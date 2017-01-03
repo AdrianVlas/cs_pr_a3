@@ -106,6 +106,7 @@ __CURRENT_EKRAN current_ekran;
 int position_in_current_level_menu[MAX_LEVEL_MENU]; //Масив у якому збкрігається індекс текучоїпозиції
 int previous_level_in_current_level_menu[MAX_LEVEL_MENU]; //Масив у якому збкрігається занчення попередніх екранів для даного рівня меню
 
+volatile unsigned int periodical_tasks_TEST_CONFIG = false;
 volatile unsigned int periodical_tasks_TEST_SETTINGS = false;
 volatile unsigned int periodical_tasks_TEST_USTUVANNJA = false;
 volatile unsigned int periodical_tasks_TEST_TRG_FUNC = false;
@@ -138,6 +139,11 @@ unsigned int copy_register8_RTC;
 int etap_reset_of_bit = ETAP_CLEAR_OF_NONE;
 int etap_settings_test_frequency = -1;
 unsigned char temp_register_rtc[2];
+
+//Налаштування
+__CONFIG current_config_prt, current_config;
+volatile unsigned int changed_config = CHANGED_ETAP_NONE; 
+unsigned char crc_config;
 
 volatile unsigned int changed_settings = CHANGED_ETAP_NONE; 
 unsigned char crc_settings;

@@ -9,16 +9,20 @@
 
 enum _error_id {
 ERROR_START_VIA_I2C_BIT = 0,
-ERROR_SETTINGS_EEPROM_BIT,
-ERROR_SETTINGS_EEPROM_EMPTY_BIT,
-ERROR_SETTINGS_EEPROM_COMPARISON_BIT,
-ERROR_SETTINGS_EEPROM_CONTROL_BIT,
-ERROR_SETTINGS_EEPROM_DEVICE_ID_FAIL_BIT,
 ERROR_USTUVANNJA_EEPROM_BIT,
 ERROR_USTUVANNJA_EEPROM_EMPTY_BIT,
 ERROR_USTUVANNJA_EEPROM_COMPARISON_BIT,
 ERROR_USTUVANNJA_EEPROM_CONTROL_BIT,
 ERROR_USTUVANNJA_EEPROM_ADJUSTMENT_ID_FAIL_BIT,
+ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT,
+ERROR_CONFIG_EEPROM_BIT,
+ERROR_CONFIG_EEPROM_EMPTY_BIT,
+ERROR_CONFIG_EEPROM_COMPARISON_BIT,
+ERROR_CONFIG_EEPROM_CONTROL_BIT,
+ERROR_SETTINGS_EEPROM_BIT,
+ERROR_SETTINGS_EEPROM_EMPTY_BIT,
+ERROR_SETTINGS_EEPROM_COMPARISON_BIT,
+ERROR_SETTINGS_EEPROM_CONTROL_BIT,
 ERROR_TRG_FUNC_EEPROM_BIT,
 ERROR_TRG_FUNC_EEPROM_EMPTY_BIT,
 ERROR_TRG_FUNC_EEPROM_COMPARISON_BIT,
@@ -76,7 +80,11 @@ ERROR_INTERNAL_FLASH_BIT,
 };
 
 #define MASKA_AVAR_ERROR_0        (unsigned int)(               \
-    (1 << (ERROR_SETTINGS_EEPROM_BIT))                          \
+    (1 << (ERROR_CONFIG_EEPROM_BIT))                            \
+  | (1 << (ERROR_CONFIG_EEPROM_EMPTY_BIT))                      \
+  | (1 << (ERROR_CONFIG_EEPROM_COMPARISON_BIT) )                \
+  | (1 << (ERROR_CONFIG_EEPROM_CONTROL_BIT))                    \
+  | (1 << (ERROR_SETTINGS_EEPROM_BIT))                          \
   | (1 << (ERROR_SETTINGS_EEPROM_EMPTY_BIT))                    \
   | (1 << (ERROR_SETTINGS_EEPROM_COMPARISON_BIT) )              \
   | (1 << (ERROR_SETTINGS_EEPROM_CONTROL_BIT))                  \
@@ -107,16 +115,20 @@ ERROR_INTERNAL_FLASH_BIT,
 
 # define NAME_DIAGN_RU  \
   " Ош.I2C         ",   \
-  " Ош.настроек    ",   \
-  " Настроек нет   ",   \
-  " Ош.зап.настр.  ",   \
-  " Ош.контр.настр.",   \
-  " Ош.типа настр. ",   \
   " Ош.юстирования ",   \
   " Юстирования нет",   \
   " Ош.зап.юстир.  ",   \
   " Ош.контр.юстир.",   \
   " Ош.юстир.набора",   \
+  " Ош.типа конф.  ",   \
+  " Ош.конфигурации",   \
+  "Конфигурации нет",   \
+  "  Ош.зап.конф.  ",   \
+  " Ош.конф.настр. ",   \
+  " Настроек нет   ",   \
+  " Ош.зап.настр.  ",   \
+  " Ош.контр.настр.",   \
+  " Ош.типа настр. ",   \
   " Ош.воcст.тр.св ",   \
   " Ош.воcст.с.вых ",   \
   "Инф.вых./св.нет ",   \
@@ -173,10 +185,6 @@ ERROR_INTERNAL_FLASH_BIT,
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
-  " Ош.выб.гр.уст. ",   \
-  " Ошибка 69      ",   \
-  " Ошибка 70      ",   \
-  " Ошибка 71      ",   \
   " Ошибка 72      ",   \
   " Ошибка 73      ",   \
   " Ошибка 74      ",   \
@@ -197,16 +205,20 @@ ERROR_INTERNAL_FLASH_BIT,
 
 # define NAME_DIAGN_UA  \
   " Пом.I2C        ",   \
-  " Пом.налаштувань",   \
-  "Налаштувань нема",   \
-  " Пом.зап.налашт.",   \
-  "Пом.контр.налашт",   \
-  " Пом.типу налашт",   \
   " Пом.юстування  ",   \
   " Юстування нема ",   \
   " Пом.зап.юст.   ",   \
   " Пом.контр.юст. ",   \
   " Пом.юст.набору ",   \
+  " Пом.типу конф. ",   \
+  "Пом.конфігурації",   \
+  "   Конф.нема    ",   \
+  " Пом.зап.конф.  ",   \
+  " Пом.контр.конф.",   \
+  " Пом.налаштувань",   \
+  "Налаштувань нема",   \
+  " Пом.зап.налашт.",   \
+  "Пом.контр.налашт",   \
   " Пом.відн.тр.св.",   \
   " Пом.відн.с.вих.",   \
   "Інф.вих./св.нема",   \
@@ -263,10 +275,6 @@ ERROR_INTERNAL_FLASH_BIT,
   " Пом.SPI_DF     ",   \
   " Пом.зовн.SRAM  ",   \
   " Пом.внутр.FLASH",   \
-  " Пом.виб.гр.уст.",   \
-  " Помилка 69     ",   \
-  " Помилка 70     ",   \
-  " Помилка 71     ",   \
   " Помилка 72     ",   \
   " Помилка 73     ",   \
   " Помилка 74     ",   \
@@ -287,16 +295,20 @@ ERROR_INTERNAL_FLASH_BIT,
 
 # define NAME_DIAGN_EN  \
   " I2C Err.       ",   \
-  " Settings Err.  ",   \
-  " No settings    ",   \
-  " Sett.W.Err.    ",   \
-  " Sett.Ctrl.Err. ",   \
-  " Sett.Type Err. ",   \
   " Adjust Err.    ",   \
   " No adjust      ",   \
   " Adjust W.Err.  ",   \
   "Adjust Ctrl.Err.",   \
   " Adjust-Set Err.",   \
+  " Conf.Type Err. ",   \
+  "   Conf.Err.    ",   \
+  "    No Conf.    ",   \
+  " Conf.W.Err.    ",   \
+  " Conf.Ctrl.Err. ",   \
+  " Settings Err.  ",   \
+  " No settings    ",   \
+  " Sett.W.Err.    ",   \
+  " Sett.Ctrl.Err. ",   \
   "Tr.LED Rest Err.",   \
   "Sign DO Rest Err",   \
   " No DO/LED Inf. ",   \
@@ -353,10 +365,6 @@ ERROR_INTERNAL_FLASH_BIT,
   " DF SPI Err.    ",   \
   " Ext.SRAM Err.  ",   \
   " Int.FLASH Err. ",   \
-  " Ош.выб.гр.уст. ",   \
-  " Error 69       ",   \
-  " Error 70       ",   \
-  " Error 71       ",   \
   " Error 72       ",   \
   " Error 73       ",   \
   " Error 74       ",   \
@@ -377,16 +385,20 @@ ERROR_INTERNAL_FLASH_BIT,
 
 # define NAME_DIAGN_KZ  \
   " Ош.I2C         ",   \
-  " Ош.настроек    ",   \
-  " Настроек нет   ",   \
-  " Ош.зап.настр.  ",   \
-  " Ош.контр.настр.",   \
-  " Ош.типа настр. ",   \
   " Ош.юстирования ",   \
   " Юстирования нет",   \
   " Ош.зап.юстир.  ",   \
   " Ош.контр.юстир.",   \
   " Ош.юстир.набора",   \
+  " Ош.типа конф.  ",   \
+  " Ош.конфигурации",   \
+  "Конфигурации нет",   \
+  "  Ош.зап.конф.  ",   \
+  " Ош.конф.настр. ",   \
+  " Настроек нет   ",   \
+  " Ош.зап.настр.  ",   \
+  " Ош.контр.настр.",   \
+  " Ош.типа настр. ",   \
   " Ош.воcст.тр.св ",   \
   " Ош.воcст.с.вых ",   \
   "Инф.вых./св.нет ",   \
@@ -443,10 +455,6 @@ ERROR_INTERNAL_FLASH_BIT,
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
-  " Ош.выб.гр.уст. ",   \
-  " Ошибка 69      ",   \
-  " Ошибка 70      ",   \
-  " Ошибка 71      ",   \
   " Ошибка 72      ",   \
   " Ошибка 73      ",   \
   " Ошибка 74      ",   \

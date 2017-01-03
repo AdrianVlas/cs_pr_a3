@@ -172,6 +172,8 @@ unsigned int start_read_buffer_via_I2C(uint32_t device_id, uint32_t ReadAddr, ui
 /*****************************************************/
 void main_routines_for_i2c(void)
 {
+  //Статична змінна, яка вказує який блок конфігурації треба записувати у EEPROM
+  static unsigned int number_block_config_write_to_eeprom;
   //Статична змінна, яка вказує який блок настройок треба записувати у EEPROM
   static unsigned int number_block_settings_write_to_eeprom;
   //Статична змінна, яка вказує який блок юстування треба записувати у EEPROM
@@ -188,6 +190,7 @@ void main_routines_for_i2c(void)
   static unsigned int temp_value_for_rtc;
   
   //Статичні змінні для контролю коректності запису
+  static __SETTINGS current_config_comp;
   static __SETTINGS current_settings_comp;
   static unsigned int ustuvannja_comp[NUMBER_ANALOG_CANALES], serial_number_dev_comp;
   static unsigned int trigger_active_functions_comp[N_BIG];
@@ -685,6 +688,36 @@ void main_routines_for_i2c(void)
         _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
       }
     }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT) !=0)
+    {
+      //Стоїть умова початку нового запису у EEPROM конфігурації пристрою
+      
+      //Скидаємо біт запуску нового запису і виставляємо біт запису блоків у EEPROM з блокуванням, щоб запуск почався з синхронізацією
+      _SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT);
+      _SET_BIT(control_i2c_taskes, TASK_BLK_WRITING_EEPROM_BIT);
+      _CLEAR_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
+      
+      //Робимо копію записуваної інформації для контролю
+
+      //Готуємо буфер для запису настройок (зкопійоманих) у EEPROM разом з контрольною сумою
+      unsigned char crc_eeprom_config = 0, temp_value;
+      unsigned char  *point_1 = (unsigned char*)(&current_config); 
+      unsigned char  *point_2 = (unsigned char*)(&current_config_comp); 
+      for (unsigned int i = 0; i < sizeof(__CONFIG); i++)
+      {
+        temp_value = *(point_1);
+        *(point_2) = temp_value;
+        point_1++;
+        point_2++;
+        read_write_i2c_buffer[i] = temp_value;
+        crc_eeprom_config += temp_value;
+      }
+      //Добавляємо інвертовану контрольну суму у кінець масиву
+      read_write_i2c_buffer[sizeof(__CONFIG)] = (unsigned char)((~(unsigned int)crc_eeprom_config) & 0xff);
+      
+      //Виставляємо перший блок конфігурації запису у EEPROM
+      number_block_config_write_to_eeprom = 0;
+    }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) !=0)
     {
       //Стоїть умова початку нового запису у EEPROM настройок
@@ -995,7 +1028,12 @@ void main_routines_for_i2c(void)
     {
       //Стоїть умова запису блоку у EEPROM
 
-      if(_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT) !=0)
+      if(_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT) !=0)
+      {
+        //Виставляємо наступний блок конфігурації запису у EEPROM
+        number_block_config_write_to_eeprom++;
+      }
+      else if(_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT) !=0)
       {
         //Виставляємо наступний блок настройок запису у EEPROM
         number_block_settings_write_to_eeprom++;
@@ -1137,7 +1175,7 @@ void main_routines_for_i2c(void)
             state_i2c_task |= STATE_SETTINGS_EEPROM_GOOD;
           
             //Скидаємо повідомлення у слові діагностики
-            _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_DEVICE_ID_FAIL_BIT);
+            _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
           }
           else
           {
@@ -1149,7 +1187,7 @@ void main_routines_for_i2c(void)
             state_i2c_task |= STATE_SETTINGS_EEPROM_EMPTY; /*Не відповідність типу настройок це то саме що їх немає взагалі*/
         
             //Виствляємо повідомлення у слові діагностики
-            _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_DEVICE_ID_FAIL_BIT);
+            _SET_BIT(set_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
           }
         }
         else
@@ -1159,7 +1197,7 @@ void main_routines_for_i2c(void)
           state_i2c_task |= STATE_SETTINGS_EEPROM_FAIL;
           
           //Виствляємо повідомлення у слові діагностики
-          _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_DEVICE_ID_FAIL_BIT);
+          _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
           _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
         }
       }
@@ -1172,7 +1210,7 @@ void main_routines_for_i2c(void)
         
         //Виствляємо повідомлення у слові діагностики
         _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
-        _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_DEVICE_ID_FAIL_BIT);
+        _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
         _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_EMPTY_BIT);
       }
             

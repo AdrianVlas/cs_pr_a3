@@ -168,6 +168,33 @@ inline void periodical_operations(void)
   Щоб за один оберт виконувалася тільки одна перевірка, тобто щоб в одному оберті
   не було надто довга затримка на фонову перевірку, хоч і важливу.
   */
+  if (periodical_tasks_TEST_CONFIG != 0)
+  {
+    //Стоїть у черзі активна задача самоконтролю конфігурації
+    if ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD) != 0)
+    {
+      //Перевірку здійснюємо тільки тоді, коли конфігурація була успішно прочитана
+      if (
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT    ) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT ) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_CONFIG_EEPROM_BIT    ) == 0) &&
+          (changed_config == CHANGED_ETAP_NONE)  
+         ) 
+      {
+        //На даний моммент не іде читання-запис конфігурації, тому можна здійснити контроль достовірності
+        control_config();
+
+        //Скидаємо активну задачу самоконтролю конфігурації
+        periodical_tasks_TEST_CONFIG = false;
+      }
+    }
+    else
+    {
+      //Скидаємо активну задачу самоконтролю таблиці конфігурації, бо не було її успішне зчитування
+      periodical_tasks_TEST_CONFIG = false;
+    }
+  }
   else if (periodical_tasks_TEST_SETTINGS != 0)
   {
     //Стоїть у черзі активна задача самоконтролю таблиці настройок

@@ -130,18 +130,14 @@ unsigned int count_number_set_bit(unsigned int*, unsigned int);
 void input_scan(void);
 void clocking_global_timers(void);
 void main_protection(void);
-void df_handler(volatile unsigned int*, unsigned int*);
-void dt_handler(volatile unsigned int*);
 void d_and_handler(volatile unsigned int*);
 void d_or_handler(volatile unsigned int*);
 void d_xor_handler(volatile unsigned int*);
 void d_not_handler(volatile unsigned int*);
-void ctrl_phase_handler(volatile unsigned int*);
 unsigned int stop_regisrator(volatile unsigned int*, unsigned int*);
 void fix_undefined_error_dr(volatile unsigned int*);
 void command_start_saving_record_dr_into_dataflash(void);
 void routine_for_queue_dr(void);
-void digital_registrator(volatile unsigned int*);
 void analog_registrator(volatile unsigned int*);
 void diagnostyca_adc_execution(void);
 
@@ -194,6 +190,7 @@ void calc_size_and_max_number_records_ar(unsigned int, unsigned int);
 unsigned int making_buffer_for_save_ar_record(unsigned int*);
 void fix_undefined_error_ar(volatile unsigned int*);
 
+void control_config(void);
 void control_settings(void);
 void control_ustuvannja(void);
 void control_trg_func(void);

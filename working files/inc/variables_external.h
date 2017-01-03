@@ -87,6 +87,7 @@ extern __CURRENT_EKRAN current_ekran;
 extern int position_in_current_level_menu[MAX_LEVEL_MENU];
 extern int previous_level_in_current_level_menu[MAX_LEVEL_MENU];
 
+extern volatile unsigned int periodical_tasks_TEST_CONFIG;
 extern volatile unsigned int periodical_tasks_TEST_SETTINGS;
 extern volatile unsigned int periodical_tasks_TEST_USTUVANNJA;
 extern volatile unsigned int periodical_tasks_TEST_TRG_FUNC;
@@ -113,6 +114,11 @@ extern unsigned int copy_register8_RTC;
 extern int etap_reset_of_bit;
 extern int etap_settings_test_frequency;
 extern unsigned char temp_register_rtc[2];
+
+//Налаштування
+extern __CONFIG current_config_prt, current_config;
+extern volatile unsigned int changed_config; 
+extern unsigned char crc_config;
 
 extern volatile unsigned int changed_settings; 
 extern unsigned char crc_settings;

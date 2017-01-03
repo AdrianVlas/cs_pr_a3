@@ -299,22 +299,6 @@ inline void clocking_global_timers(void)
 /*****************************************************/
 
 /*****************************************************/
-//Опрацювання Ориділювальних функцій - має запускатися після відкрпацювання блоків всіх захистів
-/*****************************************************/
-inline void df_handler(volatile unsigned int *p_active_functions, unsigned int *p_changed_state_with_start_new_timeout)
-{
-}
-/*****************************************************/
-
-/*****************************************************/
-//Опрацювання Ориділювальних триґерів - має запускатися після відкрпацювання опреділювальних функцій
-/*****************************************************/
-inline void dt_handler(volatile unsigned int *p_active_functions)
-{
-}
-/*****************************************************/
-
-/*****************************************************/
 //Опрацювання визначуваних "І"
 /*****************************************************/
 inline void d_and_handler(volatile unsigned int *p_active_functions)
@@ -508,14 +492,6 @@ inline void d_not_handler(volatile unsigned int *p_active_functions)
 /*****************************************************/
 
 /*****************************************************/
-// "Перевірка фазування"
-/*****************************************************/
-void ctrl_phase_handler(volatile unsigned int *p_active_functions)
-{
-}
-/*****************************************************/
-
-/*****************************************************/
 //Перевірка на необхідність завершення роботи аналогового/дискретного реєстраторів
 /*****************************************************/
 inline unsigned int stop_regisrator(volatile unsigned int* carrent_active_functions, unsigned int* ranguvannja_registrator)
@@ -682,14 +658,6 @@ inline void routine_for_queue_dr(void)
     }
       
   }
-}
-/*****************************************************/
-
-/*****************************************************/
-//Функція обробки логіки дискретного реєстратора
-/*****************************************************/
-inline void digital_registrator(volatile unsigned int* carrent_active_functions)
-{
 }
 /*****************************************************/
 
@@ -1265,7 +1233,6 @@ inline void main_protection(void)
     /**************************/
     if ((current_settings_prt.configuration & (1 << CTRL_PHASE_BIT_CONFIGURATION)) != 0) 
     {
-      ctrl_phase_handler(active_functions);
     } 
     else 
     {
@@ -1299,7 +1266,7 @@ inline void main_protection(void)
     unsigned int active_functions_tmp[NUMBER_ITERATION_EL_MAX][N_BIG];
     unsigned int iteration = 0;
 	unsigned int repeat_state = false;
-    unsigned int df_changed_state_with_start_new_timeout = 0;
+//    unsigned int df_changed_state_with_start_new_timeout = 0;
     do
     {
       for (unsigned int i = 0; i < iteration; i++)
@@ -1332,8 +1299,6 @@ inline void main_protection(void)
       d_or_handler(active_functions);
       d_xor_handler(active_functions);
       d_not_handler(active_functions);
-      df_handler(active_functions, &df_changed_state_with_start_new_timeout);
-      dt_handler(active_functions);
         
       iteration++;
     }
@@ -1395,12 +1360,6 @@ inline void main_protection(void)
   //Обробка аналогового реєстратора
   /**************************/
   analog_registrator(active_functions);
-  /**************************/
-
-  /**************************/
-  //Обробка дискретного реєстратора
-  /**************************/
-  digital_registrator(active_functions);
   /**************************/
 
   /**************************/

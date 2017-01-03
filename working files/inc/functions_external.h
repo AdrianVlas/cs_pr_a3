@@ -128,18 +128,14 @@ extern void clear_bit(unsigned int*, unsigned int);
 extern void input_scan(void);
 extern void clocking_global_timers(void);
 extern void main_protection(void);
-extern void df_handler(volatile unsigned int*, unsigned int*);
-extern void dt_handler(volatile unsigned int*);
 extern void d_and_handler(volatile unsigned int*);
 extern void d_or_handler(volatile unsigned int*);
 extern void d_xor_handler(volatile unsigned int*);
 extern void d_not_handler(volatile unsigned int*);
-extern void ctrl_phase_handler(volatile unsigned int*);
 extern unsigned int stop_regisrator(volatile unsigned int*, unsigned int*);
 extern void fix_undefined_error_dr(volatile unsigned int*);
 extern void command_start_saving_record_dr_into_dataflash(void);
 extern void routine_for_queue_dr(void);
-extern void digital_registrator(volatile unsigned int*);
 extern void analog_registrator(volatile unsigned int*);
 extern void diagnostyca_adc_execution(void);
 
@@ -192,6 +188,7 @@ extern void calc_size_and_max_number_records_ar(unsigned int, unsigned int);
 extern unsigned int making_buffer_for_save_ar_record(unsigned int*);
 extern void fix_undefined_error_ar(volatile unsigned int*);
 
+extern void control_config(void);
 extern void control_settings(void);
 extern void control_ustuvannja(void);
 extern void control_trg_func(void);

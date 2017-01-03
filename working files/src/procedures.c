@@ -886,6 +886,43 @@ unsigned int count_number_set_bit(unsigned int* source, unsigned int total_numbe
 /*****************************************************/
 
 /*****************************************************/
+//Контроль достовірності конфігурації
+/*****************************************************/
+void control_config(void)
+{
+  unsigned char crc_config_tmp = 0, temp_value_1, temp_value_2;
+  unsigned char  *point_1 = (unsigned char*)(&current_config); 
+  unsigned char  *point_2 = (unsigned char*)(&current_config_prt); 
+  unsigned int i = 0, difference = 0;
+  while ((difference == 0) && (i < sizeof(__CONFIG)))
+  {
+    temp_value_1 = *(point_1);
+    temp_value_2 = *(point_2);
+    crc_config_tmp += temp_value_1;
+    if (temp_value_1 != temp_value_2) difference = 0xff;
+    point_1++;
+    point_2++;
+    i++;
+  }
+  
+  if ((difference == 0) && (crc_config == crc_config_tmp))
+  {
+    //Контроль достовірності конфігурації пройшов успішно
+    
+    //Скидаємо повідомлення у слові діагностики
+    _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_CONTROL_BIT);
+  }
+  else
+  {
+    //Контроль достовірності конфігурації не пройшов
+
+    //Виствляємо повідомлення у слові діагностики
+    _SET_BIT(set_diagnostyka, ERROR_CONFIG_EEPROM_CONTROL_BIT);
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
 //Контроль достовірності настройок
 /*****************************************************/
 void control_settings(void)

@@ -37,6 +37,22 @@ typedef struct
 
 typedef struct
 {
+  uint32_t device_id;                   //Тип пристрою
+  
+  uint32_t n_alarms;                    //Кількість блоків сигналізацій
+  uint32_t n_meanders;                  //Кількість генераторів меандру
+
+  uint32_t n_timers;                    //Кількість таймерів
+  uint32_t n_triggers;                  //Кількість триґерів
+  uint32_t n_and;                       //Кількість елементів "І"
+  uint32_t n_or;                        //Кількість елементів "АБО"
+  uint32_t n_xor;                       //Кількість елементів "Викл.АБО"
+  uint32_t n_not;                       //Кількість елементів "НЕ"
+  
+} __CONFIG;
+
+typedef struct
+{
   //Тип пристрою
   unsigned int device_id;
   
