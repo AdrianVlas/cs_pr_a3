@@ -73,9 +73,6 @@ extern unsigned int timer_meander;
 extern unsigned int output_timer_meander;
 extern unsigned int etap_execution_df[NUMBER_DEFINED_FUNCTIONS];
 
-extern _Bool previous_states_ready_tu;
-extern _Bool trigger_ready_tu;
-
 extern unsigned int start_restart;
 
 extern unsigned char working_ekran[MAX_ROW_LCD][MAX_COL_LCD];

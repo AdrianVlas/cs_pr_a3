@@ -93,12 +93,6 @@ int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
 unsigned int timer_meander = 0;
 unsigned int output_timer_meander = false;
 unsigned int etap_execution_df[NUMBER_DEFINED_FUNCTIONS]; //Етап виконання опреділюваної функції
-//unsigned int state_df = 0; //Текучий стан опреділюваних функцій
-
-_Bool previous_states_ready_tu = 0;
-_Bool trigger_ready_tu = 0;
-
-unsigned int start_restart = 0xff;
 
 unsigned char working_ekran[MAX_ROW_LCD][MAX_COL_LCD];
 unsigned int rewrite_ekran_once_more = 0;
@@ -122,7 +116,6 @@ volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_DR = false;
 volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_DR_LOCK = false;
 volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR = false;
 volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK = false;
-volatile unsigned int periodical_tasks_TEST_RESURS_LOCK = false;
 volatile unsigned int periodical_tasks_TEST_FLASH_MEMORY = false;
 
 const unsigned char odynyci_vymirjuvannja[MAX_NAMBER_LANGUAGE][NUMBER_ODYNYCI_VYMIRJUVANNJA] =

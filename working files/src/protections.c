@@ -1380,9 +1380,6 @@ inline void main_protection(void)
     //Деактивовуємо всі реле
     state_outputs = 0;
     
-    previous_states_ready_tu = 0;
-    trigger_ready_tu = 0;
-    
     //Скидаємо всі таймери, які присутні у лозіці
     for(unsigned int i = INDEX_TIMER_DF_PROLONG_SET_FOR_BUTTON_INTERFACE_START; i < MAX_NUMBER_GLOBAL_TIMERS; i++)
       global_timers[i] = -1;
