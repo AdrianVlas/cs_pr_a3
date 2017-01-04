@@ -48,8 +48,71 @@ typedef struct
   uint32_t n_or;                        //Кількість елементів "АБО"
   uint32_t n_xor;                       //Кількість елементів "Викл.АБО"
   uint32_t n_not;                       //Кількість елементів "НЕ"
+
+  uint8_t time_config[7+1];       //Час останніх змін уставок-витримок-управління
+                                        //Останній байт масиву сигналізує мітку звідки зміни були проведені
+                                        //0 - мінімальні параметри
+                                        //1 - клавіатура
+                                        //2 - USB
+                                        //3 - RS-485
   
 } __CONFIG;
+
+typedef struct
+{
+  //Дискретні входи
+  uint32_t type_of_input_signal;                                //Тип сигналу дискретного входу 0 - постійний , 1 - змінний
+  uint32_t dopusk_dv[NUMBER_INPUTS];                            //Допуски ДВ
+    
+  uint32_t ranguvannja_outputs[NUMBER_OUTPUTS];                 //Ранжування дискретних вхиодів
+  uint32_t ranguvannja_leds[NUMBER_LEDS];                       //Ранжування свіотіндикаторів
+
+  //Тиша
+  uint32_t ranguvannja_silence;                                 //Ранжування cигналізацій
+  //Скидання
+  uint32_t ranguvannja_reset;                                   //Ранжування cигналізацій
+  //Тест
+  uint32_t ranguvannja_test;                                    //Ранжування Тесту
+  
+  uint32_t password_1;                                          //Пароль для редагування з меню
+  uint32_t password_2;                                          //Пароль для редагування з меню
+  uint32_t timeout_deactivation_password_interface_USB;         //Час деактивації паролю для редагування з інтерфейсу USB
+  uint32_t password_interface_USB;                              //Пароль для редагування з інтерфейсу USB
+  uint32_t timeout_deactivation_password_interface_RS485;       //Час деактивації паролю для редагування з інтерфейсу RS485
+  uint32_t password_interface_RS485;                             //Пароль для редагування з інтерфейсу RS485
+  
+  uint32_t timeout_idle_new_settings;
+  
+  //Комунікація
+  uint32_t name_of_cell[MAX_CHAR_IN_NAME_OF_CELL];              //І'мя ячейки
+  uint32_t volatile address;                                    //Адреса
+  int32_t speed_RS485;                                          //швидкість обміну
+                                                                // 0 - 9600
+                                                                // 1 - 14400
+                                                                // 2 - 19200
+                                                                // 3 - 28800
+                                                                // 4 - 38400
+                                                                // 5 - 57600
+                                                                // 6 - 115200
+  int32_t pare_bit_RS485;                                       //паритет
+                                                                // 0 - NONE
+                                                                // 1 - ODD
+                                                                // 2 - EVEN
+  int32_t number_stop_bit_RS485;                                //кількість стоп-біт
+                                                                // 0 - 1 stop-bit
+                                                                // 1 - 2 stop-bits
+  uint32_t time_out_1_RS485;                                    //time-out наступного символу = X/10 символу
+  
+  int32_t language;                                             //мова меню  0= змінна мов не підтримується; 1=RU; 2=UA; 3=EN; 4=KZ; 5=др.
+  
+  unsigned char time_setpoints[7+1];                            //Час останніх змін уставок-витримок-управління
+                                                                //Останній байт масиву сигналізує мітку звідки зміни були проведені
+                                                                //0 - мінімальні параметри
+                                                                //1 - клавіатура
+                                                                //2 - USB
+                                                                //3 - RS-485
+  
+} __SETTINGS_NEW;
 
 typedef struct
 {

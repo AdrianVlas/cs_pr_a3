@@ -20,6 +20,7 @@ void global_vareiables_installation(void);
 void start_settings_peripherals(void);
 void start_tim4_canal2_for_interrupt_1mc(void);
 void start_tim4_canal3_for_interrupt_10mkc(void);
+void min_config(__CONFIG *);
 void min_settings(__SETTINGS *);
 void error_reading_with_eeprom(void);
 

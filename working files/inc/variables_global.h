@@ -141,7 +141,8 @@ int etap_settings_test_frequency = -1;
 unsigned char temp_register_rtc[2];
 
 //Налаштування
-__CONFIG current_config_prt, current_config;
+__CONFIG current_config[3]; //0-1 це стуктура для захистів-структура контейнер; 2 для редагування
+size_t intex_current_config;
 volatile unsigned int changed_config = CHANGED_ETAP_NONE; 
 unsigned char crc_config;
 

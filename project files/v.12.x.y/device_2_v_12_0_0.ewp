@@ -4352,6 +4352,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_septoints_interval.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_settings.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\constants.h</name>
         </file>
         <file>

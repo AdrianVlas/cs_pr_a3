@@ -116,7 +116,8 @@ extern int etap_settings_test_frequency;
 extern unsigned char temp_register_rtc[2];
 
 //Налаштування
-extern __CONFIG current_config_prt, current_config;
+extern __CONFIG current_config[3];
+extern size_t intex_current_config;
 extern volatile unsigned int changed_config; 
 extern unsigned char crc_config;
 

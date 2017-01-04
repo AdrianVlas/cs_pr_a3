@@ -914,10 +914,10 @@ void start_settings_peripherals(void)
   /**********************/
 
   /**********************/
-  //Читаємо збережені дані настройок з EEPROM
+  //Читаємо збережені дані юстування з EEPROM
   /**********************/
-  comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);/*зчитування, а не порівняння*/
-  _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
+  comparison_writing &= (unsigned int)(~COMPARISON_WRITING_USTUVANNJA);/*зчитування, а не порівняння*/
+  _SET_BIT(control_i2c_taskes, TASK_START_READ_USTUVANNJA_EEPROM_BIT);
   while(
         (control_i2c_taskes[0]     != 0) ||
         (control_i2c_taskes[1]     != 0) ||
@@ -946,10 +946,42 @@ void start_settings_peripherals(void)
   /**********************/
 
   /**********************/
-  //Читаємо збережені дані юстування з EEPROM
+  //Читаємо збережені дані конфігурації з EEPROM
   /**********************/
-  comparison_writing &= (unsigned int)(~COMPARISON_WRITING_USTUVANNJA);/*зчитування, а не порівняння*/
-  _SET_BIT(control_i2c_taskes, TASK_START_READ_USTUVANNJA_EEPROM_BIT);
+  comparison_writing &= (unsigned int)(~COMPARISON_WRITING_CONFIG);/*зчитування, а не порівняння*/
+  _SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT);
+  while(
+        (control_i2c_taskes[0]     != 0) ||
+        (control_i2c_taskes[1]     != 0) ||
+        (driver_i2c.state_execution > 0)
+       )
+  {
+    //Робота з watchdogs
+    if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+    {
+      //Змінюємо стан біту зовнішнього Watchdog на протилежний
+      GPIO_WriteBit(
+                    GPIO_EXTERNAL_WATCHDOG,
+                    GPIO_PIN_EXTERNAL_WATCHDOG,
+                    (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+                   );
+    }
+
+    main_routines_for_i2c();
+    changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+    if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
+    {
+      //Повне роозблоковування обміну з мікросхемами для драйверу I2C
+      _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+    }
+  }
+  /**********************/
+
+  /**********************/
+  //Читаємо збережені дані настройок з EEPROM
+  /**********************/
+  comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);/*зчитування, а не порівняння*/
+  _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
   while(
         (control_i2c_taskes[0]     != 0) ||
         (control_i2c_taskes[1]     != 0) ||
@@ -1281,6 +1313,30 @@ void start_settings_peripherals(void)
 /**************************************/
 //Мінімальна конфігурація
 /**************************************/
+void min_config(__CONFIG *target_label)
+{
+  target_label->device_id = VERSIA_PZ;
+  
+  target_label->n_alarms = 0;
+  target_label->n_meanders = 0;
+
+  target_label->n_timers = 0;
+  target_label->n_triggers = 0;
+  target_label->n_and = 0;
+  target_label->n_or = 0;
+  target_label->n_xor = 0;
+  target_label->n_not = 0;
+  
+  for(unsigned int i = 0; i < (7+1); i++)
+  {
+    target_label->time_config[i] = 0;
+  }
+}
+/**************************************/
+
+/**************************************/
+//Мінімальні налаштування
+/**************************************/
 void min_settings(__SETTINGS *target_label)
 {
   target_label->device_id = VERSIA_PZ;
@@ -1581,7 +1637,8 @@ void error_reading_with_eeprom()
       //Помічаємо, що конфігурація зараз буде змінюватися і її треба буде зкопіювати у таблицю з якою працює система захистів
       changed_config = CHANGED_ETAP_EXECUTION;
       //Заповнюємо мінімальну конфігурацію
-      min_settings(&current_settings);
+      intex_current_config = 0;
+      min_config(&current_config[intex_current_config]);
       //Помічаємо, що конфігурація змінилася і її треба буде зкопіювати у таблицю з якою працює система захистів
       changed_config = CHANGED_ETAP_ENDED;
       current_settings_interfaces = current_settings;

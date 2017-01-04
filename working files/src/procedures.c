@@ -891,8 +891,8 @@ unsigned int count_number_set_bit(unsigned int* source, unsigned int total_numbe
 void control_config(void)
 {
   unsigned char crc_config_tmp = 0, temp_value_1, temp_value_2;
-  unsigned char  *point_1 = (unsigned char*)(&current_config); 
-  unsigned char  *point_2 = (unsigned char*)(&current_config_prt); 
+  unsigned char  *point_1 = (unsigned char*)(&current_config[(intex_current_config + 1) & 0x1]); //контейнер
+  unsigned char  *point_2 = (unsigned char*)(&current_config[intex_current_config]); // з цими даними працюють захисти
   unsigned int i = 0, difference = 0;
   while ((difference == 0) && (i < sizeof(__CONFIG)))
   {

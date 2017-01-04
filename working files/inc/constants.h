@@ -1,5 +1,7 @@
 #include "const_global.h"
 
+#include "const_settings.h"
+
 #include "const_fsmc.h"
 
 #include "const_lcd_and_keyboard.h"
