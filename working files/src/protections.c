@@ -1349,11 +1349,6 @@ inline void main_protection(void)
     for(unsigned int i = INDEX_TIMER_DF_PROLONG_SET_FOR_BUTTON_INTERFACE_START; i < MAX_NUMBER_GLOBAL_TIMERS; i++)
       global_timers[i] = -1;
     
-    //Стан виконання ОФ переводимо у початковий
-    for(unsigned int i = 0; i < NUMBER_DEFINED_FUNCTIONS; i++)
-    {
-      etap_execution_df[i] = NONE_DF;
-    }
   }
 
   /**************************/

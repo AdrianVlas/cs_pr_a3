@@ -92,15 +92,6 @@ void global_vareiables_installation(void)
   /**************************/
 
   /**************************/
-  //Змінні, які потрібні для роботи
-  /**************************/
-  for(unsigned int i = 0; i < NUMBER_DEFINED_FUNCTIONS; i++)
-  {
-    etap_execution_df[i] = NONE_DF;
-  }
-  /**************************/
-
-  /**************************/
   //Змінні, які потрібні для дискретного реєстратора
   /**************************/
   for(unsigned int i = 0; i < SIZE_BUFFER_FOR_DR_RECORD; i++)
@@ -1316,9 +1307,6 @@ void start_settings_peripherals(void)
 void min_config(__CONFIG *target_label)
 {
   target_label->device_id = VERSIA_PZ;
-  
-  target_label->n_alarms = 0;
-  target_label->n_meanders = 0;
 
   target_label->n_timers = 0;
   target_label->n_triggers = 0;
@@ -1326,6 +1314,9 @@ void min_config(__CONFIG *target_label)
   target_label->n_or = 0;
   target_label->n_xor = 0;
   target_label->n_not = 0;
+  
+  target_label->n_alarms = 0;
+  target_label->n_meanders = 0;
   
   for(unsigned int i = 0; i < (7+1); i++)
   {
@@ -1637,8 +1628,7 @@ void error_reading_with_eeprom()
       //Помічаємо, що конфігурація зараз буде змінюватися і її треба буде зкопіювати у таблицю з якою працює система захистів
       changed_config = CHANGED_ETAP_EXECUTION;
       //Заповнюємо мінімальну конфігурацію
-      intex_current_config = 0;
-      min_config(&current_config[intex_current_config]);
+      min_config(&current_config);
       //Помічаємо, що конфігурація змінилася і її треба буде зкопіювати у таблицю з якою працює система захистів
       changed_config = CHANGED_ETAP_ENDED;
       current_settings_interfaces = current_settings;

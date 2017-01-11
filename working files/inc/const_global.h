@@ -60,9 +60,6 @@ enum _ID_RANG_SOURCE
 
 #define NUMBER_DEFINED_BUTTONS          6
 
-#define NUMBER_IN_AND                   8
-#define NUMBER_IN_OR                    8
-
 enum _configuration {
 CTRL_PHASE_BIT_CONFIGURATION,
 

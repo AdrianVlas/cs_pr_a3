@@ -19,6 +19,7 @@ extern void start_tim4_canal2_for_interrupt_1mc(void);
 extern void start_tim4_canal3_for_interrupt_10mkc(void);
 extern void min_config(__CONFIG *);
 extern void min_settings(__SETTINGS *);
+void min_settings_AND(uintptr_t *, size_t, size_t);
 extern void error_reading_with_eeprom(void);
 
 extern void Interrupts_Config(void);
@@ -115,6 +116,7 @@ extern void make_ekran_changing_diagnostics_pr_err_registrator(void);
 extern void make_ekran_setting_language(void);
 extern void make_ekran_vidkluchenja(void);
 
+extern unsigned int allocate_dynamic_memory_for_settings(unsigned int, uintptr_t *[], __CONFIG *, __CONFIG *);
 extern unsigned int action_after_changing_of_configuration(unsigned int, __SETTINGS *);
 extern void action_after_changing_number_el(__SETTINGS *, unsigned int);
 extern void calculate_namber_bit_waiting_for_rs_485(void);
@@ -156,8 +158,8 @@ extern void set_previous_ranguvannja(void);
 extern unsigned int save_new_rang_oldr_from_gmm(unsigned int, unsigned int, unsigned int, unsigned short int, unsigned int);
 
 extern ErrorStatus check_errors_i2c(void);
-extern unsigned int start_write_buffer_via_I2C(uint32_t, uint32_t, uint8_t volatile*, uint32_t);
-extern unsigned int start_read_buffer_via_I2C(uint32_t, uint32_t, uint8_t volatile*, uint32_t);
+extern unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t volatile*, uint32_t);
+extern unsigned int start_read_buffer_via_I2C(uint32_t, uint16_t, uint8_t volatile*, uint32_t);
 extern void main_routines_for_i2c(void);
 extern void error_start_i2c(void);
 

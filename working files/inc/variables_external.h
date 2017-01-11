@@ -71,21 +71,20 @@ extern volatile unsigned int clear_diagnostyka[3];
 extern int global_timers[MAX_NUMBER_GLOBAL_TIMERS];
 extern unsigned int timer_meander;
 extern unsigned int output_timer_meander;
-extern unsigned int etap_execution_df[NUMBER_DEFINED_FUNCTIONS];
 
 extern unsigned int start_restart;
 
 extern unsigned char working_ekran[MAX_ROW_LCD][MAX_COL_LCD];
-extern unsigned int rewrite_ekran_once_more;
+extern uint16_t rewrite_ekran_once_more;
 
 extern volatile unsigned int new_state_keyboard;
 extern unsigned char time_set_keyboard[NUMBER_KEY_KEYBOARD];
 
-extern unsigned int time_rewrite;
+extern uint16_t time_rewrite;
 
 extern __CURRENT_EKRAN current_ekran;
-extern int position_in_current_level_menu[MAX_LEVEL_MENU];
-extern int previous_level_in_current_level_menu[MAX_LEVEL_MENU];
+extern int16_t position_in_current_level_menu[MAX_LEVEL_MENU];
+extern int16_t previous_level_in_current_level_menu[MAX_LEVEL_MENU];
 
 extern volatile unsigned int periodical_tasks_TEST_CONFIG;
 extern volatile unsigned int periodical_tasks_TEST_SETTINGS;
@@ -102,24 +101,26 @@ extern volatile unsigned int periodical_tasks_TEST_FLASH_MEMORY;
 
 extern const unsigned char odynyci_vymirjuvannja[MAX_NAMBER_LANGUAGE][NUMBER_ODYNYCI_VYMIRJUVANNJA];
 
-extern unsigned int fixed_power_down_into_RTC; 
+extern uint16_t fixed_power_down_into_RTC; 
 extern unsigned char time[7]; 
 extern unsigned char time_copy[7]; 
 extern unsigned char calibration;
 extern unsigned char calibration_copy;
-extern unsigned int copying_time;
+extern uint16_t copying_time;
 extern unsigned char time_edit[7]; 
 extern unsigned char calibration_edit;
-extern unsigned int copy_register8_RTC;
-extern int etap_reset_of_bit;
-extern int etap_settings_test_frequency;
+extern uint16_t copy_register8_RTC;
+extern int16_t etap_reset_of_bit;
+extern int16_t etap_settings_test_frequency;
 extern unsigned char temp_register_rtc[2];
 
 //Налаштування
-extern __CONFIG current_config[3];
-extern size_t intex_current_config;
+extern __CONFIG current_config_prt, current_config, current_config_edit;
+extern uintptr_t *sca_of_p_prt[CA_MAX], *sca_of_p[CA_MAX], *sca_of_p_edit[CA_MAX]; /*sca_of_p = settings control array of point*/
+extern uintptr_t *pca[CA_MAX][PCA_MAX]; /*pca = protect control array*/
 extern volatile unsigned int changed_config; 
 extern unsigned char crc_config;
+
 
 extern volatile unsigned int changed_settings; 
 extern unsigned char crc_settings;
@@ -146,13 +147,13 @@ extern unsigned int time_delta_watchdog_output_min;
 extern unsigned int time_delta_watchdog_output_max;
 
 extern unsigned char Temporaty_I2C_Buffer[SIZE_PAGE_EEPROM + 2];
-extern unsigned int number_busy_state;
-extern unsigned int type_error_of_exchanging_via_i2c;
-extern unsigned int low_speed_i2c;
+extern uint16_t number_busy_state;
+extern uint16_t type_error_of_exchanging_via_i2c;
+extern uint16_t low_speed_i2c;
 extern __DRIVER_I2C driver_i2c;
-extern unsigned int control_i2c_taskes[2];
-extern unsigned int comparison_writing;
-extern unsigned int state_i2c_task;
+extern uint32_t control_i2c_taskes[2];
+extern uint16_t comparison_writing;
+extern uint32_t state_i2c_task;
 extern unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
 
 //DataFlash
@@ -257,11 +258,11 @@ extern unsigned char RxBuffer_RS485[BUFFER_RS485];
 extern int TxBuffer_RS485_count;
 extern int volatile RxBuffer_RS485_count;
 extern int RxBuffer_RS485_count_previous;
-extern unsigned int time_last_receive_byte;
-extern unsigned int max_reaction_time_rs_485;
-extern unsigned int make_reconfiguration_RS_485;
-extern volatile unsigned int number_bits_rs_485_waiting;
-extern unsigned int mark_current_tick_RS_485;
+extern uint32_t time_last_receive_byte;
+extern uint32_t max_reaction_time_rs_485;
+extern uint16_t make_reconfiguration_RS_485;
+extern volatile uint16_t number_bits_rs_485_waiting;
+extern uint16_t mark_current_tick_RS_485;
 extern unsigned int timeout_idle_RS485;
 
 //USB
@@ -285,27 +286,27 @@ extern unsigned char data_usb_transmiting;
 extern unsigned int timeout_idle_USB;
 
 //MODBUS-RTU
-extern unsigned int registers_address_read;
-extern unsigned int registers_address_write;
-extern unsigned int data_write_to_memory;
-extern unsigned int number_registers_read;
-extern unsigned short int registers_values[64] /*@ "variables_RAM1"*/;
-extern unsigned int action_is_continued;
-extern unsigned int part_transmit_carrent_data;
-extern unsigned int command_to_receive_current_data;
-extern int current_data_transmit[NUMBER_ANALOG_CANALES*NUMBER_POINT*NUMBER_PERIOD_TRANSMIT] /*@ "variables_RAM1"*/;
-extern volatile unsigned int wait_of_receiving_current_data; 
-extern unsigned int password_set_USB, password_set_RS485;
-extern unsigned int password_changed;
-extern unsigned int password_ustuvannja;
-extern unsigned int *point_to_edited_rang;
-extern unsigned int number_32bit_in_target;
-extern unsigned int clear_array_rang[N_BIG];
-extern unsigned int set_array_rang[N_BIG];
-extern unsigned int restart_timeout_interface;
+extern uint32_t registers_address_read;
+extern uint32_t registers_address_write;
+extern uint32_t data_write_to_memory;
+extern uint16_t number_registers_read;
+extern uint16_t registers_values[64] /*@ "variables_RAM1"*/;
+extern uint16_t action_is_continued;
+extern uint16_t part_transmit_carrent_data;
+extern uint16_t command_to_receive_current_data;
+extern int16_t current_data_transmit[NUMBER_ANALOG_CANALES*NUMBER_POINT*NUMBER_PERIOD_TRANSMIT] /*@ "variables_RAM1"*/;
+extern volatile uint16_t wait_of_receiving_current_data; 
+extern uint16_t password_set_USB, password_set_RS485;
+extern uint16_t password_changed;
+extern uint16_t password_ustuvannja;
+extern uint32_t *point_to_edited_rang;
+extern uint16_t number_32bit_in_target;
+extern uint32_t clear_array_rang[N_BIG];
+extern uint32_t set_array_rang[N_BIG];
+extern uint16_t restart_timeout_interface;
 extern unsigned int timeout_idle_new_settings;
-extern unsigned int restart_timeout_idle_new_settings;
-extern unsigned int type_of_settings_changed;
+extern uint16_t restart_timeout_idle_new_settings;
+extern uint16_t type_of_settings_changed;
 
 extern unsigned int serial_number_dev;
 extern unsigned int edit_serial_number_dev;

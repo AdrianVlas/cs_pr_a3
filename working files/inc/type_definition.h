@@ -5,9 +5,9 @@
 
 typedef struct
 {
-  int current_level;                  //Текучий рівень відображуваного екрану
+  int16_t current_level;              //Текучий рівень відображуваного екрану
  
-  int index_position;                 //Вказує на якій ми зараз є позиції
+  int16_t index_position;             //Вказує на якій ми зараз є позиції
 
   int position_cursor_x;              //X - координата курсору
   int position_cursor_y;              //Y - координата курсору
@@ -37,17 +37,23 @@ typedef struct
 
 typedef struct
 {
+  uint32_t param;
+} __settiings_for_AND;
+
+typedef struct
+{
   uint32_t device_id;                   //Тип пристрою
   
-  uint32_t n_alarms;                    //Кількість блоків сигналізацій
-  uint32_t n_meanders;                  //Кількість генераторів меандру
-
-  uint32_t n_timers;                    //Кількість таймерів
-  uint32_t n_triggers;                  //Кількість триґерів
   uint32_t n_and;                       //Кількість елементів "І"
   uint32_t n_or;                        //Кількість елементів "АБО"
   uint32_t n_xor;                       //Кількість елементів "Викл.АБО"
   uint32_t n_not;                       //Кількість елементів "НЕ"
+  uint32_t n_timers;                    //Кількість таймерів
+  uint32_t n_triggers;                  //Кількість триґерів
+
+  uint32_t n_alarms;                    //Кількість блоків сигналізацій
+  uint32_t n_meanders;                  //Кількість генераторів меандру
+
 
   uint8_t time_config[7+1];       //Час останніх змін уставок-витримок-управління
                                         //Останній байт масиву сигналізує мітку звідки зміни були проведені
@@ -66,6 +72,8 @@ typedef struct
     
   uint32_t ranguvannja_outputs[NUMBER_OUTPUTS];                 //Ранжування дискретних вхиодів
   uint32_t ranguvannja_leds[NUMBER_LEDS];                       //Ранжування свіотіндикаторів
+
+  uint32_t number_iteration_el;                                 //Максимадбна кількість ітерацій для стандартної логіки
 
   //Тиша
   uint32_t ranguvannja_silence;                                 //Ранжування cигналізацій
@@ -232,25 +240,25 @@ typedef struct
 typedef struct
 {
   //Стан обміну
-  int state_execution;        //-1 - драйвер готовий до початку нових транзакцій
+  int16_t state_execution;        //-1 - драйвер готовий до початку нових транзакцій
                               // 0 - відбувається обмін
                               // 1 - обмін завершений без помилок
                               // 2 - обмін завершений з помилками
   
   
   //Ідентифікатор пристрою, з яким ведетьсяобмін
-  int device_id;              //-1 - пристрій не визначений
+  int16_t device_id;              //-1 - пристрій не визначений
                               // EEPROM_ADDRESS - EEPROM
                               // RTC_ADDRESS - RTC
   //Код операції
-  int action;                 //-1 - не визначений
+  int16_t action;                 //-1 - не визначений
                               // 0 - запис адреси для подальшого зчитування
                               // 1 - зчитування
                               // 2 - запис адреси і запис даних
   
 
   //Внутрішня адреса по якій буде іти звертання
-  unsigned int internal_address;
+  uint16_t internal_address;
 
   //Кількість байт для читання/запису (корисних)
   unsigned int number_bytes;

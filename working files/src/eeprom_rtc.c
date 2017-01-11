@@ -10,7 +10,7 @@
   2 - не запущений обмін через помилки на i2C
 */
 /*****************************************************/
-unsigned int start_write_buffer_via_I2C(uint32_t device_id, uint32_t WriteAddr,  uint8_t volatile* pBuffer, uint32_t number)
+unsigned int start_write_buffer_via_I2C(uint32_t device_id, uint16_t WriteAddr,  uint8_t volatile* pBuffer, uint32_t number)
 {
   unsigned int error = 0; //0 - успішно виконано; 1 - лінія зайнята; 2 - інші помилки
   //Перевіряємо чи у процесі аналізу попередньої транзакції скинуті попередні помилки
@@ -93,7 +93,7 @@ unsigned int start_write_buffer_via_I2C(uint32_t device_id, uint32_t WriteAddr, 
   2 - не запущений обмін через помилки на i2C
 */
 /*****************************************************/
-unsigned int start_read_buffer_via_I2C(uint32_t device_id, uint32_t ReadAddr, uint8_t volatile* pBuffer, uint32_t number)
+unsigned int start_read_buffer_via_I2C(uint32_t device_id, uint16_t ReadAddr, uint8_t volatile* pBuffer, uint32_t number)
 {
   unsigned int error = 0; //0 - успішно виконано; 1 - лінія зайнята; 2 - інші помилки
   //Перевіряємо чи у процесі аналізу попередньої транзакції скинуті попередні помилки
@@ -190,7 +190,7 @@ void main_routines_for_i2c(void)
   static unsigned int temp_value_for_rtc;
   
   //Статичні змінні для контролю коректності запису
-  static __SETTINGS current_config_comp;
+  static __CONFIG current_config_comp;
   static __SETTINGS current_settings_comp;
   static unsigned int ustuvannja_comp[NUMBER_ANALOG_CANALES], serial_number_dev_comp;
   static unsigned int trigger_active_functions_comp[N_BIG];
@@ -1193,8 +1193,27 @@ void main_routines_for_i2c(void)
             
               //Помічаємо, що таблиця зараз змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів
               changed_config = CHANGED_ETAP_EXECUTION;
-              //Перекидаємо таблицю настройок з тимчасового масиву у робочу таблицю
-              current_config[intex_current_config] = current_config_tmp;
+              //Перекидаємо таблицю конфігурації з тимчасового масиву у робочу таблицю-контейнер
+
+              /*
+              Забороняємо генерацію переривань, під час обновлення конфігурації для структури з якою працюють захисти
+              */
+              __disable_interrupt();
+
+              current_config_prt = current_config_tmp;
+              allocate_dynamic_memory_for_settings(false, sca_of_p_prt, &current_config_prt, NULL);
+              
+              /*
+              Дозволяємо генерацію переривань
+              */
+              __enable_interrupt();
+              
+              current_config = current_config_edit = current_config_tmp;
+              
+              //Робимо зміни у динамічній пам'яті для налаштувань
+              allocate_dynamic_memory_for_settings(false, sca_of_p     , &current_config     , &current_config_prt);
+              allocate_dynamic_memory_for_settings(false, sca_of_p_edit, &current_config_edit, &current_config);
+              
               //Помічаємо, що таблиця змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів
               changed_config = CHANGED_ETAP_ENDED;
             }

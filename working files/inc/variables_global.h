@@ -89,22 +89,21 @@ volatile unsigned int diagnostyka[3] = {0, 0, 0};
 volatile unsigned int set_diagnostyka[3] = {0, 0, 0};
 volatile unsigned int clear_diagnostyka[3] = {0, 0, 0};
 
-int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
+SRAM1 int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
 unsigned int timer_meander = 0;
 unsigned int output_timer_meander = false;
-unsigned int etap_execution_df[NUMBER_DEFINED_FUNCTIONS]; //Етап виконання опреділюваної функції
 
-unsigned char working_ekran[MAX_ROW_LCD][MAX_COL_LCD];
-unsigned int rewrite_ekran_once_more = 0;
+SRAM1 unsigned char working_ekran[MAX_ROW_LCD][MAX_COL_LCD];
+SRAM1 uint16_t rewrite_ekran_once_more/* = 0*/;
 
 volatile unsigned int new_state_keyboard = 0;
-unsigned char time_set_keyboard[NUMBER_KEY_KEYBOARD];
+SRAM1 unsigned char time_set_keyboard[NUMBER_KEY_KEYBOARD];
 
-unsigned int time_rewrite = 0; //Час який пройшов після останнього обновлення
+SRAM1 uint16_t time_rewrite/* = 0*/; //Час який пройшов після останнього обновлення
 
-__CURRENT_EKRAN current_ekran;
-int position_in_current_level_menu[MAX_LEVEL_MENU]; //Масив у якому збкрігається індекс текучоїпозиції
-int previous_level_in_current_level_menu[MAX_LEVEL_MENU]; //Масив у якому збкрігається занчення попередніх екранів для даного рівня меню
+SRAM1 __CURRENT_EKRAN current_ekran;
+SRAM1 int16_t position_in_current_level_menu[MAX_LEVEL_MENU]; //Масив у якому збкрігається індекс текучоїпозиції
+SRAM1 int16_t previous_level_in_current_level_menu[MAX_LEVEL_MENU]; //Масив у якому збкрігається занчення попередніх екранів для даного рівня меню
 
 volatile unsigned int periodical_tasks_TEST_CONFIG = false;
 volatile unsigned int periodical_tasks_TEST_SETTINGS = false;
@@ -127,28 +126,30 @@ const unsigned char odynyci_vymirjuvannja[MAX_NAMBER_LANGUAGE][NUMBER_ODYNYCI_VY
   {'А', 'В', '°', 'с'}
 };
 
-unsigned int fixed_power_down_into_RTC = 0; 
-unsigned char time[7]; 
-unsigned char time_copy[7]; 
-unsigned char calibration;
-unsigned char calibration_copy;
-unsigned int copying_time = 0;
-unsigned char time_edit[7]; 
-unsigned char calibration_edit;
-unsigned int copy_register8_RTC;
-int etap_reset_of_bit = ETAP_CLEAR_OF_NONE;
-int etap_settings_test_frequency = -1;
-unsigned char temp_register_rtc[2];
+SRAM1 uint16_t fixed_power_down_into_RTC/* = 0*/; 
+SRAM1 unsigned char time[7]; 
+SRAM1 unsigned char time_copy[7]; 
+SRAM1 unsigned char calibration;
+SRAM1 unsigned char calibration_copy;
+SRAM1 uint16_t copying_time/* = 0*/;
+SRAM1 unsigned char time_edit[7]; 
+SRAM1 unsigned char calibration_edit;
+SRAM1 uint16_t copy_register8_RTC;
+SRAM1 int16_t etap_reset_of_bit/* = ETAP_CLEAR_OF_NONE*/;
+SRAM1 int16_t etap_settings_test_frequency/* = -1*/;
+SRAM1 unsigned char temp_register_rtc[2];
 
 //Налаштування
-__CONFIG current_config[3]; //0-1 це стуктура для захистів-структура контейнер; 2 для редагування
-size_t intex_current_config;
+__CONFIG current_config_prt, current_config, current_config_edit;
+uintptr_t *sca_of_p_prt[CA_MAX], *sca_of_p[CA_MAX], *sca_of_p_edit[CA_MAX]; /*sca_of_p = settings control array of point*/
+uintptr_t *pca[CA_MAX][PCA_MAX]; /*pca = protect control array*/
 volatile unsigned int changed_config = CHANGED_ETAP_NONE; 
 unsigned char crc_config;
 
+
 volatile unsigned int changed_settings = CHANGED_ETAP_NONE; 
 unsigned char crc_settings;
-__SETTINGS current_settings_prt, current_settings, edition_settings, current_settings_interfaces;
+SRAM1 __SETTINGS current_settings_prt, current_settings, edition_settings, current_settings_interfaces;
 
 //Ресурс++
 volatile unsigned int restart_resurs_count = 0;
@@ -172,15 +173,15 @@ unsigned int time_delta_watchdog_output_max = 0;
 
 
 //I2C
-unsigned char Temporaty_I2C_Buffer[SIZE_PAGE_EEPROM + 2];
-unsigned int number_busy_state = 0;
-unsigned int type_error_of_exchanging_via_i2c = 0;
-unsigned int low_speed_i2c = 0;
-__DRIVER_I2C driver_i2c;
-unsigned int control_i2c_taskes[2]  = {0,0};
-unsigned int comparison_writing = 0; /*очищений біт означає, що іде зчитування у робочий об'єкт, встановлений біт означає що іде порівняння записаної інформації після операції запису*/
-unsigned int state_i2c_task = STATE_FIRST_READING_RTC;
-unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
+SRAM1 unsigned char Temporaty_I2C_Buffer[SIZE_PAGE_EEPROM + 2];
+SRAM1 uint16_t number_busy_state/* = 0*/;
+SRAM1 uint16_t type_error_of_exchanging_via_i2c/* = 0*/;
+SRAM1 uint16_t low_speed_i2c/* = 0*/;
+SRAM1 __DRIVER_I2C driver_i2c;
+uint32_t control_i2c_taskes[2]  = {0,0};
+SRAM1 uint16_t comparison_writing/* = 0*/; /*очищений біт означає, що іде зчитування у робочий об'єкт, встановлений біт означає що іде порівняння записаної інформації після операції запису*/
+uint32_t state_i2c_task = STATE_FIRST_READING_RTC;
+SRAM1 unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
 
 //DataFlash
 unsigned char RxBuffer_SPI_DF[SIZE_PAGE_DATAFLASH_MAX + 10];
@@ -209,36 +210,36 @@ unsigned int what_we_are_reading_from_dataflash_1;
 unsigned int what_we_are_reading_from_dataflash_2;
 
 //Аналоговий реєстратор
-unsigned char crc_info_rejestrator_ar;
-volatile __INFO_REJESTRATOR info_rejestrator_ar;
-unsigned char crc_info_rejestrator_ar_ctrl;
-__INFO_REJESTRATOR info_rejestrator_ar_ctrl;
-volatile unsigned int size_one_ar_record = 0;
-unsigned int number_word_digital_part_ar;
-volatile unsigned int max_number_records_ar = 0; //Максимальна кількість записів в аналоговому реєстраторі при вибраних витримках (розраховується з витрмиок доаварійного і післяаварійного часу)
-volatile unsigned int semaphore_read_state_ar_record = 0; //Коли цей симафор встановлений, то якщо не йде запис, то новий запис не можна починати, а якщо іде, то можна продовжувати запис
-unsigned int continue_previous_record_ar = 0; //Сигналізує, не зняті вще всі джерела запуску аналогового реєстратора після його попе6реднього запуску
-volatile int state_ar_record = STATE_AR_NO_RECORD;
+SRAM1 unsigned char crc_info_rejestrator_ar;
+SRAM1 volatile __INFO_REJESTRATOR info_rejestrator_ar;
+SRAM1 unsigned char crc_info_rejestrator_ar_ctrl;
+SRAM1 __INFO_REJESTRATOR info_rejestrator_ar_ctrl;
+SRAM1 volatile unsigned int size_one_ar_record/* = 0*/;
+SRAM1 unsigned int number_word_digital_part_ar;
+SRAM1 volatile unsigned int max_number_records_ar/* = 0*/; //Максимальна кількість записів в аналоговому реєстраторі при вибраних витримках (розраховується з витрмиок доаварійного і післяаварійного часу)
+SRAM1 volatile unsigned int semaphore_read_state_ar_record/* = 0*/; //Коли цей симафор встановлений, то якщо не йде запис, то новий запис не можна починати, а якщо іде, то можна продовжувати запис
+SRAM1 unsigned int continue_previous_record_ar/* = 0*/; //Сигналізує, не зняті вще всі джерела запуску аналогового реєстратора після його попе6реднього запуску
+SRAM1 volatile int state_ar_record/* = STATE_AR_NO_RECORD*/;
 SRAM1 short int array_ar[SIZE_BUFFER_FOR_AR];
 SRAM1 short int word_SRAM1;
-unsigned int index_array_ar_current = 0;
-volatile unsigned int index_array_ar_heat;
-volatile unsigned int index_array_ar_tail;
-unsigned int prescaler_ar = 0; //Потрібний для того, щоб з 32 виборок на секунду зробити 16 виборки на секунду
-__HEADER_AR header_ar;
-unsigned char buffer_for_save_ar_record[SIZE_PAGE_DATAFLASH_2];
-unsigned int temporary_address_ar;
-volatile unsigned int count_to_save;
-volatile unsigned int permit_copy_new_data;
-unsigned int copied_number_samples, total_number_samples;
-unsigned int etap_writing_part_page_ar_into_dataflash = ETAP_NONE;
-unsigned int number_record_of_ar_for_menu = 0xffff; //Це число означає, що номер запису не вибраний
-unsigned int number_record_of_ar_for_USB = 0xffff; //Це число означає, що номер запису не вибраний
-unsigned int number_record_of_ar_for_RS485 = 0xffff; //Це число означає, що номер запису не вибраний
-int first_number_time_sample_for_USB;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
-int last_number_time_sample_for_USB;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
-int first_number_time_sample_for_RS485;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
-int last_number_time_sample_for_RS485;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
+SRAM1 unsigned int index_array_ar_current/* = 0*/;
+SRAM1 volatile unsigned int index_array_ar_heat;
+SRAM1 volatile unsigned int index_array_ar_tail;
+SRAM1 unsigned int prescaler_ar/* = 0*/; //Потрібний для того, щоб з 32 виборок на секунду зробити 16 виборки на секунду
+SRAM1 __HEADER_AR header_ar;
+SRAM1 unsigned char buffer_for_save_ar_record[SIZE_PAGE_DATAFLASH_2];
+SRAM1 unsigned int temporary_address_ar;
+SRAM1 volatile unsigned int count_to_save;
+SRAM1 volatile unsigned int permit_copy_new_data;
+SRAM1 unsigned int copied_number_samples, total_number_samples;
+SRAM1 unsigned int etap_writing_part_page_ar_into_dataflash/* = ETAP_NONE*/;
+SRAM1 unsigned int number_record_of_ar_for_menu/* = 0xffff*/; //Це число означає, що номер запису не вибраний
+SRAM1 unsigned int number_record_of_ar_for_USB/* = 0xffff*/; //Це число означає, що номер запису не вибраний
+SRAM1 unsigned int number_record_of_ar_for_RS485/* = 0xffff*/; //Це число означає, що номер запису не вибраний
+SRAM1 int first_number_time_sample_for_USB;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
+SRAM1 int last_number_time_sample_for_USB;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
+SRAM1 int first_number_time_sample_for_RS485;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
+SRAM1 int last_number_time_sample_for_RS485;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
 
 //Дискретний реєстратор
 unsigned char crc_info_rejestrator_dr;
@@ -277,16 +278,16 @@ unsigned int number_record_of_pr_err_into_RS485 = 0xffff;
 volatile unsigned int clean_rejestrators = 0;
 
 //RS-485
-unsigned char TxBuffer_RS485[BUFFER_RS485];
-unsigned char RxBuffer_RS485[BUFFER_RS485];
+SRAM1 unsigned char TxBuffer_RS485[BUFFER_RS485];
+SRAM1 unsigned char RxBuffer_RS485[BUFFER_RS485];
 int TxBuffer_RS485_count = 0;
 int volatile RxBuffer_RS485_count = 0;
 int RxBuffer_RS485_count_previous = 0;
-unsigned int time_last_receive_byte;
-unsigned int max_reaction_time_rs_485 = 0;
-unsigned int make_reconfiguration_RS_485 = 0;
-volatile unsigned int number_bits_rs_485_waiting = 0;
-unsigned int mark_current_tick_RS_485 = 0;
+uint32_t time_last_receive_byte;
+uint32_t max_reaction_time_rs_485 = 0;
+SRAM1 uint16_t make_reconfiguration_RS_485/* = 0*/;
+SRAM1 volatile uint16_t number_bits_rs_485_waiting/* = 0*/;
+SRAM1 uint16_t mark_current_tick_RS_485/* = 0*/;
 unsigned int timeout_idle_RS485;
 
 //USB
@@ -310,27 +311,27 @@ unsigned char data_usb_transmiting = false;
 unsigned int timeout_idle_USB;
 
 //MODBUS-RTU
-unsigned int registers_address_read =0x20000000;
-unsigned int registers_address_write =0x20000000;
-unsigned int data_write_to_memory;
-unsigned int number_registers_read = 0;
-unsigned short int registers_values[64]/* @ "variables_RAM1"*/;
-unsigned int action_is_continued = false;
-unsigned int part_transmit_carrent_data = 0;
-unsigned int command_to_receive_current_data = false;
-int current_data_transmit[NUMBER_ANALOG_CANALES*NUMBER_POINT*NUMBER_PERIOD_TRANSMIT] /*@ "variables_RAM1"*/; 
-volatile unsigned int wait_of_receiving_current_data  = false; 
-unsigned int password_set_USB = 1, password_set_RS485 = 1;
-unsigned int password_changed;
-unsigned int password_ustuvannja = 0;
-unsigned int *point_to_edited_rang = NULL;
-unsigned int number_32bit_in_target = 0;
-unsigned int clear_array_rang[N_BIG] = {0, 0, 0, 0, 0, 0, 0};
-unsigned int set_array_rang[N_BIG]   = {0, 0, 0, 0, 0, 0, 0};
-unsigned int restart_timeout_interface = 0;
+SRAM1 uint32_t registers_address_read/* =0x20000000*/;
+SRAM1 uint32_t registers_address_write/* =0x20000000*/;
+SRAM1 uint32_t data_write_to_memory;
+SRAM1 uint16_t number_registers_read/* = 0*/;
+SRAM1 uint16_t registers_values[64]/* @ "variables_RAM1"*/;
+SRAM1 uint16_t action_is_continued/* = false*/;
+SRAM1 uint16_t part_transmit_carrent_data/* = 0*/;
+SRAM1 uint16_t command_to_receive_current_data/* = false*/;
+int16_t current_data_transmit[NUMBER_ANALOG_CANALES*NUMBER_POINT*NUMBER_PERIOD_TRANSMIT] /*@ "variables_RAM1"*/; 
+SRAM1 volatile uint16_t wait_of_receiving_current_data/*  = false*/; 
+SRAM1 uint16_t password_set_USB/* = 1*/, password_set_RS485/* = 1*/;
+SRAM1 uint16_t password_changed;
+SRAM1 uint16_t password_ustuvannja/* = 0*/;
+uint32_t *point_to_edited_rang = NULL;
+SRAM1 uint16_t number_32bit_in_target/* = 0*/;
+uint32_t clear_array_rang[N_BIG] = {0, 0, 0, 0, 0, 0, 0};
+uint32_t set_array_rang[N_BIG]   = {0, 0, 0, 0, 0, 0, 0};
+SRAM1 uint16_t restart_timeout_interface/* = 0*/;
 unsigned int timeout_idle_new_settings;
-unsigned int restart_timeout_idle_new_settings = 0;
-unsigned int type_of_settings_changed = 0;
+SRAM1 uint16_t restart_timeout_idle_new_settings/* = 0*/;
+SRAM1 uint16_t type_of_settings_changed/* = 0*/;
 
 unsigned int serial_number_dev = 0;                         //Заводський номер пристрою
 unsigned int edit_serial_number_dev;

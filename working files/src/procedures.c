@@ -891,8 +891,8 @@ unsigned int count_number_set_bit(unsigned int* source, unsigned int total_numbe
 void control_config(void)
 {
   unsigned char crc_config_tmp = 0, temp_value_1, temp_value_2;
-  unsigned char  *point_1 = (unsigned char*)(&current_config[(intex_current_config + 1) & 0x1]); //контейнер
-  unsigned char  *point_2 = (unsigned char*)(&current_config[intex_current_config]); // з цими даними працюють захисти
+  unsigned char  *point_1 = (unsigned char*)(&current_config);
+  unsigned char  *point_2 = (unsigned char*)(&current_config_prt); // з цими даними працюють захисти
   unsigned int i = 0, difference = 0;
   while ((difference == 0) && (i < sizeof(__CONFIG)))
   {
@@ -1125,6 +1125,86 @@ int str_to_int_DATE_Mmm(void)
     return ((i / 10) << 4) + (i % 10);
   }
   else return 0;
+}
+/*****************************************************/
+
+
+/*****************************************************/
+//Зміна конфігурації
+/*****************************************************/
+unsigned int allocate_dynamic_memory_for_settings(unsigned int make_remake, uintptr_t *p_sca_of_p[], __CONFIG *current, __CONFIG *control)
+{
+  unsigned int result = true;
+  
+  size_t index = 0;
+  while(
+        (index < CA_MAX) &&
+        (result == true)  
+       )   
+  {
+    uint32_t n_prev, n_cur;
+    size_t size;
+    void (*min_param)(uintptr_t *, size_t, size_t);
+    switch (index)
+    {
+    case CA_STANDART_LOGIC_AND:
+      {
+        //Елементів "І" немає, або вони видалені
+        n_prev = control->n_and;
+        n_cur  = current->n_and;
+        min_param = min_settings_AND;
+        size = n_cur*sizeof(__settiings_for_AND);
+        break;
+      }
+    default:
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(22);
+      }
+    }
+    
+    if ((make_remake == false) || (n_cur != n_prev))
+    {
+      //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
+      if(size == 0) 
+      {
+        free(p_sca_of_p[index]);
+        p_sca_of_p[index] = NULL;
+      }
+      else
+      {
+        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p[index], size);
+        if (ptr != NULL)
+        {
+          p_sca_of_p[index] = ptr;
+          if ((make_remake == false) || (n_cur > n_prev))
+          {
+            //Викликаємо функцію встановлення нових налаштувань у мінімальні значення
+            (*min_param)(ptr, (make_remake == false) ? 0 : n_prev, n_cur);
+          }
+        }
+        else  result = false;
+      }
+    }
+    
+    //Готуємося до зміни наступного функціонального блоку
+    if (result == true) index++;
+  }
+  
+  
+  return result;
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для елементу стандартної логіки "І"
+/*****************************************************/
+void min_settings_AND(uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    ((__settiings_for_AND *)(base) + shift)->param = 0;
+  }
 }
 /*****************************************************/
 
