@@ -1132,14 +1132,14 @@ int str_to_int_DATE_Mmm(void)
 /*****************************************************/
 //Зміна конфігурації
 /*****************************************************/
-unsigned int allocate_dynamic_memory_for_settings(unsigned int make_remake, uintptr_t *p_sca_of_p[], __CONFIG *current, __CONFIG *control)
+__result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_remake, uintptr_t *p_sca_of_p_current[], uintptr_t *p_sca_of_p_control[], __CONFIG *current, __CONFIG *control)
 {
-  unsigned int result = true;
+  __result_dym_mem_select result = DYN_MEM_SELECT_OK;
   
-  size_t index = 0;
+  intptr_t index = 0;
   while(
-        (index < CA_MAX) &&
-        (result == true)  
+        (result == DYN_MEM_SELECT_OK) &&
+        (index < CA_MAX)
        )   
   {
     uint32_t n_prev, n_cur;
@@ -1149,11 +1149,56 @@ unsigned int allocate_dynamic_memory_for_settings(unsigned int make_remake, uint
     {
     case CA_STANDART_LOGIC_AND:
       {
-        //Елементів "І" немає, або вони видалені
+        //Елемент "І"
         n_prev = control->n_and;
         n_cur  = current->n_and;
         min_param = min_settings_AND;
         size = n_cur*sizeof(__settiings_for_AND);
+        break;
+      }
+    case CA_STANDART_LOGIC_OR:
+      {
+        //Елемент "АБО"
+        n_prev = control->n_or;
+        n_cur  = current->n_or;
+        min_param = min_settings_OR;
+        size = n_cur*sizeof(__settiings_for_OR);
+        break;
+      }
+    case CA_STANDART_LOGIC_XOR:
+      {
+        //Елемент "Викл.АБО"
+        n_prev = control->n_xor;
+        n_cur  = current->n_xor;
+        min_param = min_settings_XOR;
+        size = n_cur*sizeof(__settiings_for_XOR);
+        break;
+      }
+    case CA_STANDART_LOGIC_NOT:
+      {
+        //Елемент "НЕ"
+        n_prev = control->n_not;
+        n_cur  = current->n_not;
+        min_param = min_settings_NOT;
+        size = n_cur*sizeof(__settiings_for_NOT);
+        break;
+      }
+    case CA_STANDART_LOGIC_TIMER:
+      {
+        //Елемент "Таймер"
+        n_prev = control->n_timer;
+        n_cur  = current->n_timer;
+        min_param = min_settings_TIMER;
+        size = n_cur*sizeof(__settiings_for_TIMER);
+        break;
+      }
+    case CA_STANDART_LOGIC_TRIGGER:
+      {
+        //Елемент "Триґер"
+        n_prev = control->n_trigger;
+        n_cur  = current->n_trigger;
+        min_param = min_settings_TRIGGER;
+        size = n_cur*sizeof(__settiings_for_TRIGGER);
         break;
       }
     default:
@@ -1168,29 +1213,145 @@ unsigned int allocate_dynamic_memory_for_settings(unsigned int make_remake, uint
       //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
       if(size == 0) 
       {
-        free(p_sca_of_p[index]);
-        p_sca_of_p[index] = NULL;
+        free(p_sca_of_p_current[index]);
+        p_sca_of_p_current[index] = NULL;
       }
       else
       {
-        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p[index], size);
+        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index], size);
         if (ptr != NULL)
         {
-          p_sca_of_p[index] = ptr;
+          p_sca_of_p_current[index] = ptr;
           if ((make_remake == false) || (n_cur > n_prev))
           {
             //Викликаємо функцію встановлення нових налаштувань у мінімальні значення
             (*min_param)(ptr, (make_remake == false) ? 0 : n_prev, n_cur);
           }
         }
-        else  result = false;
+        else 
+        {
+          if ((make_remake == false) || (control == NULL)) result = DYN_MEM_TOTAL_ERROR;
+          else result = DYN_MEM_NO_ENOUGH_MEM;
+        }
+      }
+    }
+    
+    //Готуємося до зміни наступного функціонального блоку (у випадку успішної зміни або неуспішної, але з можливістю відновлення)
+    if (result == DYN_MEM_SELECT_OK) index++;
+    else if (result == DYN_MEM_NO_ENOUGH_MEM) index--;
+  }
+  
+  /*
+  Цей while потрібен тільки у тому випадку, якщо пам'яті для новогого розміщення є недостатньо
+  і є спроба повернутися до попередньої конфігурації
+  */
+  
+  while(
+        (result == DYN_MEM_NO_ENOUGH_MEM) && 
+        (index >= 0)
+       )   
+  {
+    uint32_t n_prev, n_cur;
+    size_t size;
+    void (*prev_param)(uintptr_t *, uintptr_t *, size_t, size_t);;
+    switch (index)
+    {
+    case CA_STANDART_LOGIC_AND:
+      {
+        //Елемент "І"
+        n_prev = control->n_and;
+        n_cur  = current->n_and;
+        prev_param = prev_settings_AND;
+        size = n_prev*sizeof(__settiings_for_AND);
+        break;
+      }
+    case CA_STANDART_LOGIC_OR:
+      {
+        //Елемент "АБО"
+        n_prev = control->n_or;
+        n_cur  = current->n_or;
+        prev_param = prev_settings_OR;
+        size = n_prev*sizeof(__settiings_for_OR);
+        break;
+      }
+    case CA_STANDART_LOGIC_XOR:
+      {
+        //Елемент "Викл.АБО"
+        n_prev = control->n_xor;
+        n_cur  = current->n_xor;
+        prev_param = prev_settings_XOR;
+        size = n_prev*sizeof(__settiings_for_XOR);
+        break;
+      }
+    case CA_STANDART_LOGIC_NOT:
+      {
+        //Елемент "НЕ"
+        n_prev = control->n_not;
+        n_cur  = current->n_not;
+        prev_param = prev_settings_NOT;
+        size = n_prev*sizeof(__settiings_for_NOT);
+        break;
+      }
+    case CA_STANDART_LOGIC_TIMER:
+      {
+        //Елемент "Таймер"
+        n_prev = control->n_timer;
+        n_cur  = current->n_timer;
+        prev_param = prev_settings_TIMER;
+        size = n_prev*sizeof(__settiings_for_TIMER);
+        break;
+      }
+    case CA_STANDART_LOGIC_TRIGGER:
+      {
+        //Елемент "Триґер"
+        n_prev = control->n_trigger;
+        n_cur  = current->n_trigger;
+        prev_param = prev_settings_TRIGGER;
+        size = n_prev*sizeof(__settiings_for_TRIGGER);
+        break;
+      }
+    default:
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(42);
+      }
+    }
+    
+    if (n_cur != n_prev)
+    {
+      //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
+      if(size == 0) 
+      {
+        free(p_sca_of_p_current[index]);
+        p_sca_of_p_current[index] = NULL;
+      }
+      else
+      {
+        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index], size);
+        if (ptr != NULL)
+        {
+          p_sca_of_p_current[index] = ptr;
+          if (n_prev > n_cur)
+          {
+            if (p_sca_of_p_control[index] != NULL)
+            {
+              //Викликаємо функцію повернення нових налаштувань у мінімальні значення
+              (*prev_param)(ptr, p_sca_of_p_control[index], n_cur, n_prev);
+            }
+            else
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(43);
+            }
+          }
+        }
+        else  result = DYN_MEM_TOTAL_ERROR;
       }
     }
     
     //Готуємося до зміни наступного функціонального блоку
-    if (result == true) index++;
+    if (result != DYN_MEM_TOTAL_ERROR) index--;
   }
-  
   
   return result;
 }
@@ -1203,7 +1364,165 @@ void min_settings_AND(uintptr_t *base, size_t index_first, size_t index_last)
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    ((__settiings_for_AND *)(base) + shift)->param = 0;
+    for (size_t i = 0; i < NUMBER_IN_AND; i++)
+    {
+      ((__settiings_for_AND *)(base) + shift)->param[i] = 0;
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для елементу стандартної логіки "І"
+/*****************************************************/
+void prev_settings_AND(uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    for (size_t i = 0; i < NUMBER_IN_AND; i++)
+    {
+      ((__settiings_for_AND *)(base_target) + shift)->param[i] = ((__settiings_for_AND *)(base_source) + shift)->param[i];
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для елементу стандартної логіки "АБО"
+/*****************************************************/
+void min_settings_OR(uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    for (size_t i = 0; i < NUMBER_IN_OR; i++)
+    {
+      ((__settiings_for_OR *)(base) + shift)->param[i] = 0;
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для елементу стандартної логіки "АБО"
+/*****************************************************/
+void prev_settings_OR(uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    for (size_t i = 0; i < NUMBER_IN_OR; i++)
+    {
+      ((__settiings_for_OR *)(base_target) + shift)->param[i] = ((__settiings_for_OR *)(base_source) + shift)->param[i];
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для елементу стандартної логіки "Викл.АБО"
+/*****************************************************/
+void min_settings_XOR(uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    for (size_t i = 0; i < 2; i++)
+    {
+      ((__settiings_for_XOR *)(base) + shift)->param[i] = 0;
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для елементу стандартної логіки "Викл.АБО"
+/*****************************************************/
+void prev_settings_XOR(uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    for (size_t i = 0; i < 2; i++)
+    {
+      ((__settiings_for_XOR *)(base_target) + shift)->param[i] = ((__settiings_for_XOR *)(base_source) + shift)->param[i];
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для елементу стандартної логіки "НЕ"
+/*****************************************************/
+void min_settings_NOT(uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    ((__settiings_for_NOT *)(base) + shift)->param = 0;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для елементу стандартної логіки "НЕ"
+/*****************************************************/
+void prev_settings_NOT(uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    ((__settiings_for_NOT *)(base_target) + shift)->param = ((__settiings_for_NOT *)(base_source) + shift)->param;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для елементу "Таймер"
+/*****************************************************/
+void min_settings_TIMER(uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    ((__settiings_for_TIMER *)(base) + shift)->param = 0;
+    ((__settiings_for_TIMER *)(base) + shift)->control = 0;
+    ((__settiings_for_TIMER *)(base) + shift)->delay_pause = TIMEOUT_DF_PAUSE_MIN;
+    ((__settiings_for_TIMER *)(base) + shift)->delay_work  = TIMEOUT_DF_WORK_MIN;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для елементу "Таймер"
+/*****************************************************/
+void prev_settings_TIMER(uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    ((__settiings_for_TIMER *)(base_target) + shift)->param       = ((__settiings_for_TIMER *)(base_source) + shift)->param;
+    ((__settiings_for_TIMER *)(base_target) + shift)->control     = ((__settiings_for_TIMER *)(base_source) + shift)->control;
+    ((__settiings_for_TIMER *)(base_target) + shift)->delay_pause = ((__settiings_for_TIMER *)(base_source) + shift)->delay_pause;
+    ((__settiings_for_TIMER *)(base_target) + shift)->delay_work  = ((__settiings_for_TIMER *)(base_source) + shift)->delay_work;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для елементу "Триґер"
+/*****************************************************/
+void min_settings_TRIGGER(uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    ((__settiings_for_TRIGGER *)(base) + shift)->set_param   = 0;
+    ((__settiings_for_TRIGGER *)(base) + shift)->reset_param = 0;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для елементу "Триґер"
+/*****************************************************/
+void prev_settings_TRIGGER(uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    ((__settiings_for_TRIGGER *)(base_target) + shift)->set_param   = ((__settiings_for_TRIGGER *)(base_source) + shift)->set_param;
+    ((__settiings_for_TRIGGER *)(base_target) + shift)->reset_param = ((__settiings_for_TRIGGER *)(base_source) + shift)->reset_param;
   }
 }
 /*****************************************************/

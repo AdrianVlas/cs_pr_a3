@@ -1183,6 +1183,11 @@ void main_routines_for_i2c(void)
           if (current_config_tmp.device_id == VERSIA_PZ)
           {
             //Таблиця конфігурації відповідає типу даного приладу
+            state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_FAIL);
+            state_i2c_task |= STATE_CONFIG_EEPROM_GOOD;
+          
+            //Скидаємо повідомлення у слові діагностики
+            _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
             
             //Зберігаємо контрольну суму (не інвертовану)
             crc_config = crc_eeprom_config;
@@ -1201,7 +1206,7 @@ void main_routines_for_i2c(void)
               __disable_interrupt();
 
               current_config_prt = current_config_tmp;
-              allocate_dynamic_memory_for_settings(false, sca_of_p_prt, &current_config_prt, NULL);
+              __result_dym_mem_select result = allocate_dynamic_memory_for_settings(false, sca_of_p_prt, NULL, &current_config_prt, NULL);
               
               /*
               Дозволяємо генерацію переривань
@@ -1211,8 +1216,32 @@ void main_routines_for_i2c(void)
               current_config = current_config_edit = current_config_tmp;
               
               //Робимо зміни у динамічній пам'яті для налаштувань
-              allocate_dynamic_memory_for_settings(false, sca_of_p     , &current_config     , &current_config_prt);
-              allocate_dynamic_memory_for_settings(false, sca_of_p_edit, &current_config_edit, &current_config);
+              if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(false, sca_of_p     , sca_of_p_prt, &current_config     , &current_config_prt);
+              if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(false, sca_of_p_edit, sca_of_p    , &current_config_edit, &current_config    );
+              
+              if (result == DYN_MEM_SELECT_OK) 
+              {
+                state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_NO_FREE_MEMORY);
+
+                //Скидаємо повідомлення у слові діагностики
+                _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+              }
+              else
+              {
+                state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_GOOD);
+                state_i2c_task |= STATE_CONFIG_EEPROM_NO_FREE_MEMORY;
+
+                //Виствляємо повідомлення у слові діагностики
+                _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+                
+                //Звільняємо всю пам'ять
+                for (size_t index = 0; index < CA_MAX; index++)
+                {
+                  free(sca_of_p_edit[index]);
+                  free(sca_of_p[index]);
+                  free(sca_of_p_prt[index]);
+                }
+              }
               
               //Помічаємо, що таблиця змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів
               changed_config = CHANGED_ETAP_ENDED;
@@ -1251,12 +1280,6 @@ void main_routines_for_i2c(void)
                 _SET_BIT(set_diagnostyka, ERROR_CONFIG_EEPROM_COMPARISON_BIT);
               }
             }
-
-            state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_FAIL);
-            state_i2c_task |= STATE_CONFIG_EEPROM_GOOD;
-          
-            //Скидаємо повідомлення у слові діагностики
-            _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
           }
           else
           {

@@ -107,49 +107,51 @@
 #define STATE_CONFIG_EEPROM_EMPTY                                       (1<<STATE_CONFIG_EEPROM_EMPTY_BIT)      
 #define STATE_CONFIG_EEPROM_FAIL_BIT                                    1      
 #define STATE_CONFIG_EEPROM_FAIL                                        (1<<STATE_CONFIG_EEPROM_FAIL_BIT)      
-#define STATE_CONFIG_EEPROM_GOOD_BIT                                    2      
+#define STATE_CONFIG_EEPROM_NO_FREE_MEMORY_BIT                          2      
+#define STATE_CONFIG_EEPROM_NO_FREE_MEMORY                              (1<<STATE_CONFIG_EEPROM_NO_FREE_MEMORY_BIT)      
+#define STATE_CONFIG_EEPROM_GOOD_BIT                                    3      
 #define STATE_CONFIG_EEPROM_GOOD                                        (1<<STATE_CONFIG_EEPROM_GOOD_BIT)      
 
-#define STATE_SETTINGS_EEPROM_EMPTY_BIT                                 3      
+#define STATE_SETTINGS_EEPROM_EMPTY_BIT                                 4      
 #define STATE_SETTINGS_EEPROM_EMPTY                                     (1<<STATE_SETTINGS_EEPROM_EMPTY_BIT)      
-#define STATE_SETTINGS_EEPROM_FAIL_BIT                                  4      
+#define STATE_SETTINGS_EEPROM_FAIL_BIT                                  5      
 #define STATE_SETTINGS_EEPROM_FAIL                                      (1<<STATE_SETTINGS_EEPROM_FAIL_BIT)      
-#define STATE_SETTINGS_EEPROM_GOOD_BIT                                  5      
+#define STATE_SETTINGS_EEPROM_GOOD_BIT                                  6      
 #define STATE_SETTINGS_EEPROM_GOOD                                      (1<<STATE_SETTINGS_EEPROM_GOOD_BIT)      
 
-#define STATE_USTUVANNJA_EEPROM_EMPTY_BIT                               6      
+#define STATE_USTUVANNJA_EEPROM_EMPTY_BIT                               7      
 #define STATE_USTUVANNJA_EEPROM_EMPTY                                   (1<<STATE_USTUVANNJA_EEPROM_EMPTY_BIT)      
-#define STATE_USTUVANNJA_EEPROM_FAIL_BIT                                7      
+#define STATE_USTUVANNJA_EEPROM_FAIL_BIT                                8      
 #define STATE_USTUVANNJA_EEPROM_FAIL                                    (1<<STATE_USTUVANNJA_EEPROM_FAIL_BIT)      
-#define STATE_USTUVANNJA_EEPROM_GOOD_BIT                                8      
+#define STATE_USTUVANNJA_EEPROM_GOOD_BIT                                9      
 #define STATE_USTUVANNJA_EEPROM_GOOD                                    (1<<STATE_USTUVANNJA_EEPROM_GOOD_BIT)      
 
-#define STATE_TRG_FUNC_EEPROM_EMPTY_BIT                                 9      
+#define STATE_TRG_FUNC_EEPROM_EMPTY_BIT                                 10      
 #define STATE_TRG_FUNC_EEPROM_EMPTY                                     (1<<STATE_TRG_FUNC_EEPROM_EMPTY_BIT)      
-#define STATE_TRG_FUNC_EEPROM_FAIL_BIT                                  10      
+#define STATE_TRG_FUNC_EEPROM_FAIL_BIT                                  11      
 #define STATE_TRG_FUNC_EEPROM_FAIL                                      (1<<STATE_TRG_FUNC_EEPROM_FAIL_BIT)      
-#define STATE_TRG_FUNC_EEPROM_GOOD_BIT                                  11      
+#define STATE_TRG_FUNC_EEPROM_GOOD_BIT                                  12      
 #define STATE_TRG_FUNC_EEPROM_GOOD                                      (1<<STATE_TRG_FUNC_EEPROM_GOOD_BIT)      
 
-#define STATE_INFO_REJESTRATOR_AR_EEPROM_EMPTY_BIT                      12      
+#define STATE_INFO_REJESTRATOR_AR_EEPROM_EMPTY_BIT                      13      
 #define STATE_INFO_REJESTRATOR_AR_EEPROM_EMPTY                          (1<<STATE_INFO_REJESTRATOR_AR_EEPROM_EMPTY_BIT)      
-#define STATE_INFO_REJESTRATOR_AR_EEPROM_FAIL_BIT                       13      
+#define STATE_INFO_REJESTRATOR_AR_EEPROM_FAIL_BIT                       14      
 #define STATE_INFO_REJESTRATOR_AR_EEPROM_FAIL                           (1<<STATE_INFO_REJESTRATOR_AR_EEPROM_FAIL_BIT)      
-#define STATE_INFO_REJESTRATOR_AR_EEPROM_GOOD_BIT                       14      
+#define STATE_INFO_REJESTRATOR_AR_EEPROM_GOOD_BIT                       15      
 #define STATE_INFO_REJESTRATOR_AR_EEPROM_GOOD                           (1<<STATE_INFO_REJESTRATOR_AR_EEPROM_GOOD_BIT)      
 
-#define STATE_INFO_REJESTRATOR_DR_EEPROM_EMPTY_BIT                      15      
+#define STATE_INFO_REJESTRATOR_DR_EEPROM_EMPTY_BIT                      16      
 #define STATE_INFO_REJESTRATOR_DR_EEPROM_EMPTY                          (1<<STATE_INFO_REJESTRATOR_DR_EEPROM_EMPTY_BIT)      
-#define STATE_INFO_REJESTRATOR_DR_EEPROM_FAIL_BIT                       16      
+#define STATE_INFO_REJESTRATOR_DR_EEPROM_FAIL_BIT                       17      
 #define STATE_INFO_REJESTRATOR_DR_EEPROM_FAIL                           (1<<STATE_INFO_REJESTRATOR_DR_EEPROM_FAIL_BIT)      
-#define STATE_INFO_REJESTRATOR_DR_EEPROM_GOOD_BIT                       17      
+#define STATE_INFO_REJESTRATOR_DR_EEPROM_GOOD_BIT                       18      
 #define STATE_INFO_REJESTRATOR_DR_EEPROM_GOOD                           (1<<STATE_INFO_REJESTRATOR_DR_EEPROM_GOOD_BIT)      
 
-#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT                  18      
+#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT                  19      
 #define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY                      (1<<STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT)      
-#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL_BIT                   19      
+#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL_BIT                   20      
 #define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL                       (1<<STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL_BIT)      
-#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT                   20      
+#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT                   21      
 #define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD                       (1<<STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT)      
 
 #define STATE_FIRST_READING_RTC_BIT                                     30      

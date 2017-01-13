@@ -37,8 +37,57 @@ typedef struct
 
 typedef struct
 {
-  uint32_t param;
+  
+  uint32_t param[NUMBER_IN_AND];
+  
 } __settiings_for_AND;
+
+typedef struct
+{
+  
+  uint32_t param[NUMBER_IN_OR];
+  
+} __settiings_for_OR;
+
+typedef struct
+{
+  
+  uint32_t param[2];
+  
+} __settiings_for_XOR;
+
+typedef struct
+{
+  
+  uint32_t param;
+  
+} __settiings_for_NOT;
+
+typedef struct
+{
+  
+  uint32_t param;
+  uint32_t control;
+  uint32_t delay_pause;
+  uint32_t delay_work;
+  
+} __settiings_for_TIMER;
+
+typedef struct
+{
+  
+  uint32_t set_param;
+  uint32_t reset_param;
+  
+} __settiings_for_TRIGGER;
+
+typedef enum _result_dyn_mem_select
+{
+  DYN_MEM_TOTAL_ERROR = 0,
+  DYN_MEM_NO_ENOUGH_MEM,
+  DYN_MEM_SELECT_OK
+    
+} __result_dym_mem_select;
 
 typedef struct
 {
@@ -48,11 +97,11 @@ typedef struct
   uint32_t n_or;                        //Кількість елементів "АБО"
   uint32_t n_xor;                       //Кількість елементів "Викл.АБО"
   uint32_t n_not;                       //Кількість елементів "НЕ"
-  uint32_t n_timers;                    //Кількість таймерів
-  uint32_t n_triggers;                  //Кількість триґерів
+  uint32_t n_timer;                     //Кількість таймерів
+  uint32_t n_trigger;                   //Кількість триґерів
 
-  uint32_t n_alarms;                    //Кількість блоків сигналізацій
-  uint32_t n_meanders;                  //Кількість генераторів меандру
+  uint32_t n_alarm;                     //Кількість блоків сигналізацій
+  uint32_t n_meander ;                  //Кількість генераторів меандру
 
 
   uint8_t time_config[7+1];       //Час останніх змін уставок-витримок-управління

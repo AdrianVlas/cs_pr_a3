@@ -23,6 +23,17 @@ void start_tim4_canal3_for_interrupt_10mkc(void);
 void min_config(__CONFIG *);
 void min_settings(__SETTINGS *);
 void min_settings_AND(uintptr_t *, size_t, size_t);
+void prev_settings_AND(uintptr_t *, uintptr_t *, size_t, size_t);
+void min_settings_OR(uintptr_t *, size_t, size_t);
+void prev_settings_OR(uintptr_t *, uintptr_t *, size_t, size_t);
+void min_settings_XOR(uintptr_t *, size_t, size_t);
+void prev_settings_XOR(uintptr_t *, uintptr_t *, size_t, size_t);
+void min_settings_NOT(uintptr_t *, size_t, size_t);
+void prev_settings_NOT(uintptr_t *, uintptr_t *, size_t, size_t);
+void min_settings_TIMER(uintptr_t *, size_t, size_t);
+void prev_settings_TIMER(uintptr_t *, uintptr_t *, size_t, size_t);
+void min_settings_TRIGGER(uintptr_t *, size_t, size_t);
+void prev_settings_TRIGGER(uintptr_t *, uintptr_t *, size_t, size_t);
 void error_reading_with_eeprom(void);
 
 void Interrupts_Config(void);
@@ -120,7 +131,7 @@ void make_ekran_changing_diagnostics_pr_err_registrator(void);
 void make_ekran_setting_language(void);
 void make_ekran_vidkluchenja(void);
 
-unsigned int allocate_dynamic_memory_for_settings(unsigned int, uintptr_t *[], __CONFIG *, __CONFIG *);
+__result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *);
 unsigned int action_after_changing_of_configuration(unsigned int, __SETTINGS *);
 void action_after_changing_number_el(__SETTINGS *, unsigned int);
 void calculate_namber_bit_waiting_for_rs_485(void);
