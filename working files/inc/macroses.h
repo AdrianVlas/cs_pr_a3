@@ -60,6 +60,8 @@
 
 #define _GET_OUTPUT_STATE(_input, _input_bit) ((_input & ((unsigned int)(1 << _input_bit))) != 0)
 
+#define BLOCK8_SIZE(_N) ((_N >> 3) + ((_N & ((1 << 3) - 1)) != 0))
+
 #define _INVERTOR(                                         \
                   _input , _input_bit,                     \
                   _output, _output_bit                     \

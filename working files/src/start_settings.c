@@ -1334,6 +1334,10 @@ void min_config(__CONFIG *target_label)
 {
   target_label->device_id = VERSIA_PZ;
 
+  target_label->n_input = NUMBER_INPUTS;
+  target_label->n_output = NUMBER_OUTPUTS;
+  target_label->n_led = NUMBER_LEDS;
+  
   target_label->n_timer = 0;
   target_label->n_trigger = 0;
   target_label->n_and = 0;

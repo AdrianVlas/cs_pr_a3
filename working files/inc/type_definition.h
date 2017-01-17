@@ -37,41 +37,77 @@ typedef struct
 
 typedef struct
 {
+  int32_t delay;
+  
+} __delays_for_INPUT;
+
+typedef struct
+{
+  
+  __delays_for_INPUT delay;
+  uint32_t control;
+  
+} __settings_for_INPUT;
+
+typedef struct
+{
+  
+  uint32_t control;
+  uint32_t param;
+  
+} __settings_for_OUTPUT;
+
+typedef struct
+{
+  
+  uint32_t control;
+  uint32_t param;
+  
+} __settings_for_LED;
+
+typedef struct
+{
   
   uint32_t param[NUMBER_IN_AND];
   
-} __settiings_for_AND;
+} __settings_for_AND;
 
 typedef struct
 {
   
   uint32_t param[NUMBER_IN_OR];
   
-} __settiings_for_OR;
+} __settings_for_OR;
 
 typedef struct
 {
   
   uint32_t param[2];
   
-} __settiings_for_XOR;
+} __settings_for_XOR;
 
 typedef struct
 {
   
   uint32_t param;
   
-} __settiings_for_NOT;
+} __settings_for_NOT;
+
+typedef struct
+{
+  int32_t delay_pause;
+  int32_t delay_work;
+  
+} __delays_for_TIMER;
 
 typedef struct
 {
   
   uint32_t param;
   uint32_t control;
-  uint32_t delay_pause;
-  uint32_t delay_work;
+  __delays_for_TIMER delay;
   
-} __settiings_for_TIMER;
+} __settings_for_TIMER;
 
 typedef struct
 {
@@ -79,7 +115,21 @@ typedef struct
   uint32_t set_param;
   uint32_t reset_param;
   
-} __settiings_for_TRIGGER;
+} __settings_for_TRIGGER;
+
+typedef struct
+{
+  int32_t delay;
+  
+} __delays_for_MEANDER;
+
+typedef struct
+{
+  
+  __delays_for_MEANDER delay;
+  
+} __settings_for_MEANDER;
+
 
 typedef enum _result_dyn_mem_select
 {
@@ -93,6 +143,10 @@ typedef struct
 {
   uint32_t device_id;                   //Тип пристрою
   
+  uint32_t n_input;                     //Кількість дискретних входів
+  uint32_t n_output;                    //Кількість дискретних виходів
+  uint32_t n_led;                       //Кількість дискретних світлоіндикаторів
+  
   uint32_t n_and;                       //Кількість елементів "І"
   uint32_t n_or;                        //Кількість елементів "АБО"
   uint32_t n_xor;                       //Кількість елементів "Викл.АБО"
@@ -100,8 +154,8 @@ typedef struct
   uint32_t n_timer;                     //Кількість таймерів
   uint32_t n_trigger;                   //Кількість триґерів
 
+  uint32_t n_meander;                   //Кількість генераторів меандру
   uint32_t n_alarm;                     //Кількість блоків сигналізацій
-  uint32_t n_meander ;                  //Кількість генераторів меандру
 
 
   uint8_t time_config[7+1];       //Час останніх змін уставок-витримок-управління
@@ -115,15 +169,6 @@ typedef struct
 
 typedef struct
 {
-  //Дискретні входи
-  uint32_t type_of_input_signal;                                //Тип сигналу дискретного входу 0 - постійний , 1 - змінний
-  uint32_t dopusk_dv[NUMBER_INPUTS];                            //Допуски ДВ
-    
-  uint32_t ranguvannja_outputs[NUMBER_OUTPUTS];                 //Ранжування дискретних вхиодів
-  uint32_t ranguvannja_leds[NUMBER_LEDS];                       //Ранжування свіотіндикаторів
-
-  uint32_t number_iteration_el;                                 //Максимадбна кількість ітерацій для стандартної логіки
-
   //Тиша
   uint32_t ranguvannja_silence;                                 //Ранжування cигналізацій
   //Скидання

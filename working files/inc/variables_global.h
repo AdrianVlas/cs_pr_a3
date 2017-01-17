@@ -146,6 +146,21 @@ uintptr_t *pca[CA_MAX][PCA_MAX]; /*pca = protect control array*/
 volatile unsigned int changed_config = CHANGED_ETAP_NONE; 
 unsigned char crc_config;
 
+uintptr_t *pca_of_p_prt[CA_MAX][PCA_MAX]; /*pca_of_p = protect control array of point*/
+const size_t block_size_for_pca[CA_MAX][PCA_MAX] = 
+{
+  {sizeof(__delays_for_INPUT)  , BLOCK8_SIZE(INPUT_SIGNALS)  , 0                           , 0},
+  {0                           , BLOCK8_SIZE(OUTPUT_SIGNALS) , 0                           , 0},
+  {0                           , BLOCK8_SIZE(LED_SIGNALS)    , 0                           , 0},
+  {0                           , BLOCK8_SIZE(AND_SIGNALS)    , BLOCK8_SIZE(AND_SIGNALS)    , 0},
+  {0                           , BLOCK8_SIZE(OR_SIGNALS )    , BLOCK8_SIZE(OR_SIGNALS )    , 0},
+  {0                           , BLOCK8_SIZE(XOR_SIGNALS)    , BLOCK8_SIZE(XOR_SIGNALS)    , 0},
+  {0                           , BLOCK8_SIZE(NOT_SIGNALS)    , BLOCK8_SIZE(NOT_SIGNALS)    , 0},
+  {sizeof(__delays_for_TIMER)  , BLOCK8_SIZE(TIMER_SIGNALS)  , BLOCK8_SIZE(TIMER_SIGNALS)  , 0},
+  {0                           , BLOCK8_SIZE(TRIGGER_SIGNALS), BLOCK8_SIZE(TRIGGER_SIGNALS), 0},
+  {sizeof(__delays_for_MEANDER), BLOCK8_SIZE(MEANDER_SIGNALS), BLOCK8_SIZE(MEANDER_SIGNALS), 0},
+};
+
 
 volatile unsigned int changed_settings = CHANGED_ETAP_NONE; 
 unsigned char crc_settings;

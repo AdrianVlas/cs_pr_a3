@@ -1206,7 +1206,7 @@ void main_routines_for_i2c(void)
               __disable_interrupt();
 
               current_config_prt = current_config_tmp;
-              __result_dym_mem_select result = allocate_dynamic_memory_for_settings(false, sca_of_p_prt, NULL, &current_config_prt, NULL);
+              __result_dym_mem_select result = allocate_dynamic_memory_for_settings(false, true, sca_of_p_prt, NULL, &current_config_prt, NULL);
               
               /*
               Дозволяємо генерацію переривань
@@ -1216,8 +1216,8 @@ void main_routines_for_i2c(void)
               current_config = current_config_edit = current_config_tmp;
               
               //Робимо зміни у динамічній пам'яті для налаштувань
-              if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(false, sca_of_p     , sca_of_p_prt, &current_config     , &current_config_prt);
-              if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(false, sca_of_p_edit, sca_of_p    , &current_config_edit, &current_config    );
+              if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(false, false, sca_of_p     , sca_of_p_prt, &current_config     , &current_config_prt);
+              if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(false, false, sca_of_p_edit, sca_of_p    , &current_config_edit, &current_config    );
               
               if (result == DYN_MEM_SELECT_OK) 
               {
@@ -1235,11 +1235,16 @@ void main_routines_for_i2c(void)
                 _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
                 
                 //Звільняємо всю пам'ять
-                for (size_t index = 0; index < CA_MAX; index++)
+                for (size_t index_1 = 0; index_1 < CA_MAX; index_1++)
                 {
-                  free(sca_of_p_edit[index]);
-                  free(sca_of_p[index]);
-                  free(sca_of_p_prt[index]);
+                  free(sca_of_p_edit[index_1]);
+                  free(sca_of_p[index_1]);
+                  free(sca_of_p_prt[index_1]);
+                  
+                  for (size_t index_2 = 0; index_2 < PCA_MAX; index_2++)
+                  {
+                    free(pca_of_p_prt[index_1][index_2]);
+                  }
                 }
               }
               

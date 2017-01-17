@@ -121,6 +121,8 @@ extern uintptr_t *pca[CA_MAX][PCA_MAX]; /*pca = protect control array*/
 extern volatile unsigned int changed_config; 
 extern unsigned char crc_config;
 
+extern uintptr_t *pca_of_p_prt[CA_MAX][PCA_MAX]; /*pca_of_p = protect control array of point*/
+extern const size_t block_size_for_pca[CA_MAX][PCA_MAX];
 
 extern volatile unsigned int changed_settings; 
 extern unsigned char crc_settings;

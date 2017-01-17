@@ -1132,73 +1132,109 @@ int str_to_int_DATE_Mmm(void)
 /*****************************************************/
 //Зміна конфігурації
 /*****************************************************/
-__result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_remake, uintptr_t *p_sca_of_p_current[], uintptr_t *p_sca_of_p_control[], __CONFIG *current, __CONFIG *control)
+__result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_remake, unsigned int mem_for_prt, uintptr_t *p_sca_of_p_current[], uintptr_t *p_sca_of_p_control[], __CONFIG *current, __CONFIG *control)
 {
   __result_dym_mem_select result = DYN_MEM_SELECT_OK;
   
-  intptr_t index = 0;
+  intptr_t index_1 = 0;
   while(
         (result == DYN_MEM_SELECT_OK) &&
-        (index < CA_MAX)
+        (index_1 < CA_MAX)
        )   
   {
     uint32_t n_prev, n_cur;
     size_t size;
     void (*min_param)(uintptr_t *, size_t, size_t);
-    switch (index)
+    switch (index_1)
     {
+    case CA_INPUT:
+      {
+        //Дискретний вхід
+        n_prev = (control != NULL) ? control->n_input : 0;
+        n_cur  = current->n_input;
+        min_param = min_settings_INPUT;
+        size = n_cur*sizeof(__settings_for_INPUT);
+        break;
+      }
+    case CA_OUTPUT:
+      {
+        //Дискретний вихід
+        n_prev = (control != NULL) ? control->n_output : 0;
+        n_cur  = current->n_output;
+        min_param = min_settings_OUTPUT;
+        size = n_cur*sizeof(__settings_for_OUTPUT);
+        break;
+      }
+    case CA_LED:
+      {
+        //Світлоіндикатор
+        n_prev = (control != NULL) ? control->n_led : 0;
+        n_cur  = current->n_led;
+        min_param = min_settings_LED;
+        size = n_cur*sizeof(__settings_for_LED);
+        break;
+      }
     case CA_STANDART_LOGIC_AND:
       {
         //Елемент "І"
-        n_prev = control->n_and;
+        n_prev = (control != NULL) ? control->n_and : 0;
         n_cur  = current->n_and;
         min_param = min_settings_AND;
-        size = n_cur*sizeof(__settiings_for_AND);
+        size = n_cur*sizeof(__settings_for_AND);
         break;
       }
     case CA_STANDART_LOGIC_OR:
       {
         //Елемент "АБО"
-        n_prev = control->n_or;
+        n_prev = (control != NULL) ? control->n_or : 0;
         n_cur  = current->n_or;
         min_param = min_settings_OR;
-        size = n_cur*sizeof(__settiings_for_OR);
+        size = n_cur*sizeof(__settings_for_OR);
         break;
       }
     case CA_STANDART_LOGIC_XOR:
       {
         //Елемент "Викл.АБО"
-        n_prev = control->n_xor;
+        n_prev = (control != NULL) ? control->n_xor : 0;
         n_cur  = current->n_xor;
         min_param = min_settings_XOR;
-        size = n_cur*sizeof(__settiings_for_XOR);
+        size = n_cur*sizeof(__settings_for_XOR);
         break;
       }
     case CA_STANDART_LOGIC_NOT:
       {
         //Елемент "НЕ"
-        n_prev = control->n_not;
+        n_prev = (control != NULL) ? control->n_not : 0;
         n_cur  = current->n_not;
         min_param = min_settings_NOT;
-        size = n_cur*sizeof(__settiings_for_NOT);
+        size = n_cur*sizeof(__settings_for_NOT);
         break;
       }
     case CA_STANDART_LOGIC_TIMER:
       {
         //Елемент "Таймер"
-        n_prev = control->n_timer;
+        n_prev = (control != NULL) ? control->n_timer : 0;
         n_cur  = current->n_timer;
         min_param = min_settings_TIMER;
-        size = n_cur*sizeof(__settiings_for_TIMER);
+        size = n_cur*sizeof(__settings_for_TIMER);
         break;
       }
     case CA_STANDART_LOGIC_TRIGGER:
       {
         //Елемент "Триґер"
-        n_prev = control->n_trigger;
+        n_prev = (control != NULL) ? control->n_trigger : 0;
         n_cur  = current->n_trigger;
         min_param = min_settings_TRIGGER;
-        size = n_cur*sizeof(__settiings_for_TRIGGER);
+        size = n_cur*sizeof(__settings_for_TRIGGER);
+        break;
+      }
+    case CA_MEANDER:
+      {
+        //Функціональний блок "Генератор періодичних сигналів"
+        n_prev = (control != NULL) ? control->n_meander : 0;
+        n_cur  = current->n_meander;
+        min_param = min_settings_MEANDER;
+        size = n_cur*sizeof(__settings_for_MEANDER);
         break;
       }
     default:
@@ -1213,15 +1249,15 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
       //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
       if(size == 0) 
       {
-        free(p_sca_of_p_current[index]);
-        p_sca_of_p_current[index] = NULL;
+        free(p_sca_of_p_current[index_1]);
+        p_sca_of_p_current[index_1] = NULL;
       }
       else
       {
-        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index], size);
+        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index_1], size);
         if (ptr != NULL)
         {
-          p_sca_of_p_current[index] = ptr;
+          p_sca_of_p_current[index_1] = ptr;
           if ((make_remake == false) || (n_cur > n_prev))
           {
             //Викликаємо функцію встановлення нових налаштувань у мінімальні значення
@@ -1230,15 +1266,92 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         }
         else 
         {
-          if ((make_remake == false) || (control == NULL)) result = DYN_MEM_TOTAL_ERROR;
+          if ((make_remake == false) || (mem_for_prt != false) || (control == NULL)) result = DYN_MEM_TOTAL_ERROR;
           else result = DYN_MEM_NO_ENOUGH_MEM;
         }
       }
     }
+
+    /*
+    Випадок, якщо пам'яіть під налаштування успішно виділена і іде виділення пам'яті 
+    для системи захистів, то додатково ще виіляємо пам'ять під таймери, активні/спрацьовані
+    функції і додаткоий блок пам'яті (якщо потрібно)
+    */
+    if (
+        (mem_for_prt == true) &&
+        (result == DYN_MEM_SELECT_OK)  
+       )
+    {
+      intptr_t index_2 = 0;
+      while(
+            (result == DYN_MEM_SELECT_OK) &&
+            (index_2 < PCA_MAX)
+           )   
+      {
+        if ((make_remake == false) || (n_cur != n_prev))
+        {
+          //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
+          size = n_cur*block_size_for_pca[index_1][index_2];
+          if(size == 0) 
+          {
+            free(pca_of_p_prt[index_1][index_2]);
+            pca_of_p_prt[index_1][index_2] = NULL;
+          }
+          else
+          {
+            uintptr_t *ptr= (uintptr_t*)realloc(pca_of_p_prt[index_1][index_2], size);
+            if (ptr != NULL)
+            {
+              pca_of_p_prt[index_1][index_2] = ptr;
+              if ((make_remake == false) || (n_cur > n_prev))
+              {
+                switch(index_2)
+                {
+                case PCA_TIMERS:
+                  {
+                    for (size_t index_3 = ((make_remake == false) ? 0 : n_prev); index_3 < n_cur; index_3++)
+                    {
+                      ((__delays_for_TIMER*)(pca_of_p_prt[index_1][index_2]) + index_3)->delay_pause = -1;
+                      ((__delays_for_TIMER*)(pca_of_p_prt[index_1][index_2]) + index_3)->delay_work  = -1;
+                    }
+                    break;
+                  }
+                case PCA_AF:
+                case PCA_TF:
+                case PCA_EM:
+                  {
+                    for (size_t index_3 = ((make_remake == false) ? 0 : n_prev); index_3 < n_cur; index_3++)
+                    {
+                      for (size_t index_4 = 0; index_4 < block_size_for_pca[index_1][index_2]; index_4++)
+                      {
+                        ((uint8_t*)(pca_of_p_prt[index_1][index_2]) + index_3)[index_4] = 0;
+                      }
+                    }
+                    break;
+                  }
+                default:
+                  {
+                    //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+                    total_error_sw_fixed(49);
+                  }
+                }
+              }
+            }
+            else 
+            {
+              result = DYN_MEM_TOTAL_ERROR;
+            }
+          }
+        }
+      
+        if (result == DYN_MEM_SELECT_OK) index_2++;
+      }
+    }
+    /***/
     
     //Готуємося до зміни наступного функціонального блоку (у випадку успішної зміни або неуспішної, але з можливістю відновлення)
-    if (result == DYN_MEM_SELECT_OK) index++;
-    else if (result == DYN_MEM_NO_ENOUGH_MEM) index--;
+    if (result == DYN_MEM_SELECT_OK) index_1++;
+    else if (result == DYN_MEM_NO_ENOUGH_MEM) index_1--;
   }
   
   /*
@@ -1248,66 +1361,102 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
   
   while(
         (result == DYN_MEM_NO_ENOUGH_MEM) && 
-        (index >= 0)
+        (index_1 >= 0)
        )   
   {
     uint32_t n_prev, n_cur;
     size_t size;
-    void (*prev_param)(uintptr_t *, uintptr_t *, size_t, size_t);;
-    switch (index)
+    void (*prev_param)(uintptr_t *, uintptr_t *, size_t, size_t);
+    switch (index_1)
     {
+    case CA_INPUT:
+      {
+        //Дискретний вхід
+        n_prev = (control != NULL) ? control->n_input : 0;
+        n_cur  = current->n_input;
+        prev_param = prev_settings_INPUT;
+        size = n_prev*sizeof(__settings_for_INPUT);
+        break;
+      }
+    case CA_OUTPUT:
+      {
+        //Дискретний вихід
+        n_prev = (control != NULL) ? control->n_output : 0;
+        n_cur  = current->n_output;
+        prev_param = prev_settings_OUTPUT;
+        size = n_prev*sizeof(__settings_for_OUTPUT);
+        break;
+      }
+    case CA_LED:
+      {
+        //Світлоіндимкатор
+        n_prev = (control != NULL) ? control->n_led : 0;
+        n_cur  = current->n_led;
+        prev_param = prev_settings_LED;
+        size = n_prev*sizeof(__settings_for_LED);
+        break;
+      }
     case CA_STANDART_LOGIC_AND:
       {
         //Елемент "І"
-        n_prev = control->n_and;
+        n_prev = (control != NULL) ? control->n_and : 0;
         n_cur  = current->n_and;
         prev_param = prev_settings_AND;
-        size = n_prev*sizeof(__settiings_for_AND);
+        size = n_prev*sizeof(__settings_for_AND);
         break;
       }
     case CA_STANDART_LOGIC_OR:
       {
         //Елемент "АБО"
-        n_prev = control->n_or;
+        n_prev = (control != NULL) ? control->n_or : 0;
         n_cur  = current->n_or;
         prev_param = prev_settings_OR;
-        size = n_prev*sizeof(__settiings_for_OR);
+        size = n_prev*sizeof(__settings_for_OR);
         break;
       }
     case CA_STANDART_LOGIC_XOR:
       {
         //Елемент "Викл.АБО"
-        n_prev = control->n_xor;
+        n_prev = (control != NULL) ? control->n_xor : 0;
         n_cur  = current->n_xor;
         prev_param = prev_settings_XOR;
-        size = n_prev*sizeof(__settiings_for_XOR);
+        size = n_prev*sizeof(__settings_for_XOR);
         break;
       }
     case CA_STANDART_LOGIC_NOT:
       {
         //Елемент "НЕ"
-        n_prev = control->n_not;
+        n_prev = (control != NULL) ? control->n_not : 0;
         n_cur  = current->n_not;
         prev_param = prev_settings_NOT;
-        size = n_prev*sizeof(__settiings_for_NOT);
+        size = n_prev*sizeof(__settings_for_NOT);
         break;
       }
     case CA_STANDART_LOGIC_TIMER:
       {
         //Елемент "Таймер"
-        n_prev = control->n_timer;
+        n_prev = (control != NULL) ? control->n_timer : 0;
         n_cur  = current->n_timer;
         prev_param = prev_settings_TIMER;
-        size = n_prev*sizeof(__settiings_for_TIMER);
+        size = n_prev*sizeof(__settings_for_TIMER);
         break;
       }
     case CA_STANDART_LOGIC_TRIGGER:
       {
         //Елемент "Триґер"
-        n_prev = control->n_trigger;
+        n_prev = (control != NULL) ? control->n_trigger : 0;
         n_cur  = current->n_trigger;
         prev_param = prev_settings_TRIGGER;
-        size = n_prev*sizeof(__settiings_for_TRIGGER);
+        size = n_prev*sizeof(__settings_for_TRIGGER);
+        break;
+      }
+    case CA_MEANDER:
+      {
+        //Функціональний блок "Генератор періодичних сигналів"
+        n_prev = (control != NULL) ? control->n_meander : 0;
+        n_cur  = current->n_meander;
+        prev_param = prev_settings_MEANDER;
+        size = n_prev*sizeof(__settings_for_MEANDER);
         break;
       }
     default:
@@ -1322,21 +1471,21 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
       //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
       if(size == 0) 
       {
-        free(p_sca_of_p_current[index]);
-        p_sca_of_p_current[index] = NULL;
+        free(p_sca_of_p_current[index_1]);
+        p_sca_of_p_current[index_1] = NULL;
       }
       else
       {
-        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index], size);
+        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index_1], size);
         if (ptr != NULL)
         {
-          p_sca_of_p_current[index] = ptr;
+          p_sca_of_p_current[index_1] = ptr;
           if (n_prev > n_cur)
           {
-            if (p_sca_of_p_control[index] != NULL)
+            if (p_sca_of_p_control[index_1] != NULL)
             {
-              //Викликаємо функцію повернення нових налаштувань у мінімальні значення
-              (*prev_param)(ptr, p_sca_of_p_control[index], n_cur, n_prev);
+              //Викликаємо функцію повернення нових налаштувань у попередні значення
+              (*prev_param)(ptr, p_sca_of_p_control[index_1], n_cur, n_prev);
             }
             else
             {
@@ -1350,10 +1499,88 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
     }
     
     //Готуємося до зміни наступного функціонального блоку
-    if (result != DYN_MEM_TOTAL_ERROR) index--;
+    if (result != DYN_MEM_TOTAL_ERROR) index_1--;
   }
   
   return result;
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для дискретного виходу
+/*****************************************************/
+void min_settings_OUTPUT(uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    ((__settings_for_OUTPUT *)(base) + shift)->control = 0;
+    ((__settings_for_OUTPUT *)(base) + shift)->param = 0;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для дискретного виходу
+/*****************************************************/
+void prev_settings_OUTPUT(uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    ((__settings_for_OUTPUT *)(base_target) + shift)->control = ((__settings_for_OUTPUT *)(base_source) + shift)->control;
+    ((__settings_for_OUTPUT *)(base_target) + shift)->param = ((__settings_for_OUTPUT *)(base_source) + shift)->param;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для світлоіндикатора
+/*****************************************************/
+void min_settings_LED(uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    ((__settings_for_LED *)(base) + shift)->control = 0;
+    ((__settings_for_LED *)(base) + shift)->param = 0;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для світлоіндикатора
+/*****************************************************/
+void prev_settings_LED(uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    ((__settings_for_LED *)(base_target) + shift)->control = ((__settings_for_LED *)(base_source) + shift)->control;
+    ((__settings_for_LED *)(base_target) + shift)->param = ((__settings_for_LED *)(base_source) + shift)->param;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для дискретного входу
+/*****************************************************/
+void min_settings_INPUT(uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    ((__settings_for_INPUT *)(base) + shift)->control = 0;
+    ((__settings_for_INPUT *)(base) + shift)->delay.delay = KOEF_DOPUSK_DV_POST_MIN;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для дискретного входу
+/*****************************************************/
+void prev_settings_INPUT(uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    ((__settings_for_INPUT *)(base_target) + shift)->control = ((__settings_for_INPUT *)(base_source) + shift)->control;
+    ((__settings_for_INPUT *)(base_target) + shift)->delay.delay = ((__settings_for_INPUT *)(base_source) + shift)->delay.delay;
+  }
 }
 /*****************************************************/
 
@@ -1366,7 +1593,7 @@ void min_settings_AND(uintptr_t *base, size_t index_first, size_t index_last)
   {
     for (size_t i = 0; i < NUMBER_IN_AND; i++)
     {
-      ((__settiings_for_AND *)(base) + shift)->param[i] = 0;
+      ((__settings_for_AND *)(base) + shift)->param[i] = 0;
     }
   }
 }
@@ -1381,7 +1608,7 @@ void prev_settings_AND(uintptr_t *base_target, uintptr_t *base_source, size_t in
   {
     for (size_t i = 0; i < NUMBER_IN_AND; i++)
     {
-      ((__settiings_for_AND *)(base_target) + shift)->param[i] = ((__settiings_for_AND *)(base_source) + shift)->param[i];
+      ((__settings_for_AND *)(base_target) + shift)->param[i] = ((__settings_for_AND *)(base_source) + shift)->param[i];
     }
   }
 }
@@ -1396,7 +1623,7 @@ void min_settings_OR(uintptr_t *base, size_t index_first, size_t index_last)
   {
     for (size_t i = 0; i < NUMBER_IN_OR; i++)
     {
-      ((__settiings_for_OR *)(base) + shift)->param[i] = 0;
+      ((__settings_for_OR *)(base) + shift)->param[i] = 0;
     }
   }
 }
@@ -1411,7 +1638,7 @@ void prev_settings_OR(uintptr_t *base_target, uintptr_t *base_source, size_t ind
   {
     for (size_t i = 0; i < NUMBER_IN_OR; i++)
     {
-      ((__settiings_for_OR *)(base_target) + shift)->param[i] = ((__settiings_for_OR *)(base_source) + shift)->param[i];
+      ((__settings_for_OR *)(base_target) + shift)->param[i] = ((__settings_for_OR *)(base_source) + shift)->param[i];
     }
   }
 }
@@ -1426,7 +1653,7 @@ void min_settings_XOR(uintptr_t *base, size_t index_first, size_t index_last)
   {
     for (size_t i = 0; i < 2; i++)
     {
-      ((__settiings_for_XOR *)(base) + shift)->param[i] = 0;
+      ((__settings_for_XOR *)(base) + shift)->param[i] = 0;
     }
   }
 }
@@ -1441,7 +1668,7 @@ void prev_settings_XOR(uintptr_t *base_target, uintptr_t *base_source, size_t in
   {
     for (size_t i = 0; i < 2; i++)
     {
-      ((__settiings_for_XOR *)(base_target) + shift)->param[i] = ((__settiings_for_XOR *)(base_source) + shift)->param[i];
+      ((__settings_for_XOR *)(base_target) + shift)->param[i] = ((__settings_for_XOR *)(base_source) + shift)->param[i];
     }
   }
 }
@@ -1454,7 +1681,7 @@ void min_settings_NOT(uintptr_t *base, size_t index_first, size_t index_last)
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    ((__settiings_for_NOT *)(base) + shift)->param = 0;
+    ((__settings_for_NOT *)(base) + shift)->param = 0;
   }
 }
 /*****************************************************/
@@ -1466,7 +1693,7 @@ void prev_settings_NOT(uintptr_t *base_target, uintptr_t *base_source, size_t in
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    ((__settiings_for_NOT *)(base_target) + shift)->param = ((__settiings_for_NOT *)(base_source) + shift)->param;
+    ((__settings_for_NOT *)(base_target) + shift)->param = ((__settings_for_NOT *)(base_source) + shift)->param;
   }
 }
 /*****************************************************/
@@ -1478,10 +1705,10 @@ void min_settings_TIMER(uintptr_t *base, size_t index_first, size_t index_last)
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    ((__settiings_for_TIMER *)(base) + shift)->param = 0;
-    ((__settiings_for_TIMER *)(base) + shift)->control = 0;
-    ((__settiings_for_TIMER *)(base) + shift)->delay_pause = TIMEOUT_DF_PAUSE_MIN;
-    ((__settiings_for_TIMER *)(base) + shift)->delay_work  = TIMEOUT_DF_WORK_MIN;
+    ((__settings_for_TIMER *)(base) + shift)->param = 0;
+    ((__settings_for_TIMER *)(base) + shift)->control = 0;
+    ((__settings_for_TIMER *)(base) + shift)->delay.delay_pause = TIMEOUT_DF_PAUSE_MIN;
+    ((__settings_for_TIMER *)(base) + shift)->delay.delay_work  = TIMEOUT_DF_WORK_MIN;
   }
 }
 /*****************************************************/
@@ -1493,10 +1720,10 @@ void prev_settings_TIMER(uintptr_t *base_target, uintptr_t *base_source, size_t 
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    ((__settiings_for_TIMER *)(base_target) + shift)->param       = ((__settiings_for_TIMER *)(base_source) + shift)->param;
-    ((__settiings_for_TIMER *)(base_target) + shift)->control     = ((__settiings_for_TIMER *)(base_source) + shift)->control;
-    ((__settiings_for_TIMER *)(base_target) + shift)->delay_pause = ((__settiings_for_TIMER *)(base_source) + shift)->delay_pause;
-    ((__settiings_for_TIMER *)(base_target) + shift)->delay_work  = ((__settiings_for_TIMER *)(base_source) + shift)->delay_work;
+    ((__settings_for_TIMER *)(base_target) + shift)->param             = ((__settings_for_TIMER *)(base_source) + shift)->param;
+    ((__settings_for_TIMER *)(base_target) + shift)->control           = ((__settings_for_TIMER *)(base_source) + shift)->control;
+    ((__settings_for_TIMER *)(base_target) + shift)->delay.delay_pause = ((__settings_for_TIMER *)(base_source) + shift)->delay.delay_pause;
+    ((__settings_for_TIMER *)(base_target) + shift)->delay.delay_work  = ((__settings_for_TIMER *)(base_source) + shift)->delay.delay_work;
   }
 }
 /*****************************************************/
@@ -1508,8 +1735,8 @@ void min_settings_TRIGGER(uintptr_t *base, size_t index_first, size_t index_last
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    ((__settiings_for_TRIGGER *)(base) + shift)->set_param   = 0;
-    ((__settiings_for_TRIGGER *)(base) + shift)->reset_param = 0;
+    ((__settings_for_TRIGGER *)(base) + shift)->set_param   = 0;
+    ((__settings_for_TRIGGER *)(base) + shift)->reset_param = 0;
   }
 }
 /*****************************************************/
@@ -1521,11 +1748,36 @@ void prev_settings_TRIGGER(uintptr_t *base_target, uintptr_t *base_source, size_
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    ((__settiings_for_TRIGGER *)(base_target) + shift)->set_param   = ((__settiings_for_TRIGGER *)(base_source) + shift)->set_param;
-    ((__settiings_for_TRIGGER *)(base_target) + shift)->reset_param = ((__settiings_for_TRIGGER *)(base_source) + shift)->reset_param;
+    ((__settings_for_TRIGGER *)(base_target) + shift)->set_param   = ((__settings_for_TRIGGER *)(base_source) + shift)->set_param;
+    ((__settings_for_TRIGGER *)(base_target) + shift)->reset_param = ((__settings_for_TRIGGER *)(base_source) + shift)->reset_param;
   }
 }
 /*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для функціоанльного блоку "Генератор періодичних сигналів"
+/*****************************************************/
+void min_settings_MEANDER(uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    ((__settings_for_MEANDER *)(base) + shift)->delay.delay = TIMEOUT_MEANDER_MIN;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для функціоанльного блоку "Генератор періодичних сигналів"
+/*****************************************************/
+void prev_settings_MEANDER(uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    ((__settings_for_MEANDER *)(base_target) + shift)->delay.delay = ((__settings_for_MEANDER *)(base_source) + shift)->delay.delay;
+  }
+}
+/*****************************************************/
+
 
 /*****************************************************/
 /*****************************************************/
