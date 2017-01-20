@@ -3,7 +3,7 @@
 /*****************************************************/
 //Функція обновлення змінних при зміні конфігурації
 /*****************************************************/
-unsigned int action_after_changing_of_configuration(unsigned int new_configuration, __SETTINGS *target_label)
+unsigned int action_after_changing_of_configuration(unsigned int new_configuration, __SETTINGS_OLD *target_label)
 {
   unsigned int error_window = 0;
   
@@ -206,7 +206,7 @@ unsigned int action_after_changing_of_configuration(unsigned int new_configurati
 /*****************************************************/
 //Функція обновлення змінних при зміні кількості елементів розширеної логіки
 /*****************************************************/
-void action_after_changing_number_el(__SETTINGS *target_label, unsigned int element)
+void action_after_changing_number_el(__SETTINGS_OLD *target_label, unsigned int element)
 {
   unsigned int maska[N_BIG] = {0, 0, 0, 0, 0, 0, 0};
 
@@ -888,20 +888,24 @@ unsigned int count_number_set_bit(unsigned int* source, unsigned int total_numbe
 /*****************************************************/
 //Контроль достовірності конфігурації
 /*****************************************************/
-void control_config(void)
+void control_config(unsigned int modified)
 {
-  unsigned char crc_config_tmp = 0, temp_value_1, temp_value_2;
-  unsigned char  *point_1 = (unsigned char*)(&current_config);
-  unsigned char  *point_2 = (unsigned char*)(&current_config_prt); // з цими даними працюють захисти
+  uint8_t crc_config_tmp = 0, temp_value;
+  uint8_t  *point_1 = (unsigned char*)(&current_config);
+  uint8_t  *point_2 = (unsigned char*)(&current_config_prt); // з цими даними працюють захисти
   unsigned int i = 0, difference = 0;
   while ((difference == 0) && (i < sizeof(__CONFIG)))
   {
-    temp_value_1 = *(point_1);
-    temp_value_2 = *(point_2);
-    crc_config_tmp += temp_value_1;
-    if (temp_value_1 != temp_value_2) difference = 0xff;
-    point_1++;
-    point_2++;
+    //Контроль контрольної суми кофігурації для захистів
+    temp_value = *(point_1++);
+    crc_config_tmp += temp_value;
+
+    //Контроль конфігурації для захистів з конфігурацією-контейнером
+    if (modified != true)
+    {
+      if (temp_value != *(point_2++)) difference = 0xff;
+    }
+
     i++;
   }
   
@@ -925,21 +929,134 @@ void control_config(void)
 /*****************************************************/
 //Контроль достовірності настройок
 /*****************************************************/
-void control_settings(void)
+void control_settings(unsigned int modified)
 {
-  unsigned char crc_settings_tmp = 0, temp_value_1, temp_value_2;
-  unsigned char  *point_1 = (unsigned char*)(&current_settings); 
-  unsigned char  *point_2 = (unsigned char*)(&current_settings_prt); 
-  unsigned int i = 0, difference = 0;
-  while ((difference == 0) && (i < sizeof(__SETTINGS)))
+  uint8_t crc_settings_tmp = 0, temp_value;
+  uint8_t  *point_1 = NULL, *point_2 = NULL; 
+  unsigned int difference = 0;
+
+  unsigned int block = 0, shift = 0;
+  size_t size_of_block = 0;
+  while(
+        (difference == 0) &&
+        (block < (1 + CA_MAX))
+       )
   {
-    temp_value_1 = *(point_1);
-    temp_value_2 = *(point_2);
-    crc_settings_tmp += temp_value_1;
-    if (temp_value_1 != temp_value_2) difference = 0xff;
-    point_1++;
-    point_2++;
-    i++;
+    if (size_of_block == 0)
+    {
+      //Визначаємо розмір нового блоку
+      switch (block)
+      {
+      case 0:
+        {
+          size_of_block = sizeof(__SETTINGS_FIX);
+          break;
+        }
+      case (1 + CA_INPUT):
+        {
+          size_of_block = current_config_prt.n_input*sizeof(__settings_for_INPUT);
+          break;
+        }
+      case (1 + CA_OUTPUT):
+        {
+          size_of_block = current_config_prt.n_output*sizeof(__settings_for_OUTPUT);
+          break;
+        }
+      case (1 + CA_LED):
+        {
+          size_of_block = current_config_prt.n_led*sizeof(__settings_for_LED);
+          break;
+        }
+      case (1 + CA_STANDART_LOGIC_AND):
+        {
+          size_of_block = current_config_prt.n_and*sizeof(__settings_for_AND);
+          break;
+        }
+      case (1 + CA_STANDART_LOGIC_OR):
+        {
+          size_of_block = current_config_prt.n_or*sizeof(__settings_for_OR);
+          break;
+        }
+      case (1 + CA_STANDART_LOGIC_XOR):
+        {
+          size_of_block = current_config_prt.n_xor*sizeof(__settings_for_XOR);
+          break;
+        }
+      case (1 + CA_STANDART_LOGIC_NOT):
+        {
+          size_of_block = current_config_prt.n_not*sizeof(__settings_for_NOT);
+          break;
+        }
+      case (1 + CA_STANDART_LOGIC_TIMER):
+        {
+          size_of_block = current_config_prt.n_timer*sizeof(__settings_for_TIMER);
+          break;
+        }
+      case (1 + CA_STANDART_LOGIC_TRIGGER):
+        {
+          size_of_block = current_config_prt.n_trigger*sizeof(__settings_for_TRIGGER);
+          break;
+        }
+      case (1 + CA_MEANDER):
+        {
+          size_of_block = current_config_prt.n_meander*sizeof(__settings_for_MEANDER);
+          break;
+        }
+      default:
+        {
+          //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+          total_error_sw_fixed(5);
+        }
+      }
+
+      //Визначаємо вказівник на початок блоку
+      if (size_of_block != 0)
+      {
+        if (block == 0)
+        {
+          point_1 = (uint8_t *)(&settings_fix_prt);
+          if (modified != true) point_2 = (uint8_t *)(&settings_fix);
+        }
+        else
+        {
+          point_1 = (uint8_t *)(sca_of_p_prt[block - 1]);
+          if (modified != true) point_2 = (uint8_t *)(sca_of_p[block - 1]);
+        }
+      }
+    }
+      
+    if (size_of_block != 0)
+    {
+      //Контроль контрольної суми налаштувань для захистів
+      temp_value = *(point_1 + shift);
+      crc_settings_tmp += temp_value;
+
+      //Контроль налаштувань для захистів з налаштуваннями-контейнером
+      if (modified != true)
+      {
+        if (point_2 != NULL)
+        {
+          if (temp_value != *(point_2 + shift)) difference = 0xff;
+        }
+        else
+        {
+          //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+          total_error_sw_fixed(61);
+        }
+      }
+          
+      if ((++shift) >= size_of_block)
+      {
+        shift = 0;
+        block++;
+        size_of_block = 0;
+      }
+    }
+    else 
+    {
+      shift = 0;
+      block++;
+    }
   }
   
   if ((difference == 0) && (crc_settings == crc_settings_tmp))
@@ -1778,6 +1895,206 @@ void prev_settings_MEANDER(uintptr_t *base_target, uintptr_t *base_source, size_
 }
 /*****************************************************/
 
+/*****************************************************/
+//Розмір у байтах всіх налаштувань (фіксованих і змінних)
+/*****************************************************/
+size_t size_all_settings(void)
+{
+  size_t size = sizeof(__SETTINGS_FIX);
+  for (size_t i = 0; i < CA_MAX; i++)
+  {
+    size_t size_block;
+    switch (i)
+    {
+    case CA_INPUT:
+      {
+        size_block = current_config.n_input*sizeof(__settings_for_INPUT);
+        break;
+      }
+    case CA_OUTPUT:
+      {
+        size_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
+        break;
+      }
+    case CA_LED:
+      {
+        size_block = current_config.n_led*sizeof(__settings_for_LED);
+        break;
+      }
+    case CA_STANDART_LOGIC_AND:
+      {
+        size_block = current_config.n_and*sizeof(__settings_for_AND);
+        break;
+      }
+    case CA_STANDART_LOGIC_OR:
+      {
+        size_block = current_config.n_or*sizeof(__settings_for_OR);
+        break;
+      }
+    case CA_STANDART_LOGIC_XOR:
+      {
+        size_block = current_config.n_xor*sizeof(__settings_for_XOR);
+        break;
+      }
+    case CA_STANDART_LOGIC_NOT:
+      {
+        size_block = current_config.n_not*sizeof(__settings_for_NOT);
+        break;
+      }
+    case CA_STANDART_LOGIC_TIMER:
+      {
+        size_block = current_config.n_timer*sizeof(__settings_for_TIMER);
+        break;
+      }
+    case CA_STANDART_LOGIC_TRIGGER:
+      {
+        size_block = current_config.n_trigger*sizeof(__settings_for_TRIGGER);
+        break;
+      }
+    case CA_MEANDER:
+      {
+        size_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+        break;
+      }
+    default:
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(52);
+      } 
+    }
+    
+    size += size_block;
+  }
+  
+  return size;
+  
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення налаштувань з контрольної версії
+/*****************************************************/
+void copy_settings(
+                     __CONFIG *source_conf, 
+
+                     __SETTINGS_FIX *targret_fix, 
+                     __SETTINGS_FIX *source_fix, 
+                     uintptr_t *targret_dyn[], 
+                     uintptr_t *source_dyn[]
+                    )
+{
+  *targret_fix = *source_fix;
+  
+  for (size_t i = 0; i < CA_MAX; i++)
+  {
+    if (source_dyn[i] == NULL)  targret_dyn[i] = NULL;
+    else
+    {
+      uint32_t n_prev;
+      void (*prev_param)(uintptr_t *, uintptr_t *, size_t, size_t);
+      switch (i)
+      {
+        case CA_INPUT:
+          {
+            //Дискретний вхід
+            n_prev = source_conf->n_input;
+            prev_param = prev_settings_INPUT;
+
+            break;
+          }
+        case CA_OUTPUT:
+          {
+            //Дискретний вихід
+            n_prev = source_conf->n_output;
+            prev_param = prev_settings_OUTPUT;
+
+            break;
+          }
+        case CA_LED:
+          {
+            //Світлоіндимкатор
+            n_prev = source_conf->n_led;
+            prev_param = prev_settings_LED;
+
+            break;
+          }
+        case CA_STANDART_LOGIC_AND:
+          {
+            //Елемент "І"
+            n_prev = source_conf->n_and;
+            prev_param = prev_settings_AND;
+
+            break;
+          }
+        case CA_STANDART_LOGIC_OR:
+          {
+            //Елемент "АБО"
+            n_prev = source_conf->n_or;
+            prev_param = prev_settings_OR;
+
+            break;
+          }
+        case CA_STANDART_LOGIC_XOR:
+          {
+            //Елемент "Викл.АБО"
+            n_prev = source_conf->n_xor;
+            prev_param = prev_settings_XOR;
+
+            break;
+          }
+        case CA_STANDART_LOGIC_NOT:
+          {
+            //Елемент "НЕ"
+            n_prev = source_conf->n_not;
+            prev_param = prev_settings_NOT;
+
+            break;
+          }
+        case CA_STANDART_LOGIC_TIMER:
+          {
+            //Елемент "Таймер"
+            n_prev = source_conf->n_timer;
+            prev_param = prev_settings_TIMER;
+
+            break;
+          }
+        case CA_STANDART_LOGIC_TRIGGER:
+          {
+            //Елемент "Триґер"
+            n_prev = source_conf->n_trigger;
+            prev_param = prev_settings_TRIGGER;
+
+            break;
+          }
+        case CA_MEANDER:
+          {
+            //Функціональний блок "Генератор періодичних сигналів"
+            n_prev = source_conf->n_meander;
+            prev_param = prev_settings_MEANDER;
+
+            break;
+          }
+        default:
+          {
+            //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+            total_error_sw_fixed(57);
+          }
+      }
+      
+      if (n_prev != 0)
+      {
+        //Викликаємо функцію повернення нових налаштувань у попередні значення
+        (*prev_param)(targret_dyn[i], source_dyn[i], 0, n_prev);
+      }
+      else
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(59);
+      }
+    }
+  }
+}
+/*****************************************************/
 
 /*****************************************************/
 /*****************************************************/

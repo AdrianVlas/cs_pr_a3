@@ -139,12 +139,15 @@ SRAM1 int16_t etap_reset_of_bit/* = ETAP_CLEAR_OF_NONE*/;
 SRAM1 int16_t etap_settings_test_frequency/* = -1*/;
 SRAM1 unsigned char temp_register_rtc[2];
 
-//Налаштування
+//Конфігурація і Налаштування
 __CONFIG current_config_prt, current_config, current_config_edit;
 uintptr_t *sca_of_p_prt[CA_MAX], *sca_of_p[CA_MAX], *sca_of_p_edit[CA_MAX]; /*sca_of_p = settings control array of point*/
 uintptr_t *pca[CA_MAX][PCA_MAX]; /*pca = protect control array*/
-volatile unsigned int changed_config = CHANGED_ETAP_NONE; 
 unsigned char crc_config;
+
+__SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;
+uint8_t crc_settings;
+unsigned int config_settings_modified = false;
 
 uintptr_t *pca_of_p_prt[CA_MAX][PCA_MAX]; /*pca_of_p = protect control array of point*/
 const size_t block_size_for_pca[CA_MAX][PCA_MAX] = 
@@ -163,8 +166,7 @@ const size_t block_size_for_pca[CA_MAX][PCA_MAX] =
 
 
 volatile unsigned int changed_settings = CHANGED_ETAP_NONE; 
-unsigned char crc_settings;
-SRAM1 __SETTINGS current_settings_prt, current_settings, edition_settings, current_settings_interfaces;
+SRAM1 __SETTINGS_OLD current_settings_prt, current_settings, edition_settings, current_settings_interfaces;
 
 //Ресурс++
 volatile unsigned int restart_resurs_count = 0;

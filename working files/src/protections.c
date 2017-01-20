@@ -1563,22 +1563,6 @@ void TIM2_IRQHandler(void)
     uint32_t current_tick = TIM2->CCR1;
     
     /***********************************************************/
-    //Перевіряємо, чи відбувалися зміни настройок
-    /***********************************************************/
-    if (
-        (changed_settings == CHANGED_ETAP_ENDED) && /*Це є умова, що нові дані підготовлені для передачі їх у роботу системою захистів (і при цьому зараз дані не змінюються)*/
-        (state_ar_record  != STATE_AR_START    )    /*Це є умова, що на даний момент не може виникнути переривання від вимірювальної системи (з вищим пріоритетом за пріоритет системи захистів) з умовою початку формування запису аналогового реєстратора. де треба буде взяти ширину доаварійного і післяаварійного масивів*/ 
-       )   
-    {
-      //Копіюємо таблицю настройок у копію цієї таблиці але з якою працює (читає і змінює) тільки система захистів
-      current_settings_prt = current_settings;
-      
-      //Помічаємо, що зміни прийняті системою захистів
-      changed_settings = CHANGED_ETAP_NONE;
-    }
-    /***********************************************************/
-
-    /***********************************************************/
     //Перевіряємо необхідність очистки аналогового і дискретного реєстраторів
     /***********************************************************/
     //Аналоговий реєстратор
@@ -1681,35 +1665,6 @@ void TIM2_IRQHandler(void)
     if (control_state_outputs != temp_state_outputs) _SET_BIT(set_diagnostyka, ERROR_DIGITAL_OUTPUTS_BIT);
 //    else _SET_BIT(clear_diagnostyka, ERROR_DIGITAL_OUTPUTS_BIT);
     
-    //Перевіряємо достовірність значень для аналогового реєстратора
-    if (
-        (state_ar_record  != STATE_AR_TEMPORARY_BLOCK) &&
-        (changed_settings == CHANGED_ETAP_NONE       )  
-       )   
-    {
-      //Перевірку здійснюємо тільки тоді, коли не іде зміна часових параметрів
-      unsigned int size_one_ar_record_tmp = size_one_ar_record, max_number_records_ar_tmp = max_number_records_ar;
-      if (
-          ((number_word_digital_part_ar*8*sizeof(short int)) < NUMBER_TOTAL_SIGNAL_FOR_RANG)
-          ||  
-          (size_one_ar_record_tmp != (sizeof(__HEADER_AR) + ((current_settings_prt.prefault_number_periods + current_settings_prt.postfault_number_periods) << VAGA_NUMBER_POINT_AR)*(NUMBER_ANALOG_CANALES + number_word_digital_part_ar)*sizeof(short int)))
-          ||
-          (
-           !(
-             (size_one_ar_record_tmp* max_number_records_ar_tmp      <= ((NUMBER_PAGES_INTO_DATAFLASH_2 << VAGA_SIZE_PAGE_DATAFLASH_2))) &&
-             (size_one_ar_record_tmp*(max_number_records_ar_tmp + 1) >  ((NUMBER_PAGES_INTO_DATAFLASH_2 << VAGA_SIZE_PAGE_DATAFLASH_2)))
-            ) 
-          ) 
-         )
-      {
-        //Теоретично ця помилка ніколи не малаб реєструватися
-        /*Якщо виникла така ситуація то треба зациклити ропаграму, щоб вона пішла на перезапуск - 
-        бо відбулася недопустима незрозуміла помилка у розраховуваних параметрах аналогового реєстратора.
-        Не зрозумілу чого вона виникла, коли і де, коректність роботи пригоамного забезпечення під питанням!*/
-        total_error_sw_fixed(5);
-      }
-    }
-
     //Функції захистів
     main_protection();
     /***********************************************************/

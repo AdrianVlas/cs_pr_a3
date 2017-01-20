@@ -17,7 +17,7 @@
 
 #define SIZE_USTUVANNJA         (sizeof(unsigned int) + sizeof(ustuvannja) + sizeof(serial_number_dev))
 #define SIZE_CONFIG              sizeof(__CONFIG)
-#define SIZE_SETTINGS            sizeof(__SETTINGS)
+#define SIZE_SETTINGS            size_all_settings()
 
 #define START_ADDRESS_USTUVANNJA_IN_EEPROM              0x0
 #define START_ADDRESS_INFO_REJESTRATORS_DR              (((START_ADDRESS_USTUVANNJA_IN_EEPROM     + (SIZE_USTUVANNJA                 + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
@@ -30,7 +30,7 @@
 #define START_ADDRESS_TIME_REGISTERS              0x0
 #define MAX_NUMBER_REGISTERS_RTC                  20
 
-#define SIZE_BUFFER_FOR_EEPROM_EXCHNGE (sizeof(__SETTINGS) + 1)
+#define SIZE_BUFFER_FOR_EEPROM_EXCHNGE 256
 
 #define COMPARISON_WRITING_CONFIG_BIT                                   0
 #define COMPARISON_WRITING_CONFIG                                       (1 << COMPARISON_WRITING_CONFIG_BIT)

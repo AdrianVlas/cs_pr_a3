@@ -176,6 +176,10 @@ void main_routines_for_i2c(void)
   static unsigned int number_block_config_write_to_eeprom;
   //Статична змінна, яка вказує який блок настройок треба записувати у EEPROM
   static unsigned int number_block_settings_write_to_eeprom;
+  //Статична змінна, яка вказує з якої адреси треба почати записувати налаштування у EEPROM
+  static size_t shift_from_start_address_settings_in_eeprom;
+  //Статична змінна, яка вказує скільки байт налаштувань підготовлено для запису у EEPROM
+  static size_t size_settings;
   //Статична змінна, яка вказує який блок юстування треба записувати у EEPROM
   static unsigned int number_block_ustuvannja_write_to_eeprom;
   //Статична змінна, яка вказує який блок триґерної інформації треба записувати у EEPROM
@@ -191,7 +195,6 @@ void main_routines_for_i2c(void)
   
   //Статичні змінні для контролю коректності запису
   static __CONFIG current_config_comp;
-  static __SETTINGS current_settings_comp;
   static unsigned int ustuvannja_comp[NUMBER_ANALOG_CANALES], serial_number_dev_comp;
   static unsigned int trigger_active_functions_comp[N_BIG];
   static __INFO_REJESTRATOR info_rejestrator_ar_comp;
@@ -330,14 +333,14 @@ void main_routines_for_i2c(void)
       offset_from_start = number_block_settings_write_to_eeprom*SIZE_PAGE_EEPROM;
 
       //Кількість байт до кінця буферу 
-      size_to_end = (sizeof(__SETTINGS) + 1) - offset_from_start; 
+      size_to_end = size_settings - offset_from_start; 
       
       if (size_to_end > 0)
       {
         if (size_to_end < SIZE_PAGE_EEPROM)
-          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_SETTINGS_IN_EEPROM + offset_from_start), (read_write_i2c_buffer + offset_from_start), size_to_end);
+          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_SETTINGS_IN_EEPROM + shift_from_start_address_settings_in_eeprom + offset_from_start), (read_write_i2c_buffer + offset_from_start), size_to_end);
         else
-          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_SETTINGS_IN_EEPROM + offset_from_start), (read_write_i2c_buffer + offset_from_start), SIZE_PAGE_EEPROM);
+          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_SETTINGS_IN_EEPROM + shift_from_start_address_settings_in_eeprom + offset_from_start), (read_write_i2c_buffer + offset_from_start), SIZE_PAGE_EEPROM);
         
         //Аналізуємо успішність запуску нового запису
         if (rez > 1)
@@ -351,14 +354,7 @@ void main_routines_for_i2c(void)
       }
       else
       {
-        //Весь масив настройок вже записаний
-        
-        //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
-        comparison_writing |= COMPARISON_WRITING_SETTINGS;
-        _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
-        _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
-        
-        //Скидаємо умову запису настройок у EEPROM
+        //Порція масиву налаштувань вже записана
         _CLEAR_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT);
       }
       
@@ -609,26 +605,144 @@ void main_routines_for_i2c(void)
     }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT) !=0)
     {
-      unsigned int rez;
-
       //Запускаємо процес читання настройок
-      rez = start_read_buffer_via_I2C(EEPROM_ADDRESS, START_ADDRESS_SETTINGS_IN_EEPROM, read_write_i2c_buffer, (sizeof(__SETTINGS) + 1));
+      static unsigned int block, shift;
       
-      //Аналізуємо успішність запуску нового запису
-      if (rez > 1)
+      if (size_settings == 0)
       {
-        error_start_i2c();
-        
-        //Покищо просто очищаємо змінну, яка конкретизуєм помилку, у майбутньому її можна буде конкретизувати
-        type_error_of_exchanging_via_i2c = 0;
+        //Якщо ця статична змінна size_setting рівна нулю, то це ознаає що прочитані дані вже оброблені і можна читати наступний блок
+        size_t size_of_block = 0;
+        size_t size = 0;
+        while(
+              (size < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
+              (block < (1 + CA_MAX))
+             )
+        {
+          //Визначаємо розмір нового блоку
+          switch (block)
+          {
+          case 0:
+            {
+              size_of_block = sizeof(__SETTINGS_FIX);
+              break;
+            }
+          case (1 + CA_INPUT):
+            {
+              size_of_block = current_config.n_input*sizeof(__settings_for_INPUT);
+              break;
+            }
+          case (1 + CA_OUTPUT):
+            {
+              size_of_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
+              break;
+            }
+          case (1 + CA_LED):
+            {
+              size_of_block = current_config.n_led*sizeof(__settings_for_LED);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_AND):
+            {
+              size_of_block = current_config.n_and*sizeof(__settings_for_AND);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_OR):
+            {
+              size_of_block = current_config.n_or*sizeof(__settings_for_OR);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_XOR):
+            {
+              size_of_block = current_config.n_xor*sizeof(__settings_for_XOR);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_NOT):
+            {
+              size_of_block = current_config.n_not*sizeof(__settings_for_NOT);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_TIMER):
+            {
+              size_of_block = current_config.n_timer*sizeof(__settings_for_TIMER);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_TRIGGER):
+            {
+              size_of_block = current_config.n_trigger*sizeof(__settings_for_TRIGGER);
+              break;
+            }
+          case (1 + CA_MEANDER):
+            {
+              size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          default:
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(53);
+            }
+          }
+      
+          size_t size_tmp = size + (size_of_block - shift);
+          if (size_tmp <= SIZE_BUFFER_FOR_EEPROM_EXCHNGE) 
+          {
+            shift = 0;
+            block++;
+            size = size_tmp;
+          }
+          else
+          {
+            shift += SIZE_BUFFER_FOR_EEPROM_EXCHNGE - size;
+            size = SIZE_BUFFER_FOR_EEPROM_EXCHNGE;
+          }
+        }
+        size_settings = size;
       }
-      else if (rez == 0)
+      
+      if (
+          (size_settings < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
+          (block == (1 + CA_MAX))
+         )   
       {
-        _SET_BIT(clear_diagnostyka, ERROR_START_VIA_I2C_BIT);
+        //Додаємо ще контрольу суму для читання
+        size_settings++;
+        block++; /*це робимо для того, щоб коли наступний раз попадемо у цю частину програми, то не додавти ще один байтт для читання, а скинути всі статичні змінні і завршити процедуру читання*/
 
-        //При успішнопу запуску читання скидаємо біт запуску читання настройок і виставляємо біт процесу читання настройок
-        _SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT);
-        _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
+      }
+      
+      if (size_settings != 0) 
+      {
+        /*Тепер вже нерівність нулю цієї статичної змінної означає, що є що читати*/
+        unsigned int rez = start_read_buffer_via_I2C(EEPROM_ADDRESS, START_ADDRESS_SETTINGS_IN_EEPROM + shift_from_start_address_settings_in_eeprom, read_write_i2c_buffer, size_settings);
+        //Аналізуємо успішність запуску нового запису
+        if (rez > 1)
+        {
+          error_start_i2c();
+        
+          //Покищо просто очищаємо змінну, яка конкретизуєм помилку, у майбутньому її можна буде конкретизувати
+          type_error_of_exchanging_via_i2c = 0;
+        }
+        else if (rez == 0)
+        {
+          _SET_BIT(clear_diagnostyka, ERROR_START_VIA_I2C_BIT);
+
+          //При успішнопу запуску читання виставляємо біт процесу читання настройок
+          _SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT);
+          _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
+        }
+      }
+      else
+      {
+        //Скидаємо всі статичні змінні, які використовуютья при записі налаштувань
+        block = 0;
+        shift = 0;
+
+        shift_from_start_address_settings_in_eeprom = 0;
+        size_settings = 0;
+
+        //Знімаємо можливу сигналізацію, що виконувалося порівнняння
+        comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);
+        //Скидаємо біт команди читання налаштувань
         _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
       }
     }
@@ -789,33 +903,173 @@ void main_routines_for_i2c(void)
     }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) !=0)
     {
-      //Стоїть умова початку нового запису у EEPROM настройок
-      
-      //Скидаємо біт запуску нового запису і виставляємо біт запису блоків у EEPROM з блокуванням, щоб запуск почався з синхронізацією
-      _SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT);
-      _SET_BIT(control_i2c_taskes, TASK_BLK_WRITING_EEPROM_BIT);
-      _CLEAR_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+      //Стоїть умова початку запису нової порції інформації по налаштуваннях у EEPROM
+      static unsigned int block, shift;
+      static uint8_t crc_eeprom_settings;
       
       //Робимо копію записуваної інформації для контролю
 
       //Готуємо буфер для запису настройок (зкопійоманих) у EEPROM разом з контрольною сумою
-      unsigned char crc_eeprom_settings = 0, temp_value;
-      unsigned char  *point_1 = (unsigned char*)(&current_settings); 
-      unsigned char  *point_2 = (unsigned char*)(&current_settings_comp); 
-      for (unsigned int i =0; i < sizeof(__SETTINGS); i++)
-      {
-        temp_value = *(point_1);
-        *(point_2) = temp_value;
-        point_1++;
-        point_2++;
-        read_write_i2c_buffer[i] = temp_value;
-        crc_eeprom_settings += temp_value;
-      }
-      //Добавляємо інвертовану контрольну суму у кінець масиву
-      read_write_i2c_buffer[sizeof(__SETTINGS)] = (unsigned char)((~(unsigned int)crc_eeprom_settings) & 0xff);
+      uint8_t temp_value;
+      uint8_t *point_1, *point_2; 
+      size_t size_of_block = 0;
       
+      size_t index = 0;
+      while(
+            (index < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
+            (block < (1 + CA_MAX))
+           )
+      {
+        if (size_of_block == 0)
+        {
+          //Визначаємо розмір нового блоку
+          switch (block)
+          {
+          case 0:
+            {
+              size_of_block = sizeof(__SETTINGS_FIX);
+              break;
+            }
+          case (1 + CA_INPUT):
+            {
+              size_of_block = current_config.n_input*sizeof(__settings_for_INPUT);
+              break;
+            }
+          case (1 + CA_OUTPUT):
+            {
+              size_of_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
+              break;
+            }
+          case (1 + CA_LED):
+            {
+              size_of_block = current_config.n_led*sizeof(__settings_for_LED);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_AND):
+            {
+              size_of_block = current_config.n_and*sizeof(__settings_for_AND);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_OR):
+            {
+              size_of_block = current_config.n_or*sizeof(__settings_for_OR);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_XOR):
+            {
+              size_of_block = current_config.n_xor*sizeof(__settings_for_XOR);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_NOT):
+            {
+              size_of_block = current_config.n_not*sizeof(__settings_for_NOT);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_TIMER):
+            {
+              size_of_block = current_config.n_timer*sizeof(__settings_for_TIMER);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_TRIGGER):
+            {
+              size_of_block = current_config.n_trigger*sizeof(__settings_for_TRIGGER);
+              break;
+            }
+          case (1 + CA_MEANDER):
+            {
+              size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          default:
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(51);
+            }
+          }
+
+          //Визначаємо вказівник на початок блоку
+          if (size_of_block != 0)
+          {
+            if (block == 0)
+            {
+              point_1 = (uint8_t *)(&settings_fix);
+              point_2 = (uint8_t *)(&settings_fix_edit);
+            }
+            else
+            {
+              point_1 = (uint8_t *)(sca_of_p     [block - 1]);
+              point_2 = (uint8_t *)(sca_of_p_edit[block - 1]);
+            }
+          }
+        }
+      
+        if (size_of_block != 0)
+        {
+          temp_value = *(point_1 + shift);
+          *(point_2 + shift) = temp_value;
+          read_write_i2c_buffer[index++] = temp_value;
+          crc_eeprom_settings += temp_value;
+          
+          if ((++shift) >= size_of_block)
+          {
+            shift = 0;
+            block++;
+            size_of_block = 0;
+          }
+        }
+        else 
+        {
+          shift = 0;
+          block++;
+        }
+      }
+      
+      if (
+          (index < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
+          (block == (1 + CA_MAX))
+         )   
+      {
+        //Додаємо ще контрольу суму
+        read_write_i2c_buffer[index++] = (uint8_t)((~(unsigned int)crc_eeprom_settings) & 0xff);
+        block++; /*це робимо для того, щоб коли наступний раз попадемо у цю частину програми, то не додавти контрольну суму, а скинути всі статичні змінні і завршити процедузу запису*/
+
+      }
+
       //Виставляємо перший блок настройок запису у EEPROM
       number_block_settings_write_to_eeprom = 0;
+      
+      if (index == 0)
+      {
+        //Весь масив настройок вже записаний
+        
+        //Скидаємо всі статичні змінні, які використовуютья при записі налаштувань
+        block = 0;
+        shift = 0;
+        crc_eeprom_settings = 0;
+        
+        shift_from_start_address_settings_in_eeprom = 0;
+        size_settings = 0;
+
+        //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
+        comparison_writing |= COMPARISON_WRITING_SETTINGS;
+        _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
+        _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
+
+        //Скидаємо біт команди запису налаштувань
+        _CLEAR_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+      }
+      else
+      {
+        //Виставляємо біт запису блоків у EEPROM з блокуванням (щоб запуск почався з синхронізацією) тільки утому випадку, якщо є підготовлені дані до запису
+        _SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT);
+        _SET_BIT(control_i2c_taskes, TASK_BLK_WRITING_EEPROM_BIT);
+      
+        //Фіксуємо з якого зміщення треба продовжити писати
+        shift_from_start_address_settings_in_eeprom += size_settings;
+        
+        //Виставляємо скільки байт підготовлено до запису
+        size_settings = index;
+      }
     }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT) !=0)
     {
@@ -1196,10 +1450,6 @@ void main_routines_for_i2c(void)
             {
               //Виконувалося зчитування конфігурації у таблицю конфігурації
             
-              //Помічаємо, що таблиця зараз змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів
-              changed_config = CHANGED_ETAP_EXECUTION;
-              //Перекидаємо таблицю конфігурації з тимчасового масиву у робочу таблицю-контейнер
-
               /*
               Забороняємо генерацію переривань, під час обновлення конфігурації для структури з якою працюють захисти
               */
@@ -1247,9 +1497,6 @@ void main_routines_for_i2c(void)
                   }
                 }
               }
-              
-              //Помічаємо, що таблиця змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів
-              changed_config = CHANGED_ETAP_ENDED;
             }
             else
             {
@@ -1331,146 +1578,275 @@ void main_routines_for_i2c(void)
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT) !=0)
     {
       //Аналізуємо прочитані дані
-      //Спочатку аналізуємо, чи прояитаний блок є пустим, чи вже попередньо записаним
-      unsigned int empty_block = 1, i = 0; 
-      __SETTINGS current_settings_tmp;
-      
-      while ((empty_block != 0) && ( i < (sizeof(__SETTINGS) + 1)))
+
+      //Статична змінна, яка визначає блок для налаштувань є пустим
+      static unsigned int empty_block, difference;
+      static uint8_t crc_eeprom_settings;
+      if (shift_from_start_address_settings_in_eeprom == 0) 
       {
-        if (read_write_i2c_buffer[i] != 0xff) empty_block = 0;
-        i++;
+        empty_block = true;
+        difference = false;
+        crc_eeprom_settings = 0;
       }
       
-      if(empty_block == 0)
+      size_t new_shift = shift_from_start_address_settings_in_eeprom + size_settings;
+      size_settings = 0; /*Цим повідомляємо інші блоки, що читання успішно даного блоку відбувся*/
+
+      //Спочатку аналізуємо скільки і який блок налаштування прочитано
+      unsigned int block = 0, shift = 0;
+      
+      size_t size_of_block = 0;
+      size_t index = 0;
+      uint8_t *p;
+      while(
+            (index < new_shift) &&
+            (block < (1 + CA_MAX))
+           )
       {
-        //Помічаємо, що блок настроювання не є пустим
-        state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_EMPTY);
-        //Скидаємо повідомлення у слові діагностики
-        _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_EMPTY_BIT);
-        
-        //Перевіряємо контрольну суму і переписуємо прочитані дані у структуру управління
-        unsigned char crc_eeprom_settings = 0, temp_value;
-        unsigned char  *point = (unsigned char*)(&current_settings_tmp); 
-        for (i =0; i < sizeof(__SETTINGS); i++)
+        //Визначаємо розмір нового блоку
+        if (size_of_block == 0)
         {
-          temp_value = read_write_i2c_buffer[i];
-          *(point) = temp_value;
-          crc_eeprom_settings += temp_value;
-          point++;
-        }
-        if (read_write_i2c_buffer[sizeof(__SETTINGS)]  == ((unsigned char)((~(unsigned int)crc_eeprom_settings) & 0xff)))
-        {
-          //Контролдьна сума сходиться
-
-          //Скидаємо повідомлення у слові діагностики
-          _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
-
-          if (current_settings_tmp.device_id == VERSIA_PZ)
+          switch (block)
           {
-            //Таблиця настройок відповідає типу даного приладу
-            
-            //Зберігаємо контрольну суму (не інвертовану)
-            crc_settings = crc_eeprom_settings;
-
-            if ((comparison_writing & COMPARISON_WRITING_SETTINGS) == 0)
+          case 0:
             {
-              //Виконувалося зчитування настройок у таблицю настройок
-            
-              //Помічаємо, що таблиця зараз змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів
-              changed_settings = CHANGED_ETAP_EXECUTION;
-              //Перекидаємо таблицю настройок з тимчасового масиву у робочу таблицю
-              current_settings = current_settings_tmp;
-              //Помічаємо, що таблиця змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів
-              changed_settings = CHANGED_ETAP_ENDED;
-              current_settings_interfaces = current_settings;
-
-              //Розраховуємо розмір одного запису і максимальну кількість записів у аналоговому реєстраторі для даних витримок
-              /*
-              Читання настройок є зациклене поки не буде зчитано успішно настройок, а це означає, що ця дія мусить виконатися перед тим
-              як ми подовжимо запускати інші модулі в роботу
-              */
-              calc_size_and_max_number_records_ar(current_settings.prefault_number_periods, current_settings.postfault_number_periods);
+              size_of_block = sizeof(__SETTINGS_FIX);
+              break;
             }
-            else
+          case (1 + CA_INPUT):
             {
-              //Виконувалося контроль достовірності записаної інформації у EEPROM з записуваною
-            
-              unsigned char  *point_to_read  = (unsigned char*)(&current_settings_tmp );
-              unsigned char  *point_to_write = (unsigned char*)(&current_settings_comp);
-              unsigned int difference = 0;
-
-              i = 0;
-              while ((difference == 0) && ( i < sizeof(__SETTINGS)))
-              {
-                if (*point_to_write != *point_to_read) difference = 0xff;
-                else
-                {
-                  point_to_write++;
-                  point_to_read++;
-                  i++;
-                }
-              }
-              if (difference == 0)
-              {
-                //Контроль порівнняння пройшов успішно
-
-                //Скидаємо повідомлення у слові діагностики
-                _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_COMPARISON_BIT);
-              }
-              else
-              {
-                //Контроль порівнняння зафіксував розбіжності між записаною і записуваною інформацією
-
-                //Виствляємо повідомлення у слові діагностики
-                _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_COMPARISON_BIT);
-              }
+              size_of_block = current_config.n_input*sizeof(__settings_for_INPUT);
+              break;
             }
-
-            state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_FAIL);
-            state_i2c_task |= STATE_SETTINGS_EEPROM_GOOD;
+          case (1 + CA_OUTPUT):
+            {
+              size_of_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
+              break;
+            }
+          case (1 + CA_LED):
+            {
+              size_of_block = current_config.n_led*sizeof(__settings_for_LED);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_AND):
+            {
+              size_of_block = current_config.n_and*sizeof(__settings_for_AND);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_OR):
+            {
+              size_of_block = current_config.n_or*sizeof(__settings_for_OR);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_XOR):
+            {
+              size_of_block = current_config.n_xor*sizeof(__settings_for_XOR);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_NOT):
+            {
+              size_of_block = current_config.n_not*sizeof(__settings_for_NOT);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_TIMER):
+            {
+              size_of_block = current_config.n_timer*sizeof(__settings_for_TIMER);
+              break;
+            }
+          case (1 + CA_STANDART_LOGIC_TRIGGER):
+            {
+              size_of_block = current_config.n_trigger*sizeof(__settings_for_TRIGGER);
+              break;
+            }
+          case (1 + CA_MEANDER):
+            {
+              size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          default:
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(54);
+            }
+          }
           
-            //Скидаємо повідомлення у слові діагностики
-            _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
+          if (block == 0) p = (uint8_t *)(&settings_fix_edit);
+          else p = (uint8_t *)(sca_of_p_edit[block - 1]);
+        }
+
+        if (index < shift_from_start_address_settings_in_eeprom)
+        {
+          size_t index_tmp = index + size_of_block;
+          if (index_tmp <= shift_from_start_address_settings_in_eeprom) 
+          {
+            block++;
+            index = index_tmp;
+            
+            size_of_block = 0;
           }
           else
           {
-            //Таблиця настройок не відповідає типу даного приладу
-
-            //Помічаємо, що прочитаний блок настройок є пустим
-            state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_FAIL);
-            state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_GOOD);
-            state_i2c_task |= STATE_SETTINGS_EEPROM_EMPTY; /*Не відповідність типу настройок це то саме що їх немає взагалі*/
-        
-            //Виствляємо повідомлення у слові діагностики
-            _SET_BIT(set_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
+            shift = shift_from_start_address_settings_in_eeprom - index;
+            index = shift_from_start_address_settings_in_eeprom;
           }
         }
         else
         {
-          //Контрольна сума не сходиться
-          state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_GOOD);
-          state_i2c_task |= STATE_SETTINGS_EEPROM_FAIL;
+          if (size_of_block != 0)
+          {
+            intptr_t i = (index++) - shift_from_start_address_settings_in_eeprom;
+            uint8_t temp_value = read_write_i2c_buffer[i];
+            if (temp_value != 0xff) empty_block = 0;
+            crc_eeprom_settings += temp_value;
+            if (p != NULL) 
+            {
+              if ((comparison_writing & COMPARISON_WRITING_SETTINGS) == 0) 
+              {
+                //Виконувалося зчитування настройок у таблиці настройок
+                *(p + shift) = temp_value;
+              }
+              else
+              {
+                //Відбувалося контрольне читання після запису
+                if (*(p + shift) != temp_value) difference = true;
+              }
+            }
+            else
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(55);
+            }
           
-          //Виствляємо повідомлення у слові діагностики
-          _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
-          _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
+            if ((++shift) >= size_of_block)
+            {
+              shift = 0;
+              block++;
+              size_of_block = 0;
+            }
+          }
+          else 
+          {
+            shift = 0;
+            block++;
+          }
         }
       }
-      else
+      
+      if (
+          (index < new_shift) &&
+          (block == (1 + CA_MAX))
+         )   
       {
-        //Помічаємо, що прочитаний блок настройок є пустим
-        state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_FAIL);
-        state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_GOOD);
-        state_i2c_task |= STATE_SETTINGS_EEPROM_EMPTY;
+        uint8_t crc_eeprom_settings_remote = read_write_i2c_buffer[(index++) - shift_from_start_address_settings_in_eeprom];
+        if (index == new_shift)
+        {
+          //Це нормальна ситуація коли вичитано останньоб контрольна сума і можна приступити до аналізу всіх прочитаних даних
+
+          if(empty_block == 0)
+          {
+            //Помічаємо, що блок настроювання не є пустим
+            state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_EMPTY);
+            //Скидаємо повідомлення у слові діагностики
+            _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_EMPTY_BIT);
         
-        //Виствляємо повідомлення у слові діагностики
-        _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
-        _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
-        _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_EMPTY_BIT);
-      }
+            //Перевіряємо контрольну суму і переписуємо прочитані дані у структуру управління
+            if (crc_eeprom_settings_remote  == ((uint8_t)((~(unsigned int)crc_eeprom_settings) & 0xff)))
+            {
+              //Контролдьна сума сходиться
+
+              //Скидаємо повідомлення у слові діагностики
+              _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
+
+              //Зберігаємо контрольну суму (не інвертовану)
+              crc_settings = crc_eeprom_settings;
+
+              if ((comparison_writing & COMPARISON_WRITING_SETTINGS) == 0)
+              {
+                //Виконувалося зчитування настройок у таблицю настройок
             
-      //Знімаємо можливу сигналізацію, що виконувалося порівнняння
-      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);
+                /*
+                Копіюємо у контейнер і структуру для захистів (prt) з структури у якії йшло зчитування з EEPROM
+                */
+                copy_settings(&current_config_edit, &settings_fix, &settings_fix_edit, sca_of_p, sca_of_p_edit);
+
+                __disable_interrupt();
+                copy_settings(&current_config_edit, &settings_fix_prt, &settings_fix_edit, sca_of_p_prt, sca_of_p_edit);
+                __enable_interrupt();
+                /***/
+
+//                //Розраховуємо розмір одного запису і максимальну кількість записів у аналоговому реєстраторі для даних витримок
+//                /*
+//                Читання настройок є зациклене поки не буде зчитано успішно настройок, а це означає, що ця дія мусить виконатися перед тим
+//                як ми подовжимо запускати інші модулі в роботу
+//                */
+//                calc_size_and_max_number_records_ar(current_settings.prefault_number_periods, current_settings.postfault_number_periods);
+              }
+              else
+              {
+                //Виконувалося контроль достовірності записаної інформації у EEPROM з записуваною
+            
+                if (difference == false)
+                {
+                  //Контроль порівнняння пройшов успішно
+    
+                  //Скидаємо повідомлення у слові діагностики
+                  _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_COMPARISON_BIT);
+                }
+                else
+                {
+                  //Контроль порівнняння зафіксував розбіжності між записаною і записуваною інформацією
+
+                  //Виствляємо повідомлення у слові діагностики
+                  _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_COMPARISON_BIT);
+                }
+              }
+
+              state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_FAIL);
+              state_i2c_task |= STATE_SETTINGS_EEPROM_GOOD;
+            }
+            else
+            {
+              //Контрольна сума не сходиться
+              /*
+              Повертаємо у структури у які йшло зчитування з EEPROM (edit) з контейнера
+              */
+              copy_settings(&current_config, &settings_fix_edit, &settings_fix, sca_of_p_edit, sca_of_p);
+              /***/
+
+              state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_GOOD);
+              state_i2c_task |= STATE_SETTINGS_EEPROM_FAIL;
+          
+              //Виствляємо повідомлення у слові діагностики
+              _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
+            }
+          }
+          else
+          {
+            //Зчитаний блок налаштувань виявився пустим
+            /*
+            Повертаємо у структури у які йшло зчитування з EEPROM (edit) з контейнера
+            */
+            copy_settings(&current_config, &settings_fix_edit, &settings_fix, sca_of_p_edit, sca_of_p);
+            /***/
+            
+            //Помічаємо, що прочитаний блок настройок є пустим
+            state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_FAIL);
+            state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_GOOD);
+            state_i2c_task |= STATE_SETTINGS_EEPROM_EMPTY;
+        
+            //Виствляємо повідомлення у слові діагностики
+            _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
+            _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_EMPTY_BIT);
+          }
+        }
+        else
+        {
+          //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+          total_error_sw_fixed(55);
+        }
+      }
+      shift_from_start_address_settings_in_eeprom = new_shift; /*У статичній змінній визначаємо з якого зміщення треба буде продовжувати читати*/
+      
       //Скидаємо повідомлення про читання даних
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT);
     }
@@ -2812,7 +3188,6 @@ void main_routines_for_i2c(void)
       //Стоїть умова читання блоку у EEPROM настройок
       
       //Повторно запускаємо процес читання
-      _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
       _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT);
     }

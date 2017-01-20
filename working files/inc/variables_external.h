@@ -114,19 +114,21 @@ extern int16_t etap_reset_of_bit;
 extern int16_t etap_settings_test_frequency;
 extern unsigned char temp_register_rtc[2];
 
-//Налаштування
+//Конфігурація і Налаштування
 extern __CONFIG current_config_prt, current_config, current_config_edit;
 extern uintptr_t *sca_of_p_prt[CA_MAX], *sca_of_p[CA_MAX], *sca_of_p_edit[CA_MAX]; /*sca_of_p = settings control array of point*/
 extern uintptr_t *pca[CA_MAX][PCA_MAX]; /*pca = protect control array*/
-extern volatile unsigned int changed_config; 
 extern unsigned char crc_config;
+
+extern __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;
+extern uint8_t crc_settings;
+extern unsigned int config_settings_modified;
 
 extern uintptr_t *pca_of_p_prt[CA_MAX][PCA_MAX]; /*pca_of_p = protect control array of point*/
 extern const size_t block_size_for_pca[CA_MAX][PCA_MAX];
 
 extern volatile unsigned int changed_settings; 
-extern unsigned char crc_settings;
-extern __SETTINGS current_settings_prt, current_settings,  edition_settings,current_settings_interfaces;
+extern __SETTINGS_OLD current_settings_prt, current_settings,  edition_settings,current_settings_interfaces;
 
 //Змінні для визначеня ресурсу процесора-програми
 extern volatile unsigned int restart_resurs_count;

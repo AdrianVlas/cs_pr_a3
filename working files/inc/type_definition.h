@@ -214,7 +214,7 @@ typedef struct
                                                                 //2 - USB
                                                                 //3 - RS-485
   
-} __SETTINGS_NEW;
+} __SETTINGS_FIX;
 
 typedef struct
 {
@@ -329,7 +329,7 @@ typedef struct
                                                             //1 - клавіатура
                                                             //2 - USB
                                                             //3 - RS-485
-} __SETTINGS;
+} __SETTINGS_OLD;
 
 typedef struct
 {

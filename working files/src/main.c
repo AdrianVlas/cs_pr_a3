@@ -178,12 +178,11 @@ inline void periodical_operations(void)
           (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT) == 0) &&
           (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT    ) == 0) &&
           (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT ) == 0) &&
-          (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_CONFIG_EEPROM_BIT    ) == 0) &&
-          (changed_config == CHANGED_ETAP_NONE)  
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_CONFIG_EEPROM_BIT    ) == 0)
          ) 
       {
         //На даний моммент не іде читання-запис конфігурації, тому можна здійснити контроль достовірності
-        control_config();
+        control_config(config_settings_modified);
 
         //Скидаємо активну задачу самоконтролю конфігурації
         periodical_tasks_TEST_CONFIG = false;
@@ -205,12 +204,11 @@ inline void periodical_operations(void)
           (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) == 0) &&
           (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT    ) == 0) &&
           (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT ) == 0) &&
-          (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT    ) == 0) &&
-          (changed_settings == CHANGED_ETAP_NONE)  
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT    ) == 0)
          ) 
       {
         //На даний моммент не іде читання-запис таблиці настройок, тому можна здійснити контроль достовірності
-        control_settings();
+        control_settings(config_settings_modified);
 
         //Скидаємо активну задачу самоконтролю таблиці настройок
         periodical_tasks_TEST_SETTINGS = false;
@@ -415,6 +413,12 @@ int main(void)
 
   //Стартова настройка периферії процесора
   start_settings_peripherals();
+  
+  /*
+  Процес розробки нової програми
+  */
+  min_settings(&current_settings);
+  /***/
   
   if(
      ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD  ) != 0) &&

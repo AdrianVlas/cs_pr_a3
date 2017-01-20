@@ -90,8 +90,8 @@
 #define TIMEOUT_DF_WORK_MIN           0
 #define TIMEOUT_DF_WORK_MAX           300000
 
-#define TIMEOUT_MEANDER_MIN           50
-#define TIMEOUT_MEANDER_MAX           5000
+#define TIMEOUT_MEANDER_MIN           100
+#define TIMEOUT_MEANDER_MAX           10000
 
 #define TIMEOUT_PREFAULT_MIN          100
 #define TIMEOUT_PREFAULT_MAX          5000

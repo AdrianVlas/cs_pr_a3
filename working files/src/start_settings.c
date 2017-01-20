@@ -1066,7 +1066,6 @@ void start_settings_peripherals(void)
     }
     /**********************/
 
-
     /**********************/
     //Читаємо збережені дані про тригерну інформацію
     /**********************/
@@ -1358,7 +1357,7 @@ void min_config(__CONFIG *target_label)
 /**************************************/
 //Мінімальні налаштування
 /**************************************/
-void min_settings(__SETTINGS *target_label)
+void min_settings(__SETTINGS_OLD *target_label)
 {
   target_label->device_id = VERSIA_PZ;
     
@@ -1670,13 +1669,8 @@ void error_reading_with_eeprom()
     
     if (information_type == 1)
     {
-      //Помічаємо, що конфігурація зараз буде змінюватися і її треба буде зкопіювати у таблицю з якою працює система захистів
-      changed_config = CHANGED_ETAP_EXECUTION;
       //Заповнюємо мінімальну конфігурацію
       min_config(&current_config);
-      //Помічаємо, що конфігурація змінилася і її треба буде зкопіювати у таблицю з якою працює система захистів
-      changed_config = CHANGED_ETAP_ENDED;
-      current_settings_interfaces = current_settings;
       
       //Записуємо мінімальну конфігурацію
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
@@ -1684,14 +1678,6 @@ void error_reading_with_eeprom()
     }
     else if (information_type == 2)
     {
-      //Помічаємо, що таблиця зараз буде змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів
-      changed_settings = CHANGED_ETAP_EXECUTION;
-      //Заповнюємо мінімальну конфігурацію
-      min_settings(&current_settings);
-      //Помічаємо, що таблиця змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів
-      changed_settings = CHANGED_ETAP_ENDED;
-      current_settings_interfaces = current_settings;
-      
       //Записуємо мінімальну конфігурацію
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
       
@@ -1740,9 +1726,9 @@ void error_reading_with_eeprom()
     }
     else if (information_type == 2)
     {
-      //Повтрокно зчитуємо налаштування
-      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);/*зчитування, а не порівняння*/
-      _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
+//      //Повтрокно зчитуємо налаштування
+//      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);/*зчитування, а не порівняння*/
+//      _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
     }
     else if (information_type == 3)
     {

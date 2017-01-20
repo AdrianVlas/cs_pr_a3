@@ -667,7 +667,7 @@ void set_previous_ranguvannja(void)
 /***********************************************************************************/
 unsigned int save_new_rang_oldr_from_gmm(unsigned int number, unsigned int number_position, unsigned int source, unsigned short int data, unsigned int method_setting)
 {
-  __SETTINGS *target_label;
+  __SETTINGS_OLD *target_label;
   if (method_setting == SET_DATA_IMMEDITATE) target_label = &current_settings_interfaces;
   else target_label = &edition_settings;
   
@@ -2886,7 +2886,7 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
 {
   unsigned int error = 0, temp_value;
   
-  __SETTINGS *target_label;
+  __SETTINGS_OLD *target_label;
   if (method_setting == SET_DATA_IMMEDITATE) target_label = &current_settings_interfaces;
   else target_label = &edition_settings;
 
