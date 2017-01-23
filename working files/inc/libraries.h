@@ -5,8 +5,8 @@
 #include "stm32f2xx_it.h"
 #include "platform_config.h"
 #include "hw_config.h"
-#include "type_definition.h"
 #include "macroses.h"
+#include "type_definition.h"
 
 #include "usbd_cdc_core.h"
 #include "usbd_usr.h"

@@ -1490,11 +1490,6 @@ void main_routines_for_i2c(void)
                   free(sca_of_p_edit[index_1]);
                   free(sca_of_p[index_1]);
                   free(sca_of_p_prt[index_1]);
-                  
-                  for (size_t index_2 = 0; index_2 < PCA_MAX; index_2++)
-                  {
-                    free(pca_of_p_prt[index_1][index_2]);
-                  }
                 }
               }
             }

@@ -124,9 +124,6 @@ extern __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;
 extern uint8_t crc_settings;
 extern unsigned int config_settings_modified;
 
-extern uintptr_t *pca_of_p_prt[CA_MAX][PCA_MAX]; /*pca_of_p = protect control array of point*/
-extern const size_t block_size_for_pca[CA_MAX][PCA_MAX];
-
 extern volatile unsigned int changed_settings; 
 extern __SETTINGS_OLD current_settings_prt, current_settings,  edition_settings,current_settings_interfaces;
 

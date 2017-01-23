@@ -35,6 +35,9 @@ typedef struct
   unsigned int cursor_blinking_on;    //1 - курсор мигає/ 0 - курсор не мигає
 } __PREVIOUS_STATE_CURSOR;
 
+/**********
+Дискретний вхід
+**********/
 typedef struct
 {
   int32_t delay;
@@ -51,12 +54,37 @@ typedef struct
 
 typedef struct
 {
+  __settings_for_INPUT settings;
+  
+  __delays_for_INPUT delay;
+  uint8_t active_state[BLOCK8_SIZE(INPUT_SIGNALS)];
+
+} __LN_INPUT;
+/**********/
+
+/**********
+Дискретний вхід (Реле)
+**********/
+typedef struct
+{
   
   uint32_t control;
   uint32_t param;
   
 } __settings_for_OUTPUT;
 
+typedef struct
+{
+  __settings_for_OUTPUT settings;
+
+  uint8_t active_state[BLOCK8_SIZE(OUTPUT_SIGNALS)];
+
+} __LN_OUTPUT;
+/**********/
+
+/**********
+Світлоіндикатор
+**********/
 typedef struct
 {
   
@@ -67,11 +95,36 @@ typedef struct
 
 typedef struct
 {
+  __settings_for_LED settings;
+
+  uint8_t active_state[BLOCK8_SIZE(LED_SIGNALS)];
+
+} __LN_LED;
+/**********/
+
+/**********
+Елемент стандартної логіки "І"
+**********/
+typedef struct
+{
   
   uint32_t param[NUMBER_IN_AND];
   
 } __settings_for_AND;
 
+typedef struct
+{
+  __settings_for_AND settings;
+
+  uint8_t active_state[BLOCK8_SIZE(AND_SIGNALS)];
+  uint8_t trigger_state[BLOCK8_SIZE(AND_SIGNALS)];
+
+} __LN_AND;
+/**********/
+
+/**********
+Елемент стандартної логіки "АБО"
+**********/
 typedef struct
 {
   
@@ -82,10 +135,37 @@ typedef struct
 typedef struct
 {
   
+  __settings_for_OR settings;
+
+  uint8_t active_state[BLOCK8_SIZE(OR_SIGNALS)];
+  uint8_t trigger_state[BLOCK8_SIZE(OR_SIGNALS)];
+  
+} __LN_OR;
+/**********/
+
+/**********
+Елемент стандартної логіки "Викл.АБО"
+**********/
+typedef struct
+{
+  
   uint32_t param[2];
   
 } __settings_for_XOR;
 
+typedef struct
+{
+  __settings_for_XOR settings;
+  
+  uint8_t active_state[BLOCK8_SIZE(XOR_SIGNALS)];
+  uint8_t trigger_state[BLOCK8_SIZE(XOR_SIGNALS)];
+  
+} __LN_XOR;
+/**********/
+
+/**********
+Елемент стандартної логіки "НЕ"
+**********/
 typedef struct
 {
   
@@ -93,6 +173,20 @@ typedef struct
   
 } __settings_for_NOT;
 
+typedef struct
+{
+  
+  __settings_for_NOT settings;
+  
+  uint8_t active_state[BLOCK8_SIZE(NOT_SIGNALS)];
+  uint8_t trigger_state[BLOCK8_SIZE(NOT_SIGNALS)];
+  
+} __LN_NOT;
+/**********/
+
+/**********
+Багатофункціональний таймер
+**********/
 typedef struct
 {
   int32_t delay_pause;
@@ -112,11 +206,40 @@ typedef struct
 typedef struct
 {
   
+  __settings_for_TIMER settings;
+  
+  __delays_for_TIMER delay;
+  uint8_t active_state[BLOCK8_SIZE(TIMER_SIGNALS)];
+  uint8_t trigger_state[BLOCK8_SIZE(TIMER_SIGNALS)];
+  
+} __LN_TIMER;
+/**********/
+
+/**********
+Триґер
+**********/
+typedef struct
+{
+  
   uint32_t set_param;
   uint32_t reset_param;
   
 } __settings_for_TRIGGER;
 
+typedef struct
+{
+  
+  __settings_for_TRIGGER settings;
+  
+  uint8_t active_state[BLOCK8_SIZE(TRIGGER_SIGNALS)];
+  uint8_t trigger_state[BLOCK8_SIZE(TRIGGER_SIGNALS)];
+  
+} __LN_TRIGGER;
+/**********/
+
+/**********
+Функціональний блок "Генератор періодичного сигналу"
+**********/
 typedef struct
 {
   int32_t delay;
@@ -130,6 +253,17 @@ typedef struct
   
 } __settings_for_MEANDER;
 
+typedef struct
+{
+  
+  __settings_for_MEANDER settings;
+  
+  __delays_for_MEANDER delay;
+  uint8_t active_state[BLOCK8_SIZE(MEANDER_SIGNALS)];
+  uint8_t trigger_state[BLOCK8_SIZE(MEANDER_SIGNALS)];
+  
+} __LN_MEANDER;
+/**********/
 
 typedef enum _result_dyn_mem_select
 {
@@ -139,6 +273,9 @@ typedef enum _result_dyn_mem_select
     
 } __result_dym_mem_select;
 
+/**********
+Конфігурація
+**********/
 typedef struct
 {
   uint32_t device_id;                   //Тип пристрою
@@ -166,7 +303,11 @@ typedef struct
                                         //3 - RS-485
   
 } __CONFIG;
+/**********/
 
+/**********
+Налаштування, які завжди присутні у даному тппі пристрою
+**********/
 typedef struct
 {
   //Тиша
@@ -215,6 +356,7 @@ typedef struct
                                                                 //3 - RS-485
   
 } __SETTINGS_FIX;
+/**********/
 
 typedef struct
 {
