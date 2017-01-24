@@ -141,8 +141,7 @@ SRAM1 unsigned char temp_register_rtc[2];
 
 //Конфігурація і Налаштування
 __CONFIG current_config_prt, current_config, current_config_edit;
-uintptr_t *sca_of_p_prt[CA_MAX], *sca_of_p[CA_MAX], *sca_of_p_edit[CA_MAX]; /*sca_of_p = settings control array of point*/
-uintptr_t *pca[CA_MAX][PCA_MAX]; /*pca = protect control array*/
+uintptr_t *spca_of_p_prt[CA_MAX], *sca_of_p[CA_MAX], *sca_of_p_edit[CA_MAX]; /*sca_of_p = settings control array of point*/
 unsigned char crc_config;
 
 __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;

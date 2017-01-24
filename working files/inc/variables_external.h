@@ -116,8 +116,7 @@ extern unsigned char temp_register_rtc[2];
 
 //Конфігурація і Налаштування
 extern __CONFIG current_config_prt, current_config, current_config_edit;
-extern uintptr_t *sca_of_p_prt[CA_MAX], *sca_of_p[CA_MAX], *sca_of_p_edit[CA_MAX]; /*sca_of_p = settings control array of point*/
-extern uintptr_t *pca[CA_MAX][PCA_MAX]; /*pca = protect control array*/
+extern uintptr_t *spca_of_p_prt[CA_MAX], *sca_of_p[CA_MAX], *sca_of_p_edit[CA_MAX]; /*spca_of_p_prt = settings & protection control array of point for protection; sca_of_p = settings control array of point*/
 extern unsigned char crc_config;
 
 extern __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;

@@ -1019,7 +1019,7 @@ void control_settings(unsigned int modified)
         }
         else
         {
-          point_1 = (uint8_t *)(sca_of_p_prt[block - 1]);
+          point_1 = (uint8_t *)(spca_of_p_prt[block - 1]);
           if (modified != true) point_2 = (uint8_t *)(sca_of_p[block - 1]);
         }
       }
@@ -1525,7 +1525,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
             if ( p_sca_of_p_control[index_1] != NULL)
             {
               //Викликаємо функцію повернення нових налаштувань у попередні значення
-              (*copy_settings_LN)(mem_for_prt, (p_sca_of_p_control == sca_of_p_prt), ptr, p_sca_of_p_control[index_1], n_cur, n_prev);
+              (*copy_settings_LN)(mem_for_prt, (p_sca_of_p_control == spca_of_p_prt), ptr, p_sca_of_p_control[index_1], n_cur, n_prev);
             }
             else
             {
@@ -2319,7 +2319,7 @@ void copy_settings(
       if (n_prev != 0)
       {
         //Викликаємо функцію повернення нових налаштувань у попередні значення
-        (*copy_settings_LN)((targret_dyn == sca_of_p_prt), (source_dyn == sca_of_p_prt), targret_dyn[i], source_dyn[i], 0, n_prev);
+        (*copy_settings_LN)((targret_dyn == spca_of_p_prt), (source_dyn == spca_of_p_prt), targret_dyn[i], source_dyn[i], 0, n_prev);
       }
       else
       {

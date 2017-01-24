@@ -23,18 +23,6 @@ enum _control_array
     
 };
 
-
-
-enum _protect_control_array
-{
-  PCA_TIMERS = 0,    //Таймери
-  PCA_AF,            //Активні функції
-  PCA_TF,            //Триґерні функції
-  PCA_EM,            //Додаткова пам'ять для вибраного функціонального блоку
-  
-  PCA_MAX
-};
-
 enum _signals_of_INPUT
 {
   INPUT_OUT = 0,
