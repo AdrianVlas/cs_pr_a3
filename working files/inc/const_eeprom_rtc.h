@@ -22,8 +22,7 @@
 #define START_ADDRESS_USTUVANNJA_IN_EEPROM              0x0
 #define START_ADDRESS_INFO_REJESTRATORS_DR              (((START_ADDRESS_USTUVANNJA_IN_EEPROM     + (SIZE_USTUVANNJA                 + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
 #define START_ADDRESS_INFO_REJESTRATORS_PR_ERR          (((START_ADDRESS_INFO_REJESTRATORS_DR     + (sizeof(info_rejestrator_dr    ) + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
-#define START_ADDRESS_INFO_REJESTRATORS_AR              (((START_ADDRESS_INFO_REJESTRATORS_PR_ERR + (sizeof(info_rejestrator_pr_err) + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
-#define START_ADDRESS_CONFIG_IN_EEPROM                  (((START_ADDRESS_INFO_REJESTRATORS_AR     + (sizeof(info_rejestrator_ar    ) + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
+#define START_ADDRESS_CONFIG_IN_EEPROM                  (((START_ADDRESS_INFO_REJESTRATORS_PR_ERR + (sizeof(info_rejestrator_pr_err) + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
 #define START_ADDRESS_SETTINGS_IN_EEPROM                (((START_ADDRESS_CONFIG_IN_EEPROM         + (SIZE_CONFIG                     + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
 #define START_ADDRESS_TRG_FUNC                          (((START_ADDRESS_SETTINGS_IN_EEPROM       + (SIZE_SETTINGS                   + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
 
@@ -47,60 +46,57 @@
 #define COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR_BIT                  6
 #define COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR                      (1 << COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR_BIT)
 
-#define TASK_BLK_OPERATION_BIT                                          0      
-#define TASK_BLK_WRITING_EEPROM_BIT                                     1      
+enum
+{
+  TASK_BLK_OPERATION_BIT = 0,
+  TASK_BLK_WRITING_EEPROM_BIT,
 
-#define TASK_START_WRITE_USTUVANNJA_EEPROM_BIT                          1      
-#define TASK_WRITING_USTUVANNJA_EEPROM_BIT                              2      
+  TASK_START_WRITE_USTUVANNJA_EEPROM_BIT,
+  TASK_WRITING_USTUVANNJA_EEPROM_BIT,
 
-#define TASK_START_READ_USTUVANNJA_EEPROM_BIT                           3      
-#define TASK_READING_USTUVANNJA_EEPROM_BIT                              4      
+  TASK_START_READ_USTUVANNJA_EEPROM_BIT,
+  TASK_READING_USTUVANNJA_EEPROM_BIT,
 
-#define TASK_START_WRITE_CONFIG_EEPROM_BIT                              5      
-#define TASK_WRITING_CONFIG_EEPROM_BIT                                  6      
+  TASK_START_WRITE_CONFIG_EEPROM_BIT,
+  TASK_WRITING_CONFIG_EEPROM_BIT,
 
-#define TASK_START_READ_CONFIG_EEPROM_BIT                               7      
-#define TASK_READING_CONFIG_EEPROM_BIT                                  8      
+  TASK_START_READ_CONFIG_EEPROM_BIT,
+  TASK_READING_CONFIG_EEPROM_BIT,
 
-#define TASK_START_WRITE_SETTINGS_EEPROM_BIT                            9      
-#define TASK_WRITING_SETTINGS_EEPROM_BIT                                10      
+  TASK_START_WRITE_SETTINGS_EEPROM_BIT,
+  TASK_WRITING_SETTINGS_EEPROM_BIT,
 
-#define TASK_START_READ_SETTINGS_EEPROM_BIT                             11      
-#define TASK_READING_SETTINGS_EEPROM_BIT                                12     
+  TASK_START_READ_SETTINGS_EEPROM_BIT,
+  TASK_READING_SETTINGS_EEPROM_BIT,
 
-#define TASK_START_WRITE_TRG_FUNC_EEPROM_BIT                            13      
-#define TASK_WRITING_TRG_FUNC_EEPROM_BIT                                14      
+  TASK_START_WRITE_TRG_FUNC_EEPROM_BIT,
+  TASK_WRITING_TRG_FUNC_EEPROM_BIT,
 
-#define TASK_START_READ_TRG_FUNC_EEPROM_BIT                             15      
-#define TASK_READING_TRG_FUNC_EEPROM_BIT                                16      
+  TASK_START_READ_TRG_FUNC_EEPROM_BIT,
+  TASK_READING_TRG_FUNC_EEPROM_BIT,
 
-#define TASK_START_WRITE_INFO_REJESTRATOR_AR_EEPROM_BIT                 17      
-#define TASK_WRITING_INFO_REJESTRATOR_AR_EEPROM_BIT                     18      
+  TASK_START_WRITE_INFO_REJESTRATOR_DR_EEPROM_BIT,
+  TASK_WRITING_INFO_REJESTRATOR_DR_EEPROM_BIT,
 
-#define TASK_START_READ_INFO_REJESTRATOR_AR_EEPROM_BIT                  19      
-#define TASK_READING_INFO_REJESTRATOR_AR_EEPROM_BIT                     20      
+  TASK_START_READ_INFO_REJESTRATOR_DR_EEPROM_BIT,
+  TASK_READING_INFO_REJESTRATOR_DR_EEPROM_BIT,
 
-#define TASK_START_WRITE_INFO_REJESTRATOR_DR_EEPROM_BIT                 21      
-#define TASK_WRITING_INFO_REJESTRATOR_DR_EEPROM_BIT                     22      
+  TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT,
+  TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT,
 
-#define TASK_START_READ_INFO_REJESTRATOR_DR_EEPROM_BIT                  23      
-#define TASK_READING_INFO_REJESTRATOR_DR_EEPROM_BIT                     24      
+  TASK_START_READ_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT,
+  TASK_READING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT,
 
-#define TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT             25      
-#define TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT                 26      
+  TASK_START_READ_RTC_BIT,
+  TASK_READING_RTC_BIT,
 
-#define TASK_START_READ_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT              27      
-#define TASK_READING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT                 28      
+  TASK_START_WRITE_RTC_BIT,
+  TASK_WRITING_RTC_BIT,
 
-#define TASK_START_READ_RTC_BIT                                         29      
-#define TASK_READING_RTC_BIT                                            30     
-
-#define TASK_START_WRITE_RTC_BIT                                        31      
-#define TASK_WRITING_RTC_BIT                                            32      
-
-#define TASK_SET_START_SETTINGS_RTC_BIT                                 33      
-#define TASK_RESET_ST_RTC_BIT                                           34      
-#define TASK_RESET_OF_RTC_BIT                                           35      
+  TASK_SET_START_SETTINGS_RTC_BIT,
+  TASK_RESET_ST_RTC_BIT,
+  TASK_RESET_OF_RTC_BIT,
+};
 
 
 #define STATE_CONFIG_EEPROM_EMPTY_BIT                                   0      
@@ -133,25 +129,18 @@
 #define STATE_TRG_FUNC_EEPROM_GOOD_BIT                                  12      
 #define STATE_TRG_FUNC_EEPROM_GOOD                                      (1<<STATE_TRG_FUNC_EEPROM_GOOD_BIT)      
 
-#define STATE_INFO_REJESTRATOR_AR_EEPROM_EMPTY_BIT                      13      
-#define STATE_INFO_REJESTRATOR_AR_EEPROM_EMPTY                          (1<<STATE_INFO_REJESTRATOR_AR_EEPROM_EMPTY_BIT)      
-#define STATE_INFO_REJESTRATOR_AR_EEPROM_FAIL_BIT                       14      
-#define STATE_INFO_REJESTRATOR_AR_EEPROM_FAIL                           (1<<STATE_INFO_REJESTRATOR_AR_EEPROM_FAIL_BIT)      
-#define STATE_INFO_REJESTRATOR_AR_EEPROM_GOOD_BIT                       15      
-#define STATE_INFO_REJESTRATOR_AR_EEPROM_GOOD                           (1<<STATE_INFO_REJESTRATOR_AR_EEPROM_GOOD_BIT)      
-
-#define STATE_INFO_REJESTRATOR_DR_EEPROM_EMPTY_BIT                      16      
+#define STATE_INFO_REJESTRATOR_DR_EEPROM_EMPTY_BIT                      13      
 #define STATE_INFO_REJESTRATOR_DR_EEPROM_EMPTY                          (1<<STATE_INFO_REJESTRATOR_DR_EEPROM_EMPTY_BIT)      
-#define STATE_INFO_REJESTRATOR_DR_EEPROM_FAIL_BIT                       17      
+#define STATE_INFO_REJESTRATOR_DR_EEPROM_FAIL_BIT                       14      
 #define STATE_INFO_REJESTRATOR_DR_EEPROM_FAIL                           (1<<STATE_INFO_REJESTRATOR_DR_EEPROM_FAIL_BIT)      
-#define STATE_INFO_REJESTRATOR_DR_EEPROM_GOOD_BIT                       18      
+#define STATE_INFO_REJESTRATOR_DR_EEPROM_GOOD_BIT                       15      
 #define STATE_INFO_REJESTRATOR_DR_EEPROM_GOOD                           (1<<STATE_INFO_REJESTRATOR_DR_EEPROM_GOOD_BIT)      
 
-#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT                  19      
+#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT                  16      
 #define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY                      (1<<STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT)      
-#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL_BIT                   20      
+#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL_BIT                   17      
 #define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL                       (1<<STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL_BIT)      
-#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT                   21      
+#define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT                   18      
 #define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD                       (1<<STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT)      
 
 #define STATE_FIRST_READING_RTC_BIT                                     30      

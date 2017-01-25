@@ -256,31 +256,6 @@ inline void periodical_operations(void)
     //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації
     periodical_tasks_TEST_TRG_FUNC_LOCK = false;
   }
-  else if (periodical_tasks_TEST_INFO_REJESTRATOR_AR_LOCK != 0)
-  {
-    //Стоїть у черзі активна задача самоконтролю по резервній копії для аналогового реєстратора
-    //Виконуємо її
-    unsigned int result;
-    result = control_info_rejestrator(&info_rejestrator_ar_ctrl, crc_info_rejestrator_ar_ctrl);
-      
-    if (result == 1)
-    {
-      //Контроль достовірності реєстратора пройшов успішно
-    
-      //Скидаємо повідомлення у слові діагностики
-      _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_AR_CONTROL_BIT);
-    }
-    else
-    {
-      //Контроль достовірності реєстратора не пройшов
-
-      //Виствляємо повідомлення у слові діагностики
-      _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_AR_CONTROL_BIT);
-    }
-
-    //Скидаємо активну задачу самоконтролю по резервній копії для аналогового реєстратора
-    periodical_tasks_TEST_INFO_REJESTRATOR_AR_LOCK = false;
-  }
   else if (periodical_tasks_TEST_INFO_REJESTRATOR_DR_LOCK != 0)
   {
     //Стоїть у черзі активна задача самоконтролю по резервній копії для дискретного реєстратора
@@ -455,60 +430,6 @@ int main(void)
       error_reading_with_eeprom();
     }
 
-    /*****/
-    /*
-    Очищаємо структуру інформації по аналоговому реєстраторі оскільки настройки 
-    встановлені у мінімальну конфігурацію, а це значить, що, можливо, величини 
-    ширин доаварійного і післяаварійного масивів не будуть співпадати (на яких 
-    до цього часу працював аналоговий реєстратор і при мінімильній конфігурації)
-    */
-    /*****/
-    //Виставляємо команду запису цієї структури у EEPROM
-    /*
-    Команду виставляємо скоріше, а потім робимо зміни у полях, які треба змінити,
-    бо по вимозі проконтролювати достовірність даних інформації по аналоговому
-    реєстратору відбувається копіювання з системи захистів структури
-    info_rejestrator_ar у резервну мкопію. Це копіювання блокується у випадку 
-    "читання з"/"запису в" EEPROM цієї інформації. Тому виставлення спочатку команди
-    запису заблокує копіювання.
-    З другої сторони не можливо, щоб почався запис до модифікації, 
-    бо запис ініціюється функцією main_routines_for_i2c - яка виконується на одному і тому ж
-    рівні пріоритетності, що і функція main.
-    Тобто спочатку треба дійти до виклику функції main_routines_for_i2c, і аж тоді можливе
-    виконання команди, яку ми виставили перед зміною даних, яку 
-    ми зараз гарантовано зробимо (до виклику функції main_routines_for_i2c)
-    */
-    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_AR_EEPROM_BIT);
-    
-    info_rejestrator_ar.next_address = MIN_ADDRESS_AR_AREA;
-    info_rejestrator_ar.saving_execution = 0;
-    info_rejestrator_ar.number_records = 0;
-    while(
-          (control_i2c_taskes[0]     != 0) ||
-          (control_i2c_taskes[1]     != 0) ||
-          (driver_i2c.state_execution > 0)
-         )
-    {
-      //Робота з watchdogs
-      if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
-      {
-        //Змінюємо стан біту зовнішнього Watchdog на протилежний
-        GPIO_WriteBit(
-                      GPIO_EXTERNAL_WATCHDOG,
-                      GPIO_PIN_EXTERNAL_WATCHDOG,
-                      (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
-                     );
-      }
-
-      main_routines_for_i2c();
-      if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
-      {
-        //Повне роозблоковування обміну з мікросхемами для драйверу I2C
-        _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
-      }
-    }
-    /*****/
-          
     //Дозволяєм роботу таймера вимірювальної системи
     TIM_Cmd(TIM5, ENABLE);
     //Дозволяєм роботу таймера системи захистів

@@ -184,8 +184,6 @@ void main_routines_for_i2c(void)
   static unsigned int number_block_ustuvannja_write_to_eeprom;
   //Статична змінна, яка вказує який блок триґерної інформації треба записувати у EEPROM
   static unsigned int number_block_trg_func_write_to_eeprom;
-  //Статична змінна, яка вказує який блок інформації по аналоговому реєстраторі треба записувати у EEPROM
-  static unsigned int number_block_info_rejestrator_ar_write_to_eeprom;
   //Статична змінна, яка вказує який блок інформації по дискретному реєстраторі треба записувати у EEPROM
   static unsigned int number_block_info_rejestrator_dr_write_to_eeprom;
   //Статична змінна, яка вказує який блок інформації по реєстраторі програмних подій треба записувати у EEPROM
@@ -197,7 +195,6 @@ void main_routines_for_i2c(void)
   static __CONFIG current_config_comp;
   static unsigned int ustuvannja_comp[NUMBER_ANALOG_CANALES], serial_number_dev_comp;
   static unsigned int trigger_active_functions_comp[N_BIG];
-  static __INFO_REJESTRATOR info_rejestrator_ar_comp;
   static __INFO_REJESTRATOR info_rejestrator_dr_comp;
   static __INFO_REJESTRATOR info_rejestrator_pr_err_comp;
   
@@ -443,50 +440,6 @@ void main_routines_for_i2c(void)
 
         //Cкидаємо умову запису інформації аналогового реєстратора у EEPROM
         _CLEAR_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT);
-      }
-      
-    }
-    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_AR_EEPROM_BIT) !=0)
-    {
-      //Стоїть умова запису блоку інформації аналогового реєстратора у EEPROM
-
-      int size_to_end;
-      unsigned int rez, offset_from_start;
-      
-      //Визначаємо з якого місця треба почати записувати
-      offset_from_start = number_block_info_rejestrator_ar_write_to_eeprom*SIZE_PAGE_EEPROM;
-
-      //Кількість байт до кінця буферу 
-      size_to_end = (sizeof(info_rejestrator_ar) + 1) - offset_from_start; 
-      
-      if (size_to_end > 0)
-      {
-        if (size_to_end < SIZE_PAGE_EEPROM)
-          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_INFO_REJESTRATORS_AR + offset_from_start), (read_write_i2c_buffer + offset_from_start), size_to_end);
-        else
-          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_INFO_REJESTRATORS_AR + offset_from_start), (read_write_i2c_buffer + offset_from_start), SIZE_PAGE_EEPROM);
-        
-        //Аналізуємо успішність запуску нового запису
-        if (rez > 1)
-        {
-          error_start_i2c();          
-          
-          //Покищо просто очищаємо змінну, яка конкретизуєм помилку, у майбутньому її можна буде конкретизувати
-          type_error_of_exchanging_via_i2c = 0;
-        }
-        else if (rez == 0) _SET_BIT(clear_diagnostyka, ERROR_START_VIA_I2C_BIT);
-      }
-      else
-      {
-        //Весь масив вже записаний
-       
-        //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
-        comparison_writing |= COMPARISON_WRITING_INFO_REJESTRATOR_AR;
-        _SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_AR_EEPROM_BIT);
-        _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
-
-        //Cкидаємо умову запису інформації аналогового реєстратора у EEPROM
-        _CLEAR_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_AR_EEPROM_BIT);
       }
       
     }
@@ -794,31 +747,6 @@ void main_routines_for_i2c(void)
         _SET_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
         _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
         _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
-      }
-    }
-    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_AR_EEPROM_BIT) !=0)
-    {
-      unsigned int rez;
-
-      //Запускаємо процес читання
-      rez = start_read_buffer_via_I2C(EEPROM_ADDRESS, START_ADDRESS_INFO_REJESTRATORS_AR, read_write_i2c_buffer, (sizeof(info_rejestrator_ar) + 1));
-      
-      //Аналізуємо успішність запуску нового запису
-      if (rez > 1)
-      {
-        error_start_i2c();
-        
-        //Покищо просто очищаємо змінну, яка конкретизуєм помилку, у майбутньому її можна буде конкретизувати
-        type_error_of_exchanging_via_i2c = 0;
-      }
-      else if (rez == 0)
-      {
-        _SET_BIT(clear_diagnostyka, ERROR_START_VIA_I2C_BIT);
-
-        //При успішнопу запуску читання скидаємо біт запуску читання і виставляємо біт процесу читання
-        _SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_AR_EEPROM_BIT);
-        _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
-        _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_AR_EEPROM_BIT);
       }
     }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_DR_EEPROM_BIT) !=0)
@@ -1170,37 +1098,6 @@ void main_routines_for_i2c(void)
       //Виставляємо перший блок запису у EEPROM
       number_block_trg_func_write_to_eeprom = 0;
     }
-    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_AR_EEPROM_BIT) !=0)
-    {
-      //Стоїть умова початку нового запису у EEPROM по інформації аналогового реєстратора
-      
-      //Скидаємо біт запуску нового запису і виставляємо біт запису блоків у EEPROM з блокуванням, щоб запуск почався з синхронізацією
-      _SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_AR_EEPROM_BIT);
-      _SET_BIT(control_i2c_taskes, TASK_BLK_WRITING_EEPROM_BIT);
-      _CLEAR_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_AR_EEPROM_BIT);
-      
-      //Робимо копію записуваної інформації для контролю
-
-      //Готуємо буфер для запису у EEPROM разом з контрольною сумою
-      unsigned char crc_eeprom_info_rejestrator_ar = 0, temp_value;
-      unsigned char  *point_1 = (unsigned char*)(&info_rejestrator_ar); 
-      unsigned char  *point_2 = (unsigned char*)(&info_rejestrator_ar_comp); 
-      for (unsigned int i = 0; i < sizeof(__INFO_REJESTRATOR); i++)
-      {
-        temp_value = *(point_1);
-        *(point_2) = temp_value;
-        point_1++;
-        point_2++;
-        read_write_i2c_buffer[i] = temp_value;
-        crc_eeprom_info_rejestrator_ar += temp_value;
-      }
-
-      //Добавляємо інвертовану контрольну суму у кінець масиву
-      read_write_i2c_buffer[sizeof(info_rejestrator_ar)] = (unsigned char)((~(unsigned int)crc_eeprom_info_rejestrator_ar) & 0xff);
-      
-      //Виставляємо перший блок запису у EEPROM
-      number_block_info_rejestrator_ar_write_to_eeprom = 0;
-    }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_DR_EEPROM_BIT) !=0)
     {
       //Стоїть умова початку нового запису у EEPROM по інформації дискретного реєстратора
@@ -1345,7 +1242,6 @@ void main_routines_for_i2c(void)
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT               ) != 0) || 
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_USTUVANNJA_EEPROM_BIT             ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT               ) != 0) ||
-        (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_AR_EEPROM_BIT    ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_DR_EEPROM_BIT    ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) != 0)
        )
@@ -1371,11 +1267,6 @@ void main_routines_for_i2c(void)
       {
         //Виставляємо наступний блок триґерної інформаціїзапису у EEPROM
         number_block_trg_func_write_to_eeprom++;
-      }
-      else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_AR_EEPROM_BIT) != 0)
-      {
-        //Виставляємо наступний блок інформації по реєстраторах запису у EEPROM
-        number_block_info_rejestrator_ar_write_to_eeprom++;
       }
       else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_DR_EEPROM_BIT) != 0)
       {
@@ -2135,257 +2026,6 @@ void main_routines_for_i2c(void)
       comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);
       //Скидаємо повідомлення про читання даних
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
-    }
-    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_AR_EEPROM_BIT) !=0)
-    {
-      //Аналізуємо прочитані дані
-      //Спочатку аналізуємо, чи прояитаний блок є пустим, чи вже попередньо записаним
-      unsigned int empty_block = 1, i = 0; 
-      __INFO_REJESTRATOR info_rejestrator_ar_tmp;
-      
-      while ((empty_block != 0) && ( i < (sizeof(__INFO_REJESTRATOR) + 1)))
-      {
-        if (read_write_i2c_buffer[i] != 0xff) empty_block = 0;
-        i++;
-      }
-      
-      if(empty_block == 0)
-      {
-        //Помічаємо, що блок не є пустим
-        state_i2c_task &= (unsigned int)(~STATE_INFO_REJESTRATOR_AR_EEPROM_EMPTY);
-        //Скидаємо повідомлення у слові діагностики
-        _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_AR_EEPROM_EMPTY_BIT);
-        
-        //Перевіряємо контрольну суму і переписуємо прочитані дані у структуру
-        unsigned char crc_eeprom_info_rejestrator_ar = 0, temp_value;
-        unsigned char  *point = (unsigned char*)(&info_rejestrator_ar_tmp); 
-        for (i =0; i < sizeof(__INFO_REJESTRATOR); i++)
-        {
-          temp_value = read_write_i2c_buffer[i];
-          *(point) = temp_value;
-          crc_eeprom_info_rejestrator_ar += temp_value;
-          point++;
-        }
-        if (read_write_i2c_buffer[sizeof(__INFO_REJESTRATOR)]  == ((unsigned char)((~(unsigned int)crc_eeprom_info_rejestrator_ar) & 0xff)))
-        {
-          //Контролдьна сума сходиться
-          
-          //Зберігаємо контрольну суму (не інвертовану)
-          crc_info_rejestrator_ar = crc_eeprom_info_rejestrator_ar;
-
-          state_i2c_task &= (unsigned int)(~STATE_INFO_REJESTRATOR_AR_EEPROM_FAIL);
-          state_i2c_task |= STATE_INFO_REJESTRATOR_AR_EEPROM_GOOD;
-          
-          //Скидаємо повідомлення у слові діагностики
-          _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_AR_EEPROM_BIT);
-          
-          if ((comparison_writing & COMPARISON_WRITING_INFO_REJESTRATOR_AR) == 0)
-          {
-            //Виконувалося зчитування інформації по аналоговому реєстратору у робочу структуру
-            
-            //Перекидаємо інформації по аналоговому реєстратору з тимчасової структури у робочу структуру
-            info_rejestrator_ar = info_rejestrator_ar_tmp;
-
-            //Перевіряємо чи всі поляу у своїх допустимих межах
-            unsigned int max_number_records_ar_tmp = max_number_records_ar;
-            if(
-#if MIN_ADDRESS_AR_AREA != 0
-               (info_rejestrator_ar.next_address   >= MIN_ADDRESS_AR_AREA) &&
-#endif               
-               (info_rejestrator_ar.next_address   <= MAX_ADDRESS_AR_AREA) &&
-               (info_rejestrator_ar.number_records <= max_number_records_ar_tmp)  
-              )
-            {
-              //Всі величину мають допустимі значення
-
-              //Перевіряємо, чи у процесі запису останньої аварії не відбувся перезапуск/запуск приладу.
-              //Тоді останій запис може бути пошкодженим, якщо вже свя флешка є заповнена
-              //Тоді помічаємо, що у нашій флешці на один запис є менше
-              if (info_rejestrator_ar.saving_execution !=0 )
-              {
-                //Виставляємо повідомлення про цю подію
-                _SET_BIT(set_diagnostyka, ERROR_AR_LOSS_INFORMATION_BIT);
-
-                //Виставляємо команду запису цієї структури у EEPROM
-                /*
-                Команду виставляємо скоріше, а потім робимо зміни у полях, які треба змінити,
-                бо по вимозі проконтролювати достовірність даних інформації по аналоговому
-                реєстратору відбувається копіювання з системи захистів структури
-                info_rejestrator_ar у резервну мкопію. Це копіювання блокується у випадку 
-                "читання з"/"запису в" EEPROM цієї інформації. Тому виставлення спочатку команди
-                запису заблокує копіювання.
-                З другої сторони не можливо, щоб почався запис до модифікації, 
-                бо запис ініціюється функцією main_routines_for_i2c - в якій ми зараз знаходимося.
-                Тобто спочатку треба з цієї функції вийти і при наступних входженнях у цю функцію
-                можливе виконання команди яку ми виставили перед зміною даних, яку 
-                ми зараз гарантовано зробимо (до виходу з цієї функції)
-                */
-                _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_AR_EEPROM_BIT);
-
-                info_rejestrator_ar.saving_execution = 0;
-                if (info_rejestrator_ar.number_records >= max_number_records_ar_tmp)
-                  info_rejestrator_ar.number_records = (max_number_records_ar - 1);
-              }
-            }
-            else
-            {
-              //Виствляємо повідомлення у слові діагностики
-              _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_AR_EEPROM_BIT);
-
-              //Виставляємо команду запису цієї структури у EEPROM
-              /*
-              Команду виставляємо скоріше, а потім робимо зміни у полях, які треба змінити,
-              бо по вимозі проконтролювати достовірність даних інформації по аналоговому
-              реєстратору відбувається копіювання з системи захистів структури
-              info_rejestrator_ar у резервну мкопію. Це копіювання блокується у випадку 
-              "читання з"/"запису в" EEPROM цієї інформації. Тому виставлення спочатку команди
-              запису заблокує копіювання.
-              З другої сторони не можливо, щоб почався запис до модифікації, 
-              бо запис ініціюється функцією main_routines_for_i2c - в якій ми зараз знаходимося.
-              Тобто спочатку треба з цієї функції вийти і при наступних входженнях у цю функцію
-              можливе виконання команди яку ми виставили перед зміною даних, яку 
-              ми зараз гарантовано зробимо (до виходу з цієї функції)
-              */
-              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_AR_EEPROM_BIT);
-
-              //Очищаємо структуру інформації по аналоговому реєстраторі
-              info_rejestrator_ar.next_address = MIN_ADDRESS_AR_AREA;
-              info_rejestrator_ar.saving_execution = 0;
-              info_rejestrator_ar.number_records = 0;
-            }
-          }
-          else
-          {
-            //Виконувалося контроль достовірності записаної інформації у EEPROM з записуваною
-            
-            unsigned char  *point_to_read  = (unsigned char*)(&info_rejestrator_ar_tmp );
-            unsigned char  *point_to_write = (unsigned char*)(&info_rejestrator_ar_comp);
-            unsigned int difference = 0;
-
-            i = 0;
-            while ((difference == 0) && ( i < sizeof(__INFO_REJESTRATOR)))
-            {
-              if (*point_to_write != *point_to_read) difference = 0xff;
-              else
-              {
-                point_to_write++;
-                point_to_read++;
-                i++;
-              }
-            }
-            if (difference == 0)
-            {
-              //Контроль порівнняння пройшов успішно
-
-              //Скидаємо повідомлення у слові діагностики
-              _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_AR_COMPARISON_BIT);
-            }
-            else
-            {
-              //Контроль порівнняння зафіксував розбіжності між записаною і записуваною інформацією
-
-              //Виствляємо повідомлення у слові діагностики
-              _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_AR_COMPARISON_BIT);
-            }
-          }
-        }
-        else
-        {
-          //Контрольна сума не сходиться
-          state_i2c_task &= (unsigned int)(~STATE_INFO_REJESTRATOR_AR_EEPROM_GOOD);
-          state_i2c_task |= STATE_INFO_REJESTRATOR_AR_EEPROM_FAIL;
-
-          //Виствляємо повідомлення у слові діагностики
-          _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_AR_EEPROM_BIT);
-          
-          /*
-          Виставляємо повідомлення про те, що в EEPROM треба записати нові значення
-          структури тільки тоді, коли ми зчитуємо збережені дані для відновлення 
-          їх у оперативній пам'яті, а не коли ми проводимо контроль запису.
-          Бо для контролю запису нам важливо знати чи успішно записалися дані, які є у 
-          оперативній пам'яті і при цьому, навіть, якщо запис відбувся невдало, то,
-          оскільки ми працюємо зі змінними з оперативної пам'яті,  які є у нас достовірні,
-          бо ми їх якраз і записували, то на роботу до перезавантаження програмного забезперечння 
-          збій запису у EEPROM не мав би вплинути
-          */
-          if ((comparison_writing & COMPARISON_WRITING_INFO_REJESTRATOR_AR) == 0)
-          {
-            //Виконувалося зчитування інформації по аналоговому реєстратору у робочу структуру
-
-            //Виставляємо команду запису цієї структури у EEPROM
-            /*
-            Команду виставляємо скоріше, а потім робимо зміни у полях, які треба змінити,
-            бо по вимозі проконтролювати достовірність даних інформації по аналоговому
-            реєстратору відбувається копіювання з системи захистів структури
-            info_rejestrator_ar у резервну мкопію. Це копіювання блокується у випадку 
-            "читання з"/"запису в" EEPROM цієї інформації. Тому виставлення спочатку команди
-            запису заблокує копіювання.
-            З другої сторони не можливо, щоб почався запис до модифікації, 
-            бо запис ініціюється функцією main_routines_for_i2c - в якій ми зараз знаходимося.
-            Тобто спочатку треба з цієї функції вийти і при наступних входженнях у цю функцію
-            можливе виконання команди яку ми виставили перед зміною даних, яку 
-            ми зараз гарантовано зробимо (до виходу з цієї функції)
-            */
-            _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_AR_EEPROM_BIT);
-          
-            //Очищаємо структуру інформації по дискретному реєстраторі
-            info_rejestrator_ar.next_address = MIN_ADDRESS_AR_AREA;
-            info_rejestrator_ar.saving_execution = 0;
-            info_rejestrator_ar.number_records = 0;
-          }
-        }
-      }
-      else
-      {
-        //Помічаємо, що прочитаний блок є пустим
-        state_i2c_task &= (unsigned int)(~(STATE_INFO_REJESTRATOR_AR_EEPROM_FAIL | STATE_INFO_REJESTRATOR_AR_EEPROM_GOOD));
-        state_i2c_task |= STATE_INFO_REJESTRATOR_AR_EEPROM_EMPTY;
-        
-        //Виствляємо повідомлення у слові діагностики
-        _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_AR_EEPROM_BIT);
-        _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_AR_EEPROM_EMPTY_BIT);
-              
-        /*
-        Виставляємо повідомлення про те, що в EEPROM треба записати нові значення
-        структури тільки тоді, коли ми зчитуємо збережені дані для відновлення 
-        їх у оперативній пам'яті, а не коли ми проводимо контроль запису.
-        Бо для контролю запису нам важливо знати чи успішно записалися дані, які є у 
-        оперативній пам'яті і при цьому, навіть, якщо запис відбувся невдало, то,
-        оскільки ми працюємо зі змінними з оперативної пам'яті,  які є у нас достовірні,
-        бо ми їх якраз і записували, то на роботу до перезавантаження програмного забезперечння 
-        збій запису у EEPROM не мав би вплинути
-        */
-        if ((comparison_writing & COMPARISON_WRITING_INFO_REJESTRATOR_AR) == 0)
-        {
-          //Виконувалося зчитування інформації по аналоговому реєстратору у робочу структуру
-
-          //Виставляємо команду запису цієї структури у EEPROM
-          /*
-          Команду виставляємо скоріше, а потім робимо зміни у полях, які треба змінити,
-          бо по вимозі проконтролювати достовірність даних інформації по аналоговому
-          реєстратору відбувається копіювання з системи захистів структури
-          info_rejestrator_ar у резервну мкопію. Це копіювання блокується у випадку 
-          "читання з"/"запису в" EEPROM цієї інформації. Тому виставлення спочатку команди
-          запису заблокує копіювання.
-          З другої сторони не можливо, щоб почався запис до модифікації, 
-          бо запис ініціюється функцією main_routines_for_i2c - в якій ми зараз знаходимося.
-          Тобто спочатку треба з цієї функції вийти і при наступних входженнях у цю функцію
-          можливе виконання команди яку ми виставили перед зміною даних, яку 
-          ми зараз гарантовано зробимо (до виходу з цієї функції)
-          */
-          _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_AR_EEPROM_BIT);
-
-          //Очищаємо структуру інформації по аналоговому реєстраторі
-          info_rejestrator_ar.next_address = MIN_ADDRESS_AR_AREA;
-          info_rejestrator_ar.saving_execution = 0;
-          info_rejestrator_ar.number_records = 0;
-        }
-      }
-
-      //Знімаємо можливу сигналізацію, що виконувалося порівнняння
-      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_INFO_REJESTRATOR_AR);
-      //Скидаємо повідомлення про читання даних
-      _CLEAR_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_AR_EEPROM_BIT);
     }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_DR_EEPROM_BIT) !=0)
     {
@@ -3158,7 +2798,6 @@ void main_routines_for_i2c(void)
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT               ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_USTUVANNJA_EEPROM_BIT             ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT               ) != 0) ||
-        (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_AR_EEPROM_BIT    ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_DR_EEPROM_BIT    ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) != 0)
        )
@@ -3203,15 +2842,6 @@ void main_routines_for_i2c(void)
       _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
       _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
-    }
-    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_AR_EEPROM_BIT) !=0)
-    {
-      //Стоїть умова читання блоку у EEPROM по аналоговому реєстраторі
-      
-      //Повторно запускаємо процес читання
-      _SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_AR_EEPROM_BIT);
-      _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
-      _CLEAR_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_AR_EEPROM_BIT);
     }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_DR_EEPROM_BIT) !=0)
     {

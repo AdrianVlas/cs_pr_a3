@@ -204,35 +204,6 @@ RANG_ERROR_SEC_TN2_CTRL_PHASE
 
 /*****************************************/
 
-/*****************************************/
-//Макски сигналів, які активовуються або з д.входів, або з інтирфейсів чи функціональних кнопок
-/*****************************************/
-
-#define MASKA_FOR_INPUT_SIGNALS_0        (unsigned int)(               \
-    (1 << (RANG_SILENCE - 0))                                  /* 0*/  \
-  | (1 << (RANG_RESET - 0))                                    /* 1*/  \
-  | (1 << (RANG_TEST - 0))                                     /* 2*/  \
-  | (1 << (RANG_DI1 - 0))                                      /*11*/  \
-  | (1 << (RANG_DI2 - 0))                                      /*12*/  \
-  | (1 << (RANG_DI3 - 0))                                      /*13*/  \
-  | (1 << (RANG_DI4 - 0))                                      /*14*/  \
-  | (1 << (RANG_DI5 - 0))                                      /*15*/  \
-  | (1 << (RANG_DI6 - 0))                                      /*16*/  \
-  | (1 << (RANG_DI7 - 0))                                      /*17*/  \
-  | (1 << (RANG_DI8 - 0))                                      /*18*/  \
-  | (1 << (RANG_DI9 - 0))                                      /*19*/  \
-  | (1 << (RANG_DI10 - 0))                                     /*20*/  \
-  | (1 << (RANG_DB1 - 0))                                      /*21*/  \
-  | (1 << (RANG_DB2 - 0))                                      /*22*/  \
-)
-
-#define MASKA_FOR_INPUT_SIGNALS_1                  0
-#define MASKA_FOR_INPUT_SIGNALS_2                  0
-#define MASKA_FOR_INPUT_SIGNALS_3                  0
-#define MASKA_FOR_INPUT_SIGNALS_4                  0
-#define MASKA_FOR_INPUT_SIGNALS_5                  0
-#define MASKA_FOR_INPUT_SIGNALS_6                  0
-/*****************************************/
 
 
 /*****************************************/
@@ -256,26 +227,6 @@ RANG_ERROR_SEC_TN2_CTRL_PHASE
 #define MASKA_CTRL_PHASE_SIGNALS_5                 0
 #define MASKA_CTRL_PHASE_SIGNALS_6                 0
 /*****************************************/
-
-/*****************************************/
-//Макска сигналів, які мають записуватися у енергонезалежну пам'ять
-/*****************************************/
-#define MASKA_TRIGGER_SIGNALES_0                  0
-
-#define MASKA_TRIGGER_SIGNALES_1               (unsigned int)(     \
-     (1 << (RANG_DT1_OUT - 32))                              /*38*/\
-   | (1 << (RANG_DT2_OUT - 32))                              /*41*/\
-   | (1 << (RANG_DT3_OUT - 32))                              /*44*/\
-   | (1 << (RANG_DT4_OUT - 32))                              /*47*/\
-)
-
-#define MASKA_TRIGGER_SIGNALES_2                  0
-#define MASKA_TRIGGER_SIGNALES_3                  0
-#define MASKA_TRIGGER_SIGNALES_4                  0
-#define MASKA_TRIGGER_SIGNALES_5                  0
-#define MASKA_TRIGGER_SIGNALES_6                  0
-/*****************************************/
-
 
 /*****************************************/
 //Макска інформативних сигналів

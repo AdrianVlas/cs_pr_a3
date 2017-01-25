@@ -1538,11 +1538,11 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
     {
       if (type_interface == USB_RECUEST)
       {
-        for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = trigger_functions_USB[i];
+//        for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = trigger_functions_USB[i];
       }
       else if (type_interface == RS485_RECUEST)
       {
-        for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = trigger_functions_RS485[i];
+//        for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = trigger_functions_RS485[i];
       }
       else
       {

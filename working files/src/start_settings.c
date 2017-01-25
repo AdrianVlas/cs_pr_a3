@@ -1097,50 +1097,6 @@ void start_settings_peripherals(void)
       }
     }
     /**********************/
-  
-    if((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0)
-    {
-      /*
-      Оскільки при читанні даних аналогового реєстратора буде аналізуватися
-      мкасимальна кількість записів, яка залежить від ширини доаварійного і
-      післяаварійного масивів, то це читання треба виконувати тільки, коли відбулося
-      успішне зчитування настройок.
-      У інікшому разі структура інформації по аналоговому реєстратору має буди
-      обнулена - тобто вся інформація по аналоговому реєстратуу буде очищена, якщо
-      відбулася втрата інформації по настройках
-      */
-      /**********************/
-      //Читаємо збережені дані аналогового реєстратора з EEPROM
-      /**********************/
-      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_INFO_REJESTRATOR_AR);/*зчитування, а не порівняння*/
-      _SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_AR_EEPROM_BIT);
-      while(
-            (control_i2c_taskes[0]     != 0) ||
-            (control_i2c_taskes[1]     != 0) ||
-            (driver_i2c.state_execution > 0)
-           )
-      {
-        //Робота з watchdogs
-        if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
-        {
-          //Змінюємо стан біту зовнішнього Watchdog на протилежний
-          GPIO_WriteBit(
-                        GPIO_EXTERNAL_WATCHDOG,
-                        GPIO_PIN_EXTERNAL_WATCHDOG,
-                        (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
-                       );
-        }
-
-        main_routines_for_i2c();
-        changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
-        if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
-        {
-          //Повне роозблоковування обміну з мікросхемами для драйверу I2C
-          _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
-        }
-      }
-      /**********************/
-    }
   }
   else
   {

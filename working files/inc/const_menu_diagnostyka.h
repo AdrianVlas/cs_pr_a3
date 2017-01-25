@@ -28,10 +28,6 @@ ERROR_TRG_FUNC_EEPROM_BIT,
 ERROR_TRG_FUNC_EEPROM_EMPTY_BIT,
 ERROR_TRG_FUNC_EEPROM_COMPARISON_BIT,
 ERROR_TRG_FUNC_EEPROM_CONTROL_BIT,
-ERROR_INFO_REJESTRATOR_AR_EEPROM_BIT,
-ERROR_INFO_REJESTRATOR_AR_EEPROM_EMPTY_BIT,
-ERROR_INFO_REJESTRATOR_AR_COMPARISON_BIT,
-ERROR_INFO_REJESTRATOR_AR_CONTROL_BIT,
 ERROR_INFO_REJESTRATOR_DR_EEPROM_BIT,
 ERROR_INFO_REJESTRATOR_DR_EEPROM_EMPTY_BIT,
 ERROR_INFO_REJESTRATOR_DR_COMPARISON_BIT,
@@ -139,10 +135,6 @@ ERROR_INTERNAL_FLASH_BIT,
   " Триг.инф.нет   ",   \
   "Ош.зап.триг.инф.",   \
   "Ош.контр.триг.и.",   \
-  " Ош.инф.ан.рег. ",   \
-  " Инф.ан.рег.нет ",   \
-  "Ош.зап.и.ан.рег.",   \
-  "Ош.контр.ан.рег.",   \
   " Ош.инф.д.рег.  ",   \
   " Инф.д.рег.нет  ",   \
   " Ош.зап.и.д.рег.",   \
@@ -187,6 +179,10 @@ ERROR_INTERNAL_FLASH_BIT,
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
+  " Ошибка 69      ",   \
+  " Ошибка 70      ",   \
+  " Ошибка 71      ",   \
+  " Ошибка 72      ",   \
   " Ошибка 73      ",   \
   " Ошибка 74      ",   \
   " Ошибка 75      ",   \
@@ -229,10 +225,6 @@ ERROR_INTERNAL_FLASH_BIT,
   " Триґ.інф.нема  ",   \
   " Пом.зап.триґ.і.",   \
   "Пом.контр.триґ.і",   \
-  " Пом.інф.ан.р.  ",   \
-  " Інф.ан.р.нема  ",   \
-  " Пом.зап.і.ан.р.",   \
-  " Пом.контр.ан.р.",   \
   " Пом.інф.д.р.   ",   \
   " Інф.д.р.нема   ",   \
   " Пом.зап.і.д.р. ",   \
@@ -277,6 +269,10 @@ ERROR_INTERNAL_FLASH_BIT,
   " Пом.SPI_DF     ",   \
   " Пом.зовн.SRAM  ",   \
   " Пом.внутр.FLASH",   \
+  " Помилка 69     ",   \
+  " Помилка 70     ",   \
+  " Помилка 71     ",   \
+  " Помилка 72     ",   \
   " Помилка 73     ",   \
   " Помилка 74     ",   \
   " Помилка 75     ",   \
@@ -319,10 +315,6 @@ ERROR_INTERNAL_FLASH_BIT,
   " Триг.инф.нет   ",   \
   "Ош.зап.триг.инф.",   \
   "Ош.контр.триг.и.",   \
-  " An.Rec.Inf.Err.",   \
-  " No An.Rec.Inf. ",   \
-  "An.Rec.Inf.W.Err",   \
-  "An.Rec.Ctrl.Err.",   \
   " D.Rec.Inf.Err. ",   \
   " No D.Rec.Inf.  ",   \
   "Inf.D.Rec.W.Err.",   \
@@ -367,6 +359,10 @@ ERROR_INTERNAL_FLASH_BIT,
   " DF SPI Err.    ",   \
   " Ext.SRAM Err.  ",   \
   " Int.FLASH Err. ",   \
+  " Error 69       ",   \
+  " Error 70       ",   \
+  " Error 71       ",   \
+  " Error 72       ",   \
   " Error 73       ",   \
   " Error 74       ",   \
   " Error 75       ",   \
@@ -409,10 +405,6 @@ ERROR_INTERNAL_FLASH_BIT,
   " Триг.инф.нет   ",   \
   "Ош.зап.триг.инф.",   \
   "Ош.контр.триг.и.",   \
-  " Ош.инф.ан.рег. ",   \
-  " Инф.ан.рег.нет ",   \
-  "Ош.зап.и.ан.рег.",   \
-  "Ош.контр.ан.рег.",   \
   " Ош.инф.д.рег.  ",   \
   " Инф.д.рег.нет  ",   \
   " Ош.зап.и.д.рег.",   \
@@ -457,6 +449,10 @@ ERROR_INTERNAL_FLASH_BIT,
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
+  " Ошибка 69      ",   \
+  " Ошибка 70      ",   \
+  " Ошибка 71      ",   \
+  " Ошибка 72      ",   \
   " Ошибка 73      ",   \
   " Ошибка 74      ",   \
   " Ошибка 75      ",   \

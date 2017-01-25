@@ -152,15 +152,10 @@ extern void clear_bit(unsigned int*, unsigned int);
 extern void input_scan(void);
 extern void clocking_global_timers(void);
 extern void main_protection(void);
-extern void d_and_handler(volatile unsigned int*);
-extern void d_or_handler(volatile unsigned int*);
-extern void d_xor_handler(volatile unsigned int*);
-extern void d_not_handler(volatile unsigned int*);
 extern unsigned int stop_regisrator(volatile unsigned int*, unsigned int*);
 extern void fix_undefined_error_dr(volatile unsigned int*);
 extern void command_start_saving_record_dr_into_dataflash(void);
 extern void routine_for_queue_dr(void);
-extern void analog_registrator(volatile unsigned int*);
 extern void diagnostyca_adc_execution(void);
 
 extern void Usb_routines(void);
@@ -210,7 +205,6 @@ extern void analize_received_data_dataflash(int);
 extern void actions_after_changing_tiomouts_ar(void);
 extern void calc_size_and_max_number_records_ar(unsigned int, unsigned int);
 extern unsigned int making_buffer_for_save_ar_record(unsigned int*);
-extern void fix_undefined_error_ar(volatile unsigned int*);
 
 extern void control_config(unsigned int);
 extern void control_settings(unsigned int);
