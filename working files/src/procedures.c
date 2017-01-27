@@ -509,20 +509,24 @@ unsigned int set_new_settings_from_interface(unsigned int source)
     if ((type_of_settings_changed & (1 << DEFAULT_SETTINGS_SET_BIT)) != 0)
     {
       //Переводимо меню у висхідний стан
-      for(unsigned int i=0; i<MAX_LEVEL_MENU; i++)
+      for(enum _menu2_levels i = MAIN_MANU2_LEVEL; i < MAX_NUMBER_MENU2_LEVEL; i++)
       {
-        if ((i == EKRAN_LEVEL_PASSWORD) || (i == EKRAN_LEVEL_SET_NEW_PASSWORD)) position_in_current_level_menu[i] = INDEX_LINE_NUMBER_1_FOR_LEVEL_PASSWORD;
-        else  position_in_current_level_menu[i] = 0;
-        previous_level_in_current_level_menu[i] = -1;
+        /*if ((i == EKRAN_LEVEL_PASSWORD) || (i == EKRAN_LEVEL_SET_NEW_PASSWORD)) position_in_current_level_menu[i] = INDEX_LINE_NUMBER_1_FOR_LEVEL_PASSWORD;
+        else*/  position_in_current_level_menu2[i] = 0;
+        previous_level_in_current_level_menu2[i] = -1;
       }
   
       //Визначення початкового стану екрану
-      current_ekran.current_level = EKRAN_MAIN;
-      current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-      current_ekran.position_cursor_y = current_ekran.index_position;
-      current_ekran.edition = 0;
-      current_ekran.cursor_on = 0;
-      current_ekran.cursor_blinking_on = 0;  
+      current_state_menu2.current_level = MAIN_MANU2_LEVEL;
+      current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
+      current_state_menu2.position_cursor_y = current_state_menu2.index_position;
+      current_state_menu2.max_row_p = NULL;
+      current_state_menu2.max_row_c = MAX_ROW_MAIN_M2;
+      current_state_menu2.func_move = make_ekran_main;
+      current_state_menu2.func_edit = NULL;
+      current_state_menu2.edition = 0;
+      current_state_menu2.cursor_on = 0;
+      current_state_menu2.cursor_blinking_on = 0;  
     }
     
     if (set_password_USB   != false) password_set_USB   = 1;
@@ -935,71 +939,160 @@ void control_settings(unsigned int modified)
   uint8_t  *point_1 = NULL, *point_2 = NULL; 
   unsigned int difference = 0;
 
-  unsigned int block = 0, shift = 0;
   size_t size_of_block = 0;
+  uint32_t n_item = 0;
+  unsigned int block = 0, item = 0, shift = 0;
   while(
         (difference == 0) &&
         (block < (1 + CA_MAX))
        )
   {
-    if (size_of_block == 0)
+    if (shift == 0)
     {
       //Визначаємо розмір нового блоку
       switch (block)
       {
       case 0:
         {
-          size_of_block = sizeof(__SETTINGS_FIX);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__SETTINGS_FIX);
+            n_item = 1;
+            if (modified != true) point_2 = (uint8_t *)(&settings_fix);
+          }
+          
+          point_1 = (uint8_t *)(&settings_fix_prt);
+          
           break;
         }
       case (1 + CA_INPUT):
         {
-          size_of_block = current_config_prt.n_input*sizeof(__settings_for_INPUT);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_INPUT);
+            n_item = current_config_prt.n_input;
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_INPUT]);
+          }
+
+          point_1 = (uint8_t *)(&(((__LN_INPUT*)spca_of_p_prt[CA_INPUT]) + item)->settings) ;
+
           break;
         }
       case (1 + CA_OUTPUT):
         {
-          size_of_block = current_config_prt.n_output*sizeof(__settings_for_OUTPUT);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_OUTPUT);
+            n_item = current_config_prt.n_output;
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_OUTPUT]);
+          }
+
+          point_1 = (uint8_t *)(&(((__LN_OUTPUT*)spca_of_p_prt[CA_OUTPUT]) + item)->settings) ;
+
           break;
         }
       case (1 + CA_LED):
         {
-          size_of_block = current_config_prt.n_led*sizeof(__settings_for_LED);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_LED);
+            n_item = current_config_prt.n_led;
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_LED]);
+          }
+
+          point_1 = (uint8_t *)(&(((__LN_LED*)spca_of_p_prt[CA_LED]) + item)->settings) ;
+
           break;
         }
       case (1 + CA_STANDART_LOGIC_AND):
         {
-          size_of_block = current_config_prt.n_and*sizeof(__settings_for_AND);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_AND);
+            n_item = current_config_prt.n_and;
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_AND]);
+          }
+
+          point_1 = (uint8_t *)(&(((__LN_AND*)spca_of_p_prt[CA_STANDART_LOGIC_AND]) + item)->settings) ;
+
           break;
         }
       case (1 + CA_STANDART_LOGIC_OR):
         {
-          size_of_block = current_config_prt.n_or*sizeof(__settings_for_OR);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_OR);
+            n_item = current_config_prt.n_or;
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_OR]);
+          }
+
+          point_1 = (uint8_t *)(&(((__LN_OR*)spca_of_p_prt[CA_STANDART_LOGIC_OR]) + item)->settings) ;
+
           break;
         }
       case (1 + CA_STANDART_LOGIC_XOR):
         {
-          size_of_block = current_config_prt.n_xor*sizeof(__settings_for_XOR);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_XOR);
+            n_item = current_config_prt.n_xor;
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_XOR]);
+          }
+
+          point_1 = (uint8_t *)(&(((__LN_XOR*)spca_of_p_prt[CA_STANDART_LOGIC_XOR]) + item)->settings) ;
+
           break;
         }
       case (1 + CA_STANDART_LOGIC_NOT):
         {
-          size_of_block = current_config_prt.n_not*sizeof(__settings_for_NOT);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_NOT);
+            n_item = current_config_prt.n_not;
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_NOT]);
+          }
+
+          point_1 = (uint8_t *)(&(((__LN_NOT*)spca_of_p_prt[CA_STANDART_LOGIC_NOT]) + item)->settings) ;
+
           break;
         }
       case (1 + CA_STANDART_LOGIC_TIMER):
         {
-          size_of_block = current_config_prt.n_timer*sizeof(__settings_for_TIMER);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_TIMER);
+            n_item = current_config_prt.n_timer;
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_TIMER]);
+          }
+
+          point_1 = (uint8_t *)(&(((__LN_TIMER*)spca_of_p_prt[CA_STANDART_LOGIC_TIMER]) + item)->settings) ;
+
           break;
         }
       case (1 + CA_STANDART_LOGIC_TRIGGER):
         {
-          size_of_block = current_config_prt.n_trigger*sizeof(__settings_for_TRIGGER);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_TRIGGER);
+            n_item = current_config_prt.n_trigger;
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_TRIGGER]);
+          }
+
+          point_1 = (uint8_t *)(&(((__LN_TRIGGER*)spca_of_p_prt[CA_STANDART_LOGIC_TRIGGER]) + item)->settings) ;
+
           break;
         }
       case (1 + CA_MEANDER):
         {
-          size_of_block = current_config_prt.n_meander*sizeof(__settings_for_MEANDER);
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_MEANDER);
+            n_item = current_config_prt.n_meander;
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_MEANDER]);
+          }
+
+          point_1 = (uint8_t *)(&(((__LN_MEANDER*)spca_of_p_prt[CA_MEANDER]) + item)->settings) ;
+
           break;
         }
       default:
@@ -1008,24 +1101,9 @@ void control_settings(unsigned int modified)
           total_error_sw_fixed(5);
         }
       }
-
-      //Визначаємо вказівник на початок блоку
-      if (size_of_block != 0)
-      {
-        if (block == 0)
-        {
-          point_1 = (uint8_t *)(&settings_fix_prt);
-          if (modified != true) point_2 = (uint8_t *)(&settings_fix);
-        }
-        else
-        {
-          point_1 = (uint8_t *)(spca_of_p_prt[block - 1]);
-          if (modified != true) point_2 = (uint8_t *)(sca_of_p[block - 1]);
-        }
-      }
     }
       
-    if (size_of_block != 0)
+    if ((size_of_block != 0) && (n_item != 0))
     {
       //Контроль контрольної суми налаштувань для захистів
       temp_value = *(point_1 + shift);
@@ -1048,13 +1126,22 @@ void control_settings(unsigned int modified)
       if ((++shift) >= size_of_block)
       {
         shift = 0;
-        block++;
-        size_of_block = 0;
+        if ((++item) >= n_item)
+        {
+          item = 0;
+          block++;
+          size_of_block = 0;
+          n_item = 0;
+        }
       }
     }
     else 
     {
+      size_of_block = 0;
+      n_item = 0;
+          
       shift = 0;
+      item = 0;
       block++;
     }
   }
@@ -2222,8 +2309,7 @@ void copy_settings(
   
   for (size_t i = 0; i < CA_MAX; i++)
   {
-    if (source_dyn[i] == NULL)  targret_dyn[i] = NULL;
-    else
+    if (source_dyn[i] != NULL)
     {
       uint32_t n_prev;
       void (*copy_settings_LN)(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
@@ -2316,7 +2402,7 @@ void copy_settings(
           }
       }
       
-      if (n_prev != 0)
+      if ((n_prev != 0) && (targret_dyn[i] != NULL))
       {
         //Викликаємо функцію повернення нових налаштувань у попередні значення
         (*copy_settings_LN)((targret_dyn == spca_of_p_prt), (source_dyn == spca_of_p_prt), targret_dyn[i], source_dyn[i], 0, n_prev);

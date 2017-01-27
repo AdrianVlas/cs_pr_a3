@@ -4,6 +4,9 @@
 
 #include "const_fsmc.h"
 
+#include "const_menu_ver2.h"
+#include "const_main_menu2.h"
+
 #include "const_lcd_and_keyboard.h"
 #include "const_menu_level_password.h"
 #include "const_menu_main.h"

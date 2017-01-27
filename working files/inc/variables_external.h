@@ -79,6 +79,12 @@ extern unsigned char time_set_keyboard[NUMBER_KEY_KEYBOARD];
 
 extern uint16_t time_rewrite;
 
+//Меню версії 2
+extern __CURRENT_STATE_MENU2 current_state_menu2;
+extern int16_t position_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL]; //Масив у якому збкрігається індекс текучої позиції
+extern int16_t previous_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL];
+
+//Меню версії 1
 extern __CURRENT_EKRAN current_ekran;
 extern int16_t position_in_current_level_menu[MAX_LEVEL_MENU];
 extern int16_t previous_level_in_current_level_menu[MAX_LEVEL_MENU];

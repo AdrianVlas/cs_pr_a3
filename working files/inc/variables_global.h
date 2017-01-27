@@ -98,6 +98,12 @@ SRAM1 unsigned char time_set_keyboard[NUMBER_KEY_KEYBOARD];
 
 SRAM1 uint16_t time_rewrite/* = 0*/; //Час який пройшов після останнього обновлення
 
+//Меню версії 2
+SRAM1 __CURRENT_STATE_MENU2 current_state_menu2;
+SRAM1 int16_t position_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL]; //Масив у якому збкрігається індекс текучої позиції
+SRAM1 int16_t previous_level_in_current_level_menu2[MAX_LEVEL_MENU]; //Масив у якому збкрігається занчення попередніх екранів для даного рівня меню
+
+//Меню версії 1
 SRAM1 __CURRENT_EKRAN current_ekran;
 SRAM1 int16_t position_in_current_level_menu[MAX_LEVEL_MENU]; //Масив у якому збкрігається індекс текучоїпозиції
 SRAM1 int16_t previous_level_in_current_level_menu[MAX_LEVEL_MENU]; //Масив у якому збкрігається занчення попередніх екранів для даного рівня меню
@@ -136,7 +142,7 @@ SRAM1 unsigned char temp_register_rtc[2];
 
 //Конфігурація і Налаштування
 __CONFIG current_config_prt, current_config, current_config_edit;
-uintptr_t *spca_of_p_prt[CA_MAX], *sca_of_p[CA_MAX], *sca_of_p_edit[CA_MAX]; /*sca_of_p = settings control array of point*/
+uintptr_t *spca_of_p_prt[CA_MAX], *sca_of_p[CA_MAX], *sca_of_p_edit[CA_MAX]; /*spca_of_p_prt = settings & protection control array of point for protection; sca_of_p = settings control array of point*/
 unsigned char crc_config;
 
 __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;

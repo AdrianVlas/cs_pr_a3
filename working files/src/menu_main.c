@@ -5,7 +5,7 @@
 /*****************************************************/
 void make_ekran_main(void)
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EKRAN_MAIN][MAX_COL_LCD] = 
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_MAIN_M2][MAX_COL_LCD + 1] = 
   {
     {
      " Часы           ",
@@ -15,8 +15,8 @@ void make_ekran_main(void)
      " Language       ",
      " Настройки      ",
      " Диагностика    ",
-     " Конфигурация   ",
-     " Контр.фаз.     "
+     " Метка настроек ",
+     " Версия ПО и КП "
     },
     {
      " Годинник       ",
@@ -26,8 +26,8 @@ void make_ekran_main(void)
      " Language       ",
      " Налаштування   ",
      " Діагностика    ",
-     " Конфігурація   ",
-     " Контр.фаз.     "
+     " Мітка налашт.  ",
+     " Версія ПЗ і КП "
     },
     {
      " Clock          ",
@@ -37,8 +37,8 @@ void make_ekran_main(void)
      " Language       ",
      " Settings       ",
      " Diagnostic     ",
-     " Configuration  ",
-     " Контр.фаз.     "
+     " Settings Mark  ",
+     " VER.of F/W & MM"
     },
     {
      " Саfат          ",
@@ -48,95 +48,36 @@ void make_ekran_main(void)
      " Language       ",
      " Реттегіш       ",
      " Диагностика    ",
-     " Конфигурациялар",
-     " Контр.фаз.     "
+     " Метка настроек ",
+     " Версия ПО и КП "
     }
   };
-  unsigned char name_string_tmp[MAX_ROW_FOR_EKRAN_MAIN][MAX_COL_LCD];
-
-  int index_language = index_language_in_array(current_settings.language);
-  for(int index_1 = 0; index_1 < MAX_ROW_FOR_EKRAN_MAIN; index_1++)
-  {
-    for(int index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
-    {
-      name_string_tmp[index_1][index_2] = name_string[index_language][index_1][index_2];
-    }
-  }
-  
-  unsigned int additional_current = 0;
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  /******************************************/
-  //Виключаємо поля, які не треба відображати
-  /******************************************/
-  for (unsigned int zachyst = 0; zachyst < TOTAL_NUMBER_PROTECTION; zachyst++)
-  {
-    if ((current_settings.configuration & (1 << zachyst)) == 0)
-    {
-      if (zachyst == CTRL_PHASE_BIT_CONFIGURATION)
-      {
-        unsigned int i = INDEX_ML1_MEASURMENTS - additional_current;
-    
-        if ((i+1) <= position_temp) position_temp--;
-        do
-        {
-          for(unsigned int j = 0; j < MAX_COL_LCD; j++)
-          {
-            if ((i+1) < (MAX_ROW_FOR_EKRAN_MAIN - additional_current)) name_string_tmp[i][j] = name_string_tmp[i + 1][j];
-            else name_string_tmp[i][j] = ' ';
-          }
-          i++;
-        }
-        while (i< (MAX_ROW_FOR_EKRAN_MAIN - additional_current));
-        additional_current++;
-      }
-      
-      {
-        unsigned int i = INDEX_ML1_CTRL_PHASE + zachyst - additional_current;
-    
-        if ((i+1) <= position_temp) position_temp--;
-        do
-        {
-          for(unsigned int j = 0; j < MAX_COL_LCD; j++)
-          {
-            if ((i+1) < (MAX_ROW_FOR_EKRAN_MAIN - additional_current)) name_string_tmp[i][j] = name_string_tmp[i + 1][j];
-            else name_string_tmp[i][j] = ' ';
-          }
-          i++;
-        }
-        while (i< (MAX_ROW_FOR_EKRAN_MAIN - additional_current));
-        additional_current++;
-      }
-    }
-  }
-  /******************************************/
-  
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
+  int index_language = index_language_in_array(settings_fix.language);
+  int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;;
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < (MAX_ROW_FOR_EKRAN_MAIN - additional_current))
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string_tmp[index_of_ekran][j];
+    if (index_in_ekran < MAX_ROW_MAIN_M2)
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran][j];
     else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
 
-    index_of_ekran++;
+    index_in_ekran++;
   }
 
   //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
   //Курсор видимий
-  current_ekran.cursor_on = 1;
+  current_state_menu2.cursor_on = 1;
   //Курсор не мигає
   current_ekran.cursor_blinking_on = 0;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 

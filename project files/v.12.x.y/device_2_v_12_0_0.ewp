@@ -4397,6 +4397,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_lcd_and_keyboard.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_main_menu2.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu_alarms.h</name>
         </file>
         <file>
@@ -4641,6 +4644,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_time.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\menu_ver2.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_view_measurement.c</name>

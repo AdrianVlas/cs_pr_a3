@@ -90,7 +90,7 @@ inline void periodical_operations(void)
     main_routines_for_i2c();
 
   //Обробка дій системи меню
-  main_manu_function();
+  main_manu_function_ver2();
   //Обновляємо інформацію на екрані
   view_whole_ekran();
     

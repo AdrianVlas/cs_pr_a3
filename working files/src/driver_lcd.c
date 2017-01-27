@@ -373,7 +373,7 @@ unsigned int hd44780_puts_xy (unsigned char x, unsigned char y, unsigned char *s
 /*****************************************************/
 void view_whole_ekran(void)
 {
-  if (current_ekran.current_action != ACTION_WITH_CARRENT_EKRANE_NONE)
+  if (current_state_menu2.current_action != ACTION_WITH_CARRENT_EKRANE_NONE)
   {
     if (
         (_CHECK_SET_BIT(    diagnostyka, ERROR_LCD_BIT) == 0) ||
@@ -382,7 +382,7 @@ void view_whole_ekran(void)
     {
       unsigned int error_LCD = 0;
       
-      if(current_ekran.current_action == ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE)
+      if(current_state_menu2.current_action == ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE)
       {
         //Виводимо інформацію
         unsigned int i = 0;
@@ -397,13 +397,13 @@ void view_whole_ekran(void)
       }
     
       //Переводимо курсор у вказану позицю
-      if (error_LCD == 0) error_LCD = hd44780_gotoxy ((current_ekran.position_cursor_x & (MAX_COL_LCD -1)),(current_ekran.position_cursor_y & (MAX_ROW_LCD -1)));
+      if (error_LCD == 0) error_LCD = hd44780_gotoxy ((current_state_menu2.position_cursor_x & (MAX_COL_LCD -1)),(current_state_menu2.position_cursor_y & (MAX_ROW_LCD -1)));
       //Виставляємо стан курсора: включено-виключено; мигає- не мигає
-      if (error_LCD == 0) error_LCD = mode_viewing(1, current_ekran.cursor_on, current_ekran.cursor_blinking_on);
+      if (error_LCD == 0) error_LCD = mode_viewing(1, current_state_menu2.cursor_on, current_state_menu2.cursor_blinking_on);
     }
     
     //Знімаємо повідомлення, що екран требе зараз обновити
-    current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_NONE;
+    current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_NONE;
   }
 }
 /*****************************************************/

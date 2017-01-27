@@ -67,6 +67,7 @@ unsigned int bcd_to_int(unsigned char);
 
 void make_ekran_level_password(unsigned int password, unsigned int view);
 void main_manu_function(void);
+void main_manu_function_ver2(void);
 void make_ekran_main(void);
 void make_ekran_time(void);
 void edit_time(unsigned int);

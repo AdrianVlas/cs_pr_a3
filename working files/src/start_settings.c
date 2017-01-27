@@ -119,21 +119,25 @@ void global_vareiables_installation(void)
   }
   for (unsigned int i=0; i<NUMBER_KEY_KEYBOARD; i++) time_set_keyboard[i] = 0;
  
-  for(unsigned int i=0; i<MAX_LEVEL_MENU; i++)
+  for(enum _menu2_levels i = MAIN_MANU2_LEVEL; i < MAX_NUMBER_MENU2_LEVEL; i++)
   {
-    if ((i == EKRAN_LEVEL_PASSWORD) || (i == EKRAN_LEVEL_SET_NEW_PASSWORD)) position_in_current_level_menu[i] = INDEX_LINE_NUMBER_1_FOR_LEVEL_PASSWORD;
-    else  position_in_current_level_menu[i] = 0;
-    previous_level_in_current_level_menu[i] = -1;
+    /*if ((i == EKRAN_LEVEL_PASSWORD) || (i == EKRAN_LEVEL_SET_NEW_PASSWORD)) position_in_current_level_menu[i] = INDEX_LINE_NUMBER_1_FOR_LEVEL_PASSWORD;
+    else*/  position_in_current_level_menu2[i] = 0;
+    previous_level_in_current_level_menu2[i] = -1;
   }
   
   //Визначення початкового стану екрану
-  current_ekran.current_level = EKRAN_MAIN;
-  current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-  current_ekran.position_cursor_y = current_ekran.index_position;
-  current_ekran.edition = 0;
-  current_ekran.cursor_on = 0;
-  current_ekran.cursor_blinking_on = 0;  
-  
+  current_state_menu2.current_level = MAIN_MANU2_LEVEL;
+  current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
+  current_state_menu2.position_cursor_y = current_state_menu2.index_position;
+  current_state_menu2.max_row_p = NULL;
+  current_state_menu2.max_row_c = MAX_ROW_MAIN_M2;
+  current_state_menu2.func_move = make_ekran_main;
+  current_state_menu2.func_edit = NULL;
+  current_state_menu2.edition = 0;
+  current_state_menu2.cursor_on = 0;
+  current_state_menu2.cursor_blinking_on = 0;  
+
   time[0] = 0x0;
   time[1] = 0x0;
   time[2] = 0x0;
@@ -1601,7 +1605,7 @@ void error_reading_with_eeprom()
     }
   
     //Обновити повністю весь екран
-    current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 
     //Обновляємо інформацію на екрані
     view_whole_ekran();
@@ -1914,7 +1918,7 @@ void start_checking_dataflash(void)
     }
   
     //Обновити повністю весь екран
-    current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 
     //Обновляємо інформацію на екрані
     view_whole_ekran();
