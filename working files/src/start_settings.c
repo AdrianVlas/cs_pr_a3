@@ -121,19 +121,18 @@ void global_vareiables_installation(void)
  
   for(enum _menu2_levels i = MAIN_MANU2_LEVEL; i < MAX_NUMBER_MENU2_LEVEL; i++)
   {
-    /*if ((i == EKRAN_LEVEL_PASSWORD) || (i == EKRAN_LEVEL_SET_NEW_PASSWORD)) position_in_current_level_menu[i] = INDEX_LINE_NUMBER_1_FOR_LEVEL_PASSWORD;
-    else*/  position_in_current_level_menu2[i] = 0;
-    previous_level_in_current_level_menu2[i] = -1;
+    if ((i == PASSWORD_MENU2_LEVEL)/* || (i == EKRAN_LEVEL_SET_NEW_PASSWORD)*/) position_in_current_level_menu2[i] = INDEX_PASSWORD_M2_LINE1;
+    else  position_in_current_level_menu2[i] = 0;
   }
   
   //Визначення початкового стану екрану
   current_state_menu2.current_level = MAIN_MANU2_LEVEL;
   current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
   current_state_menu2.position_cursor_y = current_state_menu2.index_position;
-  current_state_menu2.max_row_p = NULL;
-  current_state_menu2.max_row_c = MAX_ROW_MAIN_M2;
-  current_state_menu2.func_move = make_ekran_main;
+  current_state_menu2.func_move = move_into_main;
+  current_state_menu2.func_show = make_ekran_main;
   current_state_menu2.func_edit = NULL;
+  current_state_menu2.func_change = NULL;
   current_state_menu2.edition = 0;
   current_state_menu2.cursor_on = 0;
   current_state_menu2.cursor_blinking_on = 0;  

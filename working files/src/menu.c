@@ -11,157 +11,6 @@ void main_manu_function(void)
     //Аналізуємо в якому ми зараз робочому екрані і виконуємо відповідні дії
     switch (current_ekran.current_level)
     {
-/******************************************************************************************************************************************/ 
-    case EKRAN_LEVEL_PASSWORD:
-      {
-        //Зміння для фіксації стану курсору з попреднього рівня меню
-        static __PREVIOUS_STATE_CURSOR previous_state_cursor;
-        //Змінні для фіксації введеного паролю
-        static unsigned int new_password;
-        static unsigned int number_symbols;
-        
-        //Очищаємо всі біти краім упралінських
-        new_state_keyboard &= (1<<BIT_KEY_ENTER)|(1<<BIT_KEY_ESC)|(1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN)|(1<<BIT_KEY_RIGHT)|(1<<BIT_KEY_LEFT)|(1<<BIT_REWRITE);
-
-        if (new_state_keyboard !=0)
-        {
-          //Пріоритет стоїть на обновлені екрану
-          if((new_state_keyboard & (1<<BIT_REWRITE)) !=0)
-          {
-            previous_state_cursor.position_cursor_x = current_ekran.position_cursor_x;              
-            previous_state_cursor.cursor_on = current_ekran.cursor_on;
-            previous_state_cursor.cursor_blinking_on = current_ekran.cursor_blinking_on;
-            current_ekran.cursor_on = 1;
-            current_ekran.cursor_blinking_on = 1;
-            current_ekran.position_cursor_x = COL_NEW_PASSWORD_BEGIN;
-            position_in_current_level_menu[current_ekran.current_level] = 1;
-            //Скидаємо новий пароль у нуль і скидаємо кількість введених символів
-            new_password = 0;
-            number_symbols = 0;
-            
-            //Формуємо екран рівня password
-            make_ekran_level_password(new_password, 0);
-            //Очищаємо біт обновлення екрану
-            new_state_keyboard &= (unsigned int)(~(1<<BIT_REWRITE));
-          }
-          else
-          {
-            if (new_state_keyboard == (1<<BIT_KEY_ENTER))
-            {
-              //Натиснута кнопка ENTER
-              if (new_password == current_settings.password)
-              {
-                //Пароль зійшовся
-                //Переходимо у попереднє меню у режимі редагування
-                current_ekran.current_level = previous_level_in_current_level_menu[current_ekran.current_level];
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 1;
-                current_ekran.position_cursor_x = previous_state_cursor.position_cursor_x;
-                current_ekran.cursor_on = previous_state_cursor.cursor_on;
-                current_ekran.cursor_blinking_on = previous_state_cursor.cursor_blinking_on;
-              }
-              else
-              {
-                //Пароль не зійшовся
-                //Переходимо у попереднє меню і анульовуємо процес редагування
-                current_ekran.current_level = previous_level_in_current_level_menu[current_ekran.current_level];
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-                current_ekran.position_cursor_x = previous_state_cursor.position_cursor_x;
-                current_ekran.cursor_on = previous_state_cursor.cursor_on;
-                current_ekran.cursor_blinking_on = previous_state_cursor.cursor_blinking_on;
-              }
-
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ENTER));
-              //Виставляємо біт обновлення екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_ESC))
-            {
-              //Натиснута кнопка ESC
-
-              //Переходимо у попереднє меню і анульовуємо процес редагування
-              current_ekran.current_level = previous_level_in_current_level_menu[current_ekran.current_level];
-              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-              current_ekran.edition = 0;
-              current_ekran.position_cursor_x = previous_state_cursor.position_cursor_x;
-              current_ekran.cursor_on = previous_state_cursor.cursor_on;
-              current_ekran.cursor_blinking_on = previous_state_cursor.cursor_blinking_on;
-              
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ESC));
-              //Виставляємо біт обновлення екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_UP))
-            {
-              //Натиснута кнопка UP
-              new_password = new_password*10 + 1;
-              number_symbols++;
-              current_ekran.position_cursor_x++;
-              
-              //Формуємо екран рівня password
-              make_ekran_level_password(new_password, 1);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_UP));
-              //Перевіряємо чи не натиснуто максимальну кількість символів для паролю (4) і якщо це так, то автоматично приймаємо його
-              if (number_symbols >= 4) new_state_keyboard |= (1<<BIT_KEY_ENTER);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_DOWN))
-            {
-              //Натиснута кнопка DOWN
-              new_password = new_password*10 + 3;
-              number_symbols++;
-              current_ekran.position_cursor_x++;
-
-              //Формуємо екран рівня password
-              make_ekran_level_password(new_password, 1);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_DOWN));
-              //Перевіряємо чи не натиснуто максимальну кількість символів для паролю (4) і якщо це так, то автоматично приймаємо його
-              if (number_symbols >= 4) new_state_keyboard |= (1<<BIT_KEY_ENTER);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_RIGHT))
-            {
-              //Натиснута кнопка RIGHT
-              new_password = new_password*10 + 2;
-              number_symbols++;
-              current_ekran.position_cursor_x++;
-
-              //Формуємо екран рівня password
-              make_ekran_level_password(new_password, 1);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_RIGHT));
-              //Перевіряємо чи не натиснуто максимальну кількість символів для паролю (4) і якщо це так, то автоматично приймаємо його
-              if (number_symbols >= 4) new_state_keyboard |= (1<<BIT_KEY_ENTER);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_LEFT))
-            {
-              //Натиснута кнопка LEFT
-              new_password = new_password*10 + 4;
-              number_symbols++;
-              current_ekran.position_cursor_x++;
-
-              //Формуємо екран рівня password
-              make_ekran_level_password(new_password, 1);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_LEFT));
-              //Перевіряємо чи не натиснуто максимальну кількість символів для паролю (4) і якщо це так, то автоматично приймаємо його
-              if (number_symbols >= 4) new_state_keyboard |= (1<<BIT_KEY_ENTER);
-            }
-            else
-            {
-              //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
-              unsigned int temp_data = new_state_keyboard;
-              new_state_keyboard &= ~temp_data;
-            }
-          }
-          
-        }
-        break;
-      }
-/******************************************************************************************************************************************/ 
 
 /******************************************************************************************************************************************/ 
     case EKRAN_LEVEL_SET_NEW_PASSWORD:
@@ -202,7 +51,7 @@ void main_manu_function(void)
               if (number_symbols_new_setting_password == 0) number_symbols_new_setting_password = 1; //Це випадок коли current_settings.password = 0, тоді кількість символів рівна 0, бо число є "0"
             
               //Формуємо екран рівня password
-              make_ekran_level_password(new_setting_password, 1);
+//              make_ekran_password(new_setting_password, 1);
               //Очищаємо біт обновлення екрану
               new_state_keyboard &= (unsigned int)(~(1<<BIT_REWRITE));
             }
@@ -285,7 +134,7 @@ void main_manu_function(void)
               }
               else if (current_ekran.edition == 3)
               {
-                const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
+                const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
                 {
                   " Неопред.ошибка ",
                   " Невизн.помилка ",
@@ -351,7 +200,7 @@ void main_manu_function(void)
               else
                 new_setting_password = (vyshchi_rozrjady*vaga*10) + edit_rozrjad*vaga + ostacha;
               //Формуємо екран рівня password
-              make_ekran_level_password(new_setting_password, 1);
+//              make_ekran_password(new_setting_password, 1);
               //Очистити сигналізацію, що натиснута кнопка 
               new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_UP));
             }
@@ -407,7 +256,7 @@ void main_manu_function(void)
                 new_setting_password = (vyshchi_rozrjady*vaga*10) + edit_rozrjad*vaga + ostacha;
 
               //Формуємо екран рівня password
-              make_ekran_level_password(new_setting_password, 1);
+//              make_ekran_password(new_setting_password, 1);
               //Очистити сигналізацію, що натиснута кнопка 
               new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_DOWN));
             }
@@ -425,7 +274,7 @@ void main_manu_function(void)
               }
 
               //Формуємо екран рівня password
-              make_ekran_level_password(new_setting_password, 1);
+//              make_ekran_password(new_setting_password, 1);
               //Очистити сигналізацію, що натиснута кнопка 
               new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_RIGHT));
             }
@@ -438,7 +287,7 @@ void main_manu_function(void)
               }
 
               //Формуємо екран рівня password
-              make_ekran_level_password(new_setting_password, 1);
+//              make_ekran_password(new_setting_password, 1);
               //Очистити сигналізацію, що натиснута кнопка 
               new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_LEFT));
             }
@@ -455,591 +304,6 @@ void main_manu_function(void)
       }
 /******************************************************************************************************************************************/ 
       
-/******************************************************************************************************************************************/      
-    case EKRAN_MAIN:
-      {
-        //Очищаємо всі біти краім упралінських
-        new_state_keyboard &= (1<<BIT_KEY_ENTER)|(1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN)|(1<<BIT_REWRITE);
-        //Дальше виконуємо дії, якщо натиснута кнопка на яку треба реагівати, або стоїть команда обновити екран
-        if (new_state_keyboard !=0)
-        {
-          //Пріоритет стоїть на обновлені екрану
-          if((new_state_keyboard & (1<<BIT_REWRITE)) !=0)
-          {
-            do
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_EKRAN_MAIN) current_ekran.index_position = 0;
-              while (
-                     (
-                      (current_ekran.index_position == INDEX_ML1_MEASURMENTS) || 
-                      (current_ekran.index_position == INDEX_ML1_CTRL_PHASE )
-                     )
-                     &&
-                     ((current_settings.configuration & (1<<CTRL_PHASE_BIT_CONFIGURATION)) == 0)
-                    )
-              {
-                current_ekran.index_position++;
-              }
-            }
-            while (current_ekran.index_position >= MAX_ROW_FOR_EKRAN_MAIN);
-            position_in_current_level_menu[EKRAN_MAIN] = current_ekran.index_position;
-            
-            //Формуємо екран рівня головного меню
-            make_ekran_main();
-            //Очищаємо біт обновлення екрану
-            new_state_keyboard &= (unsigned int)(~(1<<BIT_REWRITE));
-          }
-          else
-          {
-            if (new_state_keyboard == (1<<BIT_KEY_ENTER))
-            {
-              int temp_current_level = current_ekran.current_level;
-              
-              //Натиснута кнопка ENTER
-              if(current_ekran.index_position == INDEX_ML1_TIME)
-              {
-                //Запам'ятовуємо поперердній екран
-                //Переходимо на меню часу-калібровки
-                time_rewrite = 0;
-                current_ekran.current_level = EKRAN_TIME;
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-                current_ekran.cursor_on = 0;
-                current_ekran.cursor_blinking_on = 0;
-                
-                /**************************************************/
-                //Курсор має бути на першому символі рядка з даними
-                /**************************************************/
-                if(current_ekran.index_position == ROW_Y_)
-                {
-                  current_ekran.position_cursor_x = COL_DY1;
-                }
-                else if(current_ekran.index_position == ROW_T_)
-                {
-                  current_ekran.index_position = ROW_Y_;
-                  current_ekran.position_cursor_x = COL_DY1;
-                }
-                else if(current_ekran.index_position == ROW_N_)
-                {
-                  current_ekran.index_position = ROW_K_;
-                  current_ekran.position_cursor_x = COL_SK1;
-                }
-                else if(current_ekran.index_position == ROW_K_)
-                {
-                  current_ekran.position_cursor_x = COL_SK1;
-                }
-                /**************************************************/
-              }
-              else if(current_ekran.index_position == INDEX_ML1_MEASURMENTS)
-              {
-                //Переходимо на меню вибору відображення вимірювань струмів
-                current_ekran.current_level = EKRAN_MEASURMENT_CURRENT;
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-                current_ekran.cursor_on = 1;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              else if(current_ekran.index_position == INDEX_ML1_INPUTS_OUTPUTS)
-              {
-                //Переходимо на меню вибору відображення списку вибору входів-виходів для відображення їх миттєвого стану
-                current_ekran.current_level = EKRAN_LIST_INPUTS_OUTPUTS;
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-              }
-              else if(current_ekran.index_position == INDEX_ML1_REGISTRATORS)
-              {
-                //Переходимо на меню вибору відображення списку реєстраторів
-                current_ekran.current_level = EKRAN_LIST_REGISTRATORS;
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-              }
-              else if(current_ekran.index_position == INDEX_ML1_LANGUAGE)
-              {
-                //Переходимо на меню вибору мови відображення меню
-                current_ekran.current_level = EKRAN_VIEW_SETTING_LANGUAGE;
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-              }
-              else if(current_ekran.index_position == INDEX_ML1_SETTINGS)
-              {
-                //Переходимо на меню настройок
-                current_ekran.current_level = EKRAN_CHOSE_SETTINGS;
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-                current_ekran.cursor_on = 1;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              else if(current_ekran.index_position == INDEX_ML1_DIAGNOSTYKA)
-              {
-                //Переходимо на меню настройок
-                current_ekran.current_level = EKRAN_DIAGNOSTYKA;
-                //Для того, щоб при першому входженні завжди список починався із першої помилки обнуляємо цю позицію
-                position_in_current_level_menu[current_ekran.current_level] = 0;
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-              }
-              else if(current_ekran.index_position == INDEX_ML1_KONF)
-              {
-                //Переходимо на меню конфігурації
-                current_ekran.current_level = EKRAN_COFIGURATION;
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-                current_ekran.cursor_on = 1;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              else if(
-                      (current_ekran.index_position == INDEX_ML1_CTRL_PHASE) 
-                     )
-              {
-                //Переходимо на меню Перевірки фазування
-                if(current_ekran.index_position == INDEX_ML1_CTRL_PHASE) current_ekran.current_level = EKRAN_CHOOSE_SETTINGS_CTRL_PHASE;
-                
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-                current_ekran.cursor_on = 1;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              //У разі, якщо текучий екран змінився, то запам'ятовуємо екран в який требе буде повернутися
-              if (temp_current_level != current_ekran.current_level) 
-                previous_level_in_current_level_menu[current_ekran.current_level] = temp_current_level;
-
-              //Виставляємо команду на обновлекння нового екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-              
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ENTER));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_UP))
-            {
-              //Натиснута кнопка UP
-              current_ekran.index_position--;
-              do
-              {
-                if(current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_EKRAN_MAIN - 1;
-
-                while (
-                       (
-                        (current_ekran.index_position == INDEX_ML1_MEASURMENTS) || 
-                        (current_ekran.index_position == INDEX_ML1_CTRL_PHASE )
-                       )
-                       &&
-                       ((current_settings.configuration & (1<<CTRL_PHASE_BIT_CONFIGURATION)) == 0)
-                      )
-                {
-                  current_ekran.index_position--;
-                }
-              }
-              while (current_ekran.index_position < 0);
-              position_in_current_level_menu[EKRAN_MAIN] = current_ekran.index_position;
-              
-              //Формуємо екран рівня головного меню
-              make_ekran_main();
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_UP));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_DOWN))
-            {
-              //Натиснута кнопка DOWN
-              //current_ekran.index_position вказує номер у повному списку полів
-              current_ekran.index_position++;
-              do
-              {
-                if(current_ekran.index_position >= MAX_ROW_FOR_EKRAN_MAIN) current_ekran.index_position = 0;
- 
-                while (
-                       (
-                        (current_ekran.index_position == INDEX_ML1_MEASURMENTS) || 
-                        (current_ekran.index_position == INDEX_ML1_CTRL_PHASE )
-                       )
-                       &&
-                       ((current_settings.configuration & (1<<CTRL_PHASE_BIT_CONFIGURATION)) == 0)
-                      )
-                {
-                  current_ekran.index_position++;
-                }
-              }
-              while (current_ekran.index_position >= MAX_ROW_FOR_EKRAN_MAIN);
-              position_in_current_level_menu[EKRAN_MAIN] = current_ekran.index_position;
-              
-              //Формуємо екран рівня головного меню
-              make_ekran_main();
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_DOWN));
-            }
-            else
-            {
-              //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
-              unsigned int temp_data = new_state_keyboard;
-              new_state_keyboard &= ~temp_data;
-            }
-          }
-          
-        }
-        break;
-      }
-/******************************************************************************************************************************************/ 
-
-/******************************************************************************************************************************************/ 
-    case EKRAN_TIME:
-      {
-        //Очищаємо всі біти краім упралінський
-        unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER)| (1<<BIT_KEY_ESC)|(1<<BIT_REWRITE);
-        
-        if (current_ekran.edition == 1)
-          maska_keyboard_bits |= (1<<BIT_KEY_RIGHT) | (1<<BIT_KEY_LEFT) | (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
-        else if (current_ekran.edition == 0)
-          maska_keyboard_bits |= (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
-        
-        new_state_keyboard &= maska_keyboard_bits;
-        //Дальше виконуємо дії, якщо натиснута кнопка на яку треба реагівати, або стоїть команда обновити екран
-        if (new_state_keyboard !=0)
-        {
-          //Пріоритет стоїть на обновлені екрану
-          if((new_state_keyboard & (1<<BIT_REWRITE)) !=0)
-          {
-            if(current_ekran.index_position >= MAX_ROW_FOR_EKRAN_TIME) current_ekran.index_position = 0;
-            /**************************************************/
-            //Курсор має бути на першому символі рядка з даними
-            /**************************************************/
-            if(current_ekran.index_position == ROW_Y_)
-            {
-              current_ekran.position_cursor_x = COL_DY1;
-            }
-            else if(current_ekran.index_position == ROW_T_)
-            {
-              current_ekran.index_position = ROW_Y_;
-              current_ekran.position_cursor_x = COL_DY1;
-            }
-            else if(current_ekran.index_position == ROW_N_)
-            {
-              current_ekran.index_position = ROW_K_;
-              current_ekran.position_cursor_x = COL_SK1;
-            }
-            else if(current_ekran.index_position == ROW_K_)
-            {
-              current_ekran.position_cursor_x = COL_SK1;
-            }
-            /**************************************************/
-            position_in_current_level_menu[EKRAN_TIME] = current_ekran.index_position;
-
-            if (current_ekran.edition == 0)
-            {
-              current_ekran.cursor_on = 0;
-              current_ekran.cursor_blinking_on = 0;
-            }
-
-            //Формуємо екран години-часу
-            make_ekran_time();
-            //Очищаємо біт обновлення екрану
-            new_state_keyboard &= (unsigned int)(~(1<<BIT_REWRITE));
-          }
-          else
-          {
-            if (new_state_keyboard == (1<<BIT_KEY_ENTER))
-            {
-              //Натиснута кнопка ENTER
-              if(current_ekran.edition == 0)
-              {
-                //Копіюємо текчий масив часу у масив для редагування
-                for(unsigned int i=0; i < 7; i++) time_edit[i] = time[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
-                calibration_edit = calibration;
-                  
-                //Підготовка до режиму редагування - включаємо мигаючий курсор
-                current_ekran.cursor_on = 1;
-                current_ekran.cursor_blinking_on = 1;
-                if (current_settings.password != 0)
-                {
-                  //Переходимо на меню запиту паролю
-                  current_ekran.current_level = EKRAN_LEVEL_PASSWORD;
-                  previous_level_in_current_level_menu[current_ekran.current_level] = EKRAN_TIME;
-                  current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                }
-                else
-                {
-                  //Переходимо у режим редагування
-                  current_ekran.edition = 1;
-                }
-              }
-              else if (current_ekran.edition == 1)
-              {
-                //Перевіряємо чи якісь зміни відбулися
-                unsigned int found_changes = 0, i = 0;
-                while ((i < 7) && (found_changes == 0))
-                {
-                  if (time[i] != time_edit[i]) found_changes = 1; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
-                  i++;
-                }
-                if (found_changes == 0)
-                {
-                  if (calibration != calibration_edit) found_changes = 1;/*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
-                }
-                
-                //Виходимо з режиму редагування
-                if (found_changes == 0) current_ekran.edition = 0;
-                else current_ekran.edition = 2;
-
-                current_ekran.cursor_on = 0;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              else if (current_ekran.edition == 2)
-              {
-                //Перевіряємо достовірність даних
-                if (check_data_for_data_time_menu() ==1)
-                {
-                  //Дані достовірні
-                  //Копіюємо масив для редагування часу у текчий масив
-                  for(unsigned int i=0; i < 7; i++) time[i] = time_edit[i];/*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
-                  calibration = calibration_edit;/*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
-                  current_ekran.edition = 0;
-                  //Виставляємо повідомлення запису часу в RTC
-                  //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
-                  _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-                  _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
-                }
-                else
-                {
-                  //Дані недостовірні - повідомляємо про це
-                  current_ekran.edition = 3;
-                }
-
-                //Виходимо з режиму редагування
-                current_ekran.cursor_on = 0;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              else if (current_ekran.edition == 3)
-              {
-                //Вихід у режимі редагування
-                current_ekran.edition = 0;
-                current_ekran.cursor_on = 0;
-                current_ekran.cursor_blinking_on = 0;
-              }
-
-              
-              if(current_ekran.edition == 2) make_ekran_ask_rewrite();
-              else if(current_ekran.edition == 3) 
-              {
-                const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
-                {
-                  " Неверные данные",
-                  "  Невірні дані  ",
-                  "   False data   ",
-                  " Неверные данные"
-                };
-                make_ekran_about_error(information_about_error);
-              }
-              else
-                //Виставляємо біт обновлення екрану
-                new_state_keyboard |= (1<<BIT_REWRITE);
-              
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ENTER));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_ESC))
-            {
-              //Натиснута кнопка ESC
-
-              if(current_ekran.edition == 0)
-              {
-                //Вихід у режимі спостерігання
-                //Переходимо у попереднє меню
-                current_ekran.current_level = previous_level_in_current_level_menu[current_ekran.current_level];
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-              }
-              else
-              {
-                //Вихід у режимі редагування без введення змін
-                current_ekran.edition = 0;
-                current_ekran.cursor_on = 0;
-                current_ekran.cursor_blinking_on = 0;
-              }
-
-              //Виставляємо команду на обновлекння нового екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ESC));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_UP))
-            {
-              //Натиснута кнопка UP
-              if(current_ekran.edition == 0)
-              {
-                //Переміщення у режимі спостерігання
-                current_ekran.index_position -=MAX_ROW_LCD;
-                if(current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_EKRAN_TIME - MAX_ROW_LCD;
-                /**************************************************/
-                //Курсор має бути на першому символі рядка з даними
-                /**************************************************/
-                if(current_ekran.index_position == ROW_Y_)
-                {
-                  current_ekran.position_cursor_x = COL_DY1;
-                }
-                else if(current_ekran.index_position == ROW_T_)
-                {
-                  current_ekran.index_position = ROW_Y_;
-                  current_ekran.position_cursor_x = COL_DY1;
-                }
-                else if(current_ekran.index_position == ROW_N_)
-                {
-                  current_ekran.index_position = ROW_K_;
-                  current_ekran.position_cursor_x = COL_SK1;
-                }
-                else if(current_ekran.index_position == ROW_K_)
-                {
-                  current_ekran.position_cursor_x = COL_SK1;
-                }
-                /**************************************************/
-                position_in_current_level_menu[EKRAN_TIME] = current_ekran.index_position;
-              }
-              else
-              {
-                //Редагування числа
-                edit_time(1);
-              }
-
-              //Формуємо екран рівня 2
-              make_ekran_time();
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_UP));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_DOWN))
-            {
-              //Натиснута кнопка DOWN
-              if(current_ekran.edition == 0)
-              {
-                //Переміщення у режимі спостерігання
-                current_ekran.index_position +=MAX_ROW_LCD;
-                if(current_ekran.index_position >= MAX_ROW_FOR_EKRAN_TIME) current_ekran.index_position = 0;
-                /**************************************************/
-                //Курсор має бути на першому символі рядка з даними
-                /**************************************************/
-                if(current_ekran.index_position == ROW_Y_)
-                {
-                  current_ekran.position_cursor_x = COL_DY1;
-                }
-                else if(current_ekran.index_position == ROW_T_)
-                {
-                  current_ekran.index_position = ROW_Y_;
-                  current_ekran.position_cursor_x = COL_DY1;
-                }
-                else if(current_ekran.index_position == ROW_N_)
-                {
-                  current_ekran.index_position = ROW_K_;
-                  current_ekran.position_cursor_x = COL_SK1;
-                }
-                else if(current_ekran.index_position == ROW_K_)
-                {
-                  current_ekran.position_cursor_x = COL_SK1;
-                }
-                /**************************************************/
-                position_in_current_level_menu[EKRAN_TIME] = current_ekran.index_position;
-              }
-              else
-              {
-                //Редагування числа
-                edit_time(0);
-              }
-
-              //Формуємо екран години-часу
-              make_ekran_time();
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_DOWN));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_RIGHT))
-            {
-              if(current_ekran.index_position == ROW_Y_)
-              {
-                if(current_ekran.position_cursor_x == COL_DY1) current_ekran.position_cursor_x = COL_DY2;
-                else if(current_ekran.position_cursor_x == COL_DY2) current_ekran.position_cursor_x = COL_MY1;
-                else if(current_ekran.position_cursor_x == COL_MY1) current_ekran.position_cursor_x = COL_MY2;
-                else if(current_ekran.position_cursor_x == COL_MY2) current_ekran.position_cursor_x = COL_SY1;
-                else if(current_ekran.position_cursor_x == COL_SY1) current_ekran.position_cursor_x = COL_SY2;
-                else if(current_ekran.position_cursor_x == COL_SY2)
-                {
-                  current_ekran.index_position = ROW_T_;
-                  current_ekran.position_cursor_x = COL_HT1;
-                }
-              }
-              else if(current_ekran.index_position == ROW_T_)
-              {
-                if(current_ekran.position_cursor_x == COL_HT1) current_ekran.position_cursor_x = COL_HT2;
-                else if(current_ekran.position_cursor_x == COL_HT2) current_ekran.position_cursor_x = COL_MT1;
-                else if(current_ekran.position_cursor_x == COL_MT1) current_ekran.position_cursor_x = COL_MT2;
-                else if(current_ekran.position_cursor_x == COL_MT2) current_ekran.position_cursor_x = COL_ST1;
-                else if(current_ekran.position_cursor_x == COL_ST1) current_ekran.position_cursor_x = COL_ST2;
-                else if(current_ekran.position_cursor_x == COL_ST2)
-                {
-                  current_ekran.index_position = ROW_K_;
-                  current_ekran.position_cursor_x = COL_SK1;
-                }
-              }
-              else if(current_ekran.index_position == ROW_K_)
-              {
-                if(current_ekran.position_cursor_x == COL_SK1) current_ekran.position_cursor_x = COL_VK1;
-                else if(current_ekran.position_cursor_x == COL_VK1) current_ekran.position_cursor_x = COL_VK2;
-                else if(current_ekran.position_cursor_x == COL_VK2)
-                {
-                  current_ekran.index_position = ROW_Y_;
-                  current_ekran.position_cursor_x = COL_DY1;
-                }
-              }
-              //Формуємо екран години-часу
-              make_ekran_time();
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_RIGHT));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_LEFT))
-            {
-              if(current_ekran.index_position == ROW_Y_)
-              {
-                if(current_ekran.position_cursor_x == COL_SY2) current_ekran.position_cursor_x = COL_SY1;
-                else if(current_ekran.position_cursor_x == COL_SY1) current_ekran.position_cursor_x = COL_MY2;
-                else if(current_ekran.position_cursor_x == COL_MY2) current_ekran.position_cursor_x = COL_MY1;
-                else if(current_ekran.position_cursor_x == COL_MY1) current_ekran.position_cursor_x = COL_DY2;
-                else if(current_ekran.position_cursor_x == COL_DY2) current_ekran.position_cursor_x = COL_DY1;
-                else if(current_ekran.position_cursor_x == COL_DY1)
-                {
-                  current_ekran.index_position = ROW_K_;
-                  current_ekran.position_cursor_x = COL_VK2;
-                }
-              }
-              else if(current_ekran.index_position == ROW_T_)
-              {
-                if(current_ekran.position_cursor_x == COL_ST2) current_ekran.position_cursor_x = COL_ST1;
-                else if(current_ekran.position_cursor_x == COL_ST1) current_ekran.position_cursor_x = COL_MT2;
-                else if(current_ekran.position_cursor_x == COL_MT2) current_ekran.position_cursor_x = COL_MT1;
-                else if(current_ekran.position_cursor_x == COL_MT1) current_ekran.position_cursor_x = COL_HT2;
-                else if(current_ekran.position_cursor_x == COL_HT2) current_ekran.position_cursor_x = COL_HT1;
-                else if(current_ekran.position_cursor_x == COL_HT1)
-                {
-                  current_ekran.index_position = ROW_Y_;
-                  current_ekran.position_cursor_x = COL_SY2;
-                }
-              }
-              else if(current_ekran.index_position == ROW_K_)
-              {
-                if(current_ekran.position_cursor_x == COL_VK2) current_ekran.position_cursor_x = COL_VK1;
-                else if(current_ekran.position_cursor_x == COL_VK1) current_ekran.position_cursor_x = COL_SK1;
-                else if(current_ekran.position_cursor_x == COL_SK1)
-                {
-                  current_ekran.index_position = ROW_T_;
-                  current_ekran.position_cursor_x = COL_ST2;
-                }
-              }
-              //Формуємо екран години-часу
-              make_ekran_time();
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_LEFT));
-            }
-            else
-            {
-              //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
-              unsigned int temp_data = new_state_keyboard;
-              new_state_keyboard &= ~temp_data;
-            }
-          }
-        }
-        break;
-      }
-/******************************************************************************************************************************************/ 
 
 /******************************************************************************************************************************************/      
     case EKRAN_COFIGURATION:
@@ -4248,14 +3512,14 @@ void main_manu_function(void)
               if(current_ekran.edition == 2) make_ekran_ask_rewrite();
               else if(current_ekran.edition == 3)
               {
-                const unsigned char information_about_error1[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
+                const unsigned char information_about_error1[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
                 {
                   " Вых.за диапазон",
                   " Вих.за діапазон",
                   "  Out of Limits ",
                   "Вых.за диапазон "
                 };
-                const unsigned char information_about_error2[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
+                const unsigned char information_about_error2[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
                 {
                   " Опер.вр.недост.",
                   "Опер.тимч.недост",
@@ -4263,7 +3527,7 @@ void main_manu_function(void)
                   " Опер.вр.недост."
                 };
 
-                const unsigned char (*point_to_information_about_error)[MAX_COL_LCD] = information_about_error1;
+                const unsigned char (*point_to_information_about_error)[MAX_COL_LCD + 1] = information_about_error1;
                 if(current_ekran.current_level == EKRAN_TIMEOUT_ANALOG_REGISTRATOR)
                 {
                   if (state_ar_record != STATE_AR_NO_RECORD)
@@ -6758,7 +6022,7 @@ void main_manu_function(void)
               if(current_ekran.edition == 2) make_ekran_ask_rewrite();
               else if(current_ekran.edition == 3)
               {
-                const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
+                const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
                 {
                   "Прев.макс.кол.ф.",
                   "Переб.макс.кіл.ф",
@@ -8114,142 +7378,6 @@ void main_manu_function(void)
 }
 /*****************************************************/
 
-
-/*****************************************************/
-//Збільшення або зменшення числа при натисканні кнопки
-/*
-  Вхідні параменти
-  label_value - вказівник на змінюване  число
-  inc_dec 
-    0 - зменшити на одиницю
-    1 - збільшити на одиницю
-*/
-/*****************************************************/
-void inc_or_dec_value(unsigned int *label_value, unsigned int inc_dec)
-{
-  int temp_value = *label_value;
-  
-  if(inc_dec == 0) temp_value--;
-  else if(inc_dec == 1) temp_value++;
-  
-  if(temp_value > 9) temp_value = 0;
-  else if(temp_value < 0) temp_value = 9;
-  
-  *label_value = temp_value;
-}
-/*****************************************************/
-
-/*****************************************************/
-//Робимо повідомлення про те чи треба щоб зміни набули сили
-/*****************************************************/
-void make_ekran_ask_rewrite(void)
-{
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD] = 
-  {
-    {
-     "Ввести изменения",
-     "Да-ENTER Нет-ESC"
-    },
-    {
-     "  Ввести зміни  ",
-     "Так-ENTER Ні-ESC"
-    },
-    {
-     " Enter changes  ",
-     "Yes-ENTER No-ESC"
-    },
-    {
-     "Ввести изменения",
-     "Да-ENTER Нет-ESC"
-    }
-  };
-
-  int index_language;
-  
-  if (current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
-    index_language = index_language_in_array(edition_settings.language);
-  else
-    index_language = index_language_in_array(current_settings.language);
-
-  //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][i][j];
-  }
-  
-  //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
-}
-/*****************************************************/
-
-/*****************************************************/
-//Робимо повідомлення підтвердження виконання команди
-/*****************************************************/
-void make_ekran_about_activation_command(unsigned int index, unsigned char information[][MAX_NAMBER_LANGUAGE][MAX_COL_LCD])
-{
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
-  {
-    "Да-ENTER Нет-ESC",
-    "Так-ENTER Ні-ESC",
-    "Yes-ENTER No-ESC",
-    "Да-ENTER Нет-ESC"
-  };
-  int index_language = index_language_in_array(current_settings.language);
-
-  //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    if (i == 0)
-    {
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information[index][index_language][j];
-    }
-    else
-    {
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][j];
-    }
-  }
-  
-  //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
-}
-/*****************************************************/
-
-/*****************************************************/
-//Формування вікна про помилку
-/*****************************************************/
-void make_ekran_about_error(const unsigned char information[][MAX_COL_LCD])
-{
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
-  {
-    " Выход Enter/Esc",
-    " Вихід Enter/Esc",
-    " Exit Enter/Esc ",
-    " Выход Enter/Esc"
-  };
-  int index_language;
-
-  if (current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
-    index_language = index_language_in_array(edition_settings.language);
-  else
-    index_language = index_language_in_array(current_settings.language);
-  
-  //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    if (i == 0)
-    {
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][j];
-    }
-    else
-    {
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][j];
-    }
-  }
-  
-  //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
-}
-/*****************************************************/
 
 /*****************************************************/
 //Редагування величин вводимих значень

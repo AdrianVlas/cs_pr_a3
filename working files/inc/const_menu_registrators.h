@@ -31,7 +31,7 @@
 #define INDEX_ML_TITLE_PR_ERR_DATA_AND_TIME       0
 #define INDEX_ML_TITLE_PR_ERR_CHANGES_DIAGNOSTICS 1
 
-#define ROW_R_Y_                                  ROW_Y_
+#define ROW_R_Y_                                  INDEX_TIME_CALIBRATION_M2_DATE
 #define COL_DY1_R                                 COL_DY1
 #define COL_DY2_R                                 COL_DY2
 
@@ -41,7 +41,7 @@
 #define COL_SY1_R                                 COL_SY1
 #define COL_SY2_R                                 COL_SY2
 
-#define ROW_R_T_                                  ROW_T_
+#define ROW_R_T_                                  INDEX_TIME_CALIBRATION_M2_TIME
 #define COL_HT1_R                                 3
 #define COL_HT2_R                                 4
 

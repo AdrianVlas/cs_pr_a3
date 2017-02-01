@@ -1,11 +1,58 @@
 #include "header.h"
 
 /*****************************************************/
+/*
+Функція переміщення по меню
+
+Вхідні параметри
+0 - перемалювати меню
+2 - рухатися вверх
+1 - рухатися вниз
+*/
+/*****************************************************/
+void move_into_time(unsigned int action)
+{
+  if (action <= 1)
+  {
+    if (action == 1) current_state_menu2.index_position += MAX_ROW_LCD;
+    if(current_state_menu2.index_position >= MAX_ROW_TIME_CALIBRATION_M2) current_state_menu2.index_position = 0;
+  }
+  else if (action == 2)
+  {
+    current_state_menu2.index_position -= MAX_ROW_LCD;
+    if(current_state_menu2.index_position < 0) current_state_menu2.index_position = MAX_ROW_TIME_CALIBRATION_M2 - MAX_ROW_LCD;
+  }
+  
+  /**************************************************/
+  //Курсор має бути на першому символі рядка з даними
+  /**************************************************/
+  if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_TIME)
+  {
+    current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_DATE;
+  }
+  else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_NAME_CALIBRATION)
+  {
+    current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION;
+  }
+
+  if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
+  {
+    current_state_menu2.position_cursor_x = COL_DY1;
+  }
+  else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION)
+  {
+    current_state_menu2.position_cursor_x = COL_SK1;
+  }
+  /**************************************************/
+}
+/*****************************************************/
+
+/*****************************************************/
 //Формуємо екран година-час
 /*****************************************************/
 void make_ekran_time(void)
 {
-  unsigned char name_string[MAX_ROW_FOR_EKRAN_TIME][MAX_COL_LCD] = 
+  uint8_t name_string[MAX_ROW_TIME_CALIBRATION_M2][MAX_COL_LCD + 1] = 
   {
     "   XX-XX-20XX   ",
     "    XX:XX:XX    ",
@@ -13,7 +60,7 @@ void make_ekran_time(void)
     "      X XX      "
   };
   
-  const unsigned char calibrating[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
+  const uint8_t calibrating[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
   {
     "   Калибровка   ",
     "  Калібрування  ",
@@ -21,252 +68,375 @@ void make_ekran_time(void)
     "   Калибровка   "
   };
   
-  int index_language = index_language_in_array(current_settings.language);
-  for(int index_1 = 0; index_1 < MAX_COL_LCD; index_1++)
-    name_string[2][index_1] = calibrating[index_language][index_1];
+  int index_language = index_language_in_array(settings_fix.language);
+  for(size_t index_1 = 0; index_1 < (MAX_COL_LCD + 1); index_1++)
+    name_string[INDEX_TIME_CALIBRATION_M2_NAME_CALIBRATION][index_1] = calibrating[index_language][index_1];
   
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran;
   
   /******************************************/
   //Заповнюємо поля відповідними цифрами
   /******************************************/
-  /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і make_ekran_time() викликаються з найнижчого рівня*/ 
-  if (current_ekran.edition == 0)
-  {
-    //День
-    name_string[ROW_Y_][COL_DY1] = (time[4] >>  4) + 0x30;
-    name_string[ROW_Y_][COL_DY2] = (time[4] & 0xf) + 0x30;
+  /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function_ver2() і make_ekran_time() викликаються з найнижчого рівня*/ 
+  uint8_t *time_tmp = (current_state_menu2.edition <= 1) ? time : time_edit;
+  uint8_t *calibration_tmp = (current_state_menu2.edition <= 1) ? &calibration : &calibration_edit;
+  //День
+  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_DY1] = (time_tmp[4] >>  4) + 0x30;
+  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_DY2] = (time_tmp[4] & 0xf) + 0x30;
 
-    //Місяць
-    name_string[ROW_Y_][COL_MY1] = (time[5] >>  4) + 0x30;
-    name_string[ROW_Y_][COL_MY2] = (time[5] & 0xf) + 0x30;
+  //Місяць
+  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_MY1] = (time_tmp[5] >>  4) + 0x30;
+  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_MY2] = (time_tmp[5] & 0xf) + 0x30;
 
-    //Рік
-    name_string[ROW_Y_][COL_SY1] = (time[6] >>  4) + 0x30;
-    name_string[ROW_Y_][COL_SY2] = (time[6] & 0xf) + 0x30;
+  //Рік
+  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_SY1] = (time_tmp[6] >>  4) + 0x30;
+  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_SY2] = (time_tmp[6] & 0xf) + 0x30;
 
-    //Година
-    name_string[ROW_T_][COL_HT1] = (time[3] >>  4) + 0x30;
-    name_string[ROW_T_][COL_HT2] = (time[3] & 0xf) + 0x30;
+  //Година
+  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_HT1] = (time_tmp[3] >>  4) + 0x30;
+  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_HT2] = (time_tmp[3] & 0xf) + 0x30;
 
-    //Хвилини
-    name_string[ROW_T_][COL_MT1] = (time[2] >>  4) + 0x30;
-    name_string[ROW_T_][COL_MT2] = (time[2] & 0xf) + 0x30;
+  //Хвилини
+  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_MT1] = (time_tmp[2] >>  4) + 0x30;
+  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_MT2] = (time_tmp[2] & 0xf) + 0x30;
 
-    //Секунди
-    name_string[ROW_T_][COL_ST1] = (time[1] >>  4) + 0x30;
-    name_string[ROW_T_][COL_ST2] = (time[1] & 0xf) + 0x30;
+  //Секунди
+  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_ST1] = (time_tmp[1] >>  4) + 0x30;
+  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_ST2] = (time_tmp[1] & 0xf) + 0x30;
 
-    //Калібровка
-    if((calibration & (1<<5)) == 0) name_string[ROW_K_][COL_SK1] = '-';
-    else name_string[ROW_K_][COL_SK1] = '+';
-    
-    name_string[ROW_K_][COL_VK2] =((calibration & 0x1f) % 10) + 0x30;
-    name_string[ROW_K_][COL_VK1] =((calibration & 0x1f) / 10) + 0x30;
-  }
-  else
-  {
-    //День
-    name_string[ROW_Y_][COL_DY1] = (time_edit[4] >>  4) + 0x30;
-    name_string[ROW_Y_][COL_DY2] = (time_edit[4] & 0xf) + 0x30;
-
-    //Місяць
-    name_string[ROW_Y_][COL_MY1] = (time_edit[5] >>  4) + 0x30;
-    name_string[ROW_Y_][COL_MY2] = (time_edit[5] & 0xf) + 0x30;
-
-    //Рік
-    name_string[ROW_Y_][COL_SY1] = (time_edit[6] >>  4) + 0x30;
-    name_string[ROW_Y_][COL_SY2] = (time_edit[6] & 0xf) + 0x30;
-
-    //Година
-    name_string[ROW_T_][COL_HT1] = (time_edit[3] >>  4) + 0x30;
-    name_string[ROW_T_][COL_HT2] = (time_edit[3] & 0xf) + 0x30;
-
-    //Хвилини
-    name_string[ROW_T_][COL_MT1] = (time_edit[2] >>  4) + 0x30;
-    name_string[ROW_T_][COL_MT2] = (time_edit[2] & 0xf) + 0x30;
-
-    //Секунди
-    name_string[ROW_T_][COL_ST1] = (time_edit[1] >>  4) + 0x30;
-    name_string[ROW_T_][COL_ST2] = (time_edit[1] & 0xf) + 0x30;
-
-    //Калібровка
-    if((calibration_edit & (1<<5)) == 0) name_string[ROW_K_][COL_SK1] = '-';
-    else name_string[ROW_K_][COL_SK1] = '+';
-
-    name_string[ROW_K_][COL_VK2] =((calibration_edit & 0x1f) % 10) + 0x30;
-    name_string[ROW_K_][COL_VK1] =((calibration_edit & 0x1f) / 10) + 0x30;
-  }
-
+  //Калібровка
+  if((*calibration_tmp & (1<<5)) == 0) name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_SK1] = '-';
+  else name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_SK1] = '+';
+   
+  name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_VK2] =((*calibration_tmp & 0x1f) % 10) + 0x30;
+  name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_VK1] =((*calibration_tmp & 0x1f) / 10) + 0x30;
   /******************************************/
   
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
 
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати
-    if (index_of_ekran < MAX_ROW_FOR_EKRAN_TIME)
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_of_ekran][j];
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-
-    index_of_ekran++;
+    for (size_t j = 0; j < MAX_COL_LCD; j++)
+    {
+      working_ekran[i][j] = (index_in_ekran < MAX_ROW_TIME_CALIBRATION_M2) ? name_string[index_in_ekran][j] : ' ';
+    }
+    index_in_ekran++;
   }
 
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
 /*****************************************************/
-//Редагування часу з системи меню
+/*
+Редагування дати і часу
+
+Вхідні дані
+0 - перед редагуванням
+1 - після редагування
+
+Вихідні дані
+0 - результати виконання операції не має значення
+1 - дані не змінилися
+2 - дані змінилися і у діапазоні
+3 дані змінилися але не у діапазоні
+*/
+/*****************************************************/
+unsigned int edit_time()
+{
+  unsigned int result;
+  switch (current_state_menu2.edition)
+  {
+  case 0:
+  case 1:
+    {
+      //Копіюємо дані для редагування
+      for(size_t i = 0; i < 7; i++) time_edit[i] = time[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
+      calibration_edit = calibration;
+      
+      result = 0;
+      
+      break;
+    }
+  case 2:
+    {
+      //Перевіряємо, чи дані рельно змінилися
+      result = 1;
+      for(size_t i = 0; ((i < 7) && (result == 1)); i++)
+      {
+        if (time[i] != time_edit[i]) result = 2;
+      }
+      if (result == 1)
+      {
+        if (calibration != calibration_edit) result = 2;
+      }
+      
+      if (result == 2)
+      {
+        if (check_data_for_data_time_menu() != 1) result = 3;
+      }
+      break;
+    }
+  case 3:
+    {
+      //Копіюємо дані після редагування
+      for(size_t i = 0; i < 7; i++) time[i] = time_edit[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
+      calibration = calibration_edit;
+      
+      //Виставляємо повідомлення запису часу в RTC
+      //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
+      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+      _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+      
+      result = 0;
+      
+      break;
+    }
+  case 4:
+    {
+      result = 0;
+      break;
+    }
+  }
+  
+  return result;
+}
+/*****************************************************/
+
+/*****************************************************/
+//Зміна часу з системи меню
 /*****************************************************
 Вхідні параметри
   0 - натснуто кнопку вниз
   1 - натиснуто кнопку вверх
+  2 - ліворуч
+  3 - праворуч
 Вхідні параметри
   Немає
 *****************************************************/
-void edit_time(unsigned int action)
+void change_time(unsigned int action)
 {
   //Вводимо число у відповідне поле
-  if(current_ekran.index_position == ROW_Y_)
+  if ((action == 0) || (action == 1))
   {
-    if(current_ekran.position_cursor_x == COL_DY1)
+    if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
     {
-      unsigned int temp_value = time_edit[4] >> 4;
-      inc_or_dec_value(&temp_value, action);
+      if(current_state_menu2.position_cursor_x == COL_DY1)
+      {
+        unsigned int temp_value = time_edit[4] >> 4;
+        inc_or_dec_value(&temp_value, action);
       
-      time_edit[4] &= 0xf;
-      time_edit[4] |= (temp_value << 4);
-    }
-    else if(current_ekran.position_cursor_x == COL_DY2)
-    {
-      unsigned int temp_value = time_edit[4] & 0xf;
-      inc_or_dec_value(&temp_value, action);
+        time_edit[4] &= 0xf;
+        time_edit[4] |= (temp_value << 4);
+      }
+      else if(current_state_menu2.position_cursor_x == COL_DY2)
+      {
+        unsigned int temp_value = time_edit[4] & 0xf;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[4] &= 0xf0;
-      time_edit[4] |= temp_value;
-    }
-    else if(current_ekran.position_cursor_x == COL_MY1)
-    {
-      unsigned int temp_value = time_edit[5] >> 4;
-      inc_or_dec_value(&temp_value, action);
+        time_edit[4] &= 0xf0;
+        time_edit[4] |= temp_value;
+      }
+      else if(current_state_menu2.position_cursor_x == COL_MY1)
+      {
+        unsigned int temp_value = time_edit[5] >> 4;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[5] &= 0xf;
-      time_edit[5] |= (temp_value << 4);
-    }
-    else if(current_ekran.position_cursor_x == COL_MY2)
-    {
-      unsigned int temp_value = time_edit[5] & 0xf;
-      inc_or_dec_value(&temp_value, action);
+        time_edit[5] &= 0xf;
+        time_edit[5] |= (temp_value << 4);
+      }
+      else if(current_state_menu2.position_cursor_x == COL_MY2)
+      {
+        unsigned int temp_value = time_edit[5] & 0xf;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[5] &= 0xf0;
-      time_edit[5] |= temp_value;
-    }
-    else if(current_ekran.position_cursor_x == COL_SY1)
-    {
-      unsigned int temp_value = time_edit[6] >> 4;
-      inc_or_dec_value(&temp_value, action);
+        time_edit[5] &= 0xf0;
+        time_edit[5] |= temp_value;
+      }
+      else if(current_state_menu2.position_cursor_x == COL_SY1)
+      {
+        unsigned int temp_value = time_edit[6] >> 4;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[6] &= 0xf;
-      time_edit[6] |= (temp_value << 4);
-    }
-    else if(current_ekran.position_cursor_x == COL_SY2)
-    {
-      unsigned int temp_value = time_edit[6] & 0xf;
-      inc_or_dec_value(&temp_value, action);
+        time_edit[6] &= 0xf;
+        time_edit[6] |= (temp_value << 4);
+      }
+      else if(current_state_menu2.position_cursor_x == COL_SY2)
+      {
+        unsigned int temp_value = time_edit[6] & 0xf;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[6] &= 0xf0;
-      time_edit[6] |= temp_value;
+        time_edit[6] &= 0xf0;
+        time_edit[6] |= temp_value;
+      }
     }
-  }
-  else if(current_ekran.index_position == ROW_T_)
-  {
-    if(current_ekran.position_cursor_x == COL_HT1)
+    else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_TIME)
     {
-      unsigned int temp_value = time_edit[3] >> 4;
-      inc_or_dec_value(&temp_value, action);
+      if(current_state_menu2.position_cursor_x == COL_HT1)
+      {
+        unsigned int temp_value = time_edit[3] >> 4;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[3] &= 0xf;
-      time_edit[3] |= (temp_value << 4);
-    }
-    else if(current_ekran.position_cursor_x == COL_HT2)
-    {
-      unsigned int temp_value = time_edit[3] & 0xf;
-      inc_or_dec_value(&temp_value, action);
+        time_edit[3] &= 0xf;
+        time_edit[3] |= (temp_value << 4);
+      }
+      else if(current_state_menu2.position_cursor_x == COL_HT2)
+      {
+        unsigned int temp_value = time_edit[3] & 0xf;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[3] &= 0xf0;
-      time_edit[3] |= temp_value;
-    }
-    else if(current_ekran.position_cursor_x == COL_MT1)
-    {
-      unsigned int temp_value = time_edit[2] >> 4;
-      inc_or_dec_value(&temp_value, action);
+        time_edit[3] &= 0xf0;
+        time_edit[3] |= temp_value;
+      }
+      else if(current_state_menu2.position_cursor_x == COL_MT1)
+      {
+        unsigned int temp_value = time_edit[2] >> 4;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[2] &= 0xf;
-      time_edit[2] |= (temp_value << 4);
-    }
-    else if(current_ekran.position_cursor_x == COL_MT2)
-    {
-      unsigned int temp_value = time_edit[2] & 0xf;
-      inc_or_dec_value(&temp_value, action);
+        time_edit[2] &= 0xf;
+        time_edit[2] |= (temp_value << 4);
+      }
+      else if(current_state_menu2.position_cursor_x == COL_MT2)
+      {
+        unsigned int temp_value = time_edit[2] & 0xf;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[2] &= 0xf0;
-      time_edit[2] |= temp_value;
-    }
-    else if(current_ekran.position_cursor_x == COL_ST1)
-    {
-      unsigned int temp_value = time_edit[1] >> 4;
-      inc_or_dec_value(&temp_value, action);
+        time_edit[2] &= 0xf0;
+        time_edit[2] |= temp_value;
+      }
+      else if(current_state_menu2.position_cursor_x == COL_ST1)
+      {
+        unsigned int temp_value = time_edit[1] >> 4;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[1] &= 0xf;
-      time_edit[1] |= (temp_value << 4);
-    }
-    else if(current_ekran.position_cursor_x == COL_ST2)
-    {
-      unsigned int temp_value = time_edit[1] & 0xf;
-      inc_or_dec_value(&temp_value, action);
+        time_edit[1] &= 0xf;
+        time_edit[1] |= (temp_value << 4);
+      }
+      else if(current_state_menu2.position_cursor_x == COL_ST2)
+      {
+        unsigned int temp_value = time_edit[1] & 0xf;
+        inc_or_dec_value(&temp_value, action);
 
-      time_edit[1] &= 0xf0;
-      time_edit[1] |= temp_value;
+        time_edit[1] &= 0xf0;
+        time_edit[1] |= temp_value;
+      }
     }
-  }
-  else if(current_ekran.index_position == ROW_K_)
-  {
-    if(current_ekran.position_cursor_x == COL_SK1) 
+    else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION)
     {
-      if ((calibration_edit & 0x20) != 0) calibration_edit &= 0x1f;
-      else calibration_edit |= 0x20;
-    }
-    else if(current_ekran.position_cursor_x == COL_VK1)
-    {
-      unsigned char temp_1 = calibration_edit & 0x20, temp_2 = calibration_edit & 0x1f;
-      unsigned int temp_value = temp_2 / 10;
-      inc_or_dec_value(&temp_value, action);
+      if(current_state_menu2.position_cursor_x == COL_SK1) 
+      {
+        if ((calibration_edit & 0x20) != 0) calibration_edit &= 0x1f;
+        else calibration_edit |= 0x20;
+      }
+      else if(current_state_menu2.position_cursor_x == COL_VK1)
+      {
+        unsigned char temp_1 = calibration_edit & 0x20, temp_2 = calibration_edit & 0x1f;
+        unsigned int temp_value = temp_2 / 10;
+        inc_or_dec_value(&temp_value, action);
 
-      temp_2 %= 10;
-      temp_2 += temp_value*10;
-      if (temp_2 > 31) temp_2 = 31;
-      calibration_edit = temp_1 | temp_2;
+        temp_2 %= 10;
+        temp_2 += temp_value*10;
+        if (temp_2 > 31) temp_2 = 31;
+        calibration_edit = temp_1 | temp_2;
                 
-    }
-    else if(current_ekran.position_cursor_x == COL_VK2)
-    {
-      unsigned char temp_1 = calibration_edit & 0x20, temp_2 = calibration_edit & 0x1f;
-      unsigned int temp_value = temp_2 % 10;
-      inc_or_dec_value(&temp_value, action);
+      }
+      else if(current_state_menu2.position_cursor_x == COL_VK2)
+      {
+        unsigned char temp_1 = calibration_edit & 0x20, temp_2 = calibration_edit & 0x1f;
+        unsigned int temp_value = temp_2 % 10;
+        inc_or_dec_value(&temp_value, action);
 
-      temp_2 = (temp_2 / 10) *10;
-      temp_2 += temp_value;
-      if (temp_2 > 31) temp_2 = 31;
-      calibration_edit = temp_1 | temp_2;
-     }
+        temp_2 = (temp_2 / 10) *10;
+        temp_2 += temp_value;
+        if (temp_2 > 31) temp_2 = 31;
+        calibration_edit = temp_1 | temp_2;
+      }
+    }
+  }
+  else if (action == 2)
+  {
+    if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
+    {
+      if(current_state_menu2.position_cursor_x == COL_SY2) current_state_menu2.position_cursor_x = COL_SY1;
+      else if(current_state_menu2.position_cursor_x == COL_SY1) current_state_menu2.position_cursor_x = COL_MY2;
+      else if(current_state_menu2.position_cursor_x == COL_MY2) current_state_menu2.position_cursor_x = COL_MY1;
+      else if(current_state_menu2.position_cursor_x == COL_MY1) current_state_menu2.position_cursor_x = COL_DY2;
+      else if(current_state_menu2.position_cursor_x == COL_DY2) current_state_menu2.position_cursor_x = COL_DY1;
+      else if(current_state_menu2.position_cursor_x == COL_DY1)
+      {
+        current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION;
+        current_state_menu2.position_cursor_x = COL_VK2;
+      }
+    }
+    else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_TIME)
+    {
+      if(current_state_menu2.position_cursor_x == COL_ST2) current_state_menu2.position_cursor_x = COL_ST1;
+      else if(current_state_menu2.position_cursor_x == COL_ST1) current_state_menu2.position_cursor_x = COL_MT2;
+      else if(current_state_menu2.position_cursor_x == COL_MT2) current_state_menu2.position_cursor_x = COL_MT1;
+      else if(current_state_menu2.position_cursor_x == COL_MT1) current_state_menu2.position_cursor_x = COL_HT2;
+      else if(current_state_menu2.position_cursor_x == COL_HT2) current_state_menu2.position_cursor_x = COL_HT1;
+      else if(current_state_menu2.position_cursor_x == COL_HT1)
+      {
+        current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_DATE;
+        current_state_menu2.position_cursor_x = COL_SY2;
+      }
+    }
+    else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION)
+    {
+      if(current_state_menu2.position_cursor_x == COL_VK2) current_state_menu2.position_cursor_x = COL_VK1;
+      else if(current_state_menu2.position_cursor_x == COL_VK1) current_state_menu2.position_cursor_x = COL_SK1;
+      else if(current_state_menu2.position_cursor_x == COL_SK1)
+      {
+        current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_TIME;
+        current_state_menu2.position_cursor_x = COL_ST2;
+      }
+    }
+  }
+  else if (action == 3)
+  {
+    if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
+    {
+      if(current_state_menu2.position_cursor_x == COL_DY1) current_state_menu2.position_cursor_x = COL_DY2;
+      else if(current_state_menu2.position_cursor_x == COL_DY2) current_state_menu2.position_cursor_x = COL_MY1;
+      else if(current_state_menu2.position_cursor_x == COL_MY1) current_state_menu2.position_cursor_x = COL_MY2;
+      else if(current_state_menu2.position_cursor_x == COL_MY2) current_state_menu2.position_cursor_x = COL_SY1;
+      else if(current_state_menu2.position_cursor_x == COL_SY1) current_state_menu2.position_cursor_x = COL_SY2;
+      else if(current_state_menu2.position_cursor_x == COL_SY2)
+      {
+        current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_TIME;
+        current_state_menu2.position_cursor_x = COL_HT1;
+      }
+    }
+    else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_TIME)
+    {
+      if(current_state_menu2.position_cursor_x == COL_HT1) current_state_menu2.position_cursor_x = COL_HT2;
+      else if(current_state_menu2.position_cursor_x == COL_HT2) current_state_menu2.position_cursor_x = COL_MT1;
+      else if(current_state_menu2.position_cursor_x == COL_MT1) current_state_menu2.position_cursor_x = COL_MT2;
+      else if(current_state_menu2.position_cursor_x == COL_MT2) current_state_menu2.position_cursor_x = COL_ST1;
+      else if(current_state_menu2.position_cursor_x == COL_ST1) current_state_menu2.position_cursor_x = COL_ST2;
+      else if(current_state_menu2.position_cursor_x == COL_ST2)
+      {
+        current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION;
+        current_state_menu2.position_cursor_x = COL_SK1;
+      }
+    }
+    else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION)
+    {
+      if(current_state_menu2.position_cursor_x == COL_SK1) current_state_menu2.position_cursor_x = COL_VK1;
+      else if(current_state_menu2.position_cursor_x == COL_VK1) current_state_menu2.position_cursor_x = COL_VK2;
+      else if(current_state_menu2.position_cursor_x == COL_VK2)
+      {
+        current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_DATE;
+        current_state_menu2.position_cursor_x = COL_DY1;
+      }
+    }
   }
 }
 /*****************************************************/

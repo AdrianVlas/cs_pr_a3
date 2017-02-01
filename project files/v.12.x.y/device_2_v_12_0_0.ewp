@@ -4397,7 +4397,13 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_lcd_and_keyboard.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\inc\const_main_menu2.h</name>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_main.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_password.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_time.h</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu_alarms.h</name>
@@ -4488,6 +4494,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu_time.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu_ver2.h</name>
         </file>
       </group>
       <group>

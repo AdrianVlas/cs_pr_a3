@@ -1,6 +1,53 @@
 #include "header.h"
 
 /*****************************************************/
+/*
+Функція переміщення по меню
+
+Вхідні параметри
+0 - перемалювати меню
+1 - рухатися вверх
+2 - рухатися вниз
+*/
+/*****************************************************/
+void move_into_main(unsigned int action)
+{
+  if (action <= 1)
+  {
+    if (action == 1) current_state_menu2.index_position++;
+    do
+    {
+      if(current_state_menu2.index_position >= MAX_ROW_MAIN_M2) current_state_menu2.index_position = 0;
+      while (
+             (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
+             (current_config.ctrl_analog_inputs == 0)
+            )
+      {
+        if(++current_state_menu2.index_position >= MAX_ROW_MAIN_M2) current_state_menu2.index_position = 0;
+      }
+    }
+    while ((action == 1) &&(current_state_menu2.index_position >= MAX_ROW_MAIN_M2));
+  }
+  else if (action == 2)
+  {
+    current_state_menu2.index_position--;
+    do
+    {
+      if(current_state_menu2.index_position < 0) current_state_menu2.index_position = MAX_ROW_MAIN_M2 - 1;
+      while (
+             (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
+             (current_config.ctrl_analog_inputs == 0)
+            )
+      {
+        if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = MAX_ROW_MAIN_M2 - 1;
+      }
+    }
+    while (current_state_menu2.index_position < 0);
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
 //Формуємо екран головного меню
 /*****************************************************/
 void make_ekran_main(void)
@@ -12,7 +59,6 @@ void make_ekran_main(void)
      " Измерения      ",
      " Входы-Выходы   ",
      " Регистраторы   ",
-     " Language       ",
      " Настройки      ",
      " Диагностика    ",
      " Метка настроек ",
@@ -23,7 +69,6 @@ void make_ekran_main(void)
      " Вимірювання    ",
      " Входи-Виходи   ",
      " Реєстратори    ",
-     " Language       ",
      " Налаштування   ",
      " Діагностика    ",
      " Мітка налашт.  ",
@@ -34,7 +79,6 @@ void make_ekran_main(void)
      " Measurement    ",
      " Inputs-Outputs ",
      " Recorders      ",
-     " Language       ",
      " Settings       ",
      " Diagnostic     ",
      " Settings Mark  ",
@@ -45,26 +89,43 @@ void make_ekran_main(void)
      " Љлшем          ",
      " Кіріс-Шыfыс    ",
      " Тіркегіштер    ",
-     " Language       ",
      " Реттегіш       ",
      " Диагностика    ",
      " Метка настроек ",
      " Версия ПО и КП "
     }
   };
+
   int index_language = index_language_in_array(settings_fix.language);
-  int position_temp = current_state_menu2.index_position;
+  unsigned int additional_current = 0;
+  unsigned int position_temp = current_state_menu2.index_position;
+
+  uint8_t name_string_tmp[MAX_ROW_MAIN_M2][MAX_COL_LCD + 1];
+  for(size_t index_1 = 0; index_1 < (MAX_ROW_MAIN_M2 - additional_current); index_1++)
+  {
+    if (
+        (index_1 == (INDEX_MAIN_M2_MEASURMENTS - additional_current)) &&
+        (current_config.ctrl_analog_inputs == 0)
+       )
+    {
+      if ((index_1 + 1) <= position_temp) position_temp--;
+      additional_current++;
+    }
+    for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
+    {
+      name_string_tmp[index_1][index_2] = name_string[index_language][index_1 + additional_current][index_2];
+    }
+  }
   unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;;
   
   //Копіюємо  рядки у робочий екран
   for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_in_ekran < MAX_ROW_MAIN_M2)
-      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran][j];
-    else
-      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-
+    for (size_t j = 0; j < MAX_COL_LCD; j++) 
+    {
+      working_ekran[i][j] = (index_in_ekran < (MAX_ROW_MAIN_M2 - additional_current)) ? name_string_tmp[index_in_ekran][j] : ' ';
+    }
     index_in_ekran++;
   }
 

@@ -115,43 +115,43 @@ void make_ekran_time_settings(unsigned int kind)
   //Повідомлення про джерело змін
   if((*(point_to_target + 7)) == 0)
   {
-    name_string[ROW_T_][MAX_COL_LCD - 7] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 6] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 5] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 4] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 3] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 2] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 1] = '0';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 7] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 6] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 5] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 4] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 3] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 2] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 1] = '0';
   }
   else if((*(point_to_target + 7)) == 1)
   {
-    name_string[ROW_T_][MAX_COL_LCD - 7] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 6] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 5] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 4] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 3] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 2] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 1] = 'K';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 7] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 6] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 5] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 4] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 3] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 2] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 1] = 'K';
   }
   else if((*(point_to_target + 7)) == 2)
   {
-    name_string[ROW_T_][MAX_COL_LCD - 7] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 6] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 5] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 4] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 3] = 'U';
-    name_string[ROW_T_][MAX_COL_LCD - 2] = 'S';
-    name_string[ROW_T_][MAX_COL_LCD - 1] = 'B';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 7] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 6] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 5] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 4] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 3] = 'U';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 2] = 'S';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 1] = 'B';
   }
   else if((*(point_to_target + 7)) == 3)
   {
-    name_string[ROW_T_][MAX_COL_LCD - 7] = ' ';
-    name_string[ROW_T_][MAX_COL_LCD - 6] = 'R';
-    name_string[ROW_T_][MAX_COL_LCD - 5] = 'S';
-    name_string[ROW_T_][MAX_COL_LCD - 4] = '-';
-    name_string[ROW_T_][MAX_COL_LCD - 3] = '4';
-    name_string[ROW_T_][MAX_COL_LCD - 2] = '8';
-    name_string[ROW_T_][MAX_COL_LCD - 1] = '5';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 7] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 6] = 'R';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 5] = 'S';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 4] = '-';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 3] = '4';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 2] = '8';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 1] = '5';
   }
   else
   {
@@ -165,7 +165,7 @@ void make_ekran_time_settings(unsigned int kind)
     };
     int index_language = index_language_in_array(current_settings.language);
       
-    for (unsigned int i = 0; i < 7; i++) name_string[ROW_T_][9 + i] = error_meas[index_language][i];
+    for (unsigned int i = 0; i < 7; i++) name_string[INDEX_TIME_CALIBRATION_M2_TIME][9 + i] = error_meas[index_language][i];
   }
   
   /******************************************/

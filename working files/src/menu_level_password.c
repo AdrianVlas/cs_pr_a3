@@ -3,9 +3,9 @@
 /*****************************************************/
 //Формуємо екран паролю
 /*****************************************************/
-void make_ekran_level_password(unsigned int password, unsigned int view)
+void make_ekran_password(void)
 {
-  const unsigned char name_string_1[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
+  const uint8_t name_string_1[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
   {
     " Введите пароль:",
     " Введіть пароль:",
@@ -13,7 +13,7 @@ void make_ekran_level_password(unsigned int password, unsigned int view)
     " Введите пароль:"
   };
 
-  const unsigned char name_string_2[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
+  const uint8_t name_string_2[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
   {
     "  Новый пароль: ",
     "  Новий пароль: ",
@@ -22,56 +22,46 @@ void make_ekran_level_password(unsigned int password, unsigned int view)
   };
 
   //Визначаємо з яким масивом будемо працювати
-  unsigned char *point_to_working_array;
+  const uint8_t (*point_to_working_array)[MAX_COL_LCD + 1];
   if (current_ekran.current_level == EKRAN_LEVEL_SET_NEW_PASSWORD)
-    point_to_working_array = (unsigned char *)name_string_2;
+    point_to_working_array = name_string_2;
   else
-    point_to_working_array = (unsigned char *)name_string_1;
+    point_to_working_array = name_string_1;
 
-  unsigned char name_string_tmp[MAX_ROW_FOR_LEVEL_PASSWORD][MAX_COL_LCD];
+  uint8_t name_string_tmp[MAX_ROW_FOR_LEVEL_PASSWORD][MAX_COL_LCD + 1];
 
-  int index_language = index_language_in_array(current_settings.language);
-  for(int index_1 = 0; index_1 < MAX_ROW_FOR_LEVEL_PASSWORD; index_1++)
+  int index_language = index_language_in_array(settings_fix.language);
+  for(size_t index_1 = 0; index_1 < MAX_ROW_FOR_LEVEL_PASSWORD; index_1++)
   {
-    for(int index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
+    for(size_t index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
     {
-      unsigned char copy_symbol;
-      if (index_1 == INDEX_LINE_NUMBER_1_FOR_LEVEL_PASSWORD)
-        copy_symbol = *(point_to_working_array + index_language*MAX_COL_LCD + index_2);
-      else
-        copy_symbol = ' ';
-      
-      name_string_tmp[index_1][index_2] = copy_symbol;
+      name_string_tmp[index_1][index_2] = (index_1 == INDEX_PASSWORD_M2_LINE1) ? point_to_working_array[index_language][index_2] : ' ';
     }
   }
   
-  if (view != 0)
+  unsigned int password = *((unsigned int*)p_menu_param_1);
+  if (*((unsigned int*)p_menu_param_2) != 0)
   {
     unsigned int position_cursor = COL_NEW_PASSWORD_BEGIN;
     if (password != 0)
     {
-      unsigned int temp_value_1,temp_value_2, temp_value_3, temp_value_4;
-    
-      temp_value_4 = password % 10;
+      unsigned int temp_value[MAX_NUMBER_OF_SYMPOLS_IN_PASSWORD];
+      unsigned int password_tmp = (unsigned int)password;
 
-      temp_value_3 = password / 10;
-      temp_value_3 %=  10;
-    
-      temp_value_2 = password / 100;
-      temp_value_2 %=  10;
-    
-      temp_value_1 = password / 1000;
-      temp_value_1 %=  10;
-    
-      if(temp_value_1 != 0) name_string_tmp[INDEX_LINE_NUMBER_2_FOR_LEVEL_PASSWORD][position_cursor++] = temp_value_1 + 0x30;
-      if(temp_value_2 != 0) name_string_tmp[INDEX_LINE_NUMBER_2_FOR_LEVEL_PASSWORD][position_cursor++] = temp_value_2 + 0x30;
-      if(temp_value_3 != 0) name_string_tmp[INDEX_LINE_NUMBER_2_FOR_LEVEL_PASSWORD][position_cursor++] = temp_value_3 + 0x30;
-      if(temp_value_4 != 0) name_string_tmp[INDEX_LINE_NUMBER_2_FOR_LEVEL_PASSWORD][position_cursor++] = temp_value_4 + 0x30;
+      for (intptr_t i = (MAX_NUMBER_OF_SYMPOLS_IN_PASSWORD - 1); i >= 0; i--)
+      {
+        temp_value[i] = password_tmp % 10;
+        password_tmp /= 10;
+      }
+
+      for (size_t i = 0; i < MAX_NUMBER_OF_SYMPOLS_IN_PASSWORD; i++)
+      {
+        if(temp_value[i] != 0) name_string_tmp[INDEX_PASSWORD_M2_LINE2][position_cursor++] = temp_value[i] + 0x30;
+      }
     }
     else
     {
-      unsigned char symbol = (current_ekran.current_level == EKRAN_LEVEL_SET_NEW_PASSWORD) ? '0' : '?';
-      name_string_tmp[INDEX_LINE_NUMBER_2_FOR_LEVEL_PASSWORD][position_cursor++] = symbol;
+      name_string_tmp[INDEX_PASSWORD_M2_LINE2][position_cursor++] = (current_ekran.current_level == EKRAN_LEVEL_SET_NEW_PASSWORD) ? '0' : '?';
     }
   }
 
@@ -82,9 +72,9 @@ void make_ekran_level_password(unsigned int password, unsigned int view)
   }
   
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = 1;
+  current_state_menu2.position_cursor_y = 1;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 

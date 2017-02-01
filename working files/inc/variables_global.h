@@ -101,7 +101,9 @@ SRAM1 uint16_t time_rewrite/* = 0*/; //Час який пройшов після останнього обновле
 //Меню версії 2
 SRAM1 __CURRENT_STATE_MENU2 current_state_menu2;
 SRAM1 int16_t position_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL]; //Масив у якому збкрігається індекс текучої позиції
-SRAM1 int16_t previous_level_in_current_level_menu2[MAX_LEVEL_MENU]; //Масив у якому збкрігається занчення попередніх екранів для даного рівня меню
+SRAM1 enum _menu2_levels previous_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL]; //Масив у якому збкрігається занчення попередніх екранів для даного рівня меню
+SRAM1 enum _menu2_levels next_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL];    //Масив у якому збкрігається занчення екранів куди ми хочемо перейти з поточного екрану
+SRAM1 void *p_menu_param_1, *p_menu_param_2;
 
 //Меню версії 1
 SRAM1 __CURRENT_EKRAN current_ekran;
