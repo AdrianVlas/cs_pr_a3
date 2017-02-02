@@ -559,7 +559,14 @@ void main_routines_for_i2c(void)
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT) !=0)
     {
       //Запускаємо процес читання настройок
-      static unsigned int block, shift;
+      static enum _id_fb block;
+      static unsigned int shift;
+
+      if (shift_from_start_address_settings_in_eeprom == 0) 
+      {
+        block = _ID_FB_FIRST_ALL;
+        shift = 0;
+      }
       
       if (size_settings == 0)
       {
@@ -568,63 +575,63 @@ void main_routines_for_i2c(void)
         size_t size = 0;
         while(
               (size < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
-              (block < (1 + CA_MAX))
+              (block < _ID_FB_LAST_ALL)
              )
         {
           //Визначаємо розмір нового блоку
           switch (block)
           {
-          case 0:
+          case ID_FB_CONTROL_BLOCK:
             {
               size_of_block = sizeof(__SETTINGS_FIX);
               break;
             }
-          case (1 + CA_INPUT):
+          case ID_FB_INPUT:
             {
               size_of_block = current_config.n_input*sizeof(__settings_for_INPUT);
               break;
             }
-          case (1 + CA_OUTPUT):
+          case ID_FB_OUTPUT:
             {
               size_of_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
               break;
             }
-          case (1 + CA_LED):
+          case ID_FB_LED:
             {
               size_of_block = current_config.n_led*sizeof(__settings_for_LED);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_AND):
+          case ID_FB_AND:
             {
               size_of_block = current_config.n_and*sizeof(__settings_for_AND);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_OR):
+          case ID_FB_OR:
             {
               size_of_block = current_config.n_or*sizeof(__settings_for_OR);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_XOR):
+          case ID_FB_XOR:
             {
               size_of_block = current_config.n_xor*sizeof(__settings_for_XOR);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_NOT):
+          case ID_FB_NOT:
             {
               size_of_block = current_config.n_not*sizeof(__settings_for_NOT);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_TIMER):
+          case ID_FB_TIMER:
             {
               size_of_block = current_config.n_timer*sizeof(__settings_for_TIMER);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_TRIGGER):
+          case ID_FB_TRIGGER:
             {
               size_of_block = current_config.n_trigger*sizeof(__settings_for_TRIGGER);
               break;
             }
-          case (1 + CA_MEANDER):
+          case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
               break;
@@ -654,7 +661,7 @@ void main_routines_for_i2c(void)
       
       if (
           (size_settings < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
-          (block == (1 + CA_MAX))
+          (block == _ID_FB_LAST_ALL)
          )   
       {
         //Додаємо ще контрольу суму для читання
@@ -687,7 +694,7 @@ void main_routines_for_i2c(void)
       else
       {
         //Скидаємо всі статичні змінні, які використовуютья при записі налаштувань
-        block = 0;
+        block = _ID_FB_FIRST_ALL;
         shift = 0;
 
         shift_from_start_address_settings_in_eeprom = 0;
@@ -832,8 +839,16 @@ void main_routines_for_i2c(void)
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) !=0)
     {
       //Стоїть умова початку запису нової порції інформації по налаштуваннях у EEPROM
-      static unsigned int block, shift;
+      static enum _id_fb block;
+      static unsigned int shift;
       static uint8_t crc_eeprom_settings;
+
+      if (shift_from_start_address_settings_in_eeprom == 0) 
+      {
+        block = _ID_FB_FIRST_ALL;
+        shift = 0;
+        crc_eeprom_settings = 0;
+      }
       
       //Робимо копію записуваної інформації для контролю
 
@@ -845,7 +860,7 @@ void main_routines_for_i2c(void)
       size_t index = 0;
       while(
             (index < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
-            (block < (1 + CA_MAX))
+            (block < _ID_FB_LAST_ALL)
            )
       {
         if (size_of_block == 0)
@@ -853,57 +868,57 @@ void main_routines_for_i2c(void)
           //Визначаємо розмір нового блоку
           switch (block)
           {
-          case 0:
+          case ID_FB_CONTROL_BLOCK:
             {
               size_of_block = sizeof(__SETTINGS_FIX);
               break;
             }
-          case (1 + CA_INPUT):
+          case ID_FB_INPUT:
             {
               size_of_block = current_config.n_input*sizeof(__settings_for_INPUT);
               break;
             }
-          case (1 + CA_OUTPUT):
+          case ID_FB_OUTPUT:
             {
               size_of_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
               break;
             }
-          case (1 + CA_LED):
+          case ID_FB_LED:
             {
               size_of_block = current_config.n_led*sizeof(__settings_for_LED);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_AND):
+          case ID_FB_AND:
             {
               size_of_block = current_config.n_and*sizeof(__settings_for_AND);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_OR):
+          case ID_FB_OR:
             {
               size_of_block = current_config.n_or*sizeof(__settings_for_OR);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_XOR):
+          case ID_FB_XOR:
             {
               size_of_block = current_config.n_xor*sizeof(__settings_for_XOR);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_NOT):
+          case ID_FB_NOT:
             {
               size_of_block = current_config.n_not*sizeof(__settings_for_NOT);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_TIMER):
+          case ID_FB_TIMER:
             {
               size_of_block = current_config.n_timer*sizeof(__settings_for_TIMER);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_TRIGGER):
+          case ID_FB_TRIGGER:
             {
               size_of_block = current_config.n_trigger*sizeof(__settings_for_TRIGGER);
               break;
             }
-          case (1 + CA_MEANDER):
+          case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
               break;
@@ -918,15 +933,15 @@ void main_routines_for_i2c(void)
           //Визначаємо вказівник на початок блоку
           if (size_of_block != 0)
           {
-            if (block == 0)
+            if (block == ID_FB_CONTROL_BLOCK)
             {
               point_1 = (uint8_t *)(&settings_fix);
               point_2 = (uint8_t *)(&settings_fix_edit);
             }
             else
             {
-              point_1 = (uint8_t *)(sca_of_p     [block - 1]);
-              point_2 = (uint8_t *)(sca_of_p_edit[block - 1]);
+              point_1 = (uint8_t *)(sca_of_p     [block - _ID_FB_FIRST_VAR]);
+              point_2 = (uint8_t *)(sca_of_p_edit[block - _ID_FB_FIRST_VAR]);
             }
           }
         }
@@ -954,7 +969,7 @@ void main_routines_for_i2c(void)
       
       if (
           (index < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
-          (block == (1 + CA_MAX))
+          (block == _ID_FB_LAST_ALL)
          )   
       {
         //Додаємо ще контрольу суму
@@ -971,7 +986,7 @@ void main_routines_for_i2c(void)
         //Весь масив настройок вже записаний
         
         //Скидаємо всі статичні змінні, які використовуютья при записі налаштувань
-        block = 0;
+        block = _ID_FB_FIRST_ALL;
         shift = 0;
         crc_eeprom_settings = 0;
         
@@ -1376,11 +1391,11 @@ void main_routines_for_i2c(void)
                 _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
                 
                 //Звільняємо всю пам'ять
-                for (size_t index_1 = 0; index_1 < CA_MAX; index_1++)
+                for (enum _id_fb index_1 = _ID_FB_FIRST_VAR; index_1 < _ID_FB_LAST_VAR; index_1++)
                 {
-                  free(sca_of_p_edit[index_1]);
-                  free(sca_of_p[index_1]);
-                  free(spca_of_p_prt[index_1]);
+                  free(sca_of_p_edit[index_1 - _ID_FB_FIRST_VAR]);
+                  free(sca_of_p[index_1 - _ID_FB_FIRST_VAR]);
+                  free(spca_of_p_prt[index_1 - _ID_FB_FIRST_VAR]);
                 }
               }
             }
@@ -1479,14 +1494,15 @@ void main_routines_for_i2c(void)
       size_settings = 0; /*Цим повідомляємо інші блоки, що читання успішно даного блоку відбувся*/
 
       //Спочатку аналізуємо скільки і який блок налаштування прочитано
-      unsigned int block = 0, shift = 0;
+      enum _id_fb block = _ID_FB_FIRST_ALL;
+      unsigned int shift = 0;
       
       size_t size_of_block = 0;
       size_t index = 0;
       uint8_t *p;
       while(
             (index < new_shift) &&
-            (block < (1 + CA_MAX))
+            (block < _ID_FB_LAST_ALL)
            )
       {
         //Визначаємо розмір нового блоку
@@ -1494,57 +1510,57 @@ void main_routines_for_i2c(void)
         {
           switch (block)
           {
-          case 0:
+          case ID_FB_CONTROL_BLOCK:
             {
               size_of_block = sizeof(__SETTINGS_FIX);
               break;
             }
-          case (1 + CA_INPUT):
+          case ID_FB_INPUT:
             {
               size_of_block = current_config.n_input*sizeof(__settings_for_INPUT);
               break;
             }
-          case (1 + CA_OUTPUT):
+          case ID_FB_OUTPUT:
             {
               size_of_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
               break;
             }
-          case (1 + CA_LED):
+          case ID_FB_LED:
             {
               size_of_block = current_config.n_led*sizeof(__settings_for_LED);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_AND):
+          case ID_FB_AND:
             {
               size_of_block = current_config.n_and*sizeof(__settings_for_AND);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_OR):
+          case ID_FB_OR:
             {
               size_of_block = current_config.n_or*sizeof(__settings_for_OR);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_XOR):
+          case ID_FB_XOR:
             {
               size_of_block = current_config.n_xor*sizeof(__settings_for_XOR);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_NOT):
+          case ID_FB_NOT:
             {
               size_of_block = current_config.n_not*sizeof(__settings_for_NOT);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_TIMER):
+          case ID_FB_TIMER:
             {
               size_of_block = current_config.n_timer*sizeof(__settings_for_TIMER);
               break;
             }
-          case (1 + CA_STANDART_LOGIC_TRIGGER):
+          case ID_FB_TRIGGER:
             {
               size_of_block = current_config.n_trigger*sizeof(__settings_for_TRIGGER);
               break;
             }
-          case (1 + CA_MEANDER):
+          case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
               break;
@@ -1556,8 +1572,8 @@ void main_routines_for_i2c(void)
             }
           }
           
-          if (block == 0) p = (uint8_t *)(&settings_fix_edit);
-          else p = (uint8_t *)(sca_of_p_edit[block - 1]);
+          if (block == ID_FB_CONTROL_BLOCK) p = (uint8_t *)(&settings_fix_edit);
+          else p = (uint8_t *)(sca_of_p_edit[block - _ID_FB_FIRST_VAR]);
         }
 
         if (index < shift_from_start_address_settings_in_eeprom)
@@ -1620,7 +1636,7 @@ void main_routines_for_i2c(void)
       
       if (
           (index < new_shift) &&
-          (block == (1 + CA_MAX))
+          (block == _ID_FB_LAST_ALL)
          )   
       {
         uint8_t crc_eeprom_settings_remote = read_write_i2c_buffer[(index++) - shift_from_start_address_settings_in_eeprom];

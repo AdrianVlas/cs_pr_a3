@@ -4,24 +4,59 @@
 #define NUMBER_IN_AND                   8
 #define NUMBER_IN_OR                    8
 
-enum _control_array
-{
-  CA_INPUT = 0,
-  CA_OUTPUT,
-  CA_LED,
-  
-  CA_STANDART_LOGIC_AND,
-  CA_STANDART_LOGIC_OR,
-  CA_STANDART_LOGIC_XOR,
-  CA_STANDART_LOGIC_NOT,
-  CA_STANDART_LOGIC_TIMER,
-  CA_STANDART_LOGIC_TRIGGER,
+//enum _control_array
+//{
+//  CA_INPUT = 0,
+//  CA_OUTPUT,
+//  CA_LED,
+//  
+//  CA_STANDART_LOGIC_AND,
+//  CA_STANDART_LOGIC_OR,
+//  CA_STANDART_LOGIC_XOR,
+//  CA_STANDART_LOGIC_NOT,
+//  CA_STANDART_LOGIC_TIMER,
+//  CA_STANDART_LOGIC_TRIGGER,
+//
+//  CA_MEANDER,
+//  
+//  CA_MAX
+//    
+//};
 
-  CA_MEANDER,
+enum _id_fb
+{
+  _ID_FB_FIRST_ALL = 1,                                 /*1*/
   
-  CA_MAX
+    _ID_FB_FIRST_FIX = _ID_FB_FIRST_ALL,                /*1*/
+
+      ID_FB_CONTROL_BLOCK = _ID_FB_FIRST_FIX,           /*1*/
+      
+    _ID_FB_LAST_FIX,                                    /*2*/
+
+    _ID_FB_FIRST_VAR = _ID_FB_LAST_FIX,                 /*2*/
     
+      ID_FB_INPUT = _ID_FB_FIRST_VAR,                   /*2*/
+      ID_FB_OUTPUT,                                     /*3*/
+      ID_FB_LED,                                        /*4*/
+  
+      ID_FB_AND,                                        /*5*/
+      ID_FB_OR,                                         /*6*/
+      ID_FB_XOR,                                        /*7*/
+      ID_FB_NOT,                                        /*8*/
+
+      ID_FB_TIMER,                                      /*9*/
+      ID_FB_TRIGGER,                                    /*10*/
+
+      ID_FB_MEANDER,                                    /*11*/
+  
+    _ID_FB_LAST_VAR,                                    /*12*/
+
+  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                     /*12*/
 };
+
+#define NUMBER_FIX_BLOCKS       (_ID_FB_LAST_FIX - _ID_FB_FIRST_FIX)
+#define NUMBER_VAR_BLOCKS       (_ID_FB_LAST_VAR - _ID_FB_FIRST_VAR)
+#define NUMBER_ALL_BLOCKS       (NUMBER_FIX_BLOCKS + NUMBER_VAR_BLOCKS)
 
 enum _signals_of_INPUT
 {

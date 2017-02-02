@@ -940,10 +940,11 @@ void control_settings(unsigned int modified)
 
   size_t size_of_block = 0;
   uint32_t n_item = 0;
-  unsigned int block = 0, item = 0, shift = 0;
+  unsigned int item = 0, shift = 0;
+  enum _id_fb block = _ID_FB_FIRST_ALL;
   while(
         (difference == 0) &&
-        (block < (1 + CA_MAX))
+        (block < _ID_FB_LAST_ALL)
        )
   {
     if (shift == 0)
@@ -951,7 +952,7 @@ void control_settings(unsigned int modified)
       //Визначаємо розмір нового блоку
       switch (block)
       {
-      case 0:
+      case ID_FB_CONTROL_BLOCK:
         {
           if (item == 0)
           {
@@ -964,133 +965,133 @@ void control_settings(unsigned int modified)
           
           break;
         }
-      case (1 + CA_INPUT):
+      case ID_FB_INPUT:
         {
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_INPUT);
             n_item = current_config_prt.n_input;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_INPUT]);
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_INPUT*)spca_of_p_prt[CA_INPUT]) + item)->settings) ;
+          point_1 = (uint8_t *)(&(((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
-      case (1 + CA_OUTPUT):
+      case ID_FB_OUTPUT:
         {
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_OUTPUT);
             n_item = current_config_prt.n_output;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_OUTPUT]);
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_OUTPUT*)spca_of_p_prt[CA_OUTPUT]) + item)->settings) ;
+          point_1 = (uint8_t *)(&(((__LN_OUTPUT*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
-      case (1 + CA_LED):
+      case ID_FB_LED:
         {
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_LED);
             n_item = current_config_prt.n_led;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_LED]);
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_LED*)spca_of_p_prt[CA_LED]) + item)->settings) ;
+          point_1 = (uint8_t *)(&(((__LN_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
-      case (1 + CA_STANDART_LOGIC_AND):
+      case ID_FB_AND:
         {
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_AND);
             n_item = current_config_prt.n_and;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_AND]);
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_AND*)spca_of_p_prt[CA_STANDART_LOGIC_AND]) + item)->settings) ;
+          point_1 = (uint8_t *)(&(((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
-      case (1 + CA_STANDART_LOGIC_OR):
+      case ID_FB_OR:
         {
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_OR);
             n_item = current_config_prt.n_or;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_OR]);
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_OR*)spca_of_p_prt[CA_STANDART_LOGIC_OR]) + item)->settings) ;
+          point_1 = (uint8_t *)(&(((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
-      case (1 + CA_STANDART_LOGIC_XOR):
+      case ID_FB_XOR:
         {
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_XOR);
             n_item = current_config_prt.n_xor;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_XOR]);
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_XOR*)spca_of_p_prt[CA_STANDART_LOGIC_XOR]) + item)->settings) ;
+          point_1 = (uint8_t *)(&(((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
-      case (1 + CA_STANDART_LOGIC_NOT):
+      case ID_FB_NOT:
         {
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_NOT);
             n_item = current_config_prt.n_not;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_NOT]);
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_NOT*)spca_of_p_prt[CA_STANDART_LOGIC_NOT]) + item)->settings) ;
+          point_1 = (uint8_t *)(&(((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
-      case (1 + CA_STANDART_LOGIC_TIMER):
+      case ID_FB_TIMER:
         {
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_TIMER);
             n_item = current_config_prt.n_timer;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_TIMER]);
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_TIMER*)spca_of_p_prt[CA_STANDART_LOGIC_TIMER]) + item)->settings) ;
+          point_1 = (uint8_t *)(&(((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
-      case (1 + CA_STANDART_LOGIC_TRIGGER):
+      case ID_FB_TRIGGER:
         {
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_TRIGGER);
             n_item = current_config_prt.n_trigger;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_STANDART_LOGIC_TRIGGER]);
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_TRIGGER*)spca_of_p_prt[CA_STANDART_LOGIC_TRIGGER]) + item)->settings) ;
+          point_1 = (uint8_t *)(&(((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
-      case (1 + CA_MEANDER):
+      case ID_FB_MEANDER:
         {
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_MEANDER);
             n_item = current_config_prt.n_meander;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[CA_MEANDER]);
+            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_MEANDER*)spca_of_p_prt[CA_MEANDER]) + item)->settings) ;
+          point_1 = (uint8_t *)(&(((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
@@ -1339,10 +1340,10 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
 {
   __result_dym_mem_select result = DYN_MEM_SELECT_OK;
   
-  intptr_t index_1 = 0;
+  enum _id_fb index_1 = _ID_FB_FIRST_VAR;
   while(
         (result == DYN_MEM_SELECT_OK) &&
-        (index_1 < CA_MAX)
+        (index_1 < _ID_FB_LAST_VAR)
        )   
   {
     uint32_t n_prev, n_cur;
@@ -1350,7 +1351,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
     void (*min_param)(unsigned int, uintptr_t *, size_t, size_t);
     switch (index_1)
     {
-    case CA_INPUT:
+    case ID_FB_INPUT:
       {
         //Дискретний вхід
         n_prev = (control != NULL) ? control->n_input : 0;
@@ -1359,7 +1360,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_cur*((mem_for_prt == true) ? sizeof(__LN_INPUT) : sizeof(__settings_for_INPUT));
         break;
       }
-    case CA_OUTPUT:
+    case ID_FB_OUTPUT:
       {
         //Дискретний вихід
         n_prev = (control != NULL) ? control->n_output : 0;
@@ -1368,7 +1369,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OUTPUT) : sizeof(__settings_for_OUTPUT));
         break;
       }
-    case CA_LED:
+    case ID_FB_LED:
       {
         //Світлоіндикатор
         n_prev = (control != NULL) ? control->n_led : 0;
@@ -1377,7 +1378,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_cur*((mem_for_prt == true) ? sizeof(__LN_LED) : sizeof(__settings_for_LED));
         break;
       }
-    case CA_STANDART_LOGIC_AND:
+    case ID_FB_AND:
       {
         //Елемент "І"
         n_prev = (control != NULL) ? control->n_and : 0;
@@ -1386,7 +1387,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_cur*((mem_for_prt == true) ? sizeof(__LN_AND) : sizeof(__settings_for_AND));
         break;
       }
-    case CA_STANDART_LOGIC_OR:
+    case ID_FB_OR:
       {
         //Елемент "АБО"
         n_prev = (control != NULL) ? control->n_or : 0;
@@ -1395,7 +1396,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OR) : sizeof(__settings_for_OR));
         break;
       }
-    case CA_STANDART_LOGIC_XOR:
+    case ID_FB_XOR:
       {
         //Елемент "Викл.АБО"
         n_prev = (control != NULL) ? control->n_xor : 0;
@@ -1404,7 +1405,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_cur*((mem_for_prt == true) ? sizeof(__LN_XOR) : sizeof(__settings_for_XOR));
         break;
       }
-    case CA_STANDART_LOGIC_NOT:
+    case ID_FB_NOT:
       {
         //Елемент "НЕ"
         n_prev = (control != NULL) ? control->n_not : 0;
@@ -1413,7 +1414,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_cur*((mem_for_prt == true) ? sizeof(__LN_NOT) : sizeof(__settings_for_NOT));
         break;
       }
-    case CA_STANDART_LOGIC_TIMER:
+    case ID_FB_TIMER:
       {
         //Елемент "Таймер"
         n_prev = (control != NULL) ? control->n_timer : 0;
@@ -1422,7 +1423,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TIMER) : sizeof(__settings_for_TIMER));
         break;
       }
-    case CA_STANDART_LOGIC_TRIGGER:
+    case ID_FB_TRIGGER:
       {
         //Елемент "Триґер"
         n_prev = (control != NULL) ? control->n_trigger : 0;
@@ -1431,7 +1432,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TRIGGER) : sizeof(__settings_for_TRIGGER));
         break;
       }
-    case CA_MEANDER:
+    case ID_FB_MEANDER:
       {
         //Функціональний блок "Генератор періодичних сигналів"
         n_prev = (control != NULL) ? control->n_meander : 0;
@@ -1452,15 +1453,15 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
       //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
       if(size == 0) 
       {
-        free(p_sca_of_p_current[index_1]);
-        p_sca_of_p_current[index_1] = NULL;
+        free(p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR]);
+        p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR] = NULL;
       }
       else
       {
-        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index_1], size);
+        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR], size);
         if (ptr != NULL)
         {
-          p_sca_of_p_current[index_1] = ptr;
+          p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR] = ptr;
           if ((make_remake == false) || (n_cur > n_prev))
           {
             //Викликаємо функцію встановлення нових налаштувань у мінімальні значення
@@ -1487,7 +1488,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
   
   while(
         (result == DYN_MEM_NO_ENOUGH_MEM) && 
-        (index_1 >= 0)
+        (index_1 >= _ID_FB_FIRST_VAR)
        )   
   {
     uint32_t n_prev, n_cur;
@@ -1495,7 +1496,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
     void (*copy_settings_LN)(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
     switch (index_1)
     {
-    case CA_INPUT:
+    case ID_FB_INPUT:
       {
         //Дискретний вхід
         n_prev = (control != NULL) ? control->n_input : 0;
@@ -1504,7 +1505,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_prev*((mem_for_prt == true) ? sizeof(__LN_INPUT) : sizeof(__settings_for_INPUT));
         break;
       }
-    case CA_OUTPUT:
+    case ID_FB_OUTPUT:
       {
         //Дискретний вихід
         n_prev = (control != NULL) ? control->n_output : 0;
@@ -1513,7 +1514,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_prev*((mem_for_prt == true) ? sizeof(__LN_OUTPUT) : sizeof(__settings_for_OUTPUT));
         break;
       }
-    case CA_LED:
+    case ID_FB_LED:
       {
         //Світлоіндимкатор
         n_prev = (control != NULL) ? control->n_led : 0;
@@ -1522,7 +1523,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_prev*((mem_for_prt == true) ? sizeof(__LN_LED) : sizeof(__settings_for_LED));
         break;
       }
-    case CA_STANDART_LOGIC_AND:
+    case ID_FB_AND:
       {
         //Елемент "І"
         n_prev = (control != NULL) ? control->n_and : 0;
@@ -1531,7 +1532,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_prev*((mem_for_prt == true) ? sizeof(__LN_AND) : sizeof(__settings_for_AND));
         break;
       }
-    case CA_STANDART_LOGIC_OR:
+    case ID_FB_OR:
       {
         //Елемент "АБО"
         n_prev = (control != NULL) ? control->n_or : 0;
@@ -1540,7 +1541,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_prev*((mem_for_prt == true) ? sizeof(__LN_OR) : sizeof(__settings_for_OR));
         break;
       }
-    case CA_STANDART_LOGIC_XOR:
+    case ID_FB_XOR:
       {
         //Елемент "Викл.АБО"
         n_prev = (control != NULL) ? control->n_xor : 0;
@@ -1549,7 +1550,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_prev*((mem_for_prt == true) ? sizeof(__LN_XOR) : sizeof(__settings_for_XOR));
         break;
       }
-    case CA_STANDART_LOGIC_NOT:
+    case ID_FB_NOT:
       {
         //Елемент "НЕ"
         n_prev = (control != NULL) ? control->n_not : 0;
@@ -1558,7 +1559,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_prev*((mem_for_prt == true) ? sizeof(__LN_NOT) : sizeof(__settings_for_NOT));
         break;
       }
-    case CA_STANDART_LOGIC_TIMER:
+    case ID_FB_TIMER:
       {
         //Елемент "Таймер"
         n_prev = (control != NULL) ? control->n_timer : 0;
@@ -1567,7 +1568,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_prev*((mem_for_prt == true) ? sizeof(__LN_TIMER) : sizeof(__settings_for_TIMER));
         break;
       }
-    case CA_STANDART_LOGIC_TRIGGER:
+    case ID_FB_TRIGGER:
       {
         //Елемент "Триґер"
         n_prev = (control != NULL) ? control->n_trigger : 0;
@@ -1576,7 +1577,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
         size = n_prev*((mem_for_prt == true) ? sizeof(__LN_TRIGGER) : sizeof(__settings_for_TRIGGER));
         break;
       }
-    case CA_MEANDER:
+    case ID_FB_MEANDER:
       {
         //Функціональний блок "Генератор періодичних сигналів"
         n_prev = (control != NULL) ? control->n_meander : 0;
@@ -1597,21 +1598,21 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
       //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
       if(size == 0) 
       {
-        free(p_sca_of_p_current[index_1]);
-        p_sca_of_p_current[index_1] = NULL;
+        free(p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR]);
+        p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR] = NULL;
       }
       else
       {
-        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index_1], size);
+        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR], size);
         if (ptr != NULL)
         {
-          p_sca_of_p_current[index_1] = ptr;
+          p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR] = ptr;
           if (n_prev > n_cur)
           {
-            if ( p_sca_of_p_control[index_1] != NULL)
+            if ( p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR] != NULL)
             {
               //Викликаємо функцію повернення нових налаштувань у попередні значення
-              (*copy_settings_LN)(mem_for_prt, (p_sca_of_p_control == spca_of_p_prt), ptr, p_sca_of_p_control[index_1], n_cur, n_prev);
+              (*copy_settings_LN)(mem_for_prt, (p_sca_of_p_control == spca_of_p_prt), ptr, p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR], n_cur, n_prev);
             }
             else
             {
@@ -2222,57 +2223,57 @@ void copy_settings_MEANDER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
 size_t size_all_settings(void)
 {
   size_t size = sizeof(__SETTINGS_FIX);
-  for (size_t i = 0; i < CA_MAX; i++)
+  for (enum _id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
   {
     size_t size_block;
     switch (i)
     {
-    case CA_INPUT:
+    case ID_FB_INPUT:
       {
         size_block = current_config.n_input*sizeof(__settings_for_INPUT);
         break;
       }
-    case CA_OUTPUT:
+    case ID_FB_OUTPUT:
       {
         size_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
         break;
       }
-    case CA_LED:
+    case ID_FB_LED:
       {
         size_block = current_config.n_led*sizeof(__settings_for_LED);
         break;
       }
-    case CA_STANDART_LOGIC_AND:
+    case ID_FB_AND:
       {
         size_block = current_config.n_and*sizeof(__settings_for_AND);
         break;
       }
-    case CA_STANDART_LOGIC_OR:
+    case ID_FB_OR:
       {
         size_block = current_config.n_or*sizeof(__settings_for_OR);
         break;
       }
-    case CA_STANDART_LOGIC_XOR:
+    case ID_FB_XOR:
       {
         size_block = current_config.n_xor*sizeof(__settings_for_XOR);
         break;
       }
-    case CA_STANDART_LOGIC_NOT:
+    case ID_FB_NOT:
       {
         size_block = current_config.n_not*sizeof(__settings_for_NOT);
         break;
       }
-    case CA_STANDART_LOGIC_TIMER:
+    case ID_FB_TIMER:
       {
         size_block = current_config.n_timer*sizeof(__settings_for_TIMER);
         break;
       }
-    case CA_STANDART_LOGIC_TRIGGER:
+    case ID_FB_TRIGGER:
       {
         size_block = current_config.n_trigger*sizeof(__settings_for_TRIGGER);
         break;
       }
-    case CA_MEANDER:
+    case ID_FB_MEANDER:
       {
         size_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
         break;
@@ -2306,7 +2307,7 @@ void copy_settings(
 {
   *targret_fix = *source_fix;
   
-  for (size_t i = 0; i < CA_MAX; i++)
+  for (enum _id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
   {
     if (source_dyn[i] != NULL)
     {
@@ -2314,7 +2315,7 @@ void copy_settings(
       void (*copy_settings_LN)(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
       switch (i)
       {
-        case CA_INPUT:
+        case ID_FB_INPUT:
           {
             //Дискретний вхід
             n_prev = source_conf->n_input;
@@ -2322,7 +2323,7 @@ void copy_settings(
 
             break;
           }
-        case CA_OUTPUT:
+        case ID_FB_OUTPUT:
           {
             //Дискретний вихід
             n_prev = source_conf->n_output;
@@ -2330,7 +2331,7 @@ void copy_settings(
 
             break;
           }
-        case CA_LED:
+        case ID_FB_LED:
           {
             //Світлоіндимкатор
             n_prev = source_conf->n_led;
@@ -2338,7 +2339,7 @@ void copy_settings(
 
             break;
           }
-        case CA_STANDART_LOGIC_AND:
+        case ID_FB_AND:
           {
             //Елемент "І"
             n_prev = source_conf->n_and;
@@ -2346,7 +2347,7 @@ void copy_settings(
 
             break;
           }
-        case CA_STANDART_LOGIC_OR:
+        case ID_FB_OR:
           {
             //Елемент "АБО"
             n_prev = source_conf->n_or;
@@ -2354,7 +2355,7 @@ void copy_settings(
 
             break;
           }
-        case CA_STANDART_LOGIC_XOR:
+        case ID_FB_XOR:
           {
             //Елемент "Викл.АБО"
             n_prev = source_conf->n_xor;
@@ -2362,7 +2363,7 @@ void copy_settings(
 
             break;
           }
-        case CA_STANDART_LOGIC_NOT:
+        case ID_FB_NOT:
           {
             //Елемент "НЕ"
             n_prev = source_conf->n_not;
@@ -2370,7 +2371,7 @@ void copy_settings(
 
             break;
           }
-        case CA_STANDART_LOGIC_TIMER:
+        case ID_FB_TIMER:
           {
             //Елемент "Таймер"
             n_prev = source_conf->n_timer;
@@ -2378,7 +2379,7 @@ void copy_settings(
 
             break;
           }
-        case CA_STANDART_LOGIC_TRIGGER:
+        case ID_FB_TRIGGER:
           {
             //Елемент "Триґер"
             n_prev = source_conf->n_trigger;
@@ -2386,7 +2387,7 @@ void copy_settings(
 
             break;
           }
-        case CA_MEANDER:
+        case ID_FB_MEANDER:
           {
             //Функціональний блок "Генератор періодичних сигналів"
             n_prev = source_conf->n_meander;
@@ -2401,10 +2402,10 @@ void copy_settings(
           }
       }
       
-      if ((n_prev != 0) && (targret_dyn[i] != NULL))
+      if ((n_prev != 0) && (targret_dyn[i - _ID_FB_FIRST_VAR] != NULL))
       {
         //Викликаємо функцію повернення нових налаштувань у попередні значення
-        (*copy_settings_LN)((targret_dyn == spca_of_p_prt), (source_dyn == spca_of_p_prt), targret_dyn[i], source_dyn[i], 0, n_prev);
+        (*copy_settings_LN)((targret_dyn == spca_of_p_prt), (source_dyn == spca_of_p_prt), targret_dyn[i - _ID_FB_FIRST_VAR], source_dyn[i - _ID_FB_FIRST_VAR], 0, n_prev);
       }
       else
       {
