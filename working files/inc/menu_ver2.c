@@ -10,6 +10,7 @@ void main_manu_function_ver2(void)
   {
     static unsigned int prev_edit;
     
+    unsigned int action;
     switch (current_state_menu2.current_level)
     {
     case PASSWORD_MENU2_LEVEL:
@@ -26,7 +27,7 @@ void main_manu_function_ver2(void)
         if (new_state_keyboard !=0)
         {
           //Пріоритет стоїть на обновлені екрану
-          if((new_state_keyboard & (1<<BIT_REWRITE)) !=0)
+          if ( (action = (new_state_keyboard & (1<<BIT_REWRITE ))) !=0)
           {
             previous_state_cursor.position_cursor_x = current_state_menu2.position_cursor_x;              
             previous_state_cursor.cursor_on = current_state_menu2.cursor_on;
@@ -41,7 +42,7 @@ void main_manu_function_ver2(void)
             
             //Формуємо екран відображення
             p_menu_param_1 = &new_password;
-            unsigned int view = 0;
+            unsigned int view = false;
             p_menu_param_2 = &view;
             if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
             else
@@ -50,143 +51,103 @@ void main_manu_function_ver2(void)
               total_error_sw_fixed(100);
             }
             //Очищаємо біт обновлення екрану
-            new_state_keyboard &= (unsigned int)(~(1<<BIT_REWRITE));
+            new_state_keyboard &= (unsigned int)(~action);
           }
-          else
+          else if (
+                   ((action = (new_state_keyboard & (1<<BIT_KEY_UP   ))) !=0) ||
+                   ((action = (new_state_keyboard & (1<<BIT_KEY_DOWN ))) !=0) ||
+                   ((action = (new_state_keyboard & (1<<BIT_KEY_RIGHT))) !=0) ||
+                   ((action = (new_state_keyboard & (1<<BIT_KEY_LEFT ))) !=0)
+                  )   
           {
-            if (new_state_keyboard == (1<<BIT_KEY_ENTER))
+            unsigned int chosen_number;
+            if      (action & (1<<BIT_KEY_UP   )) chosen_number = 1;
+            else if (action & (1<<BIT_KEY_RIGHT)) chosen_number = 2;
+            else if (action & (1<<BIT_KEY_DOWN )) chosen_number = 3;
+            else if (action & (1<<BIT_KEY_LEFT )) chosen_number = 4;
+            else
             {
-              //Натиснута кнопка ENTER
-              current_state_menu2.current_level = next_level_in_current_level_menu2[current_state_menu2.current_level];
-              current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
-              current_state_menu2.position_cursor_x = previous_state_cursor.position_cursor_x;
-              current_state_menu2.cursor_on = previous_state_cursor.cursor_on;
-              current_state_menu2.cursor_blinking_on = previous_state_cursor.cursor_blinking_on;
-              new_level_menu();
-
-              if (
-                  (new_password == settings_fix.password_1) || 
-                  (new_password == settings_fix.password_2)
-                 )   
-              {
-                //Пароль зійшовся
-                //Переходимо у попереднє меню у новому режимі дозволу редагування
-                current_state_menu2.edition =  (new_password == settings_fix.password_2) ? 2 : 1;
-              }
-              else
-              {
-                //Пароль не зійшовся
-                //Переходимо у попереднє меню з попереднім режимом редагування
-                current_ekran.edition = prev_edit;
-              }
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(44);
+            }
               
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ENTER));
-              //Виставляємо біт обновлення екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_ESC))
-            {
-              //Натиснута кнопка ESC
-
-              //Переходимо у попереднє меню з попереднім режимом редагування
-              current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-              current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
-              current_state_menu2.position_cursor_x = previous_state_cursor.position_cursor_x;
-              current_state_menu2.cursor_on = previous_state_cursor.cursor_on;
-              current_state_menu2.cursor_blinking_on = previous_state_cursor.cursor_blinking_on;
-              new_level_menu();
-              current_state_menu2.edition = prev_edit;
+            new_password = new_password*10 + chosen_number;
+            number_symbols++;
+            current_state_menu2.position_cursor_x++;
               
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ESC));
-              //Виставляємо біт обновлення екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_UP))
+            //Формуємо екран відображення
+            unsigned int view = true;
+            p_menu_param_2 = &view;
+            if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
+            else
             {
-              //Натиснута кнопка UP
-              new_password = new_password*10 + 1;
-              number_symbols++;
-              current_state_menu2.position_cursor_x++;
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(101);
+            }
               
-              //Формуємо екран відображення
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(101);
-              }
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_UP));
-              //Перевіряємо чи не натиснуто максимальну кількість символів для паролю (4) і якщо це так, то автоматично приймаємо його
-              if (number_symbols >= 4) new_state_keyboard |= (1<<BIT_KEY_ENTER);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_DOWN))
-            {
-              //Натиснута кнопка DOWN
-              new_password = new_password*10 + 3;
-              number_symbols++;
-              current_state_menu2.position_cursor_x++;
+            //Очистити сигналізацію, що натиснута кнопка 
+            new_state_keyboard &= (unsigned int)(~action);
+              
+            //Перевіряємо чи не натиснуто максимальну кількість символів для паролю (4) і якщо це так, то автоматично приймаємо його
+            if (number_symbols >= 4) new_state_keyboard |= (1<<BIT_KEY_ENTER);
+          }
+          else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ENTER))) !=0)
+          {
+            //Натиснута кнопка ENTER
+            current_state_menu2.current_level = next_level_in_current_level_menu2[current_state_menu2.current_level];
+            current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
+            current_state_menu2.position_cursor_x = previous_state_cursor.position_cursor_x;
+            current_state_menu2.cursor_on = previous_state_cursor.cursor_on;
+            current_state_menu2.cursor_blinking_on = previous_state_cursor.cursor_blinking_on;
+            new_level_menu();
 
-              //Формуємо екран відображення
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(102);
-              }
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_DOWN));
-              //Перевіряємо чи не натиснуто максимальну кількість символів для паролю (4) і якщо це так, то автоматично приймаємо його
-              if (number_symbols >= 4) new_state_keyboard |= (1<<BIT_KEY_ENTER);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_RIGHT))
+            if (
+                (new_password == settings_fix.password_1) || 
+                (new_password == settings_fix.password_2)
+               )   
             {
-              //Натиснута кнопка RIGHT
-              new_password = new_password*10 + 2;
-              number_symbols++;
-              current_state_menu2.position_cursor_x++;
-
-              //Формуємо екран відображення
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(103);
-              }
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_RIGHT));
-              //Перевіряємо чи не натиснуто максимальну кількість символів для паролю (4) і якщо це так, то автоматично приймаємо його
-              if (number_symbols >= 4) new_state_keyboard |= (1<<BIT_KEY_ENTER);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_LEFT))
-            {
-              //Натиснута кнопка LEFT
-              new_password = new_password*10 + 4;
-              number_symbols++;
-              current_state_menu2.position_cursor_x++;
-
-              //Формуємо екран відображення
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(104);
-              }
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_LEFT));
-              //Перевіряємо чи не натиснуто максимальну кількість символів для паролю (4) і якщо це так, то автоматично приймаємо його
-              if (number_symbols >= 4) new_state_keyboard |= (1<<BIT_KEY_ENTER);
+              //Пароль зійшовся
+              //Переходимо у попереднє меню у новому режимі дозволу редагування
+              current_state_menu2.edition =  (new_password == settings_fix.password_2) ? 2 : 1;
             }
             else
             {
-              //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
-              unsigned int temp_data = new_state_keyboard;
-              new_state_keyboard &= ~temp_data;
+              //Пароль не зійшовся
+              //Переходимо у попереднє меню з попереднім режимом редагування
+              current_ekran.edition = prev_edit;
             }
+              
+            //Виставляємо біт обновлення екрану
+            new_state_keyboard |= (1<<BIT_REWRITE);
+
+            //Очистити сигналізацію, що натиснута кнопка 
+            new_state_keyboard &= (unsigned int)(~action);
           }
-          
+          else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ESC))) !=0)
+          {
+            //Натиснута кнопка ESC
+
+            //Переходимо у попереднє меню з попереднім режимом редагування
+            current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+            current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
+            current_state_menu2.position_cursor_x = previous_state_cursor.position_cursor_x;
+            current_state_menu2.cursor_on = previous_state_cursor.cursor_on;
+            current_state_menu2.cursor_blinking_on = previous_state_cursor.cursor_blinking_on;
+            new_level_menu();
+            current_state_menu2.edition = prev_edit;
+              
+            //Виставляємо біт обновлення екрану
+            new_state_keyboard |= (1<<BIT_REWRITE);
+
+            //Очистити сигналізацію, що натиснута кнопка 
+            new_state_keyboard &= (unsigned int)(~action);
+          }
+          else
+          {
+            //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
+            unsigned int temp_data = new_state_keyboard;
+            new_state_keyboard &= ~temp_data;
+          }
         }
         break;
       }
@@ -200,9 +161,13 @@ void main_manu_function_ver2(void)
         if (new_state_keyboard !=0)
         {
           //Пріоритет стоїть на обновлені екрану
-          if((new_state_keyboard & (1<<BIT_REWRITE)) !=0)
+          if (
+              ( (action = (new_state_keyboard & (1<<BIT_REWRITE ))) !=0) ||
+              ( (action = (new_state_keyboard & (1<<BIT_KEY_UP  ))) !=0) ||
+              ( (action = (new_state_keyboard & (1<<BIT_KEY_DOWN))) !=0)
+             )   
           {
-            if (current_state_menu2.func_show != NULL) current_state_menu2.func_move(0);
+            if (current_state_menu2.func_show != NULL) current_state_menu2.func_move(action);
             else
             {
               //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
@@ -217,131 +182,86 @@ void main_manu_function_ver2(void)
               total_error_sw_fixed(65);
             }
             //Очищаємо біт обновлення екрану
-            new_state_keyboard &= (unsigned int)(~(1<<BIT_REWRITE));
+            new_state_keyboard &= (unsigned int)(~action);
+          }
+          else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ENTER))) !=0)
+          {
+            //Натиснута кнопка ENTER
+            const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL};
+            const enum _menu2_levels *p;
+              
+            switch (current_state_menu2.current_level)
+            {
+            case MAIN_MANU2_LEVEL:
+              {
+                p = next_for_main_menu2;
+                break;
+              }
+            default:
+              {
+                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+                total_error_sw_fixed(63);
+              }
+            }
+              
+            enum _menu2_levels temp_current_level = p[current_state_menu2.index_position];
+            if (current_state_menu2.current_level != temp_current_level) 
+            {
+              previous_level_in_current_level_menu2[temp_current_level] = current_state_menu2.current_level;
+                
+              current_state_menu2.current_level = temp_current_level;
+              current_state_menu2.index_position = position_in_current_level_menu2[temp_current_level];
+              new_level_menu();
+            }
+              
+              
+//            else if(current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS)
+//            {
+//              //Переходимо на меню вибору відображення вимірювань струмів
+//              current_ekran.current_level = EKRAN_MEASURMENT_CURRENT;
+//              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
+//            }
+//            else if(current_state_menu2.index_position == INDEX_MAIN_M2_INPUTS_OUTPUTS)
+//            {
+//              //Переходимо на меню вибору відображення списку вибору входів-виходів для відображення їх миттєвого стану
+//              current_ekran.current_level = EKRAN_LIST_INPUTS_OUTPUTS;
+//              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
+//            }
+//            else if(current_state_menu2.index_position == INDEX_MAIN_M2_REGISTRATORS)
+//            {
+//              //Переходимо на меню вибору відображення списку реєстраторів
+//              current_ekran.current_level = EKRAN_LIST_REGISTRATORS;
+//              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
+//            }
+//            else if(current_state_menu2.index_position == INDEX_MAIN_M2_SETTINGS)
+//            {
+//              //Переходимо на меню настройок
+//              current_ekran.current_level = EKRAN_CHOSE_SETTINGS;
+//              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
+//            }
+//            else if(current_state_menu2.index_position == INDEX_MAIN_M2_DIAGNOSTYKA)
+//            {
+//              //Переходимо на меню настройок
+//              current_ekran.current_level = EKRAN_DIAGNOSTYKA;
+//              //Для того, щоб при першому входженні завжди список починався із першої помилки обнуляємо цю позицію
+//              position_in_current_level_menu[current_ekran.current_level] = 0;
+//              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
+//            }
+
+            //Виставляємо команду на обновлекння нового екрану
+            new_state_keyboard |= (1<<BIT_REWRITE);
+              
+            //Очистити сигналізацію, що натиснута кнопка 
+            new_state_keyboard &= (unsigned int)(~action);
           }
           else
           {
-            if (new_state_keyboard == (1<<BIT_KEY_ENTER))
-            {
-              //Натиснута кнопка ENTER
-              const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL};
-              const enum _menu2_levels *p;
-              
-              switch (current_state_menu2.current_level)
-              {
-              case MAIN_MANU2_LEVEL:
-                {
-                  p = next_for_main_menu2;
-                  break;
-                }
-              default:
-                {
-                  //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                  total_error_sw_fixed(63);
-                }
-              }
-              
-              enum _menu2_levels temp_current_level = p[current_state_menu2.index_position];
-              if (current_state_menu2.current_level != temp_current_level) 
-              {
-                previous_level_in_current_level_menu2[temp_current_level] = current_state_menu2.current_level;
-                
-                current_state_menu2.current_level = temp_current_level;
-                current_state_menu2.index_position = position_in_current_level_menu2[temp_current_level];
-                new_level_menu();
-              }
-              
-              
-//              else if(current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS)
-//              {
-//                //Переходимо на меню вибору відображення вимірювань струмів
-//                current_ekran.current_level = EKRAN_MEASURMENT_CURRENT;
-//                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-//              }
-//              else if(current_state_menu2.index_position == INDEX_MAIN_M2_INPUTS_OUTPUTS)
-//              {
-//                //Переходимо на меню вибору відображення списку вибору входів-виходів для відображення їх миттєвого стану
-//                current_ekran.current_level = EKRAN_LIST_INPUTS_OUTPUTS;
-//                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-//              }
-//              else if(current_state_menu2.index_position == INDEX_MAIN_M2_REGISTRATORS)
-//              {
-//                //Переходимо на меню вибору відображення списку реєстраторів
-//                current_ekran.current_level = EKRAN_LIST_REGISTRATORS;
-//                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-//              }
-//              else if(current_state_menu2.index_position == INDEX_MAIN_M2_SETTINGS)
-//              {
-//                //Переходимо на меню настройок
-//                current_ekran.current_level = EKRAN_CHOSE_SETTINGS;
-//                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-//              }
-//              else if(current_state_menu2.index_position == INDEX_MAIN_M2_DIAGNOSTYKA)
-//              {
-//                //Переходимо на меню настройок
-//                current_ekran.current_level = EKRAN_DIAGNOSTYKA;
-//                //Для того, щоб при першому входженні завжди список починався із першої помилки обнуляємо цю позицію
-//                position_in_current_level_menu[current_ekran.current_level] = 0;
-//                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-//              }
-
-              //Виставляємо команду на обновлекння нового екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-              
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ENTER));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_UP))
-            {
-              //Натиснута кнопка UP
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_move(2);
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(85);
-              }
-              position_in_current_level_menu2[current_state_menu2.current_level] = current_state_menu2.index_position;
-              
-              //Формуємо екран
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(66);
-              }
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_UP));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_DOWN))
-            {
-              //Натиснута кнопка DOWN
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_move(1);
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(86);
-              }
-              position_in_current_level_menu2[current_state_menu2.current_level] = current_state_menu2.index_position;
-              
-              //Формуємо екран рівня головного меню
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(67);
-              }
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_DOWN));
-            }
-            else
-            {
-              //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
-              unsigned int temp_data = new_state_keyboard;
-              new_state_keyboard &= ~temp_data;
-            }
+            //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
+            unsigned int temp_data = new_state_keyboard;
+            new_state_keyboard &= ~temp_data;
           }
-          
         }
+          
         break;
       }
     case TIME_MANU2_LEVEL:
@@ -358,9 +278,9 @@ void main_manu_function_ver2(void)
         if (new_state_keyboard !=0)
         {
           //Пріоритет стоїть на обновлені екрану
-          if((new_state_keyboard & (1<<BIT_REWRITE)) !=0)
+          if( (action = (new_state_keyboard & (1<<BIT_REWRITE))) != 0)
           {
-            if (current_state_menu2.func_show != NULL) current_state_menu2.func_move(0);
+            if (current_state_menu2.func_show != NULL) current_state_menu2.func_move(action);
             else
             {
               //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
@@ -387,230 +307,180 @@ void main_manu_function_ver2(void)
               total_error_sw_fixed(68);
             }
             //Очищаємо біт обновлення екрану
-            new_state_keyboard &= (unsigned int)(~(1<<BIT_REWRITE));
+            new_state_keyboard &= (unsigned int)(~action);
           }
-          else
+          else if (
+                   ((action = (new_state_keyboard & (1<<BIT_KEY_UP  ))) !=0) ||
+                   ((action = (new_state_keyboard & (1<<BIT_KEY_DOWN))) !=0)
+                  )
           {
-            if (new_state_keyboard == (1<<BIT_KEY_ENTER))
+            //Натиснута кнопка UP
+            if(current_state_menu2.edition <= 1)
             {
-              //Натиснута кнопка ENTER
-              unsigned int result;
-              if (current_state_menu2.func_edit != NULL) result = current_state_menu2.func_edit();
+              //Переміщення у режимі спостерігання
+              if (current_state_menu2.func_show != NULL) current_state_menu2.func_move(action);
               else
               {
                 //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(76);
+                total_error_sw_fixed(88);
               }
-              if(current_state_menu2.edition <= 1)
-              {
-                prev_edit = current_state_menu2.edition;
-                
-                if ((settings_fix.password_2 != 0) || (current_state_menu2.edition == 0))
-                {
-                  //Переходимо на меню запиту паролю
-                  next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = previous_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = current_state_menu2.current_level;
-                  current_state_menu2.current_level = PASSWORD_MENU2_LEVEL;
-                  current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
-                  new_level_menu();
-                }
-                else
-                {
-                  //Переходимо у режим редагування
-                  current_state_menu2.edition = 2;
-                }
-              }
-              else if (current_state_menu2.edition == 2)
-              {
-                //Проводимо аналіз над редагованими даними
-                switch (result)
-                {
-                case 1:
-                  {
-                    //Дані не зазнали змін
-                    current_state_menu2.edition = prev_edit;
-                    break;
-                  }
-                case 2:
-                  {
-                    //Дані зазнали змін і є у діапазоні
-                    current_state_menu2.edition = 3;
-                    break;
-                  }
-                case 3:
-                  {
-                    //Дані зазнали змін але не є у діапазоні
-                    current_state_menu2.edition = 4;
-                    break;
-                  }
-                }
-              }
-              else if (current_state_menu2.edition == 3)
-              {
-                current_state_menu2.edition = prev_edit;
-              }
-              else if (current_state_menu2.edition == 4)
-              {
-                current_state_menu2.edition = 2;
-              }
-
-              
-              if(current_state_menu2.edition == 3) make_ekran_ask_rewrite();
-              else if(current_state_menu2.edition == 4) 
-              {
-                const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-                {
-                  " Вых.за диапазон",
-                  " Вих.за діапазон",
-                  "  Out of Limits ",
-                  "Вых.за диапазон "
-                };
-                make_ekran_about_error(information_about_error);
-              }
-              else
-                //Виставляємо біт обновлення екрану
-                new_state_keyboard |= (1<<BIT_REWRITE);
-              
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ENTER));
+              position_in_current_level_menu2[current_state_menu2.current_level] = current_state_menu2.index_position;
             }
-            else if (new_state_keyboard == (1<<BIT_KEY_ESC))
+            else
             {
-              //Натиснута кнопка ESC
-
-              if(current_state_menu2.edition <= 1)
+              //Редагування числа
+              if (current_state_menu2.func_change != NULL) current_state_menu2.func_change(action); 
+              else
               {
-                //Вихід у режимі спостерігання
-                //Переходимо у попереднє меню
-                current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+                total_error_sw_fixed(77);
+              }
+            }
+
+            //Формуємо екран
+            if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
+            else
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(69);
+            }
+            //Очистити сигналізацію, що натиснута кнопка 
+            new_state_keyboard &= (unsigned int)(~action);
+          }
+          else if (
+                   ((action = (new_state_keyboard & (1<<BIT_KEY_RIGHT))) !=0) ||
+                   ((action = (new_state_keyboard & (1<<BIT_KEY_LEFT ))) !=0)
+                  )
+          {
+            if (current_state_menu2.func_change != NULL) current_state_menu2.func_change(action); 
+            else
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(81);
+            }
+                
+            //Формуємо екран
+            if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
+            else
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(73);
+            }
+            //Очистити сигналізацію, що натиснута кнопка 
+            new_state_keyboard &= (unsigned int)(~action);
+          }
+          else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ENTER))) != 0)
+          {
+            //Натиснута кнопка ENTER
+            unsigned int result;
+            if (current_state_menu2.func_edit != NULL) result = current_state_menu2.func_edit();
+            else
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(76);
+            }
+            if(current_state_menu2.edition <= 1)
+            {
+              prev_edit = current_state_menu2.edition;
+               
+              if ((settings_fix.password_2 != 0) || (current_state_menu2.edition == 0))
+              {
+                //Переходимо на меню запиту паролю
+                next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = previous_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = current_state_menu2.current_level;
+                current_state_menu2.current_level = PASSWORD_MENU2_LEVEL;
                 current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
                 new_level_menu();
               }
               else
               {
-                //Вихід у режимі редагування без введення змін
-                current_state_menu2.edition = prev_edit;
+                //Переходимо у режим редагування
+                current_state_menu2.edition = 2;
               }
-
-              //Виставляємо команду на обновлекння нового екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ESC));
             }
-            else if (new_state_keyboard == (1<<BIT_KEY_UP))
+            else if (current_state_menu2.edition == 2)
             {
-              //Натиснута кнопка UP
-              if(current_state_menu2.edition <= 1)
+              //Проводимо аналіз над редагованими даними
+              switch (result)
               {
-                //Переміщення у режимі спостерігання
-                if (current_state_menu2.func_show != NULL) current_state_menu2.func_move(2);
-                else
+              case 1:
                 {
-                  //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                  total_error_sw_fixed(88);
+                  //Дані не зазнали змін
+                  current_state_menu2.edition = prev_edit;
+                  break;
                 }
-                position_in_current_level_menu2[current_state_menu2.current_level] = current_state_menu2.index_position;
-              }
-              else
-              {
-                //Редагування числа
-                if (current_state_menu2.func_change != NULL) current_state_menu2.func_change(1); 
-                else
+              case 2:
                 {
-                  //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                  total_error_sw_fixed(77);
+                  //Дані зазнали змін і є у діапазоні
+                  current_state_menu2.edition = 3;
+                  break;
+                }
+              case 3:
+                {
+                  //Дані зазнали змін але не є у діапазоні
+                  current_state_menu2.edition = 4;
+                  break;
                 }
               }
-
-              //Формуємо екран
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(69);
-              }
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_UP));
             }
-            else if (new_state_keyboard == (1<<BIT_KEY_DOWN))
+            else if (current_state_menu2.edition == 3)
             {
-              //Натиснута кнопка DOWN
-              if(current_state_menu2.edition <= 1)
-              {
-                //Переміщення у режимі спостерігання
-                if (current_state_menu2.func_show != NULL) current_state_menu2.func_move(1);
-                else
-                {
-                  //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                  total_error_sw_fixed(89);
-                }
-                position_in_current_level_menu2[current_state_menu2.current_level] = current_state_menu2.index_position;
-              }
-              else
-              {
-                //Редагування числа
-                if (current_state_menu2.func_change != NULL) current_state_menu2.func_change(0); 
-                else
-                {
-                  //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                  total_error_sw_fixed(77);
-                }
-              }
-
-              //Формуємо екран
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(70);
-              }
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_DOWN));
+              current_state_menu2.edition = prev_edit;
             }
-            else if (new_state_keyboard == (1<<BIT_KEY_RIGHT))
+            else if (current_state_menu2.edition == 4)
             {
-              if (current_state_menu2.func_change != NULL) current_state_menu2.func_change(3); 
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(81);
-              }
-                
-              //Формуємо екран
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(73);
-              }
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_RIGHT));
+              current_state_menu2.edition = 2;
             }
-            else if (new_state_keyboard == (1<<BIT_KEY_LEFT))
-            {
-              if (current_state_menu2.func_change != NULL) current_state_menu2.func_change(2); 
-              else
-              {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(82);
-              }
 
-              //Формуємо екран
-              if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
-              else
+            if(current_state_menu2.edition == 3) make_ekran_ask_rewrite();
+            else if(current_state_menu2.edition == 4) 
+            {
+              const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
               {
-                //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-                total_error_sw_fixed(74);
-              }
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_LEFT));
+                " Вых.за диапазон",
+                " Вих.за діапазон",
+                "  Out of Limits ",
+                "Вых.за диапазон "
+              };
+              make_ekran_about_error(information_about_error);
             }
             else
             {
-              //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
-              unsigned int temp_data = new_state_keyboard;
-              new_state_keyboard &= ~temp_data;
+              //Виставляємо біт обновлення екрану
+              new_state_keyboard |= (1<<BIT_REWRITE);
             }
+              
+            //Очистити сигналізацію, що натиснута кнопка 
+            new_state_keyboard &= (unsigned int)(~action);
+          }
+          else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ESC))) !=0)
+          {
+            //Натиснута кнопка ESC
+
+            if(current_state_menu2.edition <= 1)
+            {
+              //Вихід у режимі спостерігання
+              //Переходимо у попереднє меню
+              current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+              current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
+              new_level_menu();
+            }
+            else
+            {
+              //Вихід у режимі редагування без введення змін
+              current_state_menu2.edition = prev_edit;
+            }
+
+            //Виставляємо команду на обновлекння нового екрану
+            new_state_keyboard |= (1<<BIT_REWRITE);
+
+            //Очистити сигналізацію, що натиснута кнопка 
+            new_state_keyboard &= (unsigned int)(~action);
+          }
+          else
+          {
+            //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
+            unsigned int temp_data = new_state_keyboard;
+            new_state_keyboard &= ~temp_data;
           }
         }
         break;

@@ -33,7 +33,7 @@ void make_ekran_password(void)
   int index_language = index_language_in_array(settings_fix.language);
   for(size_t index_1 = 0; index_1 < MAX_ROW_FOR_LEVEL_PASSWORD; index_1++)
   {
-    for(size_t index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
+    for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
     {
       name_string_tmp[index_1][index_2] = (index_1 == INDEX_PASSWORD_M2_LINE1) ? point_to_working_array[index_language][index_2] : ' ';
     }

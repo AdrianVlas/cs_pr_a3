@@ -5,16 +5,16 @@
 Функція переміщення по меню
 
 Вхідні параметри
-0 - перемалювати меню
-1 - рухатися вверх
-2 - рухатися вниз
+(1 << BIT_REWRITE) - перемалювати меню
+(1 << BIT_KEY_DOWN) - рухатися вниз
+(1 << BIT_KEY_UP) - рухатися вверх
 */
 /*****************************************************/
 void move_into_main(unsigned int action)
 {
-  if (action <= 1)
+  if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
   {
-    if (action == 1) current_state_menu2.index_position++;
+    if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position++;
     do
     {
       if(current_state_menu2.index_position >= MAX_ROW_MAIN_M2) current_state_menu2.index_position = 0;
@@ -26,9 +26,9 @@ void move_into_main(unsigned int action)
         if(++current_state_menu2.index_position >= MAX_ROW_MAIN_M2) current_state_menu2.index_position = 0;
       }
     }
-    while ((action == 1) &&(current_state_menu2.index_position >= MAX_ROW_MAIN_M2));
+    while ((action & (1 << BIT_KEY_DOWN)) && (current_state_menu2.index_position >= MAX_ROW_MAIN_M2));
   }
-  else if (action == 2)
+  else if (action & (1 << BIT_KEY_UP))
   {
     current_state_menu2.index_position--;
     do

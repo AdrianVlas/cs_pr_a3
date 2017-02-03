@@ -2,22 +2,22 @@
 
 /*****************************************************/
 /*
-Функція переміщення по меню
+Функція переміщення
 
 Вхідні параметри
-0 - перемалювати меню
-2 - рухатися вверх
-1 - рухатися вниз
+(1 << BIT_REWRITE) - перемалювати меню
+(1 << BIT_KEY_DOWN) - рухатися вниз
+(1 << BIT_KEY_UP) - рухатися вверх
 */
 /*****************************************************/
 void move_into_time(unsigned int action)
 {
-  if (action <= 1)
+  if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
   {
-    if (action == 1) current_state_menu2.index_position += MAX_ROW_LCD;
+    if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position += MAX_ROW_LCD;
     if(current_state_menu2.index_position >= MAX_ROW_TIME_CALIBRATION_M2) current_state_menu2.index_position = 0;
   }
-  else if (action == 2)
+  else if (action & (1 << BIT_KEY_UP))
   {
     current_state_menu2.index_position -= MAX_ROW_LCD;
     if(current_state_menu2.index_position < 0) current_state_menu2.index_position = MAX_ROW_TIME_CALIBRATION_M2 - MAX_ROW_LCD;
@@ -214,24 +214,25 @@ unsigned int edit_time()
 //Зміна часу з системи меню
 /*****************************************************
 Вхідні параметри
-  0 - натснуто кнопку вниз
-  1 - натиснуто кнопку вверх
-  2 - ліворуч
-  3 - праворуч
+(1 << BIT_KEY_DOWN) - натснуто кнопку вниз
+(1 << BIT_KEY_UP)   - атиснуто кнопку вверх
+(1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+(1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+
 Вхідні параметри
   Немає
 *****************************************************/
 void change_time(unsigned int action)
 {
   //Вводимо число у відповідне поле
-  if ((action == 0) || (action == 1))
+  if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
   {
     if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
     {
       if(current_state_menu2.position_cursor_x == COL_DY1)
       {
         unsigned int temp_value = time_edit[4] >> 4;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
       
         time_edit[4] &= 0xf;
         time_edit[4] |= (temp_value << 4);
@@ -239,7 +240,7 @@ void change_time(unsigned int action)
       else if(current_state_menu2.position_cursor_x == COL_DY2)
       {
         unsigned int temp_value = time_edit[4] & 0xf;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[4] &= 0xf0;
         time_edit[4] |= temp_value;
@@ -247,7 +248,7 @@ void change_time(unsigned int action)
       else if(current_state_menu2.position_cursor_x == COL_MY1)
       {
         unsigned int temp_value = time_edit[5] >> 4;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[5] &= 0xf;
         time_edit[5] |= (temp_value << 4);
@@ -255,7 +256,7 @@ void change_time(unsigned int action)
       else if(current_state_menu2.position_cursor_x == COL_MY2)
       {
         unsigned int temp_value = time_edit[5] & 0xf;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[5] &= 0xf0;
         time_edit[5] |= temp_value;
@@ -263,7 +264,7 @@ void change_time(unsigned int action)
       else if(current_state_menu2.position_cursor_x == COL_SY1)
       {
         unsigned int temp_value = time_edit[6] >> 4;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[6] &= 0xf;
         time_edit[6] |= (temp_value << 4);
@@ -271,7 +272,7 @@ void change_time(unsigned int action)
       else if(current_state_menu2.position_cursor_x == COL_SY2)
       {
         unsigned int temp_value = time_edit[6] & 0xf;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[6] &= 0xf0;
         time_edit[6] |= temp_value;
@@ -282,7 +283,7 @@ void change_time(unsigned int action)
       if(current_state_menu2.position_cursor_x == COL_HT1)
       {
         unsigned int temp_value = time_edit[3] >> 4;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[3] &= 0xf;
         time_edit[3] |= (temp_value << 4);
@@ -290,7 +291,7 @@ void change_time(unsigned int action)
       else if(current_state_menu2.position_cursor_x == COL_HT2)
       {
         unsigned int temp_value = time_edit[3] & 0xf;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[3] &= 0xf0;
         time_edit[3] |= temp_value;
@@ -298,7 +299,7 @@ void change_time(unsigned int action)
       else if(current_state_menu2.position_cursor_x == COL_MT1)
       {
         unsigned int temp_value = time_edit[2] >> 4;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[2] &= 0xf;
         time_edit[2] |= (temp_value << 4);
@@ -306,7 +307,7 @@ void change_time(unsigned int action)
       else if(current_state_menu2.position_cursor_x == COL_MT2)
       {
         unsigned int temp_value = time_edit[2] & 0xf;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[2] &= 0xf0;
         time_edit[2] |= temp_value;
@@ -314,7 +315,7 @@ void change_time(unsigned int action)
       else if(current_state_menu2.position_cursor_x == COL_ST1)
       {
         unsigned int temp_value = time_edit[1] >> 4;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[1] &= 0xf;
         time_edit[1] |= (temp_value << 4);
@@ -322,7 +323,7 @@ void change_time(unsigned int action)
       else if(current_state_menu2.position_cursor_x == COL_ST2)
       {
         unsigned int temp_value = time_edit[1] & 0xf;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         time_edit[1] &= 0xf0;
         time_edit[1] |= temp_value;
@@ -339,7 +340,7 @@ void change_time(unsigned int action)
       {
         unsigned char temp_1 = calibration_edit & 0x20, temp_2 = calibration_edit & 0x1f;
         unsigned int temp_value = temp_2 / 10;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         temp_2 %= 10;
         temp_2 += temp_value*10;
@@ -351,7 +352,7 @@ void change_time(unsigned int action)
       {
         unsigned char temp_1 = calibration_edit & 0x20, temp_2 = calibration_edit & 0x1f;
         unsigned int temp_value = temp_2 % 10;
-        inc_or_dec_value(&temp_value, action);
+        inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
 
         temp_2 = (temp_2 / 10) *10;
         temp_2 += temp_value;
@@ -360,7 +361,7 @@ void change_time(unsigned int action)
       }
     }
   }
-  else if (action == 2)
+  else if (action & (1 << BIT_KEY_LEFT))
   {
     if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
     {
@@ -399,7 +400,7 @@ void change_time(unsigned int action)
       }
     }
   }
-  else if (action == 3)
+  else if (action & (1 << BIT_KEY_RIGHT))
   {
     if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
     {
