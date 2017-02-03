@@ -524,7 +524,7 @@ void main_manu_function(void)
               if(current_ekran.index_position >= MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT) current_ekran.index_position = 0;
               position_in_current_level_menu[EKRAN_MEASURMENT_CURRENT] = current_ekran.index_position;
               //Формуємо екран вимірювання струмів
-              make_ekran_current();
+              make_ekran_measurement();
             }
             else if (
                      (current_ekran.current_level == EKRAN_CHOOSE_SETTINGS_CTRL_PHASE)
@@ -1586,7 +1586,7 @@ void main_manu_function(void)
                 if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT - 1;
                 position_in_current_level_menu[EKRAN_MEASURMENT_CURRENT] = current_ekran.index_position;
                 //Формуємо екран вимірювання струмів вікна
-                make_ekran_current();
+                make_ekran_measurement();
               }
               else if (
                        (current_ekran.current_level == EKRAN_CHOOSE_SETTINGS_CTRL_PHASE)
@@ -1950,7 +1950,7 @@ void main_manu_function(void)
                 if(++current_ekran.index_position >= MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT) current_ekran.index_position = 0;
                 position_in_current_level_menu[EKRAN_MEASURMENT_CURRENT] = current_ekran.index_position;
                 //Формуємо екран вимірювання струмів вікна
-                make_ekran_current();
+                make_ekran_measurement();
               }
               else if (
                        (current_ekran.current_level == EKRAN_CHOOSE_SETTINGS_CTRL_PHASE)

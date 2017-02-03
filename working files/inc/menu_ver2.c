@@ -152,6 +152,7 @@ void main_manu_function_ver2(void)
         break;
       }
     case MAIN_MANU2_LEVEL:
+    case MEASUREMENT_MENU2_LEVEL:
       {
         //Формуємо маску кнопок. які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER)| (1<<BIT_KEY_ESC)|(1<<BIT_REWRITE)| (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
@@ -187,14 +188,18 @@ void main_manu_function_ver2(void)
           else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ENTER))) !=0)
           {
             //Натиснута кнопка ENTER
-            const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL};
-            const enum _menu2_levels *p;
+            const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL};
+            const enum _menu2_levels *p = NULL;
               
             switch (current_state_menu2.current_level)
             {
             case MAIN_MANU2_LEVEL:
               {
                 p = next_for_main_menu2;
+                break;
+              }
+            case MEASUREMENT_MENU2_LEVEL:
+              {
                 break;
               }
             default:
@@ -204,23 +209,19 @@ void main_manu_function_ver2(void)
               }
             }
               
-            enum _menu2_levels temp_current_level = p[current_state_menu2.index_position];
-            if (current_state_menu2.current_level != temp_current_level) 
+            if (p != NULL)
             {
-              previous_level_in_current_level_menu2[temp_current_level] = current_state_menu2.current_level;
+              enum _menu2_levels temp_current_level = p[current_state_menu2.index_position];
+              if (current_state_menu2.current_level != temp_current_level) 
+              {
+                previous_level_in_current_level_menu2[temp_current_level] = current_state_menu2.current_level;
                 
-              current_state_menu2.current_level = temp_current_level;
-              current_state_menu2.index_position = position_in_current_level_menu2[temp_current_level];
-              new_level_menu();
+                current_state_menu2.current_level = temp_current_level;
+                current_state_menu2.index_position = position_in_current_level_menu2[temp_current_level];
+                new_level_menu();
+              }
             }
               
-              
-//            else if(current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS)
-//            {
-//              //Переходимо на меню вибору відображення вимірювань струмів
-//              current_ekran.current_level = EKRAN_MEASURMENT_CURRENT;
-//              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-//            }
 //            else if(current_state_menu2.index_position == INDEX_MAIN_M2_INPUTS_OUTPUTS)
 //            {
 //              //Переходимо на меню вибору відображення списку вибору входів-виходів для відображення їх миттєвого стану
@@ -251,6 +252,24 @@ void main_manu_function_ver2(void)
             //Виставляємо команду на обновлекння нового екрану
             new_state_keyboard |= (1<<BIT_REWRITE);
               
+            //Очистити сигналізацію, що натиснута кнопка 
+            new_state_keyboard &= (unsigned int)(~action);
+          }
+          else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ESC))) !=0)
+          {
+            //Натиснута кнопка ESC
+
+            if (current_state_menu2.current_level != MAIN_MANU2_LEVEL)
+            {
+              //Переходимо у попереднє меню
+              current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+              current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
+              new_level_menu();
+
+              //Виставляємо команду на обновлекння нового екрану
+              new_state_keyboard |= (1<<BIT_REWRITE);
+            }
+
             //Очистити сигналізацію, що натиснута кнопка 
             new_state_keyboard &= (unsigned int)(~action);
           }
@@ -630,6 +649,19 @@ void new_level_menu(void)
       current_state_menu2.func_change = change_time;
       current_state_menu2.edition = 1;
       current_state_menu2.cursor_on = 0;
+      current_state_menu2.cursor_blinking_on = 0;
+      break;
+    }
+  case MEASUREMENT_MENU2_LEVEL:
+    {
+      time_rewrite = 0;
+      
+      current_state_menu2.func_move = move_into_measurement;
+      current_state_menu2.func_show = make_ekran_measurement;
+      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.edition = 0;
+      current_state_menu2.cursor_on = 1;
       current_state_menu2.cursor_blinking_on = 0;
       break;
     }

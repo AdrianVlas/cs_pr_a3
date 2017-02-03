@@ -1406,6 +1406,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_main.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_measurement.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_password.h</name>
         </file>
         <file>

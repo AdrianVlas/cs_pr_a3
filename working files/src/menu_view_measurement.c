@@ -225,12 +225,36 @@ void convert_and_insert_char_for_measurement(unsigned int start_number_digit_aft
 /*****************************************************/
 
 /*****************************************************/
+/*
+Функція переміщення по меню
+
+Вхідні параметри
+(1 << BIT_REWRITE) - перемалювати меню
+(1 << BIT_KEY_DOWN) - рухатися вниз
+(1 << BIT_KEY_UP) - рухатися вверх
+*/
+/*****************************************************/
+void move_into_measurement(unsigned int action)
+{
+  if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
+  {
+    if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position++;
+    if(current_state_menu2.index_position >= MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT) current_state_menu2.index_position = 0;
+  }
+  else if (action & (1 << BIT_KEY_UP))
+  {
+    if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT - 1;
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
 //Формуємо екран відображення струмів
 /*****************************************************/
-void make_ekran_current(void)
+void make_ekran_measurement(void)
 {
   
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT][MAX_COL_LCD] = 
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT][MAX_COL_LCD + 1] = 
   {
     {
       " АВх1 =         ",
@@ -257,7 +281,7 @@ void make_ekran_current(void)
       " АВх4 =         "
     }
   };
-  uint8_t name_string_tmp[MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT][MAX_COL_LCD];
+  uint8_t name_string_tmp[MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT][MAX_COL_LCD + 1];
   
   const uint32_t index_array[MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT] = 
   {
@@ -269,7 +293,7 @@ void make_ekran_current(void)
   
   //Копіюємо вимірювання які потрібні для відображення
   semaphore_measure_values_low1 = 1;
-  for (unsigned int i = 0; i < MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT; i++ ) 
+  for (size_t i = 0; i < MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT; i++ ) 
   {
     unsigned int index_to_copy = index_array[i];
     measurement_low[index_to_copy] = measurement_middle[index_to_copy];
@@ -277,54 +301,52 @@ void make_ekran_current(void)
   semaphore_measure_values_low1 = 0;
 
 
-  int index_language = index_language_in_array(current_settings.language);
-  for(int index_1 = 0; index_1 < MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT; index_1++)
+  int index_language = index_language_in_array(settings_fix.language);
+  for(size_t index_1 = 0; index_1 < MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT; index_1++)
   {
-    for(int index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
+    for(size_t index_2 = 0; index_2 < MAX_COL_LCD + 1; index_2++)
     {
-      name_string_tmp[index_1][index_2] = name_string[index_language][index_1][index_2];
+      name_string_tmp[index_1][index_2] = (index_2 != (MAX_COL_LCD - 1)) ? name_string[index_language][index_1][index_2] : odynyci_vymirjuvannja[index_language][INDEX_A];
     }
-
-    name_string_tmp[index_1][MAX_COL_LCD - 1] = odynyci_vymirjuvannja[index_language][INDEX_A];
   }
   
-  int position_temp = current_ekran.index_position;
-  int index_of_ekran;
+  int position_temp = current_state_menu2.index_position;
+  int index_in_ekran;
 
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій кофігурації
-    if (index_of_ekran < MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT)
+    if (index_in_ekran < MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT)
     {
       /********************************/
       //Вводимо вимірювальні значення  
       /********************************/
-      unsigned int index = index_array[index_of_ekran];
+      unsigned int index = index_array[index_in_ekran];
       unsigned int start_number_digit_after_point = 3;
-      convert_and_insert_char_for_measurement(start_number_digit_after_point, measurement_low[index], 1, 1, name_string_tmp[index_of_ekran], 7);
+      convert_and_insert_char_for_measurement(start_number_digit_after_point, measurement_low[index], 1, 1, name_string_tmp[index_in_ekran], 7);
       /********************************/
 
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string_tmp[index_of_ekran][j];
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_tmp[index_in_ekran][j];
     }
     else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
 
-    index_of_ekran++;
+    index_in_ekran++;
   }
 
   //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
   //Курсор видимий
-  current_ekran.cursor_on = 1;
+  current_state_menu2.cursor_on = 1;
   //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 

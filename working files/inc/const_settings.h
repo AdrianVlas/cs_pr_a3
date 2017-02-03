@@ -4,25 +4,6 @@
 #define NUMBER_IN_AND                   8
 #define NUMBER_IN_OR                    8
 
-//enum _control_array
-//{
-//  CA_INPUT = 0,
-//  CA_OUTPUT,
-//  CA_LED,
-//  
-//  CA_STANDART_LOGIC_AND,
-//  CA_STANDART_LOGIC_OR,
-//  CA_STANDART_LOGIC_XOR,
-//  CA_STANDART_LOGIC_NOT,
-//  CA_STANDART_LOGIC_TIMER,
-//  CA_STANDART_LOGIC_TRIGGER,
-//
-//  CA_MEANDER,
-//  
-//  CA_MAX
-//    
-//};
-
 enum _id_fb
 {
   _ID_FB_FIRST_ALL = 1,                                 /*1*/
