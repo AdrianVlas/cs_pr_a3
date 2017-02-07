@@ -1,11 +1,55 @@
 #include "header.h"
 
+#define ROWS_ONE_PART   2
+
+/*****************************************************/
+//Функція визначення, скільки розрядів є у числі
+/*****************************************************/
+unsigned int max_number_digit_in_number(int max_item)
+{
+  unsigned int number_digit = 1;
+  if (max_item  >= 10)
+  {
+    number_digit++;
+    max_item /= 10;
+  }
+  
+  return number_digit;
+}
+/*****************************************************/
+
+
+/*****************************************************/
+/*
+Функція переміщення по меню (без винятків і додаткових алгоритмів)
+
+Вхідні параметри
+(1 << BIT_REWRITE) - перемалювати меню
+(1 << BIT_KEY_DOWN) - рухатися вниз
+(1 << BIT_KEY_UP) - рухатися вверх
+*/
+/*****************************************************/
+void move_into_ekran_input_or_output(unsigned int action, int max_row_tmp)
+{
+  int max_row = DIV_TO_HIGHER(max_row_tmp, (MAX_COL_LCD/(max_number_digit_in_number(max_row_tmp) + 1))*(MAX_ROW_LCD/ROWS_ONE_PART));
+  if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
+  {
+    if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position++;
+    if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
+  }
+  else if (action & (1 << BIT_KEY_UP))
+  {
+    if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
+  }
+}
+/*****************************************************/
+
 /*****************************************************/
 //Формуємо екран відображення заголовків станів входів-виходів
 /*****************************************************/
 void make_ekran_list_inputs_outputs(void)
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_LIST_INPUTS_OUTPUTS][MAX_COL_LCD] = 
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_INPUT_OUTPUT_M2][MAX_COL_LCD + 1] = 
   {
     {
       " Сост.входов    ",
@@ -24,201 +68,96 @@ void make_ekran_list_inputs_outputs(void)
       " Шыfыс жаfдайы  "
     }
   };
-  int index_language = index_language_in_array(current_settings.language);
+  int index_language = index_language_in_array(settings_fix.language);
   
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < MAX_ROW_FOR_LIST_INPUTS_OUTPUTS)
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_of_ekran][j];
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-
-    index_of_ekran++;
+    for (size_t j = 0; j < MAX_COL_LCD; j++) 
+    {
+      working_ekran[i][j] =  (index_in_ekran < MAX_ROW_INPUT_OUTPUT_M2) ? name_string[index_language][index_in_ekran][j] : ' ';
+    }
+    index_in_ekran++;
   }
 
   //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
-  //Курсор видимий
-  current_ekran.cursor_on = 1;
-  //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
 /*******************************************************/
 //Формуємо екрвн станів входів або виходів
-/*
---------------------------------------------------------
-input_output
-    0 - входи
-    1 - виходи
---------------------------------------------------------
-*/
 /*******************************************************/
-void make_ekran_state_inputs_or_outputs(unsigned int input_output)
+void make_ekran_state_inputs_or_outputs(void)
 {
-#define MAX_COL_LCD_PART1 7
-
-  const unsigned char title_input_output[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD_PART1] = 
+  unsigned int max_number_digit = max_number_digit_in_number(*current_state_menu2.p_max_row); 
+  unsigned int number_inputs_or_outputs_in_row = MAX_COL_LCD/(max_number_digit + 1);
+  
+  unsigned int in_out = current_state_menu2.index_position*number_inputs_or_outputs_in_row*(MAX_ROW_LCD/ROWS_ONE_PART) + 1;
+  unsigned int row = 0;
+  while (row < MAX_ROW_LCD)
   {
+    uint8_t name_string[ROWS_ONE_PART][MAX_COL_LCD + 1] = 
     {
-      " Двх   ",
-      " Двых  "
-    },
+      "                ",
+      "                "
+    };
+  
+    for (size_t i = 0; i < number_inputs_or_outputs_in_row; i++)
     {
-      " Двх   ",
-      " Двих  "
-    },
-    {
-      " DI    ",
-      " DO    "
-    },
-    {
-      " Дк    ",
-      " Дшыf  "
-    }
-  };
-  
-  const unsigned int index_of_number_di_do[MAX_NAMBER_LANGUAGE][2] = 
-  {
-    {4, 5},
-    {4, 5},
-    {3, 3},
-    {3, 5}
-  };
-    
-  const unsigned char information_active[MAX_NAMBER_LANGUAGE][MAX_COL_LCD - MAX_COL_LCD_PART1] = 
-  {
-    " Активный",
-    " Активний",
-    "   Active",
-    "  Активті"
-  };
-  const unsigned char information_pasive[MAX_NAMBER_LANGUAGE][MAX_COL_LCD - MAX_COL_LCD_PART1] = 
-  {
-    "Паcсивный",
-    " Пасивний",
-    "  Passive",
-    " Пассивті"
-  };
-  const unsigned char information_close[MAX_NAMBER_LANGUAGE][MAX_COL_LCD - MAX_COL_LCD_PART1]  = 
-  {
-    "  Замкнут",
-    "   Замкн.",
-    "   Closed",
-    "  Замкнут"
-  };
-  const unsigned char information_open[MAX_NAMBER_LANGUAGE][MAX_COL_LCD - MAX_COL_LCD_PART1]   = 
-  {
-    "Разомкнут",
-    " Разімкн.",
-    "   Opened",
-    "Разомкнут"
-  };
-  
-  int index_language = index_language_in_array(current_settings.language);
-  unsigned int index_of_number_di_do_tmp = index_of_number_di_do[index_language][input_output];
-  
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  unsigned int max_row, state;
-  
-  //Визначаємо скільки рядків має бути у вікні
-  if (input_output == 0)
-  {
-    max_row = NUMBER_INPUTS;
-    state = state_inputs;
-  }
-  else
-  {
-    max_row = NUMBER_OUTPUTS;
-    state = state_outputs;
-  }
-  
-  /*******************************************************/
-  //Формуємо назви і значення. Копіюємо  рядки у робочий екран
-  /*******************************************************/
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    unsigned int number = index_of_ekran + 1;
-    unsigned int tmp_1 = (number / 10), tmp_2 = number - tmp_1*10;
-    //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < max_row)
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++)
+      unsigned int value = in_out + i;
+      for (size_t j = 0; j < max_number_digit; j++)
       {
-        if (j < MAX_COL_LCD_PART1)
-        {
-          if ((j < index_of_number_di_do_tmp) || (j > (index_of_number_di_do_tmp + 1)))
-            working_ekran[i][j] = title_input_output[index_language][input_output][j];
-          else if (j == index_of_number_di_do_tmp)
-          {
-            if (tmp_1 > 0 ) working_ekran[i][j] = tmp_1 + 0x30;
-          }
-          else     
-          {
-            if (tmp_1 > 0 )
-            {
-              working_ekran[i][j] = tmp_2 + 0x30;
-            }
-            else
-            {
-              working_ekran[i][j - 1] = tmp_2 + 0x30;
-              working_ekran[i][j] = ' ';
-            }
-          }
-        }
-        else
-        {
-          if (input_output == 0)
-          {
-            if ((state & (1<<index_of_ekran)) == 0)
-              working_ekran[i][j] = information_pasive[index_language][j - MAX_COL_LCD_PART1];
-            else
-              working_ekran[i][j] = information_active[index_language][j - MAX_COL_LCD_PART1];
-          }
-          else
-          {
-            if ((state & (1<<index_of_ekran)) == 0)
-              working_ekran[i][j] = information_open[index_language][j - MAX_COL_LCD_PART1];
-            else
-              working_ekran[i][j] = information_close[index_language][j - MAX_COL_LCD_PART1];
-          }
-        }
+        unsigned int digit = value % 10;
+        value /= 10;
+      
+        name_string[0][i*(max_number_digit + 1) + (max_number_digit + 1 - 1) - j] = digit + 0x30;
+        if (value == 0) break;
       }
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-
-    index_of_ekran++;
-  }  
-
-  //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
-  //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
-  //Курсор видимий
-  current_ekran.cursor_on = 1;
-  //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
-
-  //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    
+      int _n = in_out + i - 1;
+      if (current_state_menu2.current_level == INPUTS_MENU2_LEVEL)
+      {
+        __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+        value = arr[_n].active_state[INPUT_OUT >> 3] & (1 << (INPUT_OUT & ((1 << 3) - 1)));
+      }
+      else
+      {
+        __LN_OUTPUT *arr = (__LN_OUTPUT*)(spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
+        value = arr[_n].active_state[OUTPUT_RAW >> 3] & (1 << (OUTPUT_RAW & ((1 << 3) - 1)));
+      }
+      name_string[1][i*(max_number_digit + 1) + (max_number_digit + 1 - 1)] = (value != 0) +  + 0x30;
+      if ((_n + 1) >= *current_state_menu2.p_max_row ) break;
+    }
   
-#undef MAX_COL_LCD_PART1  
+    //Копіюємо  рядки у робочий екран
+    for (size_t i = 0; i < ROWS_ONE_PART; i++)
+    {
+      //Наступні рядки треба перевірити, чи їх требе відображати
+      for (size_t j = 0; j < MAX_COL_LCD; j++)
+      {
+        working_ekran[row + i][j] = name_string[i][j];
+      }
+    }
+    
+    in_out += number_inputs_or_outputs_in_row*(MAX_ROW_LCD/ROWS_ONE_PART);
+    row += ROWS_ONE_PART;
+  }
+
+  //Відображення курору по вертикалі
+  current_state_menu2.position_cursor_x = 0;
+  //Відображення курору по вертикалі
+  current_state_menu2.position_cursor_y = 0;
+  //Обновити повністю весь екран
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
@@ -226,3 +165,5 @@ void make_ekran_state_inputs_or_outputs(unsigned int input_output)
 //
 /*****************************************************/
 /*****************************************************/
+
+#undef ROWS_ONE_PART  

@@ -519,12 +519,14 @@ unsigned int set_new_settings_from_interface(unsigned int source)
       current_state_menu2.current_level = MAIN_MANU2_LEVEL;
       current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
       current_state_menu2.position_cursor_y = current_state_menu2.index_position;
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_MAIN_M2;
       current_state_menu2.func_move = move_into_main;
       current_state_menu2.func_show = make_ekran_main;
       current_state_menu2.func_edit = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
-      current_state_menu2.cursor_on = 0;
+      current_state_menu2.cursor_on = 1;
       current_state_menu2.cursor_blinking_on = 0;  
     }
     
@@ -1646,7 +1648,7 @@ void min_settings_INPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
       ((__LN_INPUT *)(base) + shift)->settings.delay.delay = KOEF_DOPUSK_DV_POST_MIN;
       
       ((__LN_INPUT *)(base) + shift)->delay.delay = -1;
-      for (size_t l = 0; l < BLOCK8_SIZE(INPUT_SIGNALS); l++) 
+      for (size_t l = 0; l < DIV_TO_HIGHER(INPUT_SIGNALS, 8); l++) 
       {
         ((__LN_INPUT *)(base) + shift)->active_state[l] = 0;
       }
@@ -1703,7 +1705,7 @@ void min_settings_OUTPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_
       ((__LN_OUTPUT *)(base) + shift)->settings.control = 0;
       ((__LN_OUTPUT *)(base) + shift)->settings.param = 0;
       
-      for (size_t l = 0; l < BLOCK8_SIZE(OUTPUT_SIGNALS); l++) 
+      for (size_t l = 0; l < DIV_TO_HIGHER(OUTPUT_SIGNALS, 8); l++) 
       {
         ((__LN_OUTPUT *)(base) + shift)->active_state[l] = 0;
       }
@@ -1760,7 +1762,7 @@ void min_settings_LED(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
       ((__LN_OUTPUT *)(base) + shift)->settings.control = 0;
       ((__LN_OUTPUT *)(base) + shift)->settings.param = 0;
       
-      for (size_t l = 0; l < BLOCK8_SIZE(LED_SIGNALS); l++) 
+      for (size_t l = 0; l < DIV_TO_HIGHER(LED_SIGNALS, 8); l++) 
       {
         ((__LN_LED *)(base) + shift)->active_state[l] = 0;
       }
@@ -1818,7 +1820,7 @@ void min_settings_AND(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
       {
         ((__LN_AND *)(base) + shift)->settings.param[i] = 0;
       
-        for (size_t l = 0; l < BLOCK8_SIZE(AND_SIGNALS); l++) 
+        for (size_t l = 0; l < DIV_TO_HIGHER(AND_SIGNALS, 8); l++) 
         {
           ((__LN_AND *)(base) + shift)->active_state[i] = 0;
           ((__LN_AND *)(base) + shift)->trigger_state[i] = 0;
@@ -1877,7 +1879,7 @@ void min_settings_OR(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
       {
         ((__LN_OR *)(base) + shift)->settings.param[i] = 0;
       
-        for (size_t l = 0; l < BLOCK8_SIZE(OR_SIGNALS); l++) 
+        for (size_t l = 0; l < DIV_TO_HIGHER(OR_SIGNALS, 8); l++) 
         {
           ((__LN_OR *)(base) + shift)->active_state[i] = 0;
           ((__LN_OR *)(base) + shift)->trigger_state[i] = 0;
@@ -1936,7 +1938,7 @@ void min_settings_XOR(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
       {
         ((__LN_XOR *)(base) + shift)->settings.param[i] = 0;
       
-        for (size_t l = 0; l < BLOCK8_SIZE(XOR_SIGNALS); l++) 
+        for (size_t l = 0; l < DIV_TO_HIGHER(XOR_SIGNALS, 8); l++) 
         {
           ((__LN_XOR *)(base) + shift)->active_state[i] = 0;
           ((__LN_XOR *)(base) + shift)->trigger_state[i] = 0;
@@ -1993,7 +1995,7 @@ void min_settings_NOT(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
     {
       ((__LN_NOT *)(base) + shift)->settings.param = 0;
       
-      for (size_t l = 0; l < BLOCK8_SIZE(NOT_SIGNALS); l++) 
+      for (size_t l = 0; l < DIV_TO_HIGHER(NOT_SIGNALS, 8); l++) 
       {
         ((__LN_NOT *)(base) + shift)->active_state[l] = 0;
         ((__LN_NOT *)(base) + shift)->trigger_state[l] = 0;
@@ -2051,7 +2053,7 @@ void min_settings_TIMER(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
 
       ((__LN_TIMER *)(base) + shift)->delay.delay_pause = -1;
       ((__LN_TIMER *)(base) + shift)->delay.delay_work = -1;
-      for (size_t l = 0; l < BLOCK8_SIZE(TIMER_SIGNALS); l++) 
+      for (size_t l = 0; l < DIV_TO_HIGHER(TIMER_SIGNALS, 8); l++) 
       {
         ((__LN_TIMER *)(base) + shift)->active_state[l] = 0;
         ((__LN_TIMER *)(base) + shift)->trigger_state[l] = 0;
@@ -2116,8 +2118,10 @@ void min_settings_TRIGGER(unsigned int mem_to_prt, uintptr_t *base, size_t index
     {
       ((__LN_TRIGGER *)(base) + shift)->settings.set_param   = 0;
       ((__LN_TRIGGER *)(base) + shift)->settings.reset_param = 0;
+      ((__LN_TRIGGER *)(base) + shift)->settings.D_param = 0;
+      ((__LN_TRIGGER *)(base) + shift)->settings.C_param = 0;
 
-      for (size_t l = 0; l < BLOCK8_SIZE(TRIGGER_SIGNALS); l++) 
+      for (size_t l = 0; l < DIV_TO_HIGHER(TRIGGER_SIGNALS, 8); l++) 
       {
         ((__LN_TRIGGER *)(base) + shift)->active_state[l] = 0;
         ((__LN_TRIGGER *)(base) + shift)->trigger_state[l] = 0;
@@ -2127,6 +2131,8 @@ void min_settings_TRIGGER(unsigned int mem_to_prt, uintptr_t *base, size_t index
     {
       ((__settings_for_TRIGGER *)(base) + shift)->set_param   = 0;
       ((__settings_for_TRIGGER *)(base) + shift)->reset_param = 0;
+      ((__settings_for_TRIGGER *)(base) + shift)->D_param = 0;
+      ((__settings_for_TRIGGER *)(base) + shift)->C_param = 0;
     }
   }
 }
@@ -2143,16 +2149,22 @@ void copy_settings_TRIGGER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
     {
       ((__settings_for_TRIGGER *)(base_target) + shift)->set_param   = ((__LN_TRIGGER *)(base_source) + shift)->settings.set_param;
       ((__settings_for_TRIGGER *)(base_target) + shift)->reset_param = ((__LN_TRIGGER *)(base_source) + shift)->settings.reset_param;
+      ((__settings_for_TRIGGER *)(base_target) + shift)->D_param     = ((__LN_TRIGGER *)(base_source) + shift)->settings.D_param;
+      ((__settings_for_TRIGGER *)(base_target) + shift)->C_param     = ((__LN_TRIGGER *)(base_source) + shift)->settings.C_param;
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
       ((__LN_TRIGGER *)(base_target) + shift)->settings.set_param   = ((__settings_for_TRIGGER *)(base_source) + shift)->set_param;
       ((__LN_TRIGGER *)(base_target) + shift)->settings.reset_param = ((__settings_for_TRIGGER *)(base_source) + shift)->reset_param;
+      ((__LN_TRIGGER *)(base_target) + shift)->settings.D_param     = ((__settings_for_TRIGGER *)(base_source) + shift)->D_param;
+      ((__LN_TRIGGER *)(base_target) + shift)->settings.C_param     = ((__settings_for_TRIGGER *)(base_source) + shift)->C_param;
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
       ((__settings_for_TRIGGER *)(base_target) + shift)->set_param   = ((__settings_for_TRIGGER *)(base_source) + shift)->set_param;
       ((__settings_for_TRIGGER *)(base_target) + shift)->reset_param = ((__settings_for_TRIGGER *)(base_source) + shift)->reset_param;
+      ((__settings_for_TRIGGER *)(base_target) + shift)->D_param     = ((__settings_for_TRIGGER *)(base_source) + shift)->D_param;
+      ((__settings_for_TRIGGER *)(base_target) + shift)->C_param     = ((__settings_for_TRIGGER *)(base_source) + shift)->C_param;
     }
     else
     {
@@ -2175,7 +2187,7 @@ void min_settings_MEANDER(unsigned int mem_to_prt, uintptr_t *base, size_t index
       ((__LN_MEANDER *)(base) + shift)->settings.delay.delay = TIMEOUT_MEANDER_MIN;
 
       ((__LN_MEANDER *)(base) + shift)->delay.delay = -1;
-      for (size_t l = 0; l < BLOCK8_SIZE(MEANDER_SIGNALS); l++) 
+      for (size_t l = 0; l < DIV_TO_HIGHER(MEANDER_SIGNALS, 8); l++) 
       {
         ((__LN_MEANDER *)(base) + shift)->active_state[l] = 0;
         ((__LN_MEANDER *)(base) + shift)->trigger_state[l] = 0;

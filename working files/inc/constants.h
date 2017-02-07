@@ -9,6 +9,7 @@
 #include "const_menu2_time.h"
 #include "const_menu2_password.h"
 #include "const_menu2_measurement.h"
+#include "const_menu2_state_inputs_outputs.h"
 
 #include "const_lcd_and_keyboard.h"
 #include "const_menu_level_password.h"
@@ -16,8 +17,8 @@
 #include "const_menu_time.h"
 #include "const_menu_configuration.h"
 #include "const_menu_measurement.h"
-#include "const_menu_chose_settings_protection.h"
 #include "const_menu_state_inputs_outputs.h"
+#include "const_menu_chose_settings_protection.h"
 #include "const_menu_chose_settings.h"
 #include "const_menu_ctrl_phase.h"
 #include "const_menu_outputs.h"

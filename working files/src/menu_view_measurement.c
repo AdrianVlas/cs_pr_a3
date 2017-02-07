@@ -225,30 +225,6 @@ void convert_and_insert_char_for_measurement(unsigned int start_number_digit_aft
 /*****************************************************/
 
 /*****************************************************/
-/*
-Функція переміщення по меню
-
-Вхідні параметри
-(1 << BIT_REWRITE) - перемалювати меню
-(1 << BIT_KEY_DOWN) - рухатися вниз
-(1 << BIT_KEY_UP) - рухатися вверх
-*/
-/*****************************************************/
-void move_into_measurement(unsigned int action)
-{
-  if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
-  {
-    if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position++;
-    if(current_state_menu2.index_position >= MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT) current_state_menu2.index_position = 0;
-  }
-  else if (action & (1 << BIT_KEY_UP))
-  {
-    if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT - 1;
-  }
-}
-/*****************************************************/
-
-/*****************************************************/
 //Формуємо екран відображення струмів
 /*****************************************************/
 void make_ekran_measurement(void)

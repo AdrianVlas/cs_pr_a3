@@ -10,17 +10,17 @@
 (1 << BIT_KEY_UP) - рухатися вверх
 */
 /*****************************************************/
-void move_into_time(unsigned int action)
+void move_into_time(unsigned int action, int max_row)
 {
   if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
   {
     if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position += MAX_ROW_LCD;
-    if(current_state_menu2.index_position >= MAX_ROW_TIME_CALIBRATION_M2) current_state_menu2.index_position = 0;
+    if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
   }
   else if (action & (1 << BIT_KEY_UP))
   {
     current_state_menu2.index_position -= MAX_ROW_LCD;
-    if(current_state_menu2.index_position < 0) current_state_menu2.index_position = MAX_ROW_TIME_CALIBRATION_M2 - MAX_ROW_LCD;
+    if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - MAX_ROW_LCD;
   }
   
   /**************************************************/

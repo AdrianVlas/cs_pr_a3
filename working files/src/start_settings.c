@@ -129,12 +129,14 @@ void global_vareiables_installation(void)
   current_state_menu2.current_level = MAIN_MANU2_LEVEL;
   current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
   current_state_menu2.position_cursor_y = current_state_menu2.index_position;
+  current_state_menu2.p_max_row = NULL;
+  current_state_menu2.max_row = MAX_ROW_MAIN_M2;
   current_state_menu2.func_move = move_into_main;
   current_state_menu2.func_show = make_ekran_main;
   current_state_menu2.func_edit = NULL;
   current_state_menu2.func_change = NULL;
   current_state_menu2.edition = 0;
-  current_state_menu2.cursor_on = 0;
+  current_state_menu2.cursor_on = 1;
   current_state_menu2.cursor_blinking_on = 0;  
 
   time[0] = 0x0;

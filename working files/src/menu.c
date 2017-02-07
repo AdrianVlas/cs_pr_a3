@@ -462,7 +462,6 @@ void main_manu_function(void)
 /******************************************************************************************************************************************/ 
 
 /****************************************************************************************************************************************/      
-    case EKRAN_MEASURMENT_CURRENT:
     case EKRAN_CHOOSE_SETTINGS_CTRL_PHASE:
     case EKRAN_CHOSE_SETTINGS:
     case EKRAN_LEVEL_CHOOSE_PASSWORDS:
@@ -496,8 +495,6 @@ void main_manu_function(void)
     case EKRAN_POINT_TIME_SETPOINT:
     case EKRAN_POINT_TIME_RANGUVANNJA:
     case EKRAN_DIAGNOSTYKA:
-    case EKRAN_LIST_INPUTS_OUTPUTS:
-    case EKRAN_STATE_INPUTS:
     case EKRAN_STATE_OUTPUTS:
     case EKRAN_LIST_REGISTRATORS:
     case EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS:
@@ -519,16 +516,9 @@ void main_manu_function(void)
           //Пріоритет стоїть на обновлені екрану
           if((new_state_keyboard & (1<<BIT_REWRITE)) !=0)
           {
-            if(current_ekran.current_level == EKRAN_MEASURMENT_CURRENT)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_MEASURMENT_CURRENT] = current_ekran.index_position;
-              //Формуємо екран вимірювання струмів
-              make_ekran_measurement();
-            }
-            else if (
-                     (current_ekran.current_level == EKRAN_CHOOSE_SETTINGS_CTRL_PHASE)
-                    )   
+            if (
+                (current_ekran.current_level == EKRAN_CHOOSE_SETTINGS_CTRL_PHASE)
+               )   
             {
               if(current_ekran.index_position >= MAX_ROW_FOR_CHOSE_SETTINGS_ANY_PROTECTION) current_ekran.index_position = 0;
               position_in_current_level_menu[current_ekran.current_level] = current_ekran.index_position;
@@ -768,28 +758,6 @@ void main_manu_function(void)
               position_in_current_level_menu[EKRAN_DIAGNOSTYKA] = current_ekran.index_position;
               //Формуємо екран діагностики
               make_ekran_diagnostyka(diagnostyka);
-            }
-            else if (current_ekran.current_level == EKRAN_LIST_INPUTS_OUTPUTS)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_LIST_INPUTS_OUTPUTS) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_LIST_INPUTS_OUTPUTS] = current_ekran.index_position;
-              //Формуємо екран вибору станів входів-виходів
-              make_ekran_list_inputs_outputs();
-            }
-            else if ((current_ekran.current_level == EKRAN_STATE_INPUTS) || (current_ekran.current_level == EKRAN_STATE_OUTPUTS))
-            {
-              if (current_ekran.current_level == EKRAN_STATE_INPUTS)
-              {
-                if(current_ekran.index_position >= NUMBER_INPUTS) current_ekran.index_position = 0;
-              }
-              else
-              {
-                if(current_ekran.index_position >= NUMBER_OUTPUTS) current_ekran.index_position = 0;
-              }
-              
-              position_in_current_level_menu[current_ekran.current_level] = current_ekran.index_position;
-              //Формуємо екран станів входів або виходыв 
-              make_ekran_state_inputs_or_outputs(current_ekran.current_level - EKRAN_STATE_INPUTS);
             }
             else if (current_ekran.current_level == EKRAN_LIST_REGISTRATORS)
             {
@@ -1373,42 +1341,6 @@ void main_manu_function(void)
                 current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
                 current_ekran.edition = 0;
               }
-              else if (current_ekran.current_level == EKRAN_LIST_INPUTS_OUTPUTS)
-              {
-                //Натисну кнопка Enter у вікні вибору станів входів-виходів
-                if(current_ekran.index_position == INDEX_ML_STATE_INPUTS)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення станів входів
-                  current_ekran.current_level = EKRAN_STATE_INPUTS;
-                }
-                else
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення станів виходів
-                  current_ekran.current_level = EKRAN_STATE_OUTPUTS;
-                }
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-              }
-              else if (current_ekran.current_level == EKRAN_LIST_INPUTS_OUTPUTS)
-              {
-                //Натисну кнопка Enter у вікні вибору станів входів-виходів
-                if(current_ekran.index_position == INDEX_ML_STATE_INPUTS)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення станів входів
-                  current_ekran.current_level = EKRAN_STATE_INPUTS;
-                }
-                else
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення станів виходів
-                  current_ekran.current_level = EKRAN_STATE_OUTPUTS;
-                }
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-              }
               else if (current_ekran.current_level == EKRAN_LIST_REGISTRATORS)
               {
                 //Натисну кнопка Enter у вікні вибору реєстраторів
@@ -1581,16 +1513,9 @@ void main_manu_function(void)
             else if (new_state_keyboard == (1<<BIT_KEY_UP))
             {
               //Натиснута кнопка UP
-              if(current_ekran.current_level == EKRAN_MEASURMENT_CURRENT)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT - 1;
-                position_in_current_level_menu[EKRAN_MEASURMENT_CURRENT] = current_ekran.index_position;
-                //Формуємо екран вимірювання струмів вікна
-                make_ekran_measurement();
-              }
-              else if (
-                       (current_ekran.current_level == EKRAN_CHOOSE_SETTINGS_CTRL_PHASE)
-                      )   
+              if (
+                  (current_ekran.current_level == EKRAN_CHOOSE_SETTINGS_CTRL_PHASE)
+                 )   
               {
                 if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_CHOSE_SETTINGS_ANY_PROTECTION - 1;
                 position_in_current_level_menu[current_ekran.current_level] = current_ekran.index_position;
@@ -1826,28 +1751,6 @@ void main_manu_function(void)
                 //Формуємо екран діагностики
                 make_ekran_diagnostyka(diagnostyka);
               }
-              else if(current_ekran.current_level == EKRAN_LIST_INPUTS_OUTPUTS)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_LIST_INPUTS_OUTPUTS - 1;
-                position_in_current_level_menu[EKRAN_LIST_INPUTS_OUTPUTS] = current_ekran.index_position;
-                //Формуємо екран вибору станів входів-виходів
-                make_ekran_list_inputs_outputs();
-              }
-              else if ((current_ekran.current_level == EKRAN_STATE_INPUTS) || (current_ekran.current_level == EKRAN_STATE_OUTPUTS))
-              {
-                if (current_ekran.current_level == EKRAN_STATE_INPUTS)
-                {
-                  if(--current_ekran.index_position < 0) current_ekran.index_position = NUMBER_INPUTS - 1;
-                }
-                else
-                {
-                  if(--current_ekran.index_position < 0) current_ekran.index_position = NUMBER_OUTPUTS - 1;
-                }
-              
-                position_in_current_level_menu[current_ekran.current_level] = current_ekran.index_position;
-                //Формуємо екран станів входів або виходыв 
-                make_ekran_state_inputs_or_outputs(current_ekran.current_level - EKRAN_STATE_INPUTS);
-              }
               else if(current_ekran.current_level == EKRAN_LIST_REGISTRATORS)
               {
                 if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_LIST_REGISTRATORS - 1;
@@ -1945,16 +1848,9 @@ void main_manu_function(void)
             else if (new_state_keyboard == (1<<BIT_KEY_DOWN))
             {
               //Натиснута кнопка DOWN
-              if(current_ekran.current_level == EKRAN_MEASURMENT_CURRENT)
-              {
-                if(++current_ekran.index_position >= MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_MEASURMENT_CURRENT] = current_ekran.index_position;
-                //Формуємо екран вимірювання струмів вікна
-                make_ekran_measurement();
-              }
-              else if (
-                       (current_ekran.current_level == EKRAN_CHOOSE_SETTINGS_CTRL_PHASE)
-                      )   
+              if (
+                  (current_ekran.current_level == EKRAN_CHOOSE_SETTINGS_CTRL_PHASE)
+                 )   
               {
                 if(++current_ekran.index_position >= MAX_ROW_FOR_CHOSE_SETTINGS_ANY_PROTECTION) current_ekran.index_position = 0;
                 position_in_current_level_menu[current_ekran.current_level] = current_ekran.index_position;
@@ -2197,28 +2093,6 @@ void main_manu_function(void)
                 position_in_current_level_menu[EKRAN_DIAGNOSTYKA] = current_ekran.index_position;
                 //Формуємо екран діагностики
                 make_ekran_diagnostyka(diagnostyka);
-              }
-              else if(current_ekran.current_level == EKRAN_LIST_INPUTS_OUTPUTS)
-              {
-                if(++current_ekran.index_position >= MAX_ROW_FOR_LIST_INPUTS_OUTPUTS) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_LIST_INPUTS_OUTPUTS] = current_ekran.index_position;
-                //Формуємо екран вибору станів входів-виходів
-                make_ekran_list_inputs_outputs();
-              }
-              else if ((current_ekran.current_level == EKRAN_STATE_INPUTS) || (current_ekran.current_level == EKRAN_STATE_OUTPUTS))
-              {
-                if (current_ekran.current_level == EKRAN_STATE_INPUTS)
-                {
-                  if(++current_ekran.index_position >= NUMBER_INPUTS) current_ekran.index_position = 0;
-                }
-                else
-                {
-                  if(++current_ekran.index_position >= NUMBER_OUTPUTS) current_ekran.index_position = 0;
-                }
-              
-                position_in_current_level_menu[current_ekran.current_level] = current_ekran.index_position;
-                //Формуємо екран станів входів або виходыв 
-                make_ekran_state_inputs_or_outputs(current_ekran.current_level - EKRAN_STATE_INPUTS);
               }
               else if(current_ekran.current_level == EKRAN_LIST_REGISTRATORS)
               {

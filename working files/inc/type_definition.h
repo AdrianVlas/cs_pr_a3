@@ -9,10 +9,13 @@ typedef struct
   
   int16_t index_position;             //Вказує на якій ми зараз є позиції
 
-  int position_cursor_x;              //X - координата курсору
-  int position_cursor_y;              //Y - координата курсору
+  int16_t position_cursor_x;          //X - координата курсору
+  int16_t position_cursor_y;          //Y - координата курсору
   
-  void (*func_move)(unsigned int);    //Вказівник на функцію, для переміщення по вибраному меню  
+  int *p_max_row;                     //Вказівник на максимальну кількість рядків
+  int max_row;                        //Максимальна кількість рядків
+  
+  void (*func_move)(unsigned int, int);//Вказівник на функцію, для переміщення по вибраному меню  
   void (*func_show)(void);            //Вказівник на функцію, для відображення вибраного меню  
   unsigned int (*func_edit)(void);    //Вказівник на функцію, для виконання дії по редагуванні вибраної позиції
   void (*func_change)(unsigned int);  //Вказівник на функцію, для зміни занчення вибраної позиції у вибраному меню
@@ -86,7 +89,7 @@ typedef struct
   __settings_for_INPUT settings;
   
   __delays_for_INPUT delay;
-  uint8_t active_state[BLOCK8_SIZE(INPUT_SIGNALS)];
+  uint8_t active_state[DIV_TO_HIGHER(INPUT_SIGNALS, 8)];
 
 } __LN_INPUT;
 /**********/
@@ -106,7 +109,7 @@ typedef struct
 {
   __settings_for_OUTPUT settings;
 
-  uint8_t active_state[BLOCK8_SIZE(OUTPUT_SIGNALS)];
+  uint8_t active_state[DIV_TO_HIGHER(OUTPUT_SIGNALS, 8)];
 
 } __LN_OUTPUT;
 /**********/
@@ -126,7 +129,7 @@ typedef struct
 {
   __settings_for_LED settings;
 
-  uint8_t active_state[BLOCK8_SIZE(LED_SIGNALS)];
+  uint8_t active_state[DIV_TO_HIGHER(LED_SIGNALS, 8)];
 
 } __LN_LED;
 /**********/
@@ -145,8 +148,8 @@ typedef struct
 {
   __settings_for_AND settings;
 
-  uint8_t active_state[BLOCK8_SIZE(AND_SIGNALS)];
-  uint8_t trigger_state[BLOCK8_SIZE(AND_SIGNALS)];
+  uint8_t active_state[DIV_TO_HIGHER(AND_SIGNALS, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(AND_SIGNALS, 8)];
 
 } __LN_AND;
 /**********/
@@ -166,8 +169,8 @@ typedef struct
   
   __settings_for_OR settings;
 
-  uint8_t active_state[BLOCK8_SIZE(OR_SIGNALS)];
-  uint8_t trigger_state[BLOCK8_SIZE(OR_SIGNALS)];
+  uint8_t active_state[DIV_TO_HIGHER(OR_SIGNALS, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(OR_SIGNALS, 8)];
   
 } __LN_OR;
 /**********/
@@ -186,8 +189,8 @@ typedef struct
 {
   __settings_for_XOR settings;
   
-  uint8_t active_state[BLOCK8_SIZE(XOR_SIGNALS)];
-  uint8_t trigger_state[BLOCK8_SIZE(XOR_SIGNALS)];
+  uint8_t active_state[DIV_TO_HIGHER(XOR_SIGNALS, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(XOR_SIGNALS, 8)];
   
 } __LN_XOR;
 /**********/
@@ -207,8 +210,8 @@ typedef struct
   
   __settings_for_NOT settings;
   
-  uint8_t active_state[BLOCK8_SIZE(NOT_SIGNALS)];
-  uint8_t trigger_state[BLOCK8_SIZE(NOT_SIGNALS)];
+  uint8_t active_state[DIV_TO_HIGHER(NOT_SIGNALS, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(NOT_SIGNALS, 8)];
   
 } __LN_NOT;
 /**********/
@@ -238,8 +241,8 @@ typedef struct
   __settings_for_TIMER settings;
   
   __delays_for_TIMER delay;
-  uint8_t active_state[BLOCK8_SIZE(TIMER_SIGNALS)];
-  uint8_t trigger_state[BLOCK8_SIZE(TIMER_SIGNALS)];
+  uint8_t active_state[DIV_TO_HIGHER(TIMER_SIGNALS, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(TIMER_SIGNALS, 8)];
   
 } __LN_TIMER;
 /**********/
@@ -252,6 +255,8 @@ typedef struct
   
   uint32_t set_param;
   uint32_t reset_param;
+  uint32_t D_param; 
+  uint32_t C_param; 
   
 } __settings_for_TRIGGER;
 
@@ -260,8 +265,8 @@ typedef struct
   
   __settings_for_TRIGGER settings;
   
-  uint8_t active_state[BLOCK8_SIZE(TRIGGER_SIGNALS)];
-  uint8_t trigger_state[BLOCK8_SIZE(TRIGGER_SIGNALS)];
+  uint8_t active_state[DIV_TO_HIGHER(TRIGGER_SIGNALS, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(TRIGGER_SIGNALS, 8)];
   
 } __LN_TRIGGER;
 /**********/
@@ -288,8 +293,8 @@ typedef struct
   __settings_for_MEANDER settings;
   
   __delays_for_MEANDER delay;
-  uint8_t active_state[BLOCK8_SIZE(MEANDER_SIGNALS)];
-  uint8_t trigger_state[BLOCK8_SIZE(MEANDER_SIGNALS)];
+  uint8_t active_state[DIV_TO_HIGHER(MEANDER_SIGNALS, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(MEANDER_SIGNALS, 8)];
   
 } __LN_MEANDER;
 /**********/

@@ -10,36 +10,36 @@
 (1 << BIT_KEY_UP) - рухатися вверх
 */
 /*****************************************************/
-void move_into_main(unsigned int action)
+void move_into_main(unsigned int action, int max_row)
 {
   if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
   {
     if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position++;
     do
     {
-      if(current_state_menu2.index_position >= MAX_ROW_MAIN_M2) current_state_menu2.index_position = 0;
+      if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
       while (
              (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
              (current_config.ctrl_analog_inputs == 0)
             )
       {
-        if(++current_state_menu2.index_position >= MAX_ROW_MAIN_M2) current_state_menu2.index_position = 0;
+        if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
       }
     }
-    while ((action & (1 << BIT_KEY_DOWN)) && (current_state_menu2.index_position >= MAX_ROW_MAIN_M2));
+    while ((action & (1 << BIT_KEY_DOWN)) && (current_state_menu2.index_position >= max_row));
   }
   else if (action & (1 << BIT_KEY_UP))
   {
     current_state_menu2.index_position--;
     do
     {
-      if(current_state_menu2.index_position < 0) current_state_menu2.index_position = MAX_ROW_MAIN_M2 - 1;
+      if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
       while (
              (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
              (current_config.ctrl_analog_inputs == 0)
             )
       {
-        if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = MAX_ROW_MAIN_M2 - 1;
+        if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
       }
     }
     while (current_state_menu2.index_position < 0);
@@ -133,10 +133,6 @@ void make_ekran_main(void)
   current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
   current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
-  //Курсор видимий
-  current_state_menu2.cursor_on = 1;
-  //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }

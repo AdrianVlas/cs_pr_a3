@@ -562,7 +562,10 @@ void main_routines_for_i2c(void)
       static enum _id_fb block;
       static unsigned int shift;
 
-      if (shift_from_start_address_settings_in_eeprom == 0) 
+      if (
+          (shift_from_start_address_settings_in_eeprom == 0) &&
+          (size_settings == 0)  
+         )   
       {
         block = _ID_FB_FIRST_ALL;
         shift = 0;
@@ -843,7 +846,10 @@ void main_routines_for_i2c(void)
       static unsigned int shift;
       static uint8_t crc_eeprom_settings;
 
-      if (shift_from_start_address_settings_in_eeprom == 0) 
+      if (
+          (shift_from_start_address_settings_in_eeprom == 0) &&
+          (size_settings == 0)  
+         )   
       {
         block = _ID_FB_FIRST_ALL;
         shift = 0;
