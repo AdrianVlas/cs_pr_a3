@@ -5,61 +5,49 @@
 /*****************************************************/
 void make_ekran_list_registrators(void)
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_LIST_REGISTRATORS][MAX_COL_LCD] = 
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_REGISTRATORS_M2][MAX_COL_LCD + 1] = 
   {
     {
-      " Аналог.рег-р   ",
-      " Дискр. рег-р   ",
+      " Журнал событий ",
       " Архив диагност."
     },
     {
-      " Аналог.реєстр. ",
-      " Дискр. реєстр. ",
+      " Журнал подій   ",
       " Архів діагност."
     },
     {
-      " Analog recorder",
-      "Digital recorder",
+      " Event Log      ",
       " Diagn.Archive  "
     },
     {
-      " Аналог.рег-р   ",
-      " Дискр. рег-р   ",
+      " Журнал событий ",
       " Архив диагност."
     }
   };
 
-  int index_language = index_language_in_array(current_settings.language);
+  int index_language = index_language_in_array(settings_fix.language);
   
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < MAX_ROW_FOR_LIST_REGISTRATORS)
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_of_ekran][j];
+    if (index_in_ekran < MAX_ROW_FOR_LIST_REGISTRATORS)
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran][j];
     else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+      for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
 
-    index_of_ekran++;
+    index_in_ekran++;
   }
 
   //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
-  //Курсор видимий
-  current_ekran.cursor_on = 1;
-  //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
