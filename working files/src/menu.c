@@ -463,7 +463,6 @@ void main_manu_function(void)
 
 /****************************************************************************************************************************************/      
     case EKRAN_CHOOSE_SETTINGS_CTRL_PHASE:
-    case EKRAN_CHOSE_SETTINGS:
     case EKRAN_LEVEL_CHOOSE_PASSWORDS:
     case EKRAN_LIST_OUTPUTS_FOR_RANGUVANNJA:
     case EKRAN_LIST_LEDS_FOR_RANGUVANNJA:
@@ -489,11 +488,6 @@ void main_manu_function(void)
     case EKRAN_LIST_D_OR:
     case EKRAN_LIST_D_XOR:
     case EKRAN_LIST_D_NOT:
-    case EKRAN_INFO:
-    case EKRAN_DATE_TIME_PZ:
-    case EKRAN_POINT_TIME_SETTINGS:
-    case EKRAN_POINT_TIME_SETPOINT:
-    case EKRAN_POINT_TIME_RANGUVANNJA:
     case EKRAN_STATE_OUTPUTS:
     case EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS:
     case EKRAN_LIST_DIGITAL_REGISTRATOR_RECORDS:
@@ -541,14 +535,6 @@ void main_manu_function(void)
 
               //Формуємо екран вибору налаштувань для сигналізації
               make_ekran_choose_settings_alarms();
-            }
-            else if (current_ekran.current_level == EKRAN_CHOSE_SETTINGS)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_CHOSE_SETTINGS) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_CHOSE_SETTINGS] = current_ekran.index_position;
-            
-              //Формуємо екран заголовків настроювання
-              make_ekran_chose_settings();
             }
             else if (current_ekran.current_level == EKRAN_LEVEL_CHOOSE_PASSWORDS)
             {
@@ -697,41 +683,6 @@ void main_manu_function(void)
               position_in_current_level_menu[EKRAN_LIST_D_NOT] = current_ekran.index_position;
               //Формуємо екран заголовків визначуваних "НЕ"
               make_ekran_choose_of_ranguvannja(ID_DNOT);
-            }
-            else if (current_ekran.current_level == EKRAN_INFO)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_INFO) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_INFO] = current_ekran.index_position;
-              //Формуємо екран інформації
-              make_ekran_info();
-            }
-            else if (current_ekran.current_level == EKRAN_DATE_TIME_PZ)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_DATE_TIME_PZ) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_DATE_TIME_PZ] = current_ekran.index_position;
-              //Формуємо екран відображення міти дати і часу прошивки
-              make_ekran_date_time_pz();
-            }
-            else if (current_ekran.current_level == EKRAN_POINT_TIME_SETTINGS)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_POINT_TIME_SETTINGS) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_POINT_TIME_SETTINGS] = current_ekran.index_position;
-              //Формуємо екран вибору міток настроювання
-              make_ekran_chose_item_of_point_time_settings();
-            }
-            else if (current_ekran.current_level == EKRAN_POINT_TIME_SETPOINT)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_POINT_TIME_SETPOINT_RANGUVANNJA) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_POINT_TIME_SETPOINT] = current_ekran.index_position;
-              //Формуємо екран відображення міти останніх змін у уставках-витримках-управлінчькій інформації
-              make_ekran_time_settings(0);
-            }
-            else if (current_ekran.current_level == EKRAN_POINT_TIME_RANGUVANNJA)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_POINT_TIME_SETPOINT_RANGUVANNJA) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_POINT_TIME_RANGUVANNJA] = current_ekran.index_position;
-              //Формуємо екран відображення міти останніх змін у ранжування
-              make_ekran_time_settings(1);
             }
             else if (
                      (current_ekran.current_level == EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS ) ||
@@ -894,98 +845,6 @@ void main_manu_function(void)
                 current_ekran.edition = 0;
                 current_ekran.cursor_on = 1;
                 current_ekran.cursor_blinking_on = 0;
-              }
-              else if (current_ekran.current_level == EKRAN_CHOSE_SETTINGS)
-              {
-                //Натисну кнопка Enter у вікні вибору настройок
-                if(current_ekran.index_position == INDEX_OF_INFO)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення інформації по версії програмного забезпечення і версії карти пам'яті
-                  current_ekran.current_level = EKRAN_INFO;
-                }
-                else if(current_ekran.index_position == INDEX_OF_SETTINGS_POINT)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення вибору міток настройок
-                  current_ekran.current_level = EKRAN_POINT_TIME_SETTINGS;
-                }
-                else if(current_ekran.index_position == INDEX_OF_OUTPUTS_RANGUVANNJA)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення списку дискретних виходів
-                  current_ekran.current_level = EKRAN_LIST_OUTPUTS_FOR_RANGUVANNJA;
-                }
-                else if(current_ekran.index_position == INDEX_OF_LEDS_RANGUVANNJA)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення списку дискретних світодіодів
-                  current_ekran.current_level = EKRAN_LIST_LEDS_FOR_RANGUVANNJA;
-                }
-                else if(current_ekran.index_position == INDEX_OF_ALARMS)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення вибору списку сигналізацій
-                  current_ekran.current_level = EKRAN_LIST_ALARMS;
-                }
-                else if(current_ekran.index_position == INDEX_OF_SILENCE)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення параметрування сигналу "Тиша"
-                  current_ekran.current_level = EKRAN_RANGUVANNJA_SILENCE;
-                }
-                else if(current_ekran.index_position == INDEX_OF_RESET)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення параметрування сигналу "Скидання"
-                  current_ekran.current_level = EKRAN_RANGUVANNJA_RESET;
-                }
-                else if(current_ekran.index_position == INDEX_OF_TEST)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення параметрування сигналу "Тест"
-                  current_ekran.current_level = EKRAN_RANGUVANNJA_TEST;
-                }
-                else if(current_ekran.index_position == INDEX_OF_CONTROL_INPUTS_OUTPUTS)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення настройок УВВ
-                  current_ekran.current_level = EKRAN_CHOOSE_SETTINGS_UVV;
-                }
-                else if(current_ekran.index_position == INDEX_OF_COMMUNICATION)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення настройок комунікації
-                  current_ekran.current_level = EKRAN_CHOSE_COMMUNICATION_PARAMETERS;
-                }
-                else if(current_ekran.index_position == INDEX_OF_REGISTRATORS)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення списку наявних реєстраторів
-                  current_ekran.current_level = EKRAN_VIEW_LIST_OF_REGISTRATORS;
-                }
-                else if(current_ekran.index_position == INDEX_OF_EXTENDED_LOGIC)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення списку розширеної логіки
-                  current_ekran.current_level = EKRAN_EXTENDED_LIGIC;
-                }
-                else if(current_ekran.index_position == INDEX_OF_LIST_PASSWORDS)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню списку паролів
-                  current_ekran.current_level = EKRAN_LEVEL_CHOOSE_PASSWORDS;
-                }
-//                else if(current_ekran.index_position == INDEX_OF_PASSWORD)
-//                {
-//                  //Запам'ятовуємо поперердній екран
-//                  //Переходимо на меню зміни паролю
-//                  current_ekran.current_level = EKRAN_LEVEL_SET_NEW_PASSWORD;
-//                }
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-//                if (current_ekran.current_level != EKRAN_LEVEL_SET_NEW_PASSWORD) current_ekran.edition = 0;
-//                else current_ekran.edition = 1;
               }
               else if (current_ekran.current_level == EKRAN_LEVEL_CHOOSE_PASSWORDS)
               {
@@ -1277,37 +1136,6 @@ void main_manu_function(void)
                 current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
                 current_ekran.edition = 0;
               }
-              else if (current_ekran.current_level == EKRAN_INFO)
-              {
-                //Натисну кнопка Enter у вікні інформації по версії прошивки і карти пам'яті
-                if(current_ekran.index_position == INDEX_ML_INFO_FIRMWARE)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення кдати і часу створення прошивки
-                  current_ekran.current_level = EKRAN_DATE_TIME_PZ;
-
-                  current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                  current_ekran.edition = 0;
-                }
-              }
-              else if (current_ekran.current_level == EKRAN_POINT_TIME_SETTINGS)
-              {
-                //Натисну кнопка Enter у вікні вибору міток останніх настройок
-                if(current_ekran.index_position == INDEX_ML_TIME_SETPOINT)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення часу останніх настройк уставок-витримок-управлінської інформації
-                  current_ekran.current_level = EKRAN_POINT_TIME_SETPOINT;
-                }
-                else if(current_ekran.index_position == INDEX_ML_TIME_RANGUVANNJA)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення часу останніх настройк ранжування
-                  current_ekran.current_level = EKRAN_POINT_TIME_RANGUVANNJA;
-                }
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-              }
               else if (
                        (current_ekran.current_level == EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS) &&
                        (info_rejestrator_ar.number_records > 0) &&
@@ -1483,13 +1311,6 @@ void main_manu_function(void)
                 //Формуємо екран вибору налаштувань для сигналізації
                 make_ekran_choose_settings_alarms();
               }
-              else if (current_ekran.current_level == EKRAN_CHOSE_SETTINGS)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_CHOSE_SETTINGS - 1;
-                position_in_current_level_menu[EKRAN_CHOSE_SETTINGS] = current_ekran.index_position;
-                //Формуємо екран заголовків настроювання
-                make_ekran_chose_settings();
-              }
               else if (current_ekran.current_level == EKRAN_LEVEL_CHOOSE_PASSWORDS)
               {
                 if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_CHOOSE_PASSWORDS - 1;
@@ -1636,41 +1457,6 @@ void main_manu_function(void)
                 //Формуємо екран заголовків визначуваних "НЕ"
                 make_ekran_choose_of_ranguvannja(ID_DNOT);
               }
-              else if(current_ekran.current_level == EKRAN_INFO)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_INFO - 1;
-                position_in_current_level_menu[EKRAN_INFO] = current_ekran.index_position;
-                //Формуємо екран інформації
-                make_ekran_info();
-              }
-              else if(current_ekran.current_level == EKRAN_DATE_TIME_PZ)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_DATE_TIME_PZ - 1;
-                position_in_current_level_menu[EKRAN_DATE_TIME_PZ] = current_ekran.index_position;
-                //Формуємо екран відображення міти дати і часу прошивки
-                make_ekran_date_time_pz();
-              }
-              else if(current_ekran.current_level == EKRAN_POINT_TIME_SETTINGS)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_POINT_TIME_SETTINGS - 1;
-                position_in_current_level_menu[EKRAN_POINT_TIME_SETTINGS] = current_ekran.index_position;
-                //Формуємо екран вибору міток настроювання
-                make_ekran_chose_item_of_point_time_settings();
-              }
-              else if(current_ekran.current_level == EKRAN_POINT_TIME_SETPOINT)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_POINT_TIME_SETPOINT_RANGUVANNJA - 1;
-                position_in_current_level_menu[EKRAN_POINT_TIME_SETPOINT] = current_ekran.index_position;
-                //Формуємо екран відображення міти останніх змін у уставках-витримках-управлінчькій інформації
-                make_ekran_time_settings(0);
-              }
-              else if(current_ekran.current_level == EKRAN_POINT_TIME_RANGUVANNJA)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_POINT_TIME_SETPOINT_RANGUVANNJA - 1;
-                position_in_current_level_menu[EKRAN_POINT_TIME_RANGUVANNJA] = current_ekran.index_position;
-                //Формуємо екран відображення міти останніх змін у ранжування
-                make_ekran_time_settings(1);
-              }
               else if (
                        (current_ekran.current_level == EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS ) ||
                        (current_ekran.current_level == EKRAN_LIST_DIGITAL_REGISTRATOR_RECORDS) ||
@@ -1788,15 +1574,6 @@ void main_manu_function(void)
 
                 //Формуємо екран вибору налаштувань сигналізації
                 make_ekran_choose_settings_alarms();
-              }
-              else if (current_ekran.current_level == EKRAN_CHOSE_SETTINGS)
-              {
-                //Натиснута кнопка DOWN
-                if(++current_ekran.index_position >= MAX_ROW_FOR_CHOSE_SETTINGS) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_CHOSE_SETTINGS] = current_ekran.index_position;
-            
-                //Формуємо екран заголовків настроювання
-                make_ekran_chose_settings();
               }
               else if (current_ekran.current_level == EKRAN_LEVEL_CHOOSE_PASSWORDS)
               {
@@ -1948,41 +1725,6 @@ void main_manu_function(void)
                 position_in_current_level_menu[EKRAN_LIST_D_NOT] = current_ekran.index_position;
                 //Формуємо екран заголовків визначуваних "НЕ"
                 make_ekran_choose_of_ranguvannja(ID_DNOT);
-              }
-              else if(current_ekran.current_level == EKRAN_INFO)
-              {
-                if(++current_ekran.index_position >= MAX_ROW_FOR_INFO) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_INFO] = current_ekran.index_position;
-                //Формуємо екран інформації
-                make_ekran_info();
-              }
-              else if(current_ekran.current_level == EKRAN_DATE_TIME_PZ)
-              {
-                if(++current_ekran.index_position >= MAX_ROW_FOR_DATE_TIME_PZ) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_DATE_TIME_PZ] = current_ekran.index_position;
-                //Формуємо екран відображення міти дати і часу прошивки
-                make_ekran_date_time_pz();
-              }
-              else if(current_ekran.current_level == EKRAN_POINT_TIME_SETTINGS)
-              {
-                if(++current_ekran.index_position >= MAX_ROW_FOR_POINT_TIME_SETTINGS) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_POINT_TIME_SETTINGS] = current_ekran.index_position;
-                //Формуємо екран вибору міток настроювання
-                make_ekran_chose_item_of_point_time_settings();
-              }
-              else if(current_ekran.current_level == EKRAN_POINT_TIME_SETPOINT)
-              {
-                if(++current_ekran.index_position >= MAX_ROW_FOR_POINT_TIME_SETPOINT_RANGUVANNJA) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_POINT_TIME_SETPOINT] = current_ekran.index_position;
-                //Формуємо екран відображення міти останніх змін у уставках-витримках-управлінчькій інформації
-                make_ekran_time_settings(0);
-              }
-              else if(current_ekran.current_level == EKRAN_POINT_TIME_RANGUVANNJA)
-              {
-                if(++current_ekran.index_position >= MAX_ROW_FOR_POINT_TIME_SETPOINT_RANGUVANNJA) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_POINT_TIME_RANGUVANNJA] = current_ekran.index_position;
-                //Формуємо екран відображення міти останніх змін у ронжуваннях
-                make_ekran_time_settings(1);
               }
               else if (
                        (current_ekran.current_level == EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS) ||

@@ -1,108 +1,214 @@
 #include "header.h"
 
 /*****************************************************/
+/*
+Функція переміщення по меню
+
+Вхідні параметри
+(1 << BIT_REWRITE) - перемалювати меню
+(1 << BIT_KEY_DOWN) - рухатися вниз
+(1 << BIT_KEY_UP) - рухатися вверх
+*/
+/*****************************************************/
+void move_into_list_settings(unsigned int action, int max_row)
+{
+  if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
+  {
+    if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position++;
+    do
+    {
+      if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
+      while (
+             (
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_TIMERS) &&
+              (current_config.n_timer == 0)
+             )
+             ||
+             (
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_MEANDER) &&
+              (current_config.n_meander == 0)
+             )
+             ||
+             (
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_CTRL_ANALOG_INPUTS) &&
+              (current_config.n_ctrl_analog_inputs == 0)
+             )
+             ||
+             (
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_ALARMS) &&
+              (current_config.n_alarm == 0)
+             )
+            )
+      {
+        if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
+      }
+    }
+    while ((action & (1 << BIT_KEY_DOWN)) && (current_state_menu2.index_position >= max_row));
+  }
+  else if (action & (1 << BIT_KEY_UP))
+  {
+    current_state_menu2.index_position--;
+    do
+    {
+      if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
+      while (
+             (
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_TIMERS) &&
+              (current_config.n_timer == 0)
+             )
+             ||
+             (
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_MEANDER) &&
+              (current_config.n_meander == 0)
+             )
+             ||
+             (
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_ALARMS) &&
+              (current_config.n_alarm == 0)
+             )
+             ||
+             (
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_CTRL_ANALOG_INPUTS) &&
+              (current_config.n_ctrl_analog_inputs == 0)
+             )
+            )
+      {
+        if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
+      }
+    }
+    while (current_state_menu2.index_position < 0);
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
 //Формуємо екран відображення заголовків настройок
 /*****************************************************/
-void make_ekran_chose_settings(void)
+void make_ekran_list_settings(void)
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CHOSE_SETTINGS][MAX_COL_LCD] = 
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_M2][MAX_COL_LCD + 1] = 
   {
     {
-      " Версия ПО и КП ",
-      " Метка настроек ",
-      " Выходы         ",
-      " Светоиндикаторы",
+      " Конфигурация   ",
+      " МФ-Таймера     ",
+      " ГПС            ",
+      " Групповая сигн.",
       " Cигнализация   ",
-      " Тишина         ",
-      " Сброс          ",
-      " Тест           ",
       " УВВ            ",
+      " Параметриров.  ",
+      " Журнал событий ",
       " Коммуникация   ",
-      " Регистраторы   ",
-      " Расш.логика    ",
       " Пароли         "
     },
     {
-      " Версія ПЗ і КП ",
-      " Мітка налашт.  ",
-      " Виходи         ",
-      " Світлоіндикат. ",
+      " Конфігурація   ",
+      " БФ-Таймери     ",
+      " ГПС            ",
+      " Групова сигн.  ",
       " Сигналізація   ",
-      " Тиша           ",
-      " Скидання       ",
-      " Тест           ",
       " УВВ            ",
+      " Параметрування ",
+      " Журнал подій   ",
       " Комунікація    ",
-      " Реєстратори    ",
-      " Розш.логіка    ",
       " Паролі         "
     },
     {
-      " VER.of F/W & MM",
-      " Settings Mark  ",
-      " Outputs        ",
-      " LED            ",
+      " Configuration  ",
+      " MF-Timers      ",
+      " PSG            ",
+      " Group Alarms    ",
       " Alarms         ",
       " BIOS           ",
+      " Parametrization",
+      " Even Log       ",
       " Communication  ",
-      " Recorders      ",
-      " Extended logic ",
       " Passwords      "
     },
     {
-      " Версия ПО и КП ",
-      " Метка настроек ",
-      " Выходы         ",
-      " Светоиндикаторы",
-      " Сигнализация   ",
-      " Тишина         ",
-      " Сброс          ",
-      " Тест           ",
+      " Конфигурация   ",
+      " МФ-Таймера     ",
+      " ГПС            ",
+      " Групповая сигн.",
+      " Cигнализация   ",
       " УВВ            ",
+      " Параметриров.  ",
+      " Журнал событий ",
       " Коммуникация   ",
-      " Регистраторы   ",
-      " Расш.логика    ",
       " Пароли         "
     }
   };
-  unsigned char name_string_tmp[MAX_ROW_FOR_CHOSE_SETTINGS][MAX_COL_LCD];
 
-  int index_language = index_language_in_array(current_settings.language);
-  for(int index_1 = 0; index_1 < MAX_ROW_FOR_CHOSE_SETTINGS; index_1++)
+  int index_language = index_language_in_array(settings_fix.language);
+  unsigned int additional_current = 0;
+  unsigned int position_temp = current_state_menu2.index_position;
+
+  uint8_t name_string_tmp[MAX_ROW_LIST_SETTINGS_M2][MAX_COL_LCD + 1];
+  for(size_t index_1 = 0; index_1 < (MAX_ROW_LIST_SETTINGS_M2 - additional_current); index_1++)
   {
-    for(int index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
-      name_string_tmp[index_1][index_2] = name_string[index_language][index_1][index_2];
+    if (
+        (
+         (index_1 == (INDEX_LIST_SETTINGS_M2_TIMERS - additional_current)) &&
+         (current_config.n_timer == 0)
+        )
+        ||
+        (
+         (index_1 == (INDEX_LIST_SETTINGS_M2_MEANDER - additional_current)) &&
+         (current_config.n_meander == 0)
+        )
+        ||
+        (
+         (index_1 == (INDEX_LIST_SETTINGS_M2_CTRL_ANALOG_INPUTS - additional_current)) &&
+         (current_config.n_ctrl_analog_inputs == 0)
+        )
+        ||
+        (
+         (index_1 == (INDEX_LIST_SETTINGS_M2_ALARMS - additional_current)) &&
+         (current_config.n_alarm == 0)
+        )
+       )
+    {
+      if ((index_1 + 1) <= position_temp) position_temp--;
+      additional_current++;
+    }
+    for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
+    {
+      name_string_tmp[index_1][index_2] = name_string[index_language][index_1 + additional_current][index_2];
+    }
   }
-  
-  int position_temp = current_ekran.index_position;
-  int index_of_ekran;
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;;
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < MAX_ROW_FOR_CHOSE_SETTINGS)
+    for (size_t j = 0; j < MAX_COL_LCD; j++) 
     {
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string_tmp[index_of_ekran][j];
-    } 
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-
-    index_of_ekran++;
+      working_ekran[i][j] = (index_in_ekran < (MAX_ROW_LIST_SETTINGS_M2 - additional_current)) ? name_string_tmp[index_in_ekran][j] : ' ';
+    }
+    index_in_ekran++;
   }
 
+  /*
+  Ящо ми відкрили це вікно з довзолом на редалування, то переводим його у режим, коли зараз режиму редагування
+  для цього вікна немає, але у тому вікні де він буде, то перехід до нього не буде вимагати введення паролю
+  */
+  if (current_state_menu2.edition == 2 )
+  {
+    current_state_menu2.edition = 1;
+    //Курсор невидимий
+    current_state_menu2.cursor_blinking_on = 0;
+  }
+  
   //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
   //Курсор видимий
-  current_ekran.cursor_on = 1;
+  current_state_menu2.cursor_on = 1;
   //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 

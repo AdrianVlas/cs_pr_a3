@@ -96,12 +96,6 @@ void main_manu_function_ver2(void)
           else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ENTER))) !=0)
           {
             //Натиснута кнопка ENTER
-            current_state_menu2.current_level = next_level_in_current_level_menu2[current_state_menu2.current_level];
-            current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
-            current_state_menu2.position_cursor_x = previous_state_cursor.position_cursor_x;
-            current_state_menu2.cursor_on = previous_state_cursor.cursor_on;
-            current_state_menu2.cursor_blinking_on = previous_state_cursor.cursor_blinking_on;
-            new_level_menu();
 
             if (
                 (new_password == settings_fix.password_1) || 
@@ -109,15 +103,28 @@ void main_manu_function_ver2(void)
                )   
             {
               //Пароль зійшовся
-              //Переходимо у попереднє меню у новому режимі дозволу редагування
-              current_state_menu2.edition =  (new_password == settings_fix.password_2) ? 2 : 1;
+              //Формуємо індекс повернення з нового вікна у яке ми зараз перейдемо на вікно з якого був викликаний запит на пароль
+              if (next_level_in_current_level_menu2[current_state_menu2.current_level] != previous_level_in_current_level_menu2[current_state_menu2.current_level])
+              {
+                previous_level_in_current_level_menu2[next_level_in_current_level_menu2[current_state_menu2.current_level]] = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+              }
+              current_state_menu2.current_level = next_level_in_current_level_menu2[current_state_menu2.current_level];
+              new_level_menu();
+
+              current_state_menu2.edition =  (new_password == settings_fix.password_2) ? 2 : 0;
             }
             else
             {
               //Пароль не зійшовся
-              //Переходимо у попереднє меню з попереднім режимом редагування
+              current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+              new_level_menu();
+              
               current_ekran.edition = prev_edit;
             }
+            current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
+            current_state_menu2.position_cursor_x = previous_state_cursor.position_cursor_x;
+            current_state_menu2.cursor_on = previous_state_cursor.cursor_on;
+            current_state_menu2.cursor_blinking_on = previous_state_cursor.cursor_blinking_on;
               
             //Виставляємо біт обновлення екрану
             new_state_keyboard |= (1<<BIT_REWRITE);
@@ -159,7 +166,13 @@ void main_manu_function_ver2(void)
     case INPUTS_MENU2_LEVEL:
     case OUTPUTS_MENU2_LEVEL:
     case REGISTRATORS_MENU2_LEVEL:
+    case LIST_SETTINGS_MENU2_LEVEL:
     case DIAGNOSTICS_MENU2_LEVEL:
+    case LABELS_MENU2_LEVEL:
+    case CONFIG_LABEL_MENU2_LEVEL:
+    case SETTINGS_LABEL_MENU2_LEVEL:
+    case INFO_MENU2_LEVEL:
+    case DATE_TIME_INFO_MENU2_LEVEL:
       {
         //Формуємо маску кнопок. які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER)| (1<<BIT_KEY_ESC)|(1<<BIT_REWRITE)| (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
@@ -183,6 +196,17 @@ void main_manu_function_ver2(void)
             }
             position_in_current_level_menu2[current_state_menu2.current_level] = current_state_menu2.index_position;
             //Формуємо екран відображення
+            unsigned int menu_param_1;
+            if (
+                (current_state_menu2.current_level == CONFIG_LABEL_MENU2_LEVEL) &&
+                (current_state_menu2.current_level == SETTINGS_LABEL_MENU2_LEVEL)
+               )
+            {
+              if (current_state_menu2.current_level == CONFIG_LABEL_MENU2_LEVEL) menu_param_1 = 0;
+              else menu_param_1 = 1;
+              p_menu_param_1 = &menu_param_1; 
+            }
+            
             if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
             else
             {
@@ -195,8 +219,10 @@ void main_manu_function_ver2(void)
           else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ENTER))) !=0)
           {
             //Натиснута кнопка ENTER
-            const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL, MAIN_MANU2_LEVEL, DIAGNOSTICS_MENU2_LEVEL};
+            const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, DIAGNOSTICS_MENU2_LEVEL, LABELS_MENU2_LEVEL, INFO_MENU2_LEVEL};
             const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
+            const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
+            const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
             const enum _menu2_levels *p = NULL;
               
             switch (current_state_menu2.current_level)
@@ -215,6 +241,16 @@ void main_manu_function_ver2(void)
                 p = next_for_input_output_menu2;
                 break;
               }
+            case LABELS_MENU2_LEVEL:
+              {
+                p = next_for_labels_menu2;
+                break;
+              }
+            case INFO_MENU2_LEVEL:
+              {
+                p = next_for_info_menu2;
+                break;
+              }
             }
               
             if (p != NULL)
@@ -222,20 +258,29 @@ void main_manu_function_ver2(void)
               enum _menu2_levels temp_current_level = p[current_state_menu2.index_position];
               if (current_state_menu2.current_level != temp_current_level) 
               {
+                /**/
+                if (temp_current_level == LIST_SETTINGS_MENU2_LEVEL)
+                {
+                  //Є спроба перейти у вікно списку налаштувань
+                  if (
+                      (settings_fix.password_1 != 0) && 
+                      (settings_fix.password_2 != 0)
+                     )
+                  {
+                    //Переходимо на меню запиту паролю
+                    next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = temp_current_level;
+                    temp_current_level = PASSWORD_MENU2_LEVEL;
+                  }
+                }
+                /**/
+                
                 previous_level_in_current_level_menu2[temp_current_level] = current_state_menu2.current_level;
                 
                 current_state_menu2.current_level = temp_current_level;
-                current_state_menu2.index_position = position_in_current_level_menu2[temp_current_level];
+                current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
                 new_level_menu();
               }
             }
-              
-//            else if(current_state_menu2.index_position == INDEX_MAIN_M2_SETTINGS)
-//            {
-//              //Переходимо на меню настройок
-//              current_ekran.current_level = EKRAN_CHOSE_SETTINGS;
-//              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-//            }
 
             //Виставляємо команду на обновлекння нового екрану
             new_state_keyboard |= (1<<BIT_REWRITE);
@@ -294,17 +339,6 @@ void main_manu_function_ver2(void)
               total_error_sw_fixed(87);
             }
             position_in_current_level_menu2[current_state_menu2.current_level] = current_state_menu2.index_position;
-
-            if (current_state_menu2.edition <= 1)
-            {
-              current_state_menu2.cursor_on = 0;
-              current_state_menu2.cursor_blinking_on = 0;
-            }
-            else
-            {
-              current_state_menu2.cursor_on = 1;
-              current_state_menu2.cursor_blinking_on = 1;
-            }
 
             //Формуємо екран відображення
             if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
@@ -390,7 +424,7 @@ void main_manu_function_ver2(void)
             {
               prev_edit = current_state_menu2.edition;
                
-              if ((settings_fix.password_2 != 0) || (current_state_menu2.edition == 0))
+              if ((current_state_menu2.edition == 0) && (settings_fix.password_2 != 0))
               {
                 //Переходимо на меню запиту паролю
                 next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = previous_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = current_state_menu2.current_level;
@@ -599,7 +633,7 @@ void make_ekran_about_error(const unsigned char information[][MAX_COL_LCD + 1])
     for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i == 0) ? information[index_language][j] : name_string[index_language][j];
   }
   
-  //Курсор не видимий
+  //Курсор невидимий
   current_state_menu2.cursor_on = 0;
   //Курсор не мигає
   current_state_menu2.cursor_blinking_on = 0;
@@ -649,8 +683,6 @@ void new_level_menu(void)
       current_state_menu2.func_edit = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
-      current_state_menu2.cursor_on = 1;
-      current_state_menu2.cursor_blinking_on = 0;
 
       break;
     }
@@ -664,9 +696,7 @@ void new_level_menu(void)
       current_state_menu2.func_show = make_ekran_time;
       current_state_menu2.func_edit = edit_time;
       current_state_menu2.func_change = change_time;
-      current_state_menu2.edition = 1;
-      current_state_menu2.cursor_on = 0;
-      current_state_menu2.cursor_blinking_on = 0;
+      current_state_menu2.edition = 0;
       break;
     }
   case MEASUREMENT_MENU2_LEVEL:
@@ -680,8 +710,6 @@ void new_level_menu(void)
       current_state_menu2.func_edit = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
-      current_state_menu2.cursor_on = 1;
-      current_state_menu2.cursor_blinking_on = 0;
       break;
     }
   case INPUTS_OUTPUTS_MENU2_LEVEL:
@@ -693,8 +721,6 @@ void new_level_menu(void)
       current_state_menu2.func_edit = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
-      current_state_menu2.cursor_on = 1;
-      current_state_menu2.cursor_blinking_on = 0;
       break;
     }
   case INPUTS_MENU2_LEVEL:
@@ -710,8 +736,6 @@ void new_level_menu(void)
       current_state_menu2.func_edit = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
-      current_state_menu2.cursor_on = 0;
-      current_state_menu2.cursor_blinking_on = 0;
       break;
     }
    case REGISTRATORS_MENU2_LEVEL:
@@ -723,8 +747,20 @@ void new_level_menu(void)
       current_state_menu2.func_edit = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
-      current_state_menu2.cursor_on = 1;
-      current_state_menu2.cursor_blinking_on = 0;
+      break;
+    }
+   case LIST_SETTINGS_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_M2;
+      current_state_menu2.func_move = move_into_list_settings;
+      current_state_menu2.func_show = make_ekran_list_settings;
+      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_change = NULL;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
       break;
     }
   case DIAGNOSTICS_MENU2_LEVEL:
@@ -738,8 +774,51 @@ void new_level_menu(void)
       current_state_menu2.func_edit = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
-      current_state_menu2.cursor_on = 1;
-      current_state_menu2.cursor_blinking_on = 0;
+      break;
+    }
+  case LABELS_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_LABELS_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_list_labels;
+      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.edition = 0;
+      break;
+    }
+  case CONFIG_LABEL_MENU2_LEVEL:
+  case SETTINGS_LABEL_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_TIME_CONFIG_OR_SETTINGS;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_time_config_or_settings;
+      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.edition = 0;
+      break;
+    }
+  case INFO_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_INFO_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_info;
+      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.edition = 0;
+      break;
+    }
+  case DATE_TIME_INFO_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_FOR_DATE_TIME_PZ;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_date_time_pz;
+      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.edition = 0;
       break;
     }
   case PASSWORD_MENU2_LEVEL:
@@ -751,8 +830,6 @@ void new_level_menu(void)
       current_state_menu2.func_edit = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
-      current_state_menu2.cursor_on = 1;
-      current_state_menu2.cursor_blinking_on = 1;
       break;
     }
   default:

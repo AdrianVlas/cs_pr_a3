@@ -4400,6 +4400,15 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_diagnostyka.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_info.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_labels.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_list_settings.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_main.h</name>
         </file>
         <file>
@@ -4646,13 +4655,13 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_inputs_outputs_leds_reg_df_buttons.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_labels.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_level_password.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_main.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_point_time_settings.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_registrators.c</name>

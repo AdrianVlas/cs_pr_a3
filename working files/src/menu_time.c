@@ -129,6 +129,19 @@ void make_ekran_time(void)
 
   //Відображення курору по вертикалі
   current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  if (current_state_menu2.edition <= 1)
+  {
+    //Курсор невидимий
+    current_state_menu2.cursor_on = 0;
+    current_state_menu2.cursor_blinking_on = 0;
+  }
+  else
+  {
+    //Курсор видимий
+    current_state_menu2.cursor_on = 1;
+    //Курсор мигає
+    current_state_menu2.cursor_blinking_on = 1;
+  }
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }

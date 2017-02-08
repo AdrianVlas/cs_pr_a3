@@ -158,6 +158,8 @@ void make_ekran_diagnostics(void)
   //Відображення курору по вертикалі
   current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
 
+  //Курсор не мигає
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
   

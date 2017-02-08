@@ -1,8 +1,6 @@
 #ifndef __CONST_STATE_INPUTS_OUTPUTS_MENU2__
 #define __CONST_STATE_INPUTS_OUTPUTS_MENU2__
 
-//#define EKRAN_STATE_OUTPUTS             (EKRAN_STATE_INPUTS + 1)
-
 enum __index_input_output_m2
 {
 INDEX_INOUT_OUTPUT_M2_INPUT = 0,

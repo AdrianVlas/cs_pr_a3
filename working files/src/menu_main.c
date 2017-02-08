@@ -20,7 +20,7 @@ void move_into_main(unsigned int action, int max_row)
       if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
       while (
              (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
-             (current_config.ctrl_analog_inputs == 0)
+             (current_config.n_ctrl_analog_inputs == 0)
             )
       {
         if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
@@ -36,7 +36,7 @@ void move_into_main(unsigned int action, int max_row)
       if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
       while (
              (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
-             (current_config.ctrl_analog_inputs == 0)
+             (current_config.n_ctrl_analog_inputs == 0)
             )
       {
         if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
@@ -105,7 +105,7 @@ void make_ekran_main(void)
   {
     if (
         (index_1 == (INDEX_MAIN_M2_MEASURMENTS - additional_current)) &&
-        (current_config.ctrl_analog_inputs == 0)
+        (current_config.n_ctrl_analog_inputs == 0)
        )
     {
       if ((index_1 + 1) <= position_temp) position_temp--;
@@ -133,6 +133,10 @@ void make_ekran_main(void)
   current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
   current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  //Курсор видимий
+  current_state_menu2.cursor_on = 1;
+  //Курсор не мигає
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }

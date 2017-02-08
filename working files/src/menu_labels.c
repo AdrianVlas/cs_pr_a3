@@ -3,87 +3,73 @@
 /*****************************************************/
 //Формуємо екран відображення списку міток настроювання
 /*****************************************************/
-void make_ekran_chose_item_of_point_time_settings(void)
+void make_ekran_list_labels(void)
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_POINT_TIME_SETTINGS][MAX_COL_LCD] = 
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_LABELS_M2][MAX_COL_LCD + 1] = 
   {
     {
-      " Метка настроек ",
-      " Метка ранжиров."
+      " Метка конфиг.  ",
+      " Метка настроек "
     },
     {
-      " Мітка налашт.  ",
-      " Мітка ранжув.  "
+      " Мітка конфіг.  ",
+      " Мітка налашт.  "
     },
     {
-      " Settings Mark  ",
-      " Ranking  Mark  "
+      " Configur.Mark  ",
+      " Settings Mark  "
     },
     {
-      " Метка настроек ",
-      " Метка ранжиров."
+      " Метка конфиг.  ",
+      " Метка настроек "
     }
   };
-  int index_language = index_language_in_array(current_settings.language);
+  int index_language = index_language_in_array(settings_fix.language);
   
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < MAX_ROW_FOR_POINT_TIME_SETTINGS)
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_of_ekran][j];
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = (index_in_ekran < MAX_ROW_LABELS_M2) ? name_string[index_language][index_in_ekran][j] : ' ';
 
-    index_of_ekran++;
+    index_in_ekran++;
   }
 
   //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
   //Курсор видимий
-  current_ekran.cursor_on = 1;
+  current_state_menu2.cursor_on = 1;
   //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
 /*****************************************************/
 //Формуємо екран мітки часу останніх змін у настроюванні
 /*
--------------------------------------------------------
-Вхідний прараметр:
-kind
-      0 - мітка уставок-витримок-управлінської інформації
-      1 - мітка ранжування
--------------------------------------------------------
 */
 /*****************************************************/
-void make_ekran_time_settings(unsigned int kind)
+void make_ekran_time_config_or_settings(void)
 {
-  unsigned char name_string[2*MAX_ROW_FOR_POINT_TIME_SETPOINT_RANGUVANNJA][MAX_COL_LCD] = 
+  uint8_t name_string[2*MAX_ROW_TIME_CONFIG_OR_SETTINGS][MAX_COL_LCD + 1] = 
   {
     "XX-XX-20XX      ",
     "XX:XX:XX XXXXXXX"
   };
   
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  unsigned char *point_to_target;
-  
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  uint8_t *point_to_target;
 
-  if (kind == 0) point_to_target = (&current_settings)->time_setpoints;
-  else point_to_target = (&current_settings)->time_ranguvannja;
+  if (*((unsigned int*)p_menu_param_1) == 0) point_to_target = (&current_config)->time_config;
+  else point_to_target = (&settings_fix)->time_setpoints;
   
   /******************************************/
   //Заповнюємо поля відповідними цифрами
@@ -156,42 +142,39 @@ void make_ekran_time_settings(unsigned int kind)
   else
   {
     //теоретично ми сюди б не мали ніколи заходити, але якщо ми сюди зайшли, то виводимо сигналізацію про помилку на екран
-    const unsigned char error_meas[MAX_NAMBER_LANGUAGE][7] = 
+    const uint8_t error_meas[MAX_NAMBER_LANGUAGE][7 + 1] = 
     {
       " Ошибка",
       "Помилка",
       "  Error",
       " Ошибка"
     };
-    int index_language = index_language_in_array(current_settings.language);
+    int index_language = index_language_in_array(settings_fix.language);
       
-    for (unsigned int i = 0; i < 7; i++) name_string[INDEX_TIME_CALIBRATION_M2_TIME][9 + i] = error_meas[index_language][i];
+    for (size_t i = 0; i < 7; i++) name_string[INDEX_TIME_CALIBRATION_M2_TIME][9 + i] = error_meas[index_language][i];
   }
   
   /******************************************/
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати
-    if (index_of_ekran < (2*MAX_ROW_FOR_POINT_TIME_SETPOINT_RANGUVANNJA))
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_of_ekran][j];
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = (index_in_ekran < (2*MAX_ROW_TIME_CONFIG_OR_SETTINGS)) ? name_string[index_in_ekran][j] : ' ';
 
-    index_of_ekran++;
+    index_in_ekran++;
   }
 
   //Курсор по горизонталі поміщаємо на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі в 0
-  current_ekran.position_cursor_y = 0;
-  //Курсор не видимий
-  current_ekran.cursor_on = 0;
+  current_state_menu2.position_cursor_y = 0;
+  //Курсор невидимий
+  current_state_menu2.cursor_on = 0;
   //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 

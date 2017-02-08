@@ -88,6 +88,10 @@ void make_ekran_list_inputs_outputs(void)
   current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
   current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  //Курсор видимий
+  current_state_menu2.cursor_on = 1;
+  //Курсор не мигає
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
@@ -156,6 +160,10 @@ void make_ekran_state_inputs_or_outputs(void)
   current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
   current_state_menu2.position_cursor_y = 0;
+  //Курсор невидимий
+  current_state_menu2.cursor_on = 0;
+  //Курсор не мигає
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }

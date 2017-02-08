@@ -5,7 +5,7 @@
 /*****************************************************/
 void make_ekran_info()
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_INFO][MAX_COL_LCD] = 
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_INFO_M2][MAX_COL_LCD + 1] = 
   {
     {
       "   Версия ПО    ",
@@ -24,26 +24,25 @@ void make_ekran_info()
       "   Версия КП    "
     }
   };
-  int index_language = index_language_in_array(current_settings.language);
+  int index_language = index_language_in_array(settings_fix.language);
   
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  unsigned char value_str[MAX_COL_LCD] = "                ";
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned char value_str[MAX_COL_LCD + 1] = "                ";
   
   //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
-  index_of_ekran = ((position_temp<<1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  unsigned int index_in_ekran = ((position_temp<<1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   int first_char_row1, last_chat_row1;
   
-  for (unsigned int i = 0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
-    if (index_of_ekran < (MAX_ROW_FOR_INFO<<1))//Множення на два константи MAX_ROW_FOR_INFO потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    if (index_in_ekran < (MAX_ROW_INFO_M2 << 1))//Множення на два константи MAX_ROW_INFO_M2 потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
     {
       if ((i & 0x1) == 0)
       {
         //У непарному номері рядку виводимо заголовок
-        for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_of_ekran>>1][j];
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran>>1][j];
         
-        if ((index_of_ekran>>1) == INDEX_ML_INFO_FIRMWARE)
+        if ((index_in_ekran >> 1) == INDEX_INFO_M2_FIWMWARE)
         {
           unsigned int index_tmp = 0;
 
@@ -82,7 +81,7 @@ void make_ekran_info()
           }
           
         }
-        else if ((index_of_ekran>>1) == INDEX_ML_INFO_MEMORY_MAP)
+        else if ((index_in_ekran>>1) == INDEX_INFO_M2_MEMORY_MAP)
         {
 #if VERSIA_GMM > 9
           value_str[COL_INFO_BEGIN_2 + 0] = (VERSIA_GMM / 10) + 0x30;
@@ -107,46 +106,44 @@ void make_ekran_info()
       else
       {
         //У парному номері рядку виводимо значення
-        for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = value_str[j];
+        for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = value_str[j];
       }
     }
     else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+      for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
 
-    index_of_ekran++;
+    index_in_ekran++;
   }
 
   //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
-  current_ekran.position_cursor_y = ((position_temp<<1) + 1) & (MAX_ROW_LCD - 1);
+  current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
   int last_position_cursor_x = MAX_COL_LCD;
 
-  //Курсор по горизонталі відображається на першому символі у випадку, коли ми не в режимі редагування, інакше позиція буде визначена у функцї main_manu_function
-  if (current_ekran.index_position == INDEX_ML_INFO_FIRMWARE)
+  if (current_state_menu2.index_position == INDEX_INFO_M2_FIWMWARE)
   {
-    current_ekran.position_cursor_x = first_char_row1;
+    current_state_menu2.position_cursor_x = first_char_row1;
     last_position_cursor_x = last_chat_row1;
   }
   else
   {
-    current_ekran.position_cursor_x = COL_INFO_BEGIN_2;
+    current_state_menu2.position_cursor_x = COL_INFO_BEGIN_2;
     last_position_cursor_x = COL_END_END_2;
   }
 
   //Підтягуємо курсор до першого символу
-  while (((working_ekran[current_ekran.position_cursor_y][current_ekran.position_cursor_x + 1]) == ' ') && 
-         (current_ekran.position_cursor_x < (last_position_cursor_x -1))) current_ekran.position_cursor_x++;
+  while (((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x + 1]) == ' ') && 
+         (current_state_menu2.position_cursor_x < (last_position_cursor_x -1))) current_state_menu2.position_cursor_x++;
 
   //Курсор ставимо так, щоб він був перед числом
-  if (((working_ekran[current_ekran.position_cursor_y][current_ekran.position_cursor_x]) != ' ') && 
-      (current_ekran.position_cursor_x > 0)) current_ekran.position_cursor_x--;
+  if (((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x]) != ' ') && 
+      (current_state_menu2.position_cursor_x > 0)) current_state_menu2.position_cursor_x--;
 
   //Курсор видимий
-  current_ekran.cursor_on = 1;
+  current_state_menu2.cursor_on = 1;
   //Курсор не мигає
-  if(current_ekran.edition == 0)current_ekran.cursor_blinking_on = 0;
-  else current_ekran.cursor_blinking_on = 1;
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
@@ -155,16 +152,14 @@ void make_ekran_info()
 /*****************************************************/
 void make_ekran_date_time_pz(void)
 {
-  unsigned char name_string[2*MAX_ROW_FOR_DATE_TIME_PZ][MAX_COL_LCD] = 
+  uint8_t name_string[2*MAX_ROW_FOR_DATE_TIME_PZ][MAX_COL_LCD + 1] = 
   {
     "   XX-XX-20XX   ",
     "     XX:XX      "
   };
   
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
 
   /******************************************/
   //Заповнюємо поля відповідними цифрами
@@ -191,27 +186,25 @@ void make_ekran_date_time_pz(void)
   /******************************************/
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i< MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати
-    if (index_of_ekran < (2*MAX_ROW_FOR_DATE_TIME_PZ))
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_of_ekran][j];
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (index_in_ekran < (2*MAX_ROW_FOR_DATE_TIME_PZ)) ? name_string[index_in_ekran][j] : ' ';
 
-    index_of_ekran++;
+    index_in_ekran++;
   }
 
   //Курсор по горизонталі поміщаємо на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі в 0
-  current_ekran.position_cursor_y = 0;
-  //Курсор не видимий
-  current_ekran.cursor_on = 0;
+  current_state_menu2.position_cursor_y = 0;
+  current_state_menu2.position_cursor_y = 0;
+  //Курсор невидимий
+  current_state_menu2.cursor_on = 0;
   //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
