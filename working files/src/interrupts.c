@@ -627,7 +627,7 @@ void TIM4_IRQHandler(void)
         (current_state_menu2.current_level == MEASUREMENT_MENU2_LEVEL      ) ||
         (current_state_menu2.current_level == INPUTS_MENU2_LEVEL)   ||
         (current_state_menu2.current_level == OUTPUTS_MENU2_LEVEL)   ||
-        (current_ekran.current_level == EKRAN_DIAGNOSTYKA) 
+        (current_state_menu2.current_level == DIAGNOSTICS_MENU2_LEVEL) 
        )
     {
       if(++time_rewrite > MAX_TIME_REWRITE_EKRAN)

@@ -494,9 +494,7 @@ void main_manu_function(void)
     case EKRAN_POINT_TIME_SETTINGS:
     case EKRAN_POINT_TIME_SETPOINT:
     case EKRAN_POINT_TIME_RANGUVANNJA:
-    case EKRAN_DIAGNOSTYKA:
     case EKRAN_STATE_OUTPUTS:
-    case EKRAN_LIST_REGISTRATORS:
     case EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS:
     case EKRAN_LIST_DIGITAL_REGISTRATOR_RECORDS:
     case EKRAN_LIST_REGISTRATOR_PROGRAM_ERROR_RECORDS:
@@ -734,37 +732,6 @@ void main_manu_function(void)
               position_in_current_level_menu[EKRAN_POINT_TIME_RANGUVANNJA] = current_ekran.index_position;
               //Формуємо екран відображення міти останніх змін у ранжування
               make_ekran_time_settings(1);
-            }
-            else if(current_ekran.current_level == EKRAN_DIAGNOSTYKA)
-            {
-              if(current_ekran.index_position >= ((int)MAX_ROW_FOR_DIAGNOSTYKA)) current_ekran.index_position = 0;
-              
-              if (
-                  (diagnostyka[0] == 0) &&
-                  (diagnostyka[1] == 0) &&
-                  ((diagnostyka[2] & USED_BITS_IN_LAST_INDEX) == 0)
-                 )
-              {
-                current_ekran.index_position = 0;
-              }
-              else
-              {
-                while (_CHECK_SET_BIT(diagnostyka, current_ekran.index_position) ==0)
-                {
-                  current_ekran.index_position++;
-                  if(current_ekran.index_position >= ((int)MAX_ROW_FOR_DIAGNOSTYKA)) current_ekran.index_position = 0;
-                }
-              }
-              position_in_current_level_menu[EKRAN_DIAGNOSTYKA] = current_ekran.index_position;
-              //Формуємо екран діагностики
-              make_ekran_diagnostyka(diagnostyka);
-            }
-            else if (current_ekran.current_level == EKRAN_LIST_REGISTRATORS)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_LIST_REGISTRATORS) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_LIST_REGISTRATORS] = current_ekran.index_position;
-              //Формуємо екран вибору відображення реєстраторів
-              make_ekran_list_registrators();
             }
             else if (
                      (current_ekran.current_level == EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS ) ||
@@ -1341,30 +1308,6 @@ void main_manu_function(void)
                 current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
                 current_ekran.edition = 0;
               }
-              else if (current_ekran.current_level == EKRAN_LIST_REGISTRATORS)
-              {
-                //Натисну кнопка Enter у вікні вибору реєстраторів
-                if(current_ekran.index_position == INDEX_ML_ANALOG_REGISTRATOR_INFO)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення аналогового реєстратора
-                  current_ekran.current_level = EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS;
-                }
-                else if(current_ekran.index_position == INDEX_ML_DIGITAL_REGISTRATOR_INFO)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення дискретного реєстратора
-                  current_ekran.current_level = EKRAN_LIST_DIGITAL_REGISTRATOR_RECORDS;
-                }
-                else
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення реєстратора програмних помилок
-                  current_ekran.current_level = EKRAN_LIST_REGISTRATOR_PROGRAM_ERROR_RECORDS;
-                }
-                current_ekran.index_position = 0; //При відкриванні цих вікон з старших розділів меню завжди треба попадати на найновіший запис
-                current_ekran.edition = 0;
-              }
               else if (
                        (current_ekran.current_level == EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS) &&
                        (info_rejestrator_ar.number_records > 0) &&
@@ -1728,36 +1671,6 @@ void main_manu_function(void)
                 //Формуємо екран відображення міти останніх змін у ранжування
                 make_ekran_time_settings(1);
               }
-              else if(current_ekran.current_level == EKRAN_DIAGNOSTYKA)
-              {
-                if (
-                    (diagnostyka[0] == 0) &&
-                    (diagnostyka[1] == 0) &&
-                    ((diagnostyka[2] & USED_BITS_IN_LAST_INDEX) == 0)
-                   )
-                {
-                  current_ekran.index_position = 0;
-                }
-                else
-                {
-                  if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_DIAGNOSTYKA - 1;
-                  while (_CHECK_SET_BIT(diagnostyka, current_ekran.index_position) ==0)
-                  {
-                    current_ekran.index_position--;
-                    if(current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_DIAGNOSTYKA - 1;
-                  }
-                }
-                position_in_current_level_menu[EKRAN_DIAGNOSTYKA] = current_ekran.index_position;
-                //Формуємо екран діагностики
-                make_ekran_diagnostyka(diagnostyka);
-              }
-              else if(current_ekran.current_level == EKRAN_LIST_REGISTRATORS)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_LIST_REGISTRATORS - 1;
-                position_in_current_level_menu[EKRAN_LIST_REGISTRATORS] = current_ekran.index_position;
-                //Формуємо екран вибору реєстраторів
-                make_ekran_list_registrators();
-              }
               else if (
                        (current_ekran.current_level == EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS ) ||
                        (current_ekran.current_level == EKRAN_LIST_DIGITAL_REGISTRATOR_RECORDS) ||
@@ -2070,36 +1983,6 @@ void main_manu_function(void)
                 position_in_current_level_menu[EKRAN_POINT_TIME_RANGUVANNJA] = current_ekran.index_position;
                 //Формуємо екран відображення міти останніх змін у ронжуваннях
                 make_ekran_time_settings(1);
-              }
-              else if(current_ekran.current_level == EKRAN_DIAGNOSTYKA)
-              {
-                if (
-                    (diagnostyka[0] == 0) &&
-                    (diagnostyka[1] == 0) &&
-                    ((diagnostyka[2] & USED_BITS_IN_LAST_INDEX) == 0)
-                   )
-                {
-                  current_ekran.index_position = 0;
-                }
-                else
-                {
-                  if(++current_ekran.index_position >= ((int)MAX_ROW_FOR_DIAGNOSTYKA)) current_ekran.index_position = 0;
-                  while (_CHECK_SET_BIT(diagnostyka, current_ekran.index_position) ==0)
-                  {
-                    current_ekran.index_position++;
-                    if(current_ekran.index_position >= ((int)MAX_ROW_FOR_DIAGNOSTYKA)) current_ekran.index_position = 0;
-                  }
-                }
-                position_in_current_level_menu[EKRAN_DIAGNOSTYKA] = current_ekran.index_position;
-                //Формуємо екран діагностики
-                make_ekran_diagnostyka(diagnostyka);
-              }
-              else if(current_ekran.current_level == EKRAN_LIST_REGISTRATORS)
-              {
-                if(++current_ekran.index_position >= MAX_ROW_FOR_LIST_REGISTRATORS) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_LIST_REGISTRATORS] = current_ekran.index_position;
-                //Формуємо екран вибору реєстраторів
-                make_ekran_list_registrators();
               }
               else if (
                        (current_ekran.current_level == EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS) ||

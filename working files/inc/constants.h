@@ -11,6 +11,7 @@
 #include "const_menu2_measurement.h"
 #include "const_menu2_state_inputs_outputs.h"
 #include "const_menu2_registrators.h"
+#include "const_menu2_diagnostyka.h"
 
 #include "const_lcd_and_keyboard.h"
 #include "const_menu_level_password.h"

@@ -159,6 +159,7 @@ void main_manu_function_ver2(void)
     case INPUTS_MENU2_LEVEL:
     case OUTPUTS_MENU2_LEVEL:
     case REGISTRATORS_MENU2_LEVEL:
+    case DIAGNOSTICS_MENU2_LEVEL:
       {
         //Формуємо маску кнопок. які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER)| (1<<BIT_KEY_ESC)|(1<<BIT_REWRITE)| (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
@@ -194,7 +195,7 @@ void main_manu_function_ver2(void)
           else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ENTER))) !=0)
           {
             //Натиснута кнопка ENTER
-            const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL};
+            const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL, MAIN_MANU2_LEVEL, DIAGNOSTICS_MENU2_LEVEL};
             const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
             const enum _menu2_levels *p = NULL;
               
@@ -229,24 +230,10 @@ void main_manu_function_ver2(void)
               }
             }
               
-//            else if(current_state_menu2.index_position == INDEX_MAIN_M2_REGISTRATORS)
-//            {
-//              //Переходимо на меню вибору відображення списку реєстраторів
-//              current_ekran.current_level = EKRAN_LIST_REGISTRATORS;
-//              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-//            }
 //            else if(current_state_menu2.index_position == INDEX_MAIN_M2_SETTINGS)
 //            {
 //              //Переходимо на меню настройок
 //              current_ekran.current_level = EKRAN_CHOSE_SETTINGS;
-//              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-//            }
-//            else if(current_state_menu2.index_position == INDEX_MAIN_M2_DIAGNOSTYKA)
-//            {
-//              //Переходимо на меню настройок
-//              current_ekran.current_level = EKRAN_DIAGNOSTYKA;
-//              //Для того, щоб при першому входженні завжди список починався із першої помилки обнуляємо цю позицію
-//              position_in_current_level_menu[current_ekran.current_level] = 0;
 //              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
 //            }
 
@@ -733,6 +720,21 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_LIST_REGISTRATORS_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_list_registrators;
+      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.edition = 0;
+      current_state_menu2.cursor_on = 1;
+      current_state_menu2.cursor_blinking_on = 0;
+      break;
+    }
+  case DIAGNOSTICS_MENU2_LEVEL:
+    {
+      time_rewrite = 0;
+      
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_FOR_DIAGNOSTYKA;
+      current_state_menu2.func_move = move_into_diagnostics;
+      current_state_menu2.func_show = make_ekran_diagnostics;
       current_state_menu2.func_edit = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
