@@ -143,6 +143,57 @@ void make_ekran_main(void)
 /*****************************************************/
 
 /*****************************************************/
+/*
+Редагування дати і часу
+
+Вихідні дані
+0 - результати виконання операції не має значення
+1 - дані не змінилися
+2 - дані змінилися і у діапазоні
+3 дані змінилися але не у діапазоні
+*/
+/*****************************************************/
+unsigned int press_enter_in_main(void)
+{
+  unsigned int result = 0;
+  
+  if (*((enum _menu2_levels*)p_menu_param_1) == LIST_SETTINGS_MENU2_LEVEL)
+  {
+    //Є спроба перейти у вікно списку налаштувань
+    if (settings_fix.password_2 == 0)
+    {
+      if (config_settings_modified == false)
+      {
+        //Входимо з правом подальшого редагування
+        current_state_menu2.edition = 1;
+      }
+      else
+      {
+        if (settings_fix.password_1 == 0)
+        {
+          //Входимо без права подальшого редагування
+          current_state_menu2.edition = 0;
+        }
+        else
+        {
+          //Повідомляємо про те, що режим редагування зараз недоступний
+          current_state_menu2.edition = 5;
+        }
+      }
+    }
+    else if (settings_fix.password_1 != 0)
+    {
+      //Переходимо на меню запиту паролю
+      next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = *((enum _menu2_levels*)p_menu_param_1);
+      *((enum _menu2_levels*)p_menu_param_1) = PASSWORD_MENU2_LEVEL;
+    }
+  }
+                  
+  return result;
+}
+/*****************************************************/
+
+/*****************************************************/
 //
 /*****************************************************/
 /*****************************************************/

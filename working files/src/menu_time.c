@@ -52,96 +52,121 @@ void move_into_time(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_time(void)
 {
-  uint8_t name_string[MAX_ROW_TIME_CALIBRATION_M2][MAX_COL_LCD + 1] = 
+  if (current_state_menu2.edition == 3)
   {
-    "   XX-XX-20XX   ",
-    "    XX:XX:XX    ",
-    "                ",
-    "      X XX      "
-  };
-  
-  const uint8_t calibrating[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    "   Калибровка   ",
-    "  Калібрування  ",
-    "  Calibration   ",
-    "   Калибровка   "
-  };
-  
-  int index_language = index_language_in_array(settings_fix.language);
-  for(size_t index_1 = 0; index_1 < (MAX_COL_LCD + 1); index_1++)
-    name_string[INDEX_TIME_CALIBRATION_M2_NAME_CALIBRATION][index_1] = calibrating[index_language][index_1];
-  
-  unsigned int position_temp = current_state_menu2.index_position;
-  unsigned int index_in_ekran;
-  
-  /******************************************/
-  //Заповнюємо поля відповідними цифрами
-  /******************************************/
-  /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function_ver2() і make_ekran_time() викликаються з найнижчого рівня*/ 
-  uint8_t *time_tmp = (current_state_menu2.edition <= 1) ? time : time_edit;
-  uint8_t *calibration_tmp = (current_state_menu2.edition <= 1) ? &calibration : &calibration_edit;
-  //День
-  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_DY1] = (time_tmp[4] >>  4) + 0x30;
-  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_DY2] = (time_tmp[4] & 0xf) + 0x30;
+    make_ekran_ask_rewrite();
 
-  //Місяць
-  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_MY1] = (time_tmp[5] >>  4) + 0x30;
-  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_MY2] = (time_tmp[5] & 0xf) + 0x30;
-
-  //Рік
-  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_SY1] = (time_tmp[6] >>  4) + 0x30;
-  name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_SY2] = (time_tmp[6] & 0xf) + 0x30;
-
-  //Година
-  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_HT1] = (time_tmp[3] >>  4) + 0x30;
-  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_HT2] = (time_tmp[3] & 0xf) + 0x30;
-
-  //Хвилини
-  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_MT1] = (time_tmp[2] >>  4) + 0x30;
-  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_MT2] = (time_tmp[2] & 0xf) + 0x30;
-
-  //Секунди
-  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_ST1] = (time_tmp[1] >>  4) + 0x30;
-  name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_ST2] = (time_tmp[1] & 0xf) + 0x30;
-
-  //Калібровка
-  if((*calibration_tmp & (1<<5)) == 0) name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_SK1] = '-';
-  else name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_SK1] = '+';
-   
-  name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_VK2] =((*calibration_tmp & 0x1f) % 10) + 0x30;
-  name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_VK1] =((*calibration_tmp & 0x1f) / 10) + 0x30;
-  /******************************************/
-  
-  index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
-  
-  //Копіюємо  рядки у робочий екран
-  for (size_t i = 0; i < MAX_ROW_LCD; i++)
-  {
-    //Наступні рядки треба перевірити, чи їх требе відображати
-    for (size_t j = 0; j < MAX_COL_LCD; j++)
-    {
-      working_ekran[i][j] = (index_in_ekran < MAX_ROW_TIME_CALIBRATION_M2) ? name_string[index_in_ekran][j] : ' ';
-    }
-    index_in_ekran++;
+    //Виставляємо біт обновлення екрану
+    new_state_keyboard |= (1<<BIT_REWRITE);
   }
-
-  //Відображення курору по вертикалі
-  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
-  if (current_state_menu2.edition <= 1)
+  else if (current_state_menu2.edition == 4)
   {
-    //Курсор невидимий
-    current_state_menu2.cursor_on = 0;
-    current_state_menu2.cursor_blinking_on = 0;
+    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      " Вых.за диапазон",
+      " Вих.за діапазон",
+      "  Out of Limits ",
+      "Вых.за диапазон "
+    };
+    make_ekran_about_info(true, information_about_error);
+
+    //Виставляємо біт обновлення екрану
+    new_state_keyboard |= (1<<BIT_REWRITE);
   }
   else
   {
-    //Курсор видимий
-    current_state_menu2.cursor_on = 1;
-    //Курсор мигає
-    current_state_menu2.cursor_blinking_on = 1;
+    uint8_t name_string[MAX_ROW_TIME_CALIBRATION_M2][MAX_COL_LCD + 1] = 
+    {
+      "   XX-XX-20XX   ",
+      "    XX:XX:XX    ",
+      "                ",
+      "      X XX      "
+    };
+  
+    const uint8_t calibrating[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      "   Калибровка   ",
+      "  Калібрування  ",
+      "  Calibration   ",
+      "   Калибровка   "
+    };
+  
+    int index_language = index_language_in_array(settings_fix.language);
+    for(size_t index_1 = 0; index_1 < (MAX_COL_LCD + 1); index_1++)
+      name_string[INDEX_TIME_CALIBRATION_M2_NAME_CALIBRATION][index_1] = calibrating[index_language][index_1];
+  
+    unsigned int position_temp = current_state_menu2.index_position;
+    unsigned int index_in_ekran;
+  
+    /******************************************/
+    //Заповнюємо поля відповідними цифрами
+    /******************************************/
+    /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function_ver2() і make_ekran_time() викликаються з найнижчого рівня*/ 
+    uint8_t *time_tmp = (current_state_menu2.edition <= 1) ? time : time_edit;
+    uint8_t *calibration_tmp = (current_state_menu2.edition <= 1) ? &calibration : &calibration_edit;
+    //День
+    name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_DY1] = (time_tmp[4] >>  4) + 0x30;
+    name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_DY2] = (time_tmp[4] & 0xf) + 0x30;
+
+    //Місяць
+    name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_MY1] = (time_tmp[5] >>  4) + 0x30;
+    name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_MY2] = (time_tmp[5] & 0xf) + 0x30;
+
+    //Рік
+    name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_SY1] = (time_tmp[6] >>  4) + 0x30;
+    name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_SY2] = (time_tmp[6] & 0xf) + 0x30;
+
+    //Година
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_HT1] = (time_tmp[3] >>  4) + 0x30;
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_HT2] = (time_tmp[3] & 0xf) + 0x30;
+
+    //Хвилини
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_MT1] = (time_tmp[2] >>  4) + 0x30;
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_MT2] = (time_tmp[2] & 0xf) + 0x30;
+
+    //Секунди
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_ST1] = (time_tmp[1] >>  4) + 0x30;
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_ST2] = (time_tmp[1] & 0xf) + 0x30;
+
+    //Калібровка
+    if((*calibration_tmp & (1<<5)) == 0) name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_SK1] = '-';
+    else name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_SK1] = '+';
+   
+    name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_VK2] =((*calibration_tmp & 0x1f) % 10) + 0x30;
+    name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_VK1] =((*calibration_tmp & 0x1f) / 10) + 0x30;
+    /******************************************/
+  
+    index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+
+  
+    //Копіюємо  рядки у робочий екран
+    for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    {
+      //Наступні рядки треба перевірити, чи їх требе відображати
+      for (size_t j = 0; j < MAX_COL_LCD; j++)
+      {
+        working_ekran[i][j] = (index_in_ekran < MAX_ROW_TIME_CALIBRATION_M2) ? name_string[index_in_ekran][j] : ' ';
+      }
+      index_in_ekran++;
+    }
+
+    //Відображення курору по вертикалі
+    current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+    if (current_state_menu2.edition <= 1)
+    {
+      //Курсор невидимий
+      current_state_menu2.cursor_on = 0;
+      current_state_menu2.cursor_blinking_on = 0;
+    }
+    else
+    {
+      //Курсор видимий
+      current_state_menu2.cursor_on = 1;
+      //Курсор мигає
+      current_state_menu2.cursor_blinking_on = 1;
+    }
   }
+  
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
@@ -151,10 +176,6 @@ void make_ekran_time(void)
 /*
 Редагування дати і часу
 
-Вхідні дані
-0 - перед редагуванням
-1 - після редагування
-
 Вихідні дані
 0 - результати виконання операції не має значення
 1 - дані не змінилися
@@ -162,13 +183,12 @@ void make_ekran_time(void)
 3 дані змінилися але не у діапазоні
 */
 /*****************************************************/
-unsigned int edit_time()
+unsigned int press_enter_in_time()
 {
   unsigned int result;
   switch (current_state_menu2.edition)
   {
   case 0:
-  case 1:
     {
       //Копіюємо дані для редагування
       for(size_t i = 0; i < 7; i++) time_edit[i] = time[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
@@ -212,6 +232,7 @@ unsigned int edit_time()
       
       break;
     }
+  case 1:
   case 4:
     {
       result = 0;

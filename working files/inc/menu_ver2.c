@@ -11,6 +11,16 @@ void main_manu_function_ver2(void)
     static unsigned int prev_edit;
     
     unsigned int max_row = (current_state_menu2.p_max_row == NULL) ? current_state_menu2.max_row : *current_state_menu2.p_max_row;
+    if (max_row == 0) 
+    {
+      /*
+      Якщо при певних одбставинвах (на приклад зміна конфігурації з верхнього рівня) 
+      кількість рядків вибраному меню стала ріна 0, то попертаємо у попереднє меню 
+      (немов би натиснута конпка ESC) і до того часу, поки ми не увійдемо у таке меню, 
+      де можна відобразити його вміст
+      */
+      new_state_keyboard = (1<<BIT_KEY_ESC);
+    }
     
     unsigned int action;
     switch (current_state_menu2.current_level)
@@ -111,7 +121,19 @@ void main_manu_function_ver2(void)
               current_state_menu2.current_level = next_level_in_current_level_menu2[current_state_menu2.current_level];
               new_level_menu();
 
-              current_state_menu2.edition =  (new_password == settings_fix.password_2) ? 2 : 0;
+              if (new_password == settings_fix.password_2)
+              {
+                if (
+                    (current_state_menu2.current_level == TIME_MANU2_LEVEL) ||
+                    (config_settings_modified == false)
+                   )   
+                {
+                  current_state_menu2.edition = 2;
+                }
+                else current_state_menu2.edition = 5;
+              }
+              else current_state_menu2.edition = 0;
+              
             }
             else
             {
@@ -174,8 +196,12 @@ void main_manu_function_ver2(void)
     case INFO_MENU2_LEVEL:
     case DATE_TIME_INFO_MENU2_LEVEL:
       {
-        //Формуємо маску кнопок. які можуть бути натиснутими
-        unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER)| (1<<BIT_KEY_ESC)|(1<<BIT_REWRITE)| (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
+        //Формуємо маску кнопок, які можуть бути натиснутими
+        unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER) | (1<<BIT_REWRITE);
+        
+        if (current_state_menu2.edition <= 2) 
+          maska_keyboard_bits |= (1<<BIT_KEY_ESC) | (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
+
         //Очищаємо всі біти краім упралінський
         new_state_keyboard &= maska_keyboard_bits;
 
@@ -219,71 +245,72 @@ void main_manu_function_ver2(void)
           else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ENTER))) !=0)
           {
             //Натиснута кнопка ENTER
-            const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, DIAGNOSTICS_MENU2_LEVEL, LABELS_MENU2_LEVEL, INFO_MENU2_LEVEL};
-            const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
-            const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
-            const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
-            const enum _menu2_levels *p = NULL;
-              
-            switch (current_state_menu2.current_level)
+            if (current_state_menu2.edition == 5)
             {
-            case MAIN_MANU2_LEVEL:
-              {
-                p = next_for_main_menu2;
-                break;
-              }
-            case MEASUREMENT_MENU2_LEVEL:
-              {
-                break;
-              }
-            case INPUTS_OUTPUTS_MENU2_LEVEL:
-              {
-                p = next_for_input_output_menu2;
-                break;
-              }
-            case LABELS_MENU2_LEVEL:
-              {
-                p = next_for_labels_menu2;
-                break;
-              }
-            case INFO_MENU2_LEVEL:
-              {
-                p = next_for_info_menu2;
-                break;
-              }
+              //Входимо без прав подальшого редагування
+              current_state_menu2.edition = 0;
+              
+              //Виставляємо команду на обновлекння нового екрану
+              new_state_keyboard |= (1<<BIT_REWRITE);
             }
-              
-            if (p != NULL)
+            else
             {
-              enum _menu2_levels temp_current_level = p[current_state_menu2.index_position];
-              if (current_state_menu2.current_level != temp_current_level) 
+              const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, DIAGNOSTICS_MENU2_LEVEL, LABELS_MENU2_LEVEL, INFO_MENU2_LEVEL};
+              const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
+              const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
+              const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
+              const enum _menu2_levels *p = NULL;
+              
+              switch (current_state_menu2.current_level)
               {
-                /**/
-                if (temp_current_level == LIST_SETTINGS_MENU2_LEVEL)
+              case MAIN_MANU2_LEVEL:
                 {
-                  //Є спроба перейти у вікно списку налаштувань
-                  if (
-                      (settings_fix.password_1 != 0) && 
-                      (settings_fix.password_2 != 0)
-                     )
-                  {
-                    //Переходимо на меню запиту паролю
-                    next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = temp_current_level;
-                    temp_current_level = PASSWORD_MENU2_LEVEL;
-                  }
+                  p = next_for_main_menu2;
+                  break;
                 }
-                /**/
+              case MEASUREMENT_MENU2_LEVEL:
+                {
+                  break;
+                }
+              case INPUTS_OUTPUTS_MENU2_LEVEL:
+                {
+                  p = next_for_input_output_menu2;
+                  break;
+                }
+              case LABELS_MENU2_LEVEL:
+                {
+                  p = next_for_labels_menu2;
+                  break;
+                }
+              case INFO_MENU2_LEVEL:
+                {
+                  p = next_for_info_menu2;
+                  break;
+                }
+              }
+              
+              if (p != NULL)
+              {
+                enum _menu2_levels temp_current_level = p[current_state_menu2.index_position];
+                if (current_state_menu2.current_level != temp_current_level) 
+                {
+                  if (current_state_menu2.func_press_enter != NULL) 
+                  {
+                    p_menu_param_1 = &temp_current_level;
+                    current_state_menu2.func_press_enter();
+                  }
                 
-                previous_level_in_current_level_menu2[temp_current_level] = current_state_menu2.current_level;
+                  previous_level_in_current_level_menu2[temp_current_level] = current_state_menu2.current_level;
                 
-                current_state_menu2.current_level = temp_current_level;
-                current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
-                new_level_menu();
+                  current_state_menu2.current_level = temp_current_level;
+                  current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
+                  new_level_menu();
+
+                  //Виставляємо команду на обновлекння нового екрану
+                  new_state_keyboard |= (1<<BIT_REWRITE);
+                }
               }
             }
-
-            //Виставляємо команду на обновлекння нового екрану
-            new_state_keyboard |= (1<<BIT_REWRITE);
               
             //Очистити сигналізацію, що натиснута кнопка 
             new_state_keyboard &= (unsigned int)(~action);
@@ -319,10 +346,12 @@ void main_manu_function_ver2(void)
     case TIME_MANU2_LEVEL:
       {
         //Формуємо маску кнопок. які можуть бути натиснутими
-        unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER)| (1<<BIT_KEY_ESC)|(1<<BIT_REWRITE)| (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
+        unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER)| (1<<BIT_KEY_ESC) | (1<<BIT_REWRITE);
         
+        if (current_state_menu2.edition <= 2) 
+          maska_keyboard_bits |= (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
         if (current_state_menu2.edition == 2)
-          maska_keyboard_bits |= (1<<BIT_KEY_RIGHT) | (1<<BIT_KEY_LEFT) | (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
+          maska_keyboard_bits |= (1<<BIT_KEY_RIGHT) | (1<<BIT_KEY_LEFT);
         
         //Очищаємо всі біти краім упралінський
         new_state_keyboard &= maska_keyboard_bits;
@@ -414,13 +443,22 @@ void main_manu_function_ver2(void)
           {
             //Натиснута кнопка ENTER
             unsigned int result;
-            if (current_state_menu2.func_edit != NULL) result = current_state_menu2.func_edit();
+            if (current_state_menu2.func_press_enter != NULL) result = current_state_menu2.func_press_enter();
             else
             {
               //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
               total_error_sw_fixed(76);
             }
-            if(current_state_menu2.edition <= 1)
+
+            if (current_state_menu2.edition == 3)
+            {
+              current_state_menu2.edition = prev_edit;
+            }
+            else if (current_state_menu2.edition == 4)
+            {
+              current_state_menu2.edition = 2;
+            }
+            else if(current_state_menu2.edition <= 1)
             {
               prev_edit = current_state_menu2.edition;
                
@@ -463,32 +501,9 @@ void main_manu_function_ver2(void)
                 }
               }
             }
-            else if (current_state_menu2.edition == 3)
-            {
-              current_state_menu2.edition = prev_edit;
-            }
-            else if (current_state_menu2.edition == 4)
-            {
-              current_state_menu2.edition = 2;
-            }
 
-            if(current_state_menu2.edition == 3) make_ekran_ask_rewrite();
-            else if(current_state_menu2.edition == 4) 
-            {
-              const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-              {
-                " Вых.за диапазон",
-                " Вих.за діапазон",
-                "  Out of Limits ",
-                "Вых.за диапазон "
-              };
-              make_ekran_about_error(information_about_error);
-            }
-            else
-            {
-              //Виставляємо біт обновлення екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-            }
+            //Виставляємо біт обновлення екрану
+            new_state_keyboard |= (1<<BIT_REWRITE);
               
             //Очистити сигналізацію, що натиснута кнопка 
             new_state_keyboard &= (unsigned int)(~action);
@@ -602,8 +617,6 @@ void make_ekran_ask_rewrite(void)
   current_state_menu2.cursor_on = 0;
   //Курсор не мигає
   current_state_menu2.cursor_blinking_on = 0;
-  //Обновити повністю весь екран
-  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
@@ -611,15 +624,27 @@ void make_ekran_ask_rewrite(void)
 /*****************************************************/
 //Формування вікна про помилку
 /*****************************************************/
-void make_ekran_about_error(const unsigned char information[][MAX_COL_LCD + 1])
+void make_ekran_about_info(unsigned int info_error, const uint8_t information[][MAX_COL_LCD + 1])
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  const uint8_t name_string_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    "Продолжить:Enter",
+    "Продовжити:Enter",
+    " Continue: Enter",
+    "Продолжить:Enter"
+  };
+
+  const uint8_t name_string_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
   {
     "Повтор?Enter/Esc",
     "Повтор?Enter/Esc",
     "Repeat?Enter/Esc",
     "Повтор?Enter/Esc"
   };
+  const uint8_t (*p_name_string)[MAX_COL_LCD + 1];
+  if (info_error == false ) p_name_string = name_string_info;
+  else p_name_string = name_string_error;
+  
   int index_language;
 
   if (current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
@@ -630,15 +655,13 @@ void make_ekran_about_error(const unsigned char information[][MAX_COL_LCD + 1])
   //Копіюємо  рядки у робочий екран
   for (size_t i = 0; i< MAX_ROW_LCD; i++)
   {
-    for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i == 0) ? information[index_language][j] : name_string[index_language][j];
+    for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i == 0) ? information[index_language][j] : p_name_string[index_language][j];
   }
   
   //Курсор невидимий
   current_state_menu2.cursor_on = 0;
   //Курсор не мигає
   current_state_menu2.cursor_blinking_on = 0;
-  //Обновити повністю весь екран
-  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
@@ -680,7 +703,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_MAIN_M2;
       current_state_menu2.func_move = move_into_main;
       current_state_menu2.func_show = make_ekran_main;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = press_enter_in_main;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
 
@@ -694,7 +717,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_TIME_CALIBRATION_M2;
       current_state_menu2.func_move = move_into_time;
       current_state_menu2.func_show = make_ekran_time;
-      current_state_menu2.func_edit = edit_time;
+      current_state_menu2.func_press_enter = press_enter_in_time;
       current_state_menu2.func_change = change_time;
       current_state_menu2.edition = 0;
       break;
@@ -707,7 +730,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_measurement;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
       break;
@@ -718,7 +741,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_INPUT_OUTPUT_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_list_inputs_outputs;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
       break;
@@ -733,7 +756,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = 0;
       current_state_menu2.func_move = move_into_ekran_input_or_output;
       current_state_menu2.func_show = make_ekran_state_inputs_or_outputs;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
       break;
@@ -744,7 +767,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_LIST_REGISTRATORS_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_list_registrators;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
       break;
@@ -755,7 +778,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_M2;
       current_state_menu2.func_move = move_into_list_settings;
       current_state_menu2.func_show = make_ekran_list_settings;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
@@ -771,7 +794,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_FOR_DIAGNOSTYKA;
       current_state_menu2.func_move = move_into_diagnostics;
       current_state_menu2.func_show = make_ekran_diagnostics;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
       break;
@@ -782,7 +805,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_LABELS_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_list_labels;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
       break;
@@ -794,7 +817,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_TIME_CONFIG_OR_SETTINGS;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_time_config_or_settings;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
       break;
@@ -805,7 +828,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_INFO_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_info;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
       break;
@@ -816,7 +839,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_FOR_DATE_TIME_PZ;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_date_time_pz;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
       break;
@@ -827,7 +850,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_PASSWORD_M2;
       current_state_menu2.func_move = NULL;
       current_state_menu2.func_show = make_ekran_password;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
       break;

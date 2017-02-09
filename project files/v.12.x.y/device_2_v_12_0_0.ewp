@@ -4616,9 +4616,6 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_chose_communication_parameters.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_chose_settings.c</name>
-        </file>
-        <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_chose_settings_protection.c</name>
         </file>
         <file>
@@ -4659,6 +4656,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_level_password.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_list_settings.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_main.c</name>

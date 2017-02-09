@@ -143,7 +143,7 @@ void main_manu_function(void)
                 };
                 current_ekran.cursor_on = 0;
                 current_ekran.cursor_blinking_on = 0;
-                make_ekran_about_error(information_about_error);
+                make_ekran_about_info(true, information_about_error);
               }
 
               //Очистити сигналізацію, що натиснута кнопка 
@@ -3032,7 +3032,7 @@ void main_manu_function(void)
                   if (state_ar_record != STATE_AR_NO_RECORD)
                     point_to_information_about_error = information_about_error2;
                 }
-                make_ekran_about_error(point_to_information_about_error);
+                make_ekran_about_info(true, point_to_information_about_error);
               }
               else
                 //Виставляємо біт обновлення екрану
@@ -5528,7 +5528,7 @@ void main_manu_function(void)
                   " Max.n.of F.Exc.",
                   "Прев.макс.кол.ф."
                 };
-                make_ekran_about_error(information_about_error);
+                make_ekran_about_info(true, information_about_error);
               }
               else
                 //Виставляємо біт обновлення екрану

@@ -523,11 +523,9 @@ unsigned int set_new_settings_from_interface(unsigned int source)
       current_state_menu2.max_row = MAX_ROW_MAIN_M2;
       current_state_menu2.func_move = move_into_main;
       current_state_menu2.func_show = make_ekran_main;
-      current_state_menu2.func_edit = NULL;
+      current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
-      current_state_menu2.cursor_on = 1;
-      current_state_menu2.cursor_blinking_on = 0;  
     }
     
     if (set_password_USB   != false) password_set_USB   = 1;
