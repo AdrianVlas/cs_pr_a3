@@ -86,7 +86,14 @@ void move_into_list_settings(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_list_settings(void)
 {
-  if (current_state_menu2.edition == 5) 
+  if (current_state_menu2.edition == 3)
+  {
+    make_ekran_ask_rewrite();
+
+    //Виставляємо біт обновлення екрану
+    new_state_keyboard |= (1<<BIT_REWRITE);
+  }
+  else if (current_state_menu2.edition == 5) 
   {
     const unsigned char information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {

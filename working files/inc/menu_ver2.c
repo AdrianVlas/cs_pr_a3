@@ -125,7 +125,7 @@ void main_manu_function_ver2(void)
               {
                 if (
                     (current_state_menu2.current_level == TIME_MANU2_LEVEL) ||
-                    (config_settings_modified == false)
+                    (config_settings_modified == 0)
                    )   
                 {
                   current_state_menu2.edition = 2;
@@ -199,7 +199,9 @@ void main_manu_function_ver2(void)
         //Формуємо маску кнопок, які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER) | (1<<BIT_REWRITE);
         
-        if (current_state_menu2.edition <= 2) 
+        if (current_state_menu2.edition == 3) 
+          maska_keyboard_bits |= (1<<BIT_KEY_ESC);
+        else if (current_state_menu2.edition <= 2) 
           maska_keyboard_bits |= (1<<BIT_KEY_ESC) | (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
 
         //Очищаємо всі біти краім упралінський
@@ -252,6 +254,22 @@ void main_manu_function_ver2(void)
               
               //Виставляємо команду на обновлекння нового екрану
               new_state_keyboard |= (1<<BIT_REWRITE);
+            }
+            else if (current_state_menu2.edition == 3)
+            {
+              //Треба ввести у дію внесені зміни
+              if (current_state_menu2.current_level == LIST_SETTINGS_MENU2_LEVEL)
+              {
+                //Треба активувати нові налаштуваня
+                  
+                config_settings_modified = 0;
+              }
+              
+              //Знімаємро режим редагування
+              current_state_menu2.edition = 0;
+              
+              //Повторно подаємо команду на вихід
+              new_state_keyboard |= (1<<BIT_KEY_ESC);
             }
             else
             {
@@ -321,10 +339,35 @@ void main_manu_function_ver2(void)
 
             if (current_state_menu2.current_level != MAIN_MANU2_LEVEL)
             {
-              //Переходимо у попереднє меню
-              current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-              current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
-              new_level_menu();
+              if (
+                  (current_state_menu2.current_level == LIST_SETTINGS_MENU2_LEVEL) &&
+                  (config_settings_modified != 0)
+                 )   
+              {
+                if (current_state_menu2.edition == 1)
+                {
+                  //Треба спитатися дозвіл на внесення змін
+                  current_state_menu2.edition = 3;
+                }
+                else if (current_state_menu2.edition == 3)
+                {
+                  //Треба відмініти введення нових налаштувань
+                  
+                  config_settings_modified = 0;
+                  
+                  //Знімаємро режим редагування
+                  current_state_menu2.edition = 0;
+                }
+                
+              }
+              
+              if (current_state_menu2.edition <= 1)
+              {
+                //Переходимо у попереднє меню
+                current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+                current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
+                new_level_menu();
+              }
 
               //Виставляємо команду на обновлекння нового екрану
               new_state_keyboard |= (1<<BIT_REWRITE);

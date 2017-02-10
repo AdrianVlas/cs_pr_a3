@@ -162,7 +162,7 @@ unsigned int press_enter_in_main(void)
     //™ спроба перейти у в≥кно списку налаштувань
     if (settings_fix.password_2 == 0)
     {
-      if (config_settings_modified == false)
+      if (config_settings_modified == 0)
       {
         //¬ходимо з правом подальшого редагуванн€
         current_state_menu2.edition = 1;

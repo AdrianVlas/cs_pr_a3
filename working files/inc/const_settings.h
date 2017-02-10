@@ -1,6 +1,11 @@
 #ifndef __CONST_SETTINGS__
 #define __CONST_SETTINGS__
 
+#define BIT_CHANGED_CONFIGURATION       0
+#define MASKA_CHANGED_CONFIGURATION     (1 << BIT_CHANGED_CONFIGURATION)
+#define BIT_CHANGED_SETTINGS            1
+#define MASKA_CHANGED_SETTINGS          (1 << BIT_CHANGED_SETTINGS)
+
 #define NUMBER_IN_AND                   8
 #define NUMBER_IN_OR                    8
 

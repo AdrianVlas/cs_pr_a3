@@ -523,7 +523,7 @@ unsigned int set_new_settings_from_interface(unsigned int source)
       current_state_menu2.max_row = MAX_ROW_MAIN_M2;
       current_state_menu2.func_move = move_into_main;
       current_state_menu2.func_show = make_ekran_main;
-      current_state_menu2.func_press_enter = NULL;
+      current_state_menu2.func_press_enter = press_enter_in_main;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = 0;
     }
@@ -904,7 +904,7 @@ void control_config(unsigned int modified)
     crc_config_tmp += temp_value;
 
     //Контроль конфігурації для захистів з конфігурацією-контейнером
-    if (modified != true)
+    if ((modified & MASKA_CHANGED_CONFIGURATION) == 0)
     {
       if (temp_value != *(point_2++)) difference = 0xff;
     }
@@ -958,7 +958,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__SETTINGS_FIX);
             n_item = 1;
-            if (modified != true) point_2 = (uint8_t *)(&settings_fix);
+            if (modified == 0) point_2 = (uint8_t *)(&settings_fix);
           }
           
           point_1 = (uint8_t *)(&settings_fix_prt);
@@ -971,7 +971,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_INPUT);
             n_item = current_config_prt.n_input;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+            if (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
           }
 
           point_1 = (uint8_t *)(&(((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + item)->settings) ;
@@ -984,7 +984,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_OUTPUT);
             n_item = current_config_prt.n_output;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
+            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
           }
 
           point_1 = (uint8_t *)(&(((__LN_OUTPUT*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + item)->settings) ;
@@ -997,7 +997,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_LED);
             n_item = current_config_prt.n_led;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]);
+            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]);
           }
 
           point_1 = (uint8_t *)(&(((__LN_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]) + item)->settings) ;
@@ -1010,7 +1010,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_AND);
             n_item = current_config_prt.n_and;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR]);
+            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR]);
           }
 
           point_1 = (uint8_t *)(&(((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]) + item)->settings) ;
@@ -1023,7 +1023,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_OR);
             n_item = current_config_prt.n_or;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR]);
+            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR]);
           }
 
           point_1 = (uint8_t *)(&(((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]) + item)->settings) ;
@@ -1036,7 +1036,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_XOR);
             n_item = current_config_prt.n_xor;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR]);
+            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR]);
           }
 
           point_1 = (uint8_t *)(&(((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR]) + item)->settings) ;
@@ -1049,7 +1049,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_NOT);
             n_item = current_config_prt.n_not;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR]);
+            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR]);
           }
 
           point_1 = (uint8_t *)(&(((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]) + item)->settings) ;
@@ -1062,7 +1062,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_TIMER);
             n_item = current_config_prt.n_timer;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
+            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
           }
 
           point_1 = (uint8_t *)(&(((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + item)->settings) ;
@@ -1075,7 +1075,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_TRIGGER);
             n_item = current_config_prt.n_trigger;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
+            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
           }
 
           point_1 = (uint8_t *)(&(((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + item)->settings) ;
@@ -1088,7 +1088,7 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_MEANDER);
             n_item = current_config_prt.n_meander;
-            if (modified != true) point_2 = (uint8_t *)(sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
+            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
           }
 
           point_1 = (uint8_t *)(&(((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + item)->settings) ;
@@ -1110,7 +1110,7 @@ void control_settings(unsigned int modified)
       crc_settings_tmp += temp_value;
 
       //Контроль налаштувань для захистів з налаштуваннями-контейнером
-      if (modified != true)
+      if  (modified == 0)
       {
         if (point_2 != NULL)
         {

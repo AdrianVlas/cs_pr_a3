@@ -149,7 +149,7 @@ unsigned char crc_config;
 
 __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;
 uint8_t crc_settings;
-unsigned int config_settings_modified = false;
+unsigned int config_settings_modified = 0;
 
 volatile unsigned int changed_settings = CHANGED_ETAP_NONE; 
 SRAM1 __SETTINGS_OLD current_settings_prt, current_settings, edition_settings, current_settings_interfaces;
