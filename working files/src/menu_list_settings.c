@@ -86,14 +86,14 @@ void move_into_list_settings(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_list_settings(void)
 {
-  if (current_state_menu2.edition == 3)
+  if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
   {
     make_ekran_ask_rewrite();
 
     //Виставляємо біт обновлення екрану
     new_state_keyboard |= (1<<BIT_REWRITE);
   }
-  else if (current_state_menu2.edition == 5) 
+  else if (current_state_menu2.edition == ED_INFO) 
   {
     const unsigned char information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
@@ -103,6 +103,41 @@ void make_ekran_list_settings(void)
       "Ред.не разрешено",
     };
     make_ekran_about_info(false, information_about_info);
+  }
+  else if (current_state_menu2.edition == ED_ERROR) 
+  {
+    const uint8_t name_string_error[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+    {
+      {
+        " Дин.пам.недост.",
+        " Перезап.прибор "
+      },
+      {
+        " Дин.пам.недост.",
+        " Перезап.прилад "
+        ""
+      },
+      {
+        " Дин.пам.недост.",
+        " Restart device "
+      },
+      {
+        " Дин.пам.недост.",
+        " Перезап.прибор "
+      }
+    };
+
+    int index_language = index_language_in_array(settings_fix.language);
+    //Копіюємо  рядки у робочий екран
+    for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    {
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i < 2) ? name_string_error[index_language][i][j] : ' ';
+    }
+  
+    //Курсор невидимий
+    current_state_menu2.cursor_on = 0;
+    //Курсор не мигає
+    current_state_menu2.cursor_blinking_on = 0;
   }
   else
   {
@@ -212,9 +247,9 @@ void make_ekran_list_settings(void)
     Ящо ми відкрили це вікно з довзолом на редалування, то переводим його у режим, коли зараз режиму редагування
     для цього вікна немає, але у тому вікні де він буде, то перехід до нього не буде вимагати введення паролю
     */
-    if (current_state_menu2.edition == 2 )
+    if (current_state_menu2.edition == ED_EDITION )
     {
-      current_state_menu2.edition = 1;
+      current_state_menu2.edition = ED_CAN_BE_EDITED;
       //Курсор невидимий
       current_state_menu2.cursor_blinking_on = 0;
     }

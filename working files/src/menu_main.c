@@ -165,19 +165,19 @@ unsigned int press_enter_in_main(void)
       if (config_settings_modified == 0)
       {
         //Входимо з правом подальшого редагування
-        current_state_menu2.edition = 1;
+        current_state_menu2.edition = ED_CAN_BE_EDITED;
       }
       else
       {
         if (settings_fix.password_1 == 0)
         {
           //Входимо без права подальшого редагування
-          current_state_menu2.edition = 0;
+          current_state_menu2.edition = ED_VIEWING;
         }
         else
         {
           //Повідомляємо про те, що режим редагування зараз недоступний
-          current_state_menu2.edition = 5;
+          current_state_menu2.edition = ED_INFO;
         }
       }
     }

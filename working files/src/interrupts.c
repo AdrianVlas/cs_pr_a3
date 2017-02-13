@@ -617,7 +617,7 @@ void TIM4_IRQHandler(void)
     //Перевіряємо чи треба обновляти з часом 1 с дані на екрані
     /***********************************************************/
     if (
-        ((current_state_menu2.current_level == TIME_MANU2_LEVEL) && (current_state_menu2.edition <= 1)) ||
+        ((current_state_menu2.current_level == TIME_MANU2_LEVEL) && (current_state_menu2.edition <= ED_CAN_BE_EDITED)) ||
         ((current_ekran.current_level == EKRAN_TITLES_DIGITAL_REGISTRATOR) && (rewrite_ekran_once_more > 0)) ||
         ((current_ekran.current_level == EKRAN_TITLES_PR_ERR_REGISTRATOR ) && (rewrite_ekran_once_more > 0)) ||
         ((current_ekran.current_level == EKRAN_DATA_LADEL_AR             ) && (rewrite_ekran_once_more > 0)) ||

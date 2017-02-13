@@ -525,7 +525,7 @@ unsigned int set_new_settings_from_interface(unsigned int source)
       current_state_menu2.func_show = make_ekran_main;
       current_state_menu2.func_press_enter = press_enter_in_main;
       current_state_menu2.func_change = NULL;
-      current_state_menu2.edition = 0;
+      current_state_menu2.edition = ED_VIEWING;
     }
     
     if (set_password_USB   != false) password_set_USB   = 1;
@@ -894,8 +894,8 @@ unsigned int count_number_set_bit(unsigned int* source, unsigned int total_numbe
 void control_config(unsigned int modified)
 {
   uint8_t crc_config_tmp = 0, temp_value;
-  uint8_t  *point_1 = (unsigned char*)(&current_config);
-  uint8_t  *point_2 = (unsigned char*)(&current_config_prt); // з цими даними працюють захисти
+  uint8_t  *point_1 = (unsigned char*)(&current_config_prt); // з цими даними працюють захисти
+  uint8_t  *point_2 = (unsigned char*)(&current_config);
   unsigned int i = 0, difference = 0;
   while ((difference == 0) && (i < sizeof(__CONFIG)))
   {
@@ -1336,149 +1336,159 @@ int str_to_int_DATE_Mmm(void)
 /*****************************************************/
 //Зміна конфігурації
 /*****************************************************/
-__result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_remake, unsigned int mem_for_prt, uintptr_t *p_sca_of_p_current[], uintptr_t *p_sca_of_p_control[], __CONFIG *current, __CONFIG *control)
+__result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select make_remake_restore, unsigned int mem_for_prt, uintptr_t *p_sca_of_p_current[], uintptr_t *p_sca_of_p_control[], __CONFIG *current, __CONFIG *control)
 {
   __result_dym_mem_select result = DYN_MEM_SELECT_OK;
+  enum _id_fb index_1;
   
-  enum _id_fb index_1 = _ID_FB_FIRST_VAR;
-  while(
-        (result == DYN_MEM_SELECT_OK) &&
-        (index_1 < _ID_FB_LAST_VAR)
-       )   
+  if (make_remake_restore != RESTORE_DYN_MEM)
   {
-    uint32_t n_prev, n_cur;
-    size_t size;
-    void (*min_param)(unsigned int, uintptr_t *, size_t, size_t);
-    switch (index_1)
+    index_1 = _ID_FB_FIRST_VAR;
+    while(
+          (result == DYN_MEM_SELECT_OK) &&
+          (index_1 < _ID_FB_LAST_VAR)
+         )    
     {
-    case ID_FB_INPUT:
+      uint32_t n_prev, n_cur;
+      size_t size;
+      void (*min_param)(unsigned int, uintptr_t *, size_t, size_t);
+      switch (index_1)
       {
-        //Дискретний вхід
-        n_prev = (control != NULL) ? control->n_input : 0;
-        n_cur  = current->n_input;
-        min_param = min_settings_INPUT;
-        size = n_cur*((mem_for_prt == true) ? sizeof(__LN_INPUT) : sizeof(__settings_for_INPUT));
-        break;
-      }
-    case ID_FB_OUTPUT:
-      {
-        //Дискретний вихід
-        n_prev = (control != NULL) ? control->n_output : 0;
-        n_cur  = current->n_output;
-        min_param = min_settings_OUTPUT;
-        size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OUTPUT) : sizeof(__settings_for_OUTPUT));
-        break;
-      }
-    case ID_FB_LED:
-      {
-        //Світлоіндикатор
-        n_prev = (control != NULL) ? control->n_led : 0;
-        n_cur  = current->n_led;
-        min_param = min_settings_LED;
-        size = n_cur*((mem_for_prt == true) ? sizeof(__LN_LED) : sizeof(__settings_for_LED));
-        break;
-      }
-    case ID_FB_AND:
-      {
-        //Елемент "І"
-        n_prev = (control != NULL) ? control->n_and : 0;
-        n_cur  = current->n_and;
-        min_param = min_settings_AND;
-        size = n_cur*((mem_for_prt == true) ? sizeof(__LN_AND) : sizeof(__settings_for_AND));
-        break;
-      }
-    case ID_FB_OR:
-      {
-        //Елемент "АБО"
-        n_prev = (control != NULL) ? control->n_or : 0;
-        n_cur  = current->n_or;
-        min_param = min_settings_OR;
-        size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OR) : sizeof(__settings_for_OR));
-        break;
-      }
-    case ID_FB_XOR:
-      {
-        //Елемент "Викл.АБО"
-        n_prev = (control != NULL) ? control->n_xor : 0;
-        n_cur  = current->n_xor;
-        min_param = min_settings_XOR;
-        size = n_cur*((mem_for_prt == true) ? sizeof(__LN_XOR) : sizeof(__settings_for_XOR));
-        break;
-      }
-    case ID_FB_NOT:
-      {
-        //Елемент "НЕ"
-        n_prev = (control != NULL) ? control->n_not : 0;
-        n_cur  = current->n_not;
-        min_param = min_settings_NOT;
-        size = n_cur*((mem_for_prt == true) ? sizeof(__LN_NOT) : sizeof(__settings_for_NOT));
-        break;
-      }
-    case ID_FB_TIMER:
-      {
-        //Елемент "Таймер"
-        n_prev = (control != NULL) ? control->n_timer : 0;
-        n_cur  = current->n_timer;
-        min_param = min_settings_TIMER;
-        size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TIMER) : sizeof(__settings_for_TIMER));
-        break;
-      }
-    case ID_FB_TRIGGER:
-      {
-        //Елемент "Триґер"
-        n_prev = (control != NULL) ? control->n_trigger : 0;
-        n_cur  = current->n_trigger;
-        min_param = min_settings_TRIGGER;
-        size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TRIGGER) : sizeof(__settings_for_TRIGGER));
-        break;
-      }
-    case ID_FB_MEANDER:
-      {
-        //Функціональний блок "Генератор періодичних сигналів"
-        n_prev = (control != NULL) ? control->n_meander : 0;
-        n_cur  = current->n_meander;
-        min_param = min_settings_MEANDER;
-        size = n_cur*((mem_for_prt == true) ? sizeof(__LN_MEANDER) : sizeof(__settings_for_MEANDER));
-        break;
-      }
-    default:
-      {
-        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-        total_error_sw_fixed(22);
-      }
-    }
-    
-    if ((make_remake == false) || (n_cur != n_prev))
-    {
-      //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
-      if(size == 0) 
-      {
-        free(p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR]);
-        p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR] = NULL;
-      }
-      else
-      {
-        uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR], size);
-        if (ptr != NULL)
+      case ID_FB_INPUT:
         {
-          p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR] = ptr;
-          if ((make_remake == false) || (n_cur > n_prev))
+          //Дискретний вхід
+          n_prev = (control != NULL) ? control->n_input : 0;
+          n_cur  = current->n_input;
+          min_param = min_settings_INPUT;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_INPUT) : sizeof(__settings_for_INPUT));
+          break;
+        }
+      case ID_FB_OUTPUT:
+        {
+          //Дискретний вихід
+          n_prev = (control != NULL) ? control->n_output : 0;
+          n_cur  = current->n_output;
+          min_param = min_settings_OUTPUT;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OUTPUT) : sizeof(__settings_for_OUTPUT));
+          break;
+        }
+      case ID_FB_LED:
+        {
+          //Світлоіндикатор
+          n_prev = (control != NULL) ? control->n_led : 0;
+          n_cur  = current->n_led;
+          min_param = min_settings_LED;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_LED) : sizeof(__settings_for_LED));
+          break;
+        }
+      case ID_FB_AND:
+        {
+          //Елемент "І"
+          n_prev = (control != NULL) ? control->n_and : 0;
+          n_cur  = current->n_and;
+          min_param = min_settings_AND;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_AND) : sizeof(__settings_for_AND));
+          break;
+        }
+      case ID_FB_OR:
+        {
+          //Елемент "АБО"
+          n_prev = (control != NULL) ? control->n_or : 0;
+          n_cur  = current->n_or;
+          min_param = min_settings_OR;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OR) : sizeof(__settings_for_OR));
+          break;
+        }
+      case ID_FB_XOR:
+        {
+          //Елемент "Викл.АБО"
+          n_prev = (control != NULL) ? control->n_xor : 0;
+          n_cur  = current->n_xor;
+          min_param = min_settings_XOR;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_XOR) : sizeof(__settings_for_XOR));
+          break;
+        }
+      case ID_FB_NOT:
+        {
+          //Елемент "НЕ"
+          n_prev = (control != NULL) ? control->n_not : 0;
+          n_cur  = current->n_not;
+          min_param = min_settings_NOT;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_NOT) : sizeof(__settings_for_NOT));
+          break;
+        }
+      case ID_FB_TIMER:
+        {
+          //Елемент "Таймер"
+          n_prev = (control != NULL) ? control->n_timer : 0;
+          n_cur  = current->n_timer;
+          min_param = min_settings_TIMER;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TIMER) : sizeof(__settings_for_TIMER));
+          break;
+        }
+      case ID_FB_TRIGGER:
+        {
+          //Елемент "Триґер"
+          n_prev = (control != NULL) ? control->n_trigger : 0;
+          n_cur  = current->n_trigger;
+          min_param = min_settings_TRIGGER;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TRIGGER) : sizeof(__settings_for_TRIGGER));
+          break;
+        }
+      case ID_FB_MEANDER:
+        {
+          //Функціональний блок "Генератор періодичних сигналів"
+          n_prev = (control != NULL) ? control->n_meander : 0;
+          n_cur  = current->n_meander;
+          min_param = min_settings_MEANDER;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_MEANDER) : sizeof(__settings_for_MEANDER));
+          break;
+        }
+      default:
+        {
+          //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+          total_error_sw_fixed(22);
+        }
+      }
+    
+      if ((make_remake_restore == MAKE_DYN_MEM) || (n_cur != n_prev))
+      {
+        //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
+        if(size == 0) 
+        {
+          free(p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR]);
+          p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR] = NULL;
+        }
+        else
+        {
+          uintptr_t *ptr= (uintptr_t*)realloc(p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR], size);
+          if (ptr != NULL)
           {
-            //Викликаємо функцію встановлення нових налаштувань у мінімальні значення
-            (*min_param)(mem_for_prt, ptr, ((make_remake == false) ? 0 : n_prev), n_cur);
+            p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR] = ptr;
+            if ((make_remake_restore == MAKE_DYN_MEM) || (n_cur > n_prev))
+            {
+              //Викликаємо функцію встановлення нових налаштувань у мінімальні значення
+              (*min_param)(mem_for_prt, ptr, ((make_remake_restore == MAKE_DYN_MEM) ? 0 : n_prev), n_cur);
+            }
+          }
+          else 
+          {
+            if ((make_remake_restore == MAKE_DYN_MEM) || (mem_for_prt != false) || (control == NULL)) result = DYN_MEM_TOTAL_ERROR;
+            else result = DYN_MEM_NO_ENOUGH_MEM;
           }
         }
-        else 
-        {
-          if ((make_remake == false) || (mem_for_prt != false) || (control == NULL)) result = DYN_MEM_TOTAL_ERROR;
-          else result = DYN_MEM_NO_ENOUGH_MEM;
-        }
       }
-    }
 
-    //Готуємося до зміни наступного функціонального блоку (у випадку успішної зміни або неуспішної, але з можливістю відновлення)
-    if (result == DYN_MEM_SELECT_OK) index_1++;
-    else if (result == DYN_MEM_NO_ENOUGH_MEM) index_1--;
+      //Готуємося до зміни наступного функціонального блоку (у випадку успішної зміни або неуспішної, але з можливістю відновлення)
+      if (result == DYN_MEM_SELECT_OK) index_1++;
+      else if (result == DYN_MEM_NO_ENOUGH_MEM) index_1--;
+    }
+  }
+  else
+  {
+    //Треб підготуватися для відновлення даних по контрльних даних
+    index_1 = _ID_FB_LAST_VAR;
+    index_1--;
   }
   
   /*
@@ -1487,7 +1497,15 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(unsigned int make_r
   */
   
   while(
-        (result == DYN_MEM_NO_ENOUGH_MEM) && 
+        (
+         (
+          (make_remake_restore == RESTORE_DYN_MEM) &&
+          (result == DYN_MEM_SELECT_OK)
+         ) 
+         ||  
+         (result == DYN_MEM_NO_ENOUGH_MEM)
+        )
+        &&  
         (index_1 >= _ID_FB_FIRST_VAR)
        )   
   {
@@ -2309,13 +2327,13 @@ size_t size_all_settings(void)
 void copy_settings(
                      __CONFIG *source_conf, 
 
-                     __SETTINGS_FIX *targret_fix, 
+                     __SETTINGS_FIX *target_fix, 
                      __SETTINGS_FIX *source_fix, 
-                     uintptr_t *targret_dyn[], 
+                     uintptr_t *target_dyn[], 
                      uintptr_t *source_dyn[]
                     )
 {
-  *targret_fix = *source_fix;
+  *target_fix = *source_fix;
   
   for (enum _id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
   {
@@ -2412,10 +2430,10 @@ void copy_settings(
           }
       }
       
-      if ((n_prev != 0) && (targret_dyn[i - _ID_FB_FIRST_VAR] != NULL))
+      if ((n_prev != 0) && (target_dyn[i - _ID_FB_FIRST_VAR] != NULL))
       {
         //Викликаємо функцію повернення нових налаштувань у попередні значення
-        (*copy_settings_LN)((targret_dyn == spca_of_p_prt), (source_dyn == spca_of_p_prt), targret_dyn[i - _ID_FB_FIRST_VAR], source_dyn[i - _ID_FB_FIRST_VAR], 0, n_prev);
+        (*copy_settings_LN)((target_dyn == spca_of_p_prt), (source_dyn == spca_of_p_prt), target_dyn[i - _ID_FB_FIRST_VAR], source_dyn[i - _ID_FB_FIRST_VAR], 0, n_prev);
       }
       else
       {
@@ -2424,6 +2442,62 @@ void copy_settings(
       }
     }
   }
+}
+/*****************************************************/
+
+/*****************************************************/
+/*
+Виконання змін у кнофігурації і налаштуваннях
+
+Вхідна інформація
+-----------------
+1 - внести зміни у "для захистів" структурах і масивах
+0 - відновити попердній стан по "для захисту" у стуктурах і масивах "контейнера" і "для редагування"
+
+Вихідна інформація про помилку
+-----------------
+0 - успішее виконання опреації
+1 - недостатньо пам'яті, але вдалося відновити попередній сатн по "для захисту"
+2 - недостатньо пам'яті і не вдалося відновити попередній стан по "для захисту"
+*/
+/*****************************************************/
+unsigned int set_config_and_settings(unsigned int direction)
+{
+  unsigned int error = 0;
+  if (direction)
+  {
+    //Активація внесених змін
+  }
+  else
+  {
+    //Повернення до пстану до редагування
+    if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+    {
+      //Відбувалися зміни у конфігурації
+
+      //Необхідно по даних "для захистів" відновити дані у "контейнері" і "для редагування"
+      __result_dym_mem_select result = allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p     , spca_of_p_prt, &current_config     , &current_config_prt);
+      if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p_edit, sca_of_p     , &current_config_edit, &current_config    );
+      if (result == DYN_MEM_SELECT_OK) current_config_edit = current_config = current_config_prt;
+      else
+      {
+        error = 2;
+      }
+    }
+    
+    if (
+        (error == 0) &&
+        (config_settings_modified & MASKA_CHANGED_SETTINGS)
+       )   
+    {
+      //Відбувалися зміни у налаштуваннях
+      copy_settings(&current_config_prt, &settings_fix     , &settings_fix_prt, sca_of_p     , spca_of_p_prt);
+      copy_settings(&current_config    , &settings_fix_edit, &settings_fix    , sca_of_p_edit, sca_of_p     );
+    }
+        
+  }
+  
+  return error;
 }
 /*****************************************************/
 

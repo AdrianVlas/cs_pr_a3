@@ -52,14 +52,14 @@ void move_into_time(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_time(void)
 {
-  if (current_state_menu2.edition == 3)
+  if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
   {
     make_ekran_ask_rewrite();
 
     //Виставляємо біт обновлення екрану
     new_state_keyboard |= (1<<BIT_REWRITE);
   }
-  else if (current_state_menu2.edition == 4)
+  else if (current_state_menu2.edition == ED_WARNING)
   {
     const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
@@ -102,8 +102,8 @@ void make_ekran_time(void)
     //Заповнюємо поля відповідними цифрами
     /******************************************/
     /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function_ver2() і make_ekran_time() викликаються з найнижчого рівня*/ 
-    uint8_t *time_tmp = (current_state_menu2.edition <= 1) ? time : time_edit;
-    uint8_t *calibration_tmp = (current_state_menu2.edition <= 1) ? &calibration : &calibration_edit;
+    uint8_t *time_tmp = (current_state_menu2.edition <= ED_CAN_BE_EDITED) ? time : time_edit;
+    uint8_t *calibration_tmp = (current_state_menu2.edition <= ED_CAN_BE_EDITED) ? &calibration : &calibration_edit;
     //День
     name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_DY1] = (time_tmp[4] >>  4) + 0x30;
     name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_DY2] = (time_tmp[4] & 0xf) + 0x30;
@@ -152,7 +152,7 @@ void make_ekran_time(void)
 
     //Відображення курору по вертикалі
     current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
-    if (current_state_menu2.edition <= 1)
+    if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
     {
       //Курсор невидимий
       current_state_menu2.cursor_on = 0;
@@ -188,7 +188,7 @@ unsigned int press_enter_in_time()
   unsigned int result;
   switch (current_state_menu2.edition)
   {
-  case 0:
+  case ED_VIEWING:
     {
       //Копіюємо дані для редагування
       for(size_t i = 0; i < 7; i++) time_edit[i] = time[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
@@ -198,7 +198,7 @@ unsigned int press_enter_in_time()
       
       break;
     }
-  case 2:
+  case ED_EDITION:
     {
       //Перевіряємо, чи дані рельно змінилися
       result = 1;
@@ -217,7 +217,7 @@ unsigned int press_enter_in_time()
       }
       break;
     }
-  case 3:
+  case ED_CONFIRM_CHANGES:
     {
       //Копіюємо дані після редагування
       for(size_t i = 0; i < 7; i++) time[i] = time_edit[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
@@ -232,8 +232,8 @@ unsigned int press_enter_in_time()
       
       break;
     }
-  case 1:
-  case 4:
+  case ED_CAN_BE_EDITED:
+  case ED_WARNING:
     {
       result = 0;
       break;

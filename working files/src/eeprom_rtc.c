@@ -1368,7 +1368,7 @@ void main_routines_for_i2c(void)
               __disable_interrupt();
 
               current_config_prt = current_config_tmp;
-              __result_dym_mem_select result = allocate_dynamic_memory_for_settings(false, true, spca_of_p_prt, NULL, &current_config_prt, NULL);
+              __result_dym_mem_select result = allocate_dynamic_memory_for_settings(MAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, NULL);
               
               /*
               Дозволяємо генерацію переривань
@@ -1378,8 +1378,8 @@ void main_routines_for_i2c(void)
               current_config = current_config_edit = current_config_tmp;
               
               //Робимо зміни у динамічній пам'яті для налаштувань
-              if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(false, false, sca_of_p     , spca_of_p_prt, &current_config     , &current_config_prt);
-              if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(false, false, sca_of_p_edit, sca_of_p    , &current_config_edit, &current_config    );
+              if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(MAKE_DYN_MEM, false, sca_of_p     , spca_of_p_prt, &current_config     , &current_config_prt);
+              if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(MAKE_DYN_MEM, false, sca_of_p_edit, sca_of_p     , &current_config_edit, &current_config    );
               
               if (result == DYN_MEM_SELECT_OK) 
               {
