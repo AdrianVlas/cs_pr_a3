@@ -1336,7 +1336,7 @@ int str_to_int_DATE_Mmm(void)
 /*****************************************************/
 //Зміна конфігурації
 /*****************************************************/
-__result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select make_remake_restore, unsigned int mem_for_prt, uintptr_t *p_sca_of_p_current[], uintptr_t *p_sca_of_p_control[], __CONFIG *current, __CONFIG *control)
+__result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select make_remake_restore, unsigned int mem_for_prt, uintptr_t *p_sca_of_p_current[], uintptr_t *p_sca_of_p_control[], __CONFIG *current, __CONFIG *edited, __CONFIG *control)
 {
   __result_dym_mem_select result = DYN_MEM_SELECT_OK;
   enum _id_fb index_1;
@@ -1357,8 +1357,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       case ID_FB_INPUT:
         {
           //Дискретний вхід
-          n_prev = (control != NULL) ? control->n_input : 0;
-          n_cur  = current->n_input;
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_input : 0;
+          current->n_input = n_cur = edited->n_input;
+          
           min_param = min_settings_INPUT;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_INPUT) : sizeof(__settings_for_INPUT));
           break;
@@ -1366,8 +1367,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       case ID_FB_OUTPUT:
         {
           //Дискретний вихід
-          n_prev = (control != NULL) ? control->n_output : 0;
-          n_cur  = current->n_output;
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_output : 0;
+          current->n_output = n_cur = edited->n_output;
+          
           min_param = min_settings_OUTPUT;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OUTPUT) : sizeof(__settings_for_OUTPUT));
           break;
@@ -1375,8 +1377,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       case ID_FB_LED:
         {
           //Світлоіндикатор
-          n_prev = (control != NULL) ? control->n_led : 0;
-          n_cur  = current->n_led;
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_led : 0;
+          current->n_led = n_cur = edited->n_led;
+          
           min_param = min_settings_LED;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_LED) : sizeof(__settings_for_LED));
           break;
@@ -1384,8 +1387,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       case ID_FB_AND:
         {
           //Елемент "І"
-          n_prev = (control != NULL) ? control->n_and : 0;
-          n_cur  = current->n_and;
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_and : 0;
+          current->n_and = n_cur = edited->n_and;
+          
           min_param = min_settings_AND;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_AND) : sizeof(__settings_for_AND));
           break;
@@ -1393,8 +1397,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       case ID_FB_OR:
         {
           //Елемент "АБО"
-          n_prev = (control != NULL) ? control->n_or : 0;
-          n_cur  = current->n_or;
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_or : 0;
+          current->n_or = n_cur = edited->n_or;
+          
           min_param = min_settings_OR;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OR) : sizeof(__settings_for_OR));
           break;
@@ -1402,8 +1407,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       case ID_FB_XOR:
         {
           //Елемент "Викл.АБО"
-          n_prev = (control != NULL) ? control->n_xor : 0;
-          n_cur  = current->n_xor;
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_xor : 0;
+          current->n_xor = n_cur = edited->n_xor;
+          
           min_param = min_settings_XOR;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_XOR) : sizeof(__settings_for_XOR));
           break;
@@ -1411,8 +1417,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       case ID_FB_NOT:
         {
           //Елемент "НЕ"
-          n_prev = (control != NULL) ? control->n_not : 0;
-          n_cur  = current->n_not;
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_not : 0;
+          current->n_not = n_cur = edited->n_not;
+          
           min_param = min_settings_NOT;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_NOT) : sizeof(__settings_for_NOT));
           break;
@@ -1420,8 +1427,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       case ID_FB_TIMER:
         {
           //Елемент "Таймер"
-          n_prev = (control != NULL) ? control->n_timer : 0;
-          n_cur  = current->n_timer;
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_timer : 0;
+          current->n_timer = n_cur = edited->n_timer;
+          
           min_param = min_settings_TIMER;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TIMER) : sizeof(__settings_for_TIMER));
           break;
@@ -1429,8 +1437,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       case ID_FB_TRIGGER:
         {
           //Елемент "Триґер"
-          n_prev = (control != NULL) ? control->n_trigger : 0;
-          n_cur  = current->n_trigger;
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_trigger : 0;
+          current->n_trigger = n_cur = edited->n_trigger;
+          
           min_param = min_settings_TRIGGER;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TRIGGER) : sizeof(__settings_for_TRIGGER));
           break;
@@ -1438,8 +1447,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       case ID_FB_MEANDER:
         {
           //Функціональний блок "Генератор періодичних сигналів"
-          n_prev = (control != NULL) ? control->n_meander : 0;
-          n_cur  = current->n_meander;
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_meander : 0;
+          current->n_meander = n_cur = edited->n_meander;
+          
           min_param = min_settings_MEANDER;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_MEANDER) : sizeof(__settings_for_MEANDER));
           break;
@@ -1465,10 +1475,10 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           if (ptr != NULL)
           {
             p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR] = ptr;
-            if ((make_remake_restore == MAKE_DYN_MEM) || (n_cur > n_prev))
+            if (n_cur > n_prev)
             {
               //Викликаємо функцію встановлення нових налаштувань у мінімальні значення
-              (*min_param)(mem_for_prt, ptr, ((make_remake_restore == MAKE_DYN_MEM) ? 0 : n_prev), n_cur);
+              (*min_param)(mem_for_prt, ptr, n_prev, n_cur);
             }
           }
           else 
@@ -1486,6 +1496,9 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
   }
   else
   {
+    //Відновлюємо попередню конфігурацію
+    *current = *edited;
+    
     //Треб підготуватися для відновлення даних по контрльних даних
     index_1 = _ID_FB_LAST_VAR;
     index_1--;
@@ -1496,12 +1509,38 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
   і є спроба повернутися до попередньої конфігурації
   */
   
+  /*****
+  Контроль на те, чи не є можлива спроба відновлення даних у ситуаціції, коли це не можливо
+  *****/
+  if(
+     (
+      (
+       (make_remake_restore == RESTORE_DYN_MEM) &&
+       (result == DYN_MEM_SELECT_OK)  
+      )   
+      ||  
+      (result == DYN_MEM_NO_ENOUGH_MEM)
+     )
+     && 
+     (
+      (make_remake_restore == MAKE_DYN_MEM) ||
+      (mem_for_prt != false) ||
+      (control == NULL)
+     )
+    )   
+  {
+    //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+    total_error_sw_fixed(66);
+  }
+  /*****/
+  
+  
   while(
         (
          (
           (make_remake_restore == RESTORE_DYN_MEM) &&
-          (result == DYN_MEM_SELECT_OK)
-         ) 
+          (result == DYN_MEM_SELECT_OK)  
+         )   
          ||  
          (result == DYN_MEM_NO_ENOUGH_MEM)
         )
@@ -1517,91 +1556,101 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
     case ID_FB_INPUT:
       {
         //Дискретний вхід
-        n_prev = (control != NULL) ? control->n_input : 0;
         n_cur  = current->n_input;
+        current->n_input = n_prev = control->n_input;
+        
         copy_settings_LN = copy_settings_INPUT;
-        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_INPUT) : sizeof(__settings_for_INPUT));
+        size = n_prev*sizeof(__settings_for_INPUT);
         break;
       }
     case ID_FB_OUTPUT:
       {
         //Дискретний вихід
-        n_prev = (control != NULL) ? control->n_output : 0;
         n_cur  = current->n_output;
+        current->n_output = n_prev = control->n_output;
+        
         copy_settings_LN = copy_settings_OUTPUT;
-        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_OUTPUT) : sizeof(__settings_for_OUTPUT));
+        size = n_prev*sizeof(__settings_for_OUTPUT);
         break;
       }
     case ID_FB_LED:
       {
         //Світлоіндимкатор
-        n_prev = (control != NULL) ? control->n_led : 0;
         n_cur  = current->n_led;
+        current->n_led = n_prev = control->n_led;
+        
         copy_settings_LN = copy_settings_LED;
-        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_LED) : sizeof(__settings_for_LED));
+        size = n_prev*sizeof(__settings_for_LED);
         break;
       }
     case ID_FB_AND:
       {
         //Елемент "І"
-        n_prev = (control != NULL) ? control->n_and : 0;
         n_cur  = current->n_and;
+        current->n_and = n_prev = control->n_and;
+        
         copy_settings_LN = copy_settings_AND;
-        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_AND) : sizeof(__settings_for_AND));
+        size = n_prev*sizeof(__settings_for_AND);
         break;
       }
     case ID_FB_OR:
       {
         //Елемент "АБО"
-        n_prev = (control != NULL) ? control->n_or : 0;
         n_cur  = current->n_or;
+        current->n_or = n_prev = control->n_or;
+        
         copy_settings_LN = copy_settings_OR;
-        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_OR) : sizeof(__settings_for_OR));
+        size = n_prev*sizeof(__settings_for_OR);
         break;
       }
     case ID_FB_XOR:
       {
         //Елемент "Викл.АБО"
-        n_prev = (control != NULL) ? control->n_xor : 0;
         n_cur  = current->n_xor;
+        current->n_xor = n_prev = control->n_xor;
+        
         copy_settings_LN = copy_settings_XOR;
-        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_XOR) : sizeof(__settings_for_XOR));
+        size = n_prev*sizeof(__settings_for_XOR);
         break;
       }
     case ID_FB_NOT:
       {
         //Елемент "НЕ"
-        n_prev = (control != NULL) ? control->n_not : 0;
         n_cur  = current->n_not;
+        current->n_not = n_prev = control->n_not;
+        
         copy_settings_LN = copy_settings_NOT;
-        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_NOT) : sizeof(__settings_for_NOT));
+        size = n_prev*sizeof(__settings_for_NOT);
         break;
       }
     case ID_FB_TIMER:
       {
         //Елемент "Таймер"
-        n_prev = (control != NULL) ? control->n_timer : 0;
         n_cur  = current->n_timer;
+        current->n_timer = n_prev = control->n_timer;
+        
         copy_settings_LN = copy_settings_TIMER;
-        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_TIMER) : sizeof(__settings_for_TIMER));
+        size = n_prev*sizeof(__settings_for_TIMER);
         break;
       }
     case ID_FB_TRIGGER:
       {
         //Елемент "Триґер"
-        n_prev = (control != NULL) ? control->n_trigger : 0;
         n_cur  = current->n_trigger;
+        current->n_trigger = n_prev = control->n_trigger;
+        
         copy_settings_LN = copy_settings_TRIGGER;
-        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_TRIGGER) : sizeof(__settings_for_TRIGGER));
+        size = n_prev*sizeof(__settings_for_TRIGGER);
         break;
       }
     case ID_FB_MEANDER:
       {
         //Функціональний блок "Генератор періодичних сигналів"
-        n_prev = (control != NULL) ? control->n_meander : 0;
         n_cur  = current->n_meander;
+        current->n_meander = n_prev = control->n_meander;
+        
         copy_settings_LN = copy_settings_MEANDER;
-        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_MEANDER) : sizeof(__settings_for_MEANDER));
+        size = n_prev*sizeof(__settings_for_MEANDER);
         break;
       }
     default:
@@ -1630,7 +1679,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
             if ( p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR] != NULL)
             {
               //Викликаємо функцію повернення нових налаштувань у попередні значення
-              (*copy_settings_LN)(mem_for_prt, (p_sca_of_p_control == spca_of_p_prt), ptr, p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR], n_cur, n_prev);
+              (*copy_settings_LN)(false, (p_sca_of_p_control == spca_of_p_prt), ptr, p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR], n_cur, n_prev);
             }
             else
             {
@@ -1658,21 +1707,24 @@ void min_settings_INPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
+    if (mem_to_prt == true) 
+    {
+      ((__LN_INPUT *)(base) + shift)->settings.delay.delay = KOEF_DOPUSK_DV_POST_MIN;
+      ((__LN_INPUT *)(base) + shift)->settings.control = 0;
+    }
+    else 
+    {
+      ((__settings_for_INPUT *)(base) + shift)->delay.delay = KOEF_DOPUSK_DV_POST_MIN;
+      ((__settings_for_INPUT *)(base) + shift)->control = 0;
+    }
+    
     if (mem_to_prt == true)
     {
-      ((__LN_INPUT *)(base) + shift)->settings.control = 0;
-      ((__LN_INPUT *)(base) + shift)->settings.delay.delay = KOEF_DOPUSK_DV_POST_MIN;
-      
       ((__LN_INPUT *)(base) + shift)->delay.delay = -1;
-      for (size_t l = 0; l < DIV_TO_HIGHER(INPUT_SIGNALS, 8); l++) 
+      for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_SIGNALS, 8); i++)
       {
-        ((__LN_INPUT *)(base) + shift)->active_state[l] = 0;
+        ((__LN_INPUT *)(base) + shift)->active_state[i] = 0;
       }
-    }
-    else
-    {
-      ((__settings_for_INPUT *)(base) + shift)->control = 0;
-      ((__settings_for_INPUT *)(base) + shift)->delay.delay = KOEF_DOPUSK_DV_POST_MIN;
     }
   }
 }
@@ -1716,20 +1768,23 @@ void min_settings_OUTPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    if (mem_to_prt == true)
+    if (mem_to_prt == true) 
     {
       ((__LN_OUTPUT *)(base) + shift)->settings.control = 0;
       ((__LN_OUTPUT *)(base) + shift)->settings.param = 0;
-      
-      for (size_t l = 0; l < DIV_TO_HIGHER(OUTPUT_SIGNALS, 8); l++) 
-      {
-        ((__LN_OUTPUT *)(base) + shift)->active_state[l] = 0;
-      }
     }
-    else
+    else 
     {
       ((__settings_for_OUTPUT *)(base) + shift)->control = 0;
       ((__settings_for_OUTPUT *)(base) + shift)->param = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_SIGNALS, 8); i++)
+      {
+        ((__LN_OUTPUT *)(base) + shift)->active_state[i] = 0;
+      }
     }
   }
 }
@@ -1773,20 +1828,23 @@ void min_settings_LED(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    if (mem_to_prt == true)
+    if (mem_to_prt == true) 
     {
-      ((__LN_OUTPUT *)(base) + shift)->settings.control = 0;
-      ((__LN_OUTPUT *)(base) + shift)->settings.param = 0;
-      
-      for (size_t l = 0; l < DIV_TO_HIGHER(LED_SIGNALS, 8); l++) 
-      {
-        ((__LN_LED *)(base) + shift)->active_state[l] = 0;
-      }
+      ((__LN_LED *)(base) + shift)->settings.control = 0;
+      ((__LN_LED *)(base) + shift)->settings.param = 0;
     }
-    else
+    else 
     {
       ((__settings_for_LED *)(base) + shift)->control = 0;
       ((__settings_for_LED *)(base) + shift)->param = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(LED_SIGNALS, 8); i++)
+      {
+        ((__LN_LED *)(base) + shift)->active_state[i] = 0;
+      }
     }
   }
 }
@@ -1832,19 +1890,16 @@ void min_settings_AND(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
   {
     for (size_t i = 0; i < NUMBER_IN_AND; i++)
     {
-      if (mem_to_prt == true)
+      if (mem_to_prt == true) ((__LN_AND *)(base) + shift)->settings.param[i] = 0;
+      else ((__settings_for_AND *)(base) + shift)->param[i] = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(AND_SIGNALS, 8); i++)
       {
-        ((__LN_AND *)(base) + shift)->settings.param[i] = 0;
-      
-        for (size_t l = 0; l < DIV_TO_HIGHER(AND_SIGNALS, 8); l++) 
-        {
-          ((__LN_AND *)(base) + shift)->active_state[i] = 0;
-          ((__LN_AND *)(base) + shift)->trigger_state[i] = 0;
-        }
-      }
-      else
-      {
-        ((__settings_for_AND *)(base) + shift)->param[i] = 0;
+        ((__LN_AND *)(base) + shift)->active_state[i] = 0;
+        ((__LN_AND *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -1891,19 +1946,16 @@ void min_settings_OR(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
   {
     for (size_t i = 0; i < NUMBER_IN_OR; i++)
     {
-      if (mem_to_prt == true)
+      if (mem_to_prt == true) ((__LN_OR *)(base) + shift)->settings.param[i] = 0;
+      else ((__settings_for_OR *)(base) + shift)->param[i] = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(OR_SIGNALS, 8); i++)
       {
-        ((__LN_OR *)(base) + shift)->settings.param[i] = 0;
-      
-        for (size_t l = 0; l < DIV_TO_HIGHER(OR_SIGNALS, 8); l++) 
-        {
-          ((__LN_OR *)(base) + shift)->active_state[i] = 0;
-          ((__LN_OR *)(base) + shift)->trigger_state[i] = 0;
-        }
-      }
-      else
-      {
-        ((__settings_for_OR *)(base) + shift)->param[i] = 0;
+        ((__LN_OR *)(base) + shift)->active_state[i] = 0;
+        ((__LN_OR *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -1950,19 +2002,16 @@ void min_settings_XOR(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
   {
     for (size_t i = 0; i < 2; i++)
     {
-      if (mem_to_prt == true)
+      if (mem_to_prt == true) ((__LN_XOR *)(base) + shift)->settings.param[i] = 0;
+      else ((__settings_for_XOR *)(base) + shift)->param[i] = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(XOR_SIGNALS, 8); i++)
       {
-        ((__LN_XOR *)(base) + shift)->settings.param[i] = 0;
-      
-        for (size_t l = 0; l < DIV_TO_HIGHER(XOR_SIGNALS, 8); l++) 
-        {
-          ((__LN_XOR *)(base) + shift)->active_state[i] = 0;
-          ((__LN_XOR *)(base) + shift)->trigger_state[i] = 0;
-        }
-      }
-      else
-      {
-        ((__settings_for_XOR *)(base) + shift)->param[i] = 0;
+        ((__LN_XOR *)(base) + shift)->active_state[i] = 0;
+        ((__LN_XOR *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -2007,19 +2056,16 @@ void min_settings_NOT(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
+    if (mem_to_prt == true) ((__LN_NOT *)(base) + shift)->settings.param = 0;
+    else ((__settings_for_NOT *)(base) + shift)->param = 0;
+    
     if (mem_to_prt == true)
     {
-      ((__LN_NOT *)(base) + shift)->settings.param = 0;
-      
-      for (size_t l = 0; l < DIV_TO_HIGHER(NOT_SIGNALS, 8); l++) 
+      for (size_t i = 0; i < DIV_TO_HIGHER(NOT_SIGNALS, 8); i++)
       {
-        ((__LN_NOT *)(base) + shift)->active_state[l] = 0;
-        ((__LN_NOT *)(base) + shift)->trigger_state[l] = 0;
+        ((__LN_NOT *)(base) + shift)->active_state[i] = 0;
+        ((__LN_NOT *)(base) + shift)->trigger_state[i] = 0;
       }
-    }
-    else
-    {
-      ((__settings_for_NOT *)(base) + shift)->param = 0;
     }
   }
 }
@@ -2060,27 +2106,30 @@ void min_settings_TIMER(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    if (mem_to_prt == true)
+    if (mem_to_prt == true) 
     {
       ((__LN_TIMER *)(base) + shift)->settings.param = 0;
       ((__LN_TIMER *)(base) + shift)->settings.control = 0;
       ((__LN_TIMER *)(base) + shift)->settings.delay.delay_pause = TIMEOUT_DF_PAUSE_MIN;
       ((__LN_TIMER *)(base) + shift)->settings.delay.delay_work  = TIMEOUT_DF_WORK_MIN;
-
-      ((__LN_TIMER *)(base) + shift)->delay.delay_pause = -1;
-      ((__LN_TIMER *)(base) + shift)->delay.delay_work = -1;
-      for (size_t l = 0; l < DIV_TO_HIGHER(TIMER_SIGNALS, 8); l++) 
-      {
-        ((__LN_TIMER *)(base) + shift)->active_state[l] = 0;
-        ((__LN_TIMER *)(base) + shift)->trigger_state[l] = 0;
-      }
     }
-    else
+    else 
     {
       ((__settings_for_TIMER *)(base) + shift)->param = 0;
       ((__settings_for_TIMER *)(base) + shift)->control = 0;
       ((__settings_for_TIMER *)(base) + shift)->delay.delay_pause = TIMEOUT_DF_PAUSE_MIN;
       ((__settings_for_TIMER *)(base) + shift)->delay.delay_work  = TIMEOUT_DF_WORK_MIN;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      ((__LN_TIMER *)(base) + shift)->delay.delay_pause = -1;
+      ((__LN_TIMER *)(base) + shift)->delay.delay_work = -1;
+      for (size_t i = 0; i < DIV_TO_HIGHER(TIMER_SIGNALS, 8); i++)
+      {
+        ((__LN_TIMER *)(base) + shift)->active_state[i] = 0;
+        ((__LN_TIMER *)(base) + shift)->trigger_state[i] = 0;
+      }
     }
   }
 }
@@ -2130,25 +2179,28 @@ void min_settings_TRIGGER(unsigned int mem_to_prt, uintptr_t *base, size_t index
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    if (mem_to_prt == true)
+    if (mem_to_prt == true) 
     {
-      ((__LN_TRIGGER *)(base) + shift)->settings.set_param   = 0;
+      ((__LN_TRIGGER *)(base) + shift)->settings.set_param = 0;
       ((__LN_TRIGGER *)(base) + shift)->settings.reset_param = 0;
       ((__LN_TRIGGER *)(base) + shift)->settings.D_param = 0;
       ((__LN_TRIGGER *)(base) + shift)->settings.C_param = 0;
-
-      for (size_t l = 0; l < DIV_TO_HIGHER(TRIGGER_SIGNALS, 8); l++) 
-      {
-        ((__LN_TRIGGER *)(base) + shift)->active_state[l] = 0;
-        ((__LN_TRIGGER *)(base) + shift)->trigger_state[l] = 0;
-      }
     }
-    else
+    else 
     {
-      ((__settings_for_TRIGGER *)(base) + shift)->set_param   = 0;
+      ((__settings_for_TRIGGER *)(base) + shift)->set_param = 0;
       ((__settings_for_TRIGGER *)(base) + shift)->reset_param = 0;
       ((__settings_for_TRIGGER *)(base) + shift)->D_param = 0;
       ((__settings_for_TRIGGER *)(base) + shift)->C_param = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(TRIGGER_SIGNALS, 8); i++)
+      {
+        ((__LN_TRIGGER *)(base) + shift)->active_state[i] = 0;
+        ((__LN_TRIGGER *)(base) + shift)->trigger_state[i] = 0;
+      }
     }
   }
 }
@@ -2198,20 +2250,23 @@ void min_settings_MEANDER(unsigned int mem_to_prt, uintptr_t *base, size_t index
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    if (mem_to_prt == true)
+    if (mem_to_prt == true) 
     {
       ((__LN_MEANDER *)(base) + shift)->settings.delay.delay = TIMEOUT_MEANDER_MIN;
-
-      ((__LN_MEANDER *)(base) + shift)->delay.delay = -1;
-      for (size_t l = 0; l < DIV_TO_HIGHER(MEANDER_SIGNALS, 8); l++) 
-      {
-        ((__LN_MEANDER *)(base) + shift)->active_state[l] = 0;
-        ((__LN_MEANDER *)(base) + shift)->trigger_state[l] = 0;
-      }
     }
-    else
+    else 
     {
       ((__settings_for_MEANDER *)(base) + shift)->delay.delay = TIMEOUT_MEANDER_MIN;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      ((__LN_MEANDER *)(base) + shift)->delay.delay = -1;
+      for (size_t i = 0; i < DIV_TO_HIGHER(MEANDER_SIGNALS, 8); i++)
+      {
+        ((__LN_MEANDER *)(base) + shift)->active_state[i] = 0;
+        ((__LN_MEANDER *)(base) + shift)->trigger_state[i] = 0;
+      }
     }
   }
 }
@@ -2461,12 +2516,81 @@ void copy_settings(
 2 - недостатньо пам'яті і не вдалося відновити попередній стан по "для захисту"
 */
 /*****************************************************/
-unsigned int set_config_and_settings(unsigned int direction)
+unsigned int set_config_and_settings(unsigned int direction, unsigned int source)
 {
   unsigned int error = 0;
   if (direction)
   {
+    __result_dym_mem_select result;
     //Активація внесених змін
+    if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+    {
+      __disable_interrupt();
+      result = allocate_dynamic_memory_for_settings(REMAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, &current_config, NULL);
+    }
+
+    if (result == DYN_MEM_SELECT_OK)
+    {
+      if (config_settings_modified & MASKA_CHANGED_SETTINGS)
+      {
+        //Відбувалися зміни у налаштуваннях
+        __disable_interrupt(); /*конфігурація може записуватися, а може не записуватися, тому у цьому місці переривання вже можуть бути забороненими, або ще ні*/
+        copy_settings(&current_config, &settings_fix_prt, &settings_fix, spca_of_p_prt, sca_of_p);
+      }
+      __enable_interrupt(); /*могла бути ситуація. що конфігурація змінювалася без зміни налаштувнь*/
+    }
+    else if (result == DYN_MEM_NO_ENOUGH_MEM) 
+    {
+      __enable_interrupt();
+      /*
+      при такому негативному резульаті зміни конфігурації все ж таки конфігурація повернулася 
+      до свого попереднього стану, тому можна відновити інших більш пріоритетних систем, зокрема,
+      системи захиств.
+      У іншому випадку цього робити не можна. бо ми не знаємо, у якому стані зараз масиви налаштувань,
+      які змінювалися у процесі зміни конфігурації
+      */
+    }
+    
+    
+    if (result == DYN_MEM_SELECT_OK)
+    {
+      _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+      
+      if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+      {
+        //Записуємо час останньої зміни конфігурації
+        uint8_t *label_to_time_array;
+        if (copying_time == 0) label_to_time_array = time;
+        else label_to_time_array = time_copy;
+        
+        for (size_t i = 0; i < 7; i++) current_config_prt.time_config[i] = current_config.time_config[i] = current_config_edit.time_config[i] = *(label_to_time_array + i);
+        current_config_prt.time_config[7] = current_config.time_config[7] = current_config_edit.time_config[7] = (uint8_t)(source & 0xff);
+        
+        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
+      }
+      
+      //Записуємо час останньої зміни конфігурації
+      uint8_t *label_to_time_array;
+      if (copying_time == 0) label_to_time_array = time;
+      else label_to_time_array = time_copy;
+        
+      for (size_t i = 0; i < 7; i++) settings_fix_prt.time_setpoints[i] = settings_fix.time_setpoints[i] = settings_fix_edit.time_setpoints[i] = *(label_to_time_array + i);
+      settings_fix_prt.time_setpoints[7] = settings_fix.time_setpoints[7] = settings_fix_edit.time_setpoints[7] = (uint8_t)(source & 0xff);
+      
+      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+    }
+    else if (result == DYN_MEM_NO_ENOUGH_MEM) 
+    {
+      _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+      
+      error = 1;
+    }
+    else 
+    {
+      _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+      
+      error = 2;
+    }
   }
   else
   {
@@ -2476,12 +2600,17 @@ unsigned int set_config_and_settings(unsigned int direction)
       //Відбувалися зміни у конфігурації
 
       //Необхідно по даних "для захистів" відновити дані у "контейнері" і "для редагування"
-      __result_dym_mem_select result = allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p     , spca_of_p_prt, &current_config     , &current_config_prt);
-      if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p_edit, sca_of_p     , &current_config_edit, &current_config    );
-      if (result == DYN_MEM_SELECT_OK) current_config_edit = current_config = current_config_prt;
+      __result_dym_mem_select result = allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p     , spca_of_p_prt, &current_config     , &current_config_prt, &current_config_prt);
+      if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p_edit, sca_of_p     , &current_config_edit, &current_config    , &current_config    );
+      
+      if (result != DYN_MEM_SELECT_OK) 
+      {
+        _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+        error = 2;
+      }
       else
       {
-        error = 2;
+        _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
       }
     }
     

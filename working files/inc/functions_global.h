@@ -44,7 +44,7 @@ void min_settings_MEANDER(unsigned int, uintptr_t *, size_t, size_t);
 void copy_settings_MEANDER(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 size_t size_all_settings(void);
 void copy_settings(__CONFIG *, __SETTINGS_FIX *, __SETTINGS_FIX *, uintptr_t *[], uintptr_t *[]);
-unsigned int set_config_and_settings(unsigned int);
+unsigned int set_config_and_settings(unsigned int, unsigned int);
 void error_reading_with_eeprom(void);
 
 void Interrupts_Config(void);
@@ -152,7 +152,7 @@ void make_ekran_changing_diagnostics_pr_err_registrator(void);
 void make_ekran_setting_language(void);
 void make_ekran_vidkluchenja(void);
 
-__result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *);
+__result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *, __CONFIG *);
 unsigned int action_after_changing_of_configuration(unsigned int, __SETTINGS_OLD *);
 void action_after_changing_number_el(__SETTINGS_OLD *, unsigned int);
 void calculate_namber_bit_waiting_for_rs_485(void);

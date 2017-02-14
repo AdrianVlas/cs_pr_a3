@@ -55,9 +55,6 @@ void make_ekran_time(void)
   if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
   {
     make_ekran_ask_rewrite();
-
-    //Виставляємо біт обновлення екрану
-    new_state_keyboard |= (1<<BIT_REWRITE);
   }
   else if (current_state_menu2.edition == ED_WARNING)
   {
@@ -69,9 +66,6 @@ void make_ekran_time(void)
       "Вых.за диапазон "
     };
     make_ekran_about_info(true, information_about_error);
-
-    //Виставляємо біт обновлення екрану
-    new_state_keyboard |= (1<<BIT_REWRITE);
   }
   else
   {

@@ -104,6 +104,17 @@ void make_ekran_list_settings(void)
     };
     make_ekran_about_info(false, information_about_info);
   }
+  else if (current_state_menu2.edition == ED_WARNING)
+  {
+    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      " Дин.пам.недост.",
+      " Дин.пам.недост.",
+      " Дин.пам.недост.",
+      " Дин.пам.недост."
+    };
+    make_ekran_about_info(false, information_about_error);
+  }
   else if (current_state_menu2.edition == ED_ERROR) 
   {
     const uint8_t name_string_error[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 

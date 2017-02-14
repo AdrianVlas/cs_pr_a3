@@ -44,6 +44,14 @@ inline void test_external_SRAM(void)
 void global_vareiables_installation(void)
 {
   /**************************/
+  //Мінімальна конфігурація
+  /**************************/
+  min_config(&current_config_prt);
+  min_config(&current_config);
+  min_config(&current_config_edit);
+  /**************************/
+
+  /**************************/
   //Вимірювальна система
   /**************************/
   for (unsigned int i = 0; i < NUMBER_INPUTs_ADCs; i++)
@@ -1628,9 +1636,6 @@ void error_reading_with_eeprom()
     
     if (information_type == 1)
     {
-      //Заповнюємо мінімальну конфігурацію
-      min_config(&current_config);
-      
       //Записуємо мінімальну конфігурацію
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
       

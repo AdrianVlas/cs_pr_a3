@@ -72,6 +72,7 @@ ERROR_SPI_DF_BIT,
 ERROR_EXTERNAL_SRAM_BIT,
 ERROR_INTERNAL_FLASH_BIT,
 
+
 };
 
 #define MASKA_AVAR_ERROR_0        (unsigned int)(               \

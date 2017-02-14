@@ -228,7 +228,7 @@ void main_manu_function_ver2(void)
             //Формуємо екран відображення
             unsigned int menu_param_1;
             if (
-                (current_state_menu2.current_level == CONFIG_LABEL_MENU2_LEVEL) &&
+                (current_state_menu2.current_level == CONFIG_LABEL_MENU2_LEVEL) ||
                 (current_state_menu2.current_level == SETTINGS_LABEL_MENU2_LEVEL)
                )
             {
@@ -249,8 +249,28 @@ void main_manu_function_ver2(void)
           else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ENTER))) !=0)
           {
             //Натиснута кнопка ENTER
-            if (current_state_menu2.edition == ED_INFO)
+            if (current_state_menu2.edition == ED_WARNING)
             {
+              /*
+              Натискування ENTER у режимі виводу попередження про неуспішну дію 
+              має скинути режим пепередження про неуспішну дію і перейти у екран,
+              куди споживач спраямовував меню і які викликати попередні якісь дії
+              (зокрема, запис конфігурації+налаштувань при виході з Налаштувань)
+              */
+              
+              //Виходимо з цього пункту меню
+              current_state_menu2.edition = ED_VIEWING;
+
+              //Повторно подаємо команду на вихід
+              new_state_keyboard |= (1<<BIT_KEY_ESC);
+            }
+            else if (current_state_menu2.edition == ED_INFO)
+            {
+              /*
+              Натискування ENTER у режимі виводу повдомлення має скинути режим
+              повідомлення і обновити ектан у якому це повідомлення появилося
+              */
+              
               //Входимо без прав подальшого редагування
               current_state_menu2.edition = ED_VIEWING;
               
@@ -259,19 +279,51 @@ void main_manu_function_ver2(void)
             }
             else if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
             {
+              /*
+              Натискування ENTER у режимі підтвердження дії має виконати цю дію.
+              У залежності від результату виконання цієї дії треба або вивести повідомлення
+              про попредження, помилку або перейти у режим сполядання (з переходом) у те меню
+              в яке спрямовувавося воно перед активацєю дій, які зараз будуть виконуватися
+              */
               //Треба ввести у дію внесені зміни
               if (current_state_menu2.current_level == LIST_SETTINGS_MENU2_LEVEL)
               {
                 //Треба активувати нові налаштуваня
+                unsigned int result = set_config_and_settings(1, 1);
+                if (result == 0)
+                {
+                  //Знімаємро режим редагування
+                  current_state_menu2.edition = ED_VIEWING;
+                }
+                else if (result == 1)
+                {
+                  //Повідомляємо про неможливість встановити нову конфігурацію
+                  current_state_menu2.edition = ED_WARNING;
+                }
+                else
+                {
+                  //Повідомляємо про критичну помилку
+                  current_state_menu2.edition = ED_ERROR;
+                }
                   
                 config_settings_modified = 0;
               }
+              else
+              {
+                //Знімаємро режим редагування
+                current_state_menu2.edition = ED_VIEWING;
+              }
               
-              //Знімаємро режим редагування
-              current_state_menu2.edition = ED_VIEWING;
-              
-              //Повторно подаємо команду на вихід
-              new_state_keyboard |= (1<<BIT_KEY_ESC);
+              if (current_state_menu2.edition == ED_VIEWING)
+              {
+                //Повторно подаємо команду на вихід
+                new_state_keyboard |= (1<<BIT_KEY_ESC);
+              }
+              else
+              {
+                //Повторно подаємо команду на обновлення екрану
+                new_state_keyboard |= (1<<BIT_REWRITE);
+              }
             }
             else
             {
@@ -354,7 +406,7 @@ void main_manu_function_ver2(void)
                 else if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
                 {
                   //Треба відмініти введення нових налаштувань
-                  unsigned int result = set_config_and_settings(0);
+                  unsigned int result = set_config_and_settings(0, 1);
                   if (result == 0)
                   {
                     //Знімаємро режим редагування

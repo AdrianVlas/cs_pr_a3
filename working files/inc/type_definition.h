@@ -309,7 +309,7 @@ typedef struct
 typedef enum _action_dyn_mem_select
 {
   MAKE_DYN_MEM = 0,
-  REMAKR_DYN_MEM,
+  REMAKE_DYN_MEM,
   RESTORE_DYN_MEM
     
 } __action_dym_mem_select;
