@@ -93,7 +93,7 @@ void make_ekran_list_settings(void)
     //Виставляємо біт обновлення екрану
     new_state_keyboard |= (1<<BIT_REWRITE);
   }
-  else if (current_state_menu2.edition == ED_INFO) 
+  else if (current_state_menu2.edition == ED_WARNING_ENTER) 
   {
     const unsigned char information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
@@ -104,7 +104,7 @@ void make_ekran_list_settings(void)
     };
     make_ekran_about_info(false, information_about_info);
   }
-  else if (current_state_menu2.edition == ED_WARNING)
+  else if (current_state_menu2.edition == ED_INFO)
   {
     const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
@@ -180,7 +180,7 @@ void make_ekran_list_settings(void)
       },
       {
         " Configuration  ",
-        " MF-Timers      ",
+        " MF-Timer       ",
         " PSG            ",
         " Group Alarms    ",
         " Alarms         ",
@@ -277,6 +277,41 @@ void make_ekran_list_settings(void)
   
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+}
+/*****************************************************/
+
+/*****************************************************/
+/*
+Натискування ESC у вікні Конфігурації
+*/
+/*****************************************************/
+void press_esc_in_list_settings(void)
+{
+  if (config_settings_modified != 0)
+  {
+    if (current_state_menu2.edition == ED_CAN_BE_EDITED)
+    {
+      //Треба спитатися дозвіл на внесення змін
+      current_state_menu2.edition = ED_CONFIRM_CHANGES;
+    }
+    else if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
+    {
+      //Треба відмініти введення нових налаштувань
+      unsigned int result = set_config_and_settings(0, 1);
+      if (result == 0)
+      {
+        //Знімаємро режим редагування
+        current_state_menu2.edition = ED_VIEWING;
+      }
+      else
+      {
+        //Повідомляємо про критичну помилку
+        current_state_menu2.edition = ED_ERROR;
+      }
+      
+      config_settings_modified = 0;
+    }
+  }
 }
 /*****************************************************/
 

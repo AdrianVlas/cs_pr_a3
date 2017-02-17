@@ -3,103 +3,499 @@
 /*****************************************************/
 //Формуємо екран конфігурації
 /*****************************************************/
-void make_ekran_configuration(unsigned int configuration_edit_temp)
+void make_ekran_configuration(void)
 {
-#define MAX_COL_LCD_PART1 10
+  if (
+      (current_state_menu2.edition == ED_WARNING_ENTER) ||
+      (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+     )   
+        
+  {
+    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      " Дин.пам.недост.",
+      " Дин.пам.недост.",
+      " Дин.пам.недост.",
+      " Дин.пам.недост."
+    };
+    make_ekran_about_info( ((current_state_menu2.edition == ED_WARNING_ENTER) ? false : true), information_about_error);
+  }
+  else 
+  {
+    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGURATION][MAX_COL_LCD + 1] = 
+    {
+      {
+        "       И        ",
+        "      ИЛИ       ",
+        "    Искл.ИЛИ    ",
+        "       НЕ       ",
+        "   МФ-Таймер    ",
+        "   D-Триггер    ",
+        "      ГПС       "
+      },
+      {
+        "       І        ",
+        "      АБО       ",
+        "    Викл.АБО    ",
+        "       НЕ       ",
+        "   БФ-Таймер    ",
+        "    D-Триґер    ",
+        "      ГПС       "
+      },
+      {
+        "      AND       ",
+        "       OR       ",
+        "      XOR       ",
+        "      NOT       ",
+        "    MF-Timer    ",
+        "   D-Trigger    ",
+        "      PSG       "
+      },
+      {
+        "       И        ",
+        "      ИЛИ       ",
+        "    Искл.ИЛИ    ",
+        "       НЕ       ",
+        "   МФ-Таймер    ",
+        "   D-Триггер    ",
+        "      ГПС       "
+      }
+    };
+    int index_language = index_language_in_array(settings_fix.language);
 
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EKRAN_CONFIGURATION][MAX_COL_LCD_PART1] = 
-  {
-    {
-     "Контр.фаз "
-    },
-    {
-     "Контр.фаз "
-    },
-    {
-     "Контр.фаз "
-    },
-    {
-     "Контр.фаз "
-    }
-  };
-  const unsigned char information_on[MAX_NAMBER_LANGUAGE][MAX_COL_LCD - MAX_COL_LCD_PART1] = 
-  {
-    "Вкл.  ",
-    "Ввімк.",
-    "On    ",
-    "Косу. "
-  };
-  const unsigned char information_off[MAX_NAMBER_LANGUAGE][MAX_COL_LCD - MAX_COL_LCD_PART1] = 
-  {
-    "Откл. ",
-    "Вимк. ",
-    "Off   ",
-    "Сљнд. "
-  };
+    unsigned int position_temp = current_state_menu2.index_position;
+    //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+
+    unsigned int vaga, value, first_symbol;
   
-  unsigned char name_string_tmp[MAX_ROW_FOR_EKRAN_CONFIGURATION][MAX_COL_LCD];
+    __CONFIG *p_current_config;
+    if (current_state_menu2.edition == ED_VIEWING) p_current_config = &current_config_prt;
+    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_current_config = &current_config;
+    else p_current_config = &current_config_edit;
+    size_t col_begin, col_end;
+  
+    for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    {
+      unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+      if (index_in_ekran_tmp < MAX_ROW_FOR_CONFIGURATION)
+      {
+        if ((i & 0x1) == 0)
+        {
+          //У непарному номері рядку виводимо заголовок
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran >> 1][j];
+          first_symbol = 0; //помічаємо, що ще ніо дин значущий символ не виведений
 
-  int index_language = index_language_in_array(current_settings.language);
-  for(int index_1 = 0; index_1 < MAX_ROW_FOR_EKRAN_CONFIGURATION; index_1++)
-  {
-    for(int index_2 = 0; index_2 < MAX_COL_LCD_PART1; index_2++)
-      name_string_tmp[index_1][index_2] = name_string[index_language][index_1][index_2];
+          switch (index_in_ekran_tmp)
+          {
+          case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_and;
+
+              break;
+            }
+          case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_or;
+
+              break;
+            }
+          case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_xor;
+
+              break;
+            }
+          case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_not;
+
+              break;
+            }
+          case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_timer;
+
+              break;
+            }
+          case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_trigger;
+
+              break;
+            }
+          case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_meander;
+
+              break;
+            }
+          default:
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(77);
+            }
+          }
+        }
+        else
+        {
+          for (size_t j = 0; j < MAX_COL_LCD; j++)
+          {
+            if ((j < col_begin) || (j > col_end )) working_ekran[i][j] = ' ';
+            else calc_int_symbol_and_put_into_working_ekran((working_ekran[i] + j), &value, &vaga, &first_symbol);
+          }
+        }
+      }
+      else
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+
+      index_in_ekran++;
+    }
+
+    //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням
+    current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    //Курсор по горизонталі відображається на першому символі у випадку, коли ми не в режимі редагування, інакше позиція буде визначена користувачем
+    if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
+    {
+      int last_position_cursor_x = MAX_COL_LCD;
+      switch (current_state_menu2.index_position)
+      {
+      case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
+          last_position_cursor_x = COL_CONF_3DIGIT_END;
+          break;
+        }
+      default:
+        {
+          //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+          total_error_sw_fixed(82);
+        }
+      }
+
+      //Підтягуємо курсор до першого символу
+      while (
+             ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x + 1]) == ' ') && 
+             (current_state_menu2.position_cursor_x < (last_position_cursor_x - 1))
+            )
+      {
+        current_state_menu2.position_cursor_x++;
+      }
+    
+      //Курсор ставимо так, щоб він був перед числом
+      if (
+          ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x]) != ' ') && 
+          (current_state_menu2.position_cursor_x > 0)
+         )
+      {
+        current_state_menu2.position_cursor_x--;
+      }
+    }
+    //Курсор видимий
+    current_state_menu2.cursor_on = 1;
+    //Курсор мигає/не мигає
+    if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    else current_state_menu2.cursor_blinking_on = 1;
   }
   
-  /*******************************************************/
-  //Формуємо значення
-  /*******************************************************/
-  for(unsigned int i = 0; i< MAX_ROW_FOR_EKRAN_CONFIGURATION; i++)
-  {
-    unsigned int configuration_temp;
-    
-    //Якщо ми не в режимі редагування, то беремо дані із стуктури текучих настройок
-    //інакше берем із структури для редагування
-    if(current_ekran.edition == 0) configuration_temp = current_settings.configuration;
-    else configuration_temp = configuration_edit_temp;
-    
-    if ((configuration_temp & (1<<i)) == 0)
-    {
-      for (unsigned int j = MAX_COL_LCD_PART1; j < MAX_COL_LCD; j++)
-        name_string_tmp[i][j] = information_off[index_language][j - MAX_COL_LCD_PART1];
-    }
-    else
-    {
-      for (unsigned int j = MAX_COL_LCD_PART1; j < MAX_COL_LCD; j++)
-        name_string_tmp[i][j] = information_on[index_language][j - MAX_COL_LCD_PART1];
-    }
-  }
-  /*******************************************************/
-    
-  int position_temp = current_ekran.index_position;
-  int index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-  
-  //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < MAX_ROW_FOR_EKRAN_CONFIGURATION)
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string_tmp[index_of_ekran][j];
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-
-    index_of_ekran++;
-  }
-
-  //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = (MAX_COL_LCD_PART1 - 1);
-  //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
-  //Курсор видимий
-  current_ekran.cursor_on = 1;
-  //Курсор не мигає
-  if (current_ekran.edition == 0)   current_ekran.cursor_blinking_on = 0;
-  else   current_ekran.cursor_blinking_on = 1;
-
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+}
+/*****************************************************/
+
+/*****************************************************/
+/*
+Натискування Enter у вікні Конфігурації
+*/
+/*****************************************************/
+enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
+{
+  enum _result_pressed_enter_during_edition result;
+  switch (current_state_menu2.edition)
+  {
+  case ED_VIEWING:
+  case ED_CAN_BE_EDITED:
+    {
+      switch (current_state_menu2.index_position)
+      {
+      case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
+          break;
+        }
+      }
+
+      result = RPEDE_NONE;
+      break;
+    }
+  case ED_EDITION:
+    {
+      //Перевіряємо, чи дані рельно змінилися
+      result = RPEDE_DATA_NOT_CHANGED;
+      switch (current_state_menu2.index_position)
+      {
+      case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_and != current_config.n_and) result = RPEDE_DATA_CHANGED_OK;
+          break;
+        }
+      case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_or != current_config.n_or) result = RPEDE_DATA_CHANGED_OK;
+          break;
+        }
+      case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_xor != current_config.n_xor) result = RPEDE_DATA_CHANGED_OK;
+          break;
+        }
+      case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_not != current_config.n_not) result = RPEDE_DATA_CHANGED_OK;
+          break;
+        }
+      case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_timer != current_config.n_timer) result = RPEDE_DATA_CHANGED_OK;
+          break;
+        }
+      case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_trigger != current_config.n_trigger) result = RPEDE_DATA_CHANGED_OK;
+          break;
+        }
+      case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_meander != current_config.n_meander) result = RPEDE_DATA_CHANGED_OK;
+          break;
+        }
+      }
+      
+      if (result == RPEDE_DATA_CHANGED_OK)
+      {
+        //Треба виконати дії по зміні конфігурації
+        __result_dym_mem_select result_1 = action_after_changing_of_configuration();
+        if (result_1 == DYN_MEM_SELECT_OK) config_settings_modified = MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS;
+        else
+        {
+        
+          result = (result_1 == DYN_MEM_NO_ENOUGH_MEM) ? RPEDE_DATA_CHANGED_WRONG_RETURN_OK : RPEDE_DATA_CHANGED_WRONG_RETURN_BAD;
+          
+          if (result == RPEDE_DATA_CHANGED_WRONG_RETURN_BAD) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+        }
+      }
+
+      break;
+    }
+  case ED_WARNING_ENTER_ESC:
+  case ED_WARNING_ENTER:
+  case ED_INFO:
+    {
+      result = RPEDE_NONE;
+      break;
+    }
+  }
   
-#undef MAX_COL_LCD_PART1  
+  return result;
+}
+/*****************************************************/
+
+/*****************************************************/
+/*
+Натискування ESC у вікні Конфігурації
+*/
+/*****************************************************/
+void press_esc_in_configuration(void)
+{
+  switch (current_state_menu2.index_position)
+  {
+  case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_and = current_config.n_and;
+      break;
+    }
+  case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_or = current_config.n_or;
+      break;
+    }
+  case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_xor = current_config.n_xor;
+      break;
+    }
+  case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_not = current_config.n_not;
+      break;
+    }
+  case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_timer = current_config.n_timer;
+      break;
+    }
+  case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_trigger = current_config.n_trigger;
+      break;
+    }
+  case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_meander = current_config.n_meander;
+      break;
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Зміна Конфігурації
+/*****************************************************
+Вхідні параметри
+(1 << BIT_KEY_DOWN) - натснуто кнопку вниз
+(1 << BIT_KEY_UP)   - атиснуто кнопку вверх
+(1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+(1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+
+Вхідні параметри
+  Немає
+*****************************************************/
+void change_configuration(unsigned int action)
+{
+  //Вводимо число у відповідне поле
+  if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
+  {
+    uint32_t *p_value = NULL;
+    unsigned int col_end;
+    switch (current_state_menu2.index_position)
+    {
+    case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_and;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_or;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_xor;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_not;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_timer;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_trigger;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_meander;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    }
+    
+    if (p_value != NULL)
+    {
+      *p_value = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0), *p_value, 0, 0, col_end, 1);
+    }
+  }
+  else if (
+           ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+           ((action & (1 << BIT_KEY_RIGHT)) != 0)
+          )   
+  {
+    int col_begin, col_end;
+    switch (current_state_menu2.index_position)
+    {
+    case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+    case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+    case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+    case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+    case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+    case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+    case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        col_begin = COL_CONF_3DIGIT_BEGIN;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    }
+    
+    if (action & (1 << BIT_KEY_LEFT ))
+    {
+      current_state_menu2.position_cursor_x--;
+      if ((current_state_menu2.position_cursor_x < col_begin) ||
+          (current_state_menu2.position_cursor_x > col_end))
+        current_state_menu2.position_cursor_x = col_end;
+    }
+    else
+    {
+      current_state_menu2.position_cursor_x++;
+      if ((current_state_menu2.position_cursor_x < col_begin) ||
+          (current_state_menu2.position_cursor_x > col_end))
+        current_state_menu2.position_cursor_x = col_begin;
+    }
+    
+  }
 }
 /*****************************************************/
 

@@ -9,9 +9,20 @@ enum _edition_stats
   ED_CAN_BE_EDITED,     /* 1 - вікно зараз не в режимі редагується але з правом переходу в режим редагування без додаткої перевірки паролю  */
   ED_EDITION,           /* 2 - вікно зараз в режимі редагування  */
   ED_CONFIRM_CHANGES,   /* 3 - вікно чекає підтвердження редагування  */ 
-  ED_WARNING,           /* 4 - у процесі виконання виникнула помилка  */
-  ED_INFO,              /* 5 - у процесі виконання виникнуло необхідність проінформувати на екрані певне повідомлення  */
-  ED_ERROR              /* 6 - у процесі виконання виникнула критична помилка  */
+  ED_WARNING_ENTER_ESC, /* 4 - у процесі виконання виникнула помилка  (виводиться вікно про помилку з двома Enter/Esc кнопками функцією make_ekran_about_info. По натискуванні Enter залишаємося у тому самому вікні)*/
+  ED_WARNING_ENTER,     /* 5 - у процесі виконання виникнула помилка  (виводиться вікно про помилку з єдиною кнопкою Enter функцією make_ekran_about_info. По натискуванні Enter залишаємося у тому самому вікні)*/
+  ED_INFO,              /* 6 - у процесі виконання виникнуло необхідність проінформувати на екрані певне повідомлення  (виводиться вікно інформації з єдиною кнопкою Enter функцією make_ekran_about_info) По натискуванні Enter залишаємося повертаємо ся у попереднє вікно*/
+  ED_ERROR              /* 7 - у процесі виконання виникнула критична помилка  (виводимо інформацію без будь-якої можливості натиснути будь-яку кнопку)*/
+};
+
+enum _result_pressed_enter_during_edition
+{
+  RPEDE_NONE = 0,
+  RPEDE_DATA_NOT_CHANGED,
+  RPEDE_DATA_CHANGED_OK,
+  RPEDE_DATA_CHANGED_OUT_OF_RANGE,
+  RPEDE_DATA_CHANGED_WRONG_RETURN_OK,
+  RPEDE_DATA_CHANGED_WRONG_RETURN_BAD,
 };
 
 typedef struct
@@ -26,10 +37,11 @@ typedef struct
   int *p_max_row;                     //Вказівник на максимальну кількість рядків
   int max_row;                        //Максимальна кількість рядків
   
-  void (*func_move)(unsigned int, int);//Вказівник на функцію, для переміщення по вибраному меню  
-  void (*func_show)(void);            //Вказівник на функцію, для відображення вибраного меню  
-  unsigned int (*func_press_enter)(void);//Вказівник на функцію, для виконання дії по натискуванні кнопки Enter
-  void (*func_change)(unsigned int);  //Вказівник на функцію, для зміни занчення вибраної позиції у вибраному меню
+  void (*func_move)(unsigned int, int);                                 //Вказівник на функцію, для переміщення по вибраному меню  
+  void (*func_show)(void);                                              //Вказівник на функцію, для відображення вибраного меню  
+  enum _result_pressed_enter_during_edition (*func_press_enter)(void);  //Вказівник на функцію, для виконання дії по натискуванні кнопки Enter
+  void (*func_press_esc)(void);                                         //Вказівник на функцію, для виконання дії по натискуванні кнопки Esc
+  void (*func_change)(unsigned int);                                    //Вказівник на функцію, для зміни занчення вибраної позиції у вибраному меню
   
   enum _edition_stats edition;
   
@@ -260,10 +272,7 @@ typedef struct
 typedef struct
 {
   
-  uint32_t set_param;
-  uint32_t reset_param;
-  uint32_t D_param; 
-  uint32_t C_param; 
+  uint32_t param[INPUT_TRIGGER_SIGNALS];
   
 } __settings_for_TRIGGER;
 

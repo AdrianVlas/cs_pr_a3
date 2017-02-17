@@ -145,17 +145,11 @@ void make_ekran_main(void)
 /*****************************************************/
 /*
 Редагування дати і часу
-
-Вихідні дані
-0 - результати виконання операції не має значення
-1 - дані не змінилися
-2 - дані змінилися і у діапазоні
-3 дані змінилися але не у діапазоні
 */
 /*****************************************************/
-unsigned int press_enter_in_main(void)
+enum _result_pressed_enter_during_edition press_enter_in_main(void)
 {
-  unsigned int result = 0;
+  enum _result_pressed_enter_during_edition result = RPEDE_NONE;
   
   if (*((enum _menu2_levels*)p_menu_param_1) == LIST_SETTINGS_MENU2_LEVEL)
   {

@@ -305,162 +305,6 @@ void main_manu_function(void)
 /******************************************************************************************************************************************/ 
       
 
-/******************************************************************************************************************************************/      
-    case EKRAN_COFIGURATION:
-      {
-        //Змінна для редагування конфігурації
-        static unsigned int configuration_edit;
-        
-        //Очищаємо всі біти краім упралінський
-        unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER)| (1<<BIT_KEY_ESC)|(1<<BIT_REWRITE);
-        
-        if (current_ekran.edition == 1)
-          maska_keyboard_bits |= (1<<BIT_KEY_RIGHT) | (1<<BIT_KEY_LEFT) | (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
-        else if (current_ekran.edition == 0)
-          maska_keyboard_bits |= (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
-        
-        new_state_keyboard &= maska_keyboard_bits;
-        //Дальше виконуємо дії, якщо натиснута кнопка на яку треба реагівати, або стоїть команда обновити екран
-        if (new_state_keyboard !=0)
-        {
-          //Пріоритет стоїть на обновлені екрану
-          if((new_state_keyboard & (1<<BIT_REWRITE)) !=0)
-          {
-            if(current_ekran.index_position >= MAX_ROW_FOR_EKRAN_CONFIGURATION) current_ekran.index_position = 0;
-            position_in_current_level_menu[EKRAN_COFIGURATION] = current_ekran.index_position;
-            //Формуємо екран конфігурації
-            make_ekran_configuration(configuration_edit);
-            //Очищаємо біт обновлення екрану
-            new_state_keyboard &= (unsigned int)(~(1<<BIT_REWRITE));
-          }
-          else
-          {
-            if (new_state_keyboard == (1<<BIT_KEY_ENTER))
-            {
-              //Натиснута кнопка ENTER
-              if(current_ekran.edition == 0)
-              {
-                //Копіюємо настройки у структуру для редагування
-                configuration_edit = current_settings.configuration;
-                  
-                //Підготовка до режиму редагування - включаємо мигаючий курсор
-                current_ekran.cursor_on = 1;
-                current_ekran.cursor_blinking_on = 1;
-                if (current_settings.password != 0)
-                {
-                  //Переходимо на меню запиту паролю
-                  current_ekran.current_level = EKRAN_LEVEL_PASSWORD;
-                  previous_level_in_current_level_menu[current_ekran.current_level] = EKRAN_COFIGURATION;
-                  current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                }
-                else
-                {
-                  //Переходимо у режим редагування
-                  current_ekran.edition = 1;
-                }
-              }
-              else if (current_ekran.edition == 1)
-              {
-                //Перевіряємо чи якісь зміни відбулися
-                if (configuration_edit == current_settings.configuration) current_ekran.edition = 0;
-                else current_ekran.edition = 2;
-
-                current_ekran.cursor_on = 0;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              else if (current_ekran.edition == 2)
-              {
-                //Помічаємо, що поле структури зараз буде змінене
-                changed_settings = CHANGED_ETAP_EXECUTION;
-
-                //Обновляємо значення
-                action_after_changing_of_configuration(configuration_edit, &current_settings);
-                //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
-                fix_change_settings(0, 1);
-                current_ekran.edition = 0;
-                
-                //Виходимо з режиму редагування
-                current_ekran.cursor_on = 1;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              
-              if(current_ekran.edition == 2) make_ekran_ask_rewrite();
-              else
-                //Виставляємо біт обновлення екрану
-                new_state_keyboard |= (1<<BIT_REWRITE);
-
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ENTER));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_ESC))
-            {
-              //Натиснута кнопка ESC
-
-              if(current_ekran.edition == 0)
-              {
-                //Вихід у режимі спостерігання
-                //Переходимо у попереднє меню
-                current_ekran.current_level = previous_level_in_current_level_menu[current_ekran.current_level];
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-              }
-              else
-              {
-                //Вихід у режимі редагування без введення змін
-                current_ekran.cursor_on = 1;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              current_ekran.edition = 0;
-
-              //Виставляємо команду на обновлекння нового екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ESC));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_UP))
-            {
-              //Натиснута кнопка UP
-
-              if(--current_ekran.index_position < 0 ) current_ekran.index_position = MAX_ROW_FOR_EKRAN_CONFIGURATION - 1;
-              position_in_current_level_menu[EKRAN_COFIGURATION] = current_ekran.index_position;
-              //Формуємо екран конфігурації
-              make_ekran_configuration(configuration_edit);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_UP));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_DOWN))
-            {
-              //Натиснута кнопка DOWN
-
-              if(++current_ekran.index_position >= MAX_ROW_FOR_EKRAN_CONFIGURATION) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_COFIGURATION] = current_ekran.index_position;
-              //Формуємо екран конфігурації
-              make_ekran_configuration(configuration_edit);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_DOWN));
-            }
-            else if ((new_state_keyboard == (1<<BIT_KEY_LEFT)) || (new_state_keyboard == (1<<BIT_KEY_RIGHT)))
-            { 
-              //Натиснута кнопка LEFT або RIGHT
-
-              configuration_edit ^= (1<<current_ekran.index_position);
-
-              //Формуємо екран конфігурації
-              make_ekran_configuration(configuration_edit);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~((1<<BIT_KEY_LEFT) | (1<<BIT_KEY_RIGHT)));
-            }
-            else
-            {
-              //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
-              unsigned int temp_data = new_state_keyboard;
-              new_state_keyboard &= ~temp_data;
-            }
-          }
-        }
-        break;
-      }
-/******************************************************************************************************************************************/ 
-
 /****************************************************************************************************************************************/      
     case EKRAN_CHOOSE_SETTINGS_CTRL_PHASE:
     case EKRAN_LEVEL_CHOOSE_PASSWORDS:
@@ -2755,7 +2599,7 @@ void main_manu_function(void)
 
                         current_settings.number_defined_df = edition_settings.number_defined_df;
                         //Обновляємо значення
-                        action_after_changing_number_el(&current_settings, 0);
+//                        action_after_changing_number_el(&current_settings, 0);
                       
                         //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
                         fix_change_settings(0, 1);
@@ -2775,7 +2619,7 @@ void main_manu_function(void)
 
                         current_settings.number_defined_dt = edition_settings.number_defined_dt;
                         //Обновляємо значення
-                        action_after_changing_number_el(&current_settings, 1);
+//                        action_after_changing_number_el(&current_settings, 1);
 
                         //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
                         fix_change_settings(0, 1);
@@ -2795,7 +2639,7 @@ void main_manu_function(void)
 
                         current_settings.number_defined_and = edition_settings.number_defined_and;
                         //Обновляємо значення
-                        action_after_changing_number_el(&current_settings, 2);
+//                        action_after_changing_number_el(&current_settings, 2);
 
                         //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
                         fix_change_settings(0, 1);
@@ -2815,7 +2659,7 @@ void main_manu_function(void)
 
                         current_settings.number_defined_or = edition_settings.number_defined_or;
                         //Обновляємо значення
-                        action_after_changing_number_el(&current_settings, 3);
+//                        action_after_changing_number_el(&current_settings, 3);
 
                         //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
                         fix_change_settings(0, 1);
@@ -2835,7 +2679,7 @@ void main_manu_function(void)
 
                         current_settings.number_defined_xor = edition_settings.number_defined_xor;
                         //Обновляємо значення
-                        action_after_changing_number_el(&current_settings, 4);
+//                        action_after_changing_number_el(&current_settings, 4);
 
                         //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
                         fix_change_settings(0, 1);
@@ -2855,7 +2699,7 @@ void main_manu_function(void)
 
                         current_settings.number_defined_not = edition_settings.number_defined_not;
                         //Обновляємо значення
-                        action_after_changing_number_el(&current_settings, 5);
+//                        action_after_changing_number_el(&current_settings, 5);
 
                         //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
                         fix_change_settings(0, 1);
@@ -6877,44 +6721,6 @@ void main_manu_function(void)
 }
 /*****************************************************/
 
-
-/*****************************************************/
-//Редагування величин вводимих значень
-/*****************************************************
-Вхідні параметри
-  0 - натснуто кнопку вниз
-  1 - натиснуто кнопку вверх
-Вхідні параметри
-  Немає
-*****************************************************/
-unsigned int edit_setpoint(unsigned int action, unsigned int value, unsigned int floating_value, unsigned int comma, unsigned int end, unsigned int min_step)
-{
-  unsigned int rozrjad, vaga = min_step, temp_value, data_return;
-  //Вираховуємо розряд числа на який зараз вказує курсор
-  rozrjad = end - current_ekran.position_cursor_x;
-  
-  //У разі якщо редаговане число є числом з комою, то враховуємо позицію коми
-  if (floating_value != 0)
-    if (current_ekran.position_cursor_x < ((int)comma)) rozrjad--;
-      
-  for(unsigned int i=0; i < rozrjad; i++)  vaga *= 10;
-  
-  //Виділяємо число , яке трба змінити
-  temp_value = (value / vaga) % 10;
-  
-  //У вхідному числі, який нас цікавить редагований розряд скидаємо в нуль відніманням
-  data_return = value - temp_value*vaga;
-  
-  //Змінюємо виділений розняд
-  inc_or_dec_value(&temp_value, action);
-  
-  //Вводимо зміненй розряд у кінцевий результат
-  data_return += temp_value*vaga;
-  
-  
-  return data_return;
-}
-/*****************************************************/
 
 /*****************************************************/
 //Перевіряємо достовірність даних

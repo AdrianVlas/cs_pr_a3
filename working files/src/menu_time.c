@@ -56,7 +56,7 @@ void make_ekran_time(void)
   {
     make_ekran_ask_rewrite();
   }
-  else if (current_state_menu2.edition == ED_WARNING)
+  else if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
   {
     const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
@@ -169,17 +169,11 @@ void make_ekran_time(void)
 /*****************************************************/
 /*
 Редагування дати і часу
-
-Вихідні дані
-0 - результати виконання операції не має значення
-1 - дані не змінилися
-2 - дані змінилися і у діапазоні
-3 дані змінилися але не у діапазоні
 */
 /*****************************************************/
-unsigned int press_enter_in_time()
+enum _result_pressed_enter_during_edition press_enter_in_time(void)
 {
-  unsigned int result;
+  enum _result_pressed_enter_during_edition result;
   switch (current_state_menu2.edition)
   {
   case ED_VIEWING:
@@ -188,26 +182,26 @@ unsigned int press_enter_in_time()
       for(size_t i = 0; i < 7; i++) time_edit[i] = time[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
       calibration_edit = calibration;
       
-      result = 0;
+      result = RPEDE_NONE;
       
       break;
     }
   case ED_EDITION:
     {
       //Перевіряємо, чи дані рельно змінилися
-      result = 1;
-      for(size_t i = 0; ((i < 7) && (result == 1)); i++)
+      result = RPEDE_DATA_NOT_CHANGED;
+      for(size_t i = 0; ((i < 7) && (result == RPEDE_DATA_NOT_CHANGED)); i++)
       {
-        if (time[i] != time_edit[i]) result = 2;
+        if (time[i] != time_edit[i]) result = RPEDE_DATA_CHANGED_OK;
       }
-      if (result == 1)
+      if (result == RPEDE_DATA_NOT_CHANGED)
       {
-        if (calibration != calibration_edit) result = 2;
+        if (calibration != calibration_edit) result = RPEDE_DATA_CHANGED_OK;
       }
       
-      if (result == 2)
+      if (result == RPEDE_DATA_CHANGED_OK)
       {
-        if (check_data_for_data_time_menu() != 1) result = 3;
+        if (check_data_for_data_time_menu() != 1) result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
       }
       break;
     }
@@ -222,14 +216,14 @@ unsigned int press_enter_in_time()
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
       _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
       
-      result = 0;
+      result = RPEDE_NONE;
       
       break;
     }
   case ED_CAN_BE_EDITED:
-  case ED_WARNING:
+  case ED_WARNING_ENTER_ESC:
     {
-      result = 0;
+      result = RPEDE_NONE;
       break;
     }
   }

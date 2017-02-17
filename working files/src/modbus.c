@@ -3091,7 +3091,7 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
         if (target_label->configuration != output_conf)
         {
           //Обновлюємо всі поля структури настройок. які зв'язані із конфігурацією приладу, якщо ця операція доступна (ми не знаходимося у вікні, яке не дозволяє конфігурацію)
-          if(action_after_changing_of_configuration(output_conf, target_label) != 0)
+          if(action_after_changing_of_configuration() != DYN_MEM_SELECT_OK)
             error = ERROR_SLAVE_DEVICE_BUSY;
         }
         

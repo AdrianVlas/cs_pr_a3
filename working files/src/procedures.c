@@ -1,306 +1,6 @@
 #include "header.h"
 
 /*****************************************************/
-//Функція обновлення змінних при зміні конфігурації
-/*****************************************************/
-unsigned int action_after_changing_of_configuration(unsigned int new_configuration, __SETTINGS_OLD *target_label)
-{
-  unsigned int error_window = 0;
-  
-  /************************/
-  //Спершу перевіряємо чи не знаходимося зараз ми у такому вікні, яке забороняє змінювати текучу конфігурацію
-  /************************/
-  //Перевірка "Перевірка фазування"
-  if ((new_configuration & (1<<CTRL_PHASE_BIT_CONFIGURATION)) == 0)
-  {
-    if(
-       (current_ekran.current_level == EKRAN_CHOOSE_SETTINGS_CTRL_PHASE)
-       ||
-       (current_ekran.current_level == EKRAN_SETPOINT_CTRL_PHASE)
-       ||  
-       (current_ekran.current_level == EKRAN_TIMEOUT_CTRL_PHASE)
-       ||  
-       (current_ekran.current_level == EKRAN_CONTROL_CTRL_PHASE)
-      )
-      error_window |= (1 << CTRL_PHASE_BIT_CONFIGURATION );
-  }
-  /************************/
-  
-  if (error_window == 0)
-  {
-    //Вводимо нову конфігурацю у цільову структуру
-    target_label->configuration = new_configuration;
-    
-    unsigned int maska[N_BIG] = {0, 0, 0, 0, 0, 0, 0};
-
-    //Перевіряємо, чи "Перевірка фазування" зараз знята з конфігурації
-    if ((target_label->configuration & (1<<CTRL_PHASE_BIT_CONFIGURATION)) == 0)
-    {
-      //Виводим всі "Перевірки фазування"
-      target_label->control_ctrl_phase &= (unsigned int)(~CTR_CTRL_PHASE_U | CTR_CTRL_PHASE_PHI | CTR_CTRL_PHASE_F | CTR_CTRL_PHASE_SEQ_TN1 | CTR_CTRL_PHASE_SEQ_TN2);
-   
-      //Формуємо маски функцій "Перевірка фазування"
-      maska[0] = 0;
-      maska[1] = 0;
-      maska[2] = 0;
-      maska[3] = 0;
-      maska[4] = 0;
-      maska[5] = 0;
-      for (int i = 0; i < NUMBER_CTRL_PHASE_SIGNAL_FOR_RANG; i++)
-        _SET_BIT(
-                 maska, 
-                 (
-                  NUMBER_GENERAL_SIGNAL_FOR_RANG    + 
-                  i
-                 )
-                );
-
-
-      //Знімаємо всі функції для ранжування виходів
-      for (int i = 0; i < NUMBER_OUTPUTS; i++)
-      {
-        for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_outputs[N_BIG*i+j] &= ~maska[j];
-      }
-      //Знімаємо всі функції для ранжування світоіндикаторів
-      for (int i = 0; i < NUMBER_LEDS; i++)
-      {
-        for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_leds[N_BIG*i+j] &= ~maska[j];
-      }
-      //Знімаємо всі функції для ранжування аналогового, дискретного реєстраторів, тиші і скидання реле
-      for (unsigned int j = 0; j < N_BIG; j++ ) 
-      {
-        target_label->ranguvannja_analog_registrator[j]  &= ~maska[j];
-        target_label->ranguvannja_digital_registrator[j] &= ~maska[j];
-        target_label->ranguvannja_silence[j] &= ~maska[j];
-        target_label->ranguvannja_reset[j] &= ~maska[j];
-      }
-      //Знімаємо всі функції для ранжування сигналізацій
-      for (int i = 0; i < NUMBER_ALARMS; i++)
-      {
-        for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_alarms[N_BIG*i+j] &= ~maska[j];
-      }
-      //Знімаємо всі функції для ранжування оприділювальних функцій
-      for (int i = 0; i < NUMBER_DEFINED_FUNCTIONS; i++)
-      {
-        for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_df[N_BIG*i+j] &= ~maska[j];
-      }
-      //Знімаємо всі функції для ранжування оприділювальних триґерів
-      for (int i = 0; i < NUMBER_DEFINED_TRIGGERS; i++)
-      {
-        for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_set_dt[N_BIG*i+j] &= ~maska[j];
-      }
-  
-      //Знімаємо всі функції для ранжування визначуваних "І"
-      for(unsigned int i = 0; i < NUMBER_DEFINED_AND; i++)
-      {
-        for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_and[N_BIG*i+j] &= ~maska[j];
-      }
-  
-      //Знімаємо всі функції для ранжування визначуваних "АБО"
-      for(unsigned int i = 0; i < NUMBER_DEFINED_OR; i++)
-      {
-        for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_or[N_BIG*i+j] &= ~maska[j];
-      }
-  
-      //Знімаємо всі функції для ранжування визначуваних "Викл.АБО"
-      for(unsigned int i = 0; i < NUMBER_DEFINED_XOR; i++)
-      {
-        for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_xor[N_BIG*i+j] &= ~maska[j];
-      }
-  
-      //Знімаємо всі функції для ранжування визначуваних "НЕ"
-      for(unsigned int i = 0; i < NUMBER_DEFINED_NOT; i++)
-      {
-        for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_not[N_BIG*i+j] &= ~maska[j];
-      }
-    }
-
-    //"Розширена логіка"
-    for (unsigned int i = 0; i < N_BIG; i++ ) maska[i] = 0;
-
-    //Формуємо маски тільки тих сигналів розширеної логіки, які виведені з конфігурації у кількісному значенні
-    unsigned int array_defined_logic[NUMBER_DEFINED_ELEMENTS][2] =
-    {
-      {target_label->number_defined_df , NUMBER_DEFINED_FUNCTIONS},
-      {target_label->number_defined_dt , NUMBER_DEFINED_TRIGGERS },
-      {target_label->number_defined_and, NUMBER_DEFINED_AND      },
-      {target_label->number_defined_or , NUMBER_DEFINED_OR       },
-      {target_label->number_defined_xor, NUMBER_DEFINED_XOR      },
-      {target_label->number_defined_not, NUMBER_DEFINED_NOT      }
-    };
-    const unsigned int others_signals[NUMBER_DEFINED_ELEMENTS] = {2, 3, 1, 1, 1, 1};
-      
-    unsigned int others_shift = NUMBER_GENERAL_SIGNAL_FOR_RANG;
-    
-    for (unsigned int index = 0; index < NUMBER_DEFINED_ELEMENTS; index++)
-    {
-      for (unsigned int i = 0; i < others_signals[index]*(array_defined_logic[index][1] - array_defined_logic[index][0]); i++)
-        _SET_BIT(maska, (others_shift + others_signals[index]*array_defined_logic[index][0] + i));
-       
-      others_shift += others_signals[index]*array_defined_logic[index][1];
-    }
-
-    //Знімаємо всі функції для ранжування виходів
-    for (int i = 0; i < NUMBER_OUTPUTS; i++)
-    {
-      for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_outputs[N_BIG*i+j] &= ~maska[j];
-    }
-    //Знімаємо всі функції для ранжування світоіндикаторів
-    for (int i = 0; i < NUMBER_LEDS; i++)
-    {
-      for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_leds[N_BIG*i+j] &= ~maska[j];
-    }
-    //Знімаємо всі функції для ранжування аналогового, дискретного реєстраторів, тиші і скидання реле
-    for (unsigned int j = 0; j < N_BIG; j++ ) 
-    {
-      target_label->ranguvannja_analog_registrator[j]  &= ~maska[j];
-      target_label->ranguvannja_digital_registrator[j] &= ~maska[j];
-      target_label->ranguvannja_silence[j] &= ~maska[j];
-      target_label->ranguvannja_reset[j] &= ~maska[j];
-    }
-    //Знімаємо всі функції для ранжування сигналізацій
-    for (int i = 0; i < NUMBER_ALARMS; i++)
-    {
-      for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_alarms[N_BIG*i+j] &= ~maska[j];
-    }
-    //Очищємо всі функції для ранжування оприділювальних функцій
-    for (int i = 0; i < NUMBER_DEFINED_FUNCTIONS; i++)
-    {
-        for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_df[N_BIG*i+j] &= ~maska[j];
-    }
-    //Очищємо всі функції для ранжування оприділювальних триґерів
-    for (int i = 0; i < NUMBER_DEFINED_TRIGGERS; i++)
-    {
-      for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_set_dt[N_BIG*i+j] &= ~maska[j];
-    }
-  
-    //Очищємо всі функції для ранжування визначуваних "І"
-    for(unsigned int i = 0; i < NUMBER_DEFINED_AND; i++)
-    {
-      for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_and[N_BIG*i+j] &= ~maska[j];
-    }
-  
-    //Очищємо всі функції для ранжування визначуваних "АБО"
-    for(unsigned int i = 0; i < NUMBER_DEFINED_OR; i++)
-    {
-      for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_or[N_BIG*i+j] &= ~maska[j];
-    }
-  
-    //Очищємо всі функції для ранжування визначуваних "Викл.АБО"
-    for(unsigned int i = 0; i < NUMBER_DEFINED_XOR; i++)
-    {
-      for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_xor[N_BIG*i+j] &= ~maska[j];
-    }
-  
-    //Очищємо всі функції для ранжування визначуваних "НЕ"
-    for(unsigned int i = 0; i < NUMBER_DEFINED_NOT; i++)
-    {
-      for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_not[N_BIG*i+j] &= ~maska[j];
-    }
-  }
-  
-  return error_window;
-}
-/*****************************************************/
-
-/*****************************************************/
-//Функція обновлення змінних при зміні кількості елементів розширеної логіки
-/*****************************************************/
-void action_after_changing_number_el(__SETTINGS_OLD *target_label, unsigned int element)
-{
-  unsigned int maska[N_BIG] = {0, 0, 0, 0, 0, 0, 0};
-
-  //Формуємо маски тільки тих сигналів розширеної логіки, які виведені з конфігурації у кількісному значенні
-  unsigned int array_defined_logic[NUMBER_DEFINED_ELEMENTS][2] =
-  {
-    {target_label->number_defined_df , NUMBER_DEFINED_FUNCTIONS},
-    {target_label->number_defined_dt , NUMBER_DEFINED_TRIGGERS },
-    {target_label->number_defined_and, NUMBER_DEFINED_AND      },
-    {target_label->number_defined_or , NUMBER_DEFINED_OR       },
-    {target_label->number_defined_xor, NUMBER_DEFINED_XOR      },
-    {target_label->number_defined_not, NUMBER_DEFINED_NOT      }
-  };
-  const unsigned int others_signals[NUMBER_DEFINED_ELEMENTS] = {2, 3, 1, 1, 1, 1};
-  
-  unsigned int others_shift = NUMBER_GENERAL_SIGNAL_FOR_RANG;
-      
-  for (unsigned int index = 0; index < element; index++)
-  {
-    others_shift += others_signals[index]*array_defined_logic[index][1];
-  }
-  
-  //Формуємо маски функцій елемента Розширеної логіки
-  for (unsigned int i = 0; i < others_signals[element]*(array_defined_logic[element][1] - array_defined_logic[element][0]); i++)
-    _SET_BIT(maska, (others_shift + others_signals[element]*array_defined_logic[element][0] + i));
-    
-  //Знімаємо всі функції для ранжування виходів
-  for (int i = 0; i < NUMBER_OUTPUTS; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_outputs[N_BIG*i+j] &= ~maska[j];
-  }
-  //Знімаємо всі функції для ранжування світоіндикаторів
-  for (int i = 0; i < NUMBER_LEDS; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_leds[N_BIG*i+j] &= ~maska[j];
-  }
-  //Знімаємо всі функції для ранжування аналогового, дискретного реєстраторів, тиші і скидання реле
-  for (unsigned int j = 0; j < N_BIG; j++ ) 
-  {
-    target_label->ranguvannja_analog_registrator[j]  &= ~maska[j];
-    target_label->ranguvannja_digital_registrator[j] &= ~maska[j];
-    target_label->ranguvannja_silence[j] &= ~maska[j];
-    target_label->ranguvannja_reset[j] &= ~maska[j];
-  }
-  //Знімаємо всі функції для ранжування сигналізацій
-  for (int i = 0; i < NUMBER_ALARMS; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_alarms[N_BIG*i+j] &= ~maska[j];
-  }
-  //Очищємо всі функції для ранжування оприділювальних функцій
-  for (int i = 0; i < NUMBER_DEFINED_FUNCTIONS; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) 
-    {
-        target_label->ranguvannja_df[N_BIG*i+j] &= ~maska[j];
-    }
-  }
-  //Очищємо всі функції для ранжування оприділювальних триґерів
-  for (int i = 0; i < NUMBER_DEFINED_TRIGGERS; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) 
-    {
-      target_label->ranguvannja_set_dt[N_BIG*i+j]    &= ~maska[j];
-      target_label->ranguvannja_reset_dt[N_BIG*i+j]  &= ~maska[j];
-    }
-  }
-  
-  //Очищємо всі функції для ранжування визначуваних "І"
-  for(unsigned int i = 0; i < NUMBER_DEFINED_AND; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_and[N_BIG*i+j] &= ~maska[j];
-  }
-  
-  //Очищємо всі функції для ранжування визначуваних "АБО"
-  for(unsigned int i = 0; i < NUMBER_DEFINED_OR; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_or[N_BIG*i+j] &= ~maska[j];
-  }
-  
-  //Очищємо всі функції для ранжування визначуваних "Викл.АБО"
-  for(unsigned int i = 0; i < NUMBER_DEFINED_XOR; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_xor[N_BIG*i+j] &= ~maska[j];
-  }
-  
-  //Очищємо всі функції для ранжування визначуваних "НЕ"
-  for(unsigned int i = 0; i < NUMBER_DEFINED_NOT; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_not[N_BIG*i+j] &= ~maska[j];
-  }
-}
-/*****************************************************/
-
-/*****************************************************/
 //Функція, яка визначає кількість біт затримки, який допускається між байтами у RS-485 згідно з визначеними настройками
 /*****************************************************/
 void calculate_namber_bit_waiting_for_rs_485(void)
@@ -524,6 +224,7 @@ unsigned int set_new_settings_from_interface(unsigned int source)
       current_state_menu2.func_move = move_into_main;
       current_state_menu2.func_show = make_ekran_main;
       current_state_menu2.func_press_enter = press_enter_in_main;
+      current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.edition = ED_VIEWING;
     }
@@ -1352,13 +1053,15 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       uint32_t n_prev, n_cur;
       size_t size;
       void (*min_param)(unsigned int, uintptr_t *, size_t, size_t);
+      uint32_t *p_current_field;
       switch (index_1)
       {
       case ID_FB_INPUT:
         {
           //Дискретний вхід
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_input : 0;
-          current->n_input = n_cur = edited->n_input;
+          p_current_field = &current->n_input;
+          n_cur = edited->n_input;
           
           min_param = min_settings_INPUT;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_INPUT) : sizeof(__settings_for_INPUT));
@@ -1368,7 +1071,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         {
           //Дискретний вихід
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_output : 0;
-          current->n_output = n_cur = edited->n_output;
+          p_current_field = &current->n_output;
+          n_cur = edited->n_output;
           
           min_param = min_settings_OUTPUT;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OUTPUT) : sizeof(__settings_for_OUTPUT));
@@ -1378,7 +1082,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         {
           //Світлоіндикатор
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_led : 0;
-          current->n_led = n_cur = edited->n_led;
+          p_current_field = &current->n_led;
+          n_cur = edited->n_led;
           
           min_param = min_settings_LED;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_LED) : sizeof(__settings_for_LED));
@@ -1388,7 +1093,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         {
           //Елемент "І"
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_and : 0;
-          current->n_and = n_cur = edited->n_and;
+          p_current_field = &current->n_and;
+          n_cur = edited->n_and;
           
           min_param = min_settings_AND;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_AND) : sizeof(__settings_for_AND));
@@ -1398,7 +1104,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         {
           //Елемент "АБО"
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_or : 0;
-          current->n_or = n_cur = edited->n_or;
+          p_current_field = &current->n_or;
+          n_cur = edited->n_or;
           
           min_param = min_settings_OR;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OR) : sizeof(__settings_for_OR));
@@ -1408,7 +1115,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         {
           //Елемент "Викл.АБО"
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_xor : 0;
-          current->n_xor = n_cur = edited->n_xor;
+          p_current_field = &current->n_xor;
+          n_cur = edited->n_xor;
           
           min_param = min_settings_XOR;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_XOR) : sizeof(__settings_for_XOR));
@@ -1418,7 +1126,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         {
           //Елемент "НЕ"
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_not : 0;
-          current->n_not = n_cur = edited->n_not;
+          p_current_field = &current->n_not;
+          n_cur = edited->n_not;
           
           min_param = min_settings_NOT;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_NOT) : sizeof(__settings_for_NOT));
@@ -1428,7 +1137,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         {
           //Елемент "Таймер"
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_timer : 0;
-          current->n_timer = n_cur = edited->n_timer;
+          p_current_field = &current->n_timer;
+          n_cur = edited->n_timer;
           
           min_param = min_settings_TIMER;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TIMER) : sizeof(__settings_for_TIMER));
@@ -1438,7 +1148,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         {
           //Елемент "Триґер"
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_trigger : 0;
-          current->n_trigger = n_cur = edited->n_trigger;
+          p_current_field = &current->n_trigger;
+          n_cur = edited->n_trigger;
           
           min_param = min_settings_TRIGGER;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TRIGGER) : sizeof(__settings_for_TRIGGER));
@@ -1448,7 +1159,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         {
           //Функціональний блок "Генератор періодичних сигналів"
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_meander : 0;
-          current->n_meander = n_cur = edited->n_meander;
+          p_current_field = &current->n_meander;
+          n_cur = edited->n_meander;
           
           min_param = min_settings_MEANDER;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_MEANDER) : sizeof(__settings_for_MEANDER));
@@ -1490,15 +1202,16 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       }
 
       //Готуємося до зміни наступного функціонального блоку (у випадку успішної зміни або неуспішної, але з можливістю відновлення)
-      if (result == DYN_MEM_SELECT_OK) index_1++;
+      if (result == DYN_MEM_SELECT_OK) 
+      {
+        *p_current_field = n_cur;
+        index_1++;
+      }
       else if (result == DYN_MEM_NO_ENOUGH_MEM) index_1--;
     }
   }
   else
   {
-    //Відновлюємо попередню конфігурацію
-    *current = *edited;
-    
     //Треб підготуватися для відновлення даних по контрльних даних
     index_1 = _ID_FB_LAST_VAR;
     index_1--;
@@ -2179,19 +1892,10 @@ void min_settings_TRIGGER(unsigned int mem_to_prt, uintptr_t *base, size_t index
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    if (mem_to_prt == true) 
+    for (size_t i = 0; i < INPUT_TRIGGER_SIGNALS; i++)
     {
-      ((__LN_TRIGGER *)(base) + shift)->settings.set_param = 0;
-      ((__LN_TRIGGER *)(base) + shift)->settings.reset_param = 0;
-      ((__LN_TRIGGER *)(base) + shift)->settings.D_param = 0;
-      ((__LN_TRIGGER *)(base) + shift)->settings.C_param = 0;
-    }
-    else 
-    {
-      ((__settings_for_TRIGGER *)(base) + shift)->set_param = 0;
-      ((__settings_for_TRIGGER *)(base) + shift)->reset_param = 0;
-      ((__settings_for_TRIGGER *)(base) + shift)->D_param = 0;
-      ((__settings_for_TRIGGER *)(base) + shift)->C_param = 0;
+      if (mem_to_prt == true) ((__LN_TRIGGER *)(base) + shift)->settings.param[i] = 0;
+      else ((__settings_for_TRIGGER *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
@@ -2213,31 +1917,25 @@ void copy_settings_TRIGGER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    if ((mem_to_prt == false) && (mem_from_prt == true))
+    for (size_t i = 0; i < INPUT_TRIGGER_SIGNALS; i++)
     {
-      ((__settings_for_TRIGGER *)(base_target) + shift)->set_param   = ((__LN_TRIGGER *)(base_source) + shift)->settings.set_param;
-      ((__settings_for_TRIGGER *)(base_target) + shift)->reset_param = ((__LN_TRIGGER *)(base_source) + shift)->settings.reset_param;
-      ((__settings_for_TRIGGER *)(base_target) + shift)->D_param     = ((__LN_TRIGGER *)(base_source) + shift)->settings.D_param;
-      ((__settings_for_TRIGGER *)(base_target) + shift)->C_param     = ((__LN_TRIGGER *)(base_source) + shift)->settings.C_param;
-    }
-    else if ((mem_to_prt == true) && (mem_from_prt == false))
-    {
-      ((__LN_TRIGGER *)(base_target) + shift)->settings.set_param   = ((__settings_for_TRIGGER *)(base_source) + shift)->set_param;
-      ((__LN_TRIGGER *)(base_target) + shift)->settings.reset_param = ((__settings_for_TRIGGER *)(base_source) + shift)->reset_param;
-      ((__LN_TRIGGER *)(base_target) + shift)->settings.D_param     = ((__settings_for_TRIGGER *)(base_source) + shift)->D_param;
-      ((__LN_TRIGGER *)(base_target) + shift)->settings.C_param     = ((__settings_for_TRIGGER *)(base_source) + shift)->C_param;
-    }
-    else if ((mem_to_prt == false) && (mem_from_prt == false))
-    {
-      ((__settings_for_TRIGGER *)(base_target) + shift)->set_param   = ((__settings_for_TRIGGER *)(base_source) + shift)->set_param;
-      ((__settings_for_TRIGGER *)(base_target) + shift)->reset_param = ((__settings_for_TRIGGER *)(base_source) + shift)->reset_param;
-      ((__settings_for_TRIGGER *)(base_target) + shift)->D_param     = ((__settings_for_TRIGGER *)(base_source) + shift)->D_param;
-      ((__settings_for_TRIGGER *)(base_target) + shift)->C_param     = ((__settings_for_TRIGGER *)(base_source) + shift)->C_param;
-    }
-    else
-    {
-      //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-      total_error_sw_fixed(98);
+      if ((mem_to_prt == false) && (mem_from_prt == true))
+      {
+        ((__settings_for_TRIGGER *)(base_target) + shift)->param[i] = ((__LN_TRIGGER *)(base_source) + shift)->settings.param[i];
+      }
+      else if ((mem_to_prt == true) && (mem_from_prt == false))
+      {
+        ((__LN_TRIGGER *)(base_target) + shift)->settings.param[i] = ((__settings_for_TRIGGER *)(base_source) + shift)->param[i];
+      }
+      else if ((mem_to_prt == false) && (mem_from_prt == false))
+      {
+        ((__settings_for_TRIGGER *)(base_target) + shift)->param[i] = ((__settings_for_TRIGGER *)(base_source) + shift)->param[i];
+      }
+      else
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(98);
+      }
     }
   }
 }
@@ -2392,7 +2090,7 @@ void copy_settings(
   
   for (enum _id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
   {
-    if (source_dyn[i] != NULL)
+    if (source_dyn[i - _ID_FB_FIRST_VAR] != NULL)
     {
       uint32_t n_prev;
       void (*copy_settings_LN)(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
@@ -2567,6 +2265,9 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         current_config_prt.time_config[7] = current_config.time_config[7] = current_config_edit.time_config[7] = (uint8_t)(source & 0xff);
         
         _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
+        
+        //Зміна конфігурції може змінити розміри налаштувань. а це може вплинути на розміщення триґерної інформації, тому її також записуємо
+        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
       }
       
       //Записуємо час останньої зміни конфігурації
@@ -2600,8 +2301,8 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       //Відбувалися зміни у конфігурації
 
       //Необхідно по даних "для захистів" відновити дані у "контейнері" і "для редагування"
-      __result_dym_mem_select result = allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p     , spca_of_p_prt, &current_config     , &current_config_prt, &current_config_prt);
-      if (result == DYN_MEM_SELECT_OK) allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p_edit, sca_of_p     , &current_config_edit, &current_config    , &current_config    );
+      __result_dym_mem_select          result = allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p     , spca_of_p_prt, &current_config     , &current_config_prt, &current_config_prt);
+      if (result == DYN_MEM_SELECT_OK) result = allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p_edit, sca_of_p     , &current_config_edit, &current_config    , &current_config    );
       
       if (result != DYN_MEM_SELECT_OK) 
       {
@@ -2627,6 +2328,154 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
   }
   
   return error;
+}
+/*****************************************************/
+
+/*****************************************************/
+//Функція обновлення змінних при зміні конфігурації
+/*****************************************************/
+__result_dym_mem_select action_after_changing_of_configuration(void)
+{
+  /*
+  Так, як функція allocate_dynamic_memory_for_settings встановлює нову конфінурацію і виділяє пам'ять під неї,
+  а ми вже значення у конфігурацї змінили у стурктурі для редагування current_config_edit,
+  то цю структуру спочатку копіюємо у тимчасову структуру, відновлюємо попереднє значення
+  і тоді вже функцією allocate_dynamic_memory_for_settings виконуємо дії по встановленні нової конфігурації і виділенні
+  динамічної пам'яті
+  */
+  __CONFIG current_config_tmp = current_config_edit;
+  current_config_edit = current_config;
+  __result_dym_mem_select result = allocate_dynamic_memory_for_settings(REMAKE_DYN_MEM, false, sca_of_p_edit, sca_of_p, &current_config_edit, &current_config_tmp , &current_config);
+  if (result == DYN_MEM_SELECT_OK) 
+  {
+    result = allocate_dynamic_memory_for_settings(REMAKE_DYN_MEM, false, sca_of_p, spca_of_p_prt, &current_config, &current_config_edit, &current_config_prt);
+    if (result == DYN_MEM_NO_ENOUGH_MEM)
+    {
+      //Треба відновити у пам'яті для редагування попередню конфігурацію
+      __result_dym_mem_select result_1 =  allocate_dynamic_memory_for_settings(RESTORE_DYN_MEM, false, sca_of_p_edit, sca_of_p, &current_config_edit, &current_config, &current_config);
+      if (result_1 == DYN_MEM_SELECT_OK) 
+      {
+        //Відновлюємо зміни у налаштуваннях
+        copy_settings(&current_config, &settings_fix_edit, &settings_fix, sca_of_p_edit, sca_of_p);
+      }
+      else result = DYN_MEM_TOTAL_ERROR;
+    }
+  }
+  if (result == DYN_MEM_SELECT_OK)
+  {
+    uint32_t number[NUMBER_ALL_BLOCKS] = {
+                                          1,
+                                          current_config.n_input, 
+                                          current_config.n_output,
+                                          current_config.n_led, 
+                                          current_config.n_and,
+                                          current_config.n_or,
+                                          current_config.n_xor,
+                                          current_config.n_not,
+                                          current_config.n_timer,
+                                          current_config.n_trigger,
+                                          current_config.n_meander
+                                         };
+    for (enum _id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
+    {
+      if (
+           (i != ID_FB_INPUT) &&
+           (i != ID_FB_MEANDER)
+         )
+      {
+        uint32_t *p_param, *p_param_edit;
+        intptr_t _n;
+        switch (i)
+        {
+        case ID_FB_OUTPUT:
+          {
+            _n = 1;
+            p_param      = &(((__settings_for_OUTPUT*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
+            p_param_edit = &(((__settings_for_OUTPUT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
+            break;
+          }
+        case ID_FB_LED:
+          {
+            _n = 1;
+            p_param      = &(((__settings_for_LED*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
+            p_param_edit = &(((__settings_for_LED*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
+            break;
+          }
+        case ID_FB_AND:
+          {
+            _n = NUMBER_IN_AND;
+            p_param      = (((__settings_for_AND*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
+            p_param_edit = (((__settings_for_AND*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
+            break;
+          }
+        case ID_FB_OR:
+          {
+            _n = NUMBER_IN_OR;
+            p_param      = (((__settings_for_OR*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
+            p_param_edit = (((__settings_for_OR*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
+            break;
+          }
+        case ID_FB_XOR:
+          {
+            _n = 2;
+            p_param      = (((__settings_for_XOR*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
+            p_param_edit = (((__settings_for_XOR*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
+            break;
+          }
+        case ID_FB_NOT:
+          {
+            _n = 1;
+            p_param      = &(((__settings_for_NOT*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
+            p_param_edit = &(((__settings_for_NOT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
+            break;
+          }
+        case ID_FB_TIMER:
+          {
+            _n = 1;
+            p_param      = &(((__settings_for_TIMER*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
+            p_param_edit = &(((__settings_for_TIMER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
+            break;
+          }
+        case ID_FB_TRIGGER:
+          {
+            _n = INPUT_TRIGGER_SIGNALS;
+            p_param      = (((__settings_for_TRIGGER*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
+            p_param_edit = (((__settings_for_TRIGGER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
+            break;
+          }
+        default:
+          {
+            //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+            total_error_sw_fixed(76);
+          }
+        }
+        
+        intptr_t shift = 0;
+        for (intptr_t j = 0; j < _n; j++)
+        {
+          uint32_t param_input = *(p_param + j - shift);
+          unsigned int id_input   = (param_input >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;
+          unsigned int n_input    = (param_input >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
+//          unsigned int out_input  = (param_input >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
+          
+          //Робимо зміщення параметрування, щоб не було пропусків
+          if (n_input > number[id_input - _ID_FB_FIRST_ALL])
+          {
+            *(p_param + j - shift) = *(p_param_edit + j - shift) = 0;
+            
+            for (intptr_t k = (j + 1); k < _n; k++)
+            {
+              *(p_param + (k - 1) - shift) = *(p_param_edit + (k - 1) - shift) = *(p_param + k - shift);
+            }
+            
+            shift++;
+          }
+        }
+      }
+    }
+  }
+  
+  return result;
 }
 /*****************************************************/
 

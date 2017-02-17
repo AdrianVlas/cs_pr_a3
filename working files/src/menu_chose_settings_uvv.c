@@ -9,7 +9,7 @@ void calc_int_symbol_and_put_into_working_ekran(unsigned char* point_in_working_
   temp_data = (*point_value) / (*point_vaga); //виділяємо число, яке треба перетворити у символ і помістити у дану позицію екрану
   *point_value %= *(point_vaga); //вираховуємо число без символа, який ми зараз будемо виводити на екран
   *point_vaga /=10; //зменшуємо ваговий коефіцієнт в 10 разів
-  if(current_ekran.edition != 0) *point_in_working_ekran = temp_data + 0x30;
+  if(current_state_menu2.edition >= ED_EDITION) *point_in_working_ekran = temp_data + 0x30;
   else
   {
     //У випадку, якщо ми не у режимі редагування, то нулі перед найстаршим значущим числом приховуємо

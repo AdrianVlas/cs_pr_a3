@@ -15,6 +15,7 @@
 #include "const_menu2_labels.h"
 #include "const_menu2_info.h"
 #include "const_menu2_list_settings.h"
+#include "const_menu2_configuration.h"
 
 #include "const_lcd_and_keyboard.h"
 #include "const_menu_level_password.h"

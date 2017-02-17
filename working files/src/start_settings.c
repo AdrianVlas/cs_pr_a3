@@ -142,6 +142,7 @@ void global_vareiables_installation(void)
   current_state_menu2.func_move = move_into_main;
   current_state_menu2.func_show = make_ekran_main;
   current_state_menu2.func_press_enter = press_enter_in_main;
+  current_state_menu2.func_press_esc = NULL;
   current_state_menu2.func_change = NULL;
   current_state_menu2.edition = ED_VIEWING;
 
