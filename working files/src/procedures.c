@@ -1041,6 +1041,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
 {
   __result_dym_mem_select result = DYN_MEM_SELECT_OK;
   enum _id_fb index_1;
+  unsigned int can_be_restore = true;
   
   if (make_remake_restore != RESTORE_DYN_MEM)
   {
@@ -1175,6 +1176,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
     
       if ((make_remake_restore == MAKE_DYN_MEM) || (n_cur != n_prev))
       {
+        if ((mem_for_prt != false) && (n_cur < n_prev)) can_be_restore = false;
+        
         //Іде або виділення пергий раз області пам'яті, або кількість функціональних блоків зміникася
         if(size == 0) 
         {
@@ -1195,8 +1198,18 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
           else 
           {
-            if ((make_remake_restore == MAKE_DYN_MEM) || (mem_for_prt != false) || (control == NULL)) result = DYN_MEM_TOTAL_ERROR;
-            else result = DYN_MEM_NO_ENOUGH_MEM;
+            if (
+                (make_remake_restore == MAKE_DYN_MEM) ||
+                ((mem_for_prt != false) && (can_be_restore != true)) ||
+                (control == NULL)
+                ) 
+            {
+              result = DYN_MEM_TOTAL_ERROR;
+            }
+            else
+            {
+              result = DYN_MEM_NO_ENOUGH_MEM;
+            }
           }
         }
       }
@@ -1237,7 +1250,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
      && 
      (
       (make_remake_restore == MAKE_DYN_MEM) ||
-      (mem_for_prt != false) ||
+      ((mem_for_prt != false) && (can_be_restore != true)) ||
       (control == NULL)
      )
     )   
@@ -1389,7 +1402,11 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           p_sca_of_p_current[index_1 - _ID_FB_FIRST_VAR] = ptr;
           if (n_prev > n_cur)
           {
-            if ( p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR] != NULL)
+            if (
+                (can_be_restore == true) &&
+                (p_sca_of_p_control != NULL) &&
+                ( p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR] != NULL)
+               )   
             {
               //Викликаємо функцію повернення нових налаштувань у попередні значення
               (*copy_settings_LN)(false, (p_sca_of_p_control == spca_of_p_prt), ptr, p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR], n_cur, n_prev);
@@ -2217,14 +2234,15 @@ void copy_settings(
 unsigned int set_config_and_settings(unsigned int direction, unsigned int source)
 {
   unsigned int error = 0;
-  if (direction)
+  if (direction != 0)
   {
-    __result_dym_mem_select result;
+    __result_dym_mem_select result = DYN_MEM_SELECT_OK;
     //Активація внесених змін
     if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
     {
+      __CONFIG current_config_tmp = current_config_prt;
       __disable_interrupt();
-      result = allocate_dynamic_memory_for_settings(REMAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, &current_config, NULL);
+      result = allocate_dynamic_memory_for_settings(REMAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, &current_config, &current_config_tmp);
     }
 
     if (result == DYN_MEM_SELECT_OK)
@@ -2244,7 +2262,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       при такому негативному резульаті зміни конфігурації все ж таки конфігурація повернулася 
       до свого попереднього стану, тому можна відновити інших більш пріоритетних систем, зокрема,
       системи захиств.
-      У іншому випадку цього робити не можна. бо ми не знаємо, у якому стані зараз масиви налаштувань,
+      У іншому випадку цього робити не можна, бо ми не знаємо, у якому стані зараз масиви налаштувань,
       які змінювалися у процесі зміни конфігурації
       */
     }
@@ -2293,10 +2311,17 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       error = 2;
     }
   }
-  else
+  
+  if (
+      (error == 1) ||
+      (direction == 0)
+     ) 
   {
     //Повернення до пстану до редагування
-    if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+    if (
+        (error == 1) ||
+        (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+       )   
     {
       //Відбувалися зміни у конфігурації
 
@@ -2309,18 +2334,18 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
         error = 2;
       }
-      else
+      else if (error == 0)
       {
         _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
       }
     }
     
     if (
-        (error == 0) &&
+        (error == 1) ||
         (config_settings_modified & MASKA_CHANGED_SETTINGS)
        )   
     {
-      //Відбувалися зміни у налаштуваннях
+      //Відновлюємо зміни у налаштуваннях
       copy_settings(&current_config_prt, &settings_fix     , &settings_fix_prt, sca_of_p     , spca_of_p_prt);
       copy_settings(&current_config    , &settings_fix_edit, &settings_fix    , sca_of_p_edit, sca_of_p     );
     }
