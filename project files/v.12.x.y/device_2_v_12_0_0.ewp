@@ -4661,6 +4661,9 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_level_password.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_list_logical_nodes.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_list_settings.c</name>
         </file>
         <file>

@@ -68,8 +68,8 @@ void make_ekran_time_config_or_settings(void)
   unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   uint8_t *point_to_target;
 
-  if (*((unsigned int*)p_menu_param_1) == 0) point_to_target = (&current_config)->time_config;
-  else point_to_target = (&settings_fix)->time_setpoints;
+  if (*((unsigned int*)p_menu_param_1) == 0) point_to_target = (&current_config_prt)->time_config;
+  else point_to_target = (&settings_fix_prt)->time_setpoints;
   
   /******************************************/
   //Заповнюємо поля відповідними цифрами

@@ -130,7 +130,7 @@ void main_manu_function_ver2(void)
                 {
                   current_state_menu2.edition = ED_EDITION;
                 }
-                else current_state_menu2.edition = ED_WARNING_ENTER;
+                else current_state_menu2.edition = ED_WARNING_EDITION_BUSY;
               }
               else current_state_menu2.edition = ED_VIEWING;
               
@@ -189,6 +189,7 @@ void main_manu_function_ver2(void)
     case OUTPUTS_MENU2_LEVEL:
     case REGISTRATORS_MENU2_LEVEL:
     case LIST_SETTINGS_MENU2_LEVEL:
+    case LIST_TIMERS_MENU2_LEVEL:
     case DIAGNOSTICS_MENU2_LEVEL:
     case LABELS_MENU2_LEVEL:
     case CONFIG_LABEL_MENU2_LEVEL:
@@ -298,6 +299,7 @@ void main_manu_function_ver2(void)
               }
             }
             else if (
+                     (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
                      (current_state_menu2.edition == ED_WARNING_ENTER_ESC) ||
                      (current_state_menu2.edition == ED_WARNING_ENTER)
                     )   
@@ -334,7 +336,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
               const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
               const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL};
               const enum _menu2_levels *p = NULL;
               
               switch (current_state_menu2.current_level)
@@ -788,6 +790,10 @@ void main_manu_function_ver2(void)
             {
               current_state_menu2.edition = prev_edit;
             }
+            else if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY)
+            {
+              current_state_menu2.edition = ED_VIEWING;
+            }
             else if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
             {
               current_state_menu2.edition = ED_EDITION;
@@ -1088,8 +1094,8 @@ void new_level_menu(void)
     {
       time_rewrite = 0;
       
-      if (current_state_menu2.current_level == INPUTS_MENU2_LEVEL) current_state_menu2.p_max_row = (int*)&current_config.n_input;
-      else current_state_menu2.p_max_row = (int*)&current_config.n_output;
+      if (current_state_menu2.current_level == INPUTS_MENU2_LEVEL) current_state_menu2.p_max_row = (int*)&current_config_prt.n_input;
+      else current_state_menu2.p_max_row = (int*)&current_config_prt.n_output;
       current_state_menu2.max_row = 0;
       current_state_menu2.func_move = move_into_ekran_input_or_output;
       current_state_menu2.func_show = make_ekran_state_inputs_or_outputs;
@@ -1135,6 +1141,21 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = press_enter_in_configuration;
       current_state_menu2.func_press_esc = press_esc_in_configuration;
       current_state_menu2.func_change = change_configuration;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+   case LIST_TIMERS_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
+      current_state_menu2.max_row = 0;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_list_logical_nodes;
+      current_state_menu2.func_press_enter = NULL;
+      current_state_menu2.func_press_esc = NULL;
+      current_state_menu2.func_change = NULL;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
       відкритого вікна

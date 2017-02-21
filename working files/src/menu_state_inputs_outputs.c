@@ -8,7 +8,7 @@
 unsigned int max_number_digit_in_number(int max_item)
 {
   unsigned int number_digit = 1;
-  if (max_item  >= 10)
+  while (max_item  >= 10)
   {
     number_digit++;
     max_item /= 10;

@@ -6,11 +6,20 @@
 void make_ekran_configuration(void)
 {
   if (
-      (current_state_menu2.edition == ED_WARNING_ENTER) ||
-      (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+      (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+      (current_state_menu2.edition == ED_WARNING_ENTER_ESC) ||
+      (current_state_menu2.edition == ED_WARNING_ENTER)
      )   
         
   {
+    const unsigned char information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      "Ред.не разрешено",
+      "Ред.не дозволене",
+      "Ed.isn't allowed",
+      "Ред.не разрешено",
+    };
+    
     const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       " Дин.пам.недост.",
@@ -18,7 +27,7 @@ void make_ekran_configuration(void)
       " Дин.пам.недост.",
       " Дин.пам.недост."
     };
-    make_ekran_about_info( ((current_state_menu2.edition == ED_WARNING_ENTER) ? false : true), information_about_error);
+    make_ekran_about_info( ((current_state_menu2.edition == ED_WARNING_ENTER_ESC) ? true : false), ((current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else 
   {
@@ -244,7 +253,7 @@ void make_ekran_configuration(void)
 /*****************************************************/
 enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
 {
-  enum _result_pressed_enter_during_edition result;
+  enum _result_pressed_enter_during_edition result = RPEDE_NONE;
   switch (current_state_menu2.edition)
   {
   case ED_VIEWING:
@@ -264,8 +273,6 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
           break;
         }
       }
-
-      result = RPEDE_NONE;
       break;
     }
   case ED_EDITION:
@@ -325,13 +332,6 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
         }
       }
 
-      break;
-    }
-  case ED_WARNING_ENTER_ESC:
-  case ED_WARNING_ENTER:
-  case ED_INFO:
-    {
-      result = RPEDE_NONE;
       break;
     }
   }

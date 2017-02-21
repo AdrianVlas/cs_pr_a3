@@ -2410,90 +2410,93 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
       {
         uint32_t *p_param, *p_param_edit;
         intptr_t _n;
-        switch (i)
+        for (size_t j = 0; j < number[i - _ID_FB_FIRST_ALL]; j++)
         {
-        case ID_FB_OUTPUT:
+          switch (i)
           {
-            _n = 1;
-            p_param      = &(((__settings_for_OUTPUT*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
-            p_param_edit = &(((__settings_for_OUTPUT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
-            break;
-          }
-        case ID_FB_LED:
-          {
-            _n = 1;
-            p_param      = &(((__settings_for_LED*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
-            p_param_edit = &(((__settings_for_LED*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
-            break;
-          }
-        case ID_FB_AND:
-          {
-            _n = NUMBER_IN_AND;
-            p_param      = (((__settings_for_AND*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
-            p_param_edit = (((__settings_for_AND*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
-            break;
-          }
-        case ID_FB_OR:
-          {
-            _n = NUMBER_IN_OR;
-            p_param      = (((__settings_for_OR*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
-            p_param_edit = (((__settings_for_OR*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
-            break;
-          }
-        case ID_FB_XOR:
-          {
-            _n = 2;
-            p_param      = (((__settings_for_XOR*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
-            p_param_edit = (((__settings_for_XOR*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
-            break;
-          }
-        case ID_FB_NOT:
-          {
-            _n = 1;
-            p_param      = &(((__settings_for_NOT*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
-            p_param_edit = &(((__settings_for_NOT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
-            break;
-          }
-        case ID_FB_TIMER:
-          {
-            _n = 1;
-            p_param      = &(((__settings_for_TIMER*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
-            p_param_edit = &(((__settings_for_TIMER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
-            break;
-          }
-        case ID_FB_TRIGGER:
-          {
-            _n = INPUT_TRIGGER_SIGNALS;
-            p_param      = (((__settings_for_TRIGGER*)sca_of_p[i - _ID_FB_FIRST_VAR])->param);
-            p_param_edit = (((__settings_for_TRIGGER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])->param);
-            break;
-          }
-        default:
-          {
-            //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-            total_error_sw_fixed(76);
-          }
-        }
-        
-        intptr_t shift = 0;
-        for (intptr_t j = 0; j < _n; j++)
-        {
-          uint32_t param_input = *(p_param + j - shift);
-          unsigned int id_input   = (param_input >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;
-          unsigned int n_input    = (param_input >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
-//          unsigned int out_input  = (param_input >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
-          
-          //Робимо зміщення параметрування, щоб не було пропусків
-          if (n_input > number[id_input - _ID_FB_FIRST_ALL])
-          {
-            *(p_param + j - shift) = *(p_param_edit + j - shift) = 0;
-            
-            for (intptr_t k = (j + 1); k < _n; k++)
+          case ID_FB_OUTPUT:
             {
-              *(p_param + (k - 1) - shift) = *(p_param_edit + (k - 1) - shift) = *(p_param + k - shift);
+              _n = 1;
+              p_param      = &(((__settings_for_OUTPUT*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = &(((__settings_for_OUTPUT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
             }
+          case ID_FB_LED:
+            {
+              _n = 1;
+              p_param      = &(((__settings_for_LED*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = &(((__settings_for_LED*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_AND:
+            {
+              _n = NUMBER_IN_AND;
+              p_param      = (((__settings_for_AND*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_AND*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_OR:
+            {
+              _n = NUMBER_IN_OR;
+              p_param      = (((__settings_for_OR*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_OR*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_XOR:
+            {
+              _n = 2;
+              p_param      = (((__settings_for_XOR*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_XOR*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_NOT:
+            {
+              _n = 1;
+              p_param      = &(((__settings_for_NOT*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = &(((__settings_for_NOT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_TIMER:
+            {
+              _n = 1;
+              p_param      = &(((__settings_for_TIMER*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = &(((__settings_for_TIMER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_TRIGGER:
+            {
+              _n = INPUT_TRIGGER_SIGNALS;
+              p_param      = (((__settings_for_TRIGGER*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_TRIGGER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          default:
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(76);
+            }
+          }
+        
+          intptr_t shift = 0;
+          for (intptr_t k = 0; k < _n; k++)
+          {
+            uint32_t param_input = *(p_param + k - shift);
+            unsigned int id_input   = (param_input >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;
+            unsigned int n_input    = (param_input >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
+//            unsigned int out_input  = (param_input >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
+          
+            //Робимо зміщення параметрування, щоб не було пропусків
+            if (n_input > number[id_input - _ID_FB_FIRST_ALL])
+            {
+              *(p_param + k - shift) = *(p_param_edit + k - shift) = 0;
             
-            shift++;
+              for (intptr_t l = (k + 1); l < _n; l++)
+              {
+                *(p_param + (l - 1) - shift) = *(p_param_edit + (l - 1) - shift) = *(p_param + l - shift);
+              }
+            
+              shift++;
+            }
           }
         }
       }

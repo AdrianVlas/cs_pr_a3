@@ -95,6 +95,7 @@ extern void make_ekran_list_settings(void);
 extern void press_esc_in_list_settings(void);
 extern void press_esc_in_configuration(void);
 extern void make_ekran_chose_passwords(void);
+extern void make_ekran_list_logical_nodes(void);
 extern void make_ekran_control_zdz(void);
 extern void calc_symbol_and_put_into_working_ekran(unsigned char*, void*, void*, unsigned int*, unsigned int, unsigned int, unsigned int);
 extern void calc_int_symbol_and_put_into_working_ekran(unsigned char*, unsigned int*, unsigned int*, unsigned int*);

@@ -12,6 +12,9 @@
 /*****************************************************/
 void move_into_list_settings(unsigned int action, int max_row)
 {
+  __CONFIG *p_current_config;
+  p_current_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
+      
   if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
   {
     if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position++;
@@ -21,22 +24,22 @@ void move_into_list_settings(unsigned int action, int max_row)
       while (
              (
               (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_TIMERS) &&
-              (current_config.n_timer == 0)
+              (p_current_config->n_timer == 0)
              )
              ||
              (
               (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_MEANDER) &&
-              (current_config.n_meander == 0)
+              (p_current_config->n_meander == 0)
              )
              ||
              (
               (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_CTRL_ANALOG_INPUTS) &&
-              (current_config.n_ctrl_analog_inputs == 0)
+              (p_current_config->n_ctrl_analog_inputs == 0)
              )
              ||
              (
               (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_ALARMS) &&
-              (current_config.n_alarm == 0)
+              (p_current_config->n_alarm == 0)
              )
             )
       {
@@ -54,22 +57,22 @@ void move_into_list_settings(unsigned int action, int max_row)
       while (
              (
               (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_TIMERS) &&
-              (current_config.n_timer == 0)
+              (p_current_config->n_timer == 0)
              )
              ||
              (
               (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_MEANDER) &&
-              (current_config.n_meander == 0)
+              (p_current_config->n_meander == 0)
              )
              ||
              (
               (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_ALARMS) &&
-              (current_config.n_alarm == 0)
+              (p_current_config->n_alarm == 0)
              )
              ||
              (
               (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_CTRL_ANALOG_INPUTS) &&
-              (current_config.n_ctrl_analog_inputs == 0)
+              (p_current_config->n_ctrl_analog_inputs == 0)
              )
             )
       {
@@ -93,7 +96,7 @@ void make_ekran_list_settings(void)
     //Виставляємо біт обновлення екрану
     new_state_keyboard |= (1<<BIT_REWRITE);
   }
-  else if (current_state_menu2.edition == ED_WARNING_ENTER) 
+  else if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) 
   {
     const unsigned char information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
@@ -208,28 +211,31 @@ void make_ekran_list_settings(void)
     unsigned int additional_current = 0;
     unsigned int position_temp = current_state_menu2.index_position;
 
+    __CONFIG *p_current_config;
+    p_current_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
+    
     uint8_t name_string_tmp[MAX_ROW_LIST_SETTINGS_M2][MAX_COL_LCD + 1];
     for(size_t index_1 = 0; index_1 < (MAX_ROW_LIST_SETTINGS_M2 - additional_current); index_1++)
     {
       if (
           (
            (index_1 == (INDEX_LIST_SETTINGS_M2_TIMERS - additional_current)) &&
-           (current_config.n_timer == 0)
+           (p_current_config->n_timer == 0)
           )
           ||
           (
            (index_1 == (INDEX_LIST_SETTINGS_M2_MEANDER - additional_current)) &&
-           (current_config.n_meander == 0)
+           (p_current_config->n_meander == 0)
           )
           ||
           (
            (index_1 == (INDEX_LIST_SETTINGS_M2_CTRL_ANALOG_INPUTS - additional_current)) &&
-           (current_config.n_ctrl_analog_inputs == 0)
+           (p_current_config->n_ctrl_analog_inputs == 0)
           )
           ||
           (
            (index_1 == (INDEX_LIST_SETTINGS_M2_ALARMS - additional_current)) &&
-           (current_config.n_alarm == 0)
+           (p_current_config->n_alarm == 0)
           )
          )
       {
