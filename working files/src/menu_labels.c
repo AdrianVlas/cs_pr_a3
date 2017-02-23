@@ -24,7 +24,7 @@ void make_ekran_list_labels(void)
       " Метка настроек "
     }
   };
-  int index_language = index_language_in_array(settings_fix.language);
+  int index_language = index_language_in_array(settings_fix_prt.language);
   
   unsigned int position_temp = current_state_menu2.index_position;
   unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
@@ -149,7 +149,7 @@ void make_ekran_time_config_or_settings(void)
       "  Error",
       " Ошибка"
     };
-    int index_language = index_language_in_array(settings_fix.language);
+    int index_language = index_language_in_array(settings_fix_prt.language);
       
     for (size_t i = 0; i < 7; i++) name_string[INDEX_TIME_CALIBRATION_M2_TIME][9 + i] = error_meas[index_language][i];
   }

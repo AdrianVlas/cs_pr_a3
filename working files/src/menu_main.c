@@ -96,7 +96,8 @@ void make_ekran_main(void)
     }
   };
 
-  int index_language = index_language_in_array(settings_fix.language);
+  int index_language = index_language_in_array(settings_fix_prt.language);
+  
   unsigned int additional_current = 0;
   unsigned int position_temp = current_state_menu2.index_position;
 
@@ -154,7 +155,7 @@ enum _result_pressed_enter_during_edition press_enter_in_main(void)
   if (*((enum _menu2_levels*)p_menu_param_1) == LIST_SETTINGS_MENU2_LEVEL)
   {
     //™ спроба перейти у в≥кно списку налаштувань
-    if (settings_fix.password_2 == 0)
+    if (settings_fix_prt.password_2 == 0)
     {
       if (config_settings_modified == 0)
       {
@@ -163,7 +164,7 @@ enum _result_pressed_enter_during_edition press_enter_in_main(void)
       }
       else
       {
-        if (settings_fix.password_1 == 0)
+        if (settings_fix_prt.password_1 == 0)
         {
           //¬ходимо без права подальшого редагуванн€
           current_state_menu2.edition = ED_VIEWING;
@@ -175,7 +176,7 @@ enum _result_pressed_enter_during_edition press_enter_in_main(void)
         }
       }
     }
-    else if (settings_fix.password_1 != 0)
+    else if (settings_fix_prt.password_1 != 0)
     {
       //ѕереходимо на меню запиту паролю
       next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = *((enum _menu2_levels*)p_menu_param_1);

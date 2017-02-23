@@ -1,38 +1,6 @@
 #include "header.h"
 
 /*****************************************************/
-//Вираховуваня цілого символу і поміщення його в робочий екран
-/*****************************************************/
-void calc_int_symbol_and_put_into_working_ekran(unsigned char* point_in_working_ekran, unsigned int* point_value, unsigned int* point_vaga, unsigned int* point_first_symbol)
-{
-  unsigned int temp_data;
-  temp_data = (*point_value) / (*point_vaga); //виділяємо число, яке треба перетворити у символ і помістити у дану позицію екрану
-  *point_value %= *(point_vaga); //вираховуємо число без символа, який ми зараз будемо виводити на екран
-  *point_vaga /=10; //зменшуємо ваговий коефіцієнт в 10 разів
-  if(current_state_menu2.edition >= ED_EDITION) *point_in_working_ekran = temp_data + 0x30;
-  else
-  {
-    //У випадку, якщо ми не у режимі редагування, то нулі перед найстаршим значущим числом приховуємо
-    if ((temp_data !=0) || ((*point_first_symbol) != 0))
-    {
-      *point_in_working_ekran = temp_data + 0x30;
-      if ((*point_first_symbol) == 0) *point_first_symbol = 1;
-    }
-    else
-    {
-      //Нуль виводимо тільки у тому випадку, якщо це є символ одиниць числа (текуча вага числа рівна 1)
-      if ((*point_vaga) >= 1 ) *point_in_working_ekran = ' ';
-      else
-      {
-        *point_in_working_ekran = temp_data + 0x30;
-        if ((*point_first_symbol) == 0) *point_first_symbol = 1;
-      }
-    }
-  }
-}
-/*****************************************************/
-
-/*****************************************************/
 //Формуємо екран відображення заголовків настроювання УВВ
 /*****************************************************/
 void make_ekran_chose_settings_uvv(void)

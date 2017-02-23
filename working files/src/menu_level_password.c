@@ -30,7 +30,20 @@ void make_ekran_password(void)
 
   uint8_t name_string_tmp[MAX_ROW_FOR_LEVEL_PASSWORD][MAX_COL_LCD + 1];
 
-  int index_language = index_language_in_array(settings_fix.language);
+  int index_language;
+  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
+  else if (
+           (current_state_menu2.edition == ED_EDITION) ||
+           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
+          )  
+  {
+    index_language = index_language_in_array(settings_fix_edit.language);
+  }
+  else
+  {
+    index_language = index_language_in_array(settings_fix.language);
+  }
+  
   for(size_t index_1 = 0; index_1 < MAX_ROW_FOR_LEVEL_PASSWORD; index_1++)
   {
     for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)

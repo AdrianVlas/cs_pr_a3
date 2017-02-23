@@ -85,7 +85,8 @@ void make_ekran_time(void)
       "   Калибровка   "
     };
   
-    int index_language = index_language_in_array(settings_fix.language);
+    int index_language = index_language_in_array(settings_fix_prt.language);
+    
     for(size_t index_1 = 0; index_1 < (MAX_COL_LCD + 1); index_1++)
       name_string[INDEX_TIME_CALIBRATION_M2_NAME_CALIBRATION][index_1] = calibrating[index_language][index_1];
   

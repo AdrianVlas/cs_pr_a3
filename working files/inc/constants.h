@@ -16,6 +16,8 @@
 #include "const_menu2_info.h"
 #include "const_menu2_list_settings.h"
 #include "const_menu2_configuration.h"
+#include "const_menu2_choose_settings_logical_nodes.h"
+#include "const_menu2_timer.h"
 
 #include "const_lcd_and_keyboard.h"
 #include "const_menu_level_password.h"

@@ -25,7 +25,7 @@ void make_ekran_list_registrators(void)
     }
   };
 
-  int index_language = index_language_in_array(settings_fix.language);
+  int index_language = index_language_in_array(settings_fix_prt.language);
   
   unsigned int position_temp = current_state_menu2.index_position;
   unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;

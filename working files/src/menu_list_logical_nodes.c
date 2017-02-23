@@ -14,7 +14,19 @@ void make_ekran_list_logical_nodes(void)
   };
   const unsigned int first_index_number_timer[MAX_NAMBER_LANGUAGE] = {10, 10, 9, 10};
 
-  int index_language = index_language_in_array(settings_fix.language);
+  int index_language;
+  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
+  else if (
+           (current_state_menu2.edition == ED_EDITION) ||
+           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
+          )  
+  {
+    index_language = index_language_in_array(settings_fix_edit.language);
+  }
+  else
+  {
+    index_language = index_language_in_array(settings_fix.language);
+  }
   
   const uint8_t *p_name;
   const unsigned int *p_first_index_number;

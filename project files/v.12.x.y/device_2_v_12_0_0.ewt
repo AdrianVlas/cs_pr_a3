@@ -1403,6 +1403,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_lcd_and_keyboard.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_choose_settings_logical_nodes.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_configuration.h</name>
         </file>
         <file>
@@ -1434,6 +1437,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_time.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_timer.h</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu_alarms.h</name>
@@ -1622,10 +1628,10 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_alarms.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_chose_communication_parameters.c</name>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_choose_settings_logical_nodes.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_chose_settings_protection.c</name>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_chose_communication_parameters.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_chose_settings_registrators.c</name>
@@ -1638,9 +1644,6 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_ctrl_phase.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_df.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_diagnostyka.c</name>
@@ -1686,6 +1689,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_time.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_timer.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\menu_ver2.c</name>

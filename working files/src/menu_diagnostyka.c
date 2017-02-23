@@ -85,8 +85,7 @@ void make_ekran_diagnostics(void)
     }
   };
 
-  int index_language = index_language_in_array(settings_fix.language);
-  
+  int index_language = index_language_in_array(settings_fix_prt.language);
     
   if (
       (diagnostyka[0] == 0) &&

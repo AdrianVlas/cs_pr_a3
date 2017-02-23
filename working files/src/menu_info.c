@@ -24,7 +24,8 @@ void make_ekran_info()
       "   Версия КП    "
     }
   };
-  int index_language = index_language_in_array(settings_fix.language);
+
+  int index_language = index_language_in_array(settings_fix_prt.language);
   
   unsigned int position_temp = current_state_menu2.index_position;
   unsigned char value_str[MAX_COL_LCD + 1] = "                ";

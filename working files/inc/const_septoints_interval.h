@@ -85,10 +85,10 @@
 #define NUMBER_DEFINED_NOT_MAX        NUMBER_DEFINED_NOT
 
 #define TIMEOUT_DF_PAUSE_MIN          0
-#define TIMEOUT_DF_PAUSE_MAX          300000
+#define TIMEOUT_DF_PAUSE_MAX          600000
 
 #define TIMEOUT_DF_WORK_MIN           0
-#define TIMEOUT_DF_WORK_MAX           300000
+#define TIMEOUT_DF_WORK_MAX           600000
 
 #define TIMEOUT_MEANDER_MIN           100
 #define TIMEOUT_MEANDER_MAX           10000

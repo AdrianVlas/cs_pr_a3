@@ -659,9 +659,9 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__SETTINGS_FIX);
             n_item = 1;
-            if (modified == 0) point_2 = (uint8_t *)(&settings_fix);
           }
           
+          if (modified == 0) point_2 = (uint8_t *)(&settings_fix);
           point_1 = (uint8_t *)(&settings_fix_prt);
           
           break;
@@ -672,9 +672,9 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_INPUT);
             n_item = current_config_prt.n_input;
-            if (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
           }
 
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_INPUT*)sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
@@ -685,9 +685,9 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_OUTPUT);
             n_item = current_config_prt.n_output;
-            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
           }
 
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_OUTPUT*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
@@ -698,9 +698,9 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_LED);
             n_item = current_config_prt.n_led;
-            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]);
           }
 
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
@@ -711,9 +711,9 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_AND);
             n_item = current_config_prt.n_and;
-            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR]);
           }
 
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_AND*)sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
@@ -724,9 +724,9 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_OR);
             n_item = current_config_prt.n_or;
-            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR]);
           }
 
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_OR*)sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
@@ -737,9 +737,9 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_XOR);
             n_item = current_config_prt.n_xor;
-            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR]);
           }
 
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_XOR*)sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
@@ -750,9 +750,9 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_NOT);
             n_item = current_config_prt.n_not;
-            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR]);
           }
 
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_NOT*)sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
@@ -763,10 +763,10 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_TIMER);
             n_item = current_config_prt.n_timer;
-            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
           }
 
-          point_1 = (uint8_t *)(&(((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + item)->settings) ;
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + item);
+          point_1 = (uint8_t *)(&(((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + item)->settings);
 
           break;
         }
@@ -776,9 +776,9 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_TRIGGER);
             n_item = current_config_prt.n_trigger;
-            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
           }
 
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_TRIGGER*)sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
@@ -789,9 +789,9 @@ void control_settings(unsigned int modified)
           {
             size_of_block = sizeof(__settings_for_MEANDER);
             n_item = current_config_prt.n_meander;
-            if  (modified == 0) point_2 = (uint8_t *)(sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
           }
 
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_MEANDER*)sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;

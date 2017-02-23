@@ -10,7 +10,18 @@ void main_manu_function_ver2(void)
   {
     static enum _edition_stats prev_edit;
     
-    unsigned int max_row = (current_state_menu2.p_max_row == NULL) ? current_state_menu2.max_row : *current_state_menu2.p_max_row;
+    unsigned int max_row;
+    if (current_state_menu2.p_max_row == NULL) max_row = current_state_menu2.max_row;
+    else
+    {
+      if (current_state_menu2.max_row == 0) max_row = *current_state_menu2.p_max_row;
+      else 
+      {
+        int number_ln =  *current_state_menu2.p_max_row;
+        max_row = ((number_ln != 0) && (current_state_menu2.number_logical_node < number_ln))*current_state_menu2.max_row;
+      }
+    }
+
     if (max_row == 0) 
     {
       /*
@@ -108,8 +119,8 @@ void main_manu_function_ver2(void)
             //Натиснута кнопка ENTER
 
             if (
-                (new_password == settings_fix.password_1) || 
-                (new_password == settings_fix.password_2)
+                (new_password == settings_fix_prt.password_1) || 
+                (new_password == settings_fix_prt.password_2)
                )   
             {
               //Пароль зійшовся
@@ -121,7 +132,7 @@ void main_manu_function_ver2(void)
               current_state_menu2.current_level = next_level_in_current_level_menu2[current_state_menu2.current_level];
               new_level_menu();
 
-              if (new_password == settings_fix.password_2)
+              if (new_password == settings_fix_prt.password_2)
               {
                 if (
                     (current_state_menu2.current_level == TIME_MANU2_LEVEL) ||
@@ -190,6 +201,7 @@ void main_manu_function_ver2(void)
     case REGISTRATORS_MENU2_LEVEL:
     case LIST_SETTINGS_MENU2_LEVEL:
     case LIST_TIMERS_MENU2_LEVEL:
+    case LIST_SETTINGS_TIMER_MENU2_LEVEL:
     case DIAGNOSTICS_MENU2_LEVEL:
     case LABELS_MENU2_LEVEL:
     case CONFIG_LABEL_MENU2_LEVEL:
@@ -337,13 +349,15 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
               const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_LEVEL;
+              const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_TIMER_MENU2_LEVEL, LIST_SETTINGS_TIMER_MENU2_LEVEL};
               const enum _menu2_levels *p = NULL;
               
               switch (current_state_menu2.current_level)
               {
               case MAIN_MANU2_LEVEL:
                 {
-                  p = next_for_main_menu2;
+                  p = &next_for_main_menu2[current_state_menu2.index_position];
                   break;
                 }
               case MEASUREMENT_MENU2_LEVEL:
@@ -352,29 +366,40 @@ void main_manu_function_ver2(void)
                 }
               case INPUTS_OUTPUTS_MENU2_LEVEL:
                 {
-                  p = next_for_input_output_menu2;
-                  break;
-                }
-              case LABELS_MENU2_LEVEL:
-                {
-                  p = next_for_labels_menu2;
-                  break;
-                }
-              case INFO_MENU2_LEVEL:
-                {
-                  p = next_for_info_menu2;
+                  p = &next_for_input_output_menu2[current_state_menu2.index_position];
                   break;
                 }
               case LIST_SETTINGS_MENU2_LEVEL:
                 {
-                  p = next_for_list_settings_menu2;
+                  p = &next_for_list_settings_menu2[current_state_menu2.index_position];
+                  break;
+                }
+              case LIST_TIMERS_MENU2_LEVEL:
+                {
+                  p = &next_for_list_timers_menu2;
+                  current_state_menu2.number_logical_node = current_state_menu2.index_position;
+                  break;
+                }
+              case LIST_SETTINGS_TIMER_MENU2_LEVEL:
+                {
+                  p = &next_for_list_settings_timer_menu2[current_state_menu2.index_position];
+                  break;
+                }
+              case LABELS_MENU2_LEVEL:
+                {
+                  p = &next_for_labels_menu2[current_state_menu2.index_position];
+                  break;
+                }
+              case INFO_MENU2_LEVEL:
+                {
+                  p = &next_for_info_menu2[current_state_menu2.index_position];
                   break;
                 }
               }
               
               if (p != NULL)
               {
-                enum _menu2_levels temp_current_level = p[current_state_menu2.index_position];
+                enum _menu2_levels temp_current_level = *p;
                 if (current_state_menu2.current_level != temp_current_level) 
                 {
                   if (current_state_menu2.func_press_enter != NULL) 
@@ -540,7 +565,7 @@ void main_manu_function_ver2(void)
             {
               prev_edit = current_state_menu2.edition;
                
-              if ((current_state_menu2.edition == ED_VIEWING) && (settings_fix.password_2 != 0))
+              if ((current_state_menu2.edition == ED_VIEWING) && (settings_fix_prt.password_2 != 0))
               {
                 //Переходимо на меню запиту паролю
                 next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = previous_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = current_state_menu2.current_level;
@@ -629,14 +654,20 @@ void main_manu_function_ver2(void)
         break;
       }
     case CONFIGURATION_MENU2_LEVEL:
+    case DELAY_TIMER_MENU2_LEVEL:
       {
         //Формуємо маску кнопок, які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_REWRITE);
         
         if (current_state_menu2.edition != ED_ERROR) maska_keyboard_bits |= (1<<BIT_KEY_ENTER);
         
-        if (current_state_menu2.edition == ED_CONFIRM_CHANGES) 
+        if (
+            (current_state_menu2.edition == ED_CONFIRM_CHANGES) ||
+            (current_state_menu2.edition == ED_WARNING_ENTER_ESC) 
+           )  
+        {
           maska_keyboard_bits |= (1<<BIT_KEY_ESC);
+        }
         else if (current_state_menu2.edition <= ED_EDITION) 
         {
           maska_keyboard_bits |= (1<<BIT_KEY_ESC) | (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
@@ -741,7 +772,7 @@ void main_manu_function_ver2(void)
             {
               prev_edit = current_state_menu2.edition;
                
-              if ((current_state_menu2.edition == ED_VIEWING) && (settings_fix.password_2 != 0))
+              if ((current_state_menu2.edition == ED_VIEWING) && (settings_fix_prt.password_2 != 0))
               {
                 //Переходимо на меню запиту паролю
                 next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = previous_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = current_state_menu2.current_level;
@@ -903,12 +934,19 @@ void make_ekran_ask_rewrite(void)
   };
 
   int index_language;
-  
-  if (current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
-    index_language = index_language_in_array(edition_settings.language);
+  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
+  else if (
+           (current_state_menu2.edition == ED_EDITION) ||
+           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
+          )  
+  {
+     index_language = index_language_in_array(settings_fix_edit.language);
+  }
   else
+  {
     index_language = index_language_in_array(settings_fix.language);
-
+  }
+  
   //Копіюємо  рядки у робочий екран
   for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
@@ -948,11 +986,18 @@ void make_ekran_about_info(unsigned int info_error, const uint8_t information[][
   else p_name_string = name_string_error;
   
   int index_language;
-
-  if (current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
-    index_language = index_language_in_array(edition_settings.language);
+  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
+  else if (
+           (current_state_menu2.edition == ED_EDITION) ||
+           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
+          )  
+  {
+     index_language = index_language_in_array(settings_fix_edit.language);
+  }
   else
+  {
     index_language = index_language_in_array(settings_fix.language);
+  }
   
   //Копіюємо  рядки у робочий екран
   for (size_t i = 0; i< MAX_ROW_LCD; i++)
@@ -964,6 +1009,79 @@ void make_ekran_about_info(unsigned int info_error, const uint8_t information[][
   current_state_menu2.cursor_on = 0;
   //Курсор не мигає
   current_state_menu2.cursor_blinking_on = 0;
+}
+/*****************************************************/
+
+/*****************************************************/
+//Вираховуваня символу і поміщення його в робочий екран
+/*****************************************************/
+void calc_symbol_and_put_into_working_ekran(uint8_t* point_in_working_ekran, void* point_value, void* point_vaga, unsigned int* point_first_symbol, unsigned int current_position_x, unsigned int position_comma, unsigned int v_32_64)
+{
+  unsigned int temp_data;
+  if (v_32_64 == 0)
+  {
+    temp_data = (*((uint32_t*)point_value)) / (*((uint32_t*)point_vaga)); //виділяємо число, яке треба перетворити у символ і помістити у дану позицію екрану
+    *((uint32_t*)point_value) %= *((uint32_t*)point_vaga); //вираховуємо число без символа, який ми зараз будемо виводити на екран
+    *((uint32_t*)point_vaga) /=10; //зменшуємо ваговий коефіцієнт в 10 разів
+  }
+  else
+  {
+    temp_data = (*((uint64_t*)point_value)) / (*((uint64_t*)point_vaga)); //виділяємо число, яке треба перетворити у символ і помістити у дану позицію екрану
+    *((uint64_t*)point_value) %= *((unsigned long long*)point_vaga); //вираховуємо число без символа, який ми зараз будемо виводити на екран
+    *((uint64_t*)point_vaga) /=10; //зменшуємо ваговий коефіцієнт в 10 разів
+  }
+  
+  if(current_state_menu2.edition == ED_EDITION) *point_in_working_ekran = temp_data + 0x30;
+  else
+  {
+    //У випадку, якщо ми не у режимі редагування, то нулі перед комою (за винятком останнього, якщо такий є) приховуємо
+    if ((temp_data !=0) || ((*point_first_symbol) != 0))
+    {
+      *point_in_working_ekran = temp_data + 0x30;
+      if ((*point_first_symbol) == 0) *point_first_symbol = 1;
+    }
+    else
+    {
+      if (current_position_x < (position_comma - 1) ) *point_in_working_ekran = ' ';
+      else
+      {
+        *point_in_working_ekran = temp_data + 0x30;
+        if ((*point_first_symbol) == 0) *point_first_symbol = 1;
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Вираховуваня цілого символу і поміщення його в робочий екран
+/*****************************************************/
+void calc_int_symbol_and_put_into_working_ekran(uint8_t* point_in_working_ekran, uint32_t* point_value, uint32_t* point_vaga, unsigned int* point_first_symbol)
+{
+  unsigned int temp_data;
+  temp_data = (*point_value) / (*point_vaga); //виділяємо число, яке треба перетворити у символ і помістити у дану позицію екрану
+  *point_value %= *(point_vaga); //вираховуємо число без символа, який ми зараз будемо виводити на екран
+  *point_vaga /=10; //зменшуємо ваговий коефіцієнт в 10 разів
+  if(current_state_menu2.edition >= ED_EDITION) *point_in_working_ekran = temp_data + 0x30;
+  else
+  {
+    //У випадку, якщо ми не у режимі редагування, то нулі перед найстаршим значущим числом приховуємо
+    if ((temp_data !=0) || ((*point_first_symbol) != 0))
+    {
+      *point_in_working_ekran = temp_data + 0x30;
+      if ((*point_first_symbol) == 0) *point_first_symbol = 1;
+    }
+    else
+    {
+      //Нуль виводимо тільки у тому випадку, якщо це є символ одиниць числа (текуча вага числа рівна 1)
+      if ((*point_vaga) >= 1 ) *point_in_working_ekran = ' ';
+      else
+      {
+        *point_in_working_ekran = temp_data + 0x30;
+        if ((*point_first_symbol) == 0) *point_first_symbol = 1;
+      }
+    }
+  }
 }
 /*****************************************************/
 
@@ -1028,6 +1146,22 @@ void inc_or_dec_value(unsigned int *label_value, unsigned int inc_dec)
 }
 /*****************************************************/
 
+/*****************************************************/
+//Перевіряємо достовірність даних
+/*
+Результат
+  1 - дані достовірні
+  0 - дані недостовірні
+*/
+/*****************************************************/
+unsigned int check_data_setpoint(unsigned int current_value, unsigned int min_value, unsigned int max_value)
+{
+  if ((current_value < min_value) || (current_value > max_value)) return 0;
+
+  //Вихід з повідомленням, що уставко в межах допуску
+  return 1;
+}
+/*****************************************************/
 
 /*****************************************************/
 //Зміна стану при зміні робочого екрану
@@ -1156,6 +1290,38 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+   case LIST_SETTINGS_TIMER_MENU2_LEVEL:
+    {
+      current_state_menu2.index_position = 0;
+      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
+      current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_DC_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_chose_delay_control;
+      current_state_menu2.func_press_enter = NULL;
+      current_state_menu2.func_press_esc = NULL;
+      current_state_menu2.func_change = NULL;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+   case DELAY_TIMER_MENU2_LEVEL:
+    {
+      current_state_menu2.index_position = 0;
+      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
+      current_state_menu2.max_row = MAX_ROW_DELAY_TIMER_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_delay_timer;
+      current_state_menu2.func_press_enter = press_enter_in_delay_timer;
+      current_state_menu2.func_press_esc = press_esc_in_delay_timer;
+      current_state_menu2.func_change = change_delay_timer;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
       відкритого вікна

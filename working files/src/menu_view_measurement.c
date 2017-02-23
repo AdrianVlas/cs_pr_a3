@@ -277,7 +277,7 @@ void make_ekran_measurement(void)
   semaphore_measure_values_low1 = 0;
 
 
-  int index_language = index_language_in_array(settings_fix.language);
+  int index_language = index_language_in_array(settings_fix_prt.language);
   for(size_t index_1 = 0; index_1 < MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT; index_1++)
   {
     for(size_t index_2 = 0; index_2 < MAX_COL_LCD + 1; index_2++)

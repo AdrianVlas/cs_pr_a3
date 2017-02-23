@@ -1,113 +1,6 @@
 #include "header.h"
 
 /*****************************************************/
-//Формуємо екран вибору ДВ/ДВих/Св для ранжування
-/*****************************************************/
-void make_ekran_choose_of_ranguvannja(unsigned int type_of_window)
-{
-  const unsigned char information[MAX_NAMBER_LANGUAGE][MAX_NUMBER_ID_RANG_SOURCE][MAX_COL_LCD] = 
-  {
-    {" Двых           ", " Св             ", " О-функция      ", " О-триггер      ", " О-И            ", " О-ИЛИ          ", " О-Искл.ИЛИ     ", " О-НЕ           "},
-    {" Двих           ", " Св             ", " В-функція      ", " В-триґер       ", " В-І            ", " В-АБО          ", " В-Викл.АБО     ", " В-НЕ           "},
-    {" DO             ", " LED            ", " UD Function    ", " UD Flip-Flop   ", " UD AND         ", " UD OR          ", " UD XOR         ", " UD NOT         "},
-    {" Двых           ", " Св             ", " О-функция      ", " О-триггер      ", " О-И            ", " О-ИЛИ          ", " О-Искл.ИЛИ     ", " О-НЕ           "}
-  };
-
-  const unsigned int first_index_number[MAX_NAMBER_LANGUAGE][MAX_NUMBER_ID_RANG_SOURCE] = 
-  {
-    {5, 3, 10, 10, 4, 6, 11, 5},
-    {5, 3, 10,  9, 4, 6, 11, 5},
-    {3, 4, 12, 13, 7, 6,  7, 6},
-    {5, 3, 10, 10, 4, 6, 11, 5}
-  };
-  
-  const unsigned int max_row[MAX_NUMBER_ID_RANG_SOURCE] =
-  {
-    MAX_ROW_LIST_OUTPUTS_FOR_RANGUVANNJA,
-    MAX_ROW_LIST_LEDS_FOR_RANGUVANNJA,
-    MAX_ROW_FOR_LIST_DF,
-    MAX_ROW_FOR_LIST_DT,
-    MAX_ROW_FOR_LIST_D_AND,
-    MAX_ROW_FOR_LIST_D_OR,
-    MAX_ROW_FOR_LIST_D_XOR,
-    MAX_ROW_FOR_LIST_D_NOT
-  };
-  int index_language = index_language_in_array(current_settings.language);
-  unsigned int first_index_number_1 = first_index_number[index_language][type_of_window];
-        
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
-  //Формуємо рядки  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    unsigned int number = index_of_ekran + 1;
-    unsigned int tmp_1 = (number / 10), tmp_2 = number - tmp_1*10;
-
-    //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < max_row[type_of_window])
-    {
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++)
-      {
-        if ((j < first_index_number_1) || (j >= (first_index_number_1 + 2 + 3)))
-           working_ekran[i][j] = information[index_language][type_of_window][j];
-        else
-        {
-          if (j == first_index_number_1)
-          {
-            if (tmp_1 > 0 ) working_ekran[i][j] = tmp_1 + 0x30;
-          }
-          else if (j == (first_index_number_1 + 1))     
-          {
-            if (tmp_1 > 0 )
-            {
-              working_ekran[i][j] = tmp_2 + 0x30;
-            }
-            else
-            {
-              working_ekran[i][j - 1] = tmp_2 + 0x30;
-              working_ekran[i][j] = '.';
-            }
-          }
-          else
-          {
-            if (tmp_1 > 0 )
-            {
-              working_ekran[i][j] = '.';
-            }
-            else
-            {
-              if ( j < (first_index_number_1 + 2 + 3 - 1))
-                working_ekran[i][j] = '.';
-              else
-                working_ekran[i][j] = ' ';
-            }
-          }
-        }
-      }
-    }
-    else
-    {
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-    }
-
-    index_of_ekran++;
-  }
-
-  //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
-  //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
-  //Курсор видимий
-  current_ekran.cursor_on = 1;
-  //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
-  //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
-}
-/*****************************************************/
-
-/*****************************************************/
 //Формуємо екран відображення зранжованих сигналів на активацію команди "Тест"
 /*****************************************************/
 void make_ekran_set_function_in_test(void)
@@ -393,25 +286,7 @@ void make_ekran_set_function_in_output_led_df_dt_reg(unsigned int number_ekran, 
       name_string_tmp[index_1][index_2] = name_string[index_language][index_1][index_2];
   }
   
-  if(type_ekran == INDEX_VIEWING_DF)
-  {
-    if(current_ekran.edition == 0)
-    {
-      for (unsigned int i = 0; i < N_BIG; i++)
-      {
-        state_viewing_input[i] = current_settings.ranguvannja_df[N_BIG*(number_ekran - EKRAN_RANGUVANNJA_DF1) + i];
-      }
-    }
-    else
-    {
-      for (unsigned int i = 0; i < N_BIG; i++)
-      {
-        state_viewing_input[i] = edition_settings.ranguvannja_df[N_BIG*(number_ekran - EKRAN_RANGUVANNJA_DF1) + i];
-      }
-    }
-    max_row_ranguvannja = MAX_ROW_RANGUVANNJA_DF;
-  }
-  else if(type_ekran == INDEX_VIEWING_DT)
+  if (type_ekran == INDEX_VIEWING_DT)
   {
     unsigned int index_in_ekran_list = number_ekran - EKRAN_RANGUVANNJA_SET_DT1;
     unsigned int index_of_dt = index_in_ekran_list / 2;

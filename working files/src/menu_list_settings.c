@@ -89,6 +89,20 @@ void move_into_list_settings(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_list_settings(void)
 {
+  int index_language;
+  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
+  else if (
+           (current_state_menu2.edition == ED_EDITION) ||
+           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
+          )  
+  {
+    index_language = index_language_in_array(settings_fix_edit.language);
+  }
+  else
+  {
+    index_language = index_language_in_array(settings_fix.language);
+  }
+    
   if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
   {
     make_ekran_ask_rewrite();
@@ -140,8 +154,7 @@ void make_ekran_list_settings(void)
         " Перезап.прибор "
       }
     };
-
-    int index_language = index_language_in_array(settings_fix.language);
+    
     //Копіюємо  рядки у робочий екран
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
@@ -207,7 +220,6 @@ void make_ekran_list_settings(void)
       }
     };
 
-    int index_language = index_language_in_array(settings_fix.language);
     unsigned int additional_current = 0;
     unsigned int position_temp = current_state_menu2.index_position;
 

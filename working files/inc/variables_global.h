@@ -123,10 +123,10 @@ volatile unsigned int periodical_tasks_TEST_FLASH_MEMORY = false;
 
 const unsigned char odynyci_vymirjuvannja[MAX_NAMBER_LANGUAGE][NUMBER_ODYNYCI_VYMIRJUVANNJA] =
 {
-  {'À', 'Â', '°', 'ñ'},
-  {'À', 'Â', '°', 'ñ'},
-  {'A', 'V', '°', 's'},
-  {'À', 'Â', '°', 'ñ'}
+  {'À', 'Â', 'ñ'},
+  {'À', 'Â', 'ñ'},
+  {'A', 'V', 's'},
+  {'À', 'Â', 'ñ'}
 };
 
 SRAM1 uint16_t fixed_power_down_into_RTC/* = 0*/; 

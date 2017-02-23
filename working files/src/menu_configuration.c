@@ -70,13 +70,26 @@ void make_ekran_configuration(void)
         "      ГПС       "
       }
     };
-    int index_language = index_language_in_array(settings_fix.language);
+    int index_language;
+    if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
+    else if (
+             (current_state_menu2.edition == ED_EDITION) ||
+             (current_state_menu2.edition == ED_CONFIRM_CHANGES)
+            )  
+    {
+      index_language = index_language_in_array(settings_fix_edit.language);
+    }
+    else
+    {
+      index_language = index_language_in_array(settings_fix.language);
+    }
 
     unsigned int position_temp = current_state_menu2.index_position;
     //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
     unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
 
-    unsigned int vaga, value, first_symbol;
+    unsigned int first_symbol;
+    uint32_t vaga, value;
   
     __CONFIG *p_current_config;
     if (current_state_menu2.edition == ED_VIEWING) p_current_config = &current_config_prt;
@@ -92,8 +105,8 @@ void make_ekran_configuration(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran >> 1][j];
-          first_symbol = 0; //помічаємо, що ще ніо дин значущий символ не виведений
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
 
           switch (index_in_ekran_tmp)
           {
@@ -322,7 +335,7 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
       {
         //Треба виконати дії по зміні конфігурації
         __result_dym_mem_select result_1 = action_after_changing_of_configuration();
-        if (result_1 == DYN_MEM_SELECT_OK) config_settings_modified = MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS;
+        if (result_1 == DYN_MEM_SELECT_OK) config_settings_modified |= MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS;
         else
         {
         
