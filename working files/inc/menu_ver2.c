@@ -378,6 +378,11 @@ void main_manu_function_ver2(void)
                 {
                   p = &next_for_list_timers_menu2;
                   current_state_menu2.number_logical_node = current_state_menu2.index_position;
+                  
+                  position_in_current_level_menu2[LIST_SETTINGS_TIMER_MENU2_LEVEL] = 
+                  position_in_current_level_menu2[DELAY_TIMER_MENU2_LEVEL]         = 
+                  position_in_current_level_menu2[CTRL_TIMER_MENU2_LEVEL]          = 0;
+                  
                   break;
                 }
               case LIST_SETTINGS_TIMER_MENU2_LEVEL:
@@ -1311,7 +1316,6 @@ void new_level_menu(void)
     }
    case LIST_SETTINGS_TIMER_MENU2_LEVEL:
     {
-      current_state_menu2.index_position = 0;
       current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
       current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_DC_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
@@ -1328,7 +1332,6 @@ void new_level_menu(void)
     }
    case DELAY_TIMER_MENU2_LEVEL:
     {
-      current_state_menu2.index_position = 0;
       current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
       current_state_menu2.max_row = MAX_ROW_DELAY_TIMER_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
@@ -1345,7 +1348,6 @@ void new_level_menu(void)
     }
   case CTRL_TIMER_MENU2_LEVEL:
     {
-      current_state_menu2.index_position = 0;
       current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
       current_state_menu2.max_row = MAX_ROW_CTRL_TIMER_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
