@@ -3366,16 +3366,6 @@ void main_manu_function(void)
                 //Формуємо екран відображення загальних витримок для розширеної логіки
                 make_ekran_general_pickups_el();
               }
-              else if(current_ekran.current_level == EKRAN_LIST_TYPE_DF)
-              {
-                unsigned int value = (1 << current_ekran.index_position);
-          
-                //Міняємо на протилежний відповідний біт для вибраної позиції
-                edition_settings.type_df ^= value;
-
-                //Формуємо екран відображення типу опреділювальної функції
-                make_ekran_type_df();
-              }
               else if(current_ekran.current_level == EKRAN_TIMEOUT_ANALOG_REGISTRATOR)
               {
                 if(current_ekran.index_position == INDEX_ML_TMOPREFAULT)
@@ -3618,16 +3608,6 @@ void main_manu_function(void)
                 
                 //Формуємо екран відображення загальних витримок для розширеної логіки
                 make_ekran_general_pickups_el();
-              }
-              else if(current_ekran.current_level == EKRAN_LIST_TYPE_DF)
-              {
-                unsigned int value = (1 << current_ekran.index_position);
-          
-                //Міняємо на протилежний відповідний біт для вибраної позиції
-                edition_settings.type_df ^= value;
-
-                //Формуємо екран відображення типу опреділювальної функції
-                make_ekran_type_df();
               }
               else if(current_ekran.current_level == EKRAN_TIMEOUT_ANALOG_REGISTRATOR)
               {

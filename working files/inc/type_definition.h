@@ -45,6 +45,8 @@ typedef struct
   void (*func_press_esc)(void);                                         //Вказівник на функцію, для виконання дії по натискуванні кнопки Esc
   void (*func_change)(unsigned int);                                    //Вказівник на функцію, для зміни занчення вибраної позиції у вибраному меню
   
+  unsigned int binary_data;           //1 - екран відображення бінарної інформації/0 - екран відображення небінарної інформації
+  
   enum _edition_stats edition;
   
   unsigned int cursor_on;             //1 - курсор відображається/ 0 - курсор не відображається

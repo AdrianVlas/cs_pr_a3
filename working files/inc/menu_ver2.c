@@ -350,7 +350,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_TIMER_MENU2_LEVEL, LIST_SETTINGS_TIMER_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_TIMER_MENU2_LEVEL, CTRL_TIMER_MENU2_LEVEL};
               const enum _menu2_levels *p = NULL;
               
               switch (current_state_menu2.current_level)
@@ -655,6 +655,7 @@ void main_manu_function_ver2(void)
       }
     case CONFIGURATION_MENU2_LEVEL:
     case DELAY_TIMER_MENU2_LEVEL:
+    case CTRL_TIMER_MENU2_LEVEL:
       {
         //Формуємо маску кнопок, які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_REWRITE);
@@ -708,7 +709,10 @@ void main_manu_function_ver2(void)
                   )
           {
             //Натиснута кнопка UP
-            if(current_state_menu2.edition <= ED_CAN_BE_EDITED)
+            if(
+               (current_state_menu2.edition <= ED_CAN_BE_EDITED) ||
+               (current_state_menu2.binary_data == true)
+              )   
             {
               //Переміщення у режимі спостерігання
               if (current_state_menu2.func_show != NULL) current_state_menu2.func_move(action, max_row);
@@ -1179,6 +1183,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = press_enter_in_main;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
 
       break;
@@ -1194,6 +1199,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = press_enter_in_time;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = change_time;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
@@ -1208,6 +1214,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
@@ -1220,6 +1227,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
@@ -1236,6 +1244,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
@@ -1248,6 +1257,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
@@ -1260,6 +1270,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = press_esc_in_list_settings;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
       відкритого вікна
@@ -1275,6 +1286,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = press_enter_in_configuration;
       current_state_menu2.func_press_esc = press_esc_in_configuration;
       current_state_menu2.func_change = change_configuration;
+      current_state_menu2.binary_data = false;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
       відкритого вікна
@@ -1290,6 +1302,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
       відкритого вікна
@@ -1306,6 +1319,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
       відкритого вікна
@@ -1322,6 +1336,24 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = press_enter_in_delay_timer;
       current_state_menu2.func_press_esc = press_esc_in_delay_timer;
       current_state_menu2.func_change = change_delay_timer;
+      current_state_menu2.binary_data = false;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+  case CTRL_TIMER_MENU2_LEVEL:
+    {
+      current_state_menu2.index_position = 0;
+      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
+      current_state_menu2.max_row = MAX_ROW_CTRL_TIMER_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_control_timer;
+      current_state_menu2.func_press_enter = press_enter_in_control_timer;
+      current_state_menu2.func_press_esc = press_esc_in_control_timer;
+      current_state_menu2.func_change = change_control_timer;
+      current_state_menu2.binary_data = true;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
       відкритого вікна
@@ -1339,6 +1371,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
@@ -1351,6 +1384,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
@@ -1364,6 +1398,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
@@ -1376,6 +1411,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
@@ -1388,6 +1424,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
@@ -1400,6 +1437,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
