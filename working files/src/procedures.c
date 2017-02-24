@@ -1981,7 +1981,6 @@ void min_settings_MEANDER(unsigned int mem_to_prt, uintptr_t *base, size_t index
       for (size_t i = 0; i < DIV_TO_HIGHER(MEANDER_SIGNALS, 8); i++)
       {
         ((__LN_MEANDER *)(base) + shift)->active_state[i] = 0;
-        ((__LN_MEANDER *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }

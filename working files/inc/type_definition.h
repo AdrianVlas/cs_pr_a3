@@ -314,7 +314,6 @@ typedef struct
   
   __delays_for_MEANDER delay;
   uint8_t active_state[DIV_TO_HIGHER(MEANDER_SIGNALS, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(MEANDER_SIGNALS, 8)];
   
 } __LN_MEANDER;
 /**********/

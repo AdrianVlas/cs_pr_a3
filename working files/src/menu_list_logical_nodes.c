@@ -14,6 +14,15 @@ void make_ekran_list_logical_nodes(void)
   };
   const unsigned int first_index_number_timer[MAX_NAMBER_LANGUAGE] = {10, 10, 9, 10};
 
+  const uint8_t name_meander[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    {" цоя            "},
+    {" цоя            "},
+    {" PSG            "},
+    {" цоя            "}
+  };
+  const unsigned int first_index_number_meander[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
+  
   int index_language;
   if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
   else if (
@@ -36,6 +45,12 @@ void make_ekran_list_logical_nodes(void)
     {
       p_name = name_timer[index_language];
       p_first_index_number = &first_index_number_timer[index_language];
+      break;
+    }
+  case LIST_MEANDERS_MENU2_LEVEL:
+    {
+      p_name = name_meander[index_language];
+      p_first_index_number = &first_index_number_meander[index_language];
       break;
     }
   default:
