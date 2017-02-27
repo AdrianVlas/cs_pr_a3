@@ -354,7 +354,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_LEVEL;
               const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_TIMER_MENU2_LEVEL, CTRL_TIMER_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_meanders_menu2 = LIST_SETTINGS_MEANDER_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_meander_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {LIST_SETTINGS_MEANDER_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_meander_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_MEANDER_MENU2_LEVEL};
               const enum _menu2_levels *p = NULL;
               
               switch (current_state_menu2.current_level)
@@ -400,7 +400,7 @@ void main_manu_function_ver2(void)
                   current_state_menu2.number_logical_node = current_state_menu2.index_position;
                   
                   position_in_current_level_menu2[LIST_SETTINGS_MEANDER_MENU2_LEVEL] = 
-                  /*position_in_current_level_menu2[DELAY_MEANDER_MENU2_LEVEL]         =*/ 0;
+                  position_in_current_level_menu2[DELAY_MEANDER_MENU2_LEVEL]         = 0;
                   
                   break;
                 }
@@ -680,6 +680,7 @@ void main_manu_function_ver2(void)
     case CONFIGURATION_MENU2_LEVEL:
     case DELAY_TIMER_MENU2_LEVEL:
     case CTRL_TIMER_MENU2_LEVEL:
+    case DELAY_MEANDER_MENU2_LEVEL:
       {
         //Формуємо маску кнопок, які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_REWRITE);
@@ -1383,6 +1384,22 @@ void new_level_menu(void)
       */
       break;
     }
+  case CTRL_TIMER_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
+      current_state_menu2.max_row = MAX_ROW_CTRL_TIMER_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_control_timer;
+      current_state_menu2.func_press_enter = press_enter_in_control_timer;
+      current_state_menu2.func_press_esc = press_esc_in_control_timer;
+      current_state_menu2.func_change = change_control_timer;
+      current_state_menu2.binary_data = true;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
    case LIST_SETTINGS_MEANDER_MENU2_LEVEL:
     {
       current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_meander : (int*)&current_config.n_meander;
@@ -1399,16 +1416,16 @@ void new_level_menu(void)
       */
       break;
     }
-  case CTRL_TIMER_MENU2_LEVEL:
+   case DELAY_MEANDER_MENU2_LEVEL:
     {
-      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
-      current_state_menu2.max_row = MAX_ROW_CTRL_TIMER_M2;
+      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_meander : (int*)&current_config.n_meander;
+      current_state_menu2.max_row = MAX_ROW_DELAY_MEANDER_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
-      current_state_menu2.func_show = make_ekran_control_timer;
-      current_state_menu2.func_press_enter = press_enter_in_control_timer;
-      current_state_menu2.func_press_esc = press_esc_in_control_timer;
-      current_state_menu2.func_change = change_control_timer;
-      current_state_menu2.binary_data = true;
+      current_state_menu2.func_show = make_ekran_delay_meander;
+      current_state_menu2.func_press_enter = press_enter_in_delay_meander;
+      current_state_menu2.func_press_esc = press_esc_in_delay_meander;
+      current_state_menu2.func_change = change_delay_meander;
+      current_state_menu2.binary_data = false;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
       відкритого вікна

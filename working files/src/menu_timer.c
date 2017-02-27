@@ -386,7 +386,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_timer(void)
         {
           if (p_settings_for_timer_cont->delay.delay_pause != p_settings_for_timer_edit->delay.delay_pause) 
           {
-            if (check_data_setpoint(p_settings_for_timer_edit->delay.delay_pause, TIMEOUT_DF_PAUSE_MIN, TIMEOUT_DF_PAUSE_MAX) == 1)
+            if (check_data_setpoint(p_settings_for_timer_edit->delay.delay_pause, TIMEOUT_TIMER_PAUSE_MIN, TIMEOUT_TIMER_PAUSE_MAX) == 1)
             {
               p_settings_for_timer_cont->delay.delay_pause = p_settings_for_timer_edit->delay.delay_pause;
               config_settings_modified |= MASKA_CHANGED_SETTINGS;
@@ -401,7 +401,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_timer(void)
         {
           if (p_settings_for_timer_cont->delay.delay_work != p_settings_for_timer_edit->delay.delay_work) 
           {
-            if (check_data_setpoint(p_settings_for_timer_edit->delay.delay_work, TIMEOUT_DF_WORK_MIN, TIMEOUT_DF_WORK_MAX) == 1)
+            if (check_data_setpoint(p_settings_for_timer_edit->delay.delay_work, TIMEOUT_TIMER_WORK_MIN, TIMEOUT_TIMER_WORK_MAX) == 1)
             {
               p_settings_for_timer_cont->delay.delay_work = p_settings_for_timer_edit->delay.delay_work;
               config_settings_modified |= MASKA_CHANGED_SETTINGS;

@@ -3396,10 +3396,10 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       {
         temp_value = data*10;
         
-#if (TIMEOUT_DF_PAUSE_MIN != 0)          
-        if ((temp_value >= TIMEOUT_DF_PAUSE_MIN) && (temp_value <= TIMEOUT_DF_PAUSE_MAX))
+#if (TIMEOUT_TIMER_PAUSE_MIN != 0)          
+        if ((temp_value >= TIMEOUT_TIMER_PAUSE_MIN) && (temp_value <= TIMEOUT_TIMER_PAUSE_MAX))
 #else
-        if (temp_value <= TIMEOUT_DF_PAUSE_MAX)
+        if (temp_value <= TIMEOUT_TIMER_PAUSE_MAX)
 #endif            
         {
           target_label->timeout_pause_df[address_data - MA_DF_PAUSE_1] = temp_value;
@@ -3420,10 +3420,10 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       {
         temp_value = data*10;
         
-#if (TIMEOUT_DF_WORK_MIN != 0)          
-        if ((temp_value >= TIMEOUT_DF_WORK_MIN) && (temp_value <= TIMEOUT_DF_WORK_MAX))
+#if (TIMEOUT_TIMER_WORK_MIN != 0)          
+        if ((temp_value >= TIMEOUT_TIMER_WORK_MIN) && (temp_value <= TIMEOUT_TIMER_WORK_MAX))
 #else
-        if (temp_value <= TIMEOUT_DF_WORK_MAX)
+        if (temp_value <= TIMEOUT_TIMER_WORK_MAX)
 #endif            
         {
           target_label->timeout_work_df[address_data - MA_DF_WORK_1] = temp_value;

@@ -1382,8 +1382,8 @@ void min_settings(__SETTINGS_OLD *target_label)
   
   for(unsigned int i = 0; i < NUMBER_DEFINED_FUNCTIONS; i++)
   {
-    target_label->timeout_pause_df[i] = TIMEOUT_DF_PAUSE_MIN;
-    target_label->timeout_work_df[i] = TIMEOUT_DF_WORK_MIN;
+    target_label->timeout_pause_df[i] = TIMEOUT_TIMER_PAUSE_MIN;
+    target_label->timeout_work_df[i] = TIMEOUT_TIMER_WORK_MIN;
 
     for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_df[N_BIG*i+j]  = 0x0;
   }

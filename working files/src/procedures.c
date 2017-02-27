@@ -1841,15 +1841,15 @@ void min_settings_TIMER(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
     {
       ((__LN_TIMER *)(base) + shift)->settings.param = 0;
       ((__LN_TIMER *)(base) + shift)->settings.control = 0;
-      ((__LN_TIMER *)(base) + shift)->settings.delay.delay_pause = TIMEOUT_DF_PAUSE_MIN;
-      ((__LN_TIMER *)(base) + shift)->settings.delay.delay_work  = TIMEOUT_DF_WORK_MIN;
+      ((__LN_TIMER *)(base) + shift)->settings.delay.delay_pause = TIMEOUT_TIMER_PAUSE_MIN;
+      ((__LN_TIMER *)(base) + shift)->settings.delay.delay_work  = TIMEOUT_TIMER_WORK_MIN;
     }
     else 
     {
       ((__settings_for_TIMER *)(base) + shift)->param = 0;
       ((__settings_for_TIMER *)(base) + shift)->control = 0;
-      ((__settings_for_TIMER *)(base) + shift)->delay.delay_pause = TIMEOUT_DF_PAUSE_MIN;
-      ((__settings_for_TIMER *)(base) + shift)->delay.delay_work  = TIMEOUT_DF_WORK_MIN;
+      ((__settings_for_TIMER *)(base) + shift)->delay.delay_pause = TIMEOUT_TIMER_PAUSE_MIN;
+      ((__settings_for_TIMER *)(base) + shift)->delay.delay_work  = TIMEOUT_TIMER_WORK_MIN;
     }
     
     if (mem_to_prt == true)
@@ -1968,11 +1968,11 @@ void min_settings_MEANDER(unsigned int mem_to_prt, uintptr_t *base, size_t index
   {
     if (mem_to_prt == true) 
     {
-      ((__LN_MEANDER *)(base) + shift)->settings.delay.delay = TIMEOUT_MEANDER_MIN;
+      ((__LN_MEANDER *)(base) + shift)->settings.delay.delay = TIMEOUT_MEANDER_PERIOD_MIN;
     }
     else 
     {
-      ((__settings_for_MEANDER *)(base) + shift)->delay.delay = TIMEOUT_MEANDER_MIN;
+      ((__settings_for_MEANDER *)(base) + shift)->delay.delay = TIMEOUT_MEANDER_PERIOD_MIN;
     }
     
     if (mem_to_prt == true)
