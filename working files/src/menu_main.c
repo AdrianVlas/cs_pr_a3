@@ -102,22 +102,31 @@ void make_ekran_main(void)
   unsigned int position_temp = current_state_menu2.index_position;
 
   uint8_t name_string_tmp[MAX_ROW_MAIN_M2][MAX_COL_LCD + 1];
-  for(size_t index_1 = 0; index_1 < (MAX_ROW_MAIN_M2 - additional_current); index_1++)
+  for(size_t index_1 = 0; index_1 < MAX_ROW_MAIN_M2; index_1++)
   {
     if (
-        (index_1 == (INDEX_MAIN_M2_MEASURMENTS - additional_current)) &&
+        (index_1 == INDEX_MAIN_M2_MEASURMENTS) &&
         (current_config_prt.n_ctrl_analog_inputs == 0)
        )
     {
-      if ((index_1 + 1) <= position_temp) position_temp--;
+      if ((index_1 - additional_current) < position_temp) position_temp--;
       additional_current++;
+
+      for(size_t index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
+      {
+        name_string_tmp[MAX_ROW_MAIN_M2 - additional_current][index_2] = ' ';
+      }
+      name_string_tmp[MAX_ROW_MAIN_M2 - additional_current][MAX_COL_LCD] = '\0';
     }
-    for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
+    else
     {
-      name_string_tmp[index_1][index_2] = name_string[index_language][index_1 + additional_current][index_2];
+      for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
+      {
+        name_string_tmp[index_1 - additional_current][index_2] = name_string[index_language][index_1][index_2];
+      }
     }
   }
-  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   
   //Копіюємо  рядки у робочий екран
   for (size_t i = 0; i < MAX_ROW_LCD; i++)
