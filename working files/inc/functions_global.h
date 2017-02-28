@@ -97,6 +97,8 @@ void make_ekran_choose_settings_alarms(void);
 void move_into_list_settings(unsigned int, int);
 void make_ekran_list_settings(void);
 void press_esc_in_list_settings(void);
+void move_into_list_settings_bios(unsigned int, int);
+void make_ekran_list_settings_bios(void);
 void press_esc_in_configuration(void);
 void make_ekran_chose_passwords(void);
 void make_ekran_list_logical_nodes(void);

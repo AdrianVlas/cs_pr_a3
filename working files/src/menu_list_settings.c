@@ -41,6 +41,13 @@ void move_into_list_settings(unsigned int action, int max_row)
               (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_ALARMS) &&
               (p_current_config->n_alarm == 0)
              )
+             ||
+             (
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_BIOS) &&
+              (p_current_config->n_input == 0) &&
+              (p_current_config->n_output == 0) &&
+              (p_current_config->n_led == 0)
+             )
             )
       {
         if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
@@ -66,13 +73,20 @@ void move_into_list_settings(unsigned int action, int max_row)
              )
              ||
              (
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_CTRL_ANALOG_INPUTS) &&
+              (p_current_config->n_ctrl_analog_inputs == 0)
+             )
+             ||
+             (
               (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_ALARMS) &&
               (p_current_config->n_alarm == 0)
              )
              ||
              (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_CTRL_ANALOG_INPUTS) &&
-              (p_current_config->n_ctrl_analog_inputs == 0)
+              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_BIOS) &&
+              (p_current_config->n_input == 0) &&
+              (p_current_config->n_output == 0) &&
+              (p_current_config->n_led == 0)
              )
             )
       {
@@ -249,6 +263,13 @@ void make_ekran_list_settings(void)
            (index_1 == INDEX_LIST_SETTINGS_M2_ALARMS) &&
            (p_current_config->n_alarm == 0)
           )
+          ||
+          (
+           (index_1 == INDEX_LIST_SETTINGS_M2_BIOS) &&
+           (p_current_config->n_input == 0) &&
+           (p_current_config->n_output == 0) &&
+           (p_current_config->n_led == 0)
+          )
          )
       {
         if ((index_1 - additional_current) < position_temp) position_temp--;
@@ -288,8 +309,6 @@ void make_ekran_list_settings(void)
     if (current_state_menu2.edition == ED_EDITION )
     {
       current_state_menu2.edition = ED_CAN_BE_EDITED;
-      //Курсор невидимий
-      current_state_menu2.cursor_blinking_on = 0;
     }
   
     //Курсор по горизонталі відображається на першій позиції

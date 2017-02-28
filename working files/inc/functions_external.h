@@ -93,6 +93,8 @@ extern void make_ekran_choose_settings_alarms(void);
 extern void move_into_list_settings(unsigned int, int);
 extern void make_ekran_list_settings(void);
 extern void press_esc_in_list_settings(void);
+extern void move_into_list_settings_bios(unsigned int, int);
+extern void make_ekran_list_settings_bios(void);
 extern void press_esc_in_configuration(void);
 extern void make_ekran_chose_passwords(void);
 extern void make_ekran_list_logical_nodes(void);
