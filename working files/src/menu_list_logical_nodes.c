@@ -22,6 +22,15 @@ void make_ekran_list_logical_nodes(void)
     {" ÃÏÑ            "}
   };
   const unsigned int first_index_number_meander[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
+
+  const uint8_t name_input[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    {" Ä.Âõ.          "},
+    {" Ä.Âõ.          "},
+    {" DI             "},
+    {" Ä.Âõ.          "}
+  };
+  const unsigned int first_index_number_input[MAX_NAMBER_LANGUAGE] = {6, 6, 3, 6};
   
   int index_language;
   if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
@@ -51,6 +60,12 @@ void make_ekran_list_logical_nodes(void)
     {
       p_name = name_meander[index_language];
       p_first_index_number = &first_index_number_meander[index_language];
+      break;
+    }
+  case LIST_INPUTS_MENU2_LEVEL:
+    {
+      p_name = name_input[index_language];
+      p_first_index_number = &first_index_number_input[index_language];
       break;
     }
   default:

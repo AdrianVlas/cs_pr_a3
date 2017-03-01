@@ -5,13 +5,5 @@
 #define EKRAN_DOPUSK_DV_UVV              (EKRAN_CHOOSE_SETTINGS_UVV + 1)
 #define EKRAN_TYPE_INPUT_SIGNAL_UVV      (EKRAN_DOPUSK_DV_UVV + 1)
 
-#define MAX_ROW_FOR_CHOSE_SETTINGS_UVV   2
-
-#define INDEX_ML_UVV_DOPUSKT             0
-#define INDEX_ML_UVV_TYPE_INPUT_SIGNAL   1
-
-#define COL_DOPUSK_DV_BEGIN              5
-#define COL_DOPUSK_DV_END                6
-
 
 #endif

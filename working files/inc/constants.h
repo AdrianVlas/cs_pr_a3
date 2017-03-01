@@ -20,6 +20,7 @@
 #include "const_menu2_timer.h"
 #include "const_menu2_meander.h"
 #include "const_menu2_list_settings_bios.h"
+#include "const_menu2_input.h"
 
 #include "const_lcd_and_keyboard.h"
 #include "const_menu_level_password.h"

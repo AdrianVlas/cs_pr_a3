@@ -1415,6 +1415,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_info.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_input.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_labels.h</name>
         </file>
         <file>
@@ -1643,9 +1646,6 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_chose_settings_registrators.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_chose_settings_uvv.c</name>
-        </file>
-        <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_configuration.c</name>
         </file>
         <file>
@@ -1665,6 +1665,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_info.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_input.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_inputs_outputs_leds_reg_df_buttons.c</name>
