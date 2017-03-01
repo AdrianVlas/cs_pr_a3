@@ -91,7 +91,7 @@ void make_ekran_chose_setpoint_and_timeout_avr(void);
 void make_ekran_choose_delay_control(void);
 void make_ekran_chose_setpoint_control(void);
 void make_ekran_choose_delay(void);
-void make_ekran_chose_control(void);
+void make_ekran_choose_control(void);
 void make_ekran_choose_list_alarms(void);
 void make_ekran_choose_settings_alarms(void);
 void move_into_list_settings(unsigned int, int);
