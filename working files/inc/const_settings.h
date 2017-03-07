@@ -74,20 +74,40 @@ enum _signals_of_INPUT
 
 enum _signals_of_OUTPUT
 {
-  OUTPUT_RAW = 0,
-  OUTPUT_OUT,
+  OUTPUT_OUT = 0,
+  OUTPUT_BOARD,
   
   OUTPUT_SIGNALS
     
 };
+enum _output_input_signals
+{
+  OUTPUT_LOGIC_INPUT = 0,
+  OUTPUT_RESET,
+  OUTPUT_MEANDER1,
+  OUTPUT_MEANDER2,
+  
+  OUTPUT_MAX_NUMBER
+};
+
+
 
 enum _signals_of_LED
 {
-  LED_RAW = 0,
-  LED_OUT,
+  LED_OUT = 0,
+  LED_BOARD,
   
   LED_SIGNALS
     
+};
+enum _led_input_signals
+{
+  LED_LOGIC_INPUT = 0,
+  LED_RESET,
+  LED_MEANDER1,
+  LED_MEANDER2,
+  
+  LED_MAX_NUMBER
 };
 
 
@@ -130,6 +150,14 @@ enum _signals_of_TIMER
   TIMER_SIGNALS
     
 };
+enum _output_timer_signals
+{
+  TIMER_LOGIC_INPUT = 0,
+  TIMER_RESET,
+  
+  TIMER_MAX_NUMBER
+};
+
 
 enum _input_signals_of_TRIGGER
 {
@@ -145,6 +173,7 @@ enum _input_signals_of_TRIGGER
 enum _signals_of_TRIGGER
 {
   TRIGGER_OUT = 0,
+  TRIGGER_OUT_INV,
   
   TRIGGER_SIGNALS
     

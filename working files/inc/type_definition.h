@@ -113,6 +113,7 @@ typedef struct
   
   __delays_for_INPUT delay;
   uint8_t active_state[DIV_TO_HIGHER(INPUT_SIGNALS, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(INPUT_SIGNALS, 8)];
 
 } __LN_INPUT;
 /**********/
@@ -120,16 +121,6 @@ typedef struct
 /**********
 Дискретний вхід (Реле)
 **********/
-enum _output_input_signals
-{
-  OUTPUT_LOGIC_INPUT = 0,
-  OUTPUT_RESET,
-  OUTPUT_MEANDER1,
-  OUTPUT_MEANDER2,
-  
-  OUTPUT_MAX_NUMBER
-};
-
 typedef struct
 {
   
@@ -143,6 +134,7 @@ typedef struct
   __settings_for_OUTPUT settings;
 
   uint8_t active_state[DIV_TO_HIGHER(OUTPUT_SIGNALS, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_SIGNALS, 8)];
 
 } __LN_OUTPUT;
 /**********/
@@ -150,15 +142,6 @@ typedef struct
 /**********
 Світлоіндикатор
 **********/
-enum _led_input_signals
-{
-  LED_LOGIC_INPUT = 0,
-  LED_RESET,
-  LED_MEANDER1,
-  LED_MEANDER2,
-  
-  LED_MAX_NUMBER
-};
 
 typedef struct
 {
@@ -173,6 +156,7 @@ typedef struct
   __settings_for_LED settings;
 
   uint8_t active_state[DIV_TO_HIGHER(LED_SIGNALS, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(LED_SIGNALS, 8)];
 
 } __LN_LED;
 /**********/
@@ -272,7 +256,7 @@ typedef struct
 typedef struct
 {
   
-  uint32_t param;
+  uint32_t param[TIMER_MAX_NUMBER];
   uint32_t control;
   __delays_for_TIMER delay;
   

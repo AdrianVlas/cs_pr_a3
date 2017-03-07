@@ -4,7 +4,7 @@
 enum __index_ctrl_output_led_m2
 {
   INDEX_CTRL_OUTPUT_LED_M2_N_T = 0, /*N - normal; T - trigger*/
-  INDEX_CTRL_OUTPUT_LED_M2_C_I, /*S - Constant; I - impulse*/
+  INDEX_CTRL_OUTPUT_LED_M2_C_I, /*C - Constant; I - impulse*/
   INDEX_CTRL_OUTPUT_LED_M2_SI_EI, /*SI - simple impulse; EI - expanded impulse*/
 
   _MAX_ROW_CTRL_OUTPUT_LED_M2_BITS_SETTINGS,

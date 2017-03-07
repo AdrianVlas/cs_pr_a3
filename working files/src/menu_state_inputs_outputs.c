@@ -136,7 +136,7 @@ void make_ekran_state_inputs_or_outputs(void)
       else
       {
         __LN_OUTPUT *arr = (__LN_OUTPUT*)(spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
-        value = arr[_n].active_state[OUTPUT_RAW >> 3] & (1 << (OUTPUT_RAW & ((1 << 3) - 1)));
+        value = arr[_n].active_state[OUTPUT_OUT >> 3] & (1 << (OUTPUT_OUT & ((1 << 3) - 1)));
       }
       name_string[1][i*(max_number_digit + 1) + (max_number_digit + 1 - 1)] = (value != 0) +  + 0x30;
       if ((_n + 1) >= *current_state_menu2.p_max_row ) break;

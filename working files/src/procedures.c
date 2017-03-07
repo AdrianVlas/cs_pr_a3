@@ -1839,14 +1839,14 @@ void min_settings_TIMER(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
   {
     if (mem_to_prt == true) 
     {
-      ((__LN_TIMER *)(base) + shift)->settings.param = 0;
+      for (size_t i = 0; i < TIMER_MAX_NUMBER; i++) ((__LN_TIMER *)(base) + shift)->settings.param[i] = 0;
       ((__LN_TIMER *)(base) + shift)->settings.control = 0;
       ((__LN_TIMER *)(base) + shift)->settings.delay.delay_pause = TIMEOUT_TIMER_PAUSE_MIN;
       ((__LN_TIMER *)(base) + shift)->settings.delay.delay_work  = TIMEOUT_TIMER_WORK_MIN;
     }
     else 
     {
-      ((__settings_for_TIMER *)(base) + shift)->param = 0;
+      for (size_t i = 0; i < TIMER_MAX_NUMBER; i++) ((__settings_for_TIMER *)(base) + shift)->param[i] = 0;
       ((__settings_for_TIMER *)(base) + shift)->control = 0;
       ((__settings_for_TIMER *)(base) + shift)->delay.delay_pause = TIMEOUT_TIMER_PAUSE_MIN;
       ((__settings_for_TIMER *)(base) + shift)->delay.delay_work  = TIMEOUT_TIMER_WORK_MIN;
@@ -1875,21 +1875,21 @@ void copy_settings_TIMER(unsigned int mem_to_prt, unsigned int mem_from_prt, uin
   {
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      ((__settings_for_TIMER *)(base_target) + shift)->param             = ((__LN_TIMER *)(base_source) + shift)->settings.param;
+      for (size_t i = 0; i < TIMER_MAX_NUMBER; i++) ((__settings_for_TIMER *)(base_target) + shift)->param[i] = ((__LN_TIMER *)(base_source) + shift)->settings.param[i];
       ((__settings_for_TIMER *)(base_target) + shift)->control           = ((__LN_TIMER *)(base_source) + shift)->settings.control;
       ((__settings_for_TIMER *)(base_target) + shift)->delay.delay_pause = ((__LN_TIMER *)(base_source) + shift)->settings.delay.delay_pause;
       ((__settings_for_TIMER *)(base_target) + shift)->delay.delay_work  = ((__LN_TIMER *)(base_source) + shift)->settings.delay.delay_work;
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
-      ((__LN_TIMER *)(base_target) + shift)->settings.param             = ((__settings_for_TIMER *)(base_source) + shift)->param;
+      for (size_t i = 0; i < TIMER_MAX_NUMBER; i++) ((__LN_TIMER *)(base_target) + shift)->settings.param[i] = ((__settings_for_TIMER *)(base_source) + shift)->param[i];
       ((__LN_TIMER *)(base_target) + shift)->settings.control           = ((__settings_for_TIMER *)(base_source) + shift)->control;
       ((__LN_TIMER *)(base_target) + shift)->settings.delay.delay_pause = ((__settings_for_TIMER *)(base_source) + shift)->delay.delay_pause;
       ((__LN_TIMER *)(base_target) + shift)->settings.delay.delay_work  = ((__settings_for_TIMER *)(base_source) + shift)->delay.delay_work;
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
-      ((__settings_for_TIMER *)(base_target) + shift)->param             = ((__settings_for_TIMER *)(base_source) + shift)->param;
+      for (size_t i = 0; i < TIMER_MAX_NUMBER; i++) ((__settings_for_TIMER *)(base_target) + shift)->param[i] = ((__settings_for_TIMER *)(base_source) + shift)->param[i];
       ((__settings_for_TIMER *)(base_target) + shift)->control           = ((__settings_for_TIMER *)(base_source) + shift)->control;
       ((__settings_for_TIMER *)(base_target) + shift)->delay.delay_pause = ((__settings_for_TIMER *)(base_source) + shift)->delay.delay_pause;
       ((__settings_for_TIMER *)(base_target) + shift)->delay.delay_work  = ((__settings_for_TIMER *)(base_source) + shift)->delay.delay_work;
@@ -2462,9 +2462,9 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
             }
           case ID_FB_TIMER:
             {
-              _n = 1;
-              p_param      = &(((__settings_for_TIMER*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
-              p_param_edit = &(((__settings_for_TIMER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              _n = TIMER_MAX_NUMBER;
+              p_param      = (((__settings_for_TIMER*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_TIMER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_TRIGGER:
