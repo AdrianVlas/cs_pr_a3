@@ -150,6 +150,10 @@ void make_ekran_delay_input(void);
 enum _result_pressed_enter_during_edition press_enter_in_delay_input(void);
 void press_esc_in_delay_input(void);
 void change_delay_input(unsigned int);
+void make_ekran_control_output_led(void);
+enum _result_pressed_enter_during_edition press_enter_in_control_output_led(void);
+void press_esc_in_control_output_led(void);
+void change_control_output_led(unsigned int);
 
 void make_ekran_set_reset_trigger(void);
 void make_ekran_info(void);

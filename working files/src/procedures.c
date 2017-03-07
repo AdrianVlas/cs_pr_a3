@@ -1502,12 +1502,12 @@ void min_settings_OUTPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_
     if (mem_to_prt == true) 
     {
       ((__LN_OUTPUT *)(base) + shift)->settings.control = 0;
-      ((__LN_OUTPUT *)(base) + shift)->settings.param = 0;
+      for (size_t i = 0; i < OUTPUT_MAX_NUMBER; i++) ((__LN_OUTPUT *)(base) + shift)->settings.param[i] = 0;
     }
     else 
     {
       ((__settings_for_OUTPUT *)(base) + shift)->control = 0;
-      ((__settings_for_OUTPUT *)(base) + shift)->param = 0;
+      for (size_t i = 0; i < OUTPUT_MAX_NUMBER; i++) ((__settings_for_OUTPUT *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
@@ -1531,17 +1531,17 @@ void copy_settings_OUTPUT(unsigned int mem_to_prt, unsigned int mem_from_prt, ui
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
       ((__settings_for_OUTPUT *)(base_target) + shift)->control = ((__LN_OUTPUT *)(base_source) + shift)->settings.control;
-      ((__settings_for_OUTPUT *)(base_target) + shift)->param = ((__LN_OUTPUT *)(base_source) + shift)->settings.param;
+      for (size_t i = 0; i < OUTPUT_MAX_NUMBER; i++) ((__settings_for_OUTPUT *)(base_target) + shift)->param[i] = ((__LN_OUTPUT *)(base_source) + shift)->settings.param[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
       ((__LN_OUTPUT *)(base_target) + shift)->settings.control = ((__settings_for_OUTPUT *)(base_source) + shift)->control;
-      ((__LN_OUTPUT *)(base_target) + shift)->settings.param = ((__settings_for_OUTPUT *)(base_source) + shift)->param;
+      for (size_t i = 0; i < OUTPUT_MAX_NUMBER; i++) ((__LN_OUTPUT *)(base_target) + shift)->settings.param[i] = ((__settings_for_OUTPUT *)(base_source) + shift)->param[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
       ((__settings_for_OUTPUT *)(base_target) + shift)->control = ((__settings_for_OUTPUT *)(base_source) + shift)->control;
-      ((__settings_for_OUTPUT *)(base_target) + shift)->param = ((__settings_for_OUTPUT *)(base_source) + shift)->param;
+      for (size_t i = 0; i < OUTPUT_MAX_NUMBER; i++) ((__settings_for_OUTPUT *)(base_target) + shift)->param[i] = ((__settings_for_OUTPUT *)(base_source) + shift)->param[i];
     }
     else
     {
@@ -1562,12 +1562,12 @@ void min_settings_LED(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
     if (mem_to_prt == true) 
     {
       ((__LN_LED *)(base) + shift)->settings.control = 0;
-      ((__LN_LED *)(base) + shift)->settings.param = 0;
+      for (size_t i = 0; i < LED_MAX_NUMBER; i++) ((__LN_LED *)(base) + shift)->settings.param[i] = 0;
     }
     else 
     {
       ((__settings_for_LED *)(base) + shift)->control = 0;
-      ((__settings_for_LED *)(base) + shift)->param = 0;
+      for (size_t i = 0; i < LED_MAX_NUMBER; i++) ((__settings_for_LED *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
@@ -1591,17 +1591,17 @@ void copy_settings_LED(unsigned int mem_to_prt, unsigned int mem_from_prt, uintp
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
       ((__settings_for_LED *)(base_target) + shift)->control = ((__LN_LED *)(base_source) + shift)->settings.control;
-      ((__settings_for_LED *)(base_target) + shift)->param = ((__LN_LED *)(base_source) + shift)->settings.param;
+      for (size_t i = 0; i < LED_MAX_NUMBER; i++) ((__settings_for_LED *)(base_target) + shift)->param[i] = ((__LN_LED *)(base_source) + shift)->settings.param[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
       ((__LN_LED *)(base_target) + shift)->settings.control = ((__settings_for_LED *)(base_source) + shift)->control;
-      ((__LN_LED *)(base_target) + shift)->settings.param = ((__settings_for_LED *)(base_source) + shift)->param;
+      for (size_t i = 0; i < LED_MAX_NUMBER; i++) ((__LN_LED *)(base_target) + shift)->settings.param[i] = ((__settings_for_LED *)(base_source) + shift)->param[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
       ((__settings_for_LED *)(base_target) + shift)->control = ((__settings_for_LED *)(base_source) + shift)->control;
-      ((__settings_for_LED *)(base_target) + shift)->param = ((__settings_for_LED *)(base_source) + shift)->param;
+      for (size_t i = 0; i < LED_MAX_NUMBER; i++) ((__settings_for_LED *)(base_target) + shift)->param[i] = ((__settings_for_LED *)(base_source) + shift)->param[i];
     }
     else
     {
@@ -2410,27 +2410,29 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
       {
         uint32_t *p_param, *p_param_edit;
         intptr_t _n;
+        unsigned int moveable_inputs = false;
         for (size_t j = 0; j < number[i - _ID_FB_FIRST_ALL]; j++)
         {
           switch (i)
           {
           case ID_FB_OUTPUT:
             {
-              _n = 1;
-              p_param      = &(((__settings_for_OUTPUT*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
-              p_param_edit = &(((__settings_for_OUTPUT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              _n = OUTPUT_MAX_NUMBER;
+              p_param      = (((__settings_for_OUTPUT*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_LED:
             {
-              _n = 1;
-              p_param      = &(((__settings_for_LED*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
-              p_param_edit = &(((__settings_for_LED*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              _n = LED_MAX_NUMBER;
+              p_param      = (((__settings_for_LED*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_LED*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_AND:
             {
               _n = NUMBER_IN_AND;
+              moveable_inputs = true;
               p_param      = (((__settings_for_AND*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_AND*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
@@ -2438,6 +2440,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
           case ID_FB_OR:
             {
               _n = NUMBER_IN_OR;
+              moveable_inputs = true;
               p_param      = (((__settings_for_OR*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_OR*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
@@ -2445,6 +2448,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
           case ID_FB_XOR:
             {
               _n = 2;
+              moveable_inputs = true;
               p_param      = (((__settings_for_XOR*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_XOR*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
@@ -2490,12 +2494,19 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
             {
               *(p_param + k - shift) = *(p_param_edit + k - shift) = 0;
             
-              for (intptr_t l = (k + 1); l < _n; l++)
+              if (
+                  (_n > 1) &&
+                  (moveable_inputs != false)  
+                 )
               {
-                *(p_param + (l - 1) - shift) = *(p_param_edit + (l - 1) - shift) = *(p_param + l - shift);
+                for (intptr_t l = (k + 1); l < _n; l++)
+                {
+                  *(p_param + (l - 1) - shift) = *(p_param_edit + (l - 1) - shift) = *(p_param + l - shift);
+                }
+                *(p_param + (_n - 1) - shift) = *(p_param_edit + (_n - 1) - shift) = 0;
+                
+                shift++;
               }
-            
-              shift++;
             }
           }
         }

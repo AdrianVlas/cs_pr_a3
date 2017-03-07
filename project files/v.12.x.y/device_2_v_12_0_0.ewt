@@ -1436,6 +1436,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_measurement.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_output.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_password.h</name>
         </file>
         <file>
@@ -1692,6 +1695,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_meander.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_output.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_registrators.c</name>

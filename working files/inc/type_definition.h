@@ -120,11 +120,21 @@ typedef struct
 /**********
 Дискретний вхід (Реле)
 **********/
+enum _output_input_signals
+{
+  OUTPUT_LOGIC_INPUT = 0,
+  OUTPUT_RESET,
+  OUTPUT_MEANDER1,
+  OUTPUT_MEANDER2,
+  
+  OUTPUT_MAX_NUMBER
+};
+
 typedef struct
 {
   
   uint32_t control;
-  uint32_t param;
+  uint32_t param[OUTPUT_MAX_NUMBER];
   
 } __settings_for_OUTPUT;
 
@@ -140,11 +150,21 @@ typedef struct
 /**********
 Світлоіндикатор
 **********/
+enum _led_input_signals
+{
+  LED_LOGIC_INPUT = 0,
+  LED_RESET,
+  LED_MEANDER1,
+  LED_MEANDER2,
+  
+  LED_MAX_NUMBER
+};
+
 typedef struct
 {
   
   uint32_t control;
-  uint32_t param;
+  uint32_t param[LED_MAX_NUMBER];
   
 } __settings_for_LED;
 
