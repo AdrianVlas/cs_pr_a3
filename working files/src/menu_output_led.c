@@ -5,7 +5,7 @@
 /*****************************************************/
 void make_ekran_control_output_led(void)
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_CTRL_OUTPUT_M2][MAX_COL_LCD + 1] = 
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_CTRL_OUTPUT_LED_M2][MAX_COL_LCD + 1] = 
   {
     {
       "  Норм./Триг.   ",
@@ -54,25 +54,46 @@ void make_ekran_control_output_led(void)
   //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
   unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
 
-  __settings_for_OUTPUT *p_settings;
+  void *p_settings;
   if (current_state_menu2.edition == ED_VIEWING) 
   {
-    p_settings = &((((__LN_OUTPUT*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
+    if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+    {
+      p_settings = &((((__LN_OUTPUT*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
+    }
+    else
+    {
+      p_settings = &((((__LN_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
+    }
   }
   else if (current_state_menu2.edition == ED_CAN_BE_EDITED) 
   {
-    p_settings = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+    {
+      p_settings = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    }
+    else
+    {
+      p_settings = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    }
   }
   else 
   {
-    p_settings = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+    {
+      p_settings = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    }
+    else
+    {
+      p_settings = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    }
   }
   
   for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
     
-    if (index_in_ekran_tmp < MAX_ROW_CTRL_OUTPUT_M2)
+    if (index_in_ekran_tmp < MAX_ROW_CTRL_OUTPUT_LED_M2)
     {
       if ((i & 0x1) == 0)
       {
@@ -82,7 +103,7 @@ void make_ekran_control_output_led(void)
       else
       {
         //У парному номері рядку виводимо значення
-        if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_M2_N_T)  
+        if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_N_T)  
         {
           const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
           {
@@ -99,13 +120,16 @@ void make_ekran_control_output_led(void)
             {2, 2}
           };
           
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][(p_settings->control >> INDEX_CTRL_OUTPUT_M2_N_T) & 0x1][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) 
+          {
+            working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_N_T) & 0x1][j];
+          }
           if (position_temp == index_in_ekran_tmp)
           {
-            current_state_menu2.position_cursor_x = cursor_x[index_language][(p_settings->control >> INDEX_CTRL_OUTPUT_M2_N_T) & 0x1];
+            current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_N_T) & 0x1];
           }
         }
-        else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_M2_C_I)  
+        else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_C_I)  
         {
           const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
           {
@@ -122,13 +146,16 @@ void make_ekran_control_output_led(void)
             {2, 2}
           };
           
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][(p_settings->control >> INDEX_CTRL_OUTPUT_M2_C_I) & 0x1][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++)
+          {
+            working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_C_I) & 0x1][j];
+          }
           if (position_temp == index_in_ekran_tmp)
           {
-            current_state_menu2.position_cursor_x = cursor_x[index_language][(p_settings->control >> INDEX_CTRL_OUTPUT_M2_C_I) & 0x1];
+            current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_C_I) & 0x1];
           }
         }
-        else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_M2_SI_EI)  
+        else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_SI_EI)  
         {
           const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
           {
@@ -145,22 +172,25 @@ void make_ekran_control_output_led(void)
             {1, 0}
           };
           
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][(p_settings->control >> INDEX_CTRL_OUTPUT_M2_SI_EI) & 0x1][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) 
+          {
+            working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_SI_EI) & 0x1][j];
+          }
           if (position_temp == index_in_ekran_tmp)
           {
-            current_state_menu2.position_cursor_x = cursor_x[index_language][(p_settings->control >> INDEX_CTRL_OUTPUT_M2_SI_EI) & 0x1];
+            current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_SI_EI) & 0x1];
           }
         }
         else if (
-                 (index_in_ekran_tmp >= INDEX_CTRL_OUTPUT_M2_MEANDER1) &&
-                 (index_in_ekran_tmp <= INDEX_CTRL_OUTPUT_M2_MEANDER2)
+                 (index_in_ekran_tmp >= INDEX_CTRL_OUTPUT_LED_M2_MEANDER1) &&
+                 (index_in_ekran_tmp <= INDEX_CTRL_OUTPUT_LED_M2_MEANDER2)
                 )   
         {
           unsigned int param_input;
-          if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_M2_MEANDER1)
-            param_input = p_settings->param[OUTPUT_MEANDER1];
+          if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_MEANDER1)
+            param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->param[OUTPUT_MEANDER1] : ((__settings_for_LED*)p_settings)->param[LED_MEANDER1];
           else
-            param_input = p_settings->param[OUTPUT_MEANDER2];
+            param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->param[OUTPUT_MEANDER2] : ((__settings_for_LED*)p_settings)->param[LED_MEANDER2];
 
           if (param_input == 0)
           {
@@ -275,23 +305,55 @@ enum _result_pressed_enter_during_edition press_enter_in_control_output_led(void
       //Перевіряємо, чи дані рельно змінилися
       result = RPEDE_DATA_NOT_CHANGED;
       
-      __settings_for_OUTPUT *p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-      __settings_for_OUTPUT *p_settings_cont = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+      void *p_settings_edit;
+      void *p_settings_cont;
+      if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+      {
+        p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+        p_settings_cont = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+      }
+      else
+      {
+        p_settings_edit = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+        p_settings_cont = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+      }
+
       if (
-          (p_settings_cont->control != p_settings_edit->control) ||
-          (p_settings_cont->param[OUTPUT_MEANDER1] != p_settings_edit->param[OUTPUT_MEANDER1]) ||
-          (p_settings_cont->param[OUTPUT_MEANDER2] != p_settings_edit->param[OUTPUT_MEANDER2])
+          (
+           ((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings_cont)->control : ((__settings_for_LED*)p_settings_cont)->control) != 
+           ((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings_edit)->control : ((__settings_for_LED*)p_settings_edit)->control)
+          )
+          ||
+          (
+           ((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings_cont)->param[OUTPUT_MEANDER1] : ((__settings_for_LED*)p_settings_cont)->param[LED_MEANDER1]) != 
+           ((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings_edit)->param[OUTPUT_MEANDER1] : ((__settings_for_LED*)p_settings_edit)->param[LED_MEANDER1])
+          ) 
+          ||
+          (
+           ((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings_cont)->param[OUTPUT_MEANDER2] : ((__settings_for_LED*)p_settings_cont)->param[LED_MEANDER2]) != 
+           ((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings_edit)->param[OUTPUT_MEANDER2] : ((__settings_for_LED*)p_settings_edit)->param[LED_MEANDER2])
+          ) 
          )   
       {
         if (
-            ((p_settings_edit->control & ((uint32_t)(~MASKA_CTRL_TIMER_M2))) == 0) &&
-            (((p_settings_edit->param[OUTPUT_MEANDER1] >> SFIFT_PARAM_N ) & MASKA_PARAM_N) <= current_config.n_meander) &&
-            (((p_settings_edit->param[OUTPUT_MEANDER2] >> SFIFT_PARAM_N ) & MASKA_PARAM_N) <= current_config.n_meander)
+            ((((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings_edit)->control : ((__settings_for_LED*)p_settings_edit)->control) & ((uint32_t)(~MASKA_CTRL_OUTPUT_LED_M2))) == 0) &&
+            (((((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings_edit)->param[OUTPUT_MEANDER1] : ((__settings_for_LED*)p_settings_edit)->param[LED_MEANDER1]) >> SFIFT_PARAM_N ) & MASKA_PARAM_N) <= current_config.n_meander) &&
+            (((((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings_edit)->param[OUTPUT_MEANDER2] : ((__settings_for_LED*)p_settings_edit)->param[LED_MEANDER2]) >> SFIFT_PARAM_N ) & MASKA_PARAM_N) <= current_config.n_meander)
            )   
         {
-          p_settings_cont->control = p_settings_edit->control;
-          p_settings_cont->param[OUTPUT_MEANDER1] = p_settings_edit->param[OUTPUT_MEANDER1];
-          p_settings_cont->param[OUTPUT_MEANDER2] = p_settings_edit->param[OUTPUT_MEANDER2];
+          if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+          {
+            ((__settings_for_OUTPUT*)p_settings_cont)->control = ((__settings_for_OUTPUT*)p_settings_edit)->control;
+            ((__settings_for_OUTPUT*)p_settings_cont)->param[OUTPUT_MEANDER1] = ((__settings_for_OUTPUT*)p_settings_edit)->param[OUTPUT_MEANDER1];
+            ((__settings_for_OUTPUT*)p_settings_cont)->param[OUTPUT_MEANDER2] = ((__settings_for_OUTPUT*)p_settings_edit)->param[OUTPUT_MEANDER2];
+          }
+          else
+          {
+            ((__settings_for_LED*)p_settings_cont)->control = ((__settings_for_LED*)p_settings_edit)->control;
+            ((__settings_for_LED*)p_settings_cont)->param[LED_MEANDER1] = ((__settings_for_LED*)p_settings_edit)->param[LED_MEANDER1];
+            ((__settings_for_LED*)p_settings_cont)->param[LED_MEANDER2] = ((__settings_for_LED*)p_settings_edit)->param[LED_MEANDER2];
+          }
+
           
           config_settings_modified |= MASKA_CHANGED_SETTINGS;
           result = RPEDE_DATA_CHANGED_OK;
@@ -314,12 +376,25 @@ enum _result_pressed_enter_during_edition press_enter_in_control_output_led(void
 /*****************************************************/
 void press_esc_in_control_output_led(void)
 {
-  __settings_for_OUTPUT *p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-  __settings_for_OUTPUT *p_settings_cont = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+  if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+  {
+    __settings_for_OUTPUT *p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    __settings_for_OUTPUT *p_settings_cont = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
 
-  p_settings_edit->control = p_settings_cont->control;
-  p_settings_edit->param[OUTPUT_MEANDER1] = p_settings_cont->param[OUTPUT_MEANDER1];
-  p_settings_edit->param[OUTPUT_MEANDER2] = p_settings_cont->param[OUTPUT_MEANDER2];
+    p_settings_edit->control = p_settings_cont->control;
+    p_settings_edit->param[OUTPUT_MEANDER1] = p_settings_cont->param[OUTPUT_MEANDER1];
+    p_settings_edit->param[OUTPUT_MEANDER2] = p_settings_cont->param[OUTPUT_MEANDER2];
+  }
+  else
+  {
+    __settings_for_LED *p_settings_edit = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    __settings_for_LED *p_settings_cont = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+
+    p_settings_edit->control = p_settings_cont->control;
+    p_settings_edit->param[LED_MEANDER1] = p_settings_cont->param[LED_MEANDER1];
+    p_settings_edit->param[LED_MEANDER2] = p_settings_cont->param[LED_MEANDER2];
+  }
+
 }
 /*****************************************************/
 
@@ -336,7 +411,16 @@ void press_esc_in_control_output_led(void)
 void change_control_output_led(unsigned int action)
 {
   //Вводимо число у відповідне поле
-  __settings_for_OUTPUT *p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+  void *p_settings_edit;
+  if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+  {
+    p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+  }
+  else
+  {
+    p_settings_edit = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+  }
+
   if (
       ((action & (1 << BIT_KEY_LEFT )) != 0) ||
       ((action & (1 << BIT_KEY_RIGHT)) != 0)
@@ -344,12 +428,19 @@ void change_control_output_led(unsigned int action)
   {
     int16_t index_position = current_state_menu2.index_position;
     if (
-        (index_position == INDEX_CTRL_OUTPUT_M2_N_T) ||
-        (index_position == INDEX_CTRL_OUTPUT_M2_C_I) ||
-        (index_position == INDEX_CTRL_OUTPUT_M2_SI_EI)
+        (index_position == INDEX_CTRL_OUTPUT_LED_M2_N_T) ||
+        (index_position == INDEX_CTRL_OUTPUT_LED_M2_C_I) ||
+        (index_position == INDEX_CTRL_OUTPUT_LED_M2_SI_EI)
        )  
     {
-      p_settings_edit->control ^= (uint32_t)(1 << index_position);
+      if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+      {
+        ((__settings_for_OUTPUT*)p_settings_edit)->control ^= (uint32_t)(1 << index_position);
+      }
+      else
+      {
+        ((__settings_for_LED*)p_settings_edit)->control ^= (uint32_t)(1 << index_position);
+      }
     }
     else 
     {
@@ -357,10 +448,14 @@ void change_control_output_led(unsigned int action)
       if (n_meander > 0)
       {
         uint32_t *param_input;
-        if (index_position == INDEX_CTRL_OUTPUT_M2_MEANDER1)
-          param_input = &p_settings_edit->param[OUTPUT_MEANDER1];
+        if (index_position == INDEX_CTRL_OUTPUT_LED_M2_MEANDER1)
+        {
+          param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? &(((__settings_for_OUTPUT*)p_settings_edit)->param[OUTPUT_MEANDER1]) : &(((__settings_for_LED*)p_settings_edit)->param[LED_MEANDER1]);
+        }
         else
-          param_input = &p_settings_edit->param[OUTPUT_MEANDER2];
+        {
+          param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? &(((__settings_for_OUTPUT*)p_settings_edit)->param[OUTPUT_MEANDER2]) : &(((__settings_for_LED*)p_settings_edit)->param[LED_MEANDER2]);
+        }
       
         int n_input = ((*param_input) >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
         if ((action & (1 << BIT_KEY_RIGHT)) != 0) n_input++;

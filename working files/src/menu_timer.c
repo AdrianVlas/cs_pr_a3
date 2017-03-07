@@ -74,7 +74,10 @@ void make_ekran_control_timer(void)
           };
           
           for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][((*p_control) >> index_in_ekran_tmp) & 0x1][j];
-          current_state_menu2.position_cursor_x = cursor_x[index_language][((*p_control) >> index_in_ekran_tmp) & 0x1];
+          if (position_temp == index_in_ekran_tmp)
+          {
+            current_state_menu2.position_cursor_x = cursor_x[index_language][((*p_control) >> index_in_ekran_tmp) & 0x1];
+          }
         }
       }
     }

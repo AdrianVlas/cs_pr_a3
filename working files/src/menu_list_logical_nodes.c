@@ -41,6 +41,15 @@ void make_ekran_list_logical_nodes(void)
   };
   const unsigned int first_index_number_output[MAX_NAMBER_LANGUAGE] = {7, 7, 3, 7};
   
+  const uint8_t name_led[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    {" Ñâ.             "},
+    {" Ñâ.             "},
+    {" LED             "},
+    {" Ñâ.             "}
+  };
+  const unsigned int first_index_number_led[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
+  
   int index_language;
   if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
   else if (
@@ -81,6 +90,12 @@ void make_ekran_list_logical_nodes(void)
     {
       p_name = name_output[index_language];
       p_first_index_number = &first_index_number_output[index_language];
+      break;
+    }
+  case LIST_LEDS_MENU2_LEVEL:
+    {
+      p_name = name_led[index_language];
+      p_first_index_number = &first_index_number_led[index_language];
       break;
     }
   default:
