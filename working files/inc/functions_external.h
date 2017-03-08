@@ -58,6 +58,7 @@ extern unsigned int hd44780_gotoxy(unsigned char, unsigned char);
 extern unsigned int hd44780_puts_xy (unsigned char, unsigned char, unsigned char *);
 extern void view_whole_ekran(void);
 extern void check_state_key(GPIO_TypeDef*, uint16_t, unsigned int);
+extern __SETTINGS_FIX* select_struct_settings_fix(void);
 extern int index_language_in_array(int);
 
 extern void inc_or_dec_value(unsigned int *, unsigned int);
@@ -150,6 +151,7 @@ extern void make_ekran_control_output_led(void);
 extern enum _result_pressed_enter_during_edition press_enter_in_control_output_led(void);
 extern void press_esc_in_control_output_led(void);
 extern void change_control_output_led(unsigned int);
+extern void make_ekran_setting_language(void);
 
 extern void make_ekran_set_reset_trigger(void);
 extern void make_ekran_info(void);
@@ -169,8 +171,10 @@ extern void make_ekran_data_and_time_of_records_registrator(unsigned int);
 extern void make_ekran_changing_signals_digital_registrator(void);
 extern void make_ekran_list_titles_for_record_of_pr_err_registrator(void);
 extern void make_ekran_changing_diagnostics_pr_err_registrator(void);
-extern void make_ekran_setting_language(void);
 extern void make_ekran_vidkluchenja(void);
+extern enum _result_pressed_enter_during_edition press_enter_in_setting_language(void);
+extern void press_esc_in_setting_language(void);
+extern void change_setting_language(unsigned int);
 
 extern __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *, __CONFIG *);
 extern __result_dym_mem_select action_after_changing_of_configuration(void);

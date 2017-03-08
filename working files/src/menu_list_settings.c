@@ -103,19 +103,7 @@ void move_into_list_settings(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_list_settings(void)
 {
-  int index_language;
-  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
-  else if (
-           (current_state_menu2.edition == ED_EDITION) ||
-           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
-          )  
-  {
-    index_language = index_language_in_array(settings_fix_edit.language);
-  }
-  else
-  {
-    index_language = index_language_in_array(settings_fix.language);
-  }
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
     
   if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
   {
@@ -192,7 +180,7 @@ void make_ekran_list_settings(void)
         " Cигнализация   ",
         " УВВ            ",
         " Параметриров.  ",
-        " Журнал событий ",
+        " Язык           ",
         " Коммуникация   ",
         " Пароли         "
       },
@@ -204,7 +192,7 @@ void make_ekran_list_settings(void)
         " Сигналізація   ",
         " УВВ            ",
         " Параметрування ",
-        " Журнал подій   ",
+        " Мова           ",
         " Комунікація    ",
         " Паролі         "
       },
@@ -216,7 +204,7 @@ void make_ekran_list_settings(void)
         " Alarms         ",
         " BIOS           ",
         " Parametrization",
-        " Even Log       ",
+        " Language       ",
         " Communication  ",
         " Passwords      "
       },
@@ -228,7 +216,7 @@ void make_ekran_list_settings(void)
         " Cигнализация   ",
         " УВВ            ",
         " Параметриров.  ",
-        " Журнал событий ",
+        " Язык           ",
         " Коммуникация   ",
         " Пароли         "
       }

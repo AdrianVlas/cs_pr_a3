@@ -86,19 +86,7 @@ void move_into_list_settings_bios(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_list_settings_bios(void)
 {
-  int index_language;
-  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
-  else if (
-           (current_state_menu2.edition == ED_EDITION) ||
-           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
-          )  
-  {
-    index_language = index_language_in_array(settings_fix_edit.language);
-  }
-  else
-  {
-    index_language = index_language_in_array(settings_fix.language);
-  }
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
     
   __CONFIG *p_current_config;
   p_current_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;

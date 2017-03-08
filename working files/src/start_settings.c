@@ -1535,7 +1535,7 @@ void error_reading_with_eeprom()
   
   int index_language;
   if (((state_i2c_task & STATE_CONFIG_EEPROM_GOOD) == 0) || ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) == 0)) index_language = index_language_in_array(LANGUAGE_ABSENT);
-  else index_language = index_language_in_array(current_settings.language);
+  else index_language = index_language_in_array(settings_fix_prt.language);
 
   if ((state_i2c_task & (
                          STATE_CONFIG_EEPROM_EMPTY          | 
@@ -1904,7 +1904,7 @@ void start_checking_dataflash(void)
       }
     };
 
-    int index_language = index_language_in_array(current_settings.language);
+    int index_language = index_language_in_array(settings_fix_prt.language);
     
     //Робота з watchdogs
     if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)

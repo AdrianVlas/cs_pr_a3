@@ -4439,6 +4439,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_registrators.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_setting_language.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_state_inputs_outputs.h</name>
         </file>
         <file>

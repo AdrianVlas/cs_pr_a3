@@ -357,7 +357,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
               const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
               const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_MEANDERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_BIOS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_MEANDERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_BIOS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LANGUAGE_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_LEVEL;
               const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_TIMER_MENU2_LEVEL, CTRL_TIMER_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_meanders_menu2 = LIST_SETTINGS_MEANDER_MENU2_LEVEL;
@@ -750,6 +750,7 @@ void main_manu_function_ver2(void)
     case CTRL_INPUT_MENU2_LEVEL:
     case CTRL_OUTPUT_MENU2_LEVEL:
     case CTRL_LED_MENU2_LEVEL:
+    case LANGUAGE_MENU2_LEVEL:
       {
         //Формуємо маску кнопок, які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_REWRITE);
@@ -1030,20 +1031,7 @@ void make_ekran_ask_rewrite(void)
      "Да-ENTER Нет-ESC"
     }
   };
-
-  int index_language;
-  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
-  else if (
-           (current_state_menu2.edition == ED_EDITION) ||
-           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
-          )  
-  {
-     index_language = index_language_in_array(settings_fix_edit.language);
-  }
-  else
-  {
-    index_language = index_language_in_array(settings_fix.language);
-  }
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
   //Копіюємо  рядки у робочий екран
   for (size_t i = 0; i < MAX_ROW_LCD; i++)
@@ -1083,19 +1071,7 @@ void make_ekran_about_info(unsigned int info_error, const uint8_t information[][
   if (info_error == false ) p_name_string = name_string_info;
   else p_name_string = name_string_error;
   
-  int index_language;
-  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
-  else if (
-           (current_state_menu2.edition == ED_EDITION) ||
-           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
-          )  
-  {
-     index_language = index_language_in_array(settings_fix_edit.language);
-  }
-  else
-  {
-    index_language = index_language_in_array(settings_fix.language);
-  }
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
   //Копіюємо  рядки у робочий екран
   for (size_t i = 0; i< MAX_ROW_LCD; i++)
@@ -1646,6 +1622,22 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = press_enter_in_control_output_led;
       current_state_menu2.func_press_esc = press_esc_in_control_output_led;
       current_state_menu2.func_change = change_control_output_led;
+      current_state_menu2.binary_data = true;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+  case LANGUAGE_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_FOR_VIEW_SETTING_LANGUAGE;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_setting_language;
+      current_state_menu2.func_press_enter = press_enter_in_setting_language;
+      current_state_menu2.func_press_esc = press_esc_in_setting_language;
+      current_state_menu2.func_change = change_setting_language;
       current_state_menu2.binary_data = true;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 

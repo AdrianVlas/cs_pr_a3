@@ -409,6 +409,28 @@ void view_whole_ekran(void)
 /*****************************************************/
 
 /*****************************************************/
+//Вибір з якої структури брати налаштування для мови
+/*****************************************************/
+__SETTINGS_FIX* select_struct_settings_fix(void)
+{
+  __SETTINGS_FIX *result;
+  if (current_state_menu2.edition == ED_VIEWING) result = &settings_fix_prt;
+  else if (
+           (current_state_menu2.edition == ED_EDITION) ||
+           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
+          )  
+  {
+    result = &settings_fix_edit;
+  }
+  else
+  {
+    result = &settings_fix;
+  }
+  return result;
+}
+/*****************************************************/
+
+/*****************************************************/
 //Вибір індексу для вибраної мови
 /*****************************************************/
 int index_language_in_array(int language)

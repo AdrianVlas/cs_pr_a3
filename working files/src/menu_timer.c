@@ -20,19 +20,7 @@ void make_ekran_control_timer(void)
       "      Тип       "
     }
   };
-  int index_language;
-  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
-  else if (
-           (current_state_menu2.edition == ED_EDITION) ||
-           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
-          )  
-  {
-    index_language = index_language_in_array(settings_fix_edit.language);
-  }
-  else
-  {
-    index_language = index_language_in_array(settings_fix.language);
-  }
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
   unsigned int position_temp = current_state_menu2.index_position;
   //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
@@ -210,19 +198,7 @@ void make_ekran_delay_timer(void)
       }
     };
     
-    int index_language;
-    if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
-    else if (
-             (current_state_menu2.edition == ED_EDITION) ||
-             (current_state_menu2.edition == ED_CONFIRM_CHANGES)
-            )  
-    {
-      index_language = index_language_in_array(settings_fix_edit.language);
-    }
-    else
-    {
-      index_language = index_language_in_array(settings_fix.language);
-    }
+    int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
     //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)

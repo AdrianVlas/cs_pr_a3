@@ -82,19 +82,7 @@ void make_ekran_choose_delay(void)
       " Беріктік       "
     }
   };
-  int index_language;
-  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
-  else if (
-           (current_state_menu2.edition == ED_EDITION) ||
-           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
-          )  
-  {
-     index_language = index_language_in_array(settings_fix_edit.language);
-  }
-  else
-  {
-    index_language = index_language_in_array(settings_fix.language);
-  }
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
   unsigned int position_temp = current_state_menu2.index_position;
   unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
@@ -139,19 +127,7 @@ void make_ekran_choose_control(void)
       " Баскару        "
     }
   };
-  int index_language;
-  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
-  else if (
-           (current_state_menu2.edition == ED_EDITION) ||
-           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
-          )  
-  {
-     index_language = index_language_in_array(settings_fix_edit.language);
-  }
-  else
-  {
-    index_language = index_language_in_array(settings_fix.language);
-  }
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
   unsigned int position_temp = current_state_menu2.index_position;
   unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
@@ -200,19 +176,7 @@ void make_ekran_choose_delay_control(void)
       " Баскару        "
     }
   };
-  int index_language;
-  if (current_state_menu2.edition == ED_VIEWING) index_language = index_language_in_array(settings_fix_prt.language);
-  else if (
-           (current_state_menu2.edition == ED_EDITION) ||
-           (current_state_menu2.edition == ED_CONFIRM_CHANGES)
-          )  
-  {
-     index_language = index_language_in_array(settings_fix_edit.language);
-  }
-  else
-  {
-    index_language = index_language_in_array(settings_fix.language);
-  }
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
   unsigned int position_temp = current_state_menu2.index_position;
   unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
