@@ -1365,6 +1365,8 @@ void main_routines_for_i2c(void)
               /*
               Забороняємо генерацію переривань, під час обновлення конфігурації для структури з якою працюють захисти
               */
+              //Єдине поле, яке не змінюється з функції allocate_dynamic_memory_for_settings
+              current_config_prt.device_id = current_config.device_id = current_config_edit.device_id = current_config_tmp.device_id;
               __disable_interrupt();
 
               __result_dym_mem_select result = allocate_dynamic_memory_for_settings(MAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, &current_config_tmp, NULL);

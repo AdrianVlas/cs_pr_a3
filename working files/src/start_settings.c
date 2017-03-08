@@ -44,14 +44,6 @@ inline void test_external_SRAM(void)
 void global_vareiables_installation(void)
 {
   /**************************/
-  //Мінімальна конфігурація
-  /**************************/
-  min_config(&current_config_prt);
-  min_config(&current_config);
-  min_config(&current_config_edit);
-  /**************************/
-
-  /**************************/
   //Вимірювальна система
   /**************************/
   for (unsigned int i = 0; i < NUMBER_INPUTs_ADCs; i++)
@@ -1326,114 +1318,11 @@ void min_config(__CONFIG *target_label)
 /**************************************/
 //Мінімальні налаштування
 /**************************************/
-void min_settings(__SETTINGS_OLD *target_label)
+void min_settings(__SETTINGS_FIX *target_label)
 {
-  target_label->device_id = VERSIA_PZ;
-    
-  target_label->type_of_input_signal = 0x0;
-  
-  for(unsigned int i = 0; i < NUMBER_INPUTS; i++)
-  {
-    if ((target_label->type_of_input_signal & (1<<i)) != 0)
-    {
-      target_label->dopusk_dv[i] = KOEF_DOPUSK_DV_ZMIN_MIN;
-      if ((target_label->dopusk_dv[i] % 10) != 0)
-      {
-        target_label->dopusk_dv[i] = (target_label->dopusk_dv[i] / 10)*10;
-      }
-    }
-    else
-      target_label->dopusk_dv[i] = KOEF_DOPUSK_DV_POST_MIN;
-  }
 
-  for(unsigned int i = 0; i < NUMBER_OUTPUTS; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_outputs[N_BIG*i+j] = 0x0;
-  }
-
-  for(unsigned int i = 0; i < NUMBER_LEDS; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_leds[N_BIG*i+j] = 0x0;
-  }
-
-  for (unsigned int j = 0; j < N_BIG; j++ ) 
-  {
-    target_label->ranguvannja_analog_registrator[j]  = 0x0;
-    target_label->ranguvannja_digital_registrator[j] = 0x0;
-    target_label->ranguvannja_silence[j] = 0x0;
-    target_label->ranguvannja_reset[j] = 0x0;
-  }
-  target_label->ranguvannja_test = 0x0;
-
-  for (int i = 0; i < NUMBER_ALARMS; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_alarms[N_BIG*i+j] = 0;
-  }
-  
-  target_label->number_iteration_el = NUMBER_ITERATION_EL_MAX;
-  target_label->number_defined_df = NUMBER_DEFINED_FUNCTIONS_MAX;
-  target_label->number_defined_dt = NUMBER_DEFINED_TRIGGERS_MAX;
-  target_label->number_defined_and = NUMBER_DEFINED_AND_MAX;
-  target_label->number_defined_or = NUMBER_DEFINED_OR_MAX;
-  target_label->number_defined_xor = NUMBER_DEFINED_XOR_MAX;
-  target_label->number_defined_not = NUMBER_DEFINED_NOT_MAX;
-
-  target_label->type_df = 0x0;
-  
-  for(unsigned int i = 0; i < NUMBER_DEFINED_FUNCTIONS; i++)
-  {
-    target_label->timeout_pause_df[i] = TIMEOUT_TIMER_PAUSE_MIN;
-    target_label->timeout_work_df[i] = TIMEOUT_TIMER_WORK_MIN;
-
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_df[N_BIG*i+j]  = 0x0;
-  }
-  
-  for(unsigned int i = 0; i < NUMBER_DEFINED_TRIGGERS; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_set_dt[N_BIG*i+j] = 0x0;
-  }
-  
-  for(unsigned int i = 0; i < NUMBER_DEFINED_AND; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_and[N_BIG*i+j] = 0x0;
-  }
-  
-  for(unsigned int i = 0; i < NUMBER_DEFINED_OR; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_or[N_BIG*i+j] = 0x0;
-  }
-  
-  for(unsigned int i = 0; i < NUMBER_DEFINED_XOR; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_xor[N_BIG*i+j] = 0x0;
-  }
-  
-  for(unsigned int i = 0; i < NUMBER_DEFINED_NOT; i++)
-  {
-    for (unsigned int j = 0; j < N_BIG; j++ ) target_label->ranguvannja_d_not[N_BIG*i+j] = 0x0;
-  }
-
-  target_label->configuration = 0;
-  
-  target_label->setpoint_ctrl_phase_U = SETPOINT_CTRL_PHASE_U_MIN;
-  target_label->setpoint_ctrl_phase_phi = SETPOINT_CTRL_PHASE_PHI_MIN;
-  target_label->setpoint_ctrl_phase_f = SETPOINT_CTRL_PHASE_F_MIN;
-  target_label->timeout_ctrl_phase_U = TIMEOUT_CTRL_PHASE_U_MIN;
-  target_label->timeout_ctrl_phase_U_d = TIMEOUT_CTRL_PHASE_U_D_MIN;
-  target_label->timeout_ctrl_phase_phi = TIMEOUT_CTRL_PHASE_PHI_MIN;
-  target_label->timeout_ctrl_phase_phi_d = TIMEOUT_CTRL_PHASE_PHI_D_MIN;
-  target_label->timeout_ctrl_phase_f = TIMEOUT_CTRL_PHASE_F_MIN;
-  target_label->timeout_ctrl_phase_f_d = TIMEOUT_CTRL_PHASE_F_D_MIN;
-
-  target_label->control_ctrl_phase = 0;
-  
-  for (unsigned int i = 0; i < NUMBER_ALARMS; i++) target_label->timeout_alarm_sound_period[i] = TIMEOUT_ALARM_SOUND_PERIOD_MIN;
-  target_label->control_alarm = 0;
-  
-  target_label->prefault_number_periods = TIMEOUT_PREFAULT_MIN / 20;
-  target_label->postfault_number_periods = TIMEOUT_POSTFAULT_MIN / 20;
-
-  target_label->password = 0;
+  target_label->password_1 = 0;
+  target_label->password_2 = 0;
   target_label->timeout_deactivation_password_interface_USB = TIMEOUT_DEACTIVATION_PASSWORD_MIN;
   target_label->password_interface_USB = 0;
   target_label->timeout_deactivation_password_interface_RS485 = TIMEOUT_DEACTIVATION_PASSWORD_MIN;
@@ -1464,10 +1353,10 @@ void min_settings(__SETTINGS_OLD *target_label)
   for(unsigned int i = 0; i < (7+1); i++)
   {
     target_label->time_setpoints[i] = 0;
-    target_label->time_ranguvannja[i] = 0;
   }
 }
 /**************************************/
+
 
 /**************************************/
 //Виводимо повідомлення про те, що настройки не зчитані успішно
@@ -1639,12 +1528,14 @@ void error_reading_with_eeprom()
     if (information_type == 1)
     {
       //Записуємо мінімальну конфігурацію
+      min_config(&current_config);
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
       
     }
     else if (information_type == 2)
     {
       //Записуємо мінімальну конфігурацію
+      min_settings(&settings_fix);
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
       
     }

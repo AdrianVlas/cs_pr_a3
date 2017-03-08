@@ -98,7 +98,7 @@ inline void periodical_operations(void)
   watchdog_routine();
 
   //Робота з таймером очікування нових змін налаштувань
-  if ((timeout_idle_new_settings >= current_settings.timeout_idle_new_settings) && (restart_timeout_idle_new_settings == 0))
+  if ((timeout_idle_new_settings >= settings_fix.timeout_idle_new_settings) && (restart_timeout_idle_new_settings == 0))
   {
     if (_CHECK_SET_BIT(active_functions, RANG_SETTINGS_CHANGED) != 0) 
     {
@@ -109,17 +109,17 @@ inline void periodical_operations(void)
   }
   
   //Обмін по USB
-  if (current_settings.password_interface_USB)
+  if (settings_fix.password_interface_USB)
   {
-    unsigned int timeout = current_settings.timeout_deactivation_password_interface_USB;
+    unsigned int timeout = settings_fix.timeout_deactivation_password_interface_USB;
     if ((timeout != 0) && (timeout_idle_USB >= timeout) && ((restart_timeout_interface & (1 << USB_RECUEST)) == 0)) password_set_USB = 1;
   }
   Usb_routines();
 
   //Обмін по RS-485
-  if (current_settings.password_interface_RS485)
+  if (settings_fix.password_interface_RS485)
   {
-    unsigned int timeout = current_settings.timeout_deactivation_password_interface_RS485;
+    unsigned int timeout = settings_fix.timeout_deactivation_password_interface_RS485;
     if ((timeout != 0) && (timeout_idle_RS485 >= timeout) && ((restart_timeout_interface & (1 << RS485_RECUEST)) == 0)) password_set_RS485 = 1;
   }
   if(
@@ -389,12 +389,6 @@ int main(void)
   //Стартова настройка периферії процесора
   start_settings_peripherals();
   
-  /*
-  Процес розробки нової програми
-  */
-  min_settings(&current_settings);
-  /***/
-  
   if(
      ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD  ) != 0) &&
      ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0) &&
@@ -437,15 +431,15 @@ int main(void)
   }
   changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
 
-  timeout_idle_new_settings = current_settings.timeout_idle_new_settings;
+  timeout_idle_new_settings = settings_fix.timeout_idle_new_settings;
   //Визначаємо, чи стоїть дозвіл запису через інтерфейси з паролем
-  if (current_settings.password_interface_RS485 == 0) password_set_RS485 = 0;
+  if (settings_fix.password_interface_RS485 == 0) password_set_RS485 = 0;
   else password_set_RS485 = 1;
-  timeout_idle_RS485 = current_settings.timeout_deactivation_password_interface_RS485;
+  timeout_idle_RS485 = settings_fix.timeout_deactivation_password_interface_RS485;
   
-  if (current_settings.password_interface_USB   == 0) password_set_USB   = 0;
+  if (settings_fix.password_interface_USB   == 0) password_set_USB   = 0;
   else password_set_USB   = 1;
-  timeout_idle_USB = current_settings.timeout_deactivation_password_interface_USB;
+  timeout_idle_USB = settings_fix.timeout_deactivation_password_interface_USB;
   
   //Перевірка параметрування мікросхем DataFlash
   start_checking_dataflash();

@@ -376,13 +376,6 @@ typedef struct
 **********/
 typedef struct
 {
-  //Тиша
-  uint32_t ranguvannja_silence;                                 //Ранжування cигналізацій
-  //Скидання
-  uint32_t ranguvannja_reset;                                   //Ранжування cигналізацій
-  //Тест
-  uint32_t ranguvannja_test;                                    //Ранжування Тесту
-  
   uint32_t password_1;                                          //Пароль для проглядання з меню
   uint32_t password_2;                                          //Пароль для редагування з меню
   uint32_t timeout_deactivation_password_interface_USB;         //Час деактивації паролю для редагування з інтерфейсу USB
@@ -393,7 +386,8 @@ typedef struct
   uint32_t timeout_idle_new_settings;
   
   //Комунікація
-  uint32_t name_of_cell[MAX_CHAR_IN_NAME_OF_CELL];              //І'мя ячейки
+  uint8_t name_of_cell[MAX_CHAR_IN_NAME_OF_CELL];              //І'мя ячейки
+  uint16_t user_register[(M_ADDRESS_LAST_USER_REGISTER_DATA - M_ADDRESS_FIRST_USER_REGISTER_DATA) + 1]; //Регістри користувача
   uint32_t volatile address;                                    //Адреса
   int32_t speed_RS485;                                          //швидкість обміну
                                                                 // 0 - 9600

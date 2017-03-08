@@ -10,29 +10,4 @@
 #define EKRAN_VIEW_STOP_BITS_RS485                (EKRAN_VIEW_PARE_RS485 + 1)
 #define EKRAN_VIEW_TIMEOUT_RS485                  (EKRAN_VIEW_STOP_BITS_RS485 + 1)
 
-#define MAX_ROW_FOR_CHOSE_COMMUNICATION_PARAMETERS   3
-#define MAX_ROW_FOR_VIEW_NAME_OF_CELL                (MAX_CHAR_IN_NAME_OF_CELL >> POWER_MAX_COL_LCD)
-#define MAX_ROW_FOR_ADDRESS                          1
-#define MAX_ROW_FOR_CHOSE_SETTING_RS485              4
-#define MAX_ROW_FOR_VIEW_SPEED_INTERFACE             1
-#define MAX_ROW_FOR_VIEW_PARE_INTERFACE              1
-#define MAX_ROW_FOR_VIEW_STOP_BITS_INTERFACE         1
-#define MAX_ROW_FOR_VIEW_TIMEOUT_INTERFACE           1
-
-#define INDEX_ML_CHCP_NAME               0
-#define INDEX_ML_CHCP_ADDRESS            1
-#define INDEX_ML_CHCP_SETTING_RS485      2
-
-#define COL_ADDRESS_BEGIN                6
-#define COL_ADDRESS_END                  8
-
-#define INDEX_ML_CHSRS485_SPEED              0
-#define INDEX_ML_CHSRS485_PARE_BIT           1
-#define INDEX_ML_CHSRS485_NUMBER_STOP_BIT    2
-#define INDEX_ML_CHSRS485_TIMEOUT            3
-
-#define COL_TIMEOUT_INTERFACE_BEGIN    3
-#define COL_TIMEOUT_INTERFACE_COMMA    5
-#define COL_TIMEOUT_INTERFACE_END      6
-
 #endif

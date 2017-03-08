@@ -313,8 +313,6 @@ void main_manu_function(void)
     case EKRAN_LIST_ALARMS:
     case EKRAN_CHOOSE_SETTINGS_ALARMS1:
     case EKRAN_CHOOSE_SETTINGS_ALARMS2:
-    case EKRAN_CHOSE_COMMUNICATION_PARAMETERS:
-    case EKRAN_VIEW_NAME_OF_CELL:
     case EKRAN_CHOSE_SETTING_RS485:
     case EKRAN_VIEW_LIST_OF_REGISTRATORS:
     case EKRAN_VIEW_SETTINGS_OF_ANALOG_REGISTRATORS:
@@ -385,20 +383,6 @@ void main_manu_function(void)
             
               //Формуємо екран заголовків паролів
               make_ekran_chose_passwords();
-            }
-            else if (current_ekran.current_level == EKRAN_CHOSE_COMMUNICATION_PARAMETERS)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_CHOSE_COMMUNICATION_PARAMETERS) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_CHOSE_COMMUNICATION_PARAMETERS] = current_ekran.index_position;
-              //Формуємо екран вибору настройок парамеирів комунікації
-              make_ekran_chose_communication_parameters();
-            }
-            else if (current_ekran.current_level == EKRAN_VIEW_NAME_OF_CELL)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_VIEW_NAME_OF_CELL) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_VIEW_NAME_OF_CELL] = current_ekran.index_position;
-              //Формуємо екран відображення імені ячейки
-              make_ekran_name_of_cell();
             }
             else if (current_ekran.current_level == EKRAN_CHOSE_SETTING_RS485)
             {
@@ -644,30 +628,6 @@ void main_manu_function(void)
                 current_ekran.current_level = EKRAN_RANGUVANNJA_LED_1 + current_ekran.index_position;
                 //Для того, щоб при першому входженні завжди список починався із першої ранжованої функції обнуляємо цю позицію
                 position_in_current_level_menu[current_ekran.current_level] = 0;
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-              }
-              else if (current_ekran.current_level == EKRAN_CHOSE_COMMUNICATION_PARAMETERS)
-              {
-                //Натисну кнопка Enter у вікні вибору вікна настройок комунікації
-                if(current_ekran.index_position == INDEX_ML_CHCP_NAME)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення імені ячейки
-                  current_ekran.current_level = EKRAN_VIEW_NAME_OF_CELL;
-                }
-                else if(current_ekran.index_position == INDEX_ML_CHCP_ADDRESS)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення мережевої адреси
-                  current_ekran.current_level = EKRAN_ADDRESS;
-                }
-                else if(current_ekran.index_position == INDEX_ML_CHCP_SETTING_RS485)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення мережевої адреси
-                  current_ekran.current_level = EKRAN_CHOSE_SETTING_RS485;
-                }
                 current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
                 current_ekran.edition = 0;
               }
@@ -1030,21 +990,6 @@ void main_manu_function(void)
                 //Формуємо екран заголовків паролів
                 make_ekran_chose_passwords();
               }
-              else if (current_ekran.current_level == EKRAN_CHOSE_COMMUNICATION_PARAMETERS)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_CHOSE_COMMUNICATION_PARAMETERS - 1;
-                position_in_current_level_menu[EKRAN_CHOSE_COMMUNICATION_PARAMETERS] = current_ekran.index_position;
-                //Формуємо екран вибору настройок парамеирів комунікації
-                make_ekran_chose_communication_parameters();
-              }
-              else if (current_ekran.current_level == EKRAN_VIEW_NAME_OF_CELL)
-              {
-                current_ekran.index_position -= MAX_ROW_LCD;
-                if(current_ekran.index_position < 0) current_ekran.index_position = (MAX_ROW_FOR_VIEW_NAME_OF_CELL - 1) & (~(MAX_ROW_LCD - 1));
-                position_in_current_level_menu[EKRAN_VIEW_NAME_OF_CELL] = current_ekran.index_position;
-                //Формуємо екран відображення імені ячейки
-                make_ekran_name_of_cell();
-              }
               else if (current_ekran.current_level == EKRAN_CHOSE_SETTING_RS485)
               {
                 if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_CHOSE_SETTING_RS485 - 1;
@@ -1226,21 +1171,6 @@ void main_manu_function(void)
                 //Формуємо екран заголовків паролів
                 make_ekran_chose_passwords();
               }
-              else if (current_ekran.current_level == EKRAN_CHOSE_COMMUNICATION_PARAMETERS)
-              {
-                if(++current_ekran.index_position >= MAX_ROW_FOR_CHOSE_COMMUNICATION_PARAMETERS) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_CHOSE_COMMUNICATION_PARAMETERS] = current_ekran.index_position;
-                //Формуємо екран вибору настройок парамеирів комунікації
-                make_ekran_chose_communication_parameters();
-              }
-              else if (current_ekran.current_level == EKRAN_VIEW_NAME_OF_CELL)
-              {
-                current_ekran.index_position += MAX_ROW_LCD;
-                if(current_ekran.index_position >= MAX_ROW_FOR_VIEW_NAME_OF_CELL) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_VIEW_NAME_OF_CELL] = current_ekran.index_position;
-                //Формуємо екран відображення імені ячейки
-                make_ekran_name_of_cell();
-              }
               else if (current_ekran.current_level == EKRAN_CHOSE_SETTING_RS485)
               {
                 if(++current_ekran.index_position >= MAX_ROW_FOR_CHOSE_SETTING_RS485) current_ekran.index_position = 0;
@@ -1404,7 +1334,6 @@ void main_manu_function(void)
     case EKRAN_GENERAL_PICKUPS_EL:
     case EKRAN_LIST_TYPE_DF:
     case EKRAN_TIMEOUT_ANALOG_REGISTRATOR:
-    case EKRAN_VIEW_SETTING_LANGUAGE:
       {
         //Очищаємо всі біти краім упралінських
         unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER)| (1<<BIT_KEY_ESC)|(1<<BIT_REWRITE);
@@ -1510,13 +1439,6 @@ void main_manu_function(void)
               position_in_current_level_menu[EKRAN_TIMEOUT_ANALOG_REGISTRATOR] = current_ekran.index_position;
               //Формуємо екран витримок аналогового реєстратора
               make_ekran_timeout_analog_registrator();
-            }
-            else if(current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_VIEW_SETTING_LANGUAGE) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_VIEW_SETTING_LANGUAGE] = current_ekran.index_position;
-              //Формуємо екран інформації по мові меню
-              make_ekran_setting_language();
             }
 
             //Очищаємо біт обновлення екрану
@@ -1680,10 +1602,6 @@ void main_manu_function(void)
                     current_ekran.position_cursor_x = COL_TMO_POSTFAULT_BEGIN;
                   }
                 }
-                else if(current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
-                {
-                  edition_settings.language = current_settings.language;
-                }
 
                 //Підготовка до режиму редагування - включаємо мигаючий курсор
                 current_ekran.cursor_on = 1;
@@ -1833,10 +1751,6 @@ void main_manu_function(void)
                   {
                     if (edition_settings.postfault_number_periods != current_settings.postfault_number_periods) found_changes = 1;
                   }
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
-                {
-                  if (edition_settings.language != current_settings.language) found_changes = 1;
                 }
 
                 //Виходимо з режиму редагування
@@ -2385,23 +2299,6 @@ void main_manu_function(void)
                   //Знімаємо семафор
                   semaphore_read_state_ar_record = 0;
                 }
-                else if(current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
-                {
-                  if (check_data_setpoint(edition_settings.language, VALUE_SETTING_LANGUAGE_MIN, VALUE_SETTING_LANGUAGE_MAX) == 1)
-                  {
-                    if (edition_settings.language != current_settings.language)
-                    {
-                      //Помічаємо, що поле структури зараз буде змінене
-                      changed_settings = CHANGED_ETAP_EXECUTION;
-                        
-                      current_settings.language = edition_settings.language;
-                      //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
-                      fix_change_settings(0, 1);
-                    }
-                    //Виходимо з режиму редагування
-                    current_ekran.edition = 0;
-                  }
-                }
                 
               }
               else if (current_ekran.edition == 3)
@@ -2706,23 +2603,6 @@ void main_manu_function(void)
                 //Формуємо екран витримок аналогового реєстратора
                 make_ekran_timeout_analog_registrator();
               }
-              else if(current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_VIEW_SETTING_LANGUAGE - 1;
-                  position_in_current_level_menu[EKRAN_VIEW_SETTING_LANGUAGE] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.language--;
-                  if (edition_settings.language < VALUE_SETTING_LANGUAGE_MIN)
-                    edition_settings.language = VALUE_SETTING_LANGUAGE_MAX;
-                }
-                //Формуємо екран інформації по мові меню
-                make_ekran_setting_language();
-              }
 
               //Очистити сигналізацію, що натиснута кнопка 
               new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_UP));
@@ -2968,23 +2848,6 @@ void main_manu_function(void)
                 }
                 //Формуємо екран витримок аналогового реєстратора
                 make_ekran_timeout_analog_registrator();
-              }
-              else if(current_ekran.current_level == EKRAN_VIEW_SETTING_LANGUAGE)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(++current_ekran.index_position >= MAX_ROW_FOR_VIEW_SETTING_LANGUAGE) current_ekran.index_position = 0;
-                  position_in_current_level_menu[EKRAN_VIEW_SETTING_LANGUAGE] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.language++;
-                  if (edition_settings.language > VALUE_SETTING_LANGUAGE_MAX)
-                    edition_settings.language = VALUE_SETTING_LANGUAGE_MIN;
-                }
-                //Формуємо екран інформації по мові меню
-                make_ekran_setting_language();
               }
 
               //Очистити сигналізацію, що натиснута кнопка 

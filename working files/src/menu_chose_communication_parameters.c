@@ -3,9 +3,9 @@
 /*****************************************************/
 //Формуємо екран відображення заголовків настроювання комунікації
 /*****************************************************/
-void make_ekran_chose_communication_parameters(void)
+void make_ekran_choose_communication_parameters(void)
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CHOSE_COMMUNICATION_PARAMETERS][MAX_COL_LCD] = 
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_CHCP_M2][MAX_COL_LCD + 1] = 
   {
     {
       " Имя ячейки     ",
@@ -28,37 +28,32 @@ void make_ekran_chose_communication_parameters(void)
       " Настр.RS-485   "
     }
   };
-  int index_language = index_language_in_array(current_settings.language);
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
 
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
 
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
-    //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < MAX_ROW_FOR_CHOSE_COMMUNICATION_PARAMETERS)
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_of_ekran][j];
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-
-    index_of_ekran++;
+    for (size_t j = 0; j < MAX_COL_LCD; j++) 
+    {
+      working_ekran[i][j] = (index_in_ekran < MAX_ROW_CHCP_M2) ? name_string[index_language][index_in_ekran][j] : ' ';
+    }
+    index_in_ekran++;
   }
 
   //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
   //Курсор видимий
-  current_ekran.cursor_on = 1;
+  current_state_menu2.cursor_on = 1;
   //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
@@ -68,39 +63,35 @@ void make_ekran_chose_communication_parameters(void)
 void make_ekran_name_of_cell(void)
 {
   //Можливо треба буде додати  нові символи при зміні мови цією функцією
-  index_language_in_array(current_settings.language);
+  index_language_in_array(select_struct_settings_fix()->language);
   
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-  
+    uint8_t *p_name_of_cell;
+    p_name_of_cell = (current_state_menu2.edition == ED_VIEWING) ? settings_fix_prt.name_of_cell : settings_fix.name_of_cell;
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
-    //Наступні рядки треба перевірити, чи їх требе відображати у текучій кофігурації
-    if (index_of_ekran < MAX_ROW_FOR_VIEW_NAME_OF_CELL)
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++)
-      {
-        if (((index_of_ekran<<POWER_MAX_COL_LCD) + j) < MAX_CHAR_IN_NAME_OF_CELL) working_ekran[i][j] = current_settings.name_of_cell[(index_of_ekran<<POWER_MAX_COL_LCD) + j];
-        else working_ekran[i][j] = ' ';
-      }
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    for (size_t j = 0; j<MAX_COL_LCD; j++)
+    {
+       uint8_t symbol = (((index_in_ekran << POWER_MAX_COL_LCD) + j) < MAX_CHAR_IN_NAME_OF_CELL) ? p_name_of_cell[(index_in_ekran << POWER_MAX_COL_LCD) + j] : ' ';
+       working_ekran[i][j] = (symbol >= 0x20) ? symbol : ' ';
+    }
 
-    index_of_ekran++;
+    index_in_ekran++;
   }
 
   //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
   //Курсор  не видимий
-  current_ekran.cursor_on = 0;
+  current_state_menu2.cursor_on = 0;
   //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 

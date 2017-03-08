@@ -8,12 +8,12 @@ void calculate_namber_bit_waiting_for_rs_485(void)
   unsigned int number_bits_rs_485_waiting_tmp = 10;
   
   //Підраховуємо кількість біт у байті
-  if (current_settings.pare_bit_RS485 > 0) number_bits_rs_485_waiting_tmp++;
-  if (current_settings.number_stop_bit_RS485 > 0) number_bits_rs_485_waiting_tmp++;
+  if (settings_fix.pare_bit_RS485 > 0) number_bits_rs_485_waiting_tmp++;
+  if (settings_fix.number_stop_bit_RS485 > 0) number_bits_rs_485_waiting_tmp++;
   
   //Врахування швидкості
   unsigned int multiplicator;
-  switch (current_settings.speed_RS485)
+  switch (settings_fix.speed_RS485)
   {
   case 0:
     {
@@ -51,7 +51,7 @@ void calculate_namber_bit_waiting_for_rs_485(void)
       break;
     }
   }
-  number_bits_rs_485_waiting_tmp *= (multiplicator*current_settings.time_out_1_RS485);
+  number_bits_rs_485_waiting_tmp *= (multiplicator*settings_fix.time_out_1_RS485);
   number_bits_rs_485_waiting_tmp /= 10;
   
   number_bits_rs_485_waiting = number_bits_rs_485_waiting_tmp;

@@ -51,7 +51,7 @@ void convert_and_insert_char_for_measurement(unsigned int start_number_digit_aft
         number_digit_after_point = 1;
         if ((*(name_string + start_position + 7)) == ' ') 
         {
-          if (current_settings.language == LANGUAGE_EN)
+          if (settings_fix.language == LANGUAGE_EN)
             *(name_string + start_position + 7) = 'k';
           else
             *(name_string + start_position + 7) = 'ê';
@@ -65,7 +65,7 @@ void convert_and_insert_char_for_measurement(unsigned int start_number_digit_aft
         }
         else if ((*(name_string + start_position + 7)) == 'Ì')
         {
-          if (current_settings.language == LANGUAGE_EN)
+          if (settings_fix.language == LANGUAGE_EN)
             *(name_string + start_position + 7) = 'G';
           else
             *(name_string + start_position + 7) = 'Ã';

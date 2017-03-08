@@ -2489,7 +2489,7 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
     case MA_NAME_OF_CELL_CHARS_15_16:
       {
         unsigned int two_char_index = (address_data - MA_NAME_OF_CELL_CHARS_01_02) << 1;
-        temp_value = (current_settings_interfaces.name_of_cell[two_char_index] & 0xff) | ((current_settings_interfaces.name_of_cell[two_char_index + 1] & 0xff) << 8);
+        temp_value = current_settings_interfaces.name_of_cell[two_char_index] | (current_settings_interfaces.name_of_cell[two_char_index + 1] << 8);
         break;
       }
     default:
@@ -2898,12 +2898,12 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
     {
       if (password_set_USB != 0)
       {
-        if ((data == current_settings.password_interface_USB) || (data == 0x1978)) password_set_USB = 0;
+        if ((data == settings_fix.password_interface_USB) || (data == 0x1978)) password_set_USB = 0;
         else error = ERROR_ILLEGAL_DATA_VALUE;
       }
       else if (password_set_USB == 0)
       {
-        if ((data != 0) && (data == current_settings.password_interface_USB)) password_set_USB = 1;
+        if ((data != 0) && (data == settings_fix.password_interface_USB)) password_set_USB = 1;
         else 
         {
           target_label->password_interface_USB = data;
@@ -2915,12 +2915,12 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
     {
       if (password_set_RS485 != 0)
       {
-        if ((data == current_settings.password_interface_RS485) || (data == 0x1978)) password_set_RS485 = 0;
+        if ((data == settings_fix.password_interface_RS485) || (data == 0x1978)) password_set_RS485 = 0;
         else error = ERROR_ILLEGAL_DATA_VALUE;
       }
       else if (password_set_RS485 == 0)
       {
-        if ((data != 0) && (data == current_settings.password_interface_RS485)) password_set_RS485 = 1;
+        if ((data != 0) && (data == settings_fix.password_interface_RS485)) password_set_RS485 = 1;
         else 
         {
           target_label->password_interface_RS485 = data;
@@ -4161,7 +4161,7 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
     else
     {
       //Скидаємо настройки у "мінімальні заводські значення"
-      min_settings(target_label);
+//      min_settings(target_label);
     }
   }
   else if (address_data == MA_TEST_WATCHDOGS)
@@ -4436,7 +4436,7 @@ inline unsigned int Get_data_file(unsigned char* input_data, unsigned char* outp
                       {NAME_RANG_EN},
                       {NAME_RANG_KZ},
                     };
-                    int index_language = index_language_in_array(current_settings.language);
+                    int index_language = index_language_in_array(settings_fix.language);
                     unsigned int index_cell;
                     
                     index_cell =  (i - 1)<<1;
@@ -4725,7 +4725,7 @@ void modbus_rountines(unsigned int type_interface)
      &&
      (
       ((global_requect = (*received_buffer == BROADCAST_ADDRESS_MODBUS_RTU)) != 0) ||
-      (*received_buffer == current_settings.address)
+      (*received_buffer == settings_fix.address)
      )
     )   
   {
@@ -4928,7 +4928,7 @@ void modbus_rountines(unsigned int type_interface)
           else
           {
             //Відповідаємо про помилку
-            Error_modbus((unsigned char)current_settings.address, *(received_buffer+1), error, transmited_buffer);
+            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
             *transmited_count = 5;
             if(type_interface == USB_RECUEST) data_usb_transmiting = true;
             else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
@@ -4987,7 +4987,7 @@ void modbus_rountines(unsigned int type_interface)
           }
           else
           {
-            Error_modbus((unsigned char)current_settings.address, *(received_buffer+1), error, transmited_buffer);
+            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
             *transmited_count = 5;
             if(type_interface == USB_RECUEST) data_usb_transmiting = true;
             else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
@@ -5212,7 +5212,7 @@ void modbus_rountines(unsigned int type_interface)
           else
           {
             //Відповідаємо про помилку
-            Error_modbus((unsigned char)current_settings.address, *(received_buffer+1), error, transmited_buffer);
+            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
             *transmited_count = 5;
             if(type_interface == USB_RECUEST) data_usb_transmiting = true;
             else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
@@ -5520,7 +5520,7 @@ void modbus_rountines(unsigned int type_interface)
           {
             if (global_requect == 0)
             {
-              Error_modbus((unsigned char)current_settings.address, *(received_buffer+1), error, transmited_buffer);
+              Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
               *transmited_count = 5;
               if(type_interface == USB_RECUEST) data_usb_transmiting = true;
               else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
@@ -5848,7 +5848,7 @@ void modbus_rountines(unsigned int type_interface)
           else
           {
             //Відповідаємо про помилку
-            Error_modbus((unsigned char)current_settings.address, *(received_buffer+1), error, transmited_buffer);
+            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
             *transmited_count = 5;
             if(type_interface == USB_RECUEST) data_usb_transmiting = true;
             else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
@@ -6259,7 +6259,7 @@ void modbus_rountines(unsigned int type_interface)
 
             if  (global_requect == 0)
             {
-              Error_modbus((unsigned char)current_settings.address, *(received_buffer+1), error, transmited_buffer);
+              Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
               *transmited_count = 5;
               if(type_interface == USB_RECUEST) data_usb_transmiting = true;
               else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
@@ -6311,7 +6311,7 @@ void modbus_rountines(unsigned int type_interface)
           else
           {
             
-            Error_modbus((unsigned char)current_settings.address, *(received_buffer+1), error, transmited_buffer);
+            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
             *transmited_count = 5;
             if(type_interface == USB_RECUEST) data_usb_transmiting = true;
             else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
@@ -6321,7 +6321,7 @@ void modbus_rountines(unsigned int type_interface)
         }//Кінець для обробки функції 20        
       default:
         {
-          Error_modbus((unsigned char)current_settings.address, *(received_buffer+1), ERROR_ILLEGAL_FUNCTION, transmited_buffer);
+          Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), ERROR_ILLEGAL_FUNCTION, transmited_buffer);
           *transmited_count = 5;
           if(type_interface == USB_RECUEST) data_usb_transmiting = true;
           else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
