@@ -1326,7 +1326,6 @@ void main_manu_function(void)
     case EKRAN_TIMEOUT_ALARMS2:
     case EKRAN_CONTROL_ALARMS1:
     case EKRAN_CONTROL_ALARMS2:
-    case EKRAN_ADDRESS:
     case EKRAN_VIEW_SPEED_RS485:
     case EKRAN_VIEW_PARE_RS485:
     case EKRAN_VIEW_STOP_BITS_RS485:
@@ -1390,13 +1389,6 @@ void main_manu_function(void)
               position_in_current_level_menu[current_ekran.current_level] = current_ekran.index_position;
               //Формуємо екран управлінської інформації для сигналізації
               make_ekran_control_alarms(current_ekran.current_level - EKRAN_CONTROL_ALARMS1);
-            }
-            else if(current_ekran.current_level == EKRAN_ADDRESS)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_ADDRESS) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_ADDRESS] = current_ekran.index_position;
-              //Формуємо екран інфтрмації по комунікаційній адресі
-              make_ekran_address();
             }
             else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
             {
@@ -1524,11 +1516,6 @@ void main_manu_function(void)
                 else if((current_ekran.current_level >= EKRAN_CONTROL_ALARMS1) && (current_ekran.current_level <= EKRAN_CONTROL_ALARMS2))
                 {
                   edition_settings.control_alarm = current_settings.control_alarm;
-                }
-                else if(current_ekran.current_level == EKRAN_ADDRESS)
-                {
-                  edition_settings.address = current_settings.address;
-                  current_ekran.position_cursor_x = COL_ADDRESS_BEGIN;
                 }
                 else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
                 {
@@ -1684,11 +1671,6 @@ void main_manu_function(void)
                 else if((current_ekran.current_level >= EKRAN_CONTROL_ALARMS1) && (current_ekran.current_level <= EKRAN_CONTROL_ALARMS2))
                 {
                   if (edition_settings.control_alarm != current_settings.control_alarm) found_changes = 1;
-                }
-                else if(current_ekran.current_level == EKRAN_ADDRESS)
-                {
-                  unsigned int edit_value = edition_settings.address;
-                  if (edit_value != current_settings.address) found_changes = 1;
                 }
                 else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
                 {
@@ -1975,24 +1957,6 @@ void main_manu_function(void)
                       changed_settings = CHANGED_ETAP_EXECUTION;
                         
                       current_settings.control_alarm = edition_settings.control_alarm;
-                      //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
-                      fix_change_settings(0, 1);
-                    }
-                    //Виходимо з режиму редагування
-                    current_ekran.edition = 0;
-                  }
-                }
-                else if(current_ekran.current_level == EKRAN_ADDRESS)
-                {
-                  if (check_data_setpoint(edition_settings.address, KOEF_ADDRESS_MIN, KOEF_ADDRESS_MAX) == 1)
-                  {
-                    unsigned int edit_value = edition_settings.address;
-                    if (edit_value != current_settings.address)
-                    {
-                      //Помічаємо, що поле структури зараз буде змінене
-                      changed_settings = CHANGED_ETAP_EXECUTION;
-                        
-                      current_settings.address = edit_value;
                       //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
                       fix_change_settings(0, 1);
                     }
@@ -2444,21 +2408,6 @@ void main_manu_function(void)
                 //Формуємо екран управлінської інформації для сигналізації
                 make_ekran_control_alarms(current_ekran.current_level - EKRAN_CONTROL_ALARMS1);
               }
-              else if(current_ekran.current_level == EKRAN_ADDRESS)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_ADDRESS - 1;
-                  position_in_current_level_menu[EKRAN_ADDRESS] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.address = edit_setpoint(1, edition_settings.address, 0, 0, COL_ADDRESS_END, 1);
-                }
-                //Формуємо екран інфтрмації по комунікаційній адресі
-                make_ekran_address();
-              }
               else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
               {
                 if(current_ekran.edition == 0)
@@ -2689,21 +2638,6 @@ void main_manu_function(void)
                 position_in_current_level_menu[current_ekran.current_level] = current_ekran.index_position;
                 //Формуємо екран управлінської інформації для сигналізації
                 make_ekran_control_alarms(current_ekran.current_level - EKRAN_CONTROL_ALARMS1);
-              }
-              else if(current_ekran.current_level == EKRAN_ADDRESS)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(++current_ekran.index_position >= MAX_ROW_FOR_ADDRESS) current_ekran.index_position = 0;
-                  position_in_current_level_menu[EKRAN_ADDRESS] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.address = edit_setpoint(0, edition_settings.address, 0, 0, COL_ADDRESS_END, 1);
-                }
-                //Формуємо екран інфтрмації по комунікаційній адресі
-                make_ekran_address();
               }
               else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
               {
@@ -2978,14 +2912,6 @@ void main_manu_function(void)
                 //Формуємо екран управлінської інформації для сигналізації
                 make_ekran_control_alarms(current_ekran.current_level - EKRAN_CONTROL_ALARMS1);
               }
-              else if(current_ekran.current_level == EKRAN_ADDRESS)
-              {
-                if ((current_ekran.position_cursor_x < COL_ADDRESS_BEGIN) ||
-                    (current_ekran.position_cursor_x > COL_ADDRESS_END))
-                  current_ekran.position_cursor_x = COL_ADDRESS_BEGIN;
-                //Формуємо екран інфтрмації по комунікаційній адресі
-                make_ekran_address();
-              }
               else if(current_ekran.current_level == EKRAN_VIEW_TIMEOUT_RS485)
               {
                 if (current_ekran.position_cursor_x == COL_TIMEOUT_INTERFACE_COMMA )current_ekran.position_cursor_x++;
@@ -3190,14 +3116,6 @@ void main_manu_function(void)
 
                 //Формуємо екран управлінської інформації для сигналізації
                 make_ekran_control_alarms(current_ekran.current_level - EKRAN_CONTROL_ALARMS1);
-              }
-              else if(current_ekran.current_level == EKRAN_ADDRESS)
-              {
-                  if ((current_ekran.position_cursor_x < COL_ADDRESS_BEGIN) ||
-                      (current_ekran.position_cursor_x > COL_ADDRESS_END))
-                    current_ekran.position_cursor_x = COL_ADDRESS_END;
-                  //Формуємо екран інфтрмації по комунікаційній адресі
-                  make_ekran_address();
               }
               else if(current_ekran.current_level == EKRAN_VIEW_TIMEOUT_RS485)
               {

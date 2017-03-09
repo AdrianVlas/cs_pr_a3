@@ -62,6 +62,10 @@ extern __SETTINGS_FIX* select_struct_settings_fix(void);
 extern int index_language_in_array(int);
 extern void make_ekran_choose_communication_parameters(void);
 extern void make_ekran_name_of_cell(void);
+extern void make_ekran_address(void);
+extern enum _result_pressed_enter_during_edition press_enter_in_address(void);
+void press_esc_in_address(void);
+extern void change_address(unsigned int);
 
 extern void inc_or_dec_value(unsigned int *, unsigned int);
 extern unsigned int bcd_to_int(unsigned char);
@@ -116,7 +120,6 @@ extern void make_ekran_timeout_alarms(unsigned int);
 extern void make_ekran_control_alarms(unsigned int);
 extern void make_ekran_setpoint_VMP(int);
 extern void make_ekran_control_VMP(void);
-extern void make_ekran_address(void);
 extern void make_ekran_chose_setting_rs485(void);
 extern void make_ekran_speed_interface(void);
 extern void make_ekran_pare_interface(void);

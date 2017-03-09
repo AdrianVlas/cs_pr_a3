@@ -388,7 +388,7 @@ typedef struct
   //Комунікація
   uint8_t name_of_cell[MAX_CHAR_IN_NAME_OF_CELL];              //І'мя ячейки
   uint16_t user_register[(M_ADDRESS_LAST_USER_REGISTER_DATA - M_ADDRESS_FIRST_USER_REGISTER_DATA) + 1]; //Регістри користувача
-  uint32_t volatile address;                                    //Адреса
+  uint32_t address;                                             //Адреса
   int32_t speed_RS485;                                          //швидкість обміну
                                                                 // 0 - 9600
                                                                 // 1 - 14400

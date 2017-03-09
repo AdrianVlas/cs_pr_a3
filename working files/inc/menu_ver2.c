@@ -371,7 +371,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_settings_output_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_OUTPUT_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_leds_menu2 = LIST_SETTINGS_LED_MENU2_LEVEL;
               const enum _menu2_levels next_for_list_settings_led_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_LED_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL};
               const enum _menu2_levels *p = NULL;
               
               switch (current_state_menu2.current_level)
@@ -759,6 +759,7 @@ void main_manu_function_ver2(void)
     case CTRL_OUTPUT_MENU2_LEVEL:
     case CTRL_LED_MENU2_LEVEL:
     case LANGUAGE_MENU2_LEVEL:
+    case ADDRESS_MENU2_LEVEL:
       {
         //Формуємо маску кнопок, які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_REWRITE);
@@ -1678,6 +1679,22 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+  case ADDRESS_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_ADDRESS_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_address;
+      current_state_menu2.func_press_enter = press_enter_in_address;
+      current_state_menu2.func_press_esc = press_esc_in_address;
+      current_state_menu2.func_change = change_address;
       current_state_menu2.binary_data = false;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 

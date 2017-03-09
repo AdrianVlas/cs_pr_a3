@@ -12,16 +12,22 @@ enum __index_choose_comunication_parameters
 
 #define MAX_ROW_FOR_VIEW_NAME_OF_CELL                (MAX_CHAR_IN_NAME_OF_CELL >> POWER_MAX_COL_LCD)
 
-#define MAX_ROW_FOR_ADDRESS                          1
+enum __index_choose_comunication_address
+{
+  INDEX_M2_ADDRESS = 0,
+  
+  MAX_ROW_ADDRESS_M2
+};
+
+#define COL_ADDRESS_BEGIN                6
+#define COL_ADDRESS_END                  8
+
 #define MAX_ROW_FOR_CHOSE_SETTING_RS485              4
 #define MAX_ROW_FOR_VIEW_SPEED_INTERFACE             1
 #define MAX_ROW_FOR_VIEW_PARE_INTERFACE              1
 #define MAX_ROW_FOR_VIEW_STOP_BITS_INTERFACE         1
 #define MAX_ROW_FOR_VIEW_TIMEOUT_INTERFACE           1
 
-
-#define COL_ADDRESS_BEGIN                6
-#define COL_ADDRESS_END                  8
 
 #define INDEX_ML_CHSRS485_SPEED              0
 #define INDEX_ML_CHSRS485_PARE_BIT           1

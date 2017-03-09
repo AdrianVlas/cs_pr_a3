@@ -1333,14 +1333,12 @@ void min_settings(__SETTINGS_FIX *target_label)
   for(unsigned int i=0; i< ((M_ADDRESS_LAST_USER_REGISTER_DATA - M_ADDRESS_FIRST_USER_REGISTER_DATA) + 1); i++) target_label->user_register[i] = 0;
 
   for(unsigned int i=0; i<MAX_CHAR_IN_NAME_OF_CELL; i++) target_label->name_of_cell[i] = ' ';
-  target_label->name_of_cell[4 ] = 'Б';
-  target_label->name_of_cell[5 ] = 'е';
-  target_label->name_of_cell[6 ] = 'з';
-  target_label->name_of_cell[8 ] = 'и';
-  target_label->name_of_cell[9 ] = 'м';
-  target_label->name_of_cell[10] = 'е';
-  target_label->name_of_cell[11] = 'н';
-  target_label->name_of_cell[12] = 'и';
+  target_label->name_of_cell[4 ] = 'N';
+  target_label->name_of_cell[5 ] = 'o';
+  target_label->name_of_cell[7 ] = 'n';
+  target_label->name_of_cell[8 ] = 'a';
+  target_label->name_of_cell[9 ] = 'm';
+  target_label->name_of_cell[10] = 'e';
   
   target_label->address = KOEF_ADDRESS_MIN;
   target_label->speed_RS485 = VALUE_SPEED_INTERFACE_MIN;
@@ -1583,9 +1581,9 @@ void error_reading_with_eeprom()
     }
     else if (information_type == 2)
     {
-//      //Повтрокно зчитуємо налаштування
-//      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);/*зчитування, а не порівняння*/
-//      _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
+      //Повтрокно зчитуємо налаштування
+      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);/*зчитування, а не порівняння*/
+      _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
     }
     else if (information_type == 3)
     {

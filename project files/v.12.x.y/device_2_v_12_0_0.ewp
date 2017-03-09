@@ -4640,10 +4640,10 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_alarms.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_choose_settings_logical_nodes.c</name>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_choose_communication_parameters.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_chose_communication_parameters.c</name>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_choose_settings_logical_nodes.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_chose_settings_registrators.c</name>
