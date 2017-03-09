@@ -5,214 +5,204 @@
 /*****************************************************/
 void make_ekran_control_output_led(void)
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_CTRL_OUTPUT_LED_M2][MAX_COL_LCD + 1] = 
+  if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
   {
+    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
-      "  Норм./Триг.   ",
-      "   Пост./Имп.   ",
-      " Имп-Пр/Имп-Расш",
-      "   Частота 1    ",
-      "   Частота 2    "
-    },
-    {
-      "  Норм./Триґ.   ",
-      "   Пост./Імп.   ",
-      " Імп-Пр/Імп-Росш",
-      "   Частота 1    ",
-      "   Частота 2    "
-    },
-    {
-      "  Norm./Trig.   ",
-      "  Const./Imp.   ",
-      "  Imp-S/Imp-Ex  ",
-      "   Frequency 1  ",
-      "   Frequency 2  "
-    },
-    {
-      "   Имп./Триг.   ",
-      "   Норм./Имп.   ",
-      " Имп-Пр/Имп-Расш",
-      "   Частота 1    ",
-      "   Частота 2    "
-    }
-  };
-  int index_language = index_language_in_array(select_struct_settings_fix()->language);
-  
-  unsigned int position_temp = current_state_menu2.index_position;
-  //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
-  unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
-  void *p_settings;
-  if (current_state_menu2.edition == ED_VIEWING) 
-  {
-    if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
-    {
-      p_settings = &((((__LN_OUTPUT*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
-    }
-    else
-    {
-      p_settings = &((((__LN_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
-    }
+      " Вых.за диапазон",
+      " Вих.за діапазон",
+      "  Out of Limits ",
+      "Вых.за диапазон "
+    };
+    make_ekran_about_info(true, information_about_error);
   }
-  else if (current_state_menu2.edition == ED_CAN_BE_EDITED) 
+  else
   {
-    if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_CTRL_OUTPUT_LED_M2][MAX_COL_LCD + 1] = 
     {
-      p_settings = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-    }
-    else
-    {
-      p_settings = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-    }
-  }
-  else 
-  {
-    if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
-    {
-      p_settings = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-    }
-    else
-    {
-      p_settings = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-    }
-  }
-  
-  for (size_t i = 0; i < MAX_ROW_LCD; i++)
-  {
-    unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
-    
-    if (index_in_ekran_tmp < MAX_ROW_CTRL_OUTPUT_LED_M2)
-    {
-      if ((i & 0x1) == 0)
       {
-        //У непарному номері рядку виводимо заголовок
-        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+        "  Норм./Триг.   ",
+        "   Пост./Имп.   ",
+        " Имп-Пр/Имп-Расш",
+        "   Частота 1    ",
+        "   Частота 2    "
+      },
+      {
+        "  Норм./Триґ.   ",
+        "   Пост./Імп.   ",
+        " Імп-Пр/Імп-Росш",
+        "   Частота 1    ",
+        "   Частота 2    "
+      },
+      {
+        "  Norm./Trig.   ",
+        "  Const./Imp.   ",
+        "  Imp-S/Imp-Ex  ",
+        "   Frequency 1  ",
+        "   Frequency 2  "
+      },
+      {
+        "   Имп./Триг.   ",
+        "   Норм./Имп.   ",
+        " Имп-Пр/Имп-Расш",
+        "   Частота 1    ",
+        "   Частота 2    "
+      }
+    };
+    int index_language = index_language_in_array(select_struct_settings_fix()->language);
+  
+    unsigned int position_temp = current_state_menu2.index_position;
+    //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+
+    void *p_settings;
+    if (current_state_menu2.edition == ED_VIEWING) 
+    {
+      if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+      {
+        p_settings = &((((__LN_OUTPUT*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
       }
       else
       {
-        //У парному номері рядку виводимо значення
-        if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_N_T)  
+        p_settings = &((((__LN_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
+      }
+    }
+    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) 
+    {
+      if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+      {
+        p_settings = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+      }
+      else
+      {
+        p_settings = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+      }
+    }
+    else 
+    {
+      if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
+      {
+        p_settings = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+      }
+      else
+      {
+        p_settings = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+      }
+    }
+  
+    for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    {
+      unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+    
+      if (index_in_ekran_tmp < MAX_ROW_CTRL_OUTPUT_LED_M2)
+      {
+        if ((i & 0x1) == 0)
         {
-          const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-          {
-            {"   НОРМАЛЬНЫЙ   ", "   ТРИГГЕРНЫЙ   "},
-            {"   НОРМАЛЬНИЙ   ", "   ТРИҐЕРНИЙ    "},
-            {"     NORMAL     ", "    TRIGGER     "},
-            {"   НОРМАЛЬНЫЙ   ", "   ТРИГГЕРНЫЙ   "}
-          };
-          const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
-          {
-            {2, 2},
-            {2, 2},
-            {4, 3},
-            {2, 2}
-          };
-          
-          for (size_t j = 0; j < MAX_COL_LCD; j++) 
-          {
-            working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_N_T) & 0x1][j];
-          }
-          if (position_temp == index_in_ekran_tmp)
-          {
-            current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_N_T) & 0x1];
-          }
+          //У непарному номері рядку виводимо заголовок
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
         }
-        else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_C_I)  
+        else
         {
-          const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+          //У парному номері рядку виводимо значення
+          if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_N_T)  
           {
-            {"   ПОСТОЯННЫЙ   ", "   ИМПУЛЬСНЫЙ   "},
-            {"   ПОСТІЙНИЙ    ", "   ІМПУЛЬСНИЙ   "},
-            {"    CONSTANT    ", "    IMPULSE     "},
-            {"   ПОСТОЯННЫЙ   ", "   ИМПУЛЬСНЫЙ   "},
-          };
-          const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
-          {
-            {2, 2},
-            {2, 2},
-            {3, 3},
-            {2, 2}
-          };
-          
-          for (size_t j = 0; j < MAX_COL_LCD; j++)
-          {
-            working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_C_I) & 0x1][j];
-          }
-          if (position_temp == index_in_ekran_tmp)
-          {
-            current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_C_I) & 0x1];
-          }
-        }
-        else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_SI_EI)  
-        {
-          const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-          {
-            {"  ИМП.ПРОСТОЙ   ", " ИМП.РАСШИРЕННЫЙ"},
-            {"  ІМП.ПРОСТИЙ   ", " ІМП.РОЗШИРЕНИЙ "},
-            {"   IMP.SIMPLE   ", "  IMP.EXPANDED  "},
-            {"  ИМП.ПРОСТОЙ   ", " ИМП.РАСШИРЕННЫЙ"},
-          };
-          const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
-          {
-            {1, 0},
-            {1, 0},
-            {2, 1},
-            {1, 0}
-          };
-          
-          for (size_t j = 0; j < MAX_COL_LCD; j++) 
-          {
-            working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_SI_EI) & 0x1][j];
-          }
-          if (position_temp == index_in_ekran_tmp)
-          {
-            current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_SI_EI) & 0x1];
-          }
-        }
-        else if (
-                 (index_in_ekran_tmp >= INDEX_CTRL_OUTPUT_LED_M2_MEANDER1) &&
-                 (index_in_ekran_tmp <= INDEX_CTRL_OUTPUT_LED_M2_MEANDER2)
-                )   
-        {
-          unsigned int param_input;
-          if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_MEANDER1)
-            param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->param[OUTPUT_MEANDER1] : ((__settings_for_LED*)p_settings)->param[LED_MEANDER1];
-          else
-            param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->param[OUTPUT_MEANDER2] : ((__settings_for_LED*)p_settings)->param[LED_MEANDER2];
-
-          if (param_input == 0)
-          {
-            const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+            const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
             {
-              "     Пусто      ",
-              "     Пусто      ",
-              "     Empty      ",
-              "     Пусто      "
+              {"   НОРМАЛЬНЫЙ   ", "   ТРИГГЕРНЫЙ   "},
+              {"   НОРМАЛЬНИЙ   ", "   ТРИҐЕРНИЙ    "},
+              {"     NORMAL     ", "    TRIGGER     "},
+              {"   НОРМАЛЬНЫЙ   ", "   ТРИГГЕРНЫЙ   "}
             };
-            const uint32_t cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
-
-            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
+            const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
+            {
+              {2, 2},
+              {2, 2},
+              {4, 3},
+              {2, 2}
+            };
+          
+            for (size_t j = 0; j < MAX_COL_LCD; j++) 
+            {
+              working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_N_T) & 0x1][j];
+            }
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x_error[index_language];
+              current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_N_T) & 0x1];
             }
           }
-          else
+          else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_C_I)  
           {
-            unsigned int id_input   = (param_input >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;
-            unsigned int n_input    = (param_input >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
-            unsigned int out_input  = (param_input >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
-            
-            if ((id_input != ID_FB_MEANDER) || (out_input != (MEANDER_OUT + 1)))
+            const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+            {
+              {"   ПОСТОЯННЫЙ   ", "   ИМПУЛЬСНЫЙ   "},
+              {"   ПОСТІЙНИЙ    ", "   ІМПУЛЬСНИЙ   "},
+              {"    CONSTANT    ", "    IMPULSE     "},
+              {"   ПОСТОЯННЫЙ   ", "   ИМПУЛЬСНЫЙ   "},
+            };
+            const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
+            {
+              {2, 2},
+              {2, 2},
+              {3, 3},
+              {2, 2}
+            };
+          
+            for (size_t j = 0; j < MAX_COL_LCD; j++)
+            {
+              working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_C_I) & 0x1][j];
+            }
+            if (position_temp == index_in_ekran_tmp)
+            {
+              current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_C_I) & 0x1];
+            }
+          }
+          else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_SI_EI)  
+          {
+            const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+            {
+              {"  ИМП.ПРОСТОЙ   ", " ИМП.РАСШИРЕННЫЙ"},
+              {"  ІМП.ПРОСТИЙ   ", " ІМП.РОЗШИРЕНИЙ "},
+              {"   IMP.SIMPLE   ", "  IMP.EXPANDED  "},
+              {"  ИМП.ПРОСТОЙ   ", " ИМП.РАСШИРЕННЫЙ"},
+            };
+            const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
+            {
+              {1, 0},
+              {1, 0},
+              {2, 1},
+              {1, 0}
+            };
+          
+            for (size_t j = 0; j < MAX_COL_LCD; j++) 
+            {
+              working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_SI_EI) & 0x1][j];
+            }
+            if (position_temp == index_in_ekran_tmp)
+            {
+              current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_SI_EI) & 0x1];
+            }
+          }
+          else if (
+                   (index_in_ekran_tmp >= INDEX_CTRL_OUTPUT_LED_M2_MEANDER1) &&
+                   (index_in_ekran_tmp <= INDEX_CTRL_OUTPUT_LED_M2_MEANDER2)
+                  )   
+          {
+            unsigned int param_input;
+            if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_MEANDER1)
+              param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->param[OUTPUT_MEANDER1] : ((__settings_for_LED*)p_settings)->param[LED_MEANDER1];
+            else
+              param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->param[OUTPUT_MEANDER2] : ((__settings_for_LED*)p_settings)->param[LED_MEANDER2];
+
+            if (param_input == 0)
             {
               const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
               {
-                "     Ошибка     ",
-                "    Помилка     ",
-                "     Error      ",
-                "     Ошибка     "
+                "     Пусто      ",
+                "     Пусто      ",
+                "     Empty      ",
+                "     Пусто      "
               };
-              const uint32_t cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 3, 4, 4};
+              const uint32_t cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
 
               for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
               if (position_temp == index_in_ekran_tmp)
@@ -222,58 +212,82 @@ void make_ekran_control_output_led(void)
             }
             else
             {
-              const uint8_t value_name[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+              unsigned int id_input   = (param_input >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;
+              unsigned int n_input    = (param_input >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
+              unsigned int out_input  = (param_input >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
+            
+              if ((id_input != ID_FB_MEANDER) || (out_input != (MEANDER_OUT + 1)))
               {
-                {"ГПС             "},
-                {"ГПС             "},
-                {"MEANDER         "},
-                {"ГПС             "},
-              };
-              const unsigned int number_symbols_in_name[MAX_NAMBER_LANGUAGE] = {3, 3, 7, 3};
-              unsigned int number_symbols_in_name_tmp = number_symbols_in_name[index_language];
-          
-              unsigned int number_digit = max_number_digit_in_number(n_input);
-              unsigned int empty_before = (MAX_COL_LCD - number_symbols_in_name_tmp - number_digit) >> 1;
-
-              for (size_t j = 0; j < MAX_COL_LCD; j++)
-              {
-                if ((j < empty_before) || (j >= (empty_before + number_symbols_in_name_tmp + number_digit))) working_ekran[i][j] = ' ';
-                else if (j < (empty_before + number_symbols_in_name_tmp)) working_ekran[i][j] = value_name[index_language][j - empty_before];
-                else
+                const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
                 {
-                  /*
-                  Заповнюємо значення зправа  на ліво
-                  індекс = (empty_before + number_symbols_in_name_tmp) + number_digit - 1 - (j - (empty_before + number_symbols_in_name_tmp)) =
-                  = (empty_before + number_symbols_in_name_tmp) + number_digit - 1 - j + (empty_before + number_symbols_in_name_tmp) =
-                  = 2(empty_before + number_symbols_in_name_tmp) + number_digit - 1 - j =
-                  */
-                  working_ekran[i][2*(empty_before + number_symbols_in_name_tmp) + number_digit - 1 - j] = (n_input % 10) + 0x30;
-                  n_input /= 10;
+                  "     Ошибка     ",
+                  "    Помилка     ",
+                  "     Error      ",
+                  "     Ошибка     "
+                };
+                const uint32_t cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 3, 4, 4};
+
+                for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
+                if (position_temp == index_in_ekran_tmp)
+                {
+                  current_state_menu2.position_cursor_x = cursor_x_error[index_language];
                 }
               }
-              if (position_temp == index_in_ekran_tmp)
+              else
               {
-                current_state_menu2.position_cursor_x = empty_before - 1;
+                const uint8_t value_name[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+                {
+                  {"ГПС             "},
+                  {"ГПС             "},
+                  {"MEANDER         "},
+                  {"ГПС             "},
+                };
+                const unsigned int number_symbols_in_name[MAX_NAMBER_LANGUAGE] = {3, 3, 7, 3};
+                unsigned int number_symbols_in_name_tmp = number_symbols_in_name[index_language];
+          
+                unsigned int number_digit = max_number_digit_in_number(n_input);
+                unsigned int empty_before = (MAX_COL_LCD - number_symbols_in_name_tmp - number_digit) >> 1;
+
+                for (size_t j = 0; j < MAX_COL_LCD; j++)
+                {
+                  if ((j < empty_before) || (j >= (empty_before + number_symbols_in_name_tmp + number_digit))) working_ekran[i][j] = ' ';
+                  else if (j < (empty_before + number_symbols_in_name_tmp)) working_ekran[i][j] = value_name[index_language][j - empty_before];
+                  else
+                  {
+                    /*
+                    Заповнюємо значення зправа  на ліво
+                    індекс = (empty_before + number_symbols_in_name_tmp) + number_digit - 1 - (j - (empty_before + number_symbols_in_name_tmp)) =
+                    = (empty_before + number_symbols_in_name_tmp) + number_digit - 1 - j + (empty_before + number_symbols_in_name_tmp) =
+                    = 2(empty_before + number_symbols_in_name_tmp) + number_digit - 1 - j =
+                    */
+                    working_ekran[i][2*(empty_before + number_symbols_in_name_tmp) + number_digit - 1 - j] = (n_input % 10) + 0x30;
+                    n_input /= 10;
+                  }
+                }
+                if (position_temp == index_in_ekran_tmp)
+                {
+                  current_state_menu2.position_cursor_x = empty_before - 1;
+                }
               }
             }
           }
         }
       }
+      else
+        for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+
+      index_in_ekran++;
     }
-    else
-      for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
 
-    index_in_ekran++;
+    //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    //Курсор видимий
+    current_state_menu2.cursor_on = 1;
+    //Курсор не мигає
+    if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    else current_state_menu2.cursor_blinking_on = 1;
+    //Обновити повністю весь екран
   }
-
-  //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
-  current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
-  //Курсор видимий
-  current_state_menu2.cursor_on = 1;
-  //Курсор не мигає
-  if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
-  else current_state_menu2.cursor_blinking_on = 1;
-  //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/

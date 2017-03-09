@@ -389,7 +389,7 @@ typedef struct
   uint8_t name_of_cell[MAX_CHAR_IN_NAME_OF_CELL];              //≤'м€ €чейки
   uint16_t user_register[(M_ADDRESS_LAST_USER_REGISTER_DATA - M_ADDRESS_FIRST_USER_REGISTER_DATA) + 1]; //–ег≥стри користувача
   uint32_t address;                                             //јдреса
-  int32_t speed_RS485;                                          //швидк≥сть обм≥ну
+  int32_t baud_RS485;                                           //швидк≥сть обм≥ну
                                                                 // 0 - 9600
                                                                 // 1 - 14400
                                                                 // 2 - 19200

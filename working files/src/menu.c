@@ -313,7 +313,6 @@ void main_manu_function(void)
     case EKRAN_LIST_ALARMS:
     case EKRAN_CHOOSE_SETTINGS_ALARMS1:
     case EKRAN_CHOOSE_SETTINGS_ALARMS2:
-    case EKRAN_CHOSE_SETTING_RS485:
     case EKRAN_VIEW_LIST_OF_REGISTRATORS:
     case EKRAN_VIEW_SETTINGS_OF_ANALOG_REGISTRATORS:
     case EKRAN_EXTENDED_LIGIC:
@@ -383,20 +382,6 @@ void main_manu_function(void)
             
               //Формуємо екран заголовків паролів
               make_ekran_chose_passwords();
-            }
-            else if (current_ekran.current_level == EKRAN_CHOSE_SETTING_RS485)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_CHOSE_SETTING_RS485) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_CHOSE_SETTING_RS485] = current_ekran.index_position;
-              //Формуємо екран відображення списку настройок для інтерфейсу RS-485
-              make_ekran_chose_setting_rs485();
-            }
-            else if (current_ekran.current_level == EKRAN_VIEW_LIST_OF_REGISTRATORS)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_LIST_OF_REGISTRATORS) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_VIEW_LIST_OF_REGISTRATORS] = current_ekran.index_position;
-              //Формуємо екран вибору реєстратора
-              make_ekran_chose_registrators();
             }
             else if (current_ekran.current_level == EKRAN_VIEW_SETTINGS_OF_ANALOG_REGISTRATORS)
             {
@@ -628,36 +613,6 @@ void main_manu_function(void)
                 current_ekran.current_level = EKRAN_RANGUVANNJA_LED_1 + current_ekran.index_position;
                 //Для того, щоб при першому входженні завжди список починався із першої ранжованої функції обнуляємо цю позицію
                 position_in_current_level_menu[current_ekran.current_level] = 0;
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 0;
-              }
-              else if (current_ekran.current_level == EKRAN_CHOSE_SETTING_RS485)
-              {
-                //Натисну кнопка Enter у вікні вибору вікна настройок RS-485
-                if(current_ekran.index_position == INDEX_ML_CHSRS485_SPEED)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення швидкості обміну
-                  current_ekran.current_level = EKRAN_VIEW_SPEED_RS485;
-                }
-                else if(current_ekran.index_position == INDEX_ML_CHSRS485_PARE_BIT)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення інформації по бітупаритету
-                  current_ekran.current_level = EKRAN_VIEW_PARE_RS485;
-                }
-                else if(current_ekran.index_position == INDEX_ML_CHSRS485_NUMBER_STOP_BIT)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення інфрпмації по стоп-біту
-                  current_ekran.current_level = EKRAN_VIEW_STOP_BITS_RS485;
-                }
-                else if(current_ekran.index_position == INDEX_ML_CHSRS485_TIMEOUT)
-                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню відображення інфрпмації по time-out наступного символу
-                  current_ekran.current_level = EKRAN_VIEW_TIMEOUT_RS485;
-                }
                 current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
                 current_ekran.edition = 0;
               }
@@ -990,13 +945,6 @@ void main_manu_function(void)
                 //Формуємо екран заголовків паролів
                 make_ekran_chose_passwords();
               }
-              else if (current_ekran.current_level == EKRAN_CHOSE_SETTING_RS485)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_CHOSE_SETTING_RS485 - 1;
-                position_in_current_level_menu[EKRAN_CHOSE_SETTING_RS485] = current_ekran.index_position;
-               //Формуємо екран відображення списку настройок для інтерфейсу RS-485
-               make_ekran_chose_setting_rs485();
-              }
               else if (current_ekran.current_level == EKRAN_VIEW_LIST_OF_REGISTRATORS)
               {
                 if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_LIST_OF_REGISTRATORS - 1;
@@ -1171,13 +1119,6 @@ void main_manu_function(void)
                 //Формуємо екран заголовків паролів
                 make_ekran_chose_passwords();
               }
-              else if (current_ekran.current_level == EKRAN_CHOSE_SETTING_RS485)
-              {
-                if(++current_ekran.index_position >= MAX_ROW_FOR_CHOSE_SETTING_RS485) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_CHOSE_SETTING_RS485] = current_ekran.index_position;
-               //Формуємо екран відображення списку настройок для інтерфейсу RS-485
-                make_ekran_chose_setting_rs485();
-              }
               else if (current_ekran.current_level == EKRAN_VIEW_LIST_OF_REGISTRATORS)
               {
                 if(++current_ekran.index_position >= MAX_ROW_FOR_LIST_OF_REGISTRATORS) current_ekran.index_position = 0;
@@ -1326,10 +1267,6 @@ void main_manu_function(void)
     case EKRAN_TIMEOUT_ALARMS2:
     case EKRAN_CONTROL_ALARMS1:
     case EKRAN_CONTROL_ALARMS2:
-    case EKRAN_VIEW_SPEED_RS485:
-    case EKRAN_VIEW_PARE_RS485:
-    case EKRAN_VIEW_STOP_BITS_RS485:
-    case EKRAN_VIEW_TIMEOUT_RS485:
     case EKRAN_GENERAL_PICKUPS_EL:
     case EKRAN_LIST_TYPE_DF:
     case EKRAN_TIMEOUT_ANALOG_REGISTRATOR:
@@ -1389,34 +1326,6 @@ void main_manu_function(void)
               position_in_current_level_menu[current_ekran.current_level] = current_ekran.index_position;
               //Формуємо екран управлінської інформації для сигналізації
               make_ekran_control_alarms(current_ekran.current_level - EKRAN_CONTROL_ALARMS1);
-            }
-            else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_VIEW_SPEED_INTERFACE) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_VIEW_SPEED_RS485] = current_ekran.index_position;
-              //Формуємо екран інформації по швидкості обміну
-              make_ekran_speed_interface();
-            }
-            else if(current_ekran.current_level == EKRAN_VIEW_PARE_RS485)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_VIEW_PARE_INTERFACE) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_VIEW_PARE_RS485] = current_ekran.index_position;
-              //Формуємо екран інформації по контролю парності
-              make_ekran_pare_interface();
-            }
-            else if(current_ekran.current_level == EKRAN_VIEW_STOP_BITS_RS485)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_VIEW_STOP_BITS_INTERFACE) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_VIEW_STOP_BITS_RS485] = current_ekran.index_position;
-              //Формуємо екран інформації по кількості стопових біт
-              make_ekran_stopbits_interface();
-            }
-            else if(current_ekran.current_level == EKRAN_VIEW_TIMEOUT_RS485)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_VIEW_TIMEOUT_INTERFACE) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_VIEW_TIMEOUT_RS485] = current_ekran.index_position;
-              //Формуємо екран інформації по time-out наступного символу
-              make_ekran_timeout_interface();
             }
             else if(current_ekran.current_level == EKRAN_GENERAL_PICKUPS_EL)
             {
@@ -1516,23 +1425,6 @@ void main_manu_function(void)
                 else if((current_ekran.current_level >= EKRAN_CONTROL_ALARMS1) && (current_ekran.current_level <= EKRAN_CONTROL_ALARMS2))
                 {
                   edition_settings.control_alarm = current_settings.control_alarm;
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
-                {
-                  edition_settings.speed_RS485 = current_settings.speed_RS485;
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_PARE_RS485)
-                {
-                  edition_settings.pare_bit_RS485 = current_settings.pare_bit_RS485;
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_STOP_BITS_RS485)
-                {
-                  edition_settings.number_stop_bit_RS485 = current_settings.number_stop_bit_RS485;
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_TIMEOUT_RS485)
-                {
-                  edition_settings.time_out_1_RS485 = current_settings.time_out_1_RS485;
-                  current_ekran.position_cursor_x = COL_TIMEOUT_INTERFACE_BEGIN;
                 }
                 else if(current_ekran.current_level == EKRAN_GENERAL_PICKUPS_EL)
                 {
@@ -1671,22 +1563,6 @@ void main_manu_function(void)
                 else if((current_ekran.current_level >= EKRAN_CONTROL_ALARMS1) && (current_ekran.current_level <= EKRAN_CONTROL_ALARMS2))
                 {
                   if (edition_settings.control_alarm != current_settings.control_alarm) found_changes = 1;
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
-                {
-                  if (edition_settings.speed_RS485 != current_settings.speed_RS485) found_changes = 1;
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_PARE_RS485)
-                {
-                  if (edition_settings.pare_bit_RS485 != current_settings.pare_bit_RS485) found_changes = 1;
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_STOP_BITS_RS485)
-                {
-                  if (edition_settings.number_stop_bit_RS485 != current_settings.number_stop_bit_RS485) found_changes = 1;
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_TIMEOUT_RS485)
-                {
-                  if (edition_settings.time_out_1_RS485 != current_settings.time_out_1_RS485) found_changes = 1;
                 }
                 else if(current_ekran.current_level == EKRAN_GENERAL_PICKUPS_EL)
                 {
@@ -1957,88 +1833,6 @@ void main_manu_function(void)
                       changed_settings = CHANGED_ETAP_EXECUTION;
                         
                       current_settings.control_alarm = edition_settings.control_alarm;
-                      //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
-                      fix_change_settings(0, 1);
-                    }
-                    //Виходимо з режиму редагування
-                    current_ekran.edition = 0;
-                  }
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
-                {
-                  if (check_data_setpoint(edition_settings.speed_RS485, VALUE_SPEED_INTERFACE_MIN, VALUE_SPEED_INTERFACE_MAX) == 1)
-                  {
-                    if (edition_settings.speed_RS485 != current_settings.speed_RS485)
-                    {
-                      //Помічаємо, що поле структури зараз буде змінене
-                      changed_settings = CHANGED_ETAP_EXECUTION;
-                        
-                      current_settings.speed_RS485 = edition_settings.speed_RS485;
-                      //Підраховуємо нову величину затримки у бітах, яка допускається між байтами у RS-485 згідно з визначеними настройками
-                      calculate_namber_bit_waiting_for_rs_485();
-                      //Виставляємо команду про переконфігурування RS-485
-                      make_reconfiguration_RS_485 = 0xff;
-                      //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
-                      fix_change_settings(0, 1);
-                    }
-                    //Виходимо з режиму редагування
-                    current_ekran.edition = 0;
-                  }
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_PARE_RS485)
-                {
-                  if (check_data_setpoint(edition_settings.pare_bit_RS485, VALUE_PARE_INTERFACE_MIN, VALUE_PARE_INTERFACE_MAX) == 1)
-                  {
-                    if (edition_settings.pare_bit_RS485 != current_settings.pare_bit_RS485)
-                    {
-                      //Помічаємо, що поле структури зараз буде змінене
-                      changed_settings = CHANGED_ETAP_EXECUTION;
-                        
-                      current_settings.pare_bit_RS485 = edition_settings.pare_bit_RS485;
-                      //Підраховуємо нову величину затримки у бітах, яка допускається між байтами у RS-485 згідно з визначеними настройками
-                      calculate_namber_bit_waiting_for_rs_485();
-                      //Виставляємо команду про переконфігурування RS-485
-                      make_reconfiguration_RS_485 = 0xff;
-                      //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
-                      fix_change_settings(0, 1);
-                    }
-                    //Виходимо з режиму редагування
-                    current_ekran.edition = 0;
-                  }
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_STOP_BITS_RS485)
-                {
-                  if (check_data_setpoint(edition_settings.number_stop_bit_RS485, VALUE_STOP_BITS_INTERFACE_MIN, VALUE_STOP_BITS_INTERFACE_MAX) == 1)
-                  {
-                    if (edition_settings.number_stop_bit_RS485 != current_settings.number_stop_bit_RS485)
-                    {
-                      //Помічаємо, що поле структури зараз буде змінене
-                      changed_settings = CHANGED_ETAP_EXECUTION;
-                        
-                      current_settings.number_stop_bit_RS485 = edition_settings.number_stop_bit_RS485;
-                      //Підраховуємо нову величину затримки у бітах, яка допускається між байтами у RS-485 згідно з визначеними настройками
-                      calculate_namber_bit_waiting_for_rs_485();
-                      //Виставляємо команду про переконфігурування RS-485
-                      make_reconfiguration_RS_485 = 0xff;
-                      //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
-                      fix_change_settings(0, 1);
-                    }
-                    //Виходимо з режиму редагування
-                    current_ekran.edition = 0;
-                  }
-                }
-                else if(current_ekran.current_level == EKRAN_VIEW_TIMEOUT_RS485)
-                {
-                  if (check_data_setpoint(edition_settings.time_out_1_RS485, VALUE_TIME_OUT_1_INTERFACE_MIN, VALUE_TIME_OUT_1_INTERFACE_MAX) == 1)
-                  {
-                    if (edition_settings.time_out_1_RS485 != current_settings.time_out_1_RS485)
-                    {
-                      //Помічаємо, що поле структури зараз буде змінене
-                      changed_settings = CHANGED_ETAP_EXECUTION;
-                        
-                      current_settings.time_out_1_RS485 = edition_settings.time_out_1_RS485;
-                      //Підраховуємо нову величину затримки у бітах, яка допускається між байтами у RS-485 згідно з визначеними настройками
-                      calculate_namber_bit_waiting_for_rs_485();
                       //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
                       fix_change_settings(0, 1);
                     }
@@ -2408,72 +2202,6 @@ void main_manu_function(void)
                 //Формуємо екран управлінської інформації для сигналізації
                 make_ekran_control_alarms(current_ekran.current_level - EKRAN_CONTROL_ALARMS1);
               }
-              else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_VIEW_SPEED_INTERFACE - 1;
-                  position_in_current_level_menu[EKRAN_VIEW_SPEED_RS485] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.speed_RS485--;
-                  if (edition_settings.speed_RS485 < VALUE_SPEED_INTERFACE_MIN)
-                    edition_settings.speed_RS485 = VALUE_SPEED_INTERFACE_MAX;
-                }
-                //Формуємо екран інформації по швидкості обміну
-                make_ekran_speed_interface();
-              }
-              else if(current_ekran.current_level == EKRAN_VIEW_PARE_RS485)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_VIEW_PARE_INTERFACE - 1;
-                  position_in_current_level_menu[EKRAN_VIEW_PARE_RS485] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.pare_bit_RS485--;
-                  if (edition_settings.pare_bit_RS485 < VALUE_PARE_INTERFACE_MIN)
-                    edition_settings.pare_bit_RS485 = VALUE_PARE_INTERFACE_MAX;
-                }
-                //Формуємо екран інформації по контролю парності
-                make_ekran_pare_interface();
-              }
-              else if(current_ekran.current_level == EKRAN_VIEW_STOP_BITS_RS485)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_VIEW_STOP_BITS_INTERFACE - 1;
-                  position_in_current_level_menu[EKRAN_VIEW_STOP_BITS_RS485] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.number_stop_bit_RS485--;
-                  if (edition_settings.number_stop_bit_RS485 < VALUE_STOP_BITS_INTERFACE_MIN)
-                    edition_settings.number_stop_bit_RS485 = VALUE_STOP_BITS_INTERFACE_MAX;
-                }
-                //Формуємо екран інформації по кількості стопових біт
-                make_ekran_stopbits_interface();
-              }
-              else if(current_ekran.current_level == EKRAN_VIEW_TIMEOUT_RS485)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_VIEW_TIMEOUT_INTERFACE - 1;
-                  position_in_current_level_menu[EKRAN_VIEW_TIMEOUT_RS485] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.time_out_1_RS485 = edit_setpoint(1, edition_settings.time_out_1_RS485, 1, COL_TIMEOUT_INTERFACE_COMMA, COL_TIMEOUT_INTERFACE_END, 1);
-                }
-                //Формуємо екран інформації по time-out наступного символу
-                make_ekran_timeout_interface();
-              }
               else if(current_ekran.current_level == EKRAN_GENERAL_PICKUPS_EL)
               {
                 if(current_ekran.edition == 0)
@@ -2638,72 +2366,6 @@ void main_manu_function(void)
                 position_in_current_level_menu[current_ekran.current_level] = current_ekran.index_position;
                 //Формуємо екран управлінської інформації для сигналізації
                 make_ekran_control_alarms(current_ekran.current_level - EKRAN_CONTROL_ALARMS1);
-              }
-              else if(current_ekran.current_level == EKRAN_VIEW_SPEED_RS485)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(++current_ekran.index_position >= MAX_ROW_FOR_VIEW_SPEED_INTERFACE) current_ekran.index_position = 0;
-                  position_in_current_level_menu[EKRAN_VIEW_SPEED_RS485] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.speed_RS485++;
-                  if (edition_settings.speed_RS485 > VALUE_SPEED_INTERFACE_MAX)
-                    edition_settings.speed_RS485 = VALUE_SPEED_INTERFACE_MIN;
-                }
-                //Формуємо екран інформації по швидкості обміну
-                make_ekran_speed_interface();
-              }
-              else if(current_ekran.current_level == EKRAN_VIEW_PARE_RS485)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(++current_ekran.index_position >= MAX_ROW_FOR_VIEW_PARE_INTERFACE) current_ekran.index_position = 0;
-                  position_in_current_level_menu[EKRAN_VIEW_PARE_RS485] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.pare_bit_RS485++;
-                  if (edition_settings.pare_bit_RS485 > VALUE_PARE_INTERFACE_MAX)
-                    edition_settings.pare_bit_RS485 = VALUE_PARE_INTERFACE_MIN;
-                }
-                //Формуємо екран інформації по контролю парності
-                make_ekran_pare_interface();
-              }
-              else if(current_ekran.current_level == EKRAN_VIEW_STOP_BITS_RS485)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(++current_ekran.index_position >= MAX_ROW_FOR_VIEW_STOP_BITS_INTERFACE) current_ekran.index_position = 0;
-                  position_in_current_level_menu[EKRAN_VIEW_STOP_BITS_RS485] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.number_stop_bit_RS485++;
-                  if (edition_settings.number_stop_bit_RS485 > VALUE_STOP_BITS_INTERFACE_MAX)
-                    edition_settings.number_stop_bit_RS485 = VALUE_STOP_BITS_INTERFACE_MIN;
-                }
-                //Формуємо екран інформації по кількості стопових біт
-                make_ekran_stopbits_interface();
-              }
-              else if(current_ekran.current_level == EKRAN_VIEW_TIMEOUT_RS485)
-              {
-                if(current_ekran.edition == 0)
-                {
-                  if(++current_ekran.index_position >= MAX_ROW_FOR_VIEW_TIMEOUT_INTERFACE) current_ekran.index_position = 0;
-                  position_in_current_level_menu[EKRAN_VIEW_TIMEOUT_RS485] = current_ekran.index_position;
-                }
-                else
-                {
-                  //Редагування числа
-                  edition_settings.time_out_1_RS485 = edit_setpoint(0, edition_settings.time_out_1_RS485, 1, COL_TIMEOUT_INTERFACE_COMMA, COL_TIMEOUT_INTERFACE_END, 1);
-                }
-                //Формуємо екран інформації по time-out наступного символу
-                make_ekran_timeout_interface();
               }
               else if (current_ekran.current_level == EKRAN_GENERAL_PICKUPS_EL)
               {

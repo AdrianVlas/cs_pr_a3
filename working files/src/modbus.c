@@ -3500,10 +3500,10 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       {
         temp_value = data;
         
-#if (VALUE_SPEED_INTERFACE_MIN != 0)          
-        if ((temp_value >= VALUE_SPEED_INTERFACE_MIN) && (temp_value <= VALUE_SPEED_INTERFACE_MAX))
+#if (VALUE_BAUD_RS485_MIN != 0)          
+        if ((temp_value >= VALUE_BAUD_RS485_MIN) && (temp_value <= VALUE_BAUD_RS485_MAX))
 #else
-        if (temp_value <= VALUE_SPEED_INTERFACE_MAX)
+        if (temp_value <= VALUE_BAUD_RS485_MAX)
 #endif            
           target_label->speed_RS485 = temp_value;
         else
@@ -3515,10 +3515,10 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       {
         temp_value = data - 1;
         
-#if (VALUE_STOP_BITS_INTERFACE_MIN != 0)          
-        if ((temp_value >= VALUE_STOP_BITS_INTERFACE_MIN) && (temp_value <= VALUE_STOP_BITS_INTERFACE_MAX))
+#if (VALUE_STOP_BITS_RS485_MIN != 0)          
+        if ((temp_value >= VALUE_STOP_BITS_RS485_MIN) && (temp_value <= VALUE_STOP_BITS_RS485_MAX))
 #else
-        if (temp_value <= VALUE_STOP_BITS_INTERFACE_MAX)
+        if (temp_value <= VALUE_STOP_BITS_RS485_MAX)
 #endif            
           target_label->number_stop_bit_RS485 = temp_value;
         else
@@ -3530,10 +3530,10 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       {
         temp_value = data;
         
-#if (VALUE_PARE_INTERFACE_MIN != 0)          
-        if ((temp_value >= VALUE_PARE_INTERFACE_MIN) && (temp_value <= VALUE_PARE_INTERFACE_MAX))
+#if (VALUE_PARE_RS485_MIN != 0)          
+        if ((temp_value >= VALUE_PARE_RS485_MIN) && (temp_value <= VALUE_PARE_RS485_MAX))
 #else
-        if (temp_value <= VALUE_PARE_INTERFACE_MAX)
+        if (temp_value <= VALUE_PARE_RS485_MAX)
 #endif            
           target_label->pare_bit_RS485 = temp_value;
         else

@@ -79,42 +79,42 @@ void USART_RS485_Configure(void)
 {
   USART_InitTypeDef USART_InitStructure;
 
-  unsigned int speed_frame_RS485;
-  switch (settings_fix.speed_RS485)
+  unsigned int baud_RS485;
+  switch (settings_fix.baud_RS485)
   {
   case 0:
     {
-      speed_frame_RS485 = 9600;
+      baud_RS485 = 9600;
       break;
     }
   case 1:
     {
-      speed_frame_RS485 = 14400;
+      baud_RS485 = 14400;
       break;
     }
   case 2:
     {
-      speed_frame_RS485 = 19200;
+      baud_RS485 = 19200;
       break;
     }
   case 3:
     {
-      speed_frame_RS485 = 28800;
+      baud_RS485 = 28800;
       break;
     }
   case 4:
     {
-      speed_frame_RS485 = 38400;
+      baud_RS485 = 38400;
       break;
     }
   case 5:
     {
-      speed_frame_RS485 = 57600;
+      baud_RS485 = 57600;
       break;
     }
   default:
     {
-      speed_frame_RS485 = 115200;
+      baud_RS485 = 115200;
       break;
     }
   }
@@ -172,7 +172,7 @@ void USART_RS485_Configure(void)
   USART_RS485->CR1 &= (uint16_t)(~USART_CR1_UE);
 
   //Заповняємо структуру
-  USART_InitStructure.USART_BaudRate = speed_frame_RS485;
+  USART_InitStructure.USART_BaudRate = baud_RS485;
   if (pare_RS485 == USART_Parity_No) USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   else USART_InitStructure.USART_WordLength = USART_WordLength_9b;
   if (settings_fix.number_stop_bit_RS485 == 0) USART_InitStructure.USART_StopBits = USART_StopBits_1;

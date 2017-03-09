@@ -213,6 +213,7 @@ void main_manu_function_ver2(void)
     case LIST_SETTINGS_LED_MENU2_LEVEL:
     case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
     case NAME_OF_CELL_MENU2_LEVEL:
+    case SETTINGS_RS485_MENU2_LEVEL:
     case DIAGNOSTICS_MENU2_LEVEL:
     case LABELS_MENU2_LEVEL:
     case CONFIG_LABEL_MENU2_LEVEL:
@@ -371,7 +372,9 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_settings_output_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_OUTPUT_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_leds_menu2 = LIST_SETTINGS_LED_MENU2_LEVEL;
               const enum _menu2_levels next_for_list_settings_led_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_LED_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
+
               const enum _menu2_levels *p = NULL;
               
               switch (current_state_menu2.current_level)
@@ -480,6 +483,11 @@ void main_manu_function_ver2(void)
               case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
                 {
                   p = &next_for_list_settings_communication_parameters_menu2[current_state_menu2.index_position];
+                  break;
+                }
+              case SETTINGS_RS485_MENU2_LEVEL:
+                {
+                  p = &next_for_list_settings_RS485_menu2[current_state_menu2.index_position];
                   break;
                 }
               case LABELS_MENU2_LEVEL:
@@ -760,6 +768,9 @@ void main_manu_function_ver2(void)
     case CTRL_LED_MENU2_LEVEL:
     case LANGUAGE_MENU2_LEVEL:
     case ADDRESS_MENU2_LEVEL:
+    case BAUD_RS485_MENU2_LEVEL:
+    case PARE_RS485_MENU2_LEVEL:
+    case STOP_BITS_RS485_MENU2_LEVEL:
       {
         //Формуємо маску кнопок, які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_REWRITE);
@@ -1696,6 +1707,70 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = press_esc_in_address;
       current_state_menu2.func_change = change_address;
       current_state_menu2.binary_data = false;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+  case SETTINGS_RS485_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_SETTING_RS485_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_choose_setting_RS485;
+      current_state_menu2.func_press_enter = NULL;
+      current_state_menu2.func_press_esc = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+  case BAUD_RS485_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_FOR_VIEW_BAUD_RS485;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_baud_RS485;
+      current_state_menu2.func_press_enter = press_enter_in_baud_RS485;
+      current_state_menu2.func_press_esc = press_esc_in_baud_RS485;
+      current_state_menu2.func_change = change_baud_RS485;
+      current_state_menu2.binary_data = true;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+  case PARE_RS485_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_FOR_VIEW_PARE_RS485;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_pare_RS485;
+      current_state_menu2.func_press_enter = press_enter_in_pare_RS485;
+      current_state_menu2.func_press_esc = press_esc_in_pare_RS485;
+      current_state_menu2.func_change = change_pare_RS485;
+      current_state_menu2.binary_data = true;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+  case STOP_BITS_RS485_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_FOR_VIEW_STOP_BITS_RS485;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_stopbits_RS485;
+      current_state_menu2.func_press_enter = press_enter_in_stopbits_RS485;
+      current_state_menu2.func_press_esc = press_esc_in_stopbits_RS485;
+      current_state_menu2.func_change = change_stopbits_RS485;
+      current_state_menu2.binary_data = true;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
       відкритого вікна

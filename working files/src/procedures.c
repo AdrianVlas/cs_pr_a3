@@ -13,7 +13,7 @@ void calculate_namber_bit_waiting_for_rs_485(void)
   
   //Врахування швидкості
   unsigned int multiplicator;
-  switch (settings_fix.speed_RS485)
+  switch (settings_fix.baud_RS485)
   {
   case 0:
     {

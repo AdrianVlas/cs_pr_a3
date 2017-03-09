@@ -32,7 +32,6 @@ void make_ekran_choose_communication_parameters(void)
 
   unsigned int position_temp = current_state_menu2.index_position;
   unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
   
   //Копіюємо  рядки у робочий екран
   for (size_t i = 0; i < MAX_ROW_LCD; i++)
@@ -133,7 +132,6 @@ void make_ekran_address(void)
   
     unsigned int first_symbol;
     uint32_t vaga, value;
-    size_t col_begin, col_end;
   
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
@@ -144,28 +142,17 @@ void make_ekran_address(void)
         {
           //У непарному номері рядку виводимо заголовок
           for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
-          first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
 
-          switch (index_in_ekran_tmp)
-          {
-          case INDEX_M2_ADDRESS:
-            {
-              vaga = 100; //максимальний ваговий коефіцієнт
-              col_begin = COL_ADDRESS_BEGIN;
-              col_end = COL_ADDRESS_END;
-            
-              value = *p_address;
-          
-              break;
-            }
-          }
+          first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
+          vaga = 100; //максимальний ваговий коефіцієнт
+          value = *p_address;
         }
         else
         {
           //У парному номері рядку виводимо значення уставки
           for (size_t j = 0; j < MAX_COL_LCD; j++)
           {
-            if ((j < col_begin) ||  (j > col_end ))working_ekran[i][j] = ' ';
+            if ((j < COL_ADDRESS_BEGIN) ||  (j > COL_ADDRESS_END ))working_ekran[i][j] = ' ';
             else
               calc_int_symbol_and_put_into_working_ekran((working_ekran[i] + j), &value, &vaga, &first_symbol);
           }
@@ -183,15 +170,8 @@ void make_ekran_address(void)
     if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
     {
       int last_position_cursor_x = MAX_COL_LCD;
-      switch (current_state_menu2.index_position)
-      {
-      case INDEX_M2_ADDRESS:
-        {
-          current_state_menu2.position_cursor_x = COL_ADDRESS_BEGIN;
-          last_position_cursor_x = COL_ADDRESS_END;
-          break;
-        }
-      }
+      current_state_menu2.position_cursor_x = COL_ADDRESS_BEGIN;
+      last_position_cursor_x = COL_ADDRESS_END;
 
       //Підтягуємо курсор до першого символу
       while (
@@ -235,14 +215,7 @@ enum _result_pressed_enter_during_edition press_enter_in_address(void)
   case ED_VIEWING:
   case ED_CAN_BE_EDITED:
     {
-      switch (current_state_menu2.index_position)
-      {
-      case INDEX_M2_ADDRESS:
-        {
-          current_state_menu2.position_cursor_x = COL_ADDRESS_BEGIN;
-          break;
-        }
-      }
+      current_state_menu2.position_cursor_x = COL_ADDRESS_BEGIN;
       break;
     }
   case ED_EDITION:
@@ -252,24 +225,17 @@ enum _result_pressed_enter_during_edition press_enter_in_address(void)
       
       uint32_t *p_value_edit = &settings_fix_edit.address;
       uint32_t *p_value_cont = &settings_fix.address;
-      switch (current_state_menu2.index_position)
-      {
-      case INDEX_M2_ADDRESS:
-        {
-          if (*p_value_cont != *p_value_edit) 
-          {
-            if (check_data_setpoint(*p_value_edit, KOEF_ADDRESS_MIN, KOEF_ADDRESS_MAX) == 1)
-            {
-              *p_value_cont = *p_value_edit;
-              
-              config_settings_modified |= MASKA_CHANGED_SETTINGS;
-              result = RPEDE_DATA_CHANGED_OK;
-            }
-            else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
-          }
 
-          break;
+      if (*p_value_cont != *p_value_edit) 
+      {
+        if (check_data_setpoint(*p_value_edit, KOEF_ADDRESS_MIN, KOEF_ADDRESS_MAX) == 1)
+        {
+          *p_value_cont = *p_value_edit;
+              
+          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          result = RPEDE_DATA_CHANGED_OK;
         }
+        else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
       }
 
       break;
@@ -317,53 +283,26 @@ void change_address(unsigned int action)
   //Вводимо число у відповідне поле
   if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
   {
-    uint32_t *p_value = NULL;
-    unsigned int col_end;
-    switch (current_state_menu2.index_position)
-    {
-    case INDEX_M2_ADDRESS:
-      {
-        p_value = &settings_fix_edit.address;
-        col_end = COL_ADDRESS_END;
-        break;
-      }
-    }
-    
-    if (p_value != NULL)
-    {
-      *p_value = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0), *p_value, 0, 0, col_end, 1);
-    }
+    settings_fix_edit.address = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0), settings_fix_edit.address, 0, 0, COL_ADDRESS_END, 1);
   }
   else if (
            ((action & (1 << BIT_KEY_LEFT )) != 0) ||
            ((action & (1 << BIT_KEY_RIGHT)) != 0)
           )   
   {
-    int col_begin, col_end;
-    switch (current_state_menu2.index_position)
-    {
-    case INDEX_M2_ADDRESS:
-      {
-        col_begin = COL_ADDRESS_BEGIN;
-        col_end = COL_ADDRESS_END;
-
-        break;
-      }
-    }
-    
     if (action & (1 << BIT_KEY_LEFT ))
     {
       current_state_menu2.position_cursor_x--;
-      if ((current_state_menu2.position_cursor_x < col_begin) ||
-          (current_state_menu2.position_cursor_x > col_end))
-        current_state_menu2.position_cursor_x = col_end;
+      if ((current_state_menu2.position_cursor_x < COL_ADDRESS_BEGIN) ||
+          (current_state_menu2.position_cursor_x > COL_ADDRESS_END))
+        current_state_menu2.position_cursor_x = COL_ADDRESS_END;
     }
     else
     {
       current_state_menu2.position_cursor_x++;
-      if ((current_state_menu2.position_cursor_x < col_begin) ||
-          (current_state_menu2.position_cursor_x > col_end))
-        current_state_menu2.position_cursor_x = col_begin;
+      if ((current_state_menu2.position_cursor_x < COL_ADDRESS_BEGIN) ||
+          (current_state_menu2.position_cursor_x > COL_ADDRESS_END))
+        current_state_menu2.position_cursor_x = COL_ADDRESS_BEGIN;
     }
     
   }
@@ -373,9 +312,9 @@ void change_address(unsigned int action)
 /*****************************************************/
 //Формуємо екран відображення заголовків настроювання комунікації
 /*****************************************************/
-void make_ekran_chose_setting_rs485(void)
+void make_ekran_choose_setting_RS485(void)
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CHOSE_SETTING_RS485][MAX_COL_LCD] = 
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_SETTING_RS485_M2][MAX_COL_LCD + 1] = 
   {
     {
       " Скорость обмена",
@@ -402,302 +341,603 @@ void make_ekran_chose_setting_rs485(void)
       " Конец приёма   "
     }
   };
-  int index_language = index_language_in_array(current_settings.language);
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   
   //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
-    //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < MAX_ROW_FOR_CHOSE_SETTING_RS485)
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_of_ekran][j];
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-
-    index_of_ekran++;
+    for (size_t j = 0; j < MAX_COL_LCD; j++) 
+    {
+      working_ekran[i][j] = (index_in_ekran < MAX_ROW_SETTING_RS485_M2) ? name_string[index_language][index_in_ekran][j] : ' ';
+    }
+    index_in_ekran++;
   }
 
   //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
+  current_state_menu2.position_cursor_x = 0;
   //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
   //Курсор видимий
-  current_ekran.cursor_on = 1;
+  current_state_menu2.cursor_on = 1;
   //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+  current_state_menu2.cursor_blinking_on = 0;
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
 /*****************************************************/
 //Формуємо екран відображення швидкостіобміну для інтерфейсу
 /*****************************************************/
-void make_ekran_speed_interface()
+void make_ekran_baud_RS485(void)
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_SPEED_INTERFACE][MAX_COL_LCD] = 
+  if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
   {
-    " Скорость обмена",
-    " Швидкість обм. ",
-    "   Baud rate    ",
-    " Скорость обмена"
-  };
-  int index_language = index_language_in_array(current_settings.language);
-  
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
-  index_of_ekran = ((position_temp<<1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
-  
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    if (index_of_ekran < (MAX_ROW_FOR_VIEW_SPEED_INTERFACE<<1))//Множення на два константи MAX_ROW_FOR_VIEW_SPEED_INTERFACE потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
-      if ((i & 0x1) == 0)
-      {
-        //У непарному номері рядку виводимо заголовок
-        for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_of_ekran>>1][j];
-      }
-      else
-      {
-        //У парному номері рядку виводимо значення уставки
-        const unsigned char information[MAX_NUMBER_SPEEDS_INTERFACE][MAX_COL_LCD] = 
-        {
-          "      9600      ",
-          "     14400      ",
-          "     19200      ",
-          "     28800      ",
-          "     38400      ",
-          "     57600      ",
-          "     115200     "
-        };
-        const unsigned int cursor_x[MAX_NUMBER_SPEEDS_INTERFACE] = {5, 4, 4, 4, 4, 4, 4};
+      " Вых.за диапазон",
+      " Вих.за діапазон",
+      "  Out of Limits ",
+      "Вых.за диапазон "
+    };
+    make_ekran_about_info(true, information_about_error);
+  }
+  else
+  {
+    const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_BAUD_RS485][MAX_COL_LCD + 1] = 
+    {
+      " Скорость обмена",
+      " Швидкість обм. ",
+      "   Baud rate    ",
+      " Скорость обмена"
+    };
+    int index_language = index_language_in_array(select_struct_settings_fix()->language);
+  
+    unsigned int position_temp = current_state_menu2.index_position;
+    //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
 
-        unsigned int temp_data;
-          
-        if(current_ekran.edition == 0) temp_data = current_settings.speed_RS485;
-        else temp_data = edition_settings.speed_RS485;
-          
-        if (temp_data < MAX_NUMBER_SPEEDS_INTERFACE)
+    uint32_t value;
+    if (current_state_menu2.edition == ED_VIEWING) value = settings_fix_prt.baud_RS485;
+    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) value = settings_fix.baud_RS485;
+    else value = settings_fix_edit.baud_RS485;
+  
+    for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    {
+      unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+      if (index_in_ekran_tmp < MAX_ROW_FOR_VIEW_BAUD_RS485)
+      {
+        if ((i & 0x1) == 0)
         {
-          for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information[temp_data][j];
-          current_ekran.position_cursor_x = cursor_x[temp_data];
+          //У непарному номері рядку виводимо заголовок
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
         }
         else
         {
-          const unsigned char information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD] = 
+          //У парному номері рядку виводимо значення уставки
+          if (value < MAX_NUMBER_BAUD_RS485)
           {
-            "     Ошибка     ",
-            "    Помилка     ",
-            "     Error      ",
-            "     Ошибка     "
-          };
-          const unsigned int cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 3, 4, 4};
+            const uint8_t information[MAX_NUMBER_BAUD_RS485][MAX_COL_LCD + 1] = 
+            {
+              "      9600      ",
+              "     14400      ",
+              "     19200      ",
+              "     28800      ",
+              "     38400      ",
+              "     57600      ",
+              "     115200     "
+            };
+            const unsigned int cursor_x[MAX_NUMBER_BAUD_RS485] = {5, 4, 4, 4, 4, 4, 4};
 
-          for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
-          current_ekran.position_cursor_x = cursor_x_error[index_language];
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[value][j];
+            if (position_temp == index_in_ekran_tmp)
+            {
+              current_state_menu2.position_cursor_x = cursor_x[value];
+            }
+          }
+          else
+          {
+            const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+            {
+              "     Ошибка     ",
+              "    Помилка     ",
+              "     Error      ",
+              "     Ошибка     "
+            };
+            const unsigned int cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 3, 4, 4};
+
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
+            if (position_temp == index_in_ekran_tmp)
+            {
+              current_state_menu2.position_cursor_x = cursor_x_error[index_language];
+            }
+          }
         }
       }
+      else
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+
+      index_in_ekran++;
     }
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
 
-    index_of_ekran++;
+    //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    //Курсор видимий
+    current_state_menu2.cursor_on = 1;
+    //Курсор не мигає
+    if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    else current_state_menu2.cursor_blinking_on = 1;
+    //Обновити повністю весь екран
   }
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+}
+/*****************************************************/
 
-  //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
-  current_ekran.position_cursor_y = ((position_temp<<1) + 1) & (MAX_ROW_LCD - 1);
+/*****************************************************/
+/*
+Натискування Enter у вікні відображення налаштувань швидкості
+*/
+/*****************************************************/
+enum _result_pressed_enter_during_edition press_enter_in_baud_RS485(void)
+{
+  enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+  switch (current_state_menu2.edition)
+  {
+  case ED_EDITION:
+    {
+      //Перевіряємо, чи дані рельно змінилися
+      result = RPEDE_DATA_NOT_CHANGED;
+      
+      int32_t *p_value_edit = &settings_fix_edit.baud_RS485;
+      int32_t *p_value_cont = &settings_fix.baud_RS485;
+      if (*p_value_cont != *p_value_edit) 
+      {
+        if (check_data_setpoint(*p_value_edit, VALUE_BAUD_RS485_MIN, VALUE_BAUD_RS485_MAX) == 1)
+        {
+          *p_value_cont = *p_value_edit;
+          
+          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          result = RPEDE_DATA_CHANGED_OK;
+        }
+        else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+      }
 
-  //Курсор видимий, якщо ми у режимі редагування
-  if (current_ekran.edition == 0) current_ekran.cursor_on = 0;
-  else current_ekran.cursor_on = 1;
+      break;
+    }
+  }
+  
+  return result;
+}
+/*****************************************************/
 
-  //Курсор не мигає, якщо ми у режимі редагування
-  if(current_ekran.edition == 0)current_ekran.cursor_blinking_on = 0;
-  else current_ekran.cursor_blinking_on = 1;
+/*****************************************************/
+/*
+Натискування ESC у вікні налаштувань швидкості
+*/
+/*****************************************************/
+void press_esc_in_baud_RS485(void)
+{
+  settings_fix_edit.baud_RS485 = settings_fix.baud_RS485; 
+}
+/*****************************************************/
 
-  //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+/*****************************************************/
+//Зміна налаштувань швидкості
+/*****************************************************
+Вхідні параметри
+(1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+(1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+
+Вхідні параметри
+  Немає
+*****************************************************/
+void change_baud_RS485(unsigned int action)
+{
+  //Вводимо число у відповідне поле
+  if (
+      ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+      ((action & (1 << BIT_KEY_RIGHT)) != 0)
+     )   
+  {
+    int32_t value = settings_fix_edit.baud_RS485;
+    if ((action & (1 << BIT_KEY_RIGHT)) != 0) 
+    {
+      if ((++value) > VALUE_BAUD_RS485_MAX)
+        value = VALUE_BAUD_RS485_MIN;
+    }
+    else 
+    {
+      if ((--value) < VALUE_BAUD_RS485_MIN)
+        value = VALUE_BAUD_RS485_MAX;
+    }
+    settings_fix_edit.baud_RS485 = value;
+  }
 }
 /*****************************************************/
 
 /*****************************************************/
 //Формуємо екран відображення контролю парності для інтерфейсу
 /*****************************************************/
-void make_ekran_pare_interface()
+void make_ekran_pare_RS485()
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_PARE_INTERFACE][MAX_COL_LCD] = 
+  if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
   {
-    " Контр.четности ",
-    " Контр.парності ",
-    "     Parity     ",
-    " Контр.четности "
-  };
-  int index_language = index_language_in_array(current_settings.language);
-  
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
-  index_of_ekran = ((position_temp<<1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
-  
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    if (index_of_ekran < (MAX_ROW_FOR_VIEW_PARE_INTERFACE<<1))//Множення на два константи MAX_ROW_FOR_VIEW_PARE_INTERFACE потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
-      if ((i & 0x1) == 0)
+      " Вых.за диапазон",
+      " Вих.за діапазон",
+      "  Out of Limits ",
+      "Вых.за диапазон "
+    };
+    make_ekran_about_info(true, information_about_error);
+  }
+  else
+  {
+    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_PARE_RS485][MAX_COL_LCD + 1] = 
+    {
+      " Контр.четности ",
+      " Контр.парності ",
+      "     Parity     ",
+      " Контр.четности "
+    };
+    int index_language = index_language_in_array(select_struct_settings_fix()->language);
+  
+    unsigned int position_temp = current_state_menu2.index_position;
+    //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  
+    uint32_t value;
+    if (current_state_menu2.edition == ED_VIEWING) value = settings_fix_prt.pare_bit_RS485;
+    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) value = settings_fix.pare_bit_RS485;
+    else value = settings_fix_edit.pare_bit_RS485;
+  
+    for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    {
+      unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+      if (index_in_ekran_tmp < MAX_ROW_FOR_VIEW_PARE_RS485)
       {
-        //У непарному номері рядку виводимо заголовок
-        for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_of_ekran>>1][j];
-      }
-      else
-      {
-        const unsigned char information[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_INTERFACE + 1][MAX_COL_LCD] = 
+        if ((i & 0x1) == 0)
         {
-          {"      Нет       ", "     Нечет.     ", "      Чет.      ", "     Ошибка     "},
-          {"      Нема      ", "    Непарн.     ", "      Парн.     ", "    Помилка     "},
-          {"      None      ", "      Odd       ", "      Even      ", "     Error      "},
-          {"      Нет       ", "     Нечет.     ", "      Чет.      ", "     Ошибка     "}
-        };
-        const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_INTERFACE + 1] = 
-        {
-          {5, 4, 5, 4},
-          {5, 3, 5, 3},
-          {5, 5, 5, 4},
-          {5, 4, 5, 4}
-        };
-
-        unsigned int temp_data;
-          
-        if(current_ekran.edition == 0) temp_data = current_settings.pare_bit_RS485;
-        else temp_data = edition_settings.pare_bit_RS485;
-
-        if (temp_data < MAX_NUMBER_PARE_INTERFACE)
-        {
-          for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][temp_data][j];
-          current_ekran.position_cursor_x = cursor_x[index_language][temp_data];
+          //У непарному номері рядку виводимо заголовок
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
         }
         else
         {
-          for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][MAX_NUMBER_PARE_INTERFACE][j];
-          current_ekran.position_cursor_x = cursor_x[index_language][MAX_NUMBER_PARE_INTERFACE];
+          if (value < MAX_NUMBER_PARE_RS485)
+          {
+            const uint8_t information[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485][MAX_COL_LCD + 1] = 
+            {
+              {"      Нет       ", "     Нечет.     ", "      Чет.      "},
+              {"      Нема      ", "    Непарн.     ", "      Парн.     "},
+              {"      None      ", "      Odd       ", "      Even      "},
+              {"      Нет       ", "     Нечет.     ", "      Чет.      "}
+            };
+            const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485 + 1] = 
+            {
+              {5, 4, 5, 4},
+              {5, 3, 5, 3},
+              {5, 5, 5, 4},
+              {5, 4, 5, 4}
+            };
+
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][value][j];
+            if (position_temp == index_in_ekran_tmp)
+            {
+              current_state_menu2.position_cursor_x = cursor_x[index_language][value];
+            }
+          }
+          else
+          {
+            const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+            {
+              "     Ошибка     ",
+              "    Помилка     ",
+              "     Error      ",
+              "     Ошибка     "
+            };
+            const unsigned int cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 3, 4, 4};
+
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
+            if (position_temp == index_in_ekran_tmp)
+            {
+              current_state_menu2.position_cursor_x = cursor_x_error[index_language];
+            }
+          }
         }
       }
+      else
+        for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+
+      index_in_ekran++;
     }
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
 
-    index_of_ekran++;
+    //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    //Курсор видимий
+    current_state_menu2.cursor_on = 1;
+    //Курсор не мигає
+    if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    else current_state_menu2.cursor_blinking_on = 1;
   }
-
-  //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
-  current_ekran.position_cursor_y = ((position_temp<<1) + 1) & (MAX_ROW_LCD - 1);
-
-  //Курсор видимий, якщо ми у режимі редагування
-  if (current_ekran.edition == 0) current_ekran.cursor_on = 0;
-  else current_ekran.cursor_on = 1;
-
-  //Курсор не мигає, якщо ми у режимі редагування
-  if(current_ekran.edition == 0)current_ekran.cursor_blinking_on = 0;
-  else current_ekran.cursor_blinking_on = 1;
-
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+}
+/*****************************************************/
+
+/*****************************************************/
+/*
+Натискування Enter у вікні відображення парності
+*/
+/*****************************************************/
+enum _result_pressed_enter_during_edition press_enter_in_pare_RS485(void)
+{
+  enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+  switch (current_state_menu2.edition)
+  {
+  case ED_EDITION:
+    {
+      //Перевіряємо, чи дані рельно змінилися
+      result = RPEDE_DATA_NOT_CHANGED;
+      
+      int32_t *p_value_edit = &settings_fix_edit.pare_bit_RS485;
+      int32_t *p_value_cont = &settings_fix.pare_bit_RS485;
+      if (*p_value_cont != *p_value_edit) 
+      {
+        if (check_data_setpoint(*p_value_edit, VALUE_PARE_RS485_MIN, VALUE_PARE_RS485_MAX) == 1)
+        {
+          *p_value_cont = *p_value_edit;
+          
+          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          result = RPEDE_DATA_CHANGED_OK;
+        }
+        else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+      }
+
+      break;
+    }
+  }
+  
+  return result;
+}
+/*****************************************************/
+
+/*****************************************************/
+/*
+Натискування ESC у вікні налаштувань парності
+*/
+/*****************************************************/
+void press_esc_in_pare_RS485(void)
+{
+  settings_fix_edit.pare_bit_RS485 = settings_fix.pare_bit_RS485; 
+}
+/*****************************************************/
+
+/*****************************************************/
+//Зміна налаштувань парності
+/*****************************************************
+Вхідні параметри
+(1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+(1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+
+Вхідні параметри
+  Немає
+*****************************************************/
+void change_pare_RS485(unsigned int action)
+{
+  //Вводимо число у відповідне поле
+  if (
+      ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+      ((action & (1 << BIT_KEY_RIGHT)) != 0)
+     )   
+  {
+    int32_t value = settings_fix_edit.pare_bit_RS485;
+    if ((action & (1 << BIT_KEY_RIGHT)) != 0) 
+    {
+      if ((++value) > VALUE_PARE_RS485_MAX)
+        value = VALUE_PARE_RS485_MIN;
+    }
+    else 
+    {
+      if ((--value) < VALUE_PARE_RS485_MIN)
+        value = VALUE_PARE_RS485_MAX;
+    }
+    settings_fix_edit.pare_bit_RS485 = value;
+  }
 }
 /*****************************************************/
 
 /*****************************************************/
 //Формуємо екран відображення stop-bit для інтерфейсу
 /*****************************************************/
-void make_ekran_stopbits_interface()
+void make_ekran_stopbits_RS485()
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_STOP_BITS_INTERFACE][MAX_COL_LCD] = 
+  if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
   {
-    " Колич.стоп-бит ",
-    "Кільк.стоп-біт  ",
-    "   Stop Bits    ",
-    " Колич.стоп-бит "
-  };
-  int index_language = index_language_in_array(current_settings.language);
-  
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
-  index_of_ekran = ((position_temp<<1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
-  
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    if (index_of_ekran < (MAX_ROW_FOR_VIEW_STOP_BITS_INTERFACE<<1))//Множення на два константи MAX_ROW_FOR_VIEW_STOP_BITS_INTERFACE потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
-      if ((i & 0x1) == 0)
+      " Вых.за диапазон",
+      " Вих.за діапазон",
+      "  Out of Limits ",
+      "Вых.за диапазон "
+    };
+    make_ekran_about_info(true, information_about_error);
+  }
+  else
+  {
+    const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_STOP_BITS_RS485][MAX_COL_LCD + 1] = 
+    {
+      " Колич.стоп-бит ",
+      "Кільк.стоп-біт  ",
+      "   Stop Bits    ",
+      " Колич.стоп-бит "
+    };
+    int index_language = index_language_in_array(select_struct_settings_fix()->language);
+  
+    unsigned int position_temp = current_state_menu2.index_position;
+    //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  
+    uint32_t value;
+    if (current_state_menu2.edition == ED_VIEWING) value = settings_fix_prt.number_stop_bit_RS485;
+    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) value = settings_fix.number_stop_bit_RS485;
+    else value = settings_fix_edit.number_stop_bit_RS485;
+  
+    for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    {
+      unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+      if (index_in_ekran_tmp < MAX_ROW_FOR_VIEW_STOP_BITS_RS485)
       {
-        //У непарному номері рядку виводимо заголовок
-        for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_of_ekran>>1][j];
-      }
-      else
-      {
-        const unsigned char information[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_INTERFACE + 1][MAX_COL_LCD] = 
+        if ((i & 0x1) == 0)
         {
-          {"      Один      ", "      Два       ", "     Ошибка     "},
-          {"      Один      ", "      Два       ", "    Помилка     "},
-          {"      One       ", "      Two       ", "     Error      "},
-          {"      Один      ", "      Два       ", "     Ошибка     "}
-        };
-        const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_INTERFACE + 1] = 
-        {
-          {5, 5, 4},
-          {5, 5, 3},
-          {5, 5, 4},
-          {5, 5, 4}
-        };
-
-        unsigned int temp_data;
-          
-        if(current_ekran.edition == 0) temp_data = current_settings.number_stop_bit_RS485;
-        else temp_data = edition_settings.number_stop_bit_RS485;
-          
-        if (temp_data < MAX_NUMBER_STOP_BITS_INTERFACE)
-        {
-          for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][temp_data][j];
-          current_ekran.position_cursor_x = cursor_x[index_language][temp_data];
+          //У непарному номері рядку виводимо заголовок
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
         }
         else
         {
-          for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][MAX_NUMBER_STOP_BITS_INTERFACE][j];
-          current_ekran.position_cursor_x = cursor_x[index_language][MAX_NUMBER_STOP_BITS_INTERFACE];
+          if (value < MAX_NUMBER_STOP_BITS_RS485)
+          {
+            const unsigned char information[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485][MAX_COL_LCD + 1] = 
+            {
+              {"      Один      ", "      Два       "},
+              {"      Один      ", "      Два       "},
+              {"      One       ", "      Two       "},
+              {"      Один      ", "      Два       "}
+            };
+            const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485] = 
+            {
+              {5, 5},
+              {5, 5},
+              {5, 5},
+              {5, 5}
+            };
+
+            for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][value][j];
+            if (position_temp == index_in_ekran_tmp)
+            {
+              current_state_menu2.position_cursor_x = cursor_x[index_language][value];
+            }
+          }
+          else
+          {
+            const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+            {
+              "     Ошибка     ",
+              "    Помилка     ",
+              "     Error      ",
+              "     Ошибка     "
+            };
+            const unsigned int cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 3, 4, 4};
+
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
+            if (position_temp == index_in_ekran_tmp)
+            {
+              current_state_menu2.position_cursor_x = cursor_x_error[index_language];
+            }
+          }
         }
       }
-    }
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+      else
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
 
-    index_of_ekran++;
+      index_in_ekran++;
+    }
+
+    //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    //Курсор видимий
+    current_state_menu2.cursor_on = 1;
+    //Курсор не мигає
+    if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    else current_state_menu2.cursor_blinking_on = 1;
   }
 
-  //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
-  current_ekran.position_cursor_y = ((position_temp<<1) + 1) & (MAX_ROW_LCD - 1);
-
-  //Курсор видимий, якщо ми у режимі редагування
-  if (current_ekran.edition == 0) current_ekran.cursor_on = 0;
-  else current_ekran.cursor_on = 1;
-
-  //Курсор не мигає, якщо ми у режимі редагування
-  if(current_ekran.edition == 0)current_ekran.cursor_blinking_on = 0;
-  else current_ekran.cursor_blinking_on = 1;
-
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+}
+/*****************************************************/
+
+/*****************************************************/
+/*
+Натискування Enter у вікні відображення стоп-бітів
+*/
+/*****************************************************/
+enum _result_pressed_enter_during_edition press_enter_in_stopbits_RS485(void)
+{
+  enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+  switch (current_state_menu2.edition)
+  {
+  case ED_EDITION:
+    {
+      //Перевіряємо, чи дані рельно змінилися
+      result = RPEDE_DATA_NOT_CHANGED;
+      
+      int32_t *p_value_edit = &settings_fix_edit.number_stop_bit_RS485;
+      int32_t *p_value_cont = &settings_fix.number_stop_bit_RS485;
+      if (*p_value_cont != *p_value_edit) 
+      {
+        if (check_data_setpoint(*p_value_edit, VALUE_STOP_BITS_RS485_MIN, VALUE_STOP_BITS_RS485_MAX) == 1)
+        {
+          *p_value_cont = *p_value_edit;
+          
+          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          result = RPEDE_DATA_CHANGED_OK;
+        }
+        else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+      }
+
+      break;
+    }
+  }
+  
+  return result;
+}
+/*****************************************************/
+
+/*****************************************************/
+/*
+Натискування ESC у вікні налаштувань стоп-бітів
+*/
+/*****************************************************/
+void press_esc_in_stopbits_RS485(void)
+{
+  settings_fix_edit.number_stop_bit_RS485 = settings_fix.number_stop_bit_RS485; 
+}
+/*****************************************************/
+
+/*****************************************************/
+//Зміна налаштувань стоп-бітів
+/*****************************************************
+Вхідні параметри
+(1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+(1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+
+Вхідні параметри
+  Немає
+*****************************************************/
+void change_stopbits_RS485(unsigned int action)
+{
+  //Вводимо число у відповідне поле
+  if (
+      ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+      ((action & (1 << BIT_KEY_RIGHT)) != 0)
+     )   
+  {
+    int32_t value = settings_fix_edit.number_stop_bit_RS485;
+    if ((action & (1 << BIT_KEY_RIGHT)) != 0) 
+    {
+      if ((++value) > VALUE_STOP_BITS_RS485_MAX)
+        value = VALUE_STOP_BITS_RS485_MIN;
+    }
+    else 
+    {
+      if ((--value) < VALUE_STOP_BITS_RS485_MIN)
+        value = VALUE_STOP_BITS_RS485_MAX;
+    }
+    settings_fix_edit.number_stop_bit_RS485 = value;
+  }
 }
 /*****************************************************/
 

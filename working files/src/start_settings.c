@@ -1341,9 +1341,9 @@ void min_settings(__SETTINGS_FIX *target_label)
   target_label->name_of_cell[10] = 'e';
   
   target_label->address = KOEF_ADDRESS_MIN;
-  target_label->speed_RS485 = VALUE_SPEED_INTERFACE_MIN;
-  target_label->pare_bit_RS485 = VALUE_PARE_INTERFACE_MAX; //томущо восновному контроль парності має бути в EVEN - а це число відповідає VALUE_PARE_INTERFACE_MAX
-  target_label->number_stop_bit_RS485 = VALUE_STOP_BITS_INTERFACE_MIN;
+  target_label->baud_RS485 = VALUE_BAUD_RS485_MIN;
+  target_label->pare_bit_RS485 = VALUE_PARE_RS485_MAX; //томущо восновному контроль парності має бути в EVEN - а це число відповідає VALUE_PARE_INTERFACE_MAX
+  target_label->number_stop_bit_RS485 = VALUE_STOP_BITS_RS485_MIN;
   target_label->time_out_1_RS485 = VALUE_TIME_OUT_1_INTERFACE_MIN;
   
   target_label->language = LANGUAGE_EN;
