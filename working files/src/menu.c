@@ -2574,15 +2574,6 @@ void main_manu_function(void)
                 //Формуємо екран управлінської інформації для сигналізації
                 make_ekran_control_alarms(current_ekran.current_level - EKRAN_CONTROL_ALARMS1);
               }
-              else if(current_ekran.current_level == EKRAN_VIEW_TIMEOUT_RS485)
-              {
-                if (current_ekran.position_cursor_x == COL_TIMEOUT_INTERFACE_COMMA )current_ekran.position_cursor_x++;
-                if ((current_ekran.position_cursor_x < COL_TIMEOUT_INTERFACE_BEGIN) ||
-                    (current_ekran.position_cursor_x > COL_TIMEOUT_INTERFACE_END))
-                  current_ekran.position_cursor_x = COL_TIMEOUT_INTERFACE_BEGIN;
-                //Формуємо екран інформації по time-out наступного символу
-                make_ekran_timeout_interface();
-              }
               else if(current_ekran.current_level == EKRAN_GENERAL_PICKUPS_EL)
               {
                 if(current_ekran.index_position == INDEX_ML_NUMBER_INERATION)
@@ -2778,15 +2769,6 @@ void main_manu_function(void)
 
                 //Формуємо екран управлінської інформації для сигналізації
                 make_ekran_control_alarms(current_ekran.current_level - EKRAN_CONTROL_ALARMS1);
-              }
-              else if(current_ekran.current_level == EKRAN_VIEW_TIMEOUT_RS485)
-              {
-                if (current_ekran.position_cursor_x == COL_TIMEOUT_INTERFACE_COMMA )current_ekran.position_cursor_x--;
-                if ((current_ekran.position_cursor_x < COL_TIMEOUT_INTERFACE_BEGIN) ||
-                    (current_ekran.position_cursor_x > COL_TIMEOUT_INTERFACE_END))
-                  current_ekran.position_cursor_x = COL_TIMEOUT_INTERFACE_END;
-                //Формуємо екран інформації по time-out наступного символу
-                make_ekran_timeout_interface();
               }
               else if(current_ekran.current_level == EKRAN_GENERAL_PICKUPS_EL)
               {

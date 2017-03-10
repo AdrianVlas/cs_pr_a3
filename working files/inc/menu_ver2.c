@@ -373,7 +373,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_leds_menu2 = LIST_SETTINGS_LED_MENU2_LEVEL;
               const enum _menu2_levels next_for_list_settings_led_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_LED_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
 
               const enum _menu2_levels *p = NULL;
               
@@ -771,6 +771,7 @@ void main_manu_function_ver2(void)
     case BAUD_RS485_MENU2_LEVEL:
     case PARE_RS485_MENU2_LEVEL:
     case STOP_BITS_RS485_MENU2_LEVEL:
+    case TIMEOUT_RS485_MENU2_LEVEL:
       {
         //Формуємо маску кнопок, які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_REWRITE);
@@ -1771,6 +1772,22 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = press_esc_in_stopbits_RS485;
       current_state_menu2.func_change = change_stopbits_RS485;
       current_state_menu2.binary_data = true;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+  case TIMEOUT_RS485_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_FOR_VIEW_TIMEOUT_RS485;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_timeout_RS485;
+      current_state_menu2.func_press_enter = press_enter_in_timeout_RS485;
+      current_state_menu2.func_press_esc = press_esc_in_timeout_RS485;
+      current_state_menu2.func_change = change_timeout_RS485;
+      current_state_menu2.binary_data = false;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
       відкритого вікна

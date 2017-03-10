@@ -30,11 +30,11 @@ enum __index_choose_settings_RS485
 #define MAX_ROW_FOR_VIEW_BAUD_RS485                     1
 #define MAX_ROW_FOR_VIEW_PARE_RS485                     1
 #define MAX_ROW_FOR_VIEW_STOP_BITS_RS485                1
-#define MAX_ROW_FOR_VIEW_TIMEOUT_INTERFACE              1
+#define MAX_ROW_FOR_VIEW_TIMEOUT_RS485                  1
 
 
-#define COL_TIMEOUT_INTERFACE_BEGIN    3
-#define COL_TIMEOUT_INTERFACE_COMMA    5
-#define COL_TIMEOUT_INTERFACE_END      6
+#define COL_TIMEOUT_RS485_BEGIN    3
+#define COL_TIMEOUT_RS485_COMMA    5
+#define COL_TIMEOUT_RS485_END      6
 
 #endif

@@ -82,7 +82,10 @@ void make_ekran_stopbits_RS485(void);
 enum _result_pressed_enter_during_edition press_enter_in_stopbits_RS485(void);
 void press_esc_in_stopbits_RS485(void);
 void change_stopbits_RS485(unsigned int);
-void make_ekran_timeout_interface(void);
+void make_ekran_timeout_RS485(void);
+enum _result_pressed_enter_during_edition press_enter_in_timeout_RS485(void);
+void press_esc_in_timeout_RS485(void);
+void change_timeout_RS485(unsigned int);
 
 void inc_or_dec_value(unsigned int *, unsigned int);
 unsigned int bcd_to_int(unsigned char);

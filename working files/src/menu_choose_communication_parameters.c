@@ -944,92 +944,211 @@ void change_stopbits_RS485(unsigned int action)
 /*****************************************************/
 //Формуємо екран відображення time-out наступного символу для інтерфейсу
 /*****************************************************/
-void make_ekran_timeout_interface()
+void make_ekran_timeout_RS485(void)
 {
-  const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_TIMEOUT_INTERFACE][MAX_COL_LCD] = 
+  if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
   {
-    "  Конец приёма  ",
-    "Кінець приймання",
-    "End of Reception",
-    "  Конец приёма  "
-  };
-  const unsigned char symbols[MAX_NAMBER_LANGUAGE][5] = {"симв.", "симв.", "symb.", "симв."};
-  int index_language = index_language_in_array(current_settings.language);
-  
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  unsigned int vaga, value, first_symbol;
-  
-  //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
-  index_of_ekran = ((position_temp<<1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
-  
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    if (index_of_ekran < (MAX_ROW_FOR_VIEW_TIMEOUT_INTERFACE<<1))//Множення на два константи MAX_ROW_FOR_VIEW_TIMEOUT_INTERFACE потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
-      if ((i & 0x1) == 0)
+      " Вых.за диапазон",
+      " Вих.за діапазон",
+      "  Out of Limits ",
+      "Вых.за диапазон "
+    };
+    make_ekran_about_info(true, information_about_error);
+  }
+  else
+  {
+    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_TIMEOUT_RS485][MAX_COL_LCD + 1] = 
+    {
+      "  Конец приёма  ",
+      "Кінець приймання",
+      "End of Reception",
+      "  Конец приёма  "
+    };
+    const uint8_t symbols[MAX_NAMBER_LANGUAGE][5 + 1] = {"симв.", "симв.", "symb.", "симв."};
+    int index_language = index_language_in_array(select_struct_settings_fix()->language);
+  
+    unsigned int position_temp = current_state_menu2.index_position;
+    //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  
+    unsigned int first_symbol;
+    uint32_t vaga, value;
+    if (current_state_menu2.edition == ED_VIEWING) value = settings_fix_prt.time_out_1_RS485;
+    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) value = settings_fix.time_out_1_RS485;
+    else value = settings_fix_edit.time_out_1_RS485;
+  
+    for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    {
+      unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+      if (index_in_ekran_tmp < MAX_ROW_FOR_VIEW_TIMEOUT_RS485)
       {
-        //У непарному номері рядку виводимо заголовок
-        for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_of_ekran>>1][j];
-
-        vaga = 100; //максимальний ваговий коефіцієнт для вилілення старшого розряду
-        if (current_ekran.edition == 0) value = current_settings.time_out_1_RS485; //у змінну value поміщаємо значення time-out наступного символу 
-        else value = edition_settings.time_out_1_RS485;
-        first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
-      }
-      else
-      {
-        //У парному номері рядку виводимо значення уставки
-        for (unsigned int j = 0; j<MAX_COL_LCD; j++)
+        if ((i & 0x1) == 0)
         {
-          if (
-              ((j < COL_TIMEOUT_INTERFACE_BEGIN) ||  (j > COL_TIMEOUT_INTERFACE_END )) &&
-              (
-               !((j >= (COL_TIMEOUT_INTERFACE_END + 2)) && (j <= (COL_TIMEOUT_INTERFACE_END + 6)))
-              )    
-             )working_ekran[i][j] = ' ';
-          else if (j == COL_TIMEOUT_INTERFACE_COMMA )working_ekran[i][j] = ',';
-          else if ((j >= (COL_TIMEOUT_INTERFACE_END + 2)) && (j <= (COL_TIMEOUT_INTERFACE_END + 6)))
-            working_ekran[i][j] = symbols[index_language][j - (COL_TIMEOUT_INTERFACE_END + 2)];
-          else
-            calc_symbol_and_put_into_working_ekran((working_ekran[i] + j), &value, &vaga, &first_symbol, j, COL_TIMEOUT_INTERFACE_COMMA, 0);
+          //У непарному номері рядку виводимо заголовок
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+
+          first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
+          vaga = 100; //максимальний ваговий коефіцієнт для вилілення старшого розряду
+        }
+        else
+        {
+          //У парному номері рядку виводимо значення уставки
+          for (size_t j = 0; j<MAX_COL_LCD; j++)
+          {
+            if (
+                ((j < COL_TIMEOUT_RS485_BEGIN) ||  (j > COL_TIMEOUT_RS485_END )) &&
+                (
+                 !((j >= (COL_TIMEOUT_RS485_END + 2)) && (j <= (COL_TIMEOUT_RS485_END + 6)))
+                )    
+               )working_ekran[i][j] = ' ';
+            else if (j == COL_TIMEOUT_RS485_COMMA )working_ekran[i][j] = ',';
+            else if ((j >= (COL_TIMEOUT_RS485_END + 2)) && (j <= (COL_TIMEOUT_RS485_END + 6)))
+              working_ekran[i][j] = symbols[index_language][j - (COL_TIMEOUT_RS485_END + 2)];
+            else
+              calc_symbol_and_put_into_working_ekran((working_ekran[i] + j), &value, &vaga, &first_symbol, j, COL_TIMEOUT_RS485_COMMA, 0);
+          }
         }
       }
-        
+      else
+        for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+
+      index_in_ekran++;
+    }
+
+    //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    current_state_menu2.position_cursor_y = ((position_temp<<1) + 1) & (MAX_ROW_LCD - 1);
+    //Курсор по горизонталі відображається на першому символі у випадку, коли ми не в режимі редагування, інакше позиція буде визначена у функцї main_manu_function
+    if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
+    {
+      int last_position_cursor_x = COL_TIMEOUT_RS485_END;
+      current_state_menu2.position_cursor_x = COL_TIMEOUT_RS485_BEGIN;
+
+      //Підтягуємо курсор до першого символу
+      while (
+             ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x + 1]) == ' ') && 
+             (current_state_menu2.position_cursor_x < (last_position_cursor_x -1))
+             )
+      {
+        current_state_menu2.position_cursor_x++;
+      }
+
+      //Курсор ставимо так, щоб він був перед числом
+      if (
+          ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x]) != ' ') && 
+          (current_state_menu2.position_cursor_x > 0)
+         )
+      {
+        current_state_menu2.position_cursor_x--;
+      }
+    }
+    //Курсор видимий
+    current_state_menu2.cursor_on = 1;
+    //Курсор не мигає
+    if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    else current_state_menu2.cursor_blinking_on = 1;
+  }
+  //Обновити повністю весь екран
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+}
+/*****************************************************/
+
+/*****************************************************/
+/*
+Натискування Enter у вікні відображення time-out наступного символу для інтерфейсу
+*/
+/*****************************************************/
+enum _result_pressed_enter_during_edition press_enter_in_timeout_RS485(void)
+{
+  enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+  switch (current_state_menu2.edition)
+  {
+  case ED_VIEWING:
+  case ED_CAN_BE_EDITED:
+    {
+      current_state_menu2.position_cursor_x = COL_TIMEOUT_RS485_BEGIN;
+    }
+  case ED_EDITION:
+    {
+      //Перевіряємо, чи дані рельно змінилися
+      result = RPEDE_DATA_NOT_CHANGED;
+      
+      uint32_t *p_value_edit = &settings_fix_edit.time_out_1_RS485;
+      uint32_t *p_value_cont = &settings_fix.time_out_1_RS485;
+
+      if (*p_value_cont != *p_value_edit) 
+      {
+        if (check_data_setpoint(*p_value_edit, VALUE_TIME_OUT_1_RS485_MIN, VALUE_TIME_OUT_1_RS485_MAX) == 1)
+        {
+          *p_value_cont = *p_value_edit;
+          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          result = RPEDE_DATA_CHANGED_OK;
+        }
+        else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+      }
+
+      break;
+    }
+  }
+  
+  return result;
+}
+/*****************************************************/
+
+/*****************************************************/
+/*
+Натискування ESC у вікні відображення time-out наступного символу для інтерфейсу
+*/
+/*****************************************************/
+void press_esc_in_timeout_RS485(void)
+{
+  settings_fix_edit.time_out_1_RS485 = settings_fix.time_out_1_RS485;
+}
+/*****************************************************/
+
+/*****************************************************/
+//Зміна time-out наступного символу для інтерфейсу
+/*****************************************************
+Вхідні параметри
+(1 << BIT_KEY_DOWN) - натснуто кнопку вниз
+(1 << BIT_KEY_UP)   - атиснуто кнопку вверх
+(1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+(1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+
+Вхідні параметри
+  Немає
+*****************************************************/
+void change_timeout_RS485(unsigned int action)
+{
+  //Вводимо число у відповідне поле
+  if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
+  {
+    settings_fix_edit.time_out_1_RS485 = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0), settings_fix_edit.time_out_1_RS485, 1, COL_TIMEOUT_RS485_COMMA, COL_TIMEOUT_RS485_END, 1);
+  }
+  else if (
+           ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+           ((action & (1 << BIT_KEY_RIGHT)) != 0)
+          )   
+  {
+    if (action & (1 << BIT_KEY_LEFT ))
+    {
+      current_state_menu2.position_cursor_x--;
+      if (current_state_menu2.position_cursor_x == COL_TIMEOUT_RS485_COMMA )current_state_menu2.position_cursor_x--;
+      if ((current_state_menu2.position_cursor_x < COL_TIMEOUT_RS485_BEGIN) ||
+          (current_state_menu2.position_cursor_x > COL_TIMEOUT_RS485_END))
+        current_state_menu2.position_cursor_x = COL_TIMEOUT_RS485_END;
     }
     else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-
-    index_of_ekran++;
-  }
-
-  //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
-  current_ekran.position_cursor_y = ((position_temp<<1) + 1) & (MAX_ROW_LCD - 1);
-  //Курсор по горизонталі відображається на першому символі у випадку, коли ми не в режимі редагування, інакше позиція буде визначена у функцї main_manu_function
-  if (current_ekran.edition == 0)
-  {
-    current_ekran.position_cursor_x = COL_TIMEOUT_INTERFACE_BEGIN;
-    int last_position_cursor_x = COL_TIMEOUT_INTERFACE_END;
+    {
+      current_state_menu2.position_cursor_x++;
+      if (current_state_menu2.position_cursor_x == COL_TIMEOUT_RS485_COMMA )current_state_menu2.position_cursor_x++;
+      if ((current_state_menu2.position_cursor_x < COL_TIMEOUT_RS485_BEGIN) ||
+          (current_state_menu2.position_cursor_x > COL_TIMEOUT_RS485_END))
+        current_state_menu2.position_cursor_x = COL_TIMEOUT_RS485_BEGIN;
+    }
     
-    //Підтягуємо курсор до першого символу
-    while (((working_ekran[current_ekran.position_cursor_y][current_ekran.position_cursor_x + 1]) == ' ') && 
-           (current_ekran.position_cursor_x < (last_position_cursor_x -1))) current_ekran.position_cursor_x++;
-
-    //Курсор ставимо так, щоб він був перед числом
-    if (((working_ekran[current_ekran.position_cursor_y][current_ekran.position_cursor_x]) != ' ') && 
-        (current_ekran.position_cursor_x > 0)) current_ekran.position_cursor_x--;
   }
-  //Курсор видимий, якщо ми у режимі редагування
-  if (current_ekran.edition == 0) current_ekran.cursor_on = 0;
-  else current_ekran.cursor_on = 1;
-
-  //Курсор не мигає
-  if(current_ekran.edition == 0)current_ekran.cursor_blinking_on = 0;
-  else current_ekran.cursor_blinking_on = 1;
-  //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 

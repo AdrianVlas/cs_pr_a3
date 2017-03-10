@@ -3545,10 +3545,10 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       {
         temp_value = data;
         
-#if (VALUE_TIME_OUT_1_INTERFACE_MIN != 0)          
-        if ((temp_value >= VALUE_TIME_OUT_1_INTERFACE_MIN) && (temp_value <= VALUE_TIME_OUT_1_INTERFACE_MAX))
+#if (VALUE_TIME_OUT_1_RS485_MIN != 0)          
+        if ((temp_value >= VALUE_TIME_OUT_1_RS485_MIN) && (temp_value <= VALUE_TIME_OUT_1_RS485_MAX))
 #else
-        if (temp_value <= VALUE_TIME_OUT_1_INTERFACE_MAX)
+        if (temp_value <= VALUE_TIME_OUT_1_RS485_MAX)
 #endif            
           target_label->time_out_1_RS485 = temp_value;
         else

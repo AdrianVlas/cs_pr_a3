@@ -2221,8 +2221,16 @@ void copy_settings(
 
 Вхідна інформація
 -----------------
+direction:
 1 - внести зміни у "для захистів" структурах і масивах
 0 - відновити попердній стан по "для захисту" у стуктурах і масивах "контейнера" і "для редагування"
+
+source:
+0 - мінімальні параметри
+1 - клавіатура
+2 - USB
+3 - RS-485
+
 
 Вихідна інформація про помилку
 -----------------
@@ -2236,6 +2244,28 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
   unsigned int error = 0;
   if (direction != 0)
   {
+    unsigned int reconfiguration_RS_485 = 0, reconfiguration_RS_485_with_reset_usart = 0;
+    if (
+        (settings_fix_prt.baud_RS485 != settings_fix.baud_RS485) ||
+        (settings_fix_prt.pare_bit_RS485 != settings_fix.pare_bit_RS485) ||
+        (settings_fix_prt.number_stop_bit_RS485 != settings_fix.number_stop_bit_RS485) ||
+        (settings_fix_prt.time_out_1_RS485 != settings_fix.time_out_1_RS485)
+       )
+    {
+      //Помічаємо, що треба переконфігурувати інтерфейс RS-485
+      reconfiguration_RS_485 = 1;
+    
+      if (
+          (settings_fix_prt.baud_RS485 != settings_fix.baud_RS485) ||
+          (settings_fix_prt.pare_bit_RS485 != settings_fix.pare_bit_RS485) ||
+          (settings_fix_prt.number_stop_bit_RS485 != settings_fix.number_stop_bit_RS485)
+         )
+      {
+        //Помічаємо, що треба переконфігурувати USART для інтерфейсу RS-485
+        reconfiguration_RS_485_with_reset_usart = 1;
+      }
+    }
+
     __result_dym_mem_select result = DYN_MEM_SELECT_OK;
     //Активація внесених змін
     if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
@@ -2270,6 +2300,14 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     
     if (result == DYN_MEM_SELECT_OK)
     {
+      if (reconfiguration_RS_485 != 0)
+      {
+        //Підраховуємо нову величину затримки у бітах, яка допускається між байтами у RS-485 згідно з визначеними настройками
+        calculate_namber_bit_waiting_for_rs_485();
+        //Виставляємо команду про переконфігурування RS-485
+        if (reconfiguration_RS_485_with_reset_usart != 0) make_reconfiguration_RS_485 = 0xff;
+      }
+      
       _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
       
       if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
