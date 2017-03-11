@@ -151,41 +151,6 @@ unsigned int set_new_settings_from_interface(unsigned int source)
     }
   }
   
-  unsigned int change_timeout_ar = 0;
-  if (
-      (current_settings.prefault_number_periods != current_settings_interfaces.prefault_number_periods) ||
-      (current_settings.postfault_number_periods != current_settings_interfaces.postfault_number_periods)
-     ) 
-  {
-    //Помічаємо, що додатково ще треба буде виконати дії по зміні часових витримок аналогового реєстратора
-    change_timeout_ar = 1;
-    
-    unsigned int semaphore_read_state_ar_record_copy = semaphore_read_state_ar_record;
-
-    /*Встановлюємо симафор - суть якого полягає у тому, що якщо процес запису нової 
-    аварії не йде - то на час його установлення новий запис починати не можна, якщо ж вже іде ноий запис,
-    то він має продовжуватися і, навпаки, блокувати роботу аналогового реєстратора не можна*/
-    semaphore_read_state_ar_record = 1;
-
-    if (
-        (state_ar_record == STATE_AR_NO_RECORD      ) ||
-        (state_ar_record == STATE_AR_TEMPORARY_BLOCK)
-       )   
-    {
-      /*На даний момент не йде запис текучого аналогового аварійного процесу,
-      тому для зміни часових настройок тимчасово встановлюємо стан роботи
-      аналогового реєстратора у заблокований режим*/
-      state_ar_record = STATE_AR_TEMPORARY_BLOCK; 
-      
-    }
-    else
-    {
-      //Операція тимчасово недоступна, бо іде робота аналогового реєстратора
-      error = ERROR_SLAVE_DEVICE_BUSY;
-      semaphore_read_state_ar_record = semaphore_read_state_ar_record_copy;
-    }
-  }
-  
   unsigned int set_password_USB = false;
   if (
       (current_settings.password_interface_USB != current_settings_interfaces.password_interface_USB) &&
@@ -245,43 +210,6 @@ unsigned int set_new_settings_from_interface(unsigned int source)
       //Виставляємо команду про переконфігурування RS-485
       if (reconfiguration_RS_485_with_reset_usart != 0) make_reconfiguration_RS_485 = 0xff;
     }
-    if (
-        (state_ar_record == STATE_AR_TEMPORARY_BLOCK) ||
-        (semaphore_read_state_ar_record != 0)  
-       )
-    {
-      /*
-      Ця ситуація може бути, коли встановлюються мінімальні настройки,
-      або коли змінюється ширина доаварійного або післяаварійного процесу
-      аналогового реєстратора.
-      При цьому завжди має бути, що змінна state_ar_record рівна величині
-      STATE_AR_TEMPORARY_BLOCK і змінна semaphore_read_state_ar_record
-      не рівна нулю. Ящо ці 
-      умови не виконуються - то треба перезапустити прилад,
-      бо програмне забезпечення себе веде непередбачуваним шляхом.
-      */
-      if(
-         ((change_timeout_ar != 0)) &&
-         (state_ar_record == STATE_AR_TEMPORARY_BLOCK) &&
-         (semaphore_read_state_ar_record != 0)  
-        )
-      {
-        //Виконуємо дії по зміні часових витримок аналогового реєстратора
-        actions_after_changing_tiomouts_ar();
-
-        //Розблоковуємо роботу аналогового реєстратора
-        state_ar_record = STATE_AR_NO_RECORD;
-
-        //Знімаємо семафор
-        semaphore_read_state_ar_record = 0;
-      }
-      else
-      {
-        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-        total_error_sw_fixed(41);
-      }
-    }
-
     fix_change_settings(2, source);
 
     //Виставляємо признак, що на екрані треба обновити інформацію

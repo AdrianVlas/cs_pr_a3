@@ -144,6 +144,8 @@ extern unsigned int time_delta_watchdog_output;
 extern unsigned int time_delta_watchdog_output_min;
 extern unsigned int time_delta_watchdog_output_max;
 
+extern short int word_SRAM1;
+
 extern unsigned char Temporaty_I2C_Buffer[SIZE_PAGE_EEPROM + 2];
 extern uint16_t number_busy_state;
 extern uint16_t type_error_of_exchanging_via_i2c;
@@ -167,8 +169,6 @@ extern volatile unsigned int error_into_spi_df;
 extern unsigned int dataflash_not_busy;
 extern volatile unsigned int control_tasks_dataflash;
 extern unsigned char buffer_for_manu_read_record[SIZE_BUFFER_FOR_DR_RECORD];
-extern unsigned char buffer_for_USB_read_record_ar[SIZE_PAGE_DATAFLASH_2];
-extern unsigned char buffer_for_RS485_read_record_ar[SIZE_PAGE_DATAFLASH_2];
 extern unsigned char buffer_for_USB_read_record_dr[SIZE_BUFFER_FOR_DR_RECORD];
 extern unsigned char buffer_for_RS485_read_record_dr[SIZE_BUFFER_FOR_DR_RECORD];
 extern unsigned char buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
@@ -176,38 +176,6 @@ extern unsigned char buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR]
 
 extern unsigned int what_we_are_reading_from_dataflash_1;
 extern unsigned int what_we_are_reading_from_dataflash_2;
-
-//Аналоговий реєстратор
-extern unsigned char crc_info_rejestrator_ar;
-extern volatile __INFO_REJESTRATOR info_rejestrator_ar;
-extern unsigned char crc_info_rejestrator_ar_ctrl;
-extern __INFO_REJESTRATOR info_rejestrator_ar_ctrl;
-extern volatile unsigned int size_one_ar_record;
-extern unsigned int number_word_digital_part_ar;
-extern volatile unsigned int max_number_records_ar;
-extern volatile unsigned int semaphore_read_state_ar_record;
-extern unsigned int continue_previous_record_ar;
-extern volatile int state_ar_record;
-extern short int array_ar[SIZE_BUFFER_FOR_AR];
-extern short int word_SRAM1;
-extern unsigned int index_array_ar_current;
-extern volatile unsigned int index_array_ar_heat;
-extern volatile unsigned int index_array_ar_tail;
-extern unsigned int prescaler_ar;
-extern __HEADER_AR header_ar;
-extern unsigned char buffer_for_save_ar_record[SIZE_PAGE_DATAFLASH_2];
-extern unsigned int temporary_address_ar;
-extern volatile unsigned int count_to_save;
-extern volatile unsigned int permit_copy_new_data;
-extern unsigned int copied_number_samples, total_number_samples;
-extern unsigned int etap_writing_part_page_ar_into_dataflash;
-extern unsigned int number_record_of_ar_for_menu;
-extern unsigned int number_record_of_ar_for_USB;
-extern unsigned int number_record_of_ar_for_RS485;
-extern int first_number_time_sample_for_USB;
-extern int last_number_time_sample_for_USB;
-extern int first_number_time_sample_for_RS485;
-extern int last_number_time_sample_for_RS485;
 
 //Дискретний реєстратор
 extern unsigned char crc_info_rejestrator_dr;

@@ -226,10 +226,6 @@ void dataflash_mamory_write_buffer(int);
 void dataflash_mamory_buffer_into_memory(int);
 void analize_received_data_dataflash(int);
 
-void actions_after_changing_tiomouts_ar(void);
-void calc_size_and_max_number_records_ar(unsigned int, unsigned int);
-unsigned int making_buffer_for_save_ar_record(unsigned int*);
-
 void control_config(unsigned int);
 void control_settings(unsigned int);
 void control_ustuvannja(void);

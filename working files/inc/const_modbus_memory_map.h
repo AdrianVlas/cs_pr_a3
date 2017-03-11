@@ -1136,13 +1136,13 @@
 /*****************************************************/
 /* Адресний простір настроювання аналогового реєстратора */
 /*****************************************************/
-#define M_ADDRESS_FIRST_SETPOINTS_RANG_AR     13000
-#define M_ADDRESS_LAST_SETPOINTS_RANG_AR      (M_ADDRESS_FIRST_SETPOINTS_RANG_AR + MAX_FUNCTIONS_IN_AREG - 1)
-
-#define MA_PREFAULT_INTERVAL_AR               13032
-#define MA_POSTFAULT_INTERVAL_AR              13033
-#define MA_TOTAL_NUMBER_RECORDS_AR            13034
-#define MA_CURRENT_NUMBER_RECORD_AR           13035
+//#define M_ADDRESS_FIRST_SETPOINTS_RANG_AR     13000
+//#define M_ADDRESS_LAST_SETPOINTS_RANG_AR      (M_ADDRESS_FIRST_SETPOINTS_RANG_AR + MAX_FUNCTIONS_IN_AREG - 1)
+//
+//#define MA_PREFAULT_INTERVAL_AR               13032
+//#define MA_POSTFAULT_INTERVAL_AR              13033
+//#define MA_TOTAL_NUMBER_RECORDS_AR            13034
+//#define MA_CURRENT_NUMBER_RECORD_AR           13035
 /*****************************************************/
 
 /*****************************************************/

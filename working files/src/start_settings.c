@@ -100,14 +100,6 @@ void global_vareiables_installation(void)
   }
   /**************************/
   
-  /**************************
-  Константа (які від версії до версії може змінюватися), але для даного проекту 
-  завжди визначена
-  **************************/
-  number_word_digital_part_ar = NUMBER_TOTAL_SIGNAL_FOR_RANG/(8*sizeof(short int));
-  if ((number_word_digital_part_ar*8*sizeof(short int)) < NUMBER_TOTAL_SIGNAL_FOR_RANG) number_word_digital_part_ar += 1;
-  /**************************/
-
   /**************************/
   //
   /**************************/
@@ -167,12 +159,6 @@ void global_vareiables_installation(void)
   //Код операції
   driver_i2c.action =- 1;
   //Значення решти полів поки не грає ролі 
-  /**************************/
-
-  /**************************/
-  //Обнуляємо масив для аналогового реєстратора
-  /**************************/
-  for(unsigned int i = 0; i < SIZE_BUFFER_FOR_AR; i++) array_ar[i] = 0;
   /**************************/
 }
 /**************************************/

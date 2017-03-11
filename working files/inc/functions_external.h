@@ -223,10 +223,6 @@ extern void dataflash_mamory_write_buffer(int);
 extern void dataflash_mamory_buffer_into_memory(int);
 extern void analize_received_data_dataflash(int);
 
-extern void actions_after_changing_tiomouts_ar(void);
-extern void calc_size_and_max_number_records_ar(unsigned int, unsigned int);
-extern unsigned int making_buffer_for_save_ar_record(unsigned int*);
-
 extern void control_config(unsigned int);
 extern void control_settings(unsigned int);
 extern void control_ustuvannja(void);

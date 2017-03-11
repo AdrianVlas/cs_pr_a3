@@ -555,13 +555,6 @@ typedef struct
 
 } __DRIVER_SPI_DF;
 
-typedef struct
-{
-  unsigned char label_start_record;
-  unsigned char time[7]; 
-  unsigned char name_of_cell[MAX_CHAR_IN_NAME_OF_CELL];
-} __HEADER_AR;
-
 typedef enum __STATE_READING_ADCs {
 STATE_READING_ADCs_NONE = 0,
 STATE_READING_WRITE,

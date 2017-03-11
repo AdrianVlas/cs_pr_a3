@@ -2536,34 +2536,6 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
       }
     }
   }
-  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_AR) && (address_data <= M_ADDRESS_LAST_SETPOINTS_RANG_AR))
-  {
-    temp_value  = convert_order_list_oldr_to_gmm(0, (((address_data - M_ADDRESS_FIRST_SETPOINTS_RANG_AR) & (MAX_FUNCTIONS_IN_AREG - 1)) + 1), SOURCE_AR_RANG);
-  }
-  else if (address_data == MA_PREFAULT_INTERVAL_AR)
-  {
-    //Читання глибини доаварійного масиву (кількість періодів промислової частоти)
-    temp_value = current_settings_interfaces.prefault_number_periods;
-  }
-  else if (address_data == MA_POSTFAULT_INTERVAL_AR)
-  {
-    //Читання глибини післяаварійного масиву (кількість періодів промислової частоти)
-    temp_value = current_settings_interfaces.postfault_number_periods;
-  }
-  else if (address_data == MA_TOTAL_NUMBER_RECORDS_AR)
-  {
-    temp_value = info_rejestrator_ar.number_records;
-  }
-  else if (address_data == MA_CURRENT_NUMBER_RECORD_AR)
-  {
-    if (type_interface == USB_RECUEST) temp_value = number_record_of_ar_for_USB;
-    else if (type_interface == RS485_RECUEST) temp_value = number_record_of_ar_for_RS485;
-    else
-    {
-      //Теоретично такого бути не мало б ніколи
-      error = ERROR_SLAVE_DEVICE_FAILURE;
-    }
-  }
   else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR) && (address_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR))
   {
     temp_value  = convert_order_list_oldr_to_gmm(0, (((address_data - M_ADDRESS_FIRST_SETPOINTS_RANG_DR) & (MAX_FUNCTIONS_IN_DREG - 1)) + 1), SOURCE_DR_RANG);
@@ -3625,123 +3597,6 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
     else
       error = ERROR_ILLEGAL_DATA_VALUE;
   }
-  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_AR) && (address_data <= M_ADDRESS_LAST_SETPOINTS_RANG_AR))
-  {
-    //Запис ранжування аналогового реєстратора
-    
-    error = save_new_rang_oldr_from_gmm(0, (((address_data - M_ADDRESS_FIRST_SETPOINTS_RANG_AR) & (MAX_FUNCTIONS_IN_AREG - 1)) + 1), SOURCE_AR_RANG, data, method_setting);
-  }
-  else if ((address_data == MA_PREFAULT_INTERVAL_AR) || (address_data == MA_POSTFAULT_INTERVAL_AR))
-  {
-    temp_value = data*20; //Переводимо кількість періодів промислової частоти у мілісекунди
-
-    //Встановлюємо нові значення
-    if (address_data == MA_PREFAULT_INTERVAL_AR)
-    {
-      //Ширина доаварійного масиву
-      if ((temp_value >= TIMEOUT_PREFAULT_MIN) && (temp_value <= TIMEOUT_PREFAULT_MAX))
-      {
-        if (target_label->prefault_number_periods != data)
-        {
-          target_label->prefault_number_periods = data; //В таблицю настройок записуємо не мілісекунди, а кількість періодів
-        }
-      }
-      else
-        error = ERROR_ILLEGAL_DATA_VALUE;
-    }
-    else if (address_data == MA_POSTFAULT_INTERVAL_AR)
-    {
-      //Ширина післяаварійного масиву
-      if ((temp_value >= TIMEOUT_POSTFAULT_MIN) && (temp_value <= TIMEOUT_POSTFAULT_MAX))
-      {
-        if (target_label->postfault_number_periods != data)
-        {
-          target_label->postfault_number_periods = data; //В таблицю настройок записуємо не мілісекунди, а кількість періодів
-        }
-      }
-      else
-        error = ERROR_ILLEGAL_DATA_VALUE;
-    }
-  }
-  else if (address_data == MA_CURRENT_NUMBER_RECORD_AR)
-  {
-    if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
-    {
-      //Теоретично такого бути не мало б ніколи
-      error = ERROR_SLAVE_DEVICE_FAILURE;
-    }
-    else if (
-             ((clean_rejestrators & CLEAN_AR) != 0) ||
-             (
-              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_AR_USB  ) != 0)) ||
-              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_AR_RS485) != 0))
-             ) 
-            )
-    {
-      /*
-      Зараз іде зчитування для інтерфейсу запису аналогового реєстратора, 
-      або очистка його, тому ця операція є тимчасово недоступною
-      */
-      error = ERROR_SLAVE_DEVICE_BUSY;
-    }
-    else if (
-             (data < info_rejestrator_ar.number_records) &&
-             (data < max_number_records_ar             ) /*Хоч теоретично ця умова має перекриватися завжди першою умовою*/
-            )
-    {
-      if (
-          (type_interface == USB_RECUEST  ) ||
-          (type_interface == RS485_RECUEST)
-         )   
-      {
-        unsigned int *point_to_number_record_of_ar;
-        int *point_to_first_number_time_sample, *point_to_last_number_time_sample;
-        
-        if (type_interface == USB_RECUEST)
-        {
-          point_to_number_record_of_ar = &number_record_of_ar_for_USB;
-          point_to_first_number_time_sample = &first_number_time_sample_for_USB;
-          point_to_last_number_time_sample = &last_number_time_sample_for_USB;
-        }
-        else
-        {
-          point_to_number_record_of_ar = &number_record_of_ar_for_RS485;
-          point_to_first_number_time_sample = &first_number_time_sample_for_RS485;
-          point_to_last_number_time_sample = &last_number_time_sample_for_RS485;
-        }
-        
-        //Встановлюємо номер запису аналогового реєстратора для читання
-        *point_to_number_record_of_ar = data;
-        //Подаємо команду читання аналогового реєстратора для  інтерфейсу
-
-        //Виставляємо читання заголовку запису даного запису і дальше, скільки можливо, часових зрізів 
-        *point_to_first_number_time_sample = -1;
-        int last_number_time_sample_tmp = (SIZE_PAGE_DATAFLASH_2 - sizeof(__HEADER_AR))/((NUMBER_ANALOG_CANALES + number_word_digital_part_ar)*sizeof(short int));
-        int max_number_time_sample = (current_settings.prefault_number_periods + current_settings.postfault_number_periods) << VAGA_NUMBER_POINT_AR;
-        if (last_number_time_sample_tmp <= max_number_time_sample)
-        {
-          *point_to_last_number_time_sample = last_number_time_sample_tmp - 1;//номер останнього часового зрізу ВКЛЮЧНО
-        }
-        else
-        {
-          *point_to_last_number_time_sample = max_number_time_sample - 1;
-        }
-
-        //Подаємо команду зчитати дані у бувер пам'яті
-        if (type_interface == USB_RECUEST)
-          control_tasks_dataflash |= TASK_MAMORY_READ_DATAFLASH_FOR_AR_USB;
-        else
-          control_tasks_dataflash |= TASK_MAMORY_READ_DATAFLASH_FOR_AR_RS485;
-      }
-      else
-      {
-        //Теоретично такого бути не мало б ніколи
-        error = ERROR_SLAVE_DEVICE_FAILURE;
-      }
-    }
-    else
-      error = ERROR_ILLEGAL_DATA_VALUE;
-  }
   else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR) && (address_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR))
   {
     //Запис ранжування дискретного реєстратора
@@ -3804,43 +3659,6 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
     }
     else
       error = ERROR_ILLEGAL_DATA_VALUE;
-  }
-  else if (address_data == MA_CLEAR_NUMBER_RECORD_AR)
-  {
-    if (data != CMD_WORD_CLEAR_AR)
-    {
-      //Для стирання аналогового реєстратора має бути парописано по певній адресі визначене число
-      error = ERROR_ILLEGAL_DATA_VALUE;
-    }
-    else if (
-             /*
-             (current_ekran.current_level == EKRAN_DATA_LADEL_AR)
-             ||  
-             */
-             (state_ar_record             != STATE_AR_NO_RECORD )
-             ||  
-             (
-              (control_tasks_dataflash & (
-                                          TASK_MAMORY_PART_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_AR |
-                                          TASK_MAMORY_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_AR      |
-                                          TASK_MAMORY_READ_DATAFLASH_FOR_AR_USB                         |
-                                          TASK_MAMORY_READ_DATAFLASH_FOR_AR_RS485                       |
-                                          TASK_MAMORY_READ_DATAFLASH_FOR_AR_MENU
-                                         )
-              ) != 0
-             )
-             ||
-             ((clean_rejestrators & CLEAN_AR) != 0)  
-            ) 
-    {
-      //Зараз іде запис/зчитування аналогового реєстратора, або відкрите вікно відображення запису, тому ця операція є тимчасово недоступною
-      error = ERROR_SLAVE_DEVICE_BUSY;
-    }
-    else
-    {
-      //Помічаємо, що треба очистити аналоговий реєстратор
-      clean_rejestrators |= CLEAN_AR;
-    }
   }
   else if (address_data == MA_CLEAR_NUMBER_RECORD_DR)
   {
@@ -5200,7 +5018,6 @@ void modbus_rountines(unsigned int type_interface)
           }
           else if (
                    (current_state_menu2.edition == ED_VIEWING                     ) ||
-                   (add_data                    == MA_CURRENT_NUMBER_RECORD_AR    ) ||
                    (add_data                    == MA_CURRENT_NUMBER_RECORD_DR    ) ||
                    (add_data                    == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
                   )
@@ -5224,8 +5041,6 @@ void modbus_rountines(unsigned int type_interface)
                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              ) && (add_data != MA_PASSWORD_INTERFACE)) || /*уставки і витримки (продовження) крім паролю доступу*/
                  ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA                   ) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA                   )                                       ) || /*час*/
                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )                                       ) || /*ранжування*/
-                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_AR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_AR               )                                       ) || /*ранжування аналогового реєстратора*/
-                 ((add_data >= MA_PREFAULT_INTERVAL_AR                         ) && (add_data <= MA_POSTFAULT_INTERVAL_AR                       )                                       ) || /*встановлення ширини доаварійного/післяаварійного масиву аналогового реєстратора*/
                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR               )                                       ) || /*ранжування дискретного реєстратора*/
                   (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR                   )                                                                                                          || /*очищення реєстратора програмних подій*/        
                   (add_data == MA_CLEAR_NUMBER_RECORD_AR                       )                                                                                                          || /*очищення аналогового реєстратора*/        
@@ -5274,7 +5089,6 @@ void modbus_rountines(unsigned int type_interface)
               }
               else if(
                       ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   )) || /*ранжування*/
-                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_AR) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_AR)) || /*ранжування аналогового реєстратора*/
                       ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR))    /*ранжування дискретного реєстратора*/
                      ) 
               {
@@ -5379,8 +5193,6 @@ void modbus_rountines(unsigned int type_interface)
                 ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) ||
                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) ||
                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) ||
-                ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_AR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_AR               )) ||
-                ((add_data >= MA_PREFAULT_INTERVAL_AR                         ) && (add_data <= MA_POSTFAULT_INTERVAL_AR                       )) ||
                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR               )) ||
                 (add_data == MA_NUMBER_ITERATION_EL)
                )
@@ -5401,7 +5213,6 @@ void modbus_rountines(unsigned int type_interface)
                     
                 if (
                     ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   )) ||
-                    ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_AR) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_AR)) ||
                     ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR)) 
                    )
                 {
@@ -5847,7 +5658,6 @@ void modbus_rountines(unsigned int type_interface)
 
             if (
                 (current_state_menu2.edition == ED_VIEWING                     ) ||
-                (add_data                    == MA_CURRENT_NUMBER_RECORD_AR    ) ||
                 (add_data                    == MA_CURRENT_NUMBER_RECORD_DR    ) ||
                 (add_data                    == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
                )
@@ -5865,8 +5675,6 @@ void modbus_rountines(unsigned int type_interface)
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) || /*уставки і витримки (продовження) крім паролю доступу*/
                   ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA                   ) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA                   )) || /*час*/
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) || /*ранжування*/
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_AR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_AR               )) || /*ранжування аналогового реєстратора*/
-                  ((add_data >= MA_PREFAULT_INTERVAL_AR                         ) && (add_data <= MA_POSTFAULT_INTERVAL_AR                       )) || /*встановлення ширини доаварійного/післяаварійного масиву аналогового реєстратора*/
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR               )) || /*ранжування дискретного реєстратора*/
                    (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR                   )                                                                   || /*очищення реєстратора програмних подій*/
                    (add_data == MA_CLEAR_NUMBER_RECORD_AR                       )                                                                   || /*очищення аналогового реєстратора*/        
@@ -6016,8 +5824,6 @@ void modbus_rountines(unsigned int type_interface)
                   ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) ||  
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) ||
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) ||
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_AR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_AR               )) || 
-                  ((add_data >= MA_PREFAULT_INTERVAL_AR                         ) && (add_data <= MA_POSTFAULT_INTERVAL_AR                       )) ||
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR               )) ||
                   (add_data == MA_NUMBER_ITERATION_EL)
                  )
@@ -6034,7 +5840,6 @@ void modbus_rountines(unsigned int type_interface)
                   //Записуємо настройки
                   if (
                       ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   )) ||
-                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_AR) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_AR)) ||
                       ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR)) 
                      )
                   {

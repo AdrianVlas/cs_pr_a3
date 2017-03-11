@@ -169,6 +169,7 @@ unsigned int time_delta_watchdog_output = 0;
 unsigned int time_delta_watchdog_output_min = 0xffff*10;
 unsigned int time_delta_watchdog_output_max = 0;
 
+SRAM1 short int word_SRAM1;
 
 //I2C
 SRAM1 unsigned char Temporaty_I2C_Buffer[SIZE_PAGE_EEPROM + 2];
@@ -197,8 +198,6 @@ volatile unsigned int error_into_spi_df = 0;/*Ненульве значення означає, що зафі
 unsigned int dataflash_not_busy = 0;
 volatile unsigned int control_tasks_dataflash = 0;
 unsigned char buffer_for_manu_read_record[SIZE_BUFFER_FOR_DR_RECORD];
-unsigned char buffer_for_USB_read_record_ar[SIZE_PAGE_DATAFLASH_2];
-unsigned char buffer_for_RS485_read_record_ar[SIZE_PAGE_DATAFLASH_2];
 unsigned char buffer_for_USB_read_record_dr[SIZE_BUFFER_FOR_DR_RECORD];
 unsigned char buffer_for_RS485_read_record_dr[SIZE_BUFFER_FOR_DR_RECORD];
 unsigned char buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
@@ -206,38 +205,6 @@ unsigned char buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 
 unsigned int what_we_are_reading_from_dataflash_1;
 unsigned int what_we_are_reading_from_dataflash_2;
-
-//Аналоговий реєстратор
-SRAM1 unsigned char crc_info_rejestrator_ar;
-SRAM1 volatile __INFO_REJESTRATOR info_rejestrator_ar;
-SRAM1 unsigned char crc_info_rejestrator_ar_ctrl;
-SRAM1 __INFO_REJESTRATOR info_rejestrator_ar_ctrl;
-SRAM1 volatile unsigned int size_one_ar_record/* = 0*/;
-SRAM1 unsigned int number_word_digital_part_ar;
-SRAM1 volatile unsigned int max_number_records_ar/* = 0*/; //Максимальна кількість записів в аналоговому реєстраторі при вибраних витримках (розраховується з витрмиок доаварійного і післяаварійного часу)
-SRAM1 volatile unsigned int semaphore_read_state_ar_record/* = 0*/; //Коли цей симафор встановлений, то якщо не йде запис, то новий запис не можна починати, а якщо іде, то можна продовжувати запис
-SRAM1 unsigned int continue_previous_record_ar/* = 0*/; //Сигналізує, не зняті вще всі джерела запуску аналогового реєстратора після його попе6реднього запуску
-SRAM1 volatile int state_ar_record/* = STATE_AR_NO_RECORD*/;
-SRAM1 short int array_ar[SIZE_BUFFER_FOR_AR];
-SRAM1 short int word_SRAM1;
-SRAM1 unsigned int index_array_ar_current/* = 0*/;
-SRAM1 volatile unsigned int index_array_ar_heat;
-SRAM1 volatile unsigned int index_array_ar_tail;
-SRAM1 unsigned int prescaler_ar/* = 0*/; //Потрібний для того, щоб з 32 виборок на секунду зробити 16 виборки на секунду
-SRAM1 __HEADER_AR header_ar;
-SRAM1 unsigned char buffer_for_save_ar_record[SIZE_PAGE_DATAFLASH_2];
-SRAM1 unsigned int temporary_address_ar;
-SRAM1 volatile unsigned int count_to_save;
-SRAM1 volatile unsigned int permit_copy_new_data;
-SRAM1 unsigned int copied_number_samples, total_number_samples;
-SRAM1 unsigned int etap_writing_part_page_ar_into_dataflash/* = ETAP_NONE*/;
-SRAM1 unsigned int number_record_of_ar_for_menu/* = 0xffff*/; //Це число означає, що номер запису не вибраний
-SRAM1 unsigned int number_record_of_ar_for_USB/* = 0xffff*/; //Це число означає, що номер запису не вибраний
-SRAM1 unsigned int number_record_of_ar_for_RS485/* = 0xffff*/; //Це число означає, що номер запису не вибраний
-SRAM1 int first_number_time_sample_for_USB;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
-SRAM1 int last_number_time_sample_for_USB;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
-SRAM1 int first_number_time_sample_for_RS485;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
-SRAM1 int last_number_time_sample_for_RS485;// -1 - заголовок запису ан.р.; 0 - перший часовий зріз доаварійного масиву і т.д.
 
 //Дискретний реєстратор
 unsigned char crc_info_rejestrator_dr;
