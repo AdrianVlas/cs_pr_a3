@@ -560,23 +560,23 @@
 #define M_ADDRESS_FIRST_USER_REGISTER         1016
 #define M_ADDRESS_LAST_USER_REGISTER          1099
 
-#define M_ADDRESS_FIRST_DO_RANG               1100
-#define M_ADDRESS_LAST_DO_RANG                1355
-
-#define M_ADDRESS_FIRST_DI_RANG               1356
-#define M_ADDRESS_LAST_DI_RANG                1483
-
-#define M_ADDRESS_FIRST_LED_RANG              1484
-#define M_ADDRESS_LAST_LED_RANG               1547
-
-#define M_ADDRESS_FIRST_DF_RANG               1548
-#define M_ADDRESS_LAST_DF_RANG                2027
-
-#define M_ADDRESS_FIRST_DB_RANG               2028
-#define M_ADDRESS_LAST_DB_RANG                2091
-
-#define M_ADDRESS_FIRST_DT_RANG               2092
-#define M_ADDRESS_LAST_DT_RANG                2187
+//#define M_ADDRESS_FIRST_DO_RANG               1100
+//#define M_ADDRESS_LAST_DO_RANG                1355
+//
+//#define M_ADDRESS_FIRST_DI_RANG               1356
+//#define M_ADDRESS_LAST_DI_RANG                1483
+//
+//#define M_ADDRESS_FIRST_LED_RANG              1484
+//#define M_ADDRESS_LAST_LED_RANG               1547
+//
+//#define M_ADDRESS_FIRST_DF_RANG               1548
+//#define M_ADDRESS_LAST_DF_RANG                2027
+//
+//#define M_ADDRESS_FIRST_DB_RANG               2028
+//#define M_ADDRESS_LAST_DB_RANG                2091
+//
+//#define M_ADDRESS_FIRST_DT_RANG               2092
+//#define M_ADDRESS_LAST_DT_RANG                2187
 
 //#define M_ADDRESS_FIRST_ON_CB_RANG            2188
 //#define M_ADDRESS_LAST_ON_CB_RANG             2219
@@ -584,17 +584,17 @@
 //#define M_ADDRESS_FIRST_OFF_CB_RANG           2220
 //#define M_ADDRESS_LAST_OFF_CB_RANG            2251
 
-#define M_ADDRESS_FIRST_D_AND_RANG            2252
-#define M_ADDRESS_LAST_D_AND_RANG             2315
-
-#define M_ADDRESS_FIRST_D_OR_RANG             2316
-#define M_ADDRESS_LAST_D_OR_RANG              2379
-
-#define M_ADDRESS_FIRST_D_XOR_RANG            2380
-#define M_ADDRESS_LAST_D_XOR_RANG             2395
-
-#define M_ADDRESS_FIRST_D_NOT_RANG            2396
-#define M_ADDRESS_LAST_D_NOT_RANG             2411
+//#define M_ADDRESS_FIRST_D_AND_RANG            2252
+//#define M_ADDRESS_LAST_D_AND_RANG             2315
+//
+//#define M_ADDRESS_FIRST_D_OR_RANG             2316
+//#define M_ADDRESS_LAST_D_OR_RANG              2379
+//
+//#define M_ADDRESS_FIRST_D_XOR_RANG            2380
+//#define M_ADDRESS_LAST_D_XOR_RANG             2395
+//
+//#define M_ADDRESS_FIRST_D_NOT_RANG            2396
+//#define M_ADDRESS_LAST_D_NOT_RANG             2411
 
 #define M_ADDRESS_LAST_SETPOINTS_RANG         2411
 /*****************************************************/
@@ -1148,20 +1148,20 @@
 /*****************************************************/
 /* Адресний простір настроювання дискретного реєстратора */
 /*****************************************************/
-#define M_ADDRESS_FIRST_SETPOINTS_RANG_DR     13036
-#define M_ADDRESS_LAST_SETPOINTS_RANG_DR      (M_ADDRESS_FIRST_SETPOINTS_RANG_DR + MAX_FUNCTIONS_IN_DREG - 1)
-
-#define MA_TOTAL_NUMBER_RECORDS_DR            13070
-#define MA_CURRENT_NUMBER_RECORD_DR           13071
+//#define M_ADDRESS_FIRST_SETPOINTS_RANG_DR     13036
+//#define M_ADDRESS_LAST_SETPOINTS_RANG_DR      (M_ADDRESS_FIRST_SETPOINTS_RANG_DR + MAX_FUNCTIONS_IN_DREG - 1)
+//
+//#define MA_TOTAL_NUMBER_RECORDS_DR            13070
+//#define MA_CURRENT_NUMBER_RECORD_DR           13071
 /*****************************************************/
 
 /*****************************************************/
 /* Адресний простір очистки аналогового і дискретного реєстраторів */
 /*****************************************************/
-#define MA_CLEAR_NUMBER_RECORD_AR     13074
-#define CMD_WORD_CLEAR_AR                     0x1312
-#define MA_CLEAR_NUMBER_RECORD_DR     13075
-#define CMD_WORD_CLEAR_DR                     0x1012
+//#define MA_CLEAR_NUMBER_RECORD_AR     13074
+//#define CMD_WORD_CLEAR_AR                     0x1312
+//#define MA_CLEAR_NUMBER_RECORD_DR     13075
+//#define CMD_WORD_CLEAR_DR                     0x1012
 /*****************************************************/
 
 /*****************************************************/

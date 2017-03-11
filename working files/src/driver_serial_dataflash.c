@@ -126,32 +126,10 @@ void dataflash_mamory_page_program_through_buffer(int index_chip)
   if (index_chip == INDEX_DATAFLASH_1)
   {
     size_page = SIZE_PAGE_DATAFLASH_1;
-
-    //Запис даних дискретного реєстратора
-      
-    //Формуємо буфер для запису
-    if(part_writing_dr_into_dataflash < NUMBER_PAGES_IN_ONE_DR_RECORD)
-    {
-      //Формуємо адресу для запису
-      unsigned int address_for_program_dataflash = info_rejestrator_dr.next_address + part_writing_dr_into_dataflash*size_page;
-        
-      TxBuffer_SPI_DF[1] = (address_for_program_dataflash >> 16) & 0x0f; 
-      TxBuffer_SPI_DF[2] = (address_for_program_dataflash >> 8 ) & 0xff; 
-      TxBuffer_SPI_DF[3] = 0; 
-        
-      //Заповнюємо дальше буфер даними, які треба записати 
-      unsigned int offset_from_start = part_writing_dr_into_dataflash*size_page;
-      for (unsigned int i = 0; i < size_page; i++ )
-        TxBuffer_SPI_DF[4 + i] = buffer_for_save_dr_record_level_2[offset_from_start + i];
-    }
-    else
-    {
-      //Відбулася невизначена помилка, тому треба піти на перезавантаження
-      total_error_sw_fixed(10);
-    }
   }
   else if (index_chip == INDEX_DATAFLASH_2)
   {
+    size_page = SIZE_PAGE_DATAFLASH_2;
   }
   else
   {
@@ -169,8 +147,6 @@ void dataflash_mamory_page_program_through_buffer(int index_chip)
 /*****************************************************/
 void dataflash_mamory_read(int index_chip)
 {
-  unsigned int size_page;
-
   driver_spi_df[index_chip].code_operation = CODE_OPERATION_READ_HIGH_FREQ;
   TxBuffer_SPI_DF[0] = 0x0B;
 
@@ -178,56 +154,8 @@ void dataflash_mamory_read(int index_chip)
     
   if (index_chip == INDEX_DATAFLASH_1)
   {
-    size_page = SIZE_PAGE_DATAFLASH_1;
-
-    if(
-       (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_MENU ) ||
-       (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_USB  ) ||
-       (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_RS485)
-      )
+    if(false)
     {
-      //Читання даних дискретного реєстратора
-      unsigned int part_reading;
-      unsigned int number_record;
-      if (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_MENU)
-      {
-        part_reading = part_reading_dr_from_dataflash_for_menu;
-        number_record = number_record_of_dr_for_menu;
-      }
-      else if (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_USB)
-      {
-        part_reading = part_reading_dr_from_dataflash_for_USB;
-        number_record = number_record_of_dr_for_USB;
-      }
-      else
-      {
-        part_reading = part_reading_dr_from_dataflash_for_RS485;
-        number_record = number_record_of_dr_for_RS485;
-      }
-
-      //Формуємо буфер для передавання у мікросхему DataFlash
-      if(part_reading < NUMBER_PAGES_IN_ONE_DR_RECORD)
-      {
-        //Формуємо адресу для читання частини запису дисретного реєстратора
-        temp_value_for_address = info_rejestrator_dr.next_address - (((number_record + 1)*NUMBER_PAGES_IN_ONE_DR_RECORD - part_reading)<<VAGA_SIZE_PAGE_DATAFLASH_1);
-        while (temp_value_for_address < MIN_ADDRESS_DR_AREA) temp_value_for_address = temp_value_for_address + SIZE_DR_AREA; 
-      
-        TxBuffer_SPI_DF[1] = (temp_value_for_address >> 16) & 0x0f; 
-        TxBuffer_SPI_DF[2] = (temp_value_for_address >> 8 ) & 0xff; 
-        TxBuffer_SPI_DF[3] = (temp_value_for_address      ) & 0xff; 
-        
-        //Після адреси має іти один додатковй байт як буфер перед початком отримування реальних даних
-        
-        //Подальше вмістиме не має значення
-
-        //Запускаємо процес запису
-        start_exchange_via_spi(index_chip, (5 + size_page));
-      }
-      else
-      {
-        //Відбулася невизначена помилка, тому треба піти на перезавантаження
-        total_error_sw_fixed(12);
-      }
     }
     else if (
              (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU ) ||
@@ -457,49 +385,6 @@ inline void analize_received_data_dataflash(int index_chip)
     {
       if (index_chip == INDEX_DATAFLASH_1)
       {
-        if(part_writing_dr_into_dataflash < (NUMBER_PAGES_IN_ONE_DR_RECORD - 1)) part_writing_dr_into_dataflash++;
-        else
-        {
-          //Визначаємо нову адресу наступного запису, нову кількість записів і знімаємо сигналізацію, що зараз іде запис
-          unsigned int temp_value_for_address = (info_rejestrator_dr.next_address + SIZE_BUFFER_FOR_DR_RECORD);
-          while (temp_value_for_address > MAX_ADDRESS_DR_AREA) temp_value_for_address = temp_value_for_address - SIZE_DR_AREA; 
-
-          //Виставляємо команду запису цієї структури у EEPROM
-          /*
-          Команду виставляємо скоріше, а потім робимо зміни у полях, які треба змінити,
-          бо по вимозі проконтролювати достовірність даних інформації по дискреному
-          реєстратору відбувається копіювання з системи захистів структури
-          info_rejestrator_adr у резервну копію. Це копіювання блокується у випадку 
-          "читання з"/"запису в" EEPROM цієї інформації. Тому виставлення спочатку команди
-          запису заблокує копіювання.
-          З другої сторони не можливо, щоб почався запис до модифікації, 
-          бо запис ініціюється функцією main_routines_for_i2c - яка виконується нижчому
-          рівні пріоритетності, що і функція analize_received_data_dataflash.
-          Тобто спочатку треба дійти до виклику функції - вийти з цієї функції і дійти 
-          до виклику функції main_routines_for_i2c, і аж тоді можливе виконання команди,
-          яку ми виставили перед зміною даних, яку ми зараз гарантовано зробимо 
-          (до виклику функції main_routines_for_i2c)
-          */
-          _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_DR_EEPROM_BIT);
-          
-          info_rejestrator_dr.next_address = temp_value_for_address;
-          info_rejestrator_dr.saving_execution = 0;
-          if (info_rejestrator_dr.number_records < MAX_NUMBER_RECORDS_INTO_DR) info_rejestrator_dr.number_records += 1;
-
-          //Знімаємо з черги запуск запису дискретного реєстратора
-          /*
-          Оскільки почати новий запис система захистів, а саме функція routine_for_queue_dr 
-          (більш пріоритетна за дану функцію analize_received_data_dataflash,
-          яка викликається з системи обслуговування DataFlash) , тільки тоді, коли
-          біт за маскою TASK_MAMORY_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_DR скинуитий
-          у командному слові control_tasks_dataflash. 
-          Подібна ситуація з очисткою реєстратора програмних подій - команду очистки
-          можна тільки подати, коли маска TASK_MAMORY_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_DR
-          скинута, тоді з систекми захистів дискретний реєстратор скинеться.
-          Тому цей біт скидаємо після того, як ми зробили модифікації у інформаційній структурі дискреного реєстратора
-          */
-          control_tasks_dataflash &= (unsigned int)(~TASK_MAMORY_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_DR);
-        }
       }
       else if (index_chip == INDEX_DATAFLASH_2)
       {
@@ -522,36 +407,18 @@ inline void analize_received_data_dataflash(int index_chip)
       //Копіюємо прочитані дані у буфер
       unsigned char *point_buffer;
       unsigned int number_byte_copy_into_target_buffer;
-      unsigned int size_page;
+//      unsigned int size_page;
 
       if (index_chip == INDEX_DATAFLASH_1)
       {
-        size_page = SIZE_PAGE_DATAFLASH_1;
-        unsigned int *point_part_reading;
+//        size_page = SIZE_PAGE_DATAFLASH_1;
+//        unsigned int *point_part_reading;
 
-        if (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_MENU)
-        {
-          point_buffer = (unsigned char *)(buffer_for_manu_read_record + part_reading_dr_from_dataflash_for_menu*size_page);
-          number_byte_copy_into_target_buffer = size_page;
-          point_part_reading = &part_reading_dr_from_dataflash_for_menu;
-        }
-        else if (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_USB)
-        {
-          point_buffer = (unsigned char *)(buffer_for_USB_read_record_dr + part_reading_dr_from_dataflash_for_USB*size_page);
-          number_byte_copy_into_target_buffer = size_page;
-          point_part_reading = &part_reading_dr_from_dataflash_for_USB;
-        }
-        else if (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_RS485)
-        {
-          point_buffer = (unsigned char *)(buffer_for_RS485_read_record_dr + part_reading_dr_from_dataflash_for_RS485*size_page);
-          number_byte_copy_into_target_buffer = size_page;
-          point_part_reading = &part_reading_dr_from_dataflash_for_RS485;
-        }
-        else if (
-                 (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU )||
-                 (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB  )||
-                 (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_RS485)
-                )   
+        if (
+            (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU )||
+            (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB  )||
+            (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_RS485)
+           )   
         {
           if (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU)
             point_buffer = (unsigned char *)(buffer_for_manu_read_record);
@@ -564,9 +431,6 @@ inline void analize_received_data_dataflash(int index_chip)
         }
         
         if (
-            (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_MENU     ) ||
-            (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_USB      ) ||  
-            (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_RS485    ) ||  
             (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU ) ||
             (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB  ) ||  
             (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_RS485)  
@@ -583,39 +447,10 @@ inline void analize_received_data_dataflash(int index_chip)
         }
 
         if (
-            (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_MENU ) ||
-            (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_USB  ) ||  
-            (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_RS485)  
+            (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU ) ||
+            (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB  ) ||  
+            (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_RS485)  
            )
-        {
-          //Відбувалося зчитування дискретного реєстратора
-          if((*point_part_reading) < (NUMBER_PAGES_IN_ONE_DR_RECORD - 1)) (*point_part_reading)++;
-          else
-          {
-            //Знімаємо з черги запуск зчитування запису дискретного реєстратора
-            if (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_MENU)
-            {
-              control_tasks_dataflash &= (unsigned int)(~TASK_MAMORY_READ_DATAFLASH_FOR_DR_MENU);
-              
-              /*Подаємо команду на обновлення екрану на LCD, хоч він десь за 
-              час <= 1c обновиться автоматично, бо система меню чекає, поки
-              буде зчитано запис
-              */
-              new_state_keyboard |= (1<<BIT_REWRITE);
-            }
-            else if (what_we_are_reading_from_dataflash_1 == READING_DR_FOR_USB)
-              control_tasks_dataflash &= (unsigned int)(~TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB);
-            else
-              control_tasks_dataflash &= (unsigned int)(~TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485);
-          
-            *point_part_reading = 0;
-          }
-        }
-        else if (
-                 (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU ) ||
-                 (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB  ) ||  
-                 (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_RS485)  
-                )
         {
           //Відбувалося зчитування реєстратора програмних подій
           //Знімаємо з черги запуск зчитування запису реєстратора програмних подій

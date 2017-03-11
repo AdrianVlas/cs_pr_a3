@@ -2131,126 +2131,6 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
   {
     temp_value = current_settings_interfaces.user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER];
   }
-  else if ((address_data >= M_ADDRESS_FIRST_DO_RANG) && (address_data <= M_ADDRESS_LAST_DO_RANG))
-  {
-    //Взначаємо, який вихід зараз верхній рівень намагається прочитати
-    unsigned int number_output = (address_data - M_ADDRESS_FIRST_DO_RANG)>>VAGA_MAX_FUNCTIONS_IN_OUTPUT;
-    
-    if(number_output < NUMBER_OUTPUTS)
-    {
-      temp_value = convert_order_list_oldr_to_gmm(number_output, (((address_data - M_ADDRESS_FIRST_DO_RANG) & (MAX_FUNCTIONS_IN_OUTPUT - 1)) + 1), SOURCE_OUTPUTS_RANG);
-    }
-    else temp_value = 0;
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_DI_RANG) && (address_data <= M_ADDRESS_LAST_DI_RANG))
-  {
-    //Взначаємо, який вхід зараз верхній рівень намагається прочитати
-//    unsigned int number_input = (address_data - M_ADDRESS_FIRST_DI_RANG)>> VAGA_MAX_FUNCTIONS_IN_INPUT;
-    
-    /*if(number_input < NUMBER_INPUTS)
-    {
-      temp_value = convert_order_list_inputs_to_gmm(number_input, (((address_data - M_ADDRESS_FIRST_DI_RANG) & (MAX_FUNCTIONS_IN_INPUT - 1)) + 1));
-    }
-    else*/ temp_value = 0;
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_LED_RANG) && (address_data <= M_ADDRESS_LAST_LED_RANG))
-  {
-    //Взначаємо, який світлодіод зараз верхній рівень намагається прочитати
-    unsigned int number_led = (address_data - M_ADDRESS_FIRST_LED_RANG)>>VAGA_MAX_FUNCTIONS_IN_LED;
-    
-    if(number_led < NUMBER_LEDS)
-    {
-      temp_value = convert_order_list_oldr_to_gmm(number_led, (((address_data - M_ADDRESS_FIRST_LED_RANG) & (MAX_FUNCTIONS_IN_LED - 1)) + 1), SOURCE_LEDS_RANG);
-    }
-    else temp_value = 0;
-  }
-  else if ((address_data >=  M_ADDRESS_FIRST_DF_RANG) && (address_data <= M_ADDRESS_LAST_DF_RANG))
-  {
-    //Взначаємо, яку 0-функцію зараз верхній рівень намагається прочитати
-    unsigned int number_df_mul_3 = (address_data -  M_ADDRESS_FIRST_DF_RANG)>>VAGA_MAX_FUNCTIONS_IN_DF;
-    
-    if ((number_df_mul_3 <  (NUMBER_DEFINED_FUNCTIONS*3)) && ((number_df_mul_3 % 3) == 0))
-    {
-      temp_value = convert_order_list_oldr_to_gmm((number_df_mul_3 / 3), (((address_data -  M_ADDRESS_FIRST_DF_RANG) & (MAX_FUNCTIONS_IN_DF - 1)) + 1), SOURCE_DF);
-    }
-    else temp_value = 0;
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_DB_RANG) && (address_data <= M_ADDRESS_LAST_DB_RANG))
-  {
-    //Взначаємо, яку ф-кнопку зараз верхній рівень намагається прочитати
-//    unsigned int number_db = (address_data - M_ADDRESS_FIRST_DB_RANG)>> VAGA_MAX_FUNCTIONS_IN_DB;
-    
-    /*if(number_db < NUMBER_DEFINED_BUTTONS)
-    {
-      temp_value = convert_order_list_buttons_to_gmm(number_db, (((address_data - M_ADDRESS_FIRST_DB_RANG) & (MAX_FUNCTIONS_IN_DB - 1)) + 1));
-    }
-    else*/ temp_value = 0;
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_DT_RANG) && (address_data <= M_ADDRESS_LAST_DT_RANG))
-  {
-    //Визначаємо, який триґер зараз верхній рівень намагається прочитати
-    unsigned int number_defined_triggers = (address_data - M_ADDRESS_FIRST_DT_RANG)>>VAGA_MAX_FUNCTIONS_IN_DT;
-    
-    if ((number_defined_triggers < (NUMBER_DEFINED_TRIGGERS << 2)) && ((number_defined_triggers % 4) == 0))
-    {
-      temp_value = convert_order_list_oldr_to_gmm((number_defined_triggers >> 2),
-                               (((address_data -  M_ADDRESS_FIRST_DT_RANG) & (MAX_FUNCTIONS_IN_DT - 1)) + 1),
-                               SOURCE_SET_DT);
-    }
-    else temp_value = 0;
-  }
-//  else if ((address_data >= M_ADDRESS_FIRST_ON_CB_RANG) && (address_data <= M_ADDRESS_LAST_ON_CB_RANG))
-//  {
-//    temp_value  = convert_order_list_oldr_to_gmm(0, (((address_data - M_ADDRESS_FIRST_ON_CB_RANG) & (MAX_FUNCTIONS_IN_ON_CB - 1)) + 1), SOURCE_ON_CB_RANG);
-//  }
-//  else if ((address_data >= M_ADDRESS_FIRST_OFF_CB_RANG) && (address_data <= M_ADDRESS_LAST_OFF_CB_RANG))
-//  {
-//    temp_value  = convert_order_list_oldr_to_gmm(0, (((address_data - M_ADDRESS_FIRST_OFF_CB_RANG) & (MAX_FUNCTIONS_IN_OFF_CB - 1)) + 1), SOURCE_OFF_CB_RANG);
-//  }
-  else if ((address_data >= M_ADDRESS_FIRST_D_AND_RANG) && (address_data <= M_ADDRESS_LAST_D_AND_RANG))
-  {
-    //Визначаємо, який В-"І" зараз верхній рівень намагається прочитати
-    unsigned int number_defined_and = (address_data - M_ADDRESS_FIRST_D_AND_RANG) / MAX_FUNCTIONS_IN_D_AND;
-    
-    if(number_defined_and < NUMBER_DEFINED_AND)
-    {
-      temp_value = convert_order_list_oldr_to_gmm(number_defined_and, (((address_data -  M_ADDRESS_FIRST_D_AND_RANG) % MAX_FUNCTIONS_IN_D_AND) + 1), SOURCE_D_AND_RANG);
-    }
-    else temp_value = 0;
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_D_OR_RANG) && (address_data <= M_ADDRESS_LAST_D_OR_RANG))
-  {
-    //Визначаємо, який В-"АБО" зараз верхній рівень намагається прочитати
-    unsigned int number_defined_or = (address_data - M_ADDRESS_FIRST_D_OR_RANG) / MAX_FUNCTIONS_IN_D_OR;
-    
-    if(number_defined_or < NUMBER_DEFINED_OR)
-    {
-      temp_value = convert_order_list_oldr_to_gmm(number_defined_or, (((address_data -  M_ADDRESS_FIRST_D_OR_RANG) % MAX_FUNCTIONS_IN_D_OR) + 1), SOURCE_D_OR_RANG);
-    }
-    else temp_value = 0;
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_D_XOR_RANG) && (address_data <= M_ADDRESS_LAST_D_XOR_RANG))
-  {
-    //Визначаємо, який В-"Викл.АБО" зараз верхній рівень намагається прочитати
-    unsigned int number_defined_xor = (address_data - M_ADDRESS_FIRST_D_XOR_RANG) / MAX_FUNCTIONS_IN_D_XOR;
-    
-    if(number_defined_xor < NUMBER_DEFINED_XOR)
-    {
-      temp_value = convert_order_list_oldr_to_gmm(number_defined_xor, (((address_data -  M_ADDRESS_FIRST_D_XOR_RANG) % MAX_FUNCTIONS_IN_D_XOR) + 1), SOURCE_D_XOR_RANG);
-    }
-    else temp_value = 0;
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_D_NOT_RANG) && (address_data <= M_ADDRESS_LAST_D_NOT_RANG))
-  {
-    //Визначаємо, який В-"НЕ" зараз верхній рівень намагається прочитати
-    unsigned int number_defined_not = (address_data - M_ADDRESS_FIRST_D_NOT_RANG) / MAX_FUNCTIONS_IN_D_NOT;
-    
-    if(number_defined_not < NUMBER_DEFINED_NOT)
-    {
-      temp_value = convert_order_list_oldr_to_gmm(number_defined_not, (((address_data -  M_ADDRESS_FIRST_D_NOT_RANG) % MAX_FUNCTIONS_IN_D_NOT) + 1), SOURCE_D_NOT_RANG);
-    }
-    else temp_value = 0;
-  }
   else if ((address_data >= M_ADDRESS_CONTROL_BASE) && (address_data <= M_ADDRESS_CONTROL_LAST))
   {
     switch (address_data)
@@ -2534,24 +2414,6 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
         temp_value = 0;
         break;
       }
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR) && (address_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR))
-  {
-    temp_value  = convert_order_list_oldr_to_gmm(0, (((address_data - M_ADDRESS_FIRST_SETPOINTS_RANG_DR) & (MAX_FUNCTIONS_IN_DREG - 1)) + 1), SOURCE_DR_RANG);
-  }
-  else if (address_data == MA_TOTAL_NUMBER_RECORDS_DR)
-  {
-    temp_value = info_rejestrator_dr.number_records;
-  }
-  else if (address_data == MA_CURRENT_NUMBER_RECORD_DR)
-  {
-    if (type_interface == USB_RECUEST) temp_value = number_record_of_dr_for_USB;
-    else if (type_interface == RS485_RECUEST) temp_value = number_record_of_dr_for_RS485;
-    else
-    {
-      //Теоретично такого бути не мало б ніколи
-      error = ERROR_SLAVE_DEVICE_FAILURE;
     }
   }
   else if (address_data == MA_TOTAL_NUMBER_RECORDS_PR_ERR)
@@ -2898,145 +2760,6 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       target_label->user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER] = data;
     }
     else error = ERROR_ILLEGAL_DATA_VALUE;
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_DO_RANG) && (address_data <= M_ADDRESS_LAST_DO_RANG))
-  {
-    //Запис ранжування дискретних виходів
-    
-    //Взначаємо, який вихід зараз верхній рівень намагається записати
-    unsigned int number_output = (address_data - M_ADDRESS_FIRST_DO_RANG)>>VAGA_MAX_FUNCTIONS_IN_OUTPUT;
-    
-    if(number_output < NUMBER_OUTPUTS)
-    {
-      error = save_new_rang_oldr_from_gmm(number_output, (((address_data -  M_ADDRESS_FIRST_DO_RANG) & (MAX_FUNCTIONS_IN_OUTPUT - 1)) + 1), SOURCE_OUTPUTS_RANG, data, method_setting);
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_DI_RANG) && (address_data <= M_ADDRESS_LAST_DI_RANG))
-  {
-//    //Запис ранжування дискретних входів
-//    
-//    //Взначаємо, який вхід зараз верхній рівень намагається записати
-//    unsigned int number_input = (address_data - M_ADDRESS_FIRST_DI_RANG)>>VAGA_MAX_FUNCTIONS_IN_INPUT;
-//    
-//    if(number_input < NUMBER_INPUTS)
-//    {
-//      error = save_new_rang_inputs_from_gmm(number_input, (((address_data -  M_ADDRESS_FIRST_DI_RANG) & (MAX_FUNCTIONS_IN_INPUT - 1)) + 1), data, method_setting);
-//    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_LED_RANG) && (address_data <= M_ADDRESS_LAST_LED_RANG))
-  {
-    //Запис ранжування світлоіндикаторів
-    
-    //Взначаємо, який світлоіндикатор зараз верхній рівень намагається записати
-    unsigned int number_led = (address_data - M_ADDRESS_FIRST_LED_RANG)>>VAGA_MAX_FUNCTIONS_IN_LED;
-    
-    if(number_led < NUMBER_LEDS)
-    {
-      error = save_new_rang_oldr_from_gmm(number_led, (((address_data -  M_ADDRESS_FIRST_LED_RANG) & (MAX_FUNCTIONS_IN_LED - 1)) + 1), SOURCE_LEDS_RANG, data, method_setting);
-    }
-  }
-  else if ((address_data >=  M_ADDRESS_FIRST_DF_RANG) && (address_data <= M_ADDRESS_LAST_DF_RANG))
-  {
-    //Запис ранжування 0-функції
-    
-    //Взначаємо, яку 0-функцію зараз верхній рівень намагається записати
-    unsigned int number_df_mul_3 = (address_data -  M_ADDRESS_FIRST_DF_RANG)>>VAGA_MAX_FUNCTIONS_IN_DF;
-    
-    if((number_df_mul_3 <  (/*NUMBER_DEFINED_FUNCTIONS*/target_label->number_defined_df*3)) && ((number_df_mul_3 % 3) == 0))
-    {
-      error = save_new_rang_oldr_from_gmm((number_df_mul_3 / 3), (((address_data -  M_ADDRESS_FIRST_DF_RANG) & (MAX_FUNCTIONS_IN_DF - 1)) + 1), SOURCE_DF, data, method_setting);
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_DB_RANG) && (address_data <= M_ADDRESS_LAST_DB_RANG))
-  {
-//    //Запис ранжування функціональних кнопок
-//    
-//    //Взначаємо, яку ф-кнопку зараз верхній рівень намагається записати
-//    unsigned int number_button = (address_data - M_ADDRESS_FIRST_DB_RANG)>>VAGA_MAX_FUNCTIONS_IN_DB;
-//    
-//    if(number_button < NUMBER_DEFINED_BUTTONS)
-//    {
-//      error = save_new_rang_buttons_from_gmm(number_button, (((address_data -  M_ADDRESS_FIRST_DB_RANG) & (MAX_FUNCTIONS_IN_DB - 1)) + 1), data, method_setting);
-//    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_DT_RANG) && (address_data <= M_ADDRESS_LAST_DT_RANG))
-  {
-    //Запис ранжування триґера
-    
-    //Визначаємо, який триггер зараз верхній рівень намагається записати
-    unsigned int number_defined_triggers = (address_data - M_ADDRESS_FIRST_DT_RANG)>>VAGA_MAX_FUNCTIONS_IN_DT;
-    
-    if((number_defined_triggers < (/*NUMBER_DEFINED_TRIGGERS*/target_label->number_defined_dt << 2)) && ((number_defined_triggers % 4) == 0))
-    {
-      
-      error = save_new_rang_oldr_from_gmm((number_defined_triggers >> 2),
-                     (((address_data -  M_ADDRESS_FIRST_DT_RANG) & (MAX_FUNCTIONS_IN_DT - 1)) + 1),
-                     SOURCE_SET_DT, data, method_setting);
-    }
-  }
-//  else if ((address_data >= M_ADDRESS_FIRST_ON_CB_RANG) && (address_data <= M_ADDRESS_LAST_ON_CB_RANG))
-//  {
-//    //Запис ранжування Блоку ввімкнення
-//    
-//    error = save_new_rang_oldr_from_gmm(0, (((address_data - M_ADDRESS_FIRST_ON_CB_RANG) & (MAX_FUNCTIONS_IN_ON_CB - 1)) + 1), SOURCE_ON_CB_RANG, data, method_setting);
-//  }
-//  else if ((address_data >= M_ADDRESS_FIRST_OFF_CB_RANG) && (address_data <= M_ADDRESS_LAST_OFF_CB_RANG))
-//  {
-//    //Запис ранжування Блоку вимкнення
-//    
-//    error = save_new_rang_oldr_from_gmm(0, (((address_data - M_ADDRESS_FIRST_OFF_CB_RANG) & (MAX_FUNCTIONS_IN_OFF_CB - 1)) + 1), SOURCE_OFF_CB_RANG, data, method_setting);
-//  }
-  else if ((address_data >= M_ADDRESS_FIRST_D_AND_RANG) && (address_data <= M_ADDRESS_LAST_D_AND_RANG))
-  {
-    //Запис ранжування В-"І"
-    
-    //Визначаємо, який В-"І" зараз верхній рівень намагається записати
-    unsigned int number_defined_and = (address_data - M_ADDRESS_FIRST_D_AND_RANG) / MAX_FUNCTIONS_IN_D_AND;
-    
-    if(number_defined_and < /*NUMBER_DEFINED_AND*/target_label->number_defined_and)
-    {
-      
-      error = save_new_rang_oldr_from_gmm(number_defined_and, (((address_data -  M_ADDRESS_FIRST_D_AND_RANG) % MAX_FUNCTIONS_IN_D_AND) + 1), SOURCE_D_AND_RANG, data, method_setting);
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_D_OR_RANG) && (address_data <= M_ADDRESS_LAST_D_OR_RANG))
-  {
-    //Запис ранжування В-"АБО"
-    
-    //Визначаємо, який В-"АБО" зараз верхній рівень намагається записати
-    unsigned int number_defined_or = (address_data - M_ADDRESS_FIRST_D_OR_RANG) / MAX_FUNCTIONS_IN_D_OR;
-    
-    if(number_defined_or < /*NUMBER_DEFINED_OR*/target_label->number_defined_or)
-    {
-      
-      error = save_new_rang_oldr_from_gmm(number_defined_or, (((address_data -  M_ADDRESS_FIRST_D_OR_RANG) % MAX_FUNCTIONS_IN_D_OR) + 1), SOURCE_D_OR_RANG, data, method_setting);
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_D_XOR_RANG) && (address_data <= M_ADDRESS_LAST_D_XOR_RANG))
-  {
-    //Запис ранжування В-"Викл.АБО"
-    
-    //Визначаємо, який В-"Викл.АБО" зараз верхній рівень намагається записати
-    unsigned int number_defined_xor = (address_data - M_ADDRESS_FIRST_D_XOR_RANG) / MAX_FUNCTIONS_IN_D_XOR;
-    
-    if(number_defined_xor < /*NUMBER_DEFINED_XOR*/target_label->number_defined_xor)
-    {
-      
-      error = save_new_rang_oldr_from_gmm(number_defined_xor, (((address_data -  M_ADDRESS_FIRST_D_XOR_RANG) % MAX_FUNCTIONS_IN_D_XOR) + 1), SOURCE_D_XOR_RANG, data, method_setting);
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_D_NOT_RANG) && (address_data <= M_ADDRESS_LAST_D_NOT_RANG))
-  {
-    //Запис ранжування В-"НЕ"
-    
-    //Визначаємо, який В-"НЕ" зараз верхній рівень намагається записати
-    unsigned int number_defined_not = (address_data - M_ADDRESS_FIRST_D_NOT_RANG) / MAX_FUNCTIONS_IN_D_NOT;
-    
-    if(number_defined_not < /*NUMBER_DEFINED_NOT*/target_label->number_defined_not)
-    {
-      
-      error = save_new_rang_oldr_from_gmm(number_defined_not, (((address_data -  M_ADDRESS_FIRST_D_NOT_RANG) % MAX_FUNCTIONS_IN_D_NOT) + 1), SOURCE_D_NOT_RANG, data, method_setting);
-    }
   }
   else if ((address_data >= M_ADDRESS_CONTROL_BASE) && (address_data <= M_ADDRESS_CONTROL_LAST))
   {
@@ -3596,107 +3319,6 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
     }
     else
       error = ERROR_ILLEGAL_DATA_VALUE;
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR) && (address_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR))
-  {
-    //Запис ранжування дискретного реєстратора
-    
-    error = save_new_rang_oldr_from_gmm(0, (((address_data - M_ADDRESS_FIRST_SETPOINTS_RANG_DR) & (MAX_FUNCTIONS_IN_DREG - 1)) + 1), SOURCE_DR_RANG, data, method_setting);
-  }
-  else if (address_data == MA_CURRENT_NUMBER_RECORD_DR)
-  {
-    if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
-    {
-      //Теоретично такого бути не мало б ніколи
-      error = ERROR_SLAVE_DEVICE_FAILURE;
-    }
-    else if (
-             ((clean_rejestrators & CLEAN_DR) != 0) ||
-             (
-              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB  ) != 0)) ||
-              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485) != 0))
-             ) 
-            )
-    {
-      /*
-      Зараз іде зчитування для інтерфейсу запису дискретного реєстратора, 
-      або очистка його, тому ця операція є тимчасово недоступною
-      */
-      error = ERROR_SLAVE_DEVICE_BUSY;
-    }
-    else if (
-             (data < info_rejestrator_dr.number_records) &&
-             (data < MAX_NUMBER_RECORDS_INTO_DR        ) /*Хоч теоретично ця умова має перекриватися завжди першою умовою*/
-            )
-    {
-      if (type_interface == USB_RECUEST)
-      {
-        //Встановлюємо номер запису дискретного реєстратора для читання через інтерфейс USB
-        number_record_of_dr_for_USB = data;
-        //Подаємо команду читання дискретного реєстратора для інтерфейсу USB
-
-        //Виставляємо першу частину запису
-        part_reading_dr_from_dataflash_for_USB = 0;
-        //Подаємо команду зчитати дані у бувер пам'яті
-        control_tasks_dataflash |= TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB;
-      }
-      else if (type_interface == RS485_RECUEST)
-      {
-        //Встановлюємо номер запису дискретного реєстратора для читання через інтерфейс RS-485
-        number_record_of_dr_for_RS485 = data;
-        //Подаємо команду читання дискретного реєстратора для інтерфейсу RS-485
-
-        //Виставляємо першу частину запису
-        part_reading_dr_from_dataflash_for_RS485 = 0;
-        //Подаємо команду зчитати дані у бувер пам'яті
-        control_tasks_dataflash |= TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485;
-      }
-      else
-      {
-        //Теоретично такого бути не мало б ніколи
-        error = ERROR_SLAVE_DEVICE_FAILURE;
-      }
-    }
-    else
-      error = ERROR_ILLEGAL_DATA_VALUE;
-  }
-  else if (address_data == MA_CLEAR_NUMBER_RECORD_DR)
-  {
-    if (data != CMD_WORD_CLEAR_DR)
-    {
-      //Для стирання дискретного реєстратора має бути парописано по певній адресі визначене число
-      error = ERROR_ILLEGAL_DATA_VALUE;
-    }
-    else if (
-             /*
-             (current_ekran.current_level == EKRAN_TITLES_DIGITAL_REGISTRATOR)
-             ||  
-             (current_ekran.current_level == EKRAN_DATA_LADEL_DR             )
-             ||  
-             (current_ekran.current_level == EKRAN_CHANGES_SIGNALS_DR        )
-             ||
-             */
-             (
-              (control_tasks_dataflash & (
-                                          TASK_MAMORY_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_DR | 
-                                          TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB                    |
-                                          TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485                  |
-                                          TASK_MAMORY_READ_DATAFLASH_FOR_DR_MENU
-                                         )
-              ) != 0
-             )
-             ||
-             ((clean_rejestrators & CLEAN_DR) != 0)  
-            ) 
-    {
-      //Зараз іде запис/зчитування дискретного реєстратора, або відкрите вікно відображення запису, тому ця операція є тимчасово недоступною
-      error = ERROR_SLAVE_DEVICE_BUSY;
-    }
-    else
-    {
-      //Помічаємо, що треба очистити дискретного реєстратора
-      clean_rejestrators |= CLEAN_DR;
-    }
   }
   else if (address_data == MA_CLEAR_NUMBER_RECORD_PR_ERR)
   {
@@ -5018,7 +4640,6 @@ void modbus_rountines(unsigned int type_interface)
           }
           else if (
                    (current_state_menu2.edition == ED_VIEWING                     ) ||
-                   (add_data                    == MA_CURRENT_NUMBER_RECORD_DR    ) ||
                    (add_data                    == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
                   )
           {
@@ -5041,10 +4662,7 @@ void modbus_rountines(unsigned int type_interface)
                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              ) && (add_data != MA_PASSWORD_INTERFACE)) || /*уставки і витримки (продовження) крім паролю доступу*/
                  ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA                   ) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA                   )                                       ) || /*час*/
                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )                                       ) || /*ранжування*/
-                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR               )                                       ) || /*ранжування дискретного реєстратора*/
                   (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR                   )                                                                                                          || /*очищення реєстратора програмних подій*/        
-                  (add_data == MA_CLEAR_NUMBER_RECORD_AR                       )                                                                                                          || /*очищення аналогового реєстратора*/        
-                  (add_data == MA_CLEAR_NUMBER_RECORD_DR                       )                                                                                                          || /*очищення дискретного реєстратора*/        
                   (add_data == MA_DEFAULT_SETTINGS                             )                                                                                                          || /*встановлення мінімальної конфігурації*/        
                   (add_data == MA_TEST_WATCHDOGS                               )                                                                                                          || /*тестування внутрішнього і зовнішнього watchdog*/        
                   (add_data == MA_NUMBER_ITERATION_EL                          )                                                                                                             /*встановленнямаксимальної кількості ітераційдля розширеної логіки*/        
@@ -5088,8 +4706,7 @@ void modbus_rountines(unsigned int type_interface)
                 }
               }
               else if(
-                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   )) || /*ранжування*/
-                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR))    /*ранжування дискретного реєстратора*/
+                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   )) /*ранжування*/
                      ) 
               {
                 //Враховуючи той факт, що зараз буде відбуватися ранжування, то скидаємо вказівник на редагуюче поле в 0
@@ -5193,7 +4810,6 @@ void modbus_rountines(unsigned int type_interface)
                 ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) ||
                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) ||
                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) ||
-                ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR               )) ||
                 (add_data == MA_NUMBER_ITERATION_EL)
                )
             {
@@ -5212,8 +4828,7 @@ void modbus_rountines(unsigned int type_interface)
                 restart_timeout_idle_new_settings = true;
                     
                 if (
-                    ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   )) ||
-                    ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR)) 
+                    ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   ))
                    )
                 {
                   if  ( !((add_data >= M_ADDRESS_FIRST_USER_REGISTER   ) && (add_data <= M_ADDRESS_LAST_USER_REGISTER)) )
@@ -5658,7 +5273,6 @@ void modbus_rountines(unsigned int type_interface)
 
             if (
                 (current_state_menu2.edition == ED_VIEWING                     ) ||
-                (add_data                    == MA_CURRENT_NUMBER_RECORD_DR    ) ||
                 (add_data                    == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
                )
             {
@@ -5675,10 +5289,7 @@ void modbus_rountines(unsigned int type_interface)
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) || /*уставки і витримки (продовження) крім паролю доступу*/
                   ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA                   ) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA                   )) || /*час*/
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) || /*ранжування*/
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR               )) || /*ранжування дискретного реєстратора*/
                    (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR                   )                                                                   || /*очищення реєстратора програмних подій*/
-                   (add_data == MA_CLEAR_NUMBER_RECORD_AR                       )                                                                   || /*очищення аналогового реєстратора*/        
-                   (add_data == MA_CLEAR_NUMBER_RECORD_DR                       )                                                                   || /*очищення дискретного реєстратора*/        
                    (add_data == MA_DEFAULT_SETTINGS                             )                                                                   || /*встановлення мінімальної конфігурації*/        
                    (add_data == MA_TEST_WATCHDOGS                               )                                                                   || /*тестування внутрішнього і зовнішнього watchdog*/        
                    (add_data == MA_NUMBER_ITERATION_EL                          )                                                                      /*встановленнямаксимальної кількості ітераційдля розширеної логіки*/        
@@ -5700,8 +5311,6 @@ void modbus_rountines(unsigned int type_interface)
                          &&
                          (  
                           (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR) || /*очищення реєстратора програмних подій*/
-                          (add_data == MA_CLEAR_NUMBER_RECORD_AR    ) || /*очищення аналогового реєстратора*/        
-                          (add_data == MA_CLEAR_NUMBER_RECORD_DR    ) || /*очищення дискретного реєстратора*/        
                           (add_data == MA_DEFAULT_SETTINGS          ) || /*встановлення мінімальної конфігурації*/        
                           (add_data == MA_TEST_WATCHDOGS            )    /*тестування внутрішнього і зовнішнього watchdog*/        
                          )   
@@ -5824,7 +5433,6 @@ void modbus_rountines(unsigned int type_interface)
                   ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) ||  
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) ||
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) ||
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR               ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR               )) ||
                   (add_data == MA_NUMBER_ITERATION_EL)
                  )
               {
@@ -5839,8 +5447,7 @@ void modbus_rountines(unsigned int type_interface)
                   //Виключаємо той випадок, коли робилося зняття паролю доступу
                   //Записуємо настройки
                   if (
-                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   )) ||
-                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG_DR) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG_DR)) 
+                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   ))
                      )
                   {
                     if  ( !((add_data >= M_ADDRESS_FIRST_USER_REGISTER) && (add_data <= M_ADDRESS_LAST_USER_REGISTER)) )

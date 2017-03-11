@@ -176,10 +176,6 @@ unsigned int count_number_set_bit(unsigned int*, unsigned int);
 void input_scan(void);
 void clocking_global_timers(void);
 void main_protection(void);
-unsigned int stop_regisrator(volatile unsigned int*, unsigned int*);
-void fix_undefined_error_dr(volatile unsigned int*);
-void command_start_saving_record_dr_into_dataflash(void);
-void routine_for_queue_dr(void);
 void diagnostyca_adc_execution(void);
 
 void Usb_routines(void);

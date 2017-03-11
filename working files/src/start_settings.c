@@ -92,15 +92,6 @@ void global_vareiables_installation(void)
   /**************************/
 
   /**************************/
-  //Змінні, які потрібні для дискретного реєстратора
-  /**************************/
-  for(unsigned int i = 0; i < SIZE_BUFFER_FOR_DR_RECORD; i++)
-  {
-    buffer_for_save_dr_record[i] = 0xff;
-  }
-  /**************************/
-  
-  /**************************/
   //
   /**************************/
   /**************************/
@@ -900,38 +891,6 @@ void start_settings_peripherals(void)
   /**********************/
   comparison_writing &= (unsigned int)(~COMPARISON_WRITING_USTUVANNJA);/*зчитування, а не порівняння*/
   _SET_BIT(control_i2c_taskes, TASK_START_READ_USTUVANNJA_EEPROM_BIT);
-  while(
-        (control_i2c_taskes[0]     != 0) ||
-        (control_i2c_taskes[1]     != 0) ||
-        (driver_i2c.state_execution > 0)
-       )
-  {
-    //Робота з watchdogs
-    if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
-    {
-      //Змінюємо стан біту зовнішнього Watchdog на протилежний
-      GPIO_WriteBit(
-                    GPIO_EXTERNAL_WATCHDOG,
-                    GPIO_PIN_EXTERNAL_WATCHDOG,
-                    (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
-                   );
-    }
-
-    main_routines_for_i2c();
-    changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
-    if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
-    {
-      //Повне роозблоковування обміну з мікросхемами для драйверу I2C
-      _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
-    }
-  }
-  /**********************/
-
-  /**********************/
-  //Читаємо збережені дані дискретного реєстратора з EEPROM
-  /**********************/
-  comparison_writing &= (unsigned int)(~COMPARISON_WRITING_INFO_REJESTRATOR_DR);/*зчитування, а не порівняння*/
-  _SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_DR_EEPROM_BIT);
   while(
         (control_i2c_taskes[0]     != 0) ||
         (control_i2c_taskes[1]     != 0) ||

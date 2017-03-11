@@ -110,8 +110,6 @@ volatile unsigned int periodical_tasks_TEST_SETTINGS = false;
 volatile unsigned int periodical_tasks_TEST_USTUVANNJA = false;
 volatile unsigned int periodical_tasks_TEST_TRG_FUNC = false;
 volatile unsigned int periodical_tasks_TEST_TRG_FUNC_LOCK = false;
-volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_DR = false;
-volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_DR_LOCK = false;
 volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR = false;
 volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK = false;
 volatile unsigned int periodical_tasks_TEST_FLASH_MEMORY = false;
@@ -198,31 +196,11 @@ volatile unsigned int error_into_spi_df = 0;/*Ненульве значення означає, що зафі
 unsigned int dataflash_not_busy = 0;
 volatile unsigned int control_tasks_dataflash = 0;
 unsigned char buffer_for_manu_read_record[SIZE_BUFFER_FOR_DR_RECORD];
-unsigned char buffer_for_USB_read_record_dr[SIZE_BUFFER_FOR_DR_RECORD];
-unsigned char buffer_for_RS485_read_record_dr[SIZE_BUFFER_FOR_DR_RECORD];
 unsigned char buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 unsigned char buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 
 unsigned int what_we_are_reading_from_dataflash_1;
 unsigned int what_we_are_reading_from_dataflash_2;
-
-//Дискретний реєстратор
-unsigned char crc_info_rejestrator_dr;
-volatile __INFO_REJESTRATOR info_rejestrator_dr;
-unsigned char crc_info_rejestrator_dr_ctrl;
-__INFO_REJESTRATOR info_rejestrator_dr_ctrl;
-unsigned int state_dr_record = STATE_DR_NO_RECORD;
-unsigned int number_records_dr_waiting_for_saving_operation = 0;
-unsigned char buffer_for_save_dr_record[SIZE_BUFFER_FOR_DR_RECORD];
-unsigned char buffer_for_save_dr_record_level_1[SIZE_BUFFER_FOR_DR_RECORD];
-unsigned char buffer_for_save_dr_record_level_2[SIZE_BUFFER_FOR_DR_RECORD];
-unsigned int part_writing_dr_into_dataflash;
-unsigned int number_record_of_dr_for_menu = 0xffff; //Це число означає, що номер запису не вибраний
-unsigned int number_record_of_dr_for_USB = 0xffff; //Це число означає, що номер запису не вибраний
-unsigned int number_record_of_dr_for_RS485 = 0xffff; //Це число означає, що номер запису не вибраний
-unsigned int part_reading_dr_from_dataflash_for_menu = 0;
-unsigned int part_reading_dr_from_dataflash_for_USB = 0;
-unsigned int part_reading_dr_from_dataflash_for_RS485 = 0;
 
 //Реєстратор програмних помилок
 unsigned char crc_info_rejestrator_pr_err;

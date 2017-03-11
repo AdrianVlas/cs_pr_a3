@@ -173,10 +173,6 @@ extern void clear_bit(unsigned int*, unsigned int);
 extern void input_scan(void);
 extern void clocking_global_timers(void);
 extern void main_protection(void);
-extern unsigned int stop_regisrator(volatile unsigned int*, unsigned int*);
-extern void fix_undefined_error_dr(volatile unsigned int*);
-extern void command_start_saving_record_dr_into_dataflash(void);
-extern void routine_for_queue_dr(void);
 extern void diagnostyca_adc_execution(void);
 
 extern void Usb_routines(void);

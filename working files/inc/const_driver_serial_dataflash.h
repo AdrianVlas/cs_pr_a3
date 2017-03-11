@@ -122,9 +122,7 @@
 #define ETAP_WRITE_BUFFER_INTO_MEMORY             5
 #define ETAP_ERROR_BEFALLEN                       6
 
-#define CLEAN_DR_BIT          0
-#define CLEAN_DR              (1 << CLEAN_DR_BIT)
-#define CLEAN_PR_ERR_BIT      1
+#define CLEAN_PR_ERR_BIT      0
 #define CLEAN_PR_ERR          (1 << CLEAN_PR_ERR_BIT)
 
 #endif

@@ -91,8 +91,6 @@ extern volatile unsigned int periodical_tasks_TEST_SETTINGS;
 extern volatile unsigned int periodical_tasks_TEST_USTUVANNJA;
 extern volatile unsigned int periodical_tasks_TEST_TRG_FUNC;
 extern volatile unsigned int periodical_tasks_TEST_TRG_FUNC_LOCK;
-extern volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_DR;
-extern volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_DR_LOCK;
 extern volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR;
 extern volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK;
 extern volatile unsigned int periodical_tasks_TEST_FLASH_MEMORY;
@@ -169,31 +167,11 @@ extern volatile unsigned int error_into_spi_df;
 extern unsigned int dataflash_not_busy;
 extern volatile unsigned int control_tasks_dataflash;
 extern unsigned char buffer_for_manu_read_record[SIZE_BUFFER_FOR_DR_RECORD];
-extern unsigned char buffer_for_USB_read_record_dr[SIZE_BUFFER_FOR_DR_RECORD];
-extern unsigned char buffer_for_RS485_read_record_dr[SIZE_BUFFER_FOR_DR_RECORD];
 extern unsigned char buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 extern unsigned char buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 
 extern unsigned int what_we_are_reading_from_dataflash_1;
 extern unsigned int what_we_are_reading_from_dataflash_2;
-
-//Дискретний реєстратор
-extern unsigned char crc_info_rejestrator_dr;
-extern volatile __INFO_REJESTRATOR info_rejestrator_dr;
-extern unsigned char crc_info_rejestrator_dr_ctrl;
-extern __INFO_REJESTRATOR info_rejestrator_dr_ctrl;
-extern unsigned int state_dr_record;
-extern unsigned int number_records_dr_waiting_for_saving_operation;
-extern unsigned char buffer_for_save_dr_record[SIZE_BUFFER_FOR_DR_RECORD];
-extern unsigned char buffer_for_save_dr_record_level_1[SIZE_BUFFER_FOR_DR_RECORD];
-extern unsigned char buffer_for_save_dr_record_level_2[SIZE_BUFFER_FOR_DR_RECORD];
-extern unsigned int part_writing_dr_into_dataflash;
-extern unsigned int number_record_of_dr_for_menu;
-extern unsigned int number_record_of_dr_for_USB;
-extern unsigned int number_record_of_dr_for_RS485;
-extern unsigned int part_reading_dr_from_dataflash_for_menu;
-extern unsigned int part_reading_dr_from_dataflash_for_USB;
-extern unsigned int part_reading_dr_from_dataflash_for_RS485;
 
 //Реєстратор програмних помилок
 extern unsigned char crc_info_rejestrator_pr_err;

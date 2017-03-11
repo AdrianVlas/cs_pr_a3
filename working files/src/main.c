@@ -256,31 +256,6 @@ inline void periodical_operations(void)
     //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації
     periodical_tasks_TEST_TRG_FUNC_LOCK = false;
   }
-  else if (periodical_tasks_TEST_INFO_REJESTRATOR_DR_LOCK != 0)
-  {
-    //Стоїть у черзі активна задача самоконтролю по резервній копії для дискретного реєстратора
-    //Виконуємо її
-    unsigned int result;
-    result = control_info_rejestrator(&info_rejestrator_dr_ctrl, crc_info_rejestrator_dr_ctrl);
-      
-    if (result == 1)
-    {
-      //Контроль достовірності реєстратора пройшов успішно
-    
-      //Скидаємо повідомлення у слові діагностики
-      _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_DR_CONTROL_BIT);
-    }
-    else
-    {
-      //Контроль достовірності реєстратора не пройшов
-
-      //Виствляємо повідомлення у слові діагностики
-      _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_DR_CONTROL_BIT);
-    }
-
-    //Скидаємо активну задачу самоконтролю по резервній копії для аналогового реєстратора
-    periodical_tasks_TEST_INFO_REJESTRATOR_DR_LOCK = false;
-  }
   else if (periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK != 0)
   {
     //Стоїть у черзі активна задача самоконтролю по резервній копії для реєстратора програмних подій

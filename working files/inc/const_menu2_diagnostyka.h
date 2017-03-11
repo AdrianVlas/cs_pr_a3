@@ -50,15 +50,6 @@ ERROR_VDD_ADC_TEST_COARSE_BIT,
 
 ERROR_DIGITAL_OUTPUTS_BIT,
 
-ERROR_AR_TEMPORARY_BUSY_BIT,
-ERROR_AR_OVERLOAD_BUFFER_BIT,
-ERROR_AR_UNDEFINED_BIT,
-ERROR_AR_LOSS_INFORMATION_BIT,
-
-ERROR_DR_TEMPORARY_BUSY_BIT,
-ERROR_DR_UNDEFINED_BIT,
-ERROR_DR_LOSS_INFORMATION_BIT,
-
 ERROR_PR_ERR_OVERLOAD_BIT,
 ERROR_PR_ERR_LOSS_INFORMATION_BIT,
 
@@ -161,13 +152,6 @@ ERROR_INTERNAL_FLASH_BIT,
   "Тест VREF АЦП гр",   \
   "Тест VDD АЦП гр.",   \
   " Ош.вых.реле    ",   \
-  "Ан.рег.вр.занят.",   \
-  " Пер.буф.aн.рег.",   \
-  "Неопр.ош.ан.рег.",   \
-  "Потеря д.ан.рег.",   \
-  " Д.рег.вр.занят.",   \
-  " Неопр.ош.д.рег.",   \
-  " Потеря д.д.рег.",   \
   "Переп.буф.пр.ош.",   \
   " Потеря д.пр.ош.",   \
   " Старт устр.    ",   \
@@ -178,6 +162,13 @@ ERROR_INTERNAL_FLASH_BIT,
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
+  " Ошибка 62      ",   \
+  " Ошибка 63      ",   \
+  " Ошибка 64      ",   \
+  " Ошибка 65      ",   \
+  " Ошибка 66      ",   \
+  " Ошибка 67      ",   \
+  " Ошибка 68      ",   \
   " Ошибка 69      ",   \
   " Ошибка 70      ",   \
   " Ошибка 71      ",   \
@@ -251,13 +242,6 @@ ERROR_INTERNAL_FLASH_BIT,
   "Тест VREF АЦП гр",   \
   "Тест VDD АЦП гр.",   \
   " Пом.вих.реле   ",   \
-  "Ан.р.тимч.зайнят",   \
-  " Переп.буф.aн.р.",   \
-  "Невизн.пом.ан.р.",   \
-  "Втрата д.ан.р.  ",   \
-  "Д.р.тимч.зайнят.",   \
-  " Невизн.пом.д.р.",   \
-  " Втрата д.д.р.  ",   \
   "Переп.буф.р.пр.п",   \
   " Втрата д.р.пр.п",   \
   " Старт пристр.  ",   \
@@ -268,6 +252,13 @@ ERROR_INTERNAL_FLASH_BIT,
   " Пом.SPI_DF     ",   \
   " Пом.зовн.SRAM  ",   \
   " Пом.внутр.FLASH",   \
+  " Помилка 62     ",   \
+  " Помилка 63     ",   \
+  " Помилка 64     ",   \
+  " Помилка 65     ",   \
+  " Помилка 66     ",   \
+  " Помилка 67     ",   \
+  " Помилка 68     ",   \
   " Помилка 69     ",   \
   " Помилка 70     ",   \
   " Помилка 71     ",   \
@@ -341,13 +332,6 @@ ERROR_INTERNAL_FLASH_BIT,
   " ADC:VREF Test R",   \
   " ADC:VDD Test R.",   \
   " DO Ctrl.Err.   ",   \
-  " An.Rec.busy    ",   \
-  " An.Rec.buff.OVF",   \
-  "Undef.An.Rec.Err",   \
-  "An.Rec.Data lost",   \
-  " D.Rec.busy     ",   \
-  "Undef.D.Rec.Err.",   \
-  " D.Rec.Data lost",   \
   "OVF of PER buff.",   \
   " PER Data lost  ",   \
   " Device Start   ",   \
@@ -358,6 +342,13 @@ ERROR_INTERNAL_FLASH_BIT,
   " DF SPI Err.    ",   \
   " Ext.SRAM Err.  ",   \
   " Int.FLASH Err. ",   \
+  " Error 62       ",   \
+  " Error 63       ",   \
+  " Error 64       ",   \
+  " Error 65       ",   \
+  " Error 66       ",   \
+  " Error 67       ",   \
+  " Error 68       ",   \
   " Error 69       ",   \
   " Error 70       ",   \
   " Error 71       ",   \
@@ -431,13 +422,6 @@ ERROR_INTERNAL_FLASH_BIT,
   "Тест VREF АЦП гр",   \
   "Тест VDD АЦП гр.",   \
   " Ош.вых.реле    ",   \
-  "Ан.рег.вр.занят.",   \
-  " Пер.буф.aн.рег.",   \
-  "Неопр.ош.ан.рег.",   \
-  "Потеря д.ан.рег.",   \
-  " Д.рег.вр.занят.",   \
-  " Неопр.ош.д.рег.",   \
-  " Потеря д.д.рег.",   \
   "Переп.буф.пр.ош.",   \
   " Потеря д.пр.ош.",   \
   " Старт устр.    ",   \
@@ -448,6 +432,13 @@ ERROR_INTERNAL_FLASH_BIT,
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
+  " Ошибка 62      ",   \
+  " Ошибка 63      ",   \
+  " Ошибка 64      ",   \
+  " Ошибка 65      ",   \
+  " Ошибка 66      ",   \
+  " Ошибка 67      ",   \
+  " Ошибка 68      ",   \
   " Ошибка 69      ",   \
   " Ошибка 70      ",   \
   " Ошибка 71      ",   \
