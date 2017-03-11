@@ -5,16 +5,29 @@
 /*****************************************************/
 void make_ekran_setting_language(void)
 {
-  if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+  if (
+      (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+      (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+     )   
   {
-    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      "Ред.не разрешено",
+      "Ред.не дозволене",
+      "Ed.isn't allowed",
+      "Ред.не разрешено",
+    };
+
+    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       " Вых.за диапазон",
       " Вих.за діапазон",
       "  Out of Limits ",
       "Вых.за диапазон "
     };
-    make_ekran_about_info(true, information_about_error);
+
+    enum _edition_stats edition = current_state_menu2.edition;
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else
   {

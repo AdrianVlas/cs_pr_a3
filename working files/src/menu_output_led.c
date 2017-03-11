@@ -5,16 +5,29 @@
 /*****************************************************/
 void make_ekran_control_output_led(void)
 {
-  if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+  if (
+      (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+      (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+     )   
   {
-    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      "Ред.не разрешено",
+      "Ред.не дозволене",
+      "Ed.isn't allowed",
+      "Ред.не разрешено",
+    };
+
+    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       " Вых.за диапазон",
       " Вих.за діапазон",
       "  Out of Limits ",
       "Вых.за диапазон "
     };
-    make_ekran_about_info(true, information_about_error);
+
+    enum _edition_stats edition = current_state_menu2.edition;
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else
   {
@@ -60,33 +73,33 @@ void make_ekran_control_output_led(void)
     {
       if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
       {
-        p_settings = &((((__LN_OUTPUT*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
+        p_settings = &((((__LN_OUTPUT*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings);
       }
       else
       {
-        p_settings = &((((__LN_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
+        p_settings = &((((__LN_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings);
       }
     }
     else if (current_state_menu2.edition == ED_CAN_BE_EDITED) 
     {
       if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
       {
-        p_settings = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+        p_settings = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       }
       else
       {
-        p_settings = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+        p_settings = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       }
     }
     else 
     {
       if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
       {
-        p_settings = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+        p_settings = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       }
       else
       {
-        p_settings = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+        p_settings = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       }
     }
   
@@ -311,13 +324,13 @@ enum _result_pressed_enter_during_edition press_enter_in_control_output_led(void
       void *p_settings_cont;
       if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
       {
-        p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-        p_settings_cont = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+        p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+        p_settings_cont = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       }
       else
       {
-        p_settings_edit = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-        p_settings_cont = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+        p_settings_edit = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+        p_settings_cont = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       }
 
       if (
@@ -380,8 +393,8 @@ void press_esc_in_control_output_led(void)
 {
   if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
   {
-    __settings_for_OUTPUT *p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-    __settings_for_OUTPUT *p_settings_cont = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    __settings_for_OUTPUT *p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    __settings_for_OUTPUT *p_settings_cont = (((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
 
     p_settings_edit->control = p_settings_cont->control;
     p_settings_edit->param[OUTPUT_MEANDER1] = p_settings_cont->param[OUTPUT_MEANDER1];
@@ -389,8 +402,8 @@ void press_esc_in_control_output_led(void)
   }
   else
   {
-    __settings_for_LED *p_settings_edit = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-    __settings_for_LED *p_settings_cont = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    __settings_for_LED *p_settings_edit = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    __settings_for_LED *p_settings_cont = (((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
 
     p_settings_edit->control = p_settings_cont->control;
     p_settings_edit->param[LED_MEANDER1] = p_settings_cont->param[LED_MEANDER1];
@@ -416,11 +429,11 @@ void change_control_output_led(unsigned int action)
   void *p_settings_edit;
   if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
   {
-    p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    p_settings_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
   }
   else
   {
-    p_settings_edit = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    p_settings_edit = (((__settings_for_LED*)sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
   }
 
   if (

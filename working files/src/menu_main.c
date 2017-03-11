@@ -157,11 +157,23 @@ void make_ekran_main(void)
 Функція обробки натискування кнопки Enter
 */
 /*****************************************************/
-enum _result_pressed_enter_during_edition press_enter_in_main(void)
+enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords(void)
 {
   enum _result_pressed_enter_during_edition result = RPEDE_NONE;
   
-  if (*((enum _menu2_levels*)p_menu_param_1) == LIST_SETTINGS_MENU2_LEVEL)
+  enum _menu2_levels new_level = *((enum _menu2_levels*)p_menu_param_1);
+  if (
+      (new_level != current_state_menu2.current_level)
+      &&  
+      (
+       (new_level == LIST_SETTINGS_MENU2_LEVEL)
+       ||  
+       (
+        (new_level == SET_NEW_PASSWORD_MENU2_LEVEL) &&
+        (current_state_menu2.edition == ED_VIEWING)
+       )
+      )   
+     )   
   {
     //Є спроба перейти у вікно списку налаштувань
     if (settings_fix_prt.password_2 == 0)
@@ -173,22 +185,26 @@ enum _result_pressed_enter_during_edition press_enter_in_main(void)
       }
       else
       {
-        if (settings_fix_prt.password_1 == 0)
+        //Повідомляємо про те, що режим редагування зараз недоступний
+        current_state_menu2.edition = ED_WARNING_EDITION_BUSY;
+        if (new_level == SET_NEW_PASSWORD_MENU2_LEVEL)
         {
-          //Входимо без права подальшого редагування
-          current_state_menu2.edition = ED_VIEWING;
-        }
-        else
-        {
-          //Повідомляємо про те, що режим редагування зараз недоступний
-          current_state_menu2.edition = ED_INFO;
+          //Не дозволяємо заходити у ті вікна, у які без дозволу редагування заходити неможна
+          *((enum _menu2_levels*)p_menu_param_1) = current_state_menu2.current_level;
+          
+          //Виставляємо команду на обновлекння екрану
+          new_state_keyboard |= (1<<BIT_REWRITE);
+
         }
       }
     }
-    else if (settings_fix_prt.password_1 != 0)
+    else if (
+             (new_level == SET_NEW_PASSWORD_MENU2_LEVEL) ||
+             (settings_fix_prt.password_1 != 0)
+            )   
     {
       //Переходимо на меню запиту паролю
-      next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = *((enum _menu2_levels*)p_menu_param_1);
+      next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = new_level;
       *((enum _menu2_levels*)p_menu_param_1) = PASSWORD_MENU2_LEVEL;
     }
   }

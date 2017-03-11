@@ -8,7 +8,7 @@ void main_manu_function_ver2(void)
   //Перевіряємо чи якась кнопка натиснута
   if (new_state_keyboard !=0)
   {
-    static enum _edition_stats prev_edit;
+//    static enum _edition_stats prev_edit;
     
     unsigned int max_row;
     if (current_state_menu2.p_max_row == NULL) max_row = current_state_menu2.max_row;
@@ -18,7 +18,7 @@ void main_manu_function_ver2(void)
       else 
       {
         int number_ln =  *current_state_menu2.p_max_row;
-        max_row = ((number_ln != 0) && (current_state_menu2.number_logical_node < number_ln))*current_state_menu2.max_row;
+        max_row = ((number_ln != 0) && (current_state_menu2.number_selection < number_ln))*current_state_menu2.max_row;
       }
     }
 
@@ -55,10 +55,8 @@ void main_manu_function_ver2(void)
             previous_state_cursor.position_cursor_x = current_state_menu2.position_cursor_x;              
             previous_state_cursor.cursor_on = current_state_menu2.cursor_on;
             previous_state_cursor.cursor_blinking_on = current_state_menu2.cursor_blinking_on;
-            current_state_menu2.cursor_on = 1;
-            current_state_menu2.cursor_blinking_on = 1;
             current_state_menu2.position_cursor_x = COL_NEW_PASSWORD_BEGIN;
-            position_in_current_level_menu[current_ekran.current_level] = 1;
+            position_in_current_level_menu2[current_state_menu2.current_level] = 1;
             //Скидаємо новий пароль у нуль і скидаємо кількість введених символів
             new_password = 0;
             number_symbols = 0;
@@ -112,15 +110,20 @@ void main_manu_function_ver2(void)
             new_state_keyboard &= (unsigned int)(~action);
               
             //Перевіряємо чи не натиснуто максимальну кількість символів для паролю (4) і якщо це так, то автоматично приймаємо його
-            if (number_symbols >= 4) new_state_keyboard |= (1<<BIT_KEY_ENTER);
+            if (number_symbols >= MAX_NUMBER_OF_SYMPOLS_IN_PASSWORD) new_state_keyboard |= (1<<BIT_KEY_ENTER);
           }
           else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ENTER))) !=0)
           {
             //Натиснута кнопка ENTER
 
             if (
-                (new_password == settings_fix_prt.password_1) || 
-                (new_password == settings_fix_prt.password_2)
+                (new_password == settings_fix_prt.password_2) ||
+                (
+                 (new_password == settings_fix_prt.password_1) &&
+                 (
+                  (next_level_in_current_level_menu2[current_state_menu2.current_level] != SET_NEW_PASSWORD_MENU2_LEVEL)
+                 ) 
+                )   
                )   
             {
               //Пароль зійшовся
@@ -141,18 +144,35 @@ void main_manu_function_ver2(void)
                 {
                   current_state_menu2.edition = ED_EDITION;
                 }
-                else current_state_menu2.edition = ED_WARNING_EDITION_BUSY;
+                else 
+                {
+                  if (current_state_menu2.current_level == SET_NEW_PASSWORD_MENU2_LEVEL)
+                  {
+                    current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+                    new_level_menu();
+                  }
+                  current_state_menu2.edition = ED_WARNING_EDITION_BUSY;
+                }
               }
               else current_state_menu2.edition = ED_VIEWING;
-              
             }
             else
             {
-              //Пароль не зійшовся
-              current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+              //Пароль не зійшовся, або по Паролю1 у це вікно заходити не можна (наприклад вікно "зміна паролю")
+              enum _menu2_levels temp_value_level = current_state_menu2.current_level;
+              do
+              {
+                temp_value_level = previous_level_in_current_level_menu2[temp_value_level];
+              }
+              while(
+                    (new_password != settings_fix_prt.password_1) &&
+                    (temp_value_level >= __BEGIN_SETTINGS_MENU2_LEVEL) &&
+                    (temp_value_level <  __NEXT_AFTER_SETTINGS_MENU2_LEVEL)
+                   );
+              current_state_menu2.current_level = temp_value_level;
               new_level_menu();
               
-              current_ekran.edition = prev_edit;
+              current_state_menu2.edition = /*prev_edit*/ED_VIEWING;
             }
             current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
             current_state_menu2.position_cursor_x = previous_state_cursor.position_cursor_x;
@@ -176,7 +196,7 @@ void main_manu_function_ver2(void)
             current_state_menu2.cursor_on = previous_state_cursor.cursor_on;
             current_state_menu2.cursor_blinking_on = previous_state_cursor.cursor_blinking_on;
             new_level_menu();
-            current_state_menu2.edition = prev_edit;
+            current_state_menu2.edition = /*prev_edit*/ED_VIEWING;
               
             //Виставляємо біт обновлення екрану
             new_state_keyboard |= (1<<BIT_REWRITE);
@@ -191,6 +211,230 @@ void main_manu_function_ver2(void)
             new_state_keyboard &= ~temp_data;
           }
         }
+        break;
+      }
+    case SET_NEW_PASSWORD_MENU2_LEVEL:
+      {
+        //Змінні для фіксації введеного паролю
+        static int number_symbols;
+        
+        //Очищаємо всі біти краім упралінських
+        new_state_keyboard &= (1<<BIT_KEY_ENTER)|(1<<BIT_KEY_ESC)|(1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN)|(1<<BIT_KEY_RIGHT)|(1<<BIT_KEY_LEFT)|(1<<BIT_REWRITE);
+
+        uint32_t *p_password_cont, *p_password_edit;
+        switch (current_state_menu2.number_selection)
+        {
+        case INDEX_LIST_PASSWORDS_M2_1:
+          {
+            p_password_cont = &settings_fix.password_1;
+            p_password_edit = &settings_fix_edit.password_1;
+            break;
+          }
+        case INDEX_LIST_PASSWORDS_M2_2:
+          {
+            p_password_cont = &settings_fix.password_2;
+            p_password_edit = &settings_fix_edit.password_2;
+            break;
+          }
+        default:
+          {
+            //Теоретично цього ніколи не мало б бути
+            total_error_sw_fixed(108);
+          }
+        }
+          
+        if (
+            ((action = (new_state_keyboard & (1 << BIT_KEY_ENTER))) !=0) ||
+            ((action = (new_state_keyboard & (1 << BIT_KEY_ESC  ))) !=0)
+           )   
+        {
+          if (action == (1 << BIT_KEY_ENTER))
+          {
+            if (*p_password_edit != *p_password_cont)
+            {
+              *p_password_cont = *p_password_edit;
+              config_settings_modified |= MASKA_CHANGED_SETTINGS;
+            }
+          }
+          else
+          {
+            *p_password_edit = *p_password_cont;
+          }
+            
+          current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+          current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
+          current_state_menu2.edition = ED_CAN_BE_EDITED;
+          new_level_menu();
+              
+          //Виставляємо біт обновлення екрану
+          new_state_keyboard |= (1<<BIT_REWRITE);
+
+          //Очистити сигналізацію, що натиснута кнопка 
+          new_state_keyboard &= (unsigned int)(~action);
+        }
+        else
+        {
+          if ((action = (new_state_keyboard & (1<<BIT_REWRITE ))) !=0)
+          {
+            current_state_menu2.position_cursor_x = COL_NEW_PASSWORD_BEGIN;
+            position_in_current_level_menu2[current_state_menu2.current_level] = 1;
+            //Скидаємо новий пароль у нуль і скидаємо кількість введених символів
+
+            number_symbols = 0;
+            unsigned int temp_value = *p_password_edit;
+            while (temp_value != 0)
+            {
+              number_symbols++;
+              temp_value /= 10;
+            }
+            if (number_symbols == 0) number_symbols = 1; //Це випадок коли current_settings.password1 = 0, тоді кількість символів рівна 0, бо число є "0"
+          }
+          else if ((action = (new_state_keyboard & (1<<BIT_KEY_UP))) !=0)
+          {
+            unsigned int vaga = 1, temp_value, ostacha, vyshchi_rozrjady;
+            int edit_rozrjad;
+              
+            for (intptr_t i = (current_state_menu2.position_cursor_x - COL_NEW_PASSWORD_BEGIN + 1); i < number_symbols; i++) vaga *= 10;
+            ostacha = *p_password_edit % vaga;
+            temp_value = (*p_password_edit / vaga);
+            edit_rozrjad = temp_value % 10;
+            vyshchi_rozrjady = temp_value / 10;
+          
+            if (++edit_rozrjad > MAX_VALUE_DIGIT_PASSWORD) 
+            {
+              if (ostacha == 0)
+              {
+                edit_rozrjad = 0;
+                if (number_symbols > 1)
+                {
+                  number_symbols--;
+                  current_state_menu2.position_cursor_x--;
+                  *p_password_edit = vyshchi_rozrjady*vaga;
+                }
+                else
+                {
+                  if (
+                      (current_state_menu2.number_selection != INDEX_LIST_PASSWORDS_M2_1) && 
+                      (current_state_menu2.number_selection != INDEX_LIST_PASSWORDS_M2_2)
+                     )
+                  {
+                    edit_rozrjad = 1;
+                  }
+                  *p_password_edit = (vyshchi_rozrjady*10 + edit_rozrjad)*vaga; 
+                }
+              }
+              else
+              {
+                edit_rozrjad = 1;
+                *p_password_edit = (vyshchi_rozrjady*10 + edit_rozrjad)*vaga + ostacha;
+              }
+            }
+            else
+            {
+              *p_password_edit = (vyshchi_rozrjady*10 + edit_rozrjad)*vaga + ostacha;
+            }
+          }
+          else if ((action = (new_state_keyboard & (1<<BIT_KEY_DOWN))) !=0)
+          {
+            unsigned int vaga = 1, temp_value, ostacha, vyshchi_rozrjady;
+            int edit_rozrjad;
+              
+            for (intptr_t i = (current_state_menu2.position_cursor_x - COL_NEW_PASSWORD_BEGIN + 1); i < number_symbols; i++) vaga *= 10;
+            ostacha = *p_password_edit % vaga;
+            temp_value = (*p_password_edit / vaga);
+            edit_rozrjad = temp_value % 10;
+            vyshchi_rozrjady = temp_value / 10;
+          
+            if (--edit_rozrjad < 0) 
+            {
+              edit_rozrjad = MAX_VALUE_DIGIT_PASSWORD;
+              *p_password_edit = (vyshchi_rozrjady*10 + edit_rozrjad)*vaga + ostacha;
+            }
+            else if (edit_rozrjad == 0)
+            {
+              if ((vyshchi_rozrjady != 0) || (ostacha != 0))
+              {
+                if (ostacha == 0)
+                {
+                  edit_rozrjad = 0;
+                  if (number_symbols > 1)
+                  {
+                    number_symbols--;
+                    current_state_menu2.position_cursor_x--;
+                    *p_password_edit = vyshchi_rozrjady*vaga;
+                  }
+                  else
+                  {
+                    if (
+                        (current_state_menu2.number_selection != INDEX_LIST_PASSWORDS_M2_1) && 
+                        (current_state_menu2.number_selection != INDEX_LIST_PASSWORDS_M2_2)
+                       )
+                    {
+                      edit_rozrjad = MAX_VALUE_DIGIT_PASSWORD;
+                    }
+                    *p_password_edit = (vyshchi_rozrjady*10 + edit_rozrjad)*vaga;
+                  }
+                }
+                else
+                {
+                  edit_rozrjad = MAX_VALUE_DIGIT_PASSWORD;
+                  *p_password_edit = (vyshchi_rozrjady*10 + edit_rozrjad)*vaga + ostacha;
+                }
+              }
+              else
+              {
+                if (
+                    (current_state_menu2.number_selection != INDEX_LIST_PASSWORDS_M2_1) && 
+                    (current_state_menu2.number_selection != INDEX_LIST_PASSWORDS_M2_2)
+                   )
+                {
+                  *p_password_edit = MAX_VALUE_DIGIT_PASSWORD;
+                }
+                else *p_password_edit = 0;
+              }
+                  
+            }
+            else
+            {
+              *p_password_edit = (vyshchi_rozrjady*10 + edit_rozrjad)*vaga + ostacha;
+            }
+          }
+          else if ((action = (new_state_keyboard & (1<<BIT_KEY_RIGHT))) !=0)
+          {
+            //Натиснута кнопка RIGHT
+            if (*p_password_edit != 0)
+            {
+              if (++current_state_menu2.position_cursor_x > COL_NEW_PASSWORD_END) current_state_menu2.position_cursor_x = COL_NEW_PASSWORD_BEGIN;
+              if (number_symbols < (current_state_menu2.position_cursor_x - COL_NEW_PASSWORD_BEGIN + 1))
+              {
+                *p_password_edit = (*p_password_edit)*10 + 1;
+                number_symbols++;
+              }
+            }
+          }
+          else if ((action = (new_state_keyboard & (1<<BIT_KEY_LEFT))) !=0)
+          {
+            //Натиснута кнопка RIGHT
+            if (*p_password_edit != 0)
+            {
+              if (--current_state_menu2.position_cursor_x < COL_NEW_PASSWORD_BEGIN) current_state_menu2.position_cursor_x = COL_NEW_PASSWORD_BEGIN + number_symbols - 1;
+            }
+          }
+        
+          //Формуємо екран відображення
+          p_menu_param_1 = p_password_edit;
+          unsigned int view = true;
+          p_menu_param_2 = &view;
+          if (current_state_menu2.func_show != NULL) current_state_menu2.func_show();
+          else
+          {
+            //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+            total_error_sw_fixed(109);
+          }
+          //Очищаємо біт обновлення екрану
+          new_state_keyboard &= (unsigned int)(~action);
+        }
+        
         break;
       }
     case MAIN_MANU2_LEVEL:
@@ -214,6 +458,7 @@ void main_manu_function_ver2(void)
     case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
     case NAME_OF_CELL_MENU2_LEVEL:
     case SETTINGS_RS485_MENU2_LEVEL:
+    case LIST_PASSWORDS_MENU2_LEVEL:
     case DIAGNOSTICS_MENU2_LEVEL:
     case LABELS_MENU2_LEVEL:
     case CONFIG_LABEL_MENU2_LEVEL:
@@ -360,7 +605,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
               const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
               const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_MEANDERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_BIOS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LANGUAGE_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_MEANDERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_BIOS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LANGUAGE_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL, LIST_PASSWORDS_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_LEVEL;
               const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_TIMER_MENU2_LEVEL, CTRL_TIMER_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_meanders_menu2 = LIST_SETTINGS_MEANDER_MENU2_LEVEL;
@@ -374,6 +619,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_settings_led_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_LED_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_passwords_menu2[MAX_ROW_LIST_PASSWORDS_M2] = {SET_NEW_PASSWORD_MENU2_LEVEL, SET_NEW_PASSWORD_MENU2_LEVEL};
 
               const enum _menu2_levels *p = NULL;
               
@@ -401,7 +647,7 @@ void main_manu_function_ver2(void)
               case LIST_TIMERS_MENU2_LEVEL:
                 {
                   p = &next_for_list_timers_menu2;
-                  current_state_menu2.number_logical_node = current_state_menu2.index_position;
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
                   
                   position_in_current_level_menu2[LIST_SETTINGS_TIMER_MENU2_LEVEL] = 
                   position_in_current_level_menu2[DELAY_TIMER_MENU2_LEVEL]         = 
@@ -417,7 +663,7 @@ void main_manu_function_ver2(void)
               case LIST_MEANDERS_MENU2_LEVEL:
                 {
                   p = &next_for_list_meanders_menu2;
-                  current_state_menu2.number_logical_node = current_state_menu2.index_position;
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
                   
                   position_in_current_level_menu2[LIST_SETTINGS_MEANDER_MENU2_LEVEL] = 
                   position_in_current_level_menu2[DELAY_MEANDER_MENU2_LEVEL]         = 0;
@@ -437,7 +683,7 @@ void main_manu_function_ver2(void)
               case LIST_INPUTS_MENU2_LEVEL:
                 {
                   p = &next_for_list_inputs_menu2;
-                  current_state_menu2.number_logical_node = current_state_menu2.index_position;
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
                   
                   position_in_current_level_menu2[LIST_SETTINGS_INPUT_MENU2_LEVEL] = 
                   position_in_current_level_menu2[DELAY_INPUT_MENU2_LEVEL]         = 
@@ -453,7 +699,7 @@ void main_manu_function_ver2(void)
               case LIST_OUTPUTS_MENU2_LEVEL:
                 {
                   p = &next_for_list_outputs_menu2;
-                  current_state_menu2.number_logical_node = current_state_menu2.index_position;
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
                   
                   position_in_current_level_menu2[LIST_SETTINGS_OUTPUT_MENU2_LEVEL] = 
                   position_in_current_level_menu2[CTRL_OUTPUT_MENU2_LEVEL]          = 0;
@@ -468,7 +714,7 @@ void main_manu_function_ver2(void)
               case LIST_LEDS_MENU2_LEVEL:
                 {
                   p = &next_for_list_leds_menu2;
-                  current_state_menu2.number_logical_node = current_state_menu2.index_position;
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
                   
                   position_in_current_level_menu2[LIST_SETTINGS_LED_MENU2_LEVEL] = 
                   position_in_current_level_menu2[CTRL_LED_MENU2_LEVEL]          = 0;
@@ -490,6 +736,13 @@ void main_manu_function_ver2(void)
                   p = &next_for_list_settings_RS485_menu2[current_state_menu2.index_position];
                   break;
                 }
+              case LIST_PASSWORDS_MENU2_LEVEL:
+                {
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
+
+                  p = &next_for_list_passwords_menu2[current_state_menu2.index_position];
+                  break;
+                }
               case LABELS_MENU2_LEVEL:
                 {
                   p = &next_for_labels_menu2[current_state_menu2.index_position];
@@ -505,13 +758,13 @@ void main_manu_function_ver2(void)
               if (p != NULL)
               {
                 enum _menu2_levels temp_current_level = *p;
+                if (current_state_menu2.func_press_enter != NULL) 
+                {
+                  p_menu_param_1 = &temp_current_level;
+                  current_state_menu2.func_press_enter();
+                }
                 if (current_state_menu2.current_level != temp_current_level) 
                 {
-                  if (current_state_menu2.func_press_enter != NULL) 
-                  {
-                    p_menu_param_1 = &temp_current_level;
-                    current_state_menu2.func_press_enter();
-                  }
                 
                   previous_level_in_current_level_menu2[temp_current_level] = current_state_menu2.current_level;
                 
@@ -668,7 +921,7 @@ void main_manu_function_ver2(void)
 
             if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
             {
-              prev_edit = current_state_menu2.edition;
+//              prev_edit = current_state_menu2.edition;
                
               if ((current_state_menu2.edition == ED_VIEWING) && (settings_fix_prt.password_2 != 0))
               {
@@ -692,7 +945,7 @@ void main_manu_function_ver2(void)
               case RPEDE_DATA_NOT_CHANGED:
                 {
                   //Дані не зазнали змін
-                  current_state_menu2.edition = prev_edit;
+                  current_state_menu2.edition = /*prev_edit*/ED_VIEWING;
                   break;
                 }
               case RPEDE_DATA_CHANGED_OK:
@@ -711,7 +964,7 @@ void main_manu_function_ver2(void)
             }
             else if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
             {
-              current_state_menu2.edition = prev_edit;
+              current_state_menu2.edition = /*prev_edit*/ED_VIEWING;
             }
             else if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
             {
@@ -740,7 +993,7 @@ void main_manu_function_ver2(void)
             else
             {
               //Вихід у режимі редагування без введення змін
-              current_state_menu2.edition = prev_edit;
+              current_state_menu2.edition = /*prev_edit*/ED_VIEWING;
             }
 
             //Виставляємо команду на обновлекння нового екрану
@@ -888,23 +1141,32 @@ void main_manu_function_ver2(void)
             enum _result_pressed_enter_during_edition result;
             if (current_state_menu2.func_press_enter != NULL) result = current_state_menu2.func_press_enter();
 
-            if(current_state_menu2.edition <= ED_CAN_BE_EDITED)
+            if(current_state_menu2.edition == ED_VIEWING)
             {
-              prev_edit = current_state_menu2.edition;
-               
-              if ((current_state_menu2.edition == ED_VIEWING) && (settings_fix_prt.password_2 != 0))
+              if (settings_fix_prt.password_2 != 0)
               {
                 //Переходимо на меню запиту паролю
+//                prev_edit = current_state_menu2.edition;
                 next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = previous_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = current_state_menu2.current_level;
                 current_state_menu2.current_level = PASSWORD_MENU2_LEVEL;
                 current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
                 new_level_menu();
               }
-              else
+              else if (config_settings_modified == 0)
               {
                 //Переходимо у режим редагування
                 current_state_menu2.edition = ED_EDITION;
               }
+              else
+              {
+                //Повідомляємо про те, що режим редагування зараз недоступний
+                current_state_menu2.edition = ED_WARNING_EDITION_BUSY;
+              }
+            }
+            else if(current_state_menu2.edition == ED_CAN_BE_EDITED)
+            {
+              //Переходимо у режим редагування
+              current_state_menu2.edition = ED_EDITION;
             }
             else if (current_state_menu2.edition == ED_EDITION)
             {
@@ -939,7 +1201,7 @@ void main_manu_function_ver2(void)
             }
             else if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
             {
-              current_state_menu2.edition = prev_edit;
+              current_state_menu2.edition = /*prev_edit*/ED_CAN_BE_EDITED;
             }
             else if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY)
             {
@@ -1271,7 +1533,7 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_MAIN_M2;
       current_state_menu2.func_move = move_into_main;
       current_state_menu2.func_show = make_ekran_main;
-      current_state_menu2.func_press_enter = press_enter_in_main;
+      current_state_menu2.func_press_enter = press_enter_in_main_and_list_passwords;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
@@ -1794,6 +2056,22 @@ void new_level_menu(void)
       */
       break;
     }
+  case LIST_PASSWORDS_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_LIST_PASSWORDS_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_choose_passwords;
+      current_state_menu2.func_press_enter = press_enter_in_main_and_list_passwords;
+      current_state_menu2.func_press_esc = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
   case DIAGNOSTICS_MENU2_LEVEL:
     {
       time_rewrite = 0;
@@ -1863,6 +2141,7 @@ void new_level_menu(void)
       break;
     }
   case PASSWORD_MENU2_LEVEL:
+  case SET_NEW_PASSWORD_MENU2_LEVEL:
     {
       current_state_menu2.p_max_row = NULL;
       current_state_menu2.max_row = MAX_ROW_PASSWORD_M2;
@@ -1872,7 +2151,10 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      current_state_menu2.edition = ED_VIEWING;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
       break;
     }
   default:

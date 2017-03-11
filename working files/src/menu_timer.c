@@ -5,16 +5,29 @@
 /*****************************************************/
 void make_ekran_control_timer(void)
 {
-  if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+  if (
+      (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+      (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+     )   
   {
-    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      "Ред.не разрешено",
+      "Ред.не дозволене",
+      "Ed.isn't allowed",
+      "Ред.не разрешено",
+    };
+
+    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       " Вых.за диапазон",
       " Вих.за діапазон",
       "  Out of Limits ",
       "Вых.за диапазон "
     };
-    make_ekran_about_info(true, information_about_error);
+
+    enum _edition_stats edition = current_state_menu2.edition;
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else
   {
@@ -40,9 +53,9 @@ void make_ekran_control_timer(void)
     unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
 
     uint32_t *p_control;
-    if (current_state_menu2.edition == ED_VIEWING) p_control = &((((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings.control);
-    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_control = &((((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->control);
-    else p_control = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->control);
+    if (current_state_menu2.edition == ED_VIEWING) p_control = &((((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings.control);
+    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_control = &((((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
+    else p_control = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
   
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
@@ -116,8 +129,8 @@ enum _result_pressed_enter_during_edition press_enter_in_control_timer(void)
       //Перевіряємо, чи дані рельно змінилися
       result = RPEDE_DATA_NOT_CHANGED;
       
-      uint32_t *p_control_edit = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->control);
-      uint32_t *p_control_cont = &((((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->control);
+      uint32_t *p_control_edit = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
+      uint32_t *p_control_cont = &((((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
       if (*p_control_cont != *p_control_edit) 
       {
         if (((*p_control_edit) & ((uint32_t)(~MASKA_CTRL_TIMER_M2))) == 0)
@@ -144,8 +157,8 @@ enum _result_pressed_enter_during_edition press_enter_in_control_timer(void)
 /*****************************************************/
 void press_esc_in_control_timer(void)
 {
-  uint32_t *p_control_edit = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->control);
-  uint32_t *p_control_cont = &((((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->control);
+  uint32_t *p_control_edit = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
+  uint32_t *p_control_cont = &((((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
   *p_control_edit = *p_control_cont;
 }
 /*****************************************************/
@@ -163,7 +176,7 @@ void press_esc_in_control_timer(void)
 void change_control_timer(unsigned int action)
 {
   //Вводимо число у відповідне поле
-  uint32_t *p_control_edit = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->control);
+  uint32_t *p_control_edit = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
   if (
       ((action & (1 << BIT_KEY_LEFT )) != 0) ||
       ((action & (1 << BIT_KEY_RIGHT)) != 0)
@@ -179,16 +192,29 @@ void change_control_timer(unsigned int action)
 /*****************************************************/
 void make_ekran_delay_timer(void)
 {
-  if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+  if (
+      (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+      (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+     )   
   {
-    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      "Ред.не разрешено",
+      "Ред.не дозволене",
+      "Ed.isn't allowed",
+      "Ред.не разрешено",
+    };
+
+    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       " Вых.за диапазон",
       " Вих.за діапазон",
       "  Out of Limits ",
       "Вых.за диапазон "
     };
-    make_ekran_about_info(true, information_about_error);
+
+    enum _edition_stats edition = current_state_menu2.edition;
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else
   {
@@ -222,9 +248,9 @@ void make_ekran_delay_timer(void)
     uint32_t vaga, value;
   
     __settings_for_TIMER *p_settings_for_timer;
-    if (current_state_menu2.edition == ED_VIEWING) p_settings_for_timer = &((((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
-    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_settings_for_timer = (((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-    else p_settings_for_timer = (((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    if (current_state_menu2.edition == ED_VIEWING) p_settings_for_timer = &((((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings);
+    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_settings_for_timer = (((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    else p_settings_for_timer = (((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
     size_t col_begin, col_end, col_comma;
   
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
@@ -371,8 +397,8 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_timer(void)
       //Перевіряємо, чи дані рельно змінилися
       result = RPEDE_DATA_NOT_CHANGED;
       
-      __settings_for_TIMER *p_settings_for_timer_edit = (((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-      __settings_for_TIMER *p_settings_for_timer_cont = (((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+      __settings_for_TIMER *p_settings_for_timer_edit = (((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+      __settings_for_TIMER *p_settings_for_timer_cont = (((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       switch (current_state_menu2.index_position)
       {
       case INDEX_DELAY_TIMER_M2_PAUSE:
@@ -422,8 +448,8 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_timer(void)
 /*****************************************************/
 void press_esc_in_delay_timer(void)
 {
-  __settings_for_TIMER *p_settings_for_timer_edit = (((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-  __settings_for_TIMER *p_settings_for_timer_cont = (((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+  __settings_for_TIMER *p_settings_for_timer_edit = (((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+  __settings_for_TIMER *p_settings_for_timer_cont = (((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
   switch (current_state_menu2.index_position)
   {
   case INDEX_DELAY_TIMER_M2_PAUSE:
@@ -463,14 +489,14 @@ void change_delay_timer(unsigned int action)
     {
     case INDEX_DELAY_TIMER_M2_PAUSE:
       {
-        p_value = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->delay.delay_pause);
+        p_value = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->delay.delay_pause);
         col_end = COL_DELAY_TIMER_PAUSE_END;
         col_comma = COL_DELAY_TIMER_PAUSE_COMMA;
         break;
       }
     case INDEX_DELAY_TIMER_M2_WORK:
       {
-        p_value = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->delay.delay_work);
+        p_value = &((((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->delay.delay_work);
         col_end = COL_DELAY_TIMER_WORK_END;
         col_comma = COL_DELAY_TIMER_WORK_COMMA;
         break;

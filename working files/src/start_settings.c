@@ -121,7 +121,7 @@ void global_vareiables_installation(void)
  
   for(enum _menu2_levels i = MAIN_MANU2_LEVEL; i < MAX_NUMBER_MENU2_LEVEL; i++)
   {
-    if ((i == PASSWORD_MENU2_LEVEL)/* || (i == EKRAN_LEVEL_SET_NEW_PASSWORD)*/) position_in_current_level_menu2[i] = INDEX_PASSWORD_M2_LINE1;
+    if ((i == PASSWORD_MENU2_LEVEL) || (i == SET_NEW_PASSWORD_MENU2_LEVEL)) position_in_current_level_menu2[i] = INDEX_PASSWORD_M2_LINE1;
     else  position_in_current_level_menu2[i] = 0;
   }
   
@@ -133,7 +133,7 @@ void global_vareiables_installation(void)
   current_state_menu2.max_row = MAX_ROW_MAIN_M2;
   current_state_menu2.func_move = move_into_main;
   current_state_menu2.func_show = make_ekran_main;
-  current_state_menu2.func_press_enter = press_enter_in_main;
+  current_state_menu2.func_press_enter = press_enter_in_main_and_list_passwords;
   current_state_menu2.func_press_esc = NULL;
   current_state_menu2.func_change = NULL;
   current_state_menu2.binary_data = false;

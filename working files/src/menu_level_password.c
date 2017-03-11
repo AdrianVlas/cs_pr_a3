@@ -23,7 +23,7 @@ void make_ekran_password(void)
 
   //Визначаємо з яким масивом будемо працювати
   const uint8_t (*point_to_working_array)[MAX_COL_LCD + 1];
-  if (current_ekran.current_level == EKRAN_LEVEL_SET_NEW_PASSWORD)
+  if (current_state_menu2.current_level == SET_NEW_PASSWORD_MENU2_LEVEL)
     point_to_working_array = name_string_2;
   else
     point_to_working_array = name_string_1;
@@ -62,7 +62,7 @@ void make_ekran_password(void)
     }
     else
     {
-      name_string_tmp[INDEX_PASSWORD_M2_LINE2][position_cursor++] = (current_ekran.current_level == EKRAN_LEVEL_SET_NEW_PASSWORD) ? '0' : '?';
+      name_string_tmp[INDEX_PASSWORD_M2_LINE2][position_cursor++] = (current_state_menu2.current_level == SET_NEW_PASSWORD_MENU2_LEVEL) ? '0' : '?';
     }
   }
 
@@ -84,50 +84,77 @@ void make_ekran_password(void)
 /*****************************************************/
 
 /*****************************************************/
-//Формуємо екран відображення заголовків настройок
+//Формуємо екран відображення заголовків паролів
 /*****************************************************/
-void make_ekran_chose_passwords(void)
+void make_ekran_choose_passwords(void)
 {
-  const unsigned char password_item[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD] = 
+  if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY)
   {
-    {" Смена пароля   ", " Уст.пароля     "},
-    {" Зміна паролю   ", " Вст.паролю     "},
-    {" Pass.Change    ", " Password  Set  "},
-    {" Смена пароля   ", " Уст.пароля     "}
-  };
-  int index_language = index_language_in_array(current_settings.language);
-  
-  unsigned int position_temp = current_ekran.index_position;
-  unsigned int index_of_ekran;
-  
-  index_of_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-
-  
-  //Копіюємо  рядки у робочий екран
-  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-  {
-    //Наступні рядки треба перевірити, чи їх требе відображати у текучій кофігурації
-    if (index_of_ekran < MAX_ROW_FOR_CHOOSE_PASSWORDS)
+    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
-      unsigned int index_of_information = ( current_settings.password != 0) ? 0 : 1;
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = password_item[index_language][index_of_information][j];
-    } 
-    else
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
-
-    index_of_ekran++;
+      "Ред.не разрешено",
+      "Ред.не дозволене",
+      "Ed.isn't allowed",
+      "Ред.не разрешено",
+    };
+    make_ekran_about_info(false, information_about_info);
   }
+  else
+  {
+    const uint8_t password_item[MAX_ROW_LIST_PASSWORDS_M2][MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+    {
+      {
+        {" Смена пароля 1 ", " Уст.пароля 1   "},
+        {" Зміна паролю 1 ", " Вст.паролю 1   "},
+        {" Pass.1 Change  ", " Password 1 Set "},
+        {" Смена пароля 1 ", " Уст.пароля 1   "}
+      },
+      {
+        {" Смена пароля 2 ", " Уст.пароля 2   "},
+        {" Зміна паролю 2 ", " Вст.паролю 2   "},
+        {" Pass.2 Change  ", " Password 2 Set "},
+        {" Смена пароля 2 ", " Уст.пароля 2   "}
+      },
+    };
+    int index_language = index_language_in_array(select_struct_settings_fix()->language);
+  
+    unsigned int position_temp = current_state_menu2.index_position;
+    unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
 
-  //Курсор по горизонталі відображається на першій позиції
-  current_ekran.position_cursor_x = 0;
-  //Відображення курору по вертикалі
-  current_ekran.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
-  //Курсор видимий
-  current_ekran.cursor_on = 1;
-  //Курсор не мигає
-  current_ekran.cursor_blinking_on = 0;
+    __SETTINGS_FIX *p_settings_fix;
+    p_settings_fix = (current_state_menu2.edition == ED_VIEWING) ? &settings_fix_prt : &settings_fix;
+    
+    //Копіюємо  рядки у робочий екран
+    for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    {
+      if (index_in_ekran < MAX_ROW_LIST_PASSWORDS_M2)
+      {
+        unsigned int password;
+        if (index_in_ekran == INDEX_LIST_PASSWORDS_M2_1)
+          password = p_settings_fix->password_1;
+        else
+          password = p_settings_fix->password_2;
+      
+        unsigned int index_of_information = ( password != 0) ? 0 : 1;
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = password_item[index_in_ekran][index_language][index_of_information][j];
+      } 
+      else
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+
+      index_in_ekran++;
+    }
+
+    //Курсор по горизонталі відображається на першій позиції
+    current_state_menu2.position_cursor_x = 0;
+    //Відображення курору по вертикалі
+    current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+    //Курсор видимий
+    current_state_menu2.cursor_on = 1;
+    //Курсор не мигає
+    current_state_menu2.cursor_blinking_on = 0;
+  }
   //Обновити повністю весь екран
-  current_ekran.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 

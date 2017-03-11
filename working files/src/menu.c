@@ -12,302 +12,8 @@ void main_manu_function(void)
     switch (current_ekran.current_level)
     {
 
-/******************************************************************************************************************************************/ 
-    case EKRAN_LEVEL_SET_NEW_PASSWORD:
-      {
-        //Змінні для фіксації введеного паролю
-        static unsigned int new_setting_password;
-        static int number_symbols_new_setting_password;
-        
-        //Очищаємо всі біти краім упралінських
-        unsigned int maska_keyboard_bits = (1<<BIT_KEY_ENTER)| (1<<BIT_KEY_ESC)|(1<<BIT_REWRITE);
-        
-        if (current_ekran.edition == 1)
-          maska_keyboard_bits |= (1<<BIT_KEY_RIGHT) | (1<<BIT_KEY_LEFT) | (1<<BIT_KEY_UP)|(1<<BIT_KEY_DOWN);
-        
-        new_state_keyboard &= maska_keyboard_bits;
-
-        if (new_state_keyboard !=0)
-        {
-          //Пріоритет стоїть на обновлені екрану
-          if((new_state_keyboard & (1<<BIT_REWRITE)) !=0)
-          {
-            if (current_ekran.edition == 1)
-            {
-              current_ekran.cursor_on = 1;
-              current_ekran.cursor_blinking_on = 1;
-              current_ekran.position_cursor_x = COL_NEW_PASSWORD_BEGIN;
-              position_in_current_level_menu[current_ekran.current_level] = 1;
-              //Встановлюємо початкове значення нового паролю і скидаємо кількість введених символів
-              new_setting_password = current_settings.password;
-              number_symbols_new_setting_password = 0;
-              
-              unsigned int temp_value = new_setting_password;
-              while (temp_value != 0)
-              {
-                number_symbols_new_setting_password++;
-                temp_value /= 10;
-              }
-              if (number_symbols_new_setting_password == 0) number_symbols_new_setting_password = 1; //Це випадок коли current_settings.password = 0, тоді кількість символів рівна 0, бо число є "0"
-            
-              //Формуємо екран рівня password
-//              make_ekran_password(new_setting_password, 1);
-              //Очищаємо біт обновлення екрану
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_REWRITE));
-            }
-            else
-            {
-              //Переходимо у попереднє меню і анульовуємо процес редагування
-              current_ekran.current_level = previous_level_in_current_level_menu[current_ekran.current_level];
-              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-              current_ekran.edition = 0;
-              
-              //Біт, який сигналізує про обновлекння екрану не скидаємто, бо його ще раз треба перерисувати
-            }
-          }
-          else
-          {
-            if (new_state_keyboard == (1<<BIT_KEY_ENTER))
-            {
-              //Натиснута кнопка ENTER
-              if (current_ekran.edition == 1)
-              {
-                //Виходимо з режиму редагування
-                if (current_settings.password == new_setting_password)
-                {
-                  //Переходимо на попередній рівень
-                  current_ekran.edition = 0;
-                  current_ekran.current_level = previous_level_in_current_level_menu[current_ekran.current_level];
-                  current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                }
-                else current_ekran.edition = 2;
-
-                current_ekran.cursor_on = 0;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              else if (current_ekran.edition == 2)
-              {
-                //Помічаємо, що поле структури зараз буде змінене
-                changed_settings = CHANGED_ETAP_EXECUTION;
-                        
-                //Вводимо нове значення у дію
-                current_settings.password = new_setting_password;
-
-                //Помічаємо, що таблиця змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів (хоч ця операція і є зайвою, бо не було змін тих полів, які використовуються системою захистів, але це я зробив для універсальності, щоб завжди дві таблиці були ідентичні)
-                changed_settings = CHANGED_ETAP_ENDED;
-                
-                //Не формуємо запис у таблиці настройок про зміну конфігурації, бо її як такої не було. Просто змінився пароль доступу з меню
-                //але ініціюємо запис у EEPROM настройок
-                //Запускаємо запис у EEPROM
-                if (_CHECK_SET_BIT(active_functions, RANG_SETTINGS_CHANGED) == 0) current_settings_interfaces = current_settings;
-                _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
-                
-                //Вихід у режимі редагування
-                current_ekran.edition = 0;
-                //Переходимо на попередній рівень
-                current_ekran.current_level = previous_level_in_current_level_menu[current_ekran.current_level];
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.cursor_on = 0;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              else if (current_ekran.edition == 3)
-              {
-                //Вихід у режимі редагування
-                current_ekran.edition = 0;
-                //Переходимо на попередній рівень
-                current_ekran.current_level = previous_level_in_current_level_menu[current_ekran.current_level];
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.cursor_on = 0;
-                current_ekran.cursor_blinking_on = 0;
-              }
-              else
-              {
-                //По ідеї сюди програма ніколи б не мала дійти і виставляється повідомлення про помилку
-                current_ekran.edition = 3;
-              }
-                
-              if(current_ekran.edition == 2) make_ekran_ask_rewrite();
-              else if (current_ekran.edition == 0)
-              {
-                //Виставляємо біт обновлення екрану
-                new_state_keyboard |= (1<<BIT_REWRITE);
-              }
-              else if (current_ekran.edition == 3)
-              {
-                const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-                {
-                  " Неопред.ошибка ",
-                  " Невизн.помилка ",
-                  " Undefined error",
-                  " Неопред.ошибка "
-                };
-                current_ekran.cursor_on = 0;
-                current_ekran.cursor_blinking_on = 0;
-                make_ekran_about_info(true, information_about_error);
-              }
-
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ENTER));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_ESC))
-            {
-              //Натиснута кнопка ESC
-
-              //Переходимо у попереднє меню і анульовуємо процес редагування
-              current_ekran.current_level = previous_level_in_current_level_menu[current_ekran.current_level];
-              current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-              current_ekran.edition = 0;
-              
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_ESC));
-              //Виставляємо біт обновлення екрану
-              new_state_keyboard |= (1<<BIT_REWRITE);
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_UP))
-            {
-              //Натиснута кнопка UP
-              unsigned int vaga = 1, temp_value, ostacha, vyshchi_rozrjady;
-              int edit_rozrjad;
-              
-              for (int i=(current_ekran.position_cursor_x - 5 + 1); i<number_symbols_new_setting_password; i++) vaga *= 10;
-              ostacha = new_setting_password % vaga;
-              temp_value = (new_setting_password / vaga);
-              edit_rozrjad = temp_value % 10;
-              vyshchi_rozrjady = temp_value / 10;
-              if (++edit_rozrjad > 4) 
-              {
-                if (ostacha == 0)
-                {
-                  edit_rozrjad = 0;
-                  if (number_symbols_new_setting_password > 1)
-                  {
-                    number_symbols_new_setting_password--;
-                    current_ekran.position_cursor_x--;
-                    new_setting_password = vyshchi_rozrjady*vaga;
-                  }
-                  else
-                  {
-                    if (current_ekran.current_level != EKRAN_LEVEL_SET_NEW_PASSWORD) edit_rozrjad = 1;
-                    new_setting_password = vyshchi_rozrjady*vaga*10 + edit_rozrjad*vaga; 
-                  }
-                }
-                else
-                {
-                  edit_rozrjad = 1;
-                  new_setting_password = (vyshchi_rozrjady*vaga*10) + edit_rozrjad*vaga + ostacha;
-                }
-              }
-              else
-                new_setting_password = (vyshchi_rozrjady*vaga*10) + edit_rozrjad*vaga + ostacha;
-              //Формуємо екран рівня password
-//              make_ekran_password(new_setting_password, 1);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_UP));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_DOWN))
-            {
-              //Натиснута кнопка DOWN
-              unsigned int vaga = 1, temp_value, ostacha, vyshchi_rozrjady;
-              int edit_rozrjad;
-              for (int i=(current_ekran.position_cursor_x - 5 + 1); i<number_symbols_new_setting_password; i++) vaga *= 10;
-              ostacha = new_setting_password % vaga;
-              temp_value = (new_setting_password / vaga);
-              edit_rozrjad = temp_value % 10;
-              vyshchi_rozrjady = temp_value / 10;
-              edit_rozrjad--;
-              if (edit_rozrjad < 0)
-              {
-                edit_rozrjad = 4;
-                new_setting_password = (vyshchi_rozrjady*vaga*10) + edit_rozrjad*vaga + ostacha;
-              }
-              else if (edit_rozrjad == 0)
-              {
-                if ((vyshchi_rozrjady !=0) || (ostacha != 0))
-                {
-                  if (ostacha == 0)
-                  {
-                    edit_rozrjad = 0;
-                    if (number_symbols_new_setting_password > 1)
-                    {
-                      number_symbols_new_setting_password--;
-                      current_ekran.position_cursor_x--;
-                      new_setting_password = vyshchi_rozrjady*vaga;
-                    }
-                    else
-                    {
-                      if (current_ekran.current_level != EKRAN_LEVEL_SET_NEW_PASSWORD) edit_rozrjad = 4;
-                      new_setting_password = vyshchi_rozrjady*vaga*10 + edit_rozrjad*vaga;
-                    }
-                  }
-                  else
-                  {
-                    edit_rozrjad = 4;
-                    new_setting_password = (vyshchi_rozrjady*vaga*10) + edit_rozrjad*vaga + ostacha;
-                  }
-                }
-                else
-                {
-                  if (current_ekran.current_level != EKRAN_LEVEL_SET_NEW_PASSWORD) new_setting_password = 4;
-                  else new_setting_password = 0;
-                }
-                  
-              }
-              else
-                new_setting_password = (vyshchi_rozrjady*vaga*10) + edit_rozrjad*vaga + ostacha;
-
-              //Формуємо екран рівня password
-//              make_ekran_password(new_setting_password, 1);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_DOWN));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_RIGHT))
-            {
-              //Натиснута кнопка RIGHT
-              if (new_setting_password !=0)
-              {
-                if (++current_ekran.position_cursor_x > COL_NEW_PASSWORD_END) current_ekran.position_cursor_x = COL_NEW_PASSWORD_BEGIN;
-                if (number_symbols_new_setting_password < (current_ekran.position_cursor_x - COL_NEW_PASSWORD_BEGIN + 1))
-                {
-                  new_setting_password = new_setting_password*10 + 1;
-                  number_symbols_new_setting_password++;
-                }
-              }
-
-              //Формуємо екран рівня password
-//              make_ekran_password(new_setting_password, 1);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_RIGHT));
-            }
-            else if (new_state_keyboard == (1<<BIT_KEY_LEFT))
-            {
-              //Натиснута кнопка LEFT
-              if (new_setting_password !=0)
-              {
-                if (--current_ekran.position_cursor_x < COL_NEW_PASSWORD_BEGIN) current_ekran.position_cursor_x = COL_NEW_PASSWORD_BEGIN + number_symbols_new_setting_password - 1;
-              }
-
-              //Формуємо екран рівня password
-//              make_ekran_password(new_setting_password, 1);
-              //Очистити сигналізацію, що натиснута кнопка 
-              new_state_keyboard &= (unsigned int)(~(1<<BIT_KEY_LEFT));
-            }
-            else
-            {
-              //Натиснуто зразу декілька кнопок - це є невизначена ситуація, тому скидаємо сигналізацію про натиснуті кнопки і чекаємо знову
-              unsigned int temp_data = new_state_keyboard;
-              new_state_keyboard &= ~temp_data;
-            }
-          }
-          
-        }
-        break;
-      }
-/******************************************************************************************************************************************/ 
-      
-
 /****************************************************************************************************************************************/      
     case EKRAN_CHOOSE_SETTINGS_CTRL_PHASE:
-    case EKRAN_LEVEL_CHOOSE_PASSWORDS:
     case EKRAN_LIST_OUTPUTS_FOR_RANGUVANNJA:
     case EKRAN_LIST_LEDS_FOR_RANGUVANNJA:
     case EKRAN_LIST_ALARMS:
@@ -374,14 +80,6 @@ void main_manu_function(void)
 
               //Формуємо екран вибору налаштувань для сигналізації
               make_ekran_choose_settings_alarms();
-            }
-            else if (current_ekran.current_level == EKRAN_LEVEL_CHOOSE_PASSWORDS)
-            {
-              if(current_ekran.index_position >= MAX_ROW_FOR_CHOOSE_PASSWORDS) current_ekran.index_position = 0;
-              position_in_current_level_menu[EKRAN_LEVEL_CHOOSE_PASSWORDS] = current_ekran.index_position;
-            
-              //Формуємо екран заголовків паролів
-              make_ekran_chose_passwords();
             }
             else if (current_ekran.current_level == EKRAN_VIEW_SETTINGS_OF_ANALOG_REGISTRATORS)
             {
@@ -583,18 +281,6 @@ void main_manu_function(void)
                 current_ekran.edition = 0;
                 current_ekran.cursor_on = 1;
                 current_ekran.cursor_blinking_on = 0;
-              }
-              else if (current_ekran.current_level == EKRAN_LEVEL_CHOOSE_PASSWORDS)
-              {
-                //Натисну кнопка Enter у вікні вибору паролів
-//                if(current_ekran.index_position == INDEX_OF_PASSWORD1)
-//                {
-                  //Запам'ятовуємо поперердній екран
-                  //Переходимо на меню зміни паролю
-                  current_ekran.current_level = EKRAN_LEVEL_SET_NEW_PASSWORD;
-//                }
-                current_ekran.index_position = position_in_current_level_menu[current_ekran.current_level];
-                current_ekran.edition = 1;
               }
               else if (current_ekran.current_level == EKRAN_LIST_OUTPUTS_FOR_RANGUVANNJA)
               {
@@ -938,13 +624,6 @@ void main_manu_function(void)
                 //Формуємо екран вибору налаштувань для сигналізації
                 make_ekran_choose_settings_alarms();
               }
-              else if (current_ekran.current_level == EKRAN_LEVEL_CHOOSE_PASSWORDS)
-              {
-                if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_CHOOSE_PASSWORDS - 1;
-                position_in_current_level_menu[EKRAN_LEVEL_CHOOSE_PASSWORDS] = current_ekran.index_position;
-                //Формуємо екран заголовків паролів
-                make_ekran_chose_passwords();
-              }
               else if (current_ekran.current_level == EKRAN_VIEW_LIST_OF_REGISTRATORS)
               {
                 if(--current_ekran.index_position < 0) current_ekran.index_position = MAX_ROW_FOR_LIST_OF_REGISTRATORS - 1;
@@ -1109,15 +788,6 @@ void main_manu_function(void)
 
                 //Формуємо екран вибору налаштувань сигналізації
                 make_ekran_choose_settings_alarms();
-              }
-              else if (current_ekran.current_level == EKRAN_LEVEL_CHOOSE_PASSWORDS)
-              {
-                //Натиснута кнопка DOWN
-                if(++current_ekran.index_position >= MAX_ROW_FOR_CHOOSE_PASSWORDS) current_ekran.index_position = 0;
-                position_in_current_level_menu[EKRAN_LEVEL_CHOOSE_PASSWORDS] = current_ekran.index_position;
-            
-                //Формуємо екран заголовків паролів
-                make_ekran_chose_passwords();
               }
               else if (current_ekran.current_level == EKRAN_VIEW_LIST_OF_REGISTRATORS)
               {

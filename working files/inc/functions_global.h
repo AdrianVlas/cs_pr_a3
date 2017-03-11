@@ -86,17 +86,18 @@ void make_ekran_timeout_RS485(void);
 enum _result_pressed_enter_during_edition press_enter_in_timeout_RS485(void);
 void press_esc_in_timeout_RS485(void);
 void change_timeout_RS485(unsigned int);
+void make_ekran_choose_passwords(void);
+void make_ekran_password(void);
 
 void inc_or_dec_value(unsigned int *, unsigned int);
 unsigned int bcd_to_int(unsigned char);
 
-void make_ekran_password(void);
 void main_manu_function(void);
 void main_manu_function_ver2(void);
 void new_level_menu(void);
 void make_ekran_main(void);
 void move_into_main(unsigned int, int);
-enum _result_pressed_enter_during_edition press_enter_in_main(void);
+enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords(void);
 void make_ekran_time(void);
 void move_into_time(unsigned int, int);
 void change_time(unsigned int);
@@ -124,7 +125,6 @@ void press_esc_in_list_settings(void);
 void move_into_list_settings_bios(unsigned int, int);
 void make_ekran_list_settings_bios(void);
 void press_esc_in_configuration(void);
-void make_ekran_chose_passwords(void);
 void make_ekran_list_logical_nodes(void);
 void make_ekran_control_zdz(void);
 void calc_symbol_and_put_into_working_ekran(uint8_t*, void*, void*, unsigned int*, unsigned int, unsigned int, unsigned int);

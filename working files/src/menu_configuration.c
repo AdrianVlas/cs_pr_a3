@@ -12,7 +12,7 @@ void make_ekran_configuration(void)
      )   
         
   {
-    const unsigned char information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       "Ред.не разрешено",
       "Ред.не дозволене",
@@ -20,14 +20,16 @@ void make_ekran_configuration(void)
       "Ред.не разрешено",
     };
     
-    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       " Дин.пам.недост.",
       " Дин.пам.недост.",
       " Дин.пам.недост.",
       " Дин.пам.недост."
     };
-    make_ekran_about_info( ((current_state_menu2.edition == ED_WARNING_ENTER_ESC) ? true : false), ((current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    
+    enum _edition_stats edition = current_state_menu2.edition;
+    make_ekran_about_info( ((edition == ED_WARNING_ENTER_ESC) ? true : false), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else 
   {

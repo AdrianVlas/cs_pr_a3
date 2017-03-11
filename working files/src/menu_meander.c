@@ -5,16 +5,29 @@
 /*****************************************************/
 void make_ekran_delay_meander(void)
 {
-  if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+  if (
+      (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+      (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+     )   
   {
-    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      "Ред.не разрешено",
+      "Ред.не дозволене",
+      "Ed.isn't allowed",
+      "Ред.не разрешено",
+    };
+
+    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       " Вых.за диапазон",
       " Вих.за діапазон",
       "  Out of Limits ",
       "Вых.за диапазон "
     };
-    make_ekran_about_info(true, information_about_error);
+
+    enum _edition_stats edition = current_state_menu2.edition;
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else
   {
@@ -44,9 +57,9 @@ void make_ekran_delay_meander(void)
     uint32_t vaga, value;
   
     __settings_for_MEANDER *p_settings_for_meander;
-    if (current_state_menu2.edition == ED_VIEWING) p_settings_for_meander = &((((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->settings);
-    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_settings_for_meander = (((__settings_for_MEANDER*)sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-    else p_settings_for_meander = (((__settings_for_MEANDER*)sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+    if (current_state_menu2.edition == ED_VIEWING) p_settings_for_meander = &((((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings);
+    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_settings_for_meander = (((__settings_for_MEANDER*)sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    else p_settings_for_meander = (((__settings_for_MEANDER*)sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
     size_t col_begin, col_end, col_comma;
   
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
@@ -171,8 +184,8 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_meander(void)
       //Перевіряємо, чи дані рельно змінилися
       result = RPEDE_DATA_NOT_CHANGED;
       
-      __settings_for_MEANDER *p_settings_for_meander_edit = (((__settings_for_MEANDER*)sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-      __settings_for_MEANDER *p_settings_for_meander_cont = (((__settings_for_MEANDER*)sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+      __settings_for_MEANDER *p_settings_for_meander_edit = (((__settings_for_MEANDER*)sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+      __settings_for_MEANDER *p_settings_for_meander_cont = (((__settings_for_MEANDER*)sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       switch (current_state_menu2.index_position)
       {
       case INDEX_DELAY_MEANDER_M2_PERIOD:
@@ -207,8 +220,8 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_meander(void)
 /*****************************************************/
 void press_esc_in_delay_meander(void)
 {
-  __settings_for_MEANDER *p_settings_for_meander_edit = (((__settings_for_MEANDER*)sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
-  __settings_for_MEANDER *p_settings_for_meander_cont = (((__settings_for_MEANDER*)sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node);
+  __settings_for_MEANDER *p_settings_for_meander_edit = (((__settings_for_MEANDER*)sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+  __settings_for_MEANDER *p_settings_for_meander_cont = (((__settings_for_MEANDER*)sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
   switch (current_state_menu2.index_position)
   {
   case INDEX_DELAY_MEANDER_M2_PERIOD:
@@ -243,7 +256,7 @@ void change_delay_meander(unsigned int action)
     {
     case INDEX_DELAY_MEANDER_M2_PERIOD:
       {
-        p_value = &((((__settings_for_MEANDER*)sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_logical_node)->delay.delay);
+        p_value = &((((__settings_for_MEANDER*)sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->delay.delay);
         col_end = COL_DELAY_MEANDER_PERIOD_END;
         col_comma = COL_DELAY_MEANDER_PERIOD_COMMA;
         break;

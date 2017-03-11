@@ -29,7 +29,7 @@ enum _result_pressed_enter_during_edition
 typedef struct
 {
   enum _menu2_levels current_level;   //Текучий рівень відображуваного екрану
-  uint16_t number_logical_node;       //Номер логічного вузла (якщо відкриваєтьс однотипне відкно для відображення спільних параметрів логічних вузлів одного типу)
+  uint16_t number_selection;          //Номер вибраного елементу (функціонального блоку, паролю...)
   
   int16_t index_position;             //Вказує на якій ми зараз є позиції
 

@@ -112,27 +112,28 @@ void make_ekran_list_settings(void)
     //Виставляємо біт обновлення екрану
     new_state_keyboard |= (1<<BIT_REWRITE);
   }
-  else if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) 
+  else if (
+           (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+           (current_state_menu2.edition == ED_INFO)
+          )   
   {
-    const unsigned char information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       "Ред.не разрешено",
       "Ред.не дозволене",
       "Ed.isn't allowed",
       "Ред.не разрешено",
     };
-    make_ekran_about_info(false, information_about_info);
-  }
-  else if (current_state_menu2.edition == ED_INFO)
-  {
-    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+
+    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       " Дин.пам.недост.",
       " Дин.пам.недост.",
       " Дин.пам.недост.",
       " Дин.пам.недост."
     };
-    make_ekran_about_info(false, information_about_error);
+
+    make_ekran_about_info(false, ((current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else if (current_state_menu2.edition == ED_ERROR) 
   {
