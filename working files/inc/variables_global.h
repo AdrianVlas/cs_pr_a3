@@ -195,7 +195,7 @@ __DRIVER_SPI_DF driver_spi_df[NUMBER_DATAFLASH_CHIP] = {
 volatile unsigned int error_into_spi_df = 0;/*Ненульве значення означає, що зафіксована помилка при прийом/передачі через SPI_DF*/
 unsigned int dataflash_not_busy = 0;
 volatile unsigned int control_tasks_dataflash = 0;
-unsigned char buffer_for_manu_read_record[SIZE_BUFFER_FOR_DR_RECORD];
+unsigned char buffer_for_manu_read_record[SIZE_ONE_RECORD_PR_ERR];
 unsigned char buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 unsigned char buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 

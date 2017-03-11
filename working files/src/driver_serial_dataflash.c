@@ -702,9 +702,6 @@ void main_function_for_dataflash_req(int index_chip)
             dataflash_mamory_page_program_through_buffer(index_chip);
           }
           else if (
-                   ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_DR_MENU     ) !=0 ) ||
-                   ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB      ) !=0 ) ||
-                   ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485    ) !=0 ) ||
                    ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU ) !=0 ) ||
                    ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB  ) !=0 ) ||
                    ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485) !=0 )
@@ -713,16 +710,10 @@ void main_function_for_dataflash_req(int index_chip)
             
             //Може виконуватися тільки одна операція для одної мікросхеми DataFlash(причому більi пріоритетна може переривати менш пріоритетну, якщо задача виконується у декілька етапів)
             //DataFlash1
-            if ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB) !=0 )
-              what_we_are_reading_from_dataflash_1 = READING_DR_FOR_USB; //Читання для USB завжди має більший пріоритет порівняно з читанням для RS-485 і меню
-            else if ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB) !=0 )
+            if ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB) !=0 )
               what_we_are_reading_from_dataflash_1 = READING_PR_ERR_FOR_USB;//Читання для USB завжди має більший пріоритет порівняно з читанням для RS-485 і меню
-            else if ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485) !=0 )
-              what_we_are_reading_from_dataflash_1 = READING_DR_FOR_RS485; //Читання для RS-485 завжди має більший пріоритет порівняно з читанням для меню
             else if ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485) !=0 )
               what_we_are_reading_from_dataflash_1 = READING_PR_ERR_FOR_RS485;//Читання для RS-485 завжди має більший пріоритет порівняно з читанням для меню
-            else if ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_DR_MENU) !=0 )
-              what_we_are_reading_from_dataflash_1 = READING_DR_FOR_MENU;
             else if ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU) !=0 )
               what_we_are_reading_from_dataflash_1 = READING_PR_ERR_FOR_MENU;
             

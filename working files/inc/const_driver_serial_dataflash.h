@@ -23,24 +23,9 @@
 #define NUMBER_PAGES_INTO_DR            480
 #define NUMBER_PAGES_INTO_PR_ERR        (NUMBER_PAGES_INTO_DATAFLASH_1 - NUMBER_PAGES_INTO_DR)
 
-#define NUMBER_PAGES_IN_ONE_DR_RECORD         8
-#define SIZE_BUFFER_FOR_DR_RECORD             (SIZE_PAGE_DATAFLASH_1*NUMBER_PAGES_IN_ONE_DR_RECORD) 
-#define MAX_NUMBER_RECORDS_INTO_DR            60
 #define MIN_ADDRESS_DR_AREA                   0x0
 #define SIZE_DR_AREA                          (NUMBER_PAGES_INTO_DR<<VAGA_SIZE_PAGE_DATAFLASH_1)
 #define MAX_ADDRESS_DR_AREA                   (MIN_ADDRESS_DR_AREA + SIZE_DR_AREA - 1)
-
-#define FIRST_INDEX_START_START_RECORD_DR     0
-#define FIRST_INDEX_DATA_TIME_DR              1
-#define FIRST_INDEX_NAME_OF_CELL_DR           8
-#define FIRST_INDEX_NUMBER_ITEMS_DR           40
-#define FIRST_INDEX_NUMBER_CHANGES_DR         41
-#define FIRST_INDEX_NUMBER_MAX_PHASE_DR       43
-#define FIRST_INDEX_NUMBER_MIN_U_DR           44
-#define FIRST_INDEX_NUMBER_MAX_U_DR           45
-#define FIRST_INDEX_NUMBER_MAX_ZOP_DR         46
-#define FIRST_INDEX_FIRST_BLOCK_DR            47
-#define FIRST_INDEX_FIRST_DATA_DR             846
 
 #define VAGA_SIZE_ONE_RECORD_PR_ERR           5
 #define SIZE_ONE_RECORD_PR_ERR                (1<<VAGA_SIZE_ONE_RECORD_PR_ERR)
@@ -73,17 +58,11 @@
 #define TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH                            (1<<TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT)
 #define TASK_MAMORY_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_DR_BIT        2
 #define TASK_MAMORY_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_DR            (1<<TASK_MAMORY_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_DR_BIT)
-#define TASK_MAMORY_READ_DATAFLASH_FOR_DR_MENU_BIT                          3
-#define TASK_MAMORY_READ_DATAFLASH_FOR_DR_MENU                              (1<<TASK_MAMORY_READ_DATAFLASH_FOR_DR_MENU_BIT)
-#define TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT                      4
+#define TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT                      3
 #define TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU                          (1<<TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT)
-#define TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB_BIT                           5
-#define TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB                               (1<<TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB_BIT)
-#define TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485_BIT                         6
-#define TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485                             (1<<TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485_BIT)
-#define TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT                       7
+#define TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT                       4
 #define TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB                           (1<<TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT)
-#define TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT                     8
+#define TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT                     5
 #define TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485                         (1<<TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT)
 
 #define  SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2                16
@@ -92,25 +71,9 @@
 #define TASK_ERASE_DATAFLASH_2_BIT                                          (0 + SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2)
 #define TASK_ERASE_DATAFLASH_2                                              (1<<TASK_ERASE_DATAFLASH_2_BIT)
 
-#define WIGHT_OF_DR_WAITING                       2
-
-#define STATE_DR_NO_RECORD                        0 //На даний момент ніких дій з дискретним реєстратором не виконується
-#define STATE_DR_FORCE_START_NEW_RECORD           1 //Оформлені події оформити як запис, але ще не досягнуто умови завершення роботи дискретного реєстратора тому при наступному проході розпочати новий запис
-#define STATE_DR_EXECUTING_RECORD                 2 //Іде процес запису реєстратора
-#define STATE_DR_MAKE_RECORD                      3 //Оформити запис для  запису у Dataflash
-#define STATE_DR_CUT_RECORD                       4 //Оформлені події оформити як запис, але ще не досягнуто умови завершення роботи дискретного реєстратора тому при наступному проході розпочати новий запис
-
-#define MAX_TIME_OFFSET_FROM_START                      0xFFFFFF // 4 год. 39 хв. 37 сек. 215 мілісек.
-#define MAX_EVENTS_IN_ONE_RECORD                        41
-
-#define LABEL_START_RECORD_DR           0xA5
-
-#define READING_DR_FOR_MENU             1
-#define READING_DR_FOR_USB              2
-#define READING_DR_FOR_RS485            3
-#define READING_PR_ERR_FOR_MENU         4
-#define READING_PR_ERR_FOR_USB          5
-#define READING_PR_ERR_FOR_RS485        6
+#define READING_PR_ERR_FOR_MENU         1
+#define READING_PR_ERR_FOR_USB          2
+#define READING_PR_ERR_FOR_RS485        3
 
 #define LABEL_START_RECORD_PR_ERR       0x5A
 

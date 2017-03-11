@@ -166,7 +166,7 @@ extern __DRIVER_SPI_DF driver_spi_df[NUMBER_DATAFLASH_CHIP];
 extern volatile unsigned int error_into_spi_df;
 extern unsigned int dataflash_not_busy;
 extern volatile unsigned int control_tasks_dataflash;
-extern unsigned char buffer_for_manu_read_record[SIZE_BUFFER_FOR_DR_RECORD];
+extern unsigned char buffer_for_manu_read_record[SIZE_ONE_RECORD_PR_ERR];
 extern unsigned char buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 extern unsigned char buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 
