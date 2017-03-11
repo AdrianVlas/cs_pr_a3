@@ -1,7 +1,0 @@
-#ifndef __CONST_MENU_SETTING_LANGUAGE__
-#define __CONST_MENU_SETTING_LANGUAGE__
-
-#define EKRAN_VIEW_SETTING_LANGUAGE                    (EKRAN_DIAGNOSTYKA + 1)
-
-
-#endif

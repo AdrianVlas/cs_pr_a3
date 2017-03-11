@@ -1,6 +1,0 @@
-#ifndef __CONST_MENU_MEASURMENT__
-#define __CONST_MENU_MEASURMENT__
-
-#define EKRAN_MEASURMENT_CURRENT        (EKRAN_COFIGURATION + 1)
-
-#endif

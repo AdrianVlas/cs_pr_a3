@@ -319,7 +319,7 @@ void make_ekran_delay_input(void)
 
     //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
     current_state_menu2.position_cursor_y = ((position_temp<<1) + 1) & (MAX_ROW_LCD - 1);
-    //Курсор по горизонталі відображається на першому символі у випадку, коли ми не в режимі редагування, інакше позиція буде визначена у функцї main_manu_function
+
     if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
     {
       int last_position_cursor_x = MAX_COL_LCD;

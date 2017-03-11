@@ -1,6 +1,0 @@
-#ifndef __CONST_MENU_CHOSE_SETTINGS__
-#define __CONST_MENU_CHOSE_SETTINGS__
-
-#define EKRAN_CHOSE_SETTINGS        (EKRAN_STATE_OUTPUTS + 1)
-
-#endif

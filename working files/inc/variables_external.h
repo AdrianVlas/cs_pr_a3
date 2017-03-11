@@ -86,12 +86,6 @@ extern enum _menu2_levels previous_level_in_current_level_menu2[MAX_NUMBER_MENU2
 extern enum _menu2_levels next_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL];    //Масив у якому збкрігається занчення екранів куди ми хочемо перейти з поточного екрану
 extern void *p_menu_param_1, *p_menu_param_2;
 
-
-//Меню версії 1
-extern __CURRENT_EKRAN current_ekran;
-extern int16_t position_in_current_level_menu[MAX_LEVEL_MENU];
-extern int16_t previous_level_in_current_level_menu[MAX_LEVEL_MENU];
-
 extern volatile unsigned int periodical_tasks_TEST_CONFIG;
 extern volatile unsigned int periodical_tasks_TEST_SETTINGS;
 extern volatile unsigned int periodical_tasks_TEST_USTUVANNJA;

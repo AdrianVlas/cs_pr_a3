@@ -618,12 +618,6 @@ void TIM4_IRQHandler(void)
     /***********************************************************/
     if (
         ((current_state_menu2.current_level == TIME_MANU2_LEVEL) && (current_state_menu2.edition <= ED_CAN_BE_EDITED)) ||
-        ((current_ekran.current_level == EKRAN_TITLES_DIGITAL_REGISTRATOR) && (rewrite_ekran_once_more > 0)) ||
-        ((current_ekran.current_level == EKRAN_TITLES_PR_ERR_REGISTRATOR ) && (rewrite_ekran_once_more > 0)) ||
-        ((current_ekran.current_level == EKRAN_DATA_LADEL_AR             ) && (rewrite_ekran_once_more > 0)) ||
-        (current_ekran.current_level == EKRAN_LIST_ANALOG_REGISTRATOR_RECORDS       )   ||
-        (current_ekran.current_level == EKRAN_LIST_DIGITAL_REGISTRATOR_RECORDS      )   ||
-        (current_ekran.current_level == EKRAN_LIST_REGISTRATOR_PROGRAM_ERROR_RECORDS)   ||
         (current_state_menu2.current_level == MEASUREMENT_MENU2_LEVEL      ) ||
         (current_state_menu2.current_level == INPUTS_MENU2_LEVEL)   ||
         (current_state_menu2.current_level == OUTPUTS_MENU2_LEVEL)   ||

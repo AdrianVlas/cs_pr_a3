@@ -2255,20 +2255,6 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
   {
     switch (address_data)
     {
-    case M_ADDRESS_CONTROL_CTRL_PHASE:
-      {
-        int input_value = current_settings_interfaces.control_ctrl_phase;
-        int input_conf = current_settings_interfaces.configuration;
-        
-        temp_value = (((input_conf  >> CTRL_PHASE_BIT_CONFIGURATION  ) & 0x1 ) << (BIT_MA_CONFIGURATION_CTRL_PHASE    - BIT_MA_CONTROL_CTRL_PHASE_BASE) ) |
-          
-                     (((input_value >> INDEX_CTR_CTRL_PHASE_U         ) & 0x1 ) << (BIT_MA_CONTROL_CTRL_PHASE_U       - BIT_MA_CONTROL_CTRL_PHASE_BASE) ) |
-                     (((input_value >> INDEX_CTR_CTRL_PHASE_PHI       ) & 0x1 ) << (BIT_MA_CONTROL_CTRL_PHASE_PHI     - BIT_MA_CONTROL_CTRL_PHASE_BASE) ) |
-                     (((input_value >> INDEX_CTR_CTRL_PHASE_F         ) & 0x1 ) << (BIT_MA_CONTROL_CTRL_PHASE_F       - BIT_MA_CONTROL_CTRL_PHASE_BASE) ) |
-                     (((input_value >> INDEX_CTR_CTRL_PHASE_SEQ_TN1   ) & 0x1 ) << (BIT_MA_CONTROL_CTRL_PHASE_SEQ_TN1 - BIT_MA_CONTROL_CTRL_PHASE_BASE) ) |
-                     (((input_value >> INDEX_CTR_CTRL_PHASE_SEQ_TN2   ) & 0x1 ) << (BIT_MA_CONTROL_CTRL_PHASE_SEQ_TN2 - BIT_MA_CONTROL_CTRL_PHASE_BASE) );
-        break;
-      }
     case M_ADDRESS_CONTROL_EL:
       {
         temp_value = 1 << (BIT_MA_CONFIGURATION_EL - BIT_MA_CONTROL_EL_BASE);
@@ -3084,47 +3070,6 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
   {
     switch (address_data)
     {
-    case M_ADDRESS_CONTROL_CTRL_PHASE:
-      {
-        unsigned int output_conf = target_label->configuration & ((unsigned int)(~(1 << CTRL_PHASE_BIT_CONFIGURATION)));
-        output_conf |= ((data >> (BIT_MA_CONFIGURATION_CTRL_PHASE  - BIT_MA_CONTROL_CTRL_PHASE_BASE)) & 0x1) << CTRL_PHASE_BIT_CONFIGURATION;
-        if (target_label->configuration != output_conf)
-        {
-          //Обновлюємо всі поля структури настройок. які зв'язані із конфігурацією приладу, якщо ця операція доступна (ми не знаходимося у вікні, яке не дозволяє конфігурацію)
-          if(action_after_changing_of_configuration() != DYN_MEM_SELECT_OK)
-            error = ERROR_SLAVE_DEVICE_BUSY;
-        }
-        
-        if (error == 0) 
-        {
-          if (
-              ((target_label->configuration & (1 << CTRL_PHASE_BIT_CONFIGURATION)) !=0 ) ||
-              ((data & (
-                        (1 << (BIT_MA_CONTROL_CTRL_PHASE_U       - BIT_MA_CONTROL_CTRL_PHASE_BASE)) |
-                        (1 << (BIT_MA_CONTROL_CTRL_PHASE_PHI     - BIT_MA_CONTROL_CTRL_PHASE_BASE)) |
-                        (1 << (BIT_MA_CONTROL_CTRL_PHASE_F       - BIT_MA_CONTROL_CTRL_PHASE_BASE)) |
-                        (1 << (BIT_MA_CONTROL_CTRL_PHASE_SEQ_TN1 - BIT_MA_CONTROL_CTRL_PHASE_BASE)) |
-                        (1 << (BIT_MA_CONTROL_CTRL_PHASE_SEQ_TN2 - BIT_MA_CONTROL_CTRL_PHASE_BASE))
-                       )
-               ) == 0) 
-             )
-          {
-            int output_value = 0;
-
-            output_value |= ((data >> (BIT_MA_CONTROL_CTRL_PHASE_U       - BIT_MA_CONTROL_CTRL_PHASE_BASE)) & 0x1) << INDEX_CTR_CTRL_PHASE_U;
-            output_value |= ((data >> (BIT_MA_CONTROL_CTRL_PHASE_PHI     - BIT_MA_CONTROL_CTRL_PHASE_BASE)) & 0x1) << INDEX_CTR_CTRL_PHASE_PHI;
-            output_value |= ((data >> (BIT_MA_CONTROL_CTRL_PHASE_F       - BIT_MA_CONTROL_CTRL_PHASE_BASE)) & 0x1) << INDEX_CTR_CTRL_PHASE_F;
-            output_value |= ((data >> (BIT_MA_CONTROL_CTRL_PHASE_SEQ_TN1 - BIT_MA_CONTROL_CTRL_PHASE_BASE)) & 0x1) << INDEX_CTR_CTRL_PHASE_SEQ_TN1;
-            output_value |= ((data >> (BIT_MA_CONTROL_CTRL_PHASE_SEQ_TN2 - BIT_MA_CONTROL_CTRL_PHASE_BASE)) & 0x1) << INDEX_CTR_CTRL_PHASE_SEQ_TN2;
-        
-            target_label->control_ctrl_phase = output_value;
-          }
-          else
-            error = ERROR_ILLEGAL_DATA_VALUE;
-        }
-
-        break;
-      }
     case M_ADDRESS_CONTROL_EL:
       {
         //Для ЦС розширену логіку не можна вимикати
@@ -3868,8 +3813,10 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       error = ERROR_ILLEGAL_DATA_VALUE;
     }
     else if (
+             /*
              (current_ekran.current_level == EKRAN_DATA_LADEL_AR)
              ||  
+             */
              (state_ar_record             != STATE_AR_NO_RECORD )
              ||  
              (
@@ -3903,12 +3850,14 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       error = ERROR_ILLEGAL_DATA_VALUE;
     }
     else if (
+             /*
              (current_ekran.current_level == EKRAN_TITLES_DIGITAL_REGISTRATOR)
              ||  
              (current_ekran.current_level == EKRAN_DATA_LADEL_DR             )
              ||  
              (current_ekran.current_level == EKRAN_CHANGES_SIGNALS_DR        )
-             ||  
+             ||
+             */
              (
               (control_tasks_dataflash & (
                                           TASK_MAMORY_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_DR | 
@@ -3934,12 +3883,14 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
   else if (address_data == MA_CLEAR_NUMBER_RECORD_PR_ERR)
   {
     if (
+        /*
         (current_ekran.current_level == EKRAN_TITLES_PR_ERR_REGISTRATOR )
         ||  
         (current_ekran.current_level == EKRAN_DATA_LADEL_PR_ERR         )
         ||  
         (current_ekran.current_level == EKRAN_CHANGES_DIAGNOSTICS_PR_ERR)
-        ||  
+        ||
+        */
         (
          (control_tasks_dataflash & (
                                      TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH    |
@@ -4191,446 +4142,446 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
 /***********************************************************************************/
 //Читання файлу
 /***********************************************************************************/
-inline unsigned int Get_data_file(unsigned char* input_data, unsigned char* output_data, unsigned int* total_number_answer, unsigned int type_interface)
-{
-  unsigned int error = 0;
-  if( *(input_data + 0) == 0x6)
-  {
-    unsigned int number_file, number_record, length;
-    number_file   = ((*(input_data + 1)) << 8) + (*(input_data + 2));
-    number_record = ((*(input_data + 3)) << 8) + (*(input_data + 4));
-    length        = ((*(input_data + 5)) << 8) + (*(input_data + 6));
-    
-    unsigned int number_answer_local = (length << 1) + 1;
-    
-    *total_number_answer += (number_answer_local + 1); 
-
-    if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
-    {
-      //Теоретично такого бути не мало б ніколи
-      error = ERROR_SLAVE_DEVICE_FAILURE;
-    }
-    else if (
-             (number_file == 0)
-             ||  
-             (
-              (number_file >= 5) && 
-              (number_file <= 6) && 
-              (
-               ((type_interface == USB_RECUEST  ) && (number_record_of_dr_for_USB   == 0xffff)) ||
-               ((type_interface == RS485_RECUEST) && (number_record_of_dr_for_RS485 == 0xffff))
-              )   
-             )
-             ||  
-             (number_file > 6)
-            )
-    {
-      //Невірний номер файлу, або не подано команди вичитування відповідного запису
-      error = ERROR_ILLEGAL_DATA_ADDRESS;
-    }
-    else if (
-             (number_file >= 5) &&
-             (number_file <= 6) && 
-             (
-              (
-               ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB  ) != 0)) ||
-               ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485) != 0))
-              ) 
-              ||  
-              ((clean_rejestrators & CLEAN_DR) != 0)
-             )  
-            )   
-    {
-      //Зараз іде зчитування для інтерфейсу запису дискретного реєстратора, тому ця операція є тимчасово недоступною
-      error = ERROR_SLAVE_DEVICE_BUSY;
-    }
-    else if ((*total_number_answer + 5) < 255)
-    {
-      *(output_data + 0 ) = number_answer_local;
-      *(output_data + 1 ) = 0x6;
-      //Дальше ідуть дані файлу відповіді
-
-      int temp_data;
-      switch (number_file)
-      {
-      case 5:
-        {
-          //*************************************
-          //Заголовок для дискретного реєстратора
-          //*************************************
-          unsigned char *point_to_buffer;
-          if (type_interface == USB_RECUEST) point_to_buffer = buffer_for_USB_read_record_dr;
-          else point_to_buffer = buffer_for_RS485_read_record_dr;
-
-          switch (number_record)
-          {
-          case 0:
-            {
-              if (length <= 10)
-              {
-                unsigned int i = 0;
-                while (i < length)
-                {
-                  if (i < 8)
-                  {
-                    unsigned int index_cell;
-                    
-                    index_cell =  (i - 0)<<1;
-                    temp_data  = (*(point_to_buffer + FIRST_INDEX_NAME_OF_CELL_DR + index_cell)) | ((*(point_to_buffer + FIRST_INDEX_NAME_OF_CELL_DR + index_cell + 1))<<8);
-                  }
-                  else if (i == 8)
-                  {
-                    //Серійний номер пристрою завжди один і той самий (встановлюється на заводі-виготовнику), тому я його не включив для запису у DataFlash у складі заголовку аналогового реєстратора
-                    temp_data = serial_number_dev & 0xffff;
-                  }
-                  else
-                  {
-                    temp_data = 1999;
-                  }
-                  *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
-                  *(output_data + 3 + 2*i) = temp_data & 0xff;
-                  i++;
-                }
-              }
-              else error = ERROR_ILLEGAL_DATA_ADDRESS;
-              break;
-            }
-          case 1:
-            {
-              if (length <= 3)
-              {
-                unsigned int i = 0;
-                while (i < length)
-                {
-                  if (i == 0)
-                  {
-                    temp_data  = 0 + NUMBER_TOTAL_SIGNAL_FOR_RANG;
-                  }
-                  else if (i == 1)
-                  {
-                    temp_data = 0;
-                  }
-                  else
-                  {
-                    temp_data = NUMBER_TOTAL_SIGNAL_FOR_RANG;
-                  }
-                  *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
-                  *(output_data + 3 + 2*i) = temp_data & 0xff;
-                  i++;
-                }
-              }
-              else error = ERROR_ILLEGAL_DATA_ADDRESS;
-              break;
-            }
-          case 2:
-          case 3:
-          case 4:
-          case 5:
-          case 6:
-          case 7:
-          case 8:
-          case 9:
-          case 10:
-          case 11:
-          case 12:
-          case 13:
-          case 14:
-          case 15:
-          case 16:
-          case 17:
-          case 18:
-          case 19:
-          case 20:
-          case 21:
-          case 22:
-          case 23:
-          case 24:
-          case 25:
-          case 26:
-          case 27:
-          case 28:
-          case 29:
-          case 30:
-          case 31:
-          case 32:
-          case 33:
-          case 34:
-          case 35:
-          case 36:
-          case 37:
-          case 38:
-          case 39:
-          case 40:
-          case 41:
-          case 42:
-          case 43:
-          case 44:
-          case 45:
-          case 46:
-          case 47:
-          case 48:
-          case 49:
-          case 50:
-          case 51:
-          case 52:
-          case 53:
-          case 54:
-          case 55:
-          case 56:
-          case 57:
-          case 58:
-          case 59:
-          case 60:
-          case 61:
-          case 62:
-          case 63:
-          case 64:
-          case 65:
-          case 66:
-          case 67:
-          case 68:
-          case 69:
-          case 70:
-          case 71:
-          case 72:
-          case 73:
-          case 74:
-          case 75:
-          case 76:
-          case 77:
-          case 78:
-          case 79:
-          case 80:
-          case 81:
-          case 82:
-          case 83:
-          case 84:
-          case 85:
-          case 86:
-          case 87:
-          case 88:
-          case 89:
-          case 90:
-          case 91:
-          case 92:
-          case 93:
-          case 94:
-            {
-              if (length <= 19)
-              {
-                unsigned int i = 0;
-                while (i < length)
-                {
-                  if (i == 0)
-                  {
-                    //Номер каналу
-                    temp_data = (number_record - 2) + 1;
-                  }
-                  else if ( i < 9)
-                  {
-                    //Ідентитифікатор каналу - 16 ASCII символів
-                    const char idetyficator[MAX_NAMBER_LANGUAGE][NUMBER_TOTAL_SIGNAL_FOR_RANG][16] =
-                    {
-                      {NAME_RANG_RU},
-                      {NAME_RANG_UA},
-                      {NAME_RANG_EN},
-                      {NAME_RANG_KZ},
-                    };
-                    int index_language = index_language_in_array(settings_fix.language);
-                    unsigned int index_cell;
-                    
-                    index_cell =  (i - 1)<<1;
-                    temp_data  = idetyficator[index_language][number_record - 2][index_cell] | (idetyficator[index_language][number_record - 2][index_cell+1]<<8);
-                  }
-                  else if ( i == 9)
-                  {
-                    //Фаза каналу - 2 ASCII символів - нічого не передаємо
-                    temp_data  = (' '<<8) | ' ';
-                  }
-                  else if ( i < 18)
-                  {
-                    //Спостережний елемент в колі - 16 ASCII символів- нічого не передаємо
-                    temp_data  = (' '<<8) | ' ';
-                  }
-                  else if ( i == 18)
-                  {
-                    //Нормальний стан
-                    temp_data  = 0;
-                  }
-                  *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
-                  *(output_data + 3 + 2*i) = temp_data & 0xff;
-                  i++;
-                }
-              }
-              else error = ERROR_ILLEGAL_DATA_ADDRESS;
-              break;
-            }
-          case ( 2 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
-          case ( 3 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
-            {
-              if (length <= 1)
-              {
-                
-                if (number_record == ( 2 + NUMBER_TOTAL_SIGNAL_FOR_RANG))
-                {
-                  temp_data  = MAIN_FREQUENCY*100; //Чатота лінії
-                }
-                else
-                {
-                  temp_data  = 0; //Кількість частот дискретизації
-                }
-                *(output_data + 2 ) = (temp_data >> 8) & 0xff;
-                *(output_data + 3 ) = temp_data & 0xff;
-              }
-              else error = ERROR_ILLEGAL_DATA_ADDRESS;
-              break;
-            }
-          case ( 4 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
-            {
-              if (length <= 2)
-              {
-                unsigned int i = 0;
-                while (i < length)
-                {
-                  if (i == 0) temp_data  = 0; //Частота виборки
-                  else
-                  {
-                      temp_data = *(point_to_buffer + FIRST_INDEX_NUMBER_ITEMS_DR); //кількість запичсів у дискретному реєстраторі співпадає з номером останньої виборки (я так вважаю)
-                  }
-                  
-                  *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
-                  *(output_data + 3 + 2*i) = temp_data & 0xff;
-                  i++;
-                }
-              }
-              else error = ERROR_ILLEGAL_DATA_ADDRESS;
-              break;
-            }
-          case ( 5 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
-          case ( 6 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
-            {
-              
-              if (length <= 7)
-              {
-                //Конвертуємо формат BCD у int
-                unsigned int time_avar_digital[7];
-
-                //Конвертуємо формат BCD у int
-                for (unsigned int i = 0; i < 7; i++)
-                {
-                  unsigned int val = *(point_to_buffer + FIRST_INDEX_DATA_TIME_DR + i), val_l, val_m;
-                  val_l = val & 0xf;
-                  val_m = (val >> 4) & 0xf;
-                  time_avar_digital[i] = val_m*10 + val_l;
-                }
-                  
-                unsigned int i = 0;
-                while (i < length)
-                {
-                  if (i < 3)
-                  {
-                    temp_data = time_avar_digital[4 + i];
-                    if (i == 2)temp_data += 2000; //Бо формат має бути чотиризначним числом
-                  }
-                  else if (i < 5 ) temp_data = time_avar_digital[3 - (i - 3)];
-                  else if (i == 5) temp_data = time_avar_digital[1]*100 + time_avar_digital[0];
-                  else temp_data = 0;/*Значення мілісекунд - зараз у нашій системі не фіксується*/
-
-                  *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
-                  *(output_data + 3 + 2*i) = temp_data & 0xff;
-                  i++;
-                }
-              }
-              else error = ERROR_ILLEGAL_DATA_ADDRESS;
-              break;
-            }
-          case ( 7 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
-          case ( 8 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
-            {
-              if (length <= 1)
-              {
-                
-                if (number_record == ( 7 + NUMBER_TOTAL_SIGNAL_FOR_RANG))
-                {
-                  temp_data  = 'B'; //дані - це вінарні числа
-                }
-                else temp_data  = 1000; //Множник, на який множиться часова мітка з файлу даних, щоб отримати мікросекунди
-                *(output_data + 2 ) = (temp_data >> 8) & 0xff;
-                *(output_data + 3 ) = temp_data & 0xff;
-              }
-              else error = ERROR_ILLEGAL_DATA_ADDRESS;
-              break;
-            }
-          default:
-            {
-              error = ERROR_ILLEGAL_DATA_ADDRESS;
-              break;
-            }
-          }
-          //*************************************
-          break;
-        }
-      case 6:
-        {
-          //*************************************
-          //Дані 1 для дискретного реєстратора
-          //*************************************
-          unsigned char *point_to_buffer;
-          if (type_interface == USB_RECUEST) point_to_buffer = buffer_for_USB_read_record_dr;
-          else point_to_buffer = buffer_for_RS485_read_record_dr;
-
-          if (number_record < (*(point_to_buffer + FIRST_INDEX_NUMBER_ITEMS_DR)))
-          {
-            unsigned int max_number_two_bytes = (NUMBER_TOTAL_SIGNAL_FOR_RANG >> 4);
-            if ((max_number_two_bytes << 4) != NUMBER_TOTAL_SIGNAL_FOR_RANG)
-              max_number_two_bytes++;
-              
-            if (length <= (3 + max_number_two_bytes))
-            {
-              unsigned int i = 0;
-              while (i < length)
-              {
-                if (i == 0) temp_data = number_record + 1;
-                else
-                {
-                  unsigned int offset = FIRST_INDEX_FIRST_DATA_DR + (number_record + 1)*29; //бо найперший запис містить попереднє значення (до фіксації запуску роботи дискретного реєстратора)
-                  if (i == 1)
-                  {
-                    temp_data =  (*(point_to_buffer + offset + 0)) + ((*(point_to_buffer + offset + 1)) << 8 );
-                  }
-                  else if (i == 2)
-                  {
-                    temp_data =  *(point_to_buffer + offset + 2);
-                  }
-                  else
-                  {
-                    temp_data = (*(point_to_buffer + offset + 3 + (i - 3)*2)) + ((*(point_to_buffer + offset + 4 + (i - 3)*2)) << 8);
-                  }
-                }
-                *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
-                *(output_data + 3 + 2*i) = temp_data & 0xff;
-                i++;
-              }
-            }
-            else error = ERROR_ILLEGAL_DATA_ADDRESS;
-          }
-          else error = ERROR_ILLEGAL_DATA_ADDRESS;
-          //*************************************
-          break;
-        }
-      default:
-        {
-          //Теоретично, суди програма ніколи не мала заходити
-          error = ERROR_ILLEGAL_DATA_ADDRESS;
-          break;
-        }
-      }
-    }
-    else error = ERROR_ILLEGAL_DATA_ADDRESS;
-  }
-  else error = ERROR_ILLEGAL_DATA_ADDRESS;
-  return error;  
-}
+//inline unsigned int Get_data_file(unsigned char* input_data, unsigned char* output_data, unsigned int* total_number_answer, unsigned int type_interface)
+//{
+//  unsigned int error = 0;
+//  if( *(input_data + 0) == 0x6)
+//  {
+//    unsigned int number_file, number_record, length;
+//    number_file   = ((*(input_data + 1)) << 8) + (*(input_data + 2));
+//    number_record = ((*(input_data + 3)) << 8) + (*(input_data + 4));
+//    length        = ((*(input_data + 5)) << 8) + (*(input_data + 6));
+//    
+//    unsigned int number_answer_local = (length << 1) + 1;
+//    
+//    *total_number_answer += (number_answer_local + 1); 
+//
+//    if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
+//    {
+//      //Теоретично такого бути не мало б ніколи
+//      error = ERROR_SLAVE_DEVICE_FAILURE;
+//    }
+//    else if (
+//             (number_file == 0)
+//             ||  
+//             (
+//              (number_file >= 5) && 
+//              (number_file <= 6) && 
+//              (
+//               ((type_interface == USB_RECUEST  ) && (number_record_of_dr_for_USB   == 0xffff)) ||
+//               ((type_interface == RS485_RECUEST) && (number_record_of_dr_for_RS485 == 0xffff))
+//              )   
+//             )
+//             ||  
+//             (number_file > 6)
+//            )
+//    {
+//      //Невірний номер файлу, або не подано команди вичитування відповідного запису
+//      error = ERROR_ILLEGAL_DATA_ADDRESS;
+//    }
+//    else if (
+//             (number_file >= 5) &&
+//             (number_file <= 6) && 
+//             (
+//              (
+//               ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB  ) != 0)) ||
+//               ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485) != 0))
+//              ) 
+//              ||  
+//              ((clean_rejestrators & CLEAN_DR) != 0)
+//             )  
+//            )   
+//    {
+//      //Зараз іде зчитування для інтерфейсу запису дискретного реєстратора, тому ця операція є тимчасово недоступною
+//      error = ERROR_SLAVE_DEVICE_BUSY;
+//    }
+//    else if ((*total_number_answer + 5) < 255)
+//    {
+//      *(output_data + 0 ) = number_answer_local;
+//      *(output_data + 1 ) = 0x6;
+//      //Дальше ідуть дані файлу відповіді
+//
+//      int temp_data;
+//      switch (number_file)
+//      {
+//      case 5:
+//        {
+//          //*************************************
+//          //Заголовок для дискретного реєстратора
+//          //*************************************
+//          unsigned char *point_to_buffer;
+//          if (type_interface == USB_RECUEST) point_to_buffer = buffer_for_USB_read_record_dr;
+//          else point_to_buffer = buffer_for_RS485_read_record_dr;
+//
+//          switch (number_record)
+//          {
+//          case 0:
+//            {
+//              if (length <= 10)
+//              {
+//                unsigned int i = 0;
+//                while (i < length)
+//                {
+//                  if (i < 8)
+//                  {
+//                    unsigned int index_cell;
+//                    
+//                    index_cell =  (i - 0)<<1;
+//                    temp_data  = (*(point_to_buffer + FIRST_INDEX_NAME_OF_CELL_DR + index_cell)) | ((*(point_to_buffer + FIRST_INDEX_NAME_OF_CELL_DR + index_cell + 1))<<8);
+//                  }
+//                  else if (i == 8)
+//                  {
+//                    //Серійний номер пристрою завжди один і той самий (встановлюється на заводі-виготовнику), тому я його не включив для запису у DataFlash у складі заголовку аналогового реєстратора
+//                    temp_data = serial_number_dev & 0xffff;
+//                  }
+//                  else
+//                  {
+//                    temp_data = 1999;
+//                  }
+//                  *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
+//                  *(output_data + 3 + 2*i) = temp_data & 0xff;
+//                  i++;
+//                }
+//              }
+//              else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//              break;
+//            }
+//          case 1:
+//            {
+//              if (length <= 3)
+//              {
+//                unsigned int i = 0;
+//                while (i < length)
+//                {
+//                  if (i == 0)
+//                  {
+//                    temp_data  = 0 + NUMBER_TOTAL_SIGNAL_FOR_RANG;
+//                  }
+//                  else if (i == 1)
+//                  {
+//                    temp_data = 0;
+//                  }
+//                  else
+//                  {
+//                    temp_data = NUMBER_TOTAL_SIGNAL_FOR_RANG;
+//                  }
+//                  *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
+//                  *(output_data + 3 + 2*i) = temp_data & 0xff;
+//                  i++;
+//                }
+//              }
+//              else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//              break;
+//            }
+//          case 2:
+//          case 3:
+//          case 4:
+//          case 5:
+//          case 6:
+//          case 7:
+//          case 8:
+//          case 9:
+//          case 10:
+//          case 11:
+//          case 12:
+//          case 13:
+//          case 14:
+//          case 15:
+//          case 16:
+//          case 17:
+//          case 18:
+//          case 19:
+//          case 20:
+//          case 21:
+//          case 22:
+//          case 23:
+//          case 24:
+//          case 25:
+//          case 26:
+//          case 27:
+//          case 28:
+//          case 29:
+//          case 30:
+//          case 31:
+//          case 32:
+//          case 33:
+//          case 34:
+//          case 35:
+//          case 36:
+//          case 37:
+//          case 38:
+//          case 39:
+//          case 40:
+//          case 41:
+//          case 42:
+//          case 43:
+//          case 44:
+//          case 45:
+//          case 46:
+//          case 47:
+//          case 48:
+//          case 49:
+//          case 50:
+//          case 51:
+//          case 52:
+//          case 53:
+//          case 54:
+//          case 55:
+//          case 56:
+//          case 57:
+//          case 58:
+//          case 59:
+//          case 60:
+//          case 61:
+//          case 62:
+//          case 63:
+//          case 64:
+//          case 65:
+//          case 66:
+//          case 67:
+//          case 68:
+//          case 69:
+//          case 70:
+//          case 71:
+//          case 72:
+//          case 73:
+//          case 74:
+//          case 75:
+//          case 76:
+//          case 77:
+//          case 78:
+//          case 79:
+//          case 80:
+//          case 81:
+//          case 82:
+//          case 83:
+//          case 84:
+//          case 85:
+//          case 86:
+//          case 87:
+//          case 88:
+//          case 89:
+//          case 90:
+//          case 91:
+//          case 92:
+//          case 93:
+//          case 94:
+//            {
+//              if (length <= 19)
+//              {
+//                unsigned int i = 0;
+//                while (i < length)
+//                {
+//                  if (i == 0)
+//                  {
+//                    //Номер каналу
+//                    temp_data = (number_record - 2) + 1;
+//                  }
+//                  else if ( i < 9)
+//                  {
+//                    //Ідентитифікатор каналу - 16 ASCII символів
+//                    const char idetyficator[MAX_NAMBER_LANGUAGE][NUMBER_TOTAL_SIGNAL_FOR_RANG][16] =
+//                    {
+//                      {NAME_RANG_RU},
+//                      {NAME_RANG_UA},
+//                      {NAME_RANG_EN},
+//                      {NAME_RANG_KZ},
+//                    };
+//                    int index_language = index_language_in_array(settings_fix.language);
+//                    unsigned int index_cell;
+//                    
+//                    index_cell =  (i - 1)<<1;
+//                    temp_data  = idetyficator[index_language][number_record - 2][index_cell] | (idetyficator[index_language][number_record - 2][index_cell+1]<<8);
+//                  }
+//                  else if ( i == 9)
+//                  {
+//                    //Фаза каналу - 2 ASCII символів - нічого не передаємо
+//                    temp_data  = (' '<<8) | ' ';
+//                  }
+//                  else if ( i < 18)
+//                  {
+//                    //Спостережний елемент в колі - 16 ASCII символів- нічого не передаємо
+//                    temp_data  = (' '<<8) | ' ';
+//                  }
+//                  else if ( i == 18)
+//                  {
+//                    //Нормальний стан
+//                    temp_data  = 0;
+//                  }
+//                  *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
+//                  *(output_data + 3 + 2*i) = temp_data & 0xff;
+//                  i++;
+//                }
+//              }
+//              else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//              break;
+//            }
+//          case ( 2 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
+//          case ( 3 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
+//            {
+//              if (length <= 1)
+//              {
+//                
+//                if (number_record == ( 2 + NUMBER_TOTAL_SIGNAL_FOR_RANG))
+//                {
+//                  temp_data  = MAIN_FREQUENCY*100; //Чатота лінії
+//                }
+//                else
+//                {
+//                  temp_data  = 0; //Кількість частот дискретизації
+//                }
+//                *(output_data + 2 ) = (temp_data >> 8) & 0xff;
+//                *(output_data + 3 ) = temp_data & 0xff;
+//              }
+//              else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//              break;
+//            }
+//          case ( 4 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
+//            {
+//              if (length <= 2)
+//              {
+//                unsigned int i = 0;
+//                while (i < length)
+//                {
+//                  if (i == 0) temp_data  = 0; //Частота виборки
+//                  else
+//                  {
+//                      temp_data = *(point_to_buffer + FIRST_INDEX_NUMBER_ITEMS_DR); //кількість запичсів у дискретному реєстраторі співпадає з номером останньої виборки (я так вважаю)
+//                  }
+//                  
+//                  *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
+//                  *(output_data + 3 + 2*i) = temp_data & 0xff;
+//                  i++;
+//                }
+//              }
+//              else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//              break;
+//            }
+//          case ( 5 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
+//          case ( 6 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
+//            {
+//              
+//              if (length <= 7)
+//              {
+//                //Конвертуємо формат BCD у int
+//                unsigned int time_avar_digital[7];
+//
+//                //Конвертуємо формат BCD у int
+//                for (unsigned int i = 0; i < 7; i++)
+//                {
+//                  unsigned int val = *(point_to_buffer + FIRST_INDEX_DATA_TIME_DR + i), val_l, val_m;
+//                  val_l = val & 0xf;
+//                  val_m = (val >> 4) & 0xf;
+//                  time_avar_digital[i] = val_m*10 + val_l;
+//                }
+//                  
+//                unsigned int i = 0;
+//                while (i < length)
+//                {
+//                  if (i < 3)
+//                  {
+//                    temp_data = time_avar_digital[4 + i];
+//                    if (i == 2)temp_data += 2000; //Бо формат має бути чотиризначним числом
+//                  }
+//                  else if (i < 5 ) temp_data = time_avar_digital[3 - (i - 3)];
+//                  else if (i == 5) temp_data = time_avar_digital[1]*100 + time_avar_digital[0];
+//                  else temp_data = 0;/*Значення мілісекунд - зараз у нашій системі не фіксується*/
+//
+//                  *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
+//                  *(output_data + 3 + 2*i) = temp_data & 0xff;
+//                  i++;
+//                }
+//              }
+//              else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//              break;
+//            }
+//          case ( 7 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
+//          case ( 8 + NUMBER_TOTAL_SIGNAL_FOR_RANG):
+//            {
+//              if (length <= 1)
+//              {
+//                
+//                if (number_record == ( 7 + NUMBER_TOTAL_SIGNAL_FOR_RANG))
+//                {
+//                  temp_data  = 'B'; //дані - це вінарні числа
+//                }
+//                else temp_data  = 1000; //Множник, на який множиться часова мітка з файлу даних, щоб отримати мікросекунди
+//                *(output_data + 2 ) = (temp_data >> 8) & 0xff;
+//                *(output_data + 3 ) = temp_data & 0xff;
+//              }
+//              else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//              break;
+//            }
+//          default:
+//            {
+//              error = ERROR_ILLEGAL_DATA_ADDRESS;
+//              break;
+//            }
+//          }
+//          //*************************************
+//          break;
+//        }
+//      case 6:
+//        {
+//          //*************************************
+//          //Дані 1 для дискретного реєстратора
+//          //*************************************
+//          unsigned char *point_to_buffer;
+//          if (type_interface == USB_RECUEST) point_to_buffer = buffer_for_USB_read_record_dr;
+//          else point_to_buffer = buffer_for_RS485_read_record_dr;
+//
+//          if (number_record < (*(point_to_buffer + FIRST_INDEX_NUMBER_ITEMS_DR)))
+//          {
+//            unsigned int max_number_two_bytes = (NUMBER_TOTAL_SIGNAL_FOR_RANG >> 4);
+//            if ((max_number_two_bytes << 4) != NUMBER_TOTAL_SIGNAL_FOR_RANG)
+//              max_number_two_bytes++;
+//              
+//            if (length <= (3 + max_number_two_bytes))
+//            {
+//              unsigned int i = 0;
+//              while (i < length)
+//              {
+//                if (i == 0) temp_data = number_record + 1;
+//                else
+//                {
+//                  unsigned int offset = FIRST_INDEX_FIRST_DATA_DR + (number_record + 1)*29; //бо найперший запис містить попереднє значення (до фіксації запуску роботи дискретного реєстратора)
+//                  if (i == 1)
+//                  {
+//                    temp_data =  (*(point_to_buffer + offset + 0)) + ((*(point_to_buffer + offset + 1)) << 8 );
+//                  }
+//                  else if (i == 2)
+//                  {
+//                    temp_data =  *(point_to_buffer + offset + 2);
+//                  }
+//                  else
+//                  {
+//                    temp_data = (*(point_to_buffer + offset + 3 + (i - 3)*2)) + ((*(point_to_buffer + offset + 4 + (i - 3)*2)) << 8);
+//                  }
+//                }
+//                *(output_data + 2 + 2*i) = (temp_data >> 8) & 0xff;
+//                *(output_data + 3 + 2*i) = temp_data & 0xff;
+//                i++;
+//              }
+//            }
+//            else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//          }
+//          else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//          //*************************************
+//          break;
+//        }
+//      default:
+//        {
+//          //Теоретично, суди програма ніколи не мала заходити
+//          error = ERROR_ILLEGAL_DATA_ADDRESS;
+//          break;
+//        }
+//      }
+//    }
+//    else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//  }
+//  else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//  return error;  
+//}
 /***********************************************************************************/
 
 /***********************************************************************************/
@@ -5076,7 +5027,7 @@ void modbus_rountines(unsigned int type_interface)
                    ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
                   )
                   &&  
-                  (current_ekran.edition == 0)
+                  (current_state_menu2.edition == ED_VIEWING)
                  )
               {
                 //Запис проводимо тільки тоді, коли пароль знятий і система меню не у режимі редагування, або іде команда управління
@@ -5115,7 +5066,7 @@ void modbus_rountines(unsigned int type_interface)
               }
               else
               {
-                if (current_ekran.edition != 0) error = ERROR_SLAVE_DEVICE_BUSY;
+                if (current_state_menu2.edition != ED_VIEWING) error = ERROR_SLAVE_DEVICE_BUSY;
                 else error = ERROR_ILLEGAL_DATA_ADDRESS;
               }
             }
@@ -5248,10 +5199,10 @@ void modbus_rountines(unsigned int type_interface)
             error = ERROR_BROADCAST_ADDRESS;
           }
           else if (
-                   (current_ekran.edition == 0                              ) ||
-                   (add_data              == MA_CURRENT_NUMBER_RECORD_AR    ) ||
-                   (add_data              == MA_CURRENT_NUMBER_RECORD_DR    ) ||
-                   (add_data              == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
+                   (current_state_menu2.edition == ED_VIEWING                     ) ||
+                   (add_data                    == MA_CURRENT_NUMBER_RECORD_AR    ) ||
+                   (add_data                    == MA_CURRENT_NUMBER_RECORD_DR    ) ||
+                   (add_data                    == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
                   )
           {
             /*****/
@@ -5610,7 +5561,7 @@ void modbus_rountines(unsigned int type_interface)
                    ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
                   )   
                   &&
-                  (current_ekran.edition == 0)
+                  (current_state_menu2.edition == ED_VIEWING)
                  )
               {
                 //Операція запису є доступною
@@ -5691,7 +5642,7 @@ void modbus_rountines(unsigned int type_interface)
               }
               else
               {
-                if (current_ekran.edition != 0) error = ERROR_SLAVE_DEVICE_BUSY;
+                if (current_state_menu2.edition != ED_VIEWING) error = ERROR_SLAVE_DEVICE_BUSY;
                 else error = ERROR_ILLEGAL_DATA_ADDRESS;
               }
             }
@@ -5895,10 +5846,10 @@ void modbus_rountines(unsigned int type_interface)
             unsigned short int data = (*(received_buffer+7+2*i))<<8 | (*(received_buffer+8+2*i));
 
             if (
-                (current_ekran.edition == 0                                      ) ||
-                (add_data              == MA_CURRENT_NUMBER_RECORD_AR    ) ||
-                (add_data              == MA_CURRENT_NUMBER_RECORD_DR    ) ||
-                (add_data              == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
+                (current_state_menu2.edition == ED_VIEWING                     ) ||
+                (add_data                    == MA_CURRENT_NUMBER_RECORD_AR    ) ||
+                (add_data                    == MA_CURRENT_NUMBER_RECORD_DR    ) ||
+                (add_data                    == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
                )
             {
               /*****/
@@ -6276,49 +6227,49 @@ void modbus_rountines(unsigned int type_interface)
 
           break;
         }//Кінець для обробки функції 16
-      case 20:
-        {
-          *transmited_buffer = *(received_buffer);
-          *(transmited_buffer + 1) = *(received_buffer + 1) ;
-
-          unsigned int number_requests = *(received_buffer + 2);
-          unsigned int total_number_answer = 0;
-
-          if ((number_requests >= 0x7) && (number_requests <= 0xF5))
-          {
-            unsigned int i = 0; 
-            while ((i < number_requests) && ((error = Get_data_file((received_buffer + 3 + i), (transmited_buffer + 3 + total_number_answer), &total_number_answer, type_interface)) == 0))
-            {
-              i += 7;
-            }
-         
-          }
-          else error = ERROR_ILLEGAL_DATA_VALUE;
-        
-          if (error == 0)
-          {
-            *(transmited_buffer + 2) = total_number_answer ;
-
-            CRC_sum = 0xffff;
-            for (int index = 0; index < ((int)(total_number_answer + 3)); index++) CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
-            *(transmited_buffer+3+total_number_answer) = CRC_sum & 0xff;
-            *(transmited_buffer+4+total_number_answer) = CRC_sum >> 8;
-            
-            *transmited_count = 5+total_number_answer;
-            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-          }
-          else
-          {
-            
-            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
-            *transmited_count = 5;
-            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-          }
-
-          break;
-        }//Кінець для обробки функції 20        
+//      case 20:
+//        {
+//          *transmited_buffer = *(received_buffer);
+//          *(transmited_buffer + 1) = *(received_buffer + 1) ;
+//
+//          unsigned int number_requests = *(received_buffer + 2);
+//          unsigned int total_number_answer = 0;
+//
+//          if ((number_requests >= 0x7) && (number_requests <= 0xF5))
+//          {
+//            unsigned int i = 0; 
+//            while ((i < number_requests) && ((error = Get_data_file((received_buffer + 3 + i), (transmited_buffer + 3 + total_number_answer), &total_number_answer, type_interface)) == 0))
+//            {
+//              i += 7;
+//            }
+//         
+//          }
+//          else error = ERROR_ILLEGAL_DATA_VALUE;
+//        
+//          if (error == 0)
+//          {
+//            *(transmited_buffer + 2) = total_number_answer ;
+//
+//            CRC_sum = 0xffff;
+//            for (int index = 0; index < ((int)(total_number_answer + 3)); index++) CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
+//            *(transmited_buffer+3+total_number_answer) = CRC_sum & 0xff;
+//            *(transmited_buffer+4+total_number_answer) = CRC_sum >> 8;
+//            
+//            *transmited_count = 5+total_number_answer;
+//            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//          }
+//          else
+//          {
+//            
+//            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
+//            *transmited_count = 5;
+//            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//          }
+//
+//          break;
+//        }//Кінець для обробки функції 20        
       default:
         {
           Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), ERROR_ILLEGAL_FUNCTION, transmited_buffer);

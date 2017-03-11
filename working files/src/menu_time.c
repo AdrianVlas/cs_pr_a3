@@ -180,7 +180,7 @@ enum _result_pressed_enter_during_edition press_enter_in_time(void)
   case ED_VIEWING:
     {
       //Копіюємо дані для редагування
-      for(size_t i = 0; i < 7; i++) time_edit[i] = time[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
+      for(size_t i = 0; i < 7; i++) time_edit[i] = time[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function_ver2() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
       calibration_edit = calibration;
       
       result = RPEDE_NONE;
@@ -209,7 +209,7 @@ enum _result_pressed_enter_during_edition press_enter_in_time(void)
   case ED_CONFIRM_CHANGES:
     {
       //Копіюємо дані після редагування
-      for(size_t i = 0; i < 7; i++) time[i] = time_edit[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
+      for(size_t i = 0; i < 7; i++) time[i] = time_edit[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function_ver2() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
       calibration = calibration_edit;
       
       //Виставляємо повідомлення запису часу в RTC
