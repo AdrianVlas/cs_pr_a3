@@ -79,12 +79,33 @@ enum _signals_of_fix_block
   FIX_BLOCK_SIGNALS
 };
 
+enum _settings_delay_of_INPUT
+{
+  INPUT_SET_DELAY_DOPUSK = 0,
+  
+  INPUT_SET_DELAYS
+};
+
+enum _work_delay_of_INPUT
+{
+  INPUT_WORK_DELAY_DOPUSK = 0,
+  
+  INPUT_WORK_DELAYS
+};
+
+enum __index_ctrl_input_m2
+{
+  INDEX_CTRL_INPUT_M2_TYPE_SIGNAL = 0,
+  
+  MAX_INDEX_CTRL_INPUT
+};
+
 
 enum _signals_of_INPUT
 {
   INPUT_OUT = 0,
   
-  INPUT_SIGNALS
+  INPUT_SIGNALS_OUT
     
 };
 
@@ -93,7 +114,7 @@ enum _signals_of_OUTPUT
   OUTPUT_OUT = 0,
   OUTPUT_BOARD,
   
-  OUTPUT_SIGNALS
+  OUTPUT_SIGNALS_OUT
     
 };
 enum _output_input_signals
@@ -103,9 +124,22 @@ enum _output_input_signals
   OUTPUT_MEANDER1,
   OUTPUT_MEANDER2,
   
-  OUTPUT_MAX_NUMBER
+  OUTPUT_SIGNALS_IN
 };
 
+enum __index_ctrl_output_led_m2
+{
+  INDEX_CTRL_OUTPUT_LED_M2_N_T = 0, /*N - normal; T - trigger*/
+  INDEX_CTRL_OUTPUT_LED_M2_C_I, /*C - Constant; I - impulse*/
+  INDEX_CTRL_OUTPUT_LED_M2_SI_EI, /*SI - simple impulse; EI - expanded impulse*/
+
+  _MAX_INDEX_CTRL_OUTPUT_LED_BITS_SETTINGS,
+  
+  INDEX_CTRL_OUTPUT_LED_M2_MEANDER1 = _MAX_INDEX_CTRL_OUTPUT_LED_BITS_SETTINGS,
+  INDEX_CTRL_OUTPUT_LED_M2_MEANDER2,
+  
+  MAX_INDEX_CTRL_OUTPUT_LED
+};
 
 
 enum _signals_of_LED
@@ -113,7 +147,7 @@ enum _signals_of_LED
   LED_OUT = 0,
   LED_BOARD,
   
-  LED_SIGNALS
+  LED_SIGNALS_OUT
     
 };
 enum _led_input_signals
@@ -123,7 +157,7 @@ enum _led_input_signals
   LED_MEANDER1,
   LED_MEANDER2,
   
-  LED_MAX_NUMBER
+  LED_SIGNALS_IN
 };
 
 
@@ -131,7 +165,7 @@ enum _signals_of_AND
 {
   AND_OUT = 0,
   
-  AND_SIGNALS
+  AND_SIGNALS_OUT
     
 };
 
@@ -139,7 +173,7 @@ enum _signals_of_OR
 {
   OR_OUT = 0,
   
-  OR_SIGNALS
+  OR_SIGNALS_OUT
     
 };
 
@@ -147,7 +181,7 @@ enum _signals_of_XOR
 {
   XOR_OUT = 0,
   
-  XOR_SIGNALS
+  XOR_SIGNALS_OUT
     
 };
 
@@ -155,15 +189,34 @@ enum _signals_of_NOT
 {
   NOT_OUT = 0,
   
-  NOT_SIGNALS
+  NOT_SIGNALS_OUT
     
+};
+
+enum _settings_delay_of_TIMER
+{
+  TIMER_SET_DELAY_PAUSE = 0,
+  TIMER_SET_DELAY_WORK,
+  
+  TIMER_SET_DELAYS
+};
+
+enum _work_delay_of_TIMER
+{
+  TIMER_WORK_DELAY_PAUSE_RISE = 0,
+  TIMER_WORK_DELAY_PAUSE_FALL,
+  TIMER_WORK_DELAY_WORK_IMPULSE_RISE,
+  TIMER_WORK_DELAY_WORK_DELAY_RISE,
+  TIMER_WORK_DELAY_WORK_IMPULSE_FALL,
+  
+  TIMER_WORK_DELAYS
 };
 
 enum _signals_of_TIMER
 {
   TIMER_OUT = 0,
   
-  TIMER_SIGNALS
+  TIMER_SIGNALS_OUT
     
 };
 enum _output_timer_signals
@@ -171,9 +224,17 @@ enum _output_timer_signals
   TIMER_LOGIC_INPUT = 0,
   TIMER_RESET,
   
-  TIMER_MAX_NUMBER
+  TIMER_SIGNALS_IN
 };
 
+enum _signals_of_TRIGGER
+{
+  TRIGGER_OUT = 0,
+  TRIGGER_OUT_INV,
+  
+  TRIGGER_SIGNALS_OUT
+    
+};
 
 enum _input_signals_of_TRIGGER
 {
@@ -182,25 +243,37 @@ enum _input_signals_of_TRIGGER
   INPUT_TRIGGER_D,
   INPUT_TRIGGER_C,
   
-  INPUT_TRIGGER_SIGNALS
+  TRIGGER_SIGNALS_IN
     
 };
 
-enum _signals_of_TRIGGER
+enum _settings_delay_of_MEANDER
 {
-  TRIGGER_OUT = 0,
-  TRIGGER_OUT_INV,
+  MEANDER_SET_DELAY_PERIOD = 0,
   
-  TRIGGER_SIGNALS
-    
+  MEANDER_SET_DELAYS
+};
+
+enum _work_delay_of_MEANDER
+{
+  MEANDER_WORK_DELAY_PERIOD = 0,
+  
+  MEANDER_WORK_DELAYS
 };
 
 enum _signals_of_MEANDER
 {
   MEANDER_OUT = 0,
   
-  MEANDER_SIGNALS
+  MEANDER_SIGNALS_OUT
     
+};
+
+enum __index_delay_meander_m2
+{
+  INDEX_DELAY_MEANDER_M2_PERIOD = 0,
+  
+  MAX_INDEX_DELAY_MEANDER
 };
 
 

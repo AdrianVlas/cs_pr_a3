@@ -31,7 +31,7 @@ void make_ekran_control_output_led(void)
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_CTRL_OUTPUT_LED_M2][MAX_COL_LCD + 1] = 
+    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_INDEX_CTRL_OUTPUT_LED][MAX_COL_LCD + 1] = 
     {
       {
         "  Норм./Триг.   ",
@@ -107,7 +107,7 @@ void make_ekran_control_output_led(void)
     {
       unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
     
-      if (index_in_ekran_tmp < MAX_ROW_CTRL_OUTPUT_LED_M2)
+      if (index_in_ekran_tmp < MAX_INDEX_CTRL_OUTPUT_LED)
       {
         if ((i & 0x1) == 0)
         {

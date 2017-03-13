@@ -657,7 +657,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_MEANDERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_BIOS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LANGUAGE_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL, LIST_PASSWORDS_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_TIMER_MENU2_LEVEL, CTRL_TIMER_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_TIMER_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_meanders_menu2 = LIST_SETTINGS_MEANDER_MENU2_LEVEL;
               const enum _menu2_levels next_for_list_settings_meander_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_MEANDER_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_bios_menu2[MAX_ROW_LIST_SETTINGS_BIOS_M2] = {LIST_INPUTS_MENU2_LEVEL, LIST_OUTPUTS_MENU2_LEVEL, LIST_LEDS_MENU2_LEVEL};
@@ -700,8 +700,7 @@ void main_manu_function_ver2(void)
                   current_state_menu2.number_selection = current_state_menu2.index_position;
                   
                   position_in_current_level_menu2[LIST_SETTINGS_TIMER_MENU2_LEVEL] = 
-                  position_in_current_level_menu2[DELAY_TIMER_MENU2_LEVEL]         = 
-                  position_in_current_level_menu2[CTRL_TIMER_MENU2_LEVEL]          = 0;
+                  position_in_current_level_menu2[DELAY_TIMER_MENU2_LEVEL]         = 0;
                   
                   break;
                 }
@@ -1063,7 +1062,6 @@ void main_manu_function_ver2(void)
       }
     case CONFIGURATION_MENU2_LEVEL:
     case DELAY_TIMER_MENU2_LEVEL:
-    case CTRL_TIMER_MENU2_LEVEL:
     case DELAY_MEANDER_MENU2_LEVEL:
     case DELAY_INPUT_MENU2_LEVEL:
     case CTRL_INPUT_MENU2_LEVEL:
@@ -1749,27 +1747,9 @@ void new_level_menu(void)
       */
       break;
     }
-  case LIST_SETTINGS_TIMER_MENU2_LEVEL:
   case LIST_SETTINGS_INPUT_MENU2_LEVEL:
     {
-      switch (current_state_menu2.current_level)
-      {
-      case LIST_SETTINGS_TIMER_MENU2_LEVEL:
-        {
-          current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
-          break;
-        }
-      case LIST_SETTINGS_INPUT_MENU2_LEVEL:
-        {
-          current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_input : (int*)&current_config.n_input;
-          break;
-        }
-      default:
-        {
-          //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-          total_error_sw_fixed(105);
-        }
-      }
+      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_input : (int*)&current_config.n_input;
       current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_DC_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_choose_delay_control;
@@ -1783,9 +1763,27 @@ void new_level_menu(void)
       */
       break;
     }
+  case LIST_SETTINGS_TIMER_MENU2_LEVEL:
   case LIST_SETTINGS_MEANDER_MENU2_LEVEL:
     {
-      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_meander : (int*)&current_config.n_meander;
+      switch (current_state_menu2.current_level)
+      {
+      case LIST_SETTINGS_TIMER_MENU2_LEVEL:
+        {
+          current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
+          break;
+        }
+      case LIST_SETTINGS_MEANDER_MENU2_LEVEL:
+        {
+          current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_meander : (int*)&current_config.n_meander;
+          break;
+        }
+      default:
+        {
+          //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+          total_error_sw_fixed(105);
+        }
+      }
       current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_D_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_choose_delay;
@@ -1836,7 +1834,7 @@ void new_level_menu(void)
   case DELAY_TIMER_MENU2_LEVEL:
     {
       current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
-      current_state_menu2.max_row = MAX_ROW_DELAY_TIMER_M2;
+      current_state_menu2.max_row = TIMER_SET_DELAYS;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_delay_timer;
       current_state_menu2.func_press_enter = press_enter_in_delay_timer;
@@ -1849,26 +1847,10 @@ void new_level_menu(void)
       */
       break;
     }
-  case CTRL_TIMER_MENU2_LEVEL:
-    {
-      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
-      current_state_menu2.max_row = MAX_ROW_CTRL_TIMER_M2;
-      current_state_menu2.func_move = move_into_ekran_simple;
-      current_state_menu2.func_show = make_ekran_control_timer;
-      current_state_menu2.func_press_enter = press_enter_in_control_timer;
-      current_state_menu2.func_press_esc = press_esc_in_control_timer;
-      current_state_menu2.func_change = change_control_timer;
-      current_state_menu2.binary_data = true;
-      /*
-      current_state_menu2.edition не встановлюЇмо бо в≥н залежить в≥д поперднього 
-      в≥дкритого в≥кна
-      */
-      break;
-    }
   case DELAY_MEANDER_MENU2_LEVEL:
     {
       current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_meander : (int*)&current_config.n_meander;
-      current_state_menu2.max_row = MAX_ROW_DELAY_MEANDER_M2;
+      current_state_menu2.max_row = MAX_INDEX_DELAY_MEANDER;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_delay_meander;
       current_state_menu2.func_press_enter = press_enter_in_delay_meander;
@@ -1900,7 +1882,7 @@ void new_level_menu(void)
   case DELAY_INPUT_MENU2_LEVEL:
     {
       current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_input : (int*)&current_config.n_input;
-      current_state_menu2.max_row = MAX_ROW_DELAY_INPUT_M2;
+      current_state_menu2.max_row = INPUT_SET_DELAYS;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_delay_input;
       current_state_menu2.func_press_enter = press_enter_in_delay_input;
@@ -1916,7 +1898,7 @@ void new_level_menu(void)
   case CTRL_INPUT_MENU2_LEVEL:
     {
       current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_input : (int*)&current_config.n_input;
-      current_state_menu2.max_row = MAX_ROW_CTRL_INPUT_M2;
+      current_state_menu2.max_row = MAX_INDEX_CTRL_INPUT;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_control_input;
       current_state_menu2.func_press_enter = press_enter_in_control_input;
@@ -1950,7 +1932,7 @@ void new_level_menu(void)
           total_error_sw_fixed(107);
         }
       }
-      current_state_menu2.max_row = MAX_ROW_CTRL_OUTPUT_LED_M2;
+      current_state_menu2.max_row = MAX_INDEX_CTRL_OUTPUT_LED;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_control_output_led;
       current_state_menu2.func_press_enter = press_enter_in_control_output_led;

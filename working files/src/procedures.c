@@ -1206,19 +1206,19 @@ void min_settings_INPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
   {
     if (mem_to_prt == true) 
     {
-      ((__LN_INPUT *)(base) + shift)->settings.delay.delay = KOEF_DOPUSK_DV_POST_MIN;
+      ((__LN_INPUT *)(base) + shift)->settings.set_delay[INPUT_SET_DELAY_DOPUSK] = KOEF_DOPUSK_DV_POST_MIN;
       ((__LN_INPUT *)(base) + shift)->settings.control = 0;
     }
     else 
     {
-      ((__settings_for_INPUT *)(base) + shift)->delay.delay = KOEF_DOPUSK_DV_POST_MIN;
+      ((__settings_for_INPUT *)(base) + shift)->set_delay[INPUT_SET_DELAY_DOPUSK] = KOEF_DOPUSK_DV_POST_MIN;
       ((__settings_for_INPUT *)(base) + shift)->control = 0;
     }
     
     if (mem_to_prt == true)
     {
-      ((__LN_INPUT *)(base) + shift)->delay.delay = -1;
-      for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_SIGNALS, 8); i++)
+      for (size_t i = 0; i < INPUT_SET_DELAYS; i++) ((__LN_INPUT *)(base) + shift)->work_delay[i] = -1;
+      for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8); i++)
       {
         ((__LN_INPUT *)(base) + shift)->active_state[i] = 0;
       }
@@ -1237,17 +1237,17 @@ void copy_settings_INPUT(unsigned int mem_to_prt, unsigned int mem_from_prt, uin
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
       ((__settings_for_INPUT *)(base_target) + shift)->control = ((__LN_INPUT *)(base_source) + shift)->settings.control;
-      ((__settings_for_INPUT *)(base_target) + shift)->delay.delay = ((__LN_INPUT *)(base_source) + shift)->settings.delay.delay;
+      for (size_t i = 0; i < INPUT_SET_DELAYS; i++) ((__settings_for_INPUT *)(base_target) + shift)->set_delay[i] = ((__LN_INPUT *)(base_source) + shift)->settings.set_delay[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
       ((__LN_INPUT *)(base_target) + shift)->settings.control = ((__settings_for_INPUT *)(base_source) + shift)->control;
-      ((__LN_INPUT *)(base_target) + shift)->settings.delay.delay = ((__settings_for_INPUT *)(base_source) + shift)->delay.delay;
+      for (size_t i = 0; i < INPUT_SET_DELAYS; i++) ((__LN_INPUT *)(base_target) + shift)->settings.set_delay[i] = ((__settings_for_INPUT *)(base_source) + shift)->set_delay[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
       ((__settings_for_INPUT *)(base_target) + shift)->control = ((__settings_for_INPUT *)(base_source) + shift)->control;
-      ((__settings_for_INPUT *)(base_target) + shift)->delay.delay = ((__settings_for_INPUT *)(base_source) + shift)->delay.delay;
+      for (size_t i = 0; i < INPUT_SET_DELAYS; i++) ((__settings_for_INPUT *)(base_target) + shift)->set_delay[i] = ((__settings_for_INPUT *)(base_source) + shift)->set_delay[i];
     }
     else
     {
@@ -1268,17 +1268,17 @@ void min_settings_OUTPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_
     if (mem_to_prt == true) 
     {
       ((__LN_OUTPUT *)(base) + shift)->settings.control = 0;
-      for (size_t i = 0; i < OUTPUT_MAX_NUMBER; i++) ((__LN_OUTPUT *)(base) + shift)->settings.param[i] = 0;
+      for (size_t i = 0; i < OUTPUT_SIGNALS_IN; i++) ((__LN_OUTPUT *)(base) + shift)->settings.param[i] = 0;
     }
     else 
     {
       ((__settings_for_OUTPUT *)(base) + shift)->control = 0;
-      for (size_t i = 0; i < OUTPUT_MAX_NUMBER; i++) ((__settings_for_OUTPUT *)(base) + shift)->param[i] = 0;
+      for (size_t i = 0; i < OUTPUT_SIGNALS_IN; i++) ((__settings_for_OUTPUT *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_SIGNALS, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_SIGNALS_OUT, 8); i++)
       {
         ((__LN_OUTPUT *)(base) + shift)->active_state[i] = 0;
       }
@@ -1297,17 +1297,17 @@ void copy_settings_OUTPUT(unsigned int mem_to_prt, unsigned int mem_from_prt, ui
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
       ((__settings_for_OUTPUT *)(base_target) + shift)->control = ((__LN_OUTPUT *)(base_source) + shift)->settings.control;
-      for (size_t i = 0; i < OUTPUT_MAX_NUMBER; i++) ((__settings_for_OUTPUT *)(base_target) + shift)->param[i] = ((__LN_OUTPUT *)(base_source) + shift)->settings.param[i];
+      for (size_t i = 0; i < OUTPUT_SIGNALS_IN; i++) ((__settings_for_OUTPUT *)(base_target) + shift)->param[i] = ((__LN_OUTPUT *)(base_source) + shift)->settings.param[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
       ((__LN_OUTPUT *)(base_target) + shift)->settings.control = ((__settings_for_OUTPUT *)(base_source) + shift)->control;
-      for (size_t i = 0; i < OUTPUT_MAX_NUMBER; i++) ((__LN_OUTPUT *)(base_target) + shift)->settings.param[i] = ((__settings_for_OUTPUT *)(base_source) + shift)->param[i];
+      for (size_t i = 0; i < OUTPUT_SIGNALS_IN; i++) ((__LN_OUTPUT *)(base_target) + shift)->settings.param[i] = ((__settings_for_OUTPUT *)(base_source) + shift)->param[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
       ((__settings_for_OUTPUT *)(base_target) + shift)->control = ((__settings_for_OUTPUT *)(base_source) + shift)->control;
-      for (size_t i = 0; i < OUTPUT_MAX_NUMBER; i++) ((__settings_for_OUTPUT *)(base_target) + shift)->param[i] = ((__settings_for_OUTPUT *)(base_source) + shift)->param[i];
+      for (size_t i = 0; i < OUTPUT_SIGNALS_IN; i++) ((__settings_for_OUTPUT *)(base_target) + shift)->param[i] = ((__settings_for_OUTPUT *)(base_source) + shift)->param[i];
     }
     else
     {
@@ -1328,17 +1328,17 @@ void min_settings_LED(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
     if (mem_to_prt == true) 
     {
       ((__LN_LED *)(base) + shift)->settings.control = 0;
-      for (size_t i = 0; i < LED_MAX_NUMBER; i++) ((__LN_LED *)(base) + shift)->settings.param[i] = 0;
+      for (size_t i = 0; i < LED_SIGNALS_IN; i++) ((__LN_LED *)(base) + shift)->settings.param[i] = 0;
     }
     else 
     {
       ((__settings_for_LED *)(base) + shift)->control = 0;
-      for (size_t i = 0; i < LED_MAX_NUMBER; i++) ((__settings_for_LED *)(base) + shift)->param[i] = 0;
+      for (size_t i = 0; i < LED_SIGNALS_IN; i++) ((__settings_for_LED *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(LED_SIGNALS, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(LED_SIGNALS_OUT, 8); i++)
       {
         ((__LN_LED *)(base) + shift)->active_state[i] = 0;
       }
@@ -1357,17 +1357,17 @@ void copy_settings_LED(unsigned int mem_to_prt, unsigned int mem_from_prt, uintp
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
       ((__settings_for_LED *)(base_target) + shift)->control = ((__LN_LED *)(base_source) + shift)->settings.control;
-      for (size_t i = 0; i < LED_MAX_NUMBER; i++) ((__settings_for_LED *)(base_target) + shift)->param[i] = ((__LN_LED *)(base_source) + shift)->settings.param[i];
+      for (size_t i = 0; i < LED_SIGNALS_IN; i++) ((__settings_for_LED *)(base_target) + shift)->param[i] = ((__LN_LED *)(base_source) + shift)->settings.param[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
       ((__LN_LED *)(base_target) + shift)->settings.control = ((__settings_for_LED *)(base_source) + shift)->control;
-      for (size_t i = 0; i < LED_MAX_NUMBER; i++) ((__LN_LED *)(base_target) + shift)->settings.param[i] = ((__settings_for_LED *)(base_source) + shift)->param[i];
+      for (size_t i = 0; i < LED_SIGNALS_IN; i++) ((__LN_LED *)(base_target) + shift)->settings.param[i] = ((__settings_for_LED *)(base_source) + shift)->param[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
       ((__settings_for_LED *)(base_target) + shift)->control = ((__settings_for_LED *)(base_source) + shift)->control;
-      for (size_t i = 0; i < LED_MAX_NUMBER; i++) ((__settings_for_LED *)(base_target) + shift)->param[i] = ((__settings_for_LED *)(base_source) + shift)->param[i];
+      for (size_t i = 0; i < LED_SIGNALS_IN; i++) ((__settings_for_LED *)(base_target) + shift)->param[i] = ((__settings_for_LED *)(base_source) + shift)->param[i];
     }
     else
     {
@@ -1393,7 +1393,7 @@ void min_settings_AND(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(AND_SIGNALS, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(AND_SIGNALS_OUT, 8); i++)
       {
         ((__LN_AND *)(base) + shift)->active_state[i] = 0;
         ((__LN_AND *)(base) + shift)->trigger_state[i] = 0;
@@ -1449,7 +1449,7 @@ void min_settings_OR(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(OR_SIGNALS, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(OR_SIGNALS_OUT, 8); i++)
       {
         ((__LN_OR *)(base) + shift)->active_state[i] = 0;
         ((__LN_OR *)(base) + shift)->trigger_state[i] = 0;
@@ -1505,7 +1505,7 @@ void min_settings_XOR(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(XOR_SIGNALS, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(XOR_SIGNALS_OUT, 8); i++)
       {
         ((__LN_XOR *)(base) + shift)->active_state[i] = 0;
         ((__LN_XOR *)(base) + shift)->trigger_state[i] = 0;
@@ -1558,7 +1558,7 @@ void min_settings_NOT(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(NOT_SIGNALS, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(NOT_SIGNALS_OUT, 8); i++)
       {
         ((__LN_NOT *)(base) + shift)->active_state[i] = 0;
         ((__LN_NOT *)(base) + shift)->trigger_state[i] = 0;
@@ -1605,24 +1605,21 @@ void min_settings_TIMER(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
   {
     if (mem_to_prt == true) 
     {
-      for (size_t i = 0; i < TIMER_MAX_NUMBER; i++) ((__LN_TIMER *)(base) + shift)->settings.param[i] = 0;
-      ((__LN_TIMER *)(base) + shift)->settings.control = 0;
-      ((__LN_TIMER *)(base) + shift)->settings.delay.delay_pause = TIMEOUT_TIMER_PAUSE_MIN;
-      ((__LN_TIMER *)(base) + shift)->settings.delay.delay_work  = TIMEOUT_TIMER_WORK_MIN;
+      for (size_t i = 0; i < TIMER_SIGNALS_IN; i++) ((__LN_TIMER *)(base) + shift)->settings.param[i] = 0;
+      ((__LN_TIMER *)(base) + shift)->settings.set_delay[TIMER_SET_DELAY_PAUSE] = TIMEOUT_TIMER_PAUSE_MIN;
+      ((__LN_TIMER *)(base) + shift)->settings.set_delay[TIMER_SET_DELAY_WORK]  = TIMEOUT_TIMER_WORK_MIN;
     }
     else 
     {
-      for (size_t i = 0; i < TIMER_MAX_NUMBER; i++) ((__settings_for_TIMER *)(base) + shift)->param[i] = 0;
-      ((__settings_for_TIMER *)(base) + shift)->control = 0;
-      ((__settings_for_TIMER *)(base) + shift)->delay.delay_pause = TIMEOUT_TIMER_PAUSE_MIN;
-      ((__settings_for_TIMER *)(base) + shift)->delay.delay_work  = TIMEOUT_TIMER_WORK_MIN;
+      for (size_t i = 0; i < TIMER_SIGNALS_IN; i++) ((__settings_for_TIMER *)(base) + shift)->param[i] = 0;
+      ((__settings_for_TIMER *)(base) + shift)->set_delay[TIMER_SET_DELAY_PAUSE] = TIMEOUT_TIMER_PAUSE_MIN;
+      ((__settings_for_TIMER *)(base) + shift)->set_delay[TIMER_SET_DELAY_WORK]  = TIMEOUT_TIMER_WORK_MIN;
     }
     
     if (mem_to_prt == true)
     {
-      ((__LN_TIMER *)(base) + shift)->delay.delay_pause = -1;
-      ((__LN_TIMER *)(base) + shift)->delay.delay_work = -1;
-      for (size_t i = 0; i < DIV_TO_HIGHER(TIMER_SIGNALS, 8); i++)
+      for (size_t i = 0; i < TIMER_WORK_DELAYS; i++) ((__LN_TIMER *)(base) + shift)->work_delay[i] = -1;
+      for (size_t i = 0; i < DIV_TO_HIGHER(TIMER_SIGNALS_OUT, 8); i++)
       {
         ((__LN_TIMER *)(base) + shift)->active_state[i] = 0;
         ((__LN_TIMER *)(base) + shift)->trigger_state[i] = 0;
@@ -1641,24 +1638,18 @@ void copy_settings_TIMER(unsigned int mem_to_prt, unsigned int mem_from_prt, uin
   {
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      for (size_t i = 0; i < TIMER_MAX_NUMBER; i++) ((__settings_for_TIMER *)(base_target) + shift)->param[i] = ((__LN_TIMER *)(base_source) + shift)->settings.param[i];
-      ((__settings_for_TIMER *)(base_target) + shift)->control           = ((__LN_TIMER *)(base_source) + shift)->settings.control;
-      ((__settings_for_TIMER *)(base_target) + shift)->delay.delay_pause = ((__LN_TIMER *)(base_source) + shift)->settings.delay.delay_pause;
-      ((__settings_for_TIMER *)(base_target) + shift)->delay.delay_work  = ((__LN_TIMER *)(base_source) + shift)->settings.delay.delay_work;
+      for (size_t i = 0; i < TIMER_SIGNALS_IN; i++) ((__settings_for_TIMER *)(base_target) + shift)->param[i] = ((__LN_TIMER *)(base_source) + shift)->settings.param[i];
+      for (size_t i = 0; i < TIMER_SET_DELAYS; i++) ((__settings_for_TIMER *)(base_target) + shift)->set_delay[i] = ((__LN_TIMER *)(base_source) + shift)->settings.set_delay[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
-      for (size_t i = 0; i < TIMER_MAX_NUMBER; i++) ((__LN_TIMER *)(base_target) + shift)->settings.param[i] = ((__settings_for_TIMER *)(base_source) + shift)->param[i];
-      ((__LN_TIMER *)(base_target) + shift)->settings.control           = ((__settings_for_TIMER *)(base_source) + shift)->control;
-      ((__LN_TIMER *)(base_target) + shift)->settings.delay.delay_pause = ((__settings_for_TIMER *)(base_source) + shift)->delay.delay_pause;
-      ((__LN_TIMER *)(base_target) + shift)->settings.delay.delay_work  = ((__settings_for_TIMER *)(base_source) + shift)->delay.delay_work;
+      for (size_t i = 0; i < TIMER_SIGNALS_IN; i++) ((__LN_TIMER *)(base_target) + shift)->settings.param[i] = ((__settings_for_TIMER *)(base_source) + shift)->param[i];
+      for (size_t i = 0; i < TIMER_SET_DELAYS; i++)((__LN_TIMER *)(base_target) + shift)->settings.set_delay[i] = ((__settings_for_TIMER *)(base_source) + shift)->set_delay[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
-      for (size_t i = 0; i < TIMER_MAX_NUMBER; i++) ((__settings_for_TIMER *)(base_target) + shift)->param[i] = ((__settings_for_TIMER *)(base_source) + shift)->param[i];
-      ((__settings_for_TIMER *)(base_target) + shift)->control           = ((__settings_for_TIMER *)(base_source) + shift)->control;
-      ((__settings_for_TIMER *)(base_target) + shift)->delay.delay_pause = ((__settings_for_TIMER *)(base_source) + shift)->delay.delay_pause;
-      ((__settings_for_TIMER *)(base_target) + shift)->delay.delay_work  = ((__settings_for_TIMER *)(base_source) + shift)->delay.delay_work;
+      for (size_t i = 0; i < TIMER_SIGNALS_IN; i++) ((__settings_for_TIMER *)(base_target) + shift)->param[i] = ((__settings_for_TIMER *)(base_source) + shift)->param[i];
+      for (size_t i = 0; i < TIMER_SET_DELAYS; i++)((__settings_for_TIMER *)(base_target) + shift)->set_delay[i] = ((__settings_for_TIMER *)(base_source) + shift)->set_delay[i];
     }
     else
     {
@@ -1676,7 +1667,7 @@ void min_settings_TRIGGER(unsigned int mem_to_prt, uintptr_t *base, size_t index
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < INPUT_TRIGGER_SIGNALS; i++)
+    for (size_t i = 0; i < TRIGGER_SIGNALS_IN; i++)
     {
       if (mem_to_prt == true) ((__LN_TRIGGER *)(base) + shift)->settings.param[i] = 0;
       else ((__settings_for_TRIGGER *)(base) + shift)->param[i] = 0;
@@ -1684,7 +1675,7 @@ void min_settings_TRIGGER(unsigned int mem_to_prt, uintptr_t *base, size_t index
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(TRIGGER_SIGNALS, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8); i++)
       {
         ((__LN_TRIGGER *)(base) + shift)->active_state[i] = 0;
         ((__LN_TRIGGER *)(base) + shift)->trigger_state[i] = 0;
@@ -1701,7 +1692,7 @@ void copy_settings_TRIGGER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < INPUT_TRIGGER_SIGNALS; i++)
+    for (size_t i = 0; i < TRIGGER_SIGNALS_IN; i++)
     {
       if ((mem_to_prt == false) && (mem_from_prt == true))
       {
@@ -1734,17 +1725,17 @@ void min_settings_MEANDER(unsigned int mem_to_prt, uintptr_t *base, size_t index
   {
     if (mem_to_prt == true) 
     {
-      ((__LN_MEANDER *)(base) + shift)->settings.delay.delay = TIMEOUT_MEANDER_PERIOD_MIN;
+      ((__LN_MEANDER *)(base) + shift)->settings.set_delay[MEANDER_SET_DELAY_PERIOD] = TIMEOUT_MEANDER_PERIOD_MIN;
     }
     else 
     {
-      ((__settings_for_MEANDER *)(base) + shift)->delay.delay = TIMEOUT_MEANDER_PERIOD_MIN;
+      ((__settings_for_MEANDER *)(base) + shift)->set_delay[MEANDER_SET_DELAY_PERIOD] = TIMEOUT_MEANDER_PERIOD_MIN;
     }
     
     if (mem_to_prt == true)
     {
-      ((__LN_MEANDER *)(base) + shift)->delay.delay = -1;
-      for (size_t i = 0; i < DIV_TO_HIGHER(MEANDER_SIGNALS, 8); i++)
+      for (size_t i = 0; i < MEANDER_WORK_DELAYS; i++) ((__LN_MEANDER *)(base) + shift)->work_delay[i] = -1;
+      for (size_t i = 0; i < DIV_TO_HIGHER(MEANDER_SIGNALS_OUT, 8); i++)
       {
         ((__LN_MEANDER *)(base) + shift)->active_state[i] = 0;
       }
@@ -1762,15 +1753,15 @@ void copy_settings_MEANDER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
   {
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      ((__settings_for_MEANDER *)(base_target) + shift)->delay.delay = ((__LN_MEANDER *)(base_source) + shift)->settings.delay.delay;
+      for (size_t i = 0; i < MEANDER_SET_DELAYS; i++) ((__settings_for_MEANDER *)(base_target) + shift)->set_delay[i] = ((__LN_MEANDER *)(base_source) + shift)->settings.set_delay[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
-      ((__LN_MEANDER *)(base_target) + shift)->settings.delay.delay = ((__settings_for_MEANDER *)(base_source) + shift)->delay.delay;
+      for (size_t i = 0; i < MEANDER_SET_DELAYS; i++) ((__LN_MEANDER *)(base_target) + shift)->settings.set_delay[i] = ((__settings_for_MEANDER *)(base_source) + shift)->set_delay[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
-      ((__settings_for_MEANDER *)(base_target) + shift)->delay.delay = ((__settings_for_MEANDER *)(base_source) + shift)->delay.delay;
+      for (size_t i = 0; i < MEANDER_SET_DELAYS; i++) ((__settings_for_MEANDER *)(base_target) + shift)->set_delay[i] = ((__settings_for_MEANDER *)(base_source) + shift)->set_delay[i];
     }
     else
     {
@@ -2265,14 +2256,14 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
           {
           case ID_FB_OUTPUT:
             {
-              _n = OUTPUT_MAX_NUMBER;
+              _n = OUTPUT_SIGNALS_IN;
               p_param      = (((__settings_for_OUTPUT*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_LED:
             {
-              _n = LED_MAX_NUMBER;
+              _n = LED_SIGNALS_IN;
               p_param      = (((__settings_for_LED*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_LED*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
@@ -2310,14 +2301,14 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
             }
           case ID_FB_TIMER:
             {
-              _n = TIMER_MAX_NUMBER;
+              _n = TIMER_SIGNALS_IN;
               p_param      = (((__settings_for_TIMER*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_TIMER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_TRIGGER:
             {
-              _n = INPUT_TRIGGER_SIGNALS;
+              _n = TRIGGER_SIGNALS_IN;
               p_param      = (((__settings_for_TRIGGER*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_TRIGGER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;

@@ -124,10 +124,6 @@ void calc_symbol_and_put_into_working_ekran(uint8_t*, void*, void*, unsigned int
 void calc_int_symbol_and_put_into_working_ekran(uint8_t*, uint32_t*, uint32_t*, unsigned int*);
 unsigned int edit_setpoint(unsigned int,  uint32_t, unsigned int, int, unsigned int, unsigned int);
 unsigned int check_data_setpoint(unsigned int, unsigned int, unsigned int);
-void make_ekran_control_timer(void);
-enum _result_pressed_enter_during_edition press_enter_in_control_timer(void);
-void press_esc_in_control_timer(void);
-void change_control_timer(unsigned int);
 void make_ekran_delay_timer(void);
 enum _result_pressed_enter_during_edition press_enter_in_delay_timer(void);
 void press_esc_in_delay_timer(void);

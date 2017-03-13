@@ -31,7 +31,7 @@ void make_ekran_control_input(void)
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_CTRL_INPUT_M2][MAX_COL_LCD + 1] = 
+    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_INDEX_CTRL_INPUT][MAX_COL_LCD + 1] = 
     {
       {
         " Входной сигнал "
@@ -60,7 +60,7 @@ void make_ekran_control_input(void)
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
       unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
-      if (index_in_ekran_tmp < MAX_ROW_CTRL_INPUT_M2)
+      if (index_in_ekran_tmp < MAX_INDEX_CTRL_INPUT)
       {
         if ((i & 0x1) == 0)
         {
@@ -137,7 +137,7 @@ enum _result_pressed_enter_during_edition press_enter_in_control_input(void)
         {
           if ((p_settings_edit->control & (1 << INDEX_CTRL_INPUT_M2_TYPE_SIGNAL)) != 0)
           {
-            int32_t delay = p_settings_edit->delay.delay;
+            int32_t delay = p_settings_edit->set_delay[INPUT_SET_DELAY_DOPUSK];
             if (delay < KOEF_DOPUSK_DV_ZMIN_MIN)
             {
               delay = KOEF_DOPUSK_DV_ZMIN_MIN;
@@ -147,9 +147,9 @@ enum _result_pressed_enter_during_edition press_enter_in_control_input(void)
               delay = (delay / 10)*10;
             }
             
-            if (delay != p_settings_edit->delay.delay)
+            if (delay != p_settings_edit->set_delay[INPUT_SET_DELAY_DOPUSK])
             {
-              p_settings_cont->delay.delay = p_settings_edit->delay.delay = delay;
+              p_settings_cont->set_delay[INPUT_SET_DELAY_DOPUSK] = p_settings_edit->set_delay[INPUT_SET_DELAY_DOPUSK] = delay;
             }
           }
           
@@ -236,7 +236,7 @@ void make_ekran_delay_input(void)
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_DELAY_INPUT_M2][MAX_COL_LCD + 1] = 
+    const uint8_t name_string[MAX_NAMBER_LANGUAGE][INPUT_SET_DELAYS][MAX_COL_LCD + 1] = 
     {
       {
         " Допуск д.входа "
@@ -271,7 +271,7 @@ void make_ekran_delay_input(void)
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
       unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
-      if (index_in_ekran_tmp < MAX_ROW_DELAY_INPUT_M2)
+      if (index_in_ekran_tmp < INPUT_SET_DELAYS)
       {
         if ((i & 0x1) == 0)
         {
@@ -281,13 +281,13 @@ void make_ekran_delay_input(void)
 
           switch (index_in_ekran_tmp)
           {
-          case INDEX_DELAY_INPUT_M2_DOPUSK:
+          case INPUT_SET_DELAY_DOPUSK:
             {
               vaga = 10; //максимальний ваговий коефіцієнт
               col_begin = COL_DELAY_INPUT_DOPUSK_BEGIN;
               col_end = COL_DELAY_INPUT_DOPUSK_END;
             
-              value = p_settings_for_input->delay.delay;
+              value = p_settings_for_input->set_delay[INPUT_SET_DELAY_DOPUSK];
             
               break;
             }
@@ -325,7 +325,7 @@ void make_ekran_delay_input(void)
       int last_position_cursor_x = MAX_COL_LCD;
       switch (current_state_menu2.index_position)
       {
-      case INDEX_DELAY_INPUT_M2_DOPUSK:
+      case INPUT_SET_DELAY_DOPUSK:
         {
           current_state_menu2.position_cursor_x = COL_DELAY_INPUT_DOPUSK_BEGIN;
           last_position_cursor_x = COL_DELAY_INPUT_DOPUSK_END;
@@ -377,7 +377,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_input(void)
     {
       switch (current_state_menu2.index_position)
       {
-      case INDEX_DELAY_INPUT_M2_DOPUSK:
+      case INPUT_SET_DELAY_DOPUSK:
         {
           current_state_menu2.position_cursor_x = COL_DELAY_INPUT_DOPUSK_BEGIN;
           break;
@@ -394,14 +394,14 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_input(void)
       __settings_for_INPUT *p_settings_for_input_cont = (((__settings_for_INPUT*)sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       switch (current_state_menu2.index_position)
       {
-      case INDEX_DELAY_INPUT_M2_DOPUSK:
+      case INPUT_SET_DELAY_DOPUSK:
         {
-          if (p_settings_for_input_cont->delay.delay != p_settings_for_input_edit->delay.delay) 
+          if (p_settings_for_input_cont->set_delay[INPUT_SET_DELAY_DOPUSK] != p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK]) 
           {
             unsigned int min_porig = ((p_settings_for_input_edit->control & (1 << INDEX_CTRL_INPUT_M2_TYPE_SIGNAL)) == 0  ) ? KOEF_DOPUSK_DV_POST_MIN : KOEF_DOPUSK_DV_ZMIN_MIN;
-            if (check_data_setpoint(p_settings_for_input_edit->delay.delay, min_porig, KOEF_DOPUSK_DV_MAX) == 1)
+            if (check_data_setpoint(p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK], min_porig, KOEF_DOPUSK_DV_MAX) == 1)
             {
-              p_settings_for_input_cont->delay.delay = p_settings_for_input_edit->delay.delay;
+              p_settings_for_input_cont->set_delay[INPUT_SET_DELAY_DOPUSK] = p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK];
               config_settings_modified |= MASKA_CHANGED_SETTINGS;
               result = RPEDE_DATA_CHANGED_OK;
             }
@@ -431,9 +431,9 @@ void press_esc_in_delay_input(void)
   __settings_for_INPUT *p_settings_for_input_cont = (((__settings_for_INPUT*)sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
   switch (current_state_menu2.index_position)
   {
-  case INDEX_DELAY_INPUT_M2_DOPUSK:
+  case INPUT_SET_DELAY_DOPUSK:
     {
-      p_settings_for_input_edit->delay.delay = p_settings_for_input_cont->delay.delay;
+      p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK] = p_settings_for_input_cont->set_delay[INPUT_SET_DELAY_DOPUSK];
       break;
     }
   }
@@ -457,22 +457,19 @@ void change_delay_input(unsigned int action)
   //Вводимо число у відповідне поле
   if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
   {
-    int32_t *p_value = NULL;
+    int32_t *p_value = (((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->set_delay;
     unsigned int col_end;
     switch (current_state_menu2.index_position)
     {
-    case INDEX_DELAY_INPUT_M2_DOPUSK:
+    case INPUT_SET_DELAY_DOPUSK:
       {
-        p_value = &((((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->delay.delay);
         col_end = COL_DELAY_INPUT_DOPUSK_END;
         break;
       }
     }
     
-    if (p_value != NULL)
-    {
-      *p_value = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0), *p_value, 0, 0, col_end, 1);
-    }
+    intptr_t index = current_state_menu2.index_position;
+     p_value[index] = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0),  p_value[index], 0, 0, col_end, 1);
   }
   else if (
            ((action & (1 << BIT_KEY_LEFT )) != 0) ||
@@ -482,7 +479,7 @@ void change_delay_input(unsigned int action)
     int col_begin, col_end;
     switch (current_state_menu2.index_position)
     {
-    case INDEX_DELAY_INPUT_M2_DOPUSK:
+    case INPUT_SET_DELAY_DOPUSK:
       {
         col_begin = COL_DELAY_INPUT_DOPUSK_BEGIN;
         col_end = COL_DELAY_INPUT_DOPUSK_END;

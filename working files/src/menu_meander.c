@@ -31,7 +31,7 @@ void make_ekran_delay_meander(void)
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_DELAY_MEANDER_M2][MAX_COL_LCD + 1] = 
+    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_INDEX_DELAY_MEANDER][MAX_COL_LCD + 1] = 
     {
       {
         "     Период     "
@@ -65,7 +65,7 @@ void make_ekran_delay_meander(void)
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
       unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
-      if (index_in_ekran_tmp < MAX_ROW_DELAY_MEANDER_M2)
+      if (index_in_ekran_tmp < MAX_INDEX_DELAY_MEANDER)
       {
         if ((i & 0x1) == 0)
         {
@@ -82,7 +82,7 @@ void make_ekran_delay_meander(void)
               col_end = COL_DELAY_MEANDER_PERIOD_END;
               col_comma = COL_DELAY_MEANDER_PERIOD_COMMA;
             
-              value = p_settings_for_meander->delay.delay;
+              value = p_settings_for_meander->set_delay[MEANDER_SET_DELAY_PERIOD];
             
               break;
             }
@@ -190,11 +190,11 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_meander(void)
       {
       case INDEX_DELAY_MEANDER_M2_PERIOD:
         {
-          if (p_settings_for_meander_cont->delay.delay != p_settings_for_meander_edit->delay.delay) 
+          if (p_settings_for_meander_cont->set_delay[MEANDER_SET_DELAY_PERIOD] != p_settings_for_meander_edit->set_delay[MEANDER_SET_DELAY_PERIOD]) 
           {
-            if (check_data_setpoint(p_settings_for_meander_edit->delay.delay, TIMEOUT_MEANDER_PERIOD_MIN, TIMEOUT_MEANDER_PERIOD_MAX) == 1)
+            if (check_data_setpoint(p_settings_for_meander_edit->set_delay[MEANDER_SET_DELAY_PERIOD], TIMEOUT_MEANDER_PERIOD_MIN, TIMEOUT_MEANDER_PERIOD_MAX) == 1)
             {
-              p_settings_for_meander_cont->delay.delay = p_settings_for_meander_edit->delay.delay;
+              p_settings_for_meander_cont->set_delay[MEANDER_SET_DELAY_PERIOD] = p_settings_for_meander_edit->set_delay[MEANDER_SET_DELAY_PERIOD];
               config_settings_modified |= MASKA_CHANGED_SETTINGS;
               result = RPEDE_DATA_CHANGED_OK;
             }
@@ -226,7 +226,7 @@ void press_esc_in_delay_meander(void)
   {
   case INDEX_DELAY_MEANDER_M2_PERIOD:
     {
-      p_settings_for_meander_edit->delay.delay = p_settings_for_meander_cont->delay.delay;
+      p_settings_for_meander_edit->set_delay[MEANDER_SET_DELAY_PERIOD] = p_settings_for_meander_cont->set_delay[MEANDER_SET_DELAY_PERIOD];
       break;
     }
   }
@@ -250,23 +250,20 @@ void change_delay_meander(unsigned int action)
   //Вводимо число у відповідне поле
   if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
   {
-    int32_t *p_value = NULL;
+    int32_t *p_value = (((__settings_for_MEANDER*)sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->set_delay;
     unsigned int col_end, col_comma;
     switch (current_state_menu2.index_position)
     {
     case INDEX_DELAY_MEANDER_M2_PERIOD:
       {
-        p_value = &((((__settings_for_MEANDER*)sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->delay.delay);
         col_end = COL_DELAY_MEANDER_PERIOD_END;
         col_comma = COL_DELAY_MEANDER_PERIOD_COMMA;
         break;
       }
     }
     
-    if (p_value != NULL)
-    {
-      *p_value = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0), *p_value, 1, col_comma, col_end, 100);
-    }
+    intptr_t index = current_state_menu2.index_position;
+    p_value[index] = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0), p_value[index], 1, col_comma, col_end, 100);
   }
   else if (
            ((action & (1 << BIT_KEY_LEFT )) != 0) ||

@@ -268,14 +268,8 @@ void press_esc_in_address(void)
 {
   uint32_t *p_value_edit = &settings_fix_edit.address;
   uint32_t *p_value_cont = &settings_fix.address;
-  switch (current_state_menu2.index_position)
-  {
-  case INDEX_DELAY_INPUT_M2_DOPUSK:
-    {
-      *p_value_edit = *p_value_cont;
-      break;
-    }
-  }
+
+  *p_value_edit = *p_value_cont;
 }
 /*****************************************************/
 

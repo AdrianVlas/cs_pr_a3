@@ -71,14 +71,8 @@ typedef struct
 **********/
 typedef struct
 {
-  int32_t delay;
   
-} __delays_for_INPUT;
-
-typedef struct
-{
-  
-  __delays_for_INPUT delay;
+  int32_t set_delay[INPUT_SET_DELAYS];
   uint32_t control;
   
 } __settings_for_INPUT;
@@ -87,9 +81,9 @@ typedef struct
 {
   __settings_for_INPUT settings;
   
-  __delays_for_INPUT delay;
-  uint8_t active_state[DIV_TO_HIGHER(INPUT_SIGNALS, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(INPUT_SIGNALS, 8)];
+  int32_t work_delay[INPUT_WORK_DELAYS];
+  uint8_t active_state[DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8)];
 
 } __LN_INPUT;
 /**********/
@@ -101,7 +95,7 @@ typedef struct
 {
   
   uint32_t control;
-  uint32_t param[OUTPUT_MAX_NUMBER];
+  uint32_t param[OUTPUT_SIGNALS_IN];
   
 } __settings_for_OUTPUT;
 
@@ -109,8 +103,8 @@ typedef struct
 {
   __settings_for_OUTPUT settings;
 
-  uint8_t active_state[DIV_TO_HIGHER(OUTPUT_SIGNALS, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_SIGNALS, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(OUTPUT_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_SIGNALS_OUT, 8)];
 
 } __LN_OUTPUT;
 /**********/
@@ -123,7 +117,7 @@ typedef struct
 {
   
   uint32_t control;
-  uint32_t param[LED_MAX_NUMBER];
+  uint32_t param[LED_SIGNALS_IN];
   
 } __settings_for_LED;
 
@@ -131,8 +125,8 @@ typedef struct
 {
   __settings_for_LED settings;
 
-  uint8_t active_state[DIV_TO_HIGHER(LED_SIGNALS, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(LED_SIGNALS, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(LED_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(LED_SIGNALS_OUT, 8)];
 
 } __LN_LED;
 /**********/
@@ -151,8 +145,8 @@ typedef struct
 {
   __settings_for_AND settings;
 
-  uint8_t active_state[DIV_TO_HIGHER(AND_SIGNALS, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(AND_SIGNALS, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(AND_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(AND_SIGNALS_OUT, 8)];
 
 } __LN_AND;
 /**********/
@@ -172,8 +166,8 @@ typedef struct
   
   __settings_for_OR settings;
 
-  uint8_t active_state[DIV_TO_HIGHER(OR_SIGNALS, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(OR_SIGNALS, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(OR_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(OR_SIGNALS_OUT, 8)];
   
 } __LN_OR;
 /**********/
@@ -192,8 +186,8 @@ typedef struct
 {
   __settings_for_XOR settings;
   
-  uint8_t active_state[DIV_TO_HIGHER(XOR_SIGNALS, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(XOR_SIGNALS, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(XOR_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(XOR_SIGNALS_OUT, 8)];
   
 } __LN_XOR;
 /**********/
@@ -213,8 +207,8 @@ typedef struct
   
   __settings_for_NOT settings;
   
-  uint8_t active_state[DIV_TO_HIGHER(NOT_SIGNALS, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(NOT_SIGNALS, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(NOT_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(NOT_SIGNALS_OUT, 8)];
   
 } __LN_NOT;
 /**********/
@@ -224,17 +218,9 @@ typedef struct
 **********/
 typedef struct
 {
-  int32_t delay_pause;
-  int32_t delay_work;
   
-} __delays_for_TIMER;
-
-typedef struct
-{
-  
-  uint32_t param[TIMER_MAX_NUMBER];
-  uint32_t control;
-  __delays_for_TIMER delay;
+  int32_t set_delay[TIMER_SET_DELAYS];
+  uint32_t param[TIMER_SIGNALS_IN];
   
 } __settings_for_TIMER;
 
@@ -243,9 +229,9 @@ typedef struct
   
   __settings_for_TIMER settings;
   
-  __delays_for_TIMER delay;
-  uint8_t active_state[DIV_TO_HIGHER(TIMER_SIGNALS, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(TIMER_SIGNALS, 8)];
+  int32_t work_delay[TIMER_WORK_DELAYS];
+  uint8_t active_state[DIV_TO_HIGHER(TIMER_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(TIMER_SIGNALS_OUT, 8)];
   
 } __LN_TIMER;
 /**********/
@@ -256,7 +242,7 @@ typedef struct
 typedef struct
 {
   
-  uint32_t param[INPUT_TRIGGER_SIGNALS];
+  uint32_t param[TRIGGER_SIGNALS_IN];
   
 } __settings_for_TRIGGER;
 
@@ -265,8 +251,8 @@ typedef struct
   
   __settings_for_TRIGGER settings;
   
-  uint8_t active_state[DIV_TO_HIGHER(TRIGGER_SIGNALS, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(TRIGGER_SIGNALS, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8)];
   
 } __LN_TRIGGER;
 /**********/
@@ -276,14 +262,8 @@ typedef struct
 **********/
 typedef struct
 {
-  int32_t delay;
   
-} __delays_for_MEANDER;
-
-typedef struct
-{
-  
-  __delays_for_MEANDER delay;
+  int32_t set_delay[MEANDER_SET_DELAYS];
   
 } __settings_for_MEANDER;
 
@@ -292,8 +272,8 @@ typedef struct
   
   __settings_for_MEANDER settings;
   
-  __delays_for_MEANDER delay;
-  uint8_t active_state[DIV_TO_HIGHER(MEANDER_SIGNALS, 8)];
+  int32_t work_delay[MEANDER_WORK_DELAYS];
+  uint8_t active_state[DIV_TO_HIGHER(MEANDER_SIGNALS_OUT, 8)];
   
 } __LN_MEANDER;
 /**********/
