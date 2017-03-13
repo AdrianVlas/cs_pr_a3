@@ -71,13 +71,9 @@ unsigned int measurement_middle[NUMBER_ANALOG_CANALES];
 unsigned int measurement_low[NUMBER_ANALOG_CANALES]; 
 
 volatile unsigned int state_inputs = 0; //"є сигнал " - відповідає встановленому біту (1); "немає сигналу" - відповідає скинутому біту (0)
-unsigned int state_outputs = 0;
-volatile unsigned int state_leds = 0;
-volatile unsigned int active_functions[N_BIG]  = {0, 0, 0, 0, 0, 0, 0};
-unsigned int trigger_active_functions[N_BIG]  = {0, 0, 0, 0, 0, 0, 0}, trigger_active_functions_ctrl[N_BIG];
-unsigned char crc_trg_func, crc_trg_func_ctrl;
-volatile unsigned int active_functions_copy[N_BIG]  = {0, 0, 0, 0, 0, 0, 0};
-volatile unsigned int active_functions_trg[N_BIG]  = {0, 0, 0, 0, 0, 0, 0};
+uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS, 8)];
+//uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS, 8)];
+//unsigned char crc_trg_func, crc_trg_func_ctrl;
 unsigned int pressed_buttons = 0;
 volatile unsigned int activation_function_from_interface = 0;
 volatile unsigned int reset_trigger_function_from_interface = 0;
@@ -87,8 +83,6 @@ volatile unsigned int set_diagnostyka[3] = {0, 0, 0};
 volatile unsigned int clear_diagnostyka[3] = {0, 0, 0};
 
 SRAM1 int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
-unsigned int timer_meander = 0;
-unsigned int output_timer_meander = false;
 
 SRAM1 unsigned char working_ekran[MAX_ROW_LCD][MAX_COL_LCD];
 SRAM1 uint16_t rewrite_ekran_once_more/* = 0*/;
@@ -108,8 +102,8 @@ SRAM1 void *p_menu_param_1, *p_menu_param_2;
 volatile unsigned int periodical_tasks_TEST_CONFIG = false;
 volatile unsigned int periodical_tasks_TEST_SETTINGS = false;
 volatile unsigned int periodical_tasks_TEST_USTUVANNJA = false;
-volatile unsigned int periodical_tasks_TEST_TRG_FUNC = false;
-volatile unsigned int periodical_tasks_TEST_TRG_FUNC_LOCK = false;
+//volatile unsigned int periodical_tasks_TEST_TRG_FUNC = false;
+//volatile unsigned int periodical_tasks_TEST_TRG_FUNC_LOCK = false;
 volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR = false;
 volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK = false;
 volatile unsigned int periodical_tasks_TEST_FLASH_MEMORY = false;
@@ -143,9 +137,6 @@ unsigned char crc_config;
 __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;
 uint8_t crc_settings;
 unsigned int config_settings_modified = 0;
-
-volatile unsigned int changed_settings = CHANGED_ETAP_NONE; 
-SRAM1 __SETTINGS_OLD current_settings_prt, current_settings, edition_settings, current_settings_interfaces;
 
 //Ресурс++
 volatile unsigned int restart_resurs_count = 0;
@@ -269,12 +260,12 @@ SRAM1 uint16_t password_changed;
 SRAM1 uint16_t password_ustuvannja/* = 0*/;
 uint32_t *point_to_edited_rang = NULL;
 SRAM1 uint16_t number_32bit_in_target/* = 0*/;
-uint32_t clear_array_rang[N_BIG] = {0, 0, 0, 0, 0, 0, 0};
-uint32_t set_array_rang[N_BIG]   = {0, 0, 0, 0, 0, 0, 0};
+//uint32_t clear_array_rang[N_BIG] = {0, 0, 0, 0, 0, 0, 0};
+//uint32_t set_array_rang[N_BIG]   = {0, 0, 0, 0, 0, 0, 0};
 SRAM1 uint16_t restart_timeout_interface/* = 0*/;
 unsigned int timeout_idle_new_settings;
 SRAM1 uint16_t restart_timeout_idle_new_settings/* = 0*/;
-SRAM1 uint16_t type_of_settings_changed/* = 0*/;
+SRAM1 uint16_t type_of_settings_changed_from_interface/* = 0*/;
 
 unsigned int serial_number_dev = 0;                         //Заводський номер пристрою
 unsigned int edit_serial_number_dev;

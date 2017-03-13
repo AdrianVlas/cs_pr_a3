@@ -1,7 +1,6 @@
 #ifndef __CONST_LCD_AND_KEYBOARD__
 #define __CONST_LCD_AND_KEYBOARD__
 
-#define MAX_LEVEL_MENU          (69 + 3*NUMBER_ALARMS + NUMBER_OUTPUTS + NUMBER_LEDS + 2*NUMBER_DEFINED_FUNCTIONS + 3*NUMBER_DEFINED_TRIGGERS + NUMBER_DEFINED_AND + NUMBER_DEFINED_OR + NUMBER_DEFINED_XOR + NUMBER_DEFINED_NOT)   //Максимальна кількість допустимих вікон у системі меню
 #define MAX_TIME_REWRITE_EKRAN  100 //x10 - Максимальний час у мс для автоматичного обновлення екранів меню, які треба обновляти
 
 #define INDEX_VIEWING_DF                            0

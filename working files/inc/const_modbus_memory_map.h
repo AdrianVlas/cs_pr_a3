@@ -981,15 +981,15 @@
 //#define MA_TO_CHAPV_1                     10471
 //#define MA_TO_CHAPV_2                     10472
 
-#define MA_STP_CTRL_PHASE_U               10473
-#define MA_STP_CTRL_PHASE_PHI             10474
-#define MA_STP_CTRL_PHASE_F               10475
-#define MA_TO_CTRL_PHASE_U                10476
-#define MA_TO_CTRL_PHASE_U_D              10477
-#define MA_TO_CTRL_PHASE_PHI              10478
-#define MA_TO_CTRL_PHASE_PHI_D            10479
-#define MA_TO_CTRL_PHASE_F                10480
-#define MA_TO_CTRL_PHASE_F_D              10481
+//#define MA_STP_CTRL_PHASE_U               10473
+//#define MA_STP_CTRL_PHASE_PHI             10474
+//#define MA_STP_CTRL_PHASE_F               10475
+//#define MA_TO_CTRL_PHASE_U                10476
+//#define MA_TO_CTRL_PHASE_U_D              10477
+//#define MA_TO_CTRL_PHASE_PHI              10478
+//#define MA_TO_CTRL_PHASE_PHI_D            10479
+//#define MA_TO_CTRL_PHASE_F                10480
+//#define MA_TO_CTRL_PHASE_F_D              10481
 
 
 #define M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV 10481
@@ -1198,11 +1198,11 @@
 #define MA_ADDRESS_LAST_USTUVANNJA            (MA_ADDRESS_FIRST_USTUVANNJA  + NUMBER_ANALOG_CANALES - 1)
 /*****************************************************/
 
-/*****************************************************/
-/* Адреса установки максимальної кількості ітерацій для розширеної логіки */
-/*****************************************************/
-#define MA_NUMBER_ITERATION_EL                62000
-/*****************************************************/
+///*****************************************************/
+///* Адреса установки максимальної кількості ітерацій для розширеної логіки */
+///*****************************************************/
+//#define MA_NUMBER_ITERATION_EL                62000
+///*****************************************************/
 
 /*****************************************************/
 /* Адреса подачі команди скинути настройки у мінімальні параметри */

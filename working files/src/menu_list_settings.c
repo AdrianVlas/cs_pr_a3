@@ -299,7 +299,7 @@ void press_esc_in_list_settings(void)
       else if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
       {
         //Треба відмініти введення нових налаштувань
-        unsigned int result = set_config_and_settings(0, 1);
+        unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
         if (result == 0)
         {
           //Знімаємро режим редагування

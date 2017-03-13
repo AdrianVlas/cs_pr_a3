@@ -43,598 +43,11 @@ inline void Error_modbus(unsigned int address, unsigned int function, unsigned i
 /***********************************************************************************/
 
 /***********************************************************************************/
-//Формування відповідні по дискретних сигналаг для "унверсальної карти пам'яті"
-/***********************************************************************************/
-void convert_order_list_function_to_gmm(unsigned int* input_array, unsigned short int* output_array)
-{
-  //Перевірка фазування
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_ERROR_DELTA_U_CTRL_PHASE  , (BIT_MA_ERROR_DELTA_U_CTRL_PHASE   - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_ERROR_DELTA_PHI_CTRL_PHASE, (BIT_MA_ERROR_DELTA_PHI_CTRL_PHASE - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_ERROR_DELTA_F_CTRL_PHASE  , (BIT_MA_ERROR_DELTA_F_CTRL_PHASE   - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_ERROR_SEC_TN1_CTRL_PHASE  , (BIT_MA_ERROR_SEC_TN1_CTRL_PHASE   - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_ERROR_SEC_TN2_CTRL_PHASE  , (BIT_MA_ERROR_SEC_TN2_CTRL_PHASE   - BIT_MA_CURRENT_AF_BASE));
-
-  //ОФ
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF1_IN , (BIT_MA_INPUT_DF1  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF2_IN , (BIT_MA_INPUT_DF2  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF3_IN , (BIT_MA_INPUT_DF3  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF4_IN , (BIT_MA_INPUT_DF4  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF5_IN , (BIT_MA_INPUT_DF5  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF6_IN , (BIT_MA_INPUT_DF6  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF7_IN , (BIT_MA_INPUT_DF7  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF8_IN , (BIT_MA_INPUT_DF8  - BIT_MA_CURRENT_AF_BASE));
-
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF1_OUT, (BIT_MA_OUTPUT_DF1 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF2_OUT, (BIT_MA_OUTPUT_DF2 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF3_OUT, (BIT_MA_OUTPUT_DF3 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF4_OUT, (BIT_MA_OUTPUT_DF4 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF5_OUT, (BIT_MA_OUTPUT_DF5 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF6_OUT, (BIT_MA_OUTPUT_DF6 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF7_OUT, (BIT_MA_OUTPUT_DF7 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DF8_OUT, (BIT_MA_OUTPUT_DF8 - BIT_MA_CURRENT_AF_BASE));
-
-  //ОТ
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT1_SET  , (BIT_MA_DT1_SET   - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT1_RESET, (BIT_MA_DT1_RESET - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT2_SET  , (BIT_MA_DT2_SET   - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT2_RESET, (BIT_MA_DT2_RESET - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT3_SET  , (BIT_MA_DT3_SET   - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT3_RESET, (BIT_MA_DT3_RESET - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT4_SET  , (BIT_MA_DT4_SET   - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT4_RESET, (BIT_MA_DT4_RESET - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT1_OUT  , (BIT_MA_DT1_OUT   - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT2_OUT  , (BIT_MA_DT2_OUT   - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT3_OUT  , (BIT_MA_DT3_OUT   - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DT4_OUT  , (BIT_MA_DT4_OUT   - BIT_MA_CURRENT_AF_BASE));
-
-  //Визначцані "І"
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_AND1, (BIT_MA_D_AND1 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_AND2, (BIT_MA_D_AND2 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_AND3, (BIT_MA_D_AND3 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_AND4, (BIT_MA_D_AND4 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_AND5, (BIT_MA_D_AND5 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_AND6, (BIT_MA_D_AND6 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_AND7, (BIT_MA_D_AND7 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_AND8, (BIT_MA_D_AND8 - BIT_MA_CURRENT_AF_BASE));
-
-  //Визначцані "АБО"
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_OR1, (BIT_MA_D_OR1 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_OR2, (BIT_MA_D_OR2 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_OR3, (BIT_MA_D_OR3 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_OR4, (BIT_MA_D_OR4 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_OR5, (BIT_MA_D_OR5 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_OR6, (BIT_MA_D_OR6 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_OR7, (BIT_MA_D_OR7 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_OR8, (BIT_MA_D_OR8 - BIT_MA_CURRENT_AF_BASE));
-
-  //Визначцані "Викл.АБО"
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_XOR1, (BIT_MA_D_XOR1 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_XOR2, (BIT_MA_D_XOR2 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_XOR3, (BIT_MA_D_XOR3 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_XOR4, (BIT_MA_D_XOR4 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_XOR5, (BIT_MA_D_XOR5 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_XOR6, (BIT_MA_D_XOR6 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_XOR7, (BIT_MA_D_XOR7 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_XOR8, (BIT_MA_D_XOR8 - BIT_MA_CURRENT_AF_BASE));
-
-  //Визначцані "НЕ"
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT1 , (BIT_MA_D_NOT1  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT2 , (BIT_MA_D_NOT2  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT3 , (BIT_MA_D_NOT3  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT4 , (BIT_MA_D_NOT4  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT5 , (BIT_MA_D_NOT5  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT6 , (BIT_MA_D_NOT6  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT7 , (BIT_MA_D_NOT7  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT8 , (BIT_MA_D_NOT8  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT9 , (BIT_MA_D_NOT9  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT10, (BIT_MA_D_NOT10 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT11, (BIT_MA_D_NOT11 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT12, (BIT_MA_D_NOT12 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT13, (BIT_MA_D_NOT13 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT14, (BIT_MA_D_NOT14 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT15, (BIT_MA_D_NOT15 - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_D_NOT16, (BIT_MA_D_NOT16 - BIT_MA_CURRENT_AF_BASE));
-
-  //Помилка параметрування розширеної логіки
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_ERROR_CONF_EL, (BIT_MA_ERROR_CONF_EL - BIT_MA_CURRENT_AF_BASE));
-  
-  //Функції загального користування
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_DEFECT                      , (BIT_MA_DEFECT                       - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_AVAR_DEFECT                 , (BIT_MA_AVAR_DEFECT                  - BIT_MA_CURRENT_AF_BASE));
-//  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_RESET_LEDS                  , (BIT_MA_RESET_LEDS                   - BIT_MA_CURRENT_AF_BASE));
-//  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_RESET_RELES                 , (BIT_MA_RESET_RELES                  - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_WORK_A_REJESTRATOR          , (BIT_MA_WORK_A_REJESTRATOR           - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_WORK_D_REJESTRATOR          , (BIT_MA_WORK_D_REJESTRATOR           - BIT_MA_CURRENT_AF_BASE));
-  _CONVERT_SIGNAL_TO_GMM(input_array, output_array, RANG_SETTINGS_CHANGED            , (BIT_MA_SETTINGS_CHANGED             - BIT_MA_CURRENT_AF_BASE));
-}
-/***********************************************************************************/
-
-/***********************************************************************************/
 /*
 Переформатування ранжування виходів
 який передається системою захистів у формат для "унверсальної карти пам'яті"
 */
 /***********************************************************************************/
-unsigned int convert_order_list_oldr_to_gmm(unsigned int number, unsigned int number_position, unsigned int source)
-{
-  unsigned int input_value[N_BIG];
-  unsigned int index_in_gmm = 0;
-  unsigned short rezultat = 0;
-  
-  //Визначаємо значення .яке треба конвертувати у коди "універсальної карти пам'яті"
-  if (source == SOURCE_OUTPUTS_RANG)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_outputs[N_BIG*number + i];
-  }
-  else if (source == SOURCE_LEDS_RANG)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_leds[N_BIG*number + i];
-  }
-  else if (source == SOURCE_DF)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_df[N_BIG*number + i];
-  }
-  else if (source == SOURCE_AR_RANG)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_analog_registrator[i];
-  }
-  else if (source == SOURCE_DR_RANG)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_digital_registrator[i];
-  }
-  else if (source == SOURCE_SET_DT)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_set_dt[N_BIG*number + i];
-  }
-  else if (source == SOURCE_D_AND_RANG)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_d_and[N_BIG*number + i];
-  }
-  else if (source == SOURCE_D_OR_RANG)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_d_or[N_BIG*number + i];
-  }
-  else if (source == SOURCE_D_XOR_RANG)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_d_xor[N_BIG*number + i];
-  }
-  else if (source == SOURCE_D_NOT_RANG)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_d_not[N_BIG*number + i];
-  }
-  else if (source == SOURCE_ALARMS_RANG)
-  {
-    for (unsigned int i = 0; i < N_BIG; i++ ) input_value[i] = current_settings_interfaces.ranguvannja_alarms[N_BIG*number + i];
-  }
-  
-  //Шукаємо потрібний індекс функції у полі бітових настройок
-  unsigned int i = 0;
-  while ( (i < NUMBER_TOTAL_SIGNAL_FOR_RANG) && (index_in_gmm < number_position) )
-  {
-    unsigned int offset, shift;
-    offset = i >> 5; //Це є, фактично, ділення на 32
-    shift  = (i & (32 - 1)); //Це є, фактично, визначення остачі від ділення на 32
-
-    if ((input_value[offset] & (1 << shift)) != 0) index_in_gmm++;
-    if (index_in_gmm < number_position) i++;
-  }
-  
-  //Визначаємо код функції для інтерпретації в "універсальній карті пам'яті"
-  if (index_in_gmm == number_position)
-  {
-    switch (i)
-    {
-    case RANG_DF1_IN:
-      {
-        rezultat =  BIT_MA_INPUT_DF1;
-        break;
-      }
-    case RANG_DF1_OUT:
-      {
-        rezultat =  BIT_MA_OUTPUT_DF1;
-        break;
-      }
-    case RANG_DF2_IN:
-      {
-        rezultat = BIT_MA_INPUT_DF2;
-        break;
-      }
-    case RANG_DF2_OUT:
-      {
-        rezultat =  BIT_MA_OUTPUT_DF2;
-        break;
-      }
-    case RANG_DF3_IN:
-      {
-        rezultat = BIT_MA_INPUT_DF3;
-        break;
-      }
-    case RANG_DF3_OUT:
-      {
-        rezultat =  BIT_MA_OUTPUT_DF3;
-        break;
-      }
-    case RANG_DF4_IN:
-      {
-        rezultat = BIT_MA_INPUT_DF4;
-        break;
-      }
-    case RANG_DF4_OUT:
-      {
-        rezultat =  BIT_MA_OUTPUT_DF4;
-        break;
-      }
-    case RANG_DF5_IN:
-      {
-        rezultat = BIT_MA_INPUT_DF5;
-        break;
-      }
-    case RANG_DF5_OUT:
-      {
-        rezultat =  BIT_MA_OUTPUT_DF5;
-        break;
-      }
-    case RANG_DF6_IN:
-      {
-        rezultat = BIT_MA_INPUT_DF6;
-        break;
-      }
-    case RANG_DF6_OUT:
-      {
-        rezultat =  BIT_MA_OUTPUT_DF6;
-        break;
-      }
-    case RANG_DF7_IN:
-      {
-        rezultat = BIT_MA_INPUT_DF7;
-        break;
-      }
-    case RANG_DF7_OUT:
-      {
-        rezultat =  BIT_MA_OUTPUT_DF7;
-        break;
-      }
-    case RANG_DF8_IN:
-      {
-        rezultat = BIT_MA_INPUT_DF8;
-        break;
-      }
-    case RANG_DF8_OUT:
-      {
-        rezultat =  BIT_MA_OUTPUT_DF8;
-        break;
-      }
-    case RANG_DT1_SET:
-      {
-        rezultat = BIT_MA_DT1_SET;
-        break;
-      }
-    case RANG_DT1_RESET:
-      {
-        rezultat = BIT_MA_DT1_RESET;
-        break;
-      }
-    case RANG_DT1_OUT:
-      {
-        rezultat = BIT_MA_DT1_OUT;
-        break;
-      }
-    case RANG_DT2_SET:
-      {
-        rezultat = BIT_MA_DT2_SET;
-        break;
-      }
-    case RANG_DT2_RESET:
-      {
-        rezultat = BIT_MA_DT2_RESET;
-        break;
-      }
-    case RANG_DT2_OUT:
-      {
-        rezultat = BIT_MA_DT2_OUT;
-        break;
-      }
-    case RANG_DT3_SET:
-      {
-        rezultat = BIT_MA_DT3_SET;
-        break;
-      }
-    case RANG_DT3_RESET:
-      {
-        rezultat = BIT_MA_DT3_RESET;
-        break;
-      }
-    case RANG_DT3_OUT:
-      {
-        rezultat = BIT_MA_DT3_OUT;
-        break;
-      }
-    case RANG_DT4_SET:
-      {
-        rezultat = BIT_MA_DT4_SET;
-        break;
-      }
-    case RANG_DT4_RESET:
-      {
-        rezultat = BIT_MA_DT4_RESET;
-        break;
-      }
-    case RANG_DT4_OUT:
-      {
-        rezultat = BIT_MA_DT4_OUT;
-        break;
-      }
-    case RANG_D_AND1:
-      {
-        rezultat = BIT_MA_D_AND1;
-        break;
-      }
-    case RANG_D_AND2:
-      {
-        rezultat = BIT_MA_D_AND2;
-        break;
-      }
-    case RANG_D_AND3:
-      {
-        rezultat = BIT_MA_D_AND3;
-        break;
-      }
-    case RANG_D_AND4:
-      {
-        rezultat = BIT_MA_D_AND4;
-        break;
-      }
-    case RANG_D_AND5:
-      {
-        rezultat = BIT_MA_D_AND5;
-        break;
-      }
-    case RANG_D_AND6:
-      {
-        rezultat = BIT_MA_D_AND6;
-        break;
-      }
-    case RANG_D_AND7:
-      {
-        rezultat = BIT_MA_D_AND7;
-        break;
-      }
-    case RANG_D_AND8:
-      {
-        rezultat = BIT_MA_D_AND8;
-        break;
-      }
-    case RANG_D_OR1:
-      {
-        rezultat = BIT_MA_D_OR1;
-        break;
-      }
-    case RANG_D_OR2:
-      {
-        rezultat = BIT_MA_D_OR2;
-        break;
-      }
-    case RANG_D_OR3:
-      {
-        rezultat = BIT_MA_D_OR3;
-        break;
-      }
-    case RANG_D_OR4:
-      {
-        rezultat = BIT_MA_D_OR4;
-        break;
-      }
-    case RANG_D_OR5:
-      {
-        rezultat = BIT_MA_D_OR5;
-        break;
-      }
-    case RANG_D_OR6:
-      {
-        rezultat = BIT_MA_D_OR6;
-        break;
-      }
-    case RANG_D_OR7:
-      {
-        rezultat = BIT_MA_D_OR7;
-        break;
-      }
-    case RANG_D_OR8:
-      {
-        rezultat = BIT_MA_D_OR8;
-        break;
-      }
-    case RANG_D_XOR1:
-      {
-        rezultat = BIT_MA_D_XOR1;
-        break;
-      }
-    case RANG_D_XOR2:
-      {
-        rezultat = BIT_MA_D_XOR2;
-        break;
-      }
-    case RANG_D_XOR3:
-      {
-        rezultat = BIT_MA_D_XOR3;
-        break;
-      }
-    case RANG_D_XOR4:
-      {
-        rezultat = BIT_MA_D_XOR4;
-        break;
-      }
-    case RANG_D_XOR5:
-      {
-        rezultat = BIT_MA_D_XOR5;
-        break;
-      }
-    case RANG_D_XOR6:
-      {
-        rezultat = BIT_MA_D_XOR6;
-        break;
-      }
-    case RANG_D_XOR7:
-      {
-        rezultat = BIT_MA_D_XOR7;
-        break;
-      }
-    case RANG_D_XOR8:
-      {
-        rezultat = BIT_MA_D_XOR8;
-        break;
-      }
-    case RANG_D_NOT1:
-      {
-        rezultat = BIT_MA_D_NOT1;
-        break;
-      }
-    case RANG_D_NOT2:
-      {
-        rezultat = BIT_MA_D_NOT2;
-        break;
-      }
-    case RANG_D_NOT3:
-      {
-        rezultat = BIT_MA_D_NOT3;
-        break;
-      }
-    case RANG_D_NOT4:
-      {
-        rezultat = BIT_MA_D_NOT4;
-        break;
-      }
-    case RANG_D_NOT5:
-      {
-        rezultat = BIT_MA_D_NOT5;
-        break;
-      }
-    case RANG_D_NOT6:
-      {
-        rezultat = BIT_MA_D_NOT6;
-        break;
-      }
-    case RANG_D_NOT7:
-      {
-        rezultat = BIT_MA_D_NOT7;
-        break;
-      }
-    case RANG_D_NOT8:
-      {
-        rezultat = BIT_MA_D_NOT8;
-        break;
-      }
-    case RANG_D_NOT9:
-      {
-        rezultat = BIT_MA_D_NOT9;
-        break;
-      }
-    case RANG_D_NOT10:
-      {
-        rezultat = BIT_MA_D_NOT10;
-        break;
-      }
-    case RANG_D_NOT11:
-      {
-        rezultat = BIT_MA_D_NOT11;
-        break;
-      }
-    case RANG_D_NOT12:
-      {
-        rezultat = BIT_MA_D_NOT12;
-        break;
-      }
-    case RANG_D_NOT13:
-      {
-        rezultat = BIT_MA_D_NOT13;
-        break;
-      }
-    case RANG_D_NOT14:
-      {
-        rezultat = BIT_MA_D_NOT14;
-        break;
-      }
-    case RANG_D_NOT15:
-      {
-        rezultat = BIT_MA_D_NOT15;
-        break;
-      }
-    case RANG_D_NOT16:
-      {
-        rezultat = BIT_MA_D_NOT16;
-        break;
-      }
-    case RANG_ERROR_CONF_EL:
-      {
-        rezultat = BIT_MA_ERROR_CONF_EL;
-        break;
-      }
-//    case RANG_RESET_LEDS:
-//      {
-//        rezultat = BIT_MA_RESET_LEDS;
-//        break;
-//      }
-//    case RANG_RESET_RELES:
-//      {
-//        rezultat = BIT_MA_RESET_RELES;
-//        break;
-//      }
-    case RANG_DEFECT:
-      {
-        rezultat = BIT_MA_DEFECT;
-        break;
-      }
-    case RANG_AVAR_DEFECT:
-      {
-        rezultat = BIT_MA_AVAR_DEFECT;
-        break;
-      }
-    case RANG_WORK_A_REJESTRATOR:
-      {
-        rezultat = BIT_MA_WORK_A_REJESTRATOR;
-        break;
-      }
-    case RANG_WORK_D_REJESTRATOR:
-      {
-        rezultat = BIT_MA_WORK_D_REJESTRATOR;
-        break;
-      }
-    case RANG_SETTINGS_CHANGED:
-      {
-        rezultat = BIT_MA_SETTINGS_CHANGED;
-        break;
-      }
-    case RANG_ERROR_DELTA_U_CTRL_PHASE:
-      {
-        rezultat = BIT_MA_ERROR_DELTA_U_CTRL_PHASE;
-        break;
-      }
-    case RANG_ERROR_DELTA_PHI_CTRL_PHASE:
-      {
-        rezultat = BIT_MA_ERROR_DELTA_PHI_CTRL_PHASE;
-        break;
-      }
-    case RANG_ERROR_DELTA_F_CTRL_PHASE:
-      {
-        rezultat = BIT_MA_ERROR_DELTA_F_CTRL_PHASE;
-        break;
-      }
-    case RANG_ERROR_SEC_TN1_CTRL_PHASE:
-      {
-        rezultat = BIT_MA_ERROR_SEC_TN1_CTRL_PHASE;
-        break;
-      }
-    case RANG_ERROR_SEC_TN2_CTRL_PHASE:
-      {
-        rezultat = BIT_MA_ERROR_SEC_TN2_CTRL_PHASE;
-        break;
-      }
-    default: break;
-    }
-  }
-
-  return rezultat;
-}
 /***********************************************************************************/
 
 /***********************************************************************************/
@@ -642,734 +55,21 @@ unsigned int convert_order_list_oldr_to_gmm(unsigned int number, unsigned int nu
 /***********************************************************************************/
 void set_previous_ranguvannja(void)
 {
-  //Спочатку скидаємо можливі функції, які нам треба було скинути, а потім виставляємо ті, які треба виставити
-  for (unsigned int i = 0; i < number_32bit_in_target; i++)
-  {
-    *(point_to_edited_rang + i) &= ~clear_array_rang[i];
-    *(point_to_edited_rang + i) |=    set_array_rang[i];
-  }
-  
-  //Повертаємо допоміжні змінні у висхідний стан
-  for (unsigned int i = 0; i < N_BIG; i++)
-  {
-    clear_array_rang[i] = 0;
-    set_array_rang[i]   = 0;
-  }
+//  //Спочатку скидаємо можливі функції, які нам треба було скинути, а потім виставляємо ті, які треба виставити
+//  for (unsigned int i = 0; i < number_32bit_in_target; i++)
+//  {
+//    *(point_to_edited_rang + i) &= ~clear_array_rang[i];
+//    *(point_to_edited_rang + i) |=    set_array_rang[i];
+//  }
+//  
+//  //Повертаємо допоміжні змінні у висхідний стан
+//  for (unsigned int i = 0; i < N_BIG; i++)
+//  {
+//    clear_array_rang[i] = 0;
+//    set_array_rang[i]   = 0;
+//  }
   
   point_to_edited_rang = NULL;
-}
-/***********************************************************************************/
-
-/***********************************************************************************/
-
-/***********************************************************************************/
-// Виконання ранжування дискретного виходу або світлоіндикатора, або опреділюваної функції, або реємтратора
-/***********************************************************************************/
-unsigned int save_new_rang_oldr_from_gmm(unsigned int number, unsigned int number_position, unsigned int source, unsigned short int data, unsigned int method_setting)
-{
-  __SETTINGS_OLD *target_label;
-  if (method_setting == SET_DATA_IMMEDITATE) target_label = &current_settings_interfaces;
-  else target_label = &edition_settings;
-  
-  unsigned int *point_to_source, *point_to_target;
-  unsigned int input_value[N_BIG];
-  unsigned int number_function_in_source = 0, index_function_in_source;
-  unsigned short error = 0;
-  
-  if (source == SOURCE_OUTPUTS_RANG)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_outputs + N_BIG*number;
-    point_to_target = (unsigned int *)target_label->ranguvannja_outputs + N_BIG*number;
-  }
-  else if (source == SOURCE_LEDS_RANG)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_leds + N_BIG*number;
-    point_to_target = (unsigned int *)target_label->ranguvannja_leds + N_BIG*number;
-  }
-  else if (source == SOURCE_DF)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_df + N_BIG*number;
-    point_to_target = (unsigned int *)target_label->ranguvannja_df + N_BIG*number;
-  }
-  else if (source == SOURCE_AR_RANG)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_analog_registrator;
-    point_to_target = (unsigned int *)target_label->ranguvannja_analog_registrator;
-  }
-  else if (source == SOURCE_DR_RANG)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_digital_registrator;
-    point_to_target = (unsigned int *)target_label->ranguvannja_digital_registrator;
-  }
-  else if (source == SOURCE_SET_DT)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_set_dt + N_BIG*number;
-    point_to_target = (unsigned int *)target_label->ranguvannja_set_dt + N_BIG*number;
-  }
-  else if (source == SOURCE_D_AND_RANG)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_d_and + N_BIG*number;
-    point_to_target = (unsigned int *)target_label->ranguvannja_d_and + N_BIG*number;
-  }
-  else if (source == SOURCE_D_OR_RANG)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_d_or + N_BIG*number;
-    point_to_target = (unsigned int *)target_label->ranguvannja_d_or + N_BIG*number;
-  }
-  else if (source == SOURCE_D_XOR_RANG)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_d_xor + N_BIG*number;
-    point_to_target = (unsigned int *)target_label->ranguvannja_d_xor + N_BIG*number;
-  }
-  else if (source == SOURCE_D_NOT_RANG)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_d_not + N_BIG*number;
-    point_to_target = (unsigned int *)target_label->ranguvannja_d_not + N_BIG*number;
-  }
-  else if (source == SOURCE_ALARMS_RANG)
-  {
-    point_to_source = (unsigned int *)current_settings_interfaces.ranguvannja_alarms + N_BIG*number;
-    point_to_target = (unsigned int *)target_label->ranguvannja_alarms + N_BIG*number;
-  }
-
-  //Перевіряємо, чи треба попередні зміни (якщо такі були) ввести в цільовий масив
-  if (point_to_edited_rang != NULL)
-  {
-    //Вже відбувалися попередньо ранжування з цього пакету зміни ранжування
-    if (point_to_edited_rang != point_to_target)
-    {
-      //Зараз ми приступаємо до ранжування нового об'єкту, тому попереднї ранжування треба ввести у цільоий  об'єкт
-      set_previous_ranguvannja();
-      
-      point_to_edited_rang = point_to_target;
-    }
-  }
-  else
-  {
-    //Це є перша операція по ранжуванню з пакету зміни ранжування
-    point_to_edited_rang = point_to_target;
-  }
-  
-  //Встановлюємо мітку на об'кт, який зараз редагується
-  number_32bit_in_target = N_BIG;
-  for (unsigned int i = 0; i < N_BIG; i++) input_value[i] = *(point_to_source + i);
-
-  //Перевіряємо, чи таку функцію можна встановлювати
-  if (data != 0)
-  {
-    //Якщо data == 0, то це означає, що треба якусь сункцію скинути
-    
-    if (
-//        (data == BIT_MA_RESET_LEDS            ) ||
-//        (data == BIT_MA_RESET_RELES           ) || 
-        (data == BIT_MA_DEFECT                ) || 
-        (data == BIT_MA_AVAR_DEFECT           ) || 
-        (data == BIT_MA_WORK_A_REJESTRATOR    ) || 
-        (data == BIT_MA_WORK_D_REJESTRATOR    ) || 
-        (data == BIT_MA_SETTINGS_CHANGED) 
-       )
-    {
-      //Зараз є намагання зранжувати загальну функцю і номер її є допустимим
-
-      //Перевіряємо, чи можна цю функцію встановляти на дане джерело
-      if (
-          (
-           (source == SOURCE_AR_RANG) & (data == BIT_MA_WORK_A_REJESTRATOR)
-          )
-          ||
-          (
-           (source == SOURCE_DR_RANG) & (data == BIT_MA_WORK_D_REJESTRATOR)
-          )
-         ) 
-      {
-        error = ERROR_ILLEGAL_DATA_VALUE;  
-      }
-    }
-    else if (
-             (data == BIT_MA_ERROR_DELTA_U_CTRL_PHASE  ) ||
-             (data == BIT_MA_ERROR_DELTA_PHI_CTRL_PHASE) ||
-             (data == BIT_MA_ERROR_DELTA_F_CTRL_PHASE  ) ||
-             (data == BIT_MA_ERROR_SEC_TN1_CTRL_PHASE  ) ||
-             (data == BIT_MA_ERROR_SEC_TN2_CTRL_PHASE  )
-            )
-    {
-      //Зараз є намагання зранжувати функцю Перевірки фазування і номер її є допустимим
-      if ((target_label->configuration & (1 << CTRL_PHASE_BIT_CONFIGURATION)) !=0 ) error = 0;
-      else error = ERROR_ILLEGAL_DATA_VALUE;
-    }
-    else if (
-             (
-              (data >= BIT_MA_INPUT_DF1 ) && 
-              (data <= BIT_MA_INPUT_DF8 )
-             )
-             ||
-             (
-              (data >= BIT_MA_OUTPUT_DF1 ) && 
-              (data <= BIT_MA_OUTPUT_DF8 )
-             )
-             ||
-             (
-              (data >= BIT_MA_DT1_SET ) && 
-              (data <= BIT_MA_DT4_OUT )
-             )
-             ||
-             (
-              (data >= BIT_MA_D_AND1 ) && 
-              (data <= BIT_MA_D_AND8 )
-             )
-             ||
-             (
-              (data >= BIT_MA_D_OR1 ) && 
-              (data <= BIT_MA_D_OR8 )
-             )
-             ||
-             (
-              (data >= BIT_MA_D_XOR1 ) && 
-              (data <= BIT_MA_D_XOR8 )
-             )
-             ||
-             (
-              (data >= BIT_MA_D_NOT1 ) && 
-              (data <= BIT_MA_D_NOT16)
-             )
-             ||
-             (data == BIT_MA_ERROR_CONF_EL)
-            )
-    {
-      //Зараз є намагання зранжувати функцю розширеної логіки і номер її є допустимим
-
-      //Перевіряємо, чи можна цю функцію встановляти на дане джерело, або чи розширена логіка зараз не знята з конфігурвації
-      if (
-          (
-           (source == SOURCE_DF)
-           &
-           (
-            ((number == 0) && ((data == BIT_MA_INPUT_DF1) || (data == BIT_MA_OUTPUT_DF1))) ||
-            ((number == 1) && ((data == BIT_MA_INPUT_DF2) || (data == BIT_MA_OUTPUT_DF2))) ||
-            ((number == 2) && ((data == BIT_MA_INPUT_DF3) || (data == BIT_MA_OUTPUT_DF3))) ||
-            ((number == 3) && ((data == BIT_MA_INPUT_DF4) || (data == BIT_MA_OUTPUT_DF4))) ||
-            ((number == 4) && ((data == BIT_MA_INPUT_DF5) || (data == BIT_MA_OUTPUT_DF5))) ||
-            ((number == 5) && ((data == BIT_MA_INPUT_DF6) || (data == BIT_MA_OUTPUT_DF6))) ||
-            ((number == 6) && ((data == BIT_MA_INPUT_DF7) || (data == BIT_MA_OUTPUT_DF7))) ||
-            ((number == 7) && ((data == BIT_MA_INPUT_DF8) || (data == BIT_MA_OUTPUT_DF8)))
-           )
-          )
-          ||
-          (
-           (source == SOURCE_SET_DT)
-           &
-           (
-            ( (number == 0) && ((data == BIT_MA_DT1_SET) || (data == BIT_MA_DT1_RESET) || (data == BIT_MA_DT1_OUT) ) ) ||
-            ( (number == 1) && ((data == BIT_MA_DT2_SET) || (data == BIT_MA_DT2_RESET) || (data == BIT_MA_DT2_OUT) ) ) ||
-            ( (number == 2) && ((data == BIT_MA_DT3_SET) || (data == BIT_MA_DT3_RESET) || (data == BIT_MA_DT3_OUT) ) ) ||
-            ( (number == 3) && ((data == BIT_MA_DT4_SET) || (data == BIT_MA_DT4_RESET) || (data == BIT_MA_DT4_OUT) ) )
-           )
-          )
-          ||
-          (
-           (source == SOURCE_D_AND_RANG)
-           &
-           (data == (BIT_MA_D_AND1 + number))
-          )
-          ||
-          (
-           (source == SOURCE_D_OR_RANG)
-           &
-           (data == (BIT_MA_D_OR1 + number))
-          )
-          ||
-          (
-           (source == SOURCE_D_XOR_RANG)
-           &
-           (data == (BIT_MA_D_XOR1 + number))
-          )
-          ||
-          (
-           (source == SOURCE_D_NOT_RANG)
-           &
-           (data == (BIT_MA_D_NOT1 + number))
-          )
-         ) error = ERROR_ILLEGAL_DATA_VALUE;  
-    }
-    else
-    {
-      error = ERROR_ILLEGAL_DATA_VALUE;
-    }
-  }
-  
-  //Якщо номер функції є недопустимим, то подальшу обробку виконувати немає сенсу
-  if (error != 0) return error;
-  
-  //Підраховуємо кількість функцій, які зранжовані на даний вхід
-  if (
-      (input_value[0] != 0) ||
-      (input_value[1] != 0) ||
-      (input_value[2] != 0) ||
-      (input_value[3] != 0) ||
-      (input_value[4] != 0) ||
-      (input_value[5] != 0) ||
-      (input_value[6] != 0)
-     )
-  {
-    //Якщо ця величина не нульова, то це означає, що якісь функції зранжовані
-    //Інакше кількість функцій залишається рівною 0, яким змінна number_function_in_source ініціалізується при вході
-    for (unsigned int i = 0; i < NUMBER_TOTAL_SIGNAL_FOR_RANG; i++)
-    {
-      unsigned int offset, shift;
-      offset = i >> 5;          //Це є, фактично, ділення на 32
-      shift  = (i & (32 - 1));  //Це є, фактично, визначення остачі від ділення на 32
-      if ((input_value[offset] & (1 << shift)) != 0) number_function_in_source++;
-    }
-  }
-  
-  if (number_position <= number_function_in_source)
-  {
-    //Цей випадок означає, що треба замість якоїсь вже встановленої функції поставити інакшу
-    //Інакша просто добавляємо нову функцію у нову позицію
-    
-    //Тобто, нам треба знайти позицію, яка відповідає за номером встановленого біта відповідного регістра і  спочатку скинути цей біт
-    //А потім встановити нову функцію  
-
-    //Шукаємо позицію у бітовому полі змінної (захистів), який відповідає даному номеру регістра Modbus-RTU
-    unsigned int i = 0;
-    index_function_in_source = 0;
-    while ( (i < NUMBER_TOTAL_SIGNAL_FOR_RANG) && (index_function_in_source < number_position) )
-    {
-      unsigned int offset, shift;
-      offset = i >> 5;          //Це є, фактично, ділення на 32
-      shift  = (i & (32 - 1));  //Це є, фактично, визначення остачі від ділення на 32
-      if ((input_value[offset] & (1 << shift)) != 0) index_function_in_source++;
-      if (index_function_in_source < number_position) i++;
-    }
-    
-    if(index_function_in_source == number_position)
-    {
-      //Якщо сюди дійшла програма, то це означає, що відповідний біт знайдений
-      //Помічаємо що замість цієї функції бкде встановлюватися іншп функція
-      _SET_BIT(clear_array_rang, i);
-    }
-  }
-  
-  if (data != 0)
-  {
-    //Встановлюємо відповідну функцію
-    switch (data)
-    {
-    case BIT_MA_INPUT_DF1:
-      {
-         _SET_BIT(set_array_rang, RANG_DF1_IN);
-        break;
-      }
-    case BIT_MA_OUTPUT_DF1:
-      {
-         _SET_BIT(set_array_rang, RANG_DF1_OUT);
-        break;
-      }
-    case BIT_MA_INPUT_DF2:
-      {
-         _SET_BIT(set_array_rang, RANG_DF2_IN);
-        break;
-      }
-    case BIT_MA_OUTPUT_DF2:
-      {
-         _SET_BIT(set_array_rang, RANG_DF2_OUT);
-        break;
-      }
-    case BIT_MA_INPUT_DF3:
-      {
-         _SET_BIT(set_array_rang, RANG_DF3_IN);
-        break;
-      }
-    case BIT_MA_OUTPUT_DF3:
-      {
-         _SET_BIT(set_array_rang, RANG_DF3_OUT);
-        break;
-      }
-    case BIT_MA_INPUT_DF4:
-      {
-         _SET_BIT(set_array_rang, RANG_DF4_IN);
-        break;
-      }
-    case BIT_MA_OUTPUT_DF4:
-      {
-         _SET_BIT(set_array_rang, RANG_DF4_OUT);
-        break;
-      }
-    case BIT_MA_INPUT_DF5:
-      {
-         _SET_BIT(set_array_rang, RANG_DF5_IN);
-        break;
-      }
-    case BIT_MA_OUTPUT_DF5:
-      {
-         _SET_BIT(set_array_rang, RANG_DF5_OUT);
-        break;
-      }
-    case BIT_MA_INPUT_DF6:
-      {
-         _SET_BIT(set_array_rang, RANG_DF6_IN);
-        break;
-      }
-    case BIT_MA_OUTPUT_DF6:
-      {
-         _SET_BIT(set_array_rang, RANG_DF6_OUT);
-        break;
-      }
-    case BIT_MA_INPUT_DF7:
-      {
-         _SET_BIT(set_array_rang, RANG_DF7_IN);
-        break;
-      }
-    case BIT_MA_OUTPUT_DF7:
-      {
-         _SET_BIT(set_array_rang, RANG_DF7_OUT);
-        break;
-      }
-    case BIT_MA_INPUT_DF8:
-      {
-         _SET_BIT(set_array_rang, RANG_DF8_IN);
-        break;
-      }
-    case BIT_MA_OUTPUT_DF8:
-      {
-         _SET_BIT(set_array_rang, RANG_DF8_OUT);
-        break;
-      }
-    case BIT_MA_DT1_SET:
-      {
-        _SET_BIT(set_array_rang, RANG_DT1_SET);
-        break;
-      }
-    case BIT_MA_DT1_RESET:
-      {
-        _SET_BIT(set_array_rang, RANG_DT1_RESET);
-        break;
-      }
-    case BIT_MA_DT1_OUT:
-      {
-        _SET_BIT(set_array_rang, RANG_DT1_OUT);
-        break;
-      }
-    case BIT_MA_DT2_SET:
-      {
-        _SET_BIT(set_array_rang, RANG_DT2_SET);
-        break;
-      }
-    case BIT_MA_DT2_RESET:
-      {
-        _SET_BIT(set_array_rang, RANG_DT2_RESET);
-        break;
-      }
-    case BIT_MA_DT2_OUT:
-      {
-        _SET_BIT(set_array_rang, RANG_DT2_OUT);
-        break;
-      }
-    case BIT_MA_DT3_SET:
-      {
-        _SET_BIT(set_array_rang, RANG_DT3_SET);
-        break;
-      }
-    case BIT_MA_DT3_RESET:
-      {
-        _SET_BIT(set_array_rang, RANG_DT3_RESET);
-        break;
-      }
-    case BIT_MA_DT3_OUT:
-      {
-        _SET_BIT(set_array_rang, RANG_DT3_OUT);
-        break;
-      }
-    case BIT_MA_DT4_SET:
-      {
-        _SET_BIT(set_array_rang, RANG_DT4_SET);
-        break;
-      }
-    case BIT_MA_DT4_RESET:
-      {
-        _SET_BIT(set_array_rang, RANG_DT4_RESET);
-        break;
-      }
-    case BIT_MA_DT4_OUT:
-      {
-        _SET_BIT(set_array_rang, RANG_DT4_OUT);
-        break;
-      }
-    case BIT_MA_D_AND1:
-      {
-        _SET_BIT(set_array_rang, RANG_D_AND1);
-        break;
-      }
-    case BIT_MA_D_AND2:
-      {
-        _SET_BIT(set_array_rang, RANG_D_AND2);
-        break;
-      }
-    case BIT_MA_D_AND3:
-      {
-        _SET_BIT(set_array_rang, RANG_D_AND3);
-        break;
-      }
-    case BIT_MA_D_AND4:
-      {
-        _SET_BIT(set_array_rang, RANG_D_AND4);
-        break;
-      }
-    case BIT_MA_D_AND5:
-      {
-        _SET_BIT(set_array_rang, RANG_D_AND5);
-        break;
-      }
-    case BIT_MA_D_AND6:
-      {
-        _SET_BIT(set_array_rang, RANG_D_AND6);
-        break;
-      }
-    case BIT_MA_D_AND7:
-      {
-        _SET_BIT(set_array_rang, RANG_D_AND7);
-        break;
-      }
-    case BIT_MA_D_AND8:
-      {
-        _SET_BIT(set_array_rang, RANG_D_AND8);
-        break;
-      }
-    case BIT_MA_D_OR1:
-      {
-        _SET_BIT(set_array_rang, RANG_D_OR1);
-        break;
-      }
-    case BIT_MA_D_OR2:
-      {
-        _SET_BIT(set_array_rang, RANG_D_OR2);
-        break;
-      }
-    case BIT_MA_D_OR3:
-      {
-        _SET_BIT(set_array_rang, RANG_D_OR3);
-        break;
-      }
-    case BIT_MA_D_OR4:
-      {
-        _SET_BIT(set_array_rang, RANG_D_OR4);
-        break;
-      }
-    case BIT_MA_D_OR5:
-      {
-        _SET_BIT(set_array_rang, RANG_D_OR5);
-        break;
-      }
-    case BIT_MA_D_OR6:
-      {
-        _SET_BIT(set_array_rang, RANG_D_OR6);
-        break;
-      }
-    case BIT_MA_D_OR7:
-      {
-        _SET_BIT(set_array_rang, RANG_D_OR7);
-        break;
-      }
-    case BIT_MA_D_OR8:
-      {
-        _SET_BIT(set_array_rang, RANG_D_OR8);
-        break;
-      }
-    case BIT_MA_D_XOR1:
-      {
-        _SET_BIT(set_array_rang, RANG_D_XOR1);
-        break;
-      }
-    case BIT_MA_D_XOR2:
-      {
-        _SET_BIT(set_array_rang, RANG_D_XOR2);
-        break;
-      }
-    case BIT_MA_D_XOR3:
-      {
-        _SET_BIT(set_array_rang, RANG_D_XOR3);
-        break;
-      }
-    case BIT_MA_D_XOR4:
-      {
-        _SET_BIT(set_array_rang, RANG_D_XOR4);
-        break;
-      }
-    case BIT_MA_D_XOR5:
-      {
-        _SET_BIT(set_array_rang, RANG_D_XOR5);
-        break;
-      }
-    case BIT_MA_D_XOR6:
-      {
-        _SET_BIT(set_array_rang, RANG_D_XOR6);
-        break;
-      }
-    case BIT_MA_D_XOR7:
-      {
-        _SET_BIT(set_array_rang, RANG_D_XOR7);
-        break;
-      }
-    case BIT_MA_D_XOR8:
-      {
-        _SET_BIT(set_array_rang, RANG_D_XOR8);
-        break;
-      }
-    case BIT_MA_D_NOT1:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT1);
-        break;
-      }
-    case BIT_MA_D_NOT2:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT2);
-        break;
-      }
-    case BIT_MA_D_NOT3:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT3);
-        break;
-      }
-    case BIT_MA_D_NOT4:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT4);
-        break;
-      }
-    case BIT_MA_D_NOT5:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT5);
-        break;
-      }
-    case BIT_MA_D_NOT6:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT6);
-        break;
-      }
-    case BIT_MA_D_NOT7:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT7);
-        break;
-      }
-    case BIT_MA_D_NOT8:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT8);
-        break;
-      }
-    case BIT_MA_D_NOT9:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT9);
-        break;
-      }
-    case BIT_MA_D_NOT10:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT10);
-        break;
-      }
-    case BIT_MA_D_NOT11:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT11);
-        break;
-      }
-    case BIT_MA_D_NOT12:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT12);
-        break;
-      }
-    case BIT_MA_D_NOT13:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT13);
-        break;
-      }
-    case BIT_MA_D_NOT14:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT14);
-        break;
-      }
-    case BIT_MA_D_NOT15:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT15);
-        break;
-      }
-    case BIT_MA_D_NOT16:
-      {
-        _SET_BIT(set_array_rang, RANG_D_NOT16);
-        break;
-      }
-    case BIT_MA_ERROR_CONF_EL:
-      {
-        _SET_BIT(set_array_rang, RANG_ERROR_CONF_EL);
-        break;
-      }
-//    case BIT_MA_RESET_LEDS:
-//      {
-//         _SET_BIT(set_array_rang, RANG_RESET_LEDS);
-//        break;
-//      }
-//    case BIT_MA_RESET_RELES:
-//      {
-//         _SET_BIT(set_array_rang, RANG_RESET_RELES);
-//        break;
-//      }
-    case BIT_MA_DEFECT:
-      {
-         _SET_BIT(set_array_rang, RANG_DEFECT);
-        break;
-      }
-    case BIT_MA_AVAR_DEFECT:
-      {
-         _SET_BIT(set_array_rang, RANG_AVAR_DEFECT);
-        break;
-      }
-    case BIT_MA_WORK_A_REJESTRATOR:
-      {
-        _SET_BIT(set_array_rang, RANG_WORK_A_REJESTRATOR);
-        break;
-      }
-    case BIT_MA_WORK_D_REJESTRATOR:
-      {
-        _SET_BIT(set_array_rang, RANG_WORK_D_REJESTRATOR);
-        break;
-      }
-    case BIT_MA_SETTINGS_CHANGED:
-      {
-        _SET_BIT(set_array_rang, RANG_SETTINGS_CHANGED);
-        break;
-      }
-    case BIT_MA_ERROR_DELTA_U_CTRL_PHASE:
-      {
-        _SET_BIT(set_array_rang, RANG_ERROR_DELTA_U_CTRL_PHASE);
-        break;
-      }
-    case BIT_MA_ERROR_DELTA_PHI_CTRL_PHASE:
-      {
-        _SET_BIT(set_array_rang, RANG_ERROR_DELTA_PHI_CTRL_PHASE);
-        break;
-      }
-    case BIT_MA_ERROR_DELTA_F_CTRL_PHASE:
-      {
-        _SET_BIT(set_array_rang, RANG_ERROR_DELTA_F_CTRL_PHASE);
-        break;
-      }
-    case BIT_MA_ERROR_SEC_TN1_CTRL_PHASE:
-      {
-        _SET_BIT(set_array_rang, RANG_ERROR_SEC_TN1_CTRL_PHASE);
-        break;
-      }
-    case BIT_MA_ERROR_SEC_TN2_CTRL_PHASE:
-      {
-        _SET_BIT(set_array_rang, RANG_ERROR_SEC_TN2_CTRL_PHASE);
-        break;
-      }
-    default:
-      {
-        //Теоретично сюди б програма ніколи не мала б доходити
-        //Але якщо дійшла, то виставляємо повідомлення про помилку
-        error = ERROR_ILLEGAL_DATA_VALUE;
-        break;
-      }
-    }
-  }
-  return error;
 }
 /***********************************************************************************/
 
@@ -1477,7 +177,7 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
   }
   else if ((address_data >= M_ADDRESS_FIRST_USER_REGISTER_DATA) && (address_data <= M_ADDRESS_LAST_USER_REGISTER_DATA))
   {
-    unsigned int address_data_tmp = current_settings_interfaces.user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER_DATA];
+    unsigned int address_data_tmp = settings_fix_prt.user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER_DATA];
 
     //Щоб не відбулося зациклювання регістрів користувача на регістри користувача робимо цю перевірку
     if ( !((address_data_tmp >= M_ADDRESS_FIRST_USER_REGISTER_DATA) && (address_data_tmp <= M_ADDRESS_LAST_USER_REGISTER_DATA)) )
@@ -1492,7 +192,6 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
   }
   else if (address_data == MA_OUTPUTS)
   {
-    temp_value = state_outputs & ((1 << NUMBER_OUTPUTS) - 1);
   }
   else if (address_data == MA_INPUTS)
   {
@@ -1500,64 +199,63 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
   }
   else if (address_data == MA_LEDS)
   {
-    temp_value = state_leds & ((1 << NUMBER_LEDS) - 1);
   }
-  else if (
-           (address_data >= M_ADDRESS_FIRST_CURRENT_AF ) && (address_data <= M_ADDRESS_LAST_CURRENT_AF) ||
-           (address_data >= M_ADDRESS_FIRST_GENERAL_AF ) && (address_data <= M_ADDRESS_LAST_GENERAL_AF)
-          )
-  {
-#define SIZE_OUTPUT_ARRAY       (M_ADDRESS_LAST_GENERAL_AF - M_ADDRESS_FIRST_GENERAL_AF + 1)
-    
-    //Блок текучих активних функцій або загальних функцій
-    unsigned int input_array[N_BIG], base_address;
-    unsigned short int output_array[SIZE_OUTPUT_ARRAY];
-    
-    //Спочатку очищаємо весь вихідний масив
-    for (unsigned int i = 0; i< SIZE_OUTPUT_ARRAY; i++ ) output_array[i] = 0;
-#undef SIZE_OUTPUT_ARRAY
-
-    //Копіюємо вхідну інформацію
-    if ((address_data >= M_ADDRESS_FIRST_CURRENT_AF ) && (address_data <= M_ADDRESS_LAST_CURRENT_AF))
-    {
-      for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = active_functions[i];
-      
-      unsigned int password_set_tmp;
-      if (type_interface == USB_RECUEST) password_set_tmp = password_set_USB;
-      else if (type_interface == RS485_RECUEST) password_set_tmp = password_set_RS485;
-        
-      if (password_set_tmp != 0) 
-      {
-        output_array[(BIT_MA_PASSWORD_SET - BIT_MA_CURRENT_AF_BASE) >> 4] |= 
-          (0x1 << ((BIT_MA_PASSWORD_SET - BIT_MA_CURRENT_AF_BASE) & 0xf));
-      }
-        
-      base_address = M_ADDRESS_FIRST_CURRENT_AF;
-    }
-    else
-    {
-      if (type_interface == USB_RECUEST)
-      {
-//        for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = trigger_functions_USB[i];
-      }
-      else if (type_interface == RS485_RECUEST)
-      {
-//        for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = trigger_functions_RS485[i];
-      }
-      else
-      {
-          //Теоретично цього ніколи не мало б бути
-          total_error_sw_fixed(48);
-      }
-      base_address = M_ADDRESS_FIRST_GENERAL_AF;
-    }
-    
-    //Конвертуємо отриманий результат в порядок "універсальної карти пам'яті"
-    convert_order_list_function_to_gmm(input_array, output_array);
-    /*****************************************************/
-    
-    temp_value  = output_array[address_data - base_address];
-  }
+//  else if (
+//           (address_data >= M_ADDRESS_FIRST_CURRENT_AF ) && (address_data <= M_ADDRESS_LAST_CURRENT_AF) ||
+//           (address_data >= M_ADDRESS_FIRST_GENERAL_AF ) && (address_data <= M_ADDRESS_LAST_GENERAL_AF)
+//          )
+//  {
+//#define SIZE_OUTPUT_ARRAY       (M_ADDRESS_LAST_GENERAL_AF - M_ADDRESS_FIRST_GENERAL_AF + 1)
+//    
+//    //Блок текучих активних функцій або загальних функцій
+//    unsigned int input_array[N_BIG], base_address;
+//    unsigned short int output_array[SIZE_OUTPUT_ARRAY];
+//    
+//    //Спочатку очищаємо весь вихідний масив
+//    for (unsigned int i = 0; i< SIZE_OUTPUT_ARRAY; i++ ) output_array[i] = 0;
+//#undef SIZE_OUTPUT_ARRAY
+//
+//    //Копіюємо вхідну інформацію
+//    if ((address_data >= M_ADDRESS_FIRST_CURRENT_AF ) && (address_data <= M_ADDRESS_LAST_CURRENT_AF))
+//    {
+//      for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = active_functions[i];
+//      
+//      unsigned int password_set_tmp;
+//      if (type_interface == USB_RECUEST) password_set_tmp = password_set_USB;
+//      else if (type_interface == RS485_RECUEST) password_set_tmp = password_set_RS485;
+//        
+//      if (password_set_tmp != 0) 
+//      {
+//        output_array[(BIT_MA_PASSWORD_SET - BIT_MA_CURRENT_AF_BASE) >> 4] |= 
+//          (0x1 << ((BIT_MA_PASSWORD_SET - BIT_MA_CURRENT_AF_BASE) & 0xf));
+//      }
+//        
+//      base_address = M_ADDRESS_FIRST_CURRENT_AF;
+//    }
+//    else
+//    {
+//      if (type_interface == USB_RECUEST)
+//      {
+////        for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = trigger_functions_USB[i];
+//      }
+//      else if (type_interface == RS485_RECUEST)
+//      {
+////        for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = trigger_functions_RS485[i];
+//      }
+//      else
+//      {
+//          //Теоретично цього ніколи не мало б бути
+//          total_error_sw_fixed(48);
+//      }
+//      base_address = M_ADDRESS_FIRST_GENERAL_AF;
+//    }
+//    
+//    //Конвертуємо отриманий результат в порядок "універсальної карти пам'яті"
+////    convert_order_list_function_to_gmm(input_array, output_array);
+//    /*****************************************************/
+//    
+//    temp_value  = output_array[address_data - base_address];
+//  }
 //  else if ((address_data >= M_ADDRESS_FIRST_MEASUREMENTS_1) && (address_data <= M_ADDRESS_LAST_MEASUREMENTS_1))
 //  {
 //    //Митєві вимірювання розраховані фетодом перетворення Фур'є
@@ -2129,7 +827,7 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
 //  }
   else if ((address_data >= M_ADDRESS_FIRST_USER_REGISTER) && (address_data <= M_ADDRESS_LAST_USER_REGISTER))
   {
-    temp_value = current_settings_interfaces.user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER];
+    temp_value = settings_fix_prt.user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER];
   }
   else if ((address_data >= M_ADDRESS_CONTROL_BASE) && (address_data <= M_ADDRESS_CONTROL_LAST))
   {
@@ -2190,51 +888,6 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
         
     switch (address_data_tmp)
     {
-    case MA_STP_CTRL_PHASE_U:
-      {
-        temp_value = current_settings_interfaces.setpoint_ctrl_phase_U/100;
-        break;
-      }
-    case MA_STP_CTRL_PHASE_PHI:
-      {
-        temp_value = current_settings_interfaces.setpoint_ctrl_phase_phi/100;
-        break;
-      }
-    case MA_STP_CTRL_PHASE_F:
-      {
-        temp_value = current_settings_interfaces.setpoint_ctrl_phase_f/10;
-        break;
-      }
-    case MA_TO_CTRL_PHASE_U:
-      {
-        temp_value = current_settings_interfaces.timeout_ctrl_phase_U/100;
-        break;
-      }
-    case MA_TO_CTRL_PHASE_U_D:
-      {
-        temp_value = current_settings_interfaces.timeout_ctrl_phase_U_d/100;
-        break;
-      }
-    case MA_TO_CTRL_PHASE_PHI:
-      {
-        temp_value = current_settings_interfaces.timeout_ctrl_phase_phi/100;
-        break;
-      }
-    case MA_TO_CTRL_PHASE_PHI_D:
-      {
-        temp_value = current_settings_interfaces.timeout_ctrl_phase_phi_d/100;
-        break;
-      }
-    case MA_TO_CTRL_PHASE_F:
-      {
-        temp_value = current_settings_interfaces.timeout_ctrl_phase_f/100;
-        break;
-      }
-    case MA_TO_CTRL_PHASE_F_D:
-      {
-        temp_value = current_settings_interfaces.timeout_ctrl_phase_f_d/100;
-        break;
-      }
     default:
       {
         temp_value = 0;
@@ -2249,12 +902,12 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
     {
     case MA_UVV_TYPE_SIGNAL_INPUT:
       {
-        temp_value = current_settings_interfaces.type_of_input_signal & ((1 << NUMBER_INPUTS) - 1);
+//        temp_value = current_settings_interfaces.type_of_input_signal & ((1 << NUMBER_INPUTS) - 1);
         break;
       }
     case MA_TYPE_DF:
       {
-        temp_value = current_settings_interfaces.type_df & ((1 << NUMBER_DEFINED_FUNCTIONS) - 1);
+//        temp_value = current_settings_interfaces.type_df & ((1 << NUMBER_DEFINED_FUNCTIONS) - 1);
         break;
       }
     case MA_DOPUSK_DV_1:
@@ -2268,7 +921,7 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
     case MA_DOPUSK_DV_9:
     case MA_DOPUSK_DV_10:
       {
-        temp_value = current_settings_interfaces.dopusk_dv[address_data - MA_DOPUSK_DV_1];
+//        temp_value = current_settings_interfaces.dopusk_dv[address_data - MA_DOPUSK_DV_1];
         break;
       }
     case MA_DF_PAUSE_1:
@@ -2280,7 +933,7 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
     case MA_DF_PAUSE_7:
     case MA_DF_PAUSE_8:
       {
-        temp_value = current_settings_interfaces.timeout_pause_df[address_data - MA_DF_PAUSE_1]/10;
+//        temp_value = current_settings_interfaces.timeout_pause_df[address_data - MA_DF_PAUSE_1]/10;
         break;
       }
     case MA_DF_WORK_1:
@@ -2292,18 +945,18 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
     case MA_DF_WORK_7:
     case MA_DF_WORK_8:
       {
-        temp_value = current_settings_interfaces.timeout_work_df[address_data - MA_DF_WORK_1]/10;
+//        temp_value = current_settings_interfaces.timeout_work_df[address_data - MA_DF_WORK_1]/10;
         break;
       }
     case MA_TO_DEACTIVATION_PASSWORD_INTERFACE:
       {
           if (type_interface == USB_RECUEST)
           {
-            temp_value = current_settings_interfaces.timeout_deactivation_password_interface_USB;
+            temp_value = settings_fix_prt.timeout_deactivation_password_interface_USB;
           }
           else if (type_interface == RS485_RECUEST)
           {
-            temp_value = current_settings_interfaces.timeout_deactivation_password_interface_RS485;
+            temp_value = settings_fix_prt.timeout_deactivation_password_interface_RS485;
           }
           else error = ERROR_SLAVE_DEVICE_FAILURE;
       
@@ -2311,38 +964,38 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
       }
     case MA_TO_IDLE_NEW_SETTINGS:
       {
-          temp_value = current_settings_interfaces.timeout_idle_new_settings;
+          temp_value = settings_fix_prt.timeout_idle_new_settings;
       
           break;
       }
     case MA_LANGUAGE_MENU:
       {
-        temp_value = current_settings_interfaces.language;
+        temp_value = settings_fix_prt.language;
         break;
       }
     case MA_SPEED_RS485_1:
       {
-        temp_value = current_settings_interfaces.speed_RS485;
+        temp_value = settings_fix_prt.baud_RS485;
         break;
       }
     case MA_STOP_BITS_RS485_1:
       {
-        temp_value = current_settings_interfaces.number_stop_bit_RS485 + 1;
+        temp_value = settings_fix_prt.number_stop_bit_RS485 + 1;
         break;
       }
     case MA_PARE_RS485_1:
       {
-        temp_value = current_settings_interfaces.pare_bit_RS485;
+        temp_value = settings_fix_prt.pare_bit_RS485;
         break;
       }
     case MA_TIMEOUT_RS485_1:
       {
-        temp_value = current_settings_interfaces.time_out_1_RS485;
+        temp_value = settings_fix_prt.time_out_1_RS485;
         break;
       }
     case MA_LOGICAL_ADDRESS:
       {
-        temp_value = current_settings_interfaces.address;
+        temp_value = settings_fix_prt.address;
         break;
       }
     case MA_NAME_OF_CELL_CHARS_01_02:
@@ -2355,7 +1008,7 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
     case MA_NAME_OF_CELL_CHARS_15_16:
       {
         unsigned int two_char_index = (address_data - MA_NAME_OF_CELL_CHARS_01_02) << 1;
-        temp_value = current_settings_interfaces.name_of_cell[two_char_index] | (current_settings_interfaces.name_of_cell[two_char_index + 1] << 8);
+        temp_value = settings_fix_prt.name_of_cell[two_char_index] | (settings_fix_prt.name_of_cell[two_char_index + 1] << 8);
         break;
       }
     default:
@@ -2602,10 +1255,10 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
 //  {
 //    temp_value = phi_ustuvannja[address_data - MA_ADDRESS_FIRST_PHI_USTUVANNJA ];
 //  }
-  else if (address_data == MA_NUMBER_ITERATION_EL)
-  {
-    temp_value = current_settings_interfaces.number_iteration_el;
-  }
+//  else if (address_data == MA_NUMBER_ITERATION_EL)
+//  {
+//    temp_value = settings_fix_prt.number_iteration_el;
+//  }
   else if (address_data == MA_LSW_GLOBAL_RESURS_MIN)
   {
     temp_value = resurs_global_min & 0xffff;
@@ -2706,9 +1359,9 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
 {
   unsigned int error = 0, temp_value;
   
-  __SETTINGS_OLD *target_label;
-  if (method_setting == SET_DATA_IMMEDITATE) target_label = &current_settings_interfaces;
-  else target_label = &edition_settings;
+  __SETTINGS_FIX *target_label;
+  if (method_setting == SET_DATA_IMMEDITATE) target_label = &settings_fix;
+  else target_label = &settings_fix_edit;
 
   password_changed = false;
   if (address_data == MA_PASSWORD_INTERFACE)
@@ -2814,141 +1467,6 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
      
     switch (address_data_tmp)
     {
-    case MA_STP_CTRL_PHASE_U:
-      {
-        temp_value = data*100;
-    
-        if ((temp_value >= SETPOINT_CTRL_PHASE_U_MIN) && (temp_value <= SETPOINT_CTRL_PHASE_U_MAX))
-          target_label->setpoint_ctrl_phase_U = temp_value;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_STP_CTRL_PHASE_PHI:
-      {
-        temp_value = data*100;
-    
-        if ((temp_value >= SETPOINT_CTRL_PHASE_PHI_MIN) && (temp_value <= SETPOINT_CTRL_PHASE_PHI_MAX))
-          target_label->setpoint_ctrl_phase_phi = temp_value;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_STP_CTRL_PHASE_F:
-      {
-        temp_value = data*10;
-    
-        if ((temp_value >= SETPOINT_CTRL_PHASE_F_MIN) && (temp_value <= SETPOINT_CTRL_PHASE_F_MAX))
-          target_label->setpoint_ctrl_phase_f = temp_value;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_TO_CTRL_PHASE_U:
-      {
-        temp_value = data*10;
-
-#if (TIMEOUT_CTRL_PHASE_U_MIN != 0)          
-        if ((temp_value >= TIMEOUT_CTRL_PHASE_U_MIN) && (temp_value <= TIMEOUT_CTRL_PHASE_U_MAX))
-#else
-        if (temp_value <= TIMEOUT_CTRL_PHASE_U_MAX)
-#endif            
-        {
-          target_label->timeout_ctrl_phase_U = temp_value;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_TO_CTRL_PHASE_U_D:
-      {
-        temp_value = data*10;
-
-#if (TIMEOUT_CTRL_PHASE_U_D_MIN != 0)          
-        if ((temp_value >= TIMEOUT_CTRL_PHASE_U_D_MIN) && (temp_value <= TIMEOUT_CTRL_PHASE_U_D_MAX))
-#else
-        if (temp_value <= TIMEOUT_CTRL_PHASE_U_D_MAX)
-#endif            
-        {
-          target_label->timeout_ctrl_phase_U_d = temp_value;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_TO_CTRL_PHASE_PHI:
-      {
-        temp_value = data*10;
-
-#if (TIMEOUT_CTRL_PHASE_PHI_MIN != 0)          
-        if ((temp_value >= TIMEOUT_CTRL_PHASE_PHI_MIN) && (temp_value <= TIMEOUT_CTRL_PHASE_PHI_MAX))
-#else
-        if (temp_value <= TIMEOUT_CTRL_PHASE_PHI_MAX)
-#endif            
-        {
-          target_label->timeout_ctrl_phase_phi = temp_value;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_TO_CTRL_PHASE_PHI_D:
-      {
-        temp_value = data*10;
-
-#if (TIMEOUT_CTRL_PHASE_PHI_D_MIN != 0)          
-        if ((temp_value >= TIMEOUT_CTRL_PHASE_PHI_D_MIN) && (temp_value <= TIMEOUT_CTRL_PHASE_PHI_D_MAX))
-#else
-        if (temp_value <= TIMEOUT_CTRL_PHASE_PHI_D_MAX)
-#endif            
-        {
-          target_label->timeout_ctrl_phase_phi_d = temp_value;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_TO_CTRL_PHASE_F:
-      {
-        temp_value = data*10;
-
-#if (TIMEOUT_CTRL_PHASE_F_MIN != 0)          
-        if ((temp_value >= TIMEOUT_CTRL_PHASE_F_MIN) && (temp_value <= TIMEOUT_CTRL_PHASE_F_MAX))
-#else
-        if (temp_value <= TIMEOUT_CTRL_PHASE_F_MAX)
-#endif            
-        {
-          target_label->timeout_ctrl_phase_f = temp_value;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_TO_CTRL_PHASE_F_D:
-      {
-        temp_value = data*10;
-
-#if (TIMEOUT_CTRL_PHASE_F_D_MIN != 0)          
-        if ((temp_value >= TIMEOUT_CTRL_PHASE_F_D_MIN) && (temp_value <= TIMEOUT_CTRL_PHASE_F_D_MAX))
-#else
-        if (temp_value <= TIMEOUT_CTRL_PHASE_F_D_MAX)
-#endif            
-        {
-          target_label->timeout_ctrl_phase_f_d = temp_value;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
     default: break;
     }
   }
@@ -2959,36 +1477,36 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
     {
     case MA_UVV_TYPE_SIGNAL_INPUT:
       {
-        if (data <= ((1 << NUMBER_INPUTS) - 1)) 
-        {
-          target_label->type_of_input_signal = data;
-          
-          //Коректуємо допуск входів
-          for(unsigned int i = 0; i < NUMBER_INPUTS; i++)
-          {
-            if ((target_label->type_of_input_signal & (1 << i)) !=0)
-            {
-              if ((target_label->dopusk_dv[i] % 10) != 0)
-              {
-                target_label->dopusk_dv[i] = (target_label->dopusk_dv[i] / 10)*10;
-              }
-
-              if (target_label->dopusk_dv[i] < KOEF_DOPUSK_DV_ZMIN_MIN)
-                target_label->dopusk_dv[i] = KOEF_DOPUSK_DV_ZMIN_MIN;
-            }
-          }
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
+//        if (data <= ((1 << NUMBER_INPUTS) - 1)) 
+//        {
+//          target_label->type_of_input_signal = data;
+//          
+//          //Коректуємо допуск входів
+//          for(unsigned int i = 0; i < NUMBER_INPUTS; i++)
+//          {
+//            if ((target_label->type_of_input_signal & (1 << i)) !=0)
+//            {
+//              if ((target_label->dopusk_dv[i] % 10) != 0)
+//              {
+//                target_label->dopusk_dv[i] = (target_label->dopusk_dv[i] / 10)*10;
+//              }
+//
+//              if (target_label->dopusk_dv[i] < KOEF_DOPUSK_DV_ZMIN_MIN)
+//                target_label->dopusk_dv[i] = KOEF_DOPUSK_DV_ZMIN_MIN;
+//            }
+//          }
+//        }
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
 
         break;
       }
     case MA_TYPE_DF:
       {
-        if (data <= ((1 << NUMBER_DEFINED_FUNCTIONS) - 1)) 
-          target_label->type_df = data;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
+//        if (data <= ((1 << NUMBER_DEFINED_FUNCTIONS) - 1)) 
+//          target_label->type_df = data;
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
 
         break;
       }
@@ -3006,19 +1524,19 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
         if (data <= KOEF_DOPUSK_DV_MAX)
         {
           //Додатково перевіряємо нижню межу у випадку і крок, коли тип сигналу є змінний сигнал
-          if (
-              ((target_label->type_of_input_signal & (1 << (address_data - MA_DOPUSK_DV_1))) == 0) ||
-              (
-               ((target_label->type_of_input_signal & (1 << (address_data - MA_DOPUSK_DV_1))) != 0) &&
-               ( data >= KOEF_DOPUSK_DV_ZMIN_MIN)                                                   &&
-               ((data % 10) == 0)  
-              )
-             )
-          {
-            target_label->dopusk_dv[address_data - MA_DOPUSK_DV_1] = data;
-          }
-          else
-            error = ERROR_ILLEGAL_DATA_VALUE;
+//          if (
+//              ((target_label->type_of_input_signal & (1 << (address_data - MA_DOPUSK_DV_1))) == 0) ||
+//              (
+//               ((target_label->type_of_input_signal & (1 << (address_data - MA_DOPUSK_DV_1))) != 0) &&
+//               ( data >= KOEF_DOPUSK_DV_ZMIN_MIN)                                                   &&
+//               ((data % 10) == 0)  
+//              )
+//             )
+//          {
+//            target_label->dopusk_dv[address_data - MA_DOPUSK_DV_1] = data;
+//          }
+//          else
+//            error = ERROR_ILLEGAL_DATA_VALUE;
         }
         else
           error = ERROR_ILLEGAL_DATA_VALUE;
@@ -3036,16 +1554,16 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       {
         temp_value = data*10;
         
-#if (TIMEOUT_TIMER_PAUSE_MIN != 0)          
-        if ((temp_value >= TIMEOUT_TIMER_PAUSE_MIN) && (temp_value <= TIMEOUT_TIMER_PAUSE_MAX))
-#else
-        if (temp_value <= TIMEOUT_TIMER_PAUSE_MAX)
-#endif            
-        {
-          target_label->timeout_pause_df[address_data - MA_DF_PAUSE_1] = temp_value;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
+//#if (TIMEOUT_TIMER_PAUSE_MIN != 0)          
+//        if ((temp_value >= TIMEOUT_TIMER_PAUSE_MIN) && (temp_value <= TIMEOUT_TIMER_PAUSE_MAX))
+//#else
+//        if (temp_value <= TIMEOUT_TIMER_PAUSE_MAX)
+//#endif            
+//        {
+//          target_label->timeout_pause_df[address_data - MA_DF_PAUSE_1] = temp_value;
+//        }
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
 
         break;
       }
@@ -3058,18 +1576,18 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
     case MA_DF_WORK_7:
     case MA_DF_WORK_8:
       {
-        temp_value = data*10;
-        
-#if (TIMEOUT_TIMER_WORK_MIN != 0)          
-        if ((temp_value >= TIMEOUT_TIMER_WORK_MIN) && (temp_value <= TIMEOUT_TIMER_WORK_MAX))
-#else
-        if (temp_value <= TIMEOUT_TIMER_WORK_MAX)
-#endif            
-        {
-          target_label->timeout_work_df[address_data - MA_DF_WORK_1] = temp_value;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
+//        temp_value = data*10;
+//        
+//#if (TIMEOUT_TIMER_WORK_MIN != 0)          
+//        if ((temp_value >= TIMEOUT_TIMER_WORK_MIN) && (temp_value <= TIMEOUT_TIMER_WORK_MAX))
+//#else
+//        if (temp_value <= TIMEOUT_TIMER_WORK_MAX)
+//#endif            
+//        {
+//          target_label->timeout_work_df[address_data - MA_DF_WORK_1] = temp_value;
+//        }
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
 
         break;
       }
@@ -3145,7 +1663,7 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
 #else
         if (temp_value <= VALUE_BAUD_RS485_MAX)
 #endif            
-          target_label->speed_RS485 = temp_value;
+          target_label->baud_RS485 = temp_value;
         else
           error = ERROR_ILLEGAL_DATA_VALUE;
 
@@ -3483,15 +2001,15 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
 //      error = ERROR_ILLEGAL_DATA_ADDRESS;
 //    }
 //  }
-  else if (address_data == MA_NUMBER_ITERATION_EL)
-  {
-    temp_value = data;
-    
-    if ((temp_value >= NUMBER_ITERATION_EL_MIN) && (temp_value <= NUMBER_ITERATION_EL_MAX))
-      target_label->number_iteration_el = temp_value;
-    else
-      error = ERROR_ILLEGAL_DATA_VALUE;
-  }
+//  else if (address_data == MA_NUMBER_ITERATION_EL)
+//  {
+//    temp_value = data;
+//    
+//    if ((temp_value >= NUMBER_ITERATION_EL_MIN) && (temp_value <= NUMBER_ITERATION_EL_MAX))
+//      target_label->number_iteration_el = temp_value;
+//    else
+//      error = ERROR_ILLEGAL_DATA_VALUE;
+//  }
   else if (address_data == MA_LSW_ADR_MEMORY_TO_WRITE)
   {
     registers_address_write = (registers_address_write & 0xffff0000) + (data);
@@ -4497,9 +3015,9 @@ void modbus_rountines(unsigned int type_interface)
                     if (error == 0)
                     {
                       //Дійсно відбулася зміна настройки
-                      _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//                      _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
                       restart_timeout_idle_new_settings = true;
-                      type_of_settings_changed |= (1 << SETTINGS_DATA_CHANGED_BIT);
+                      type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
                     }
                   }
                 }
@@ -4550,16 +3068,34 @@ void modbus_rountines(unsigned int type_interface)
                 if (value == 0xff00)
                 {
                   //Активація внесекних змін
-                  if(type_interface == USB_RECUEST) error = set_new_settings_from_interface(2);
-                  else if(type_interface ==  RS485_RECUEST) error = set_new_settings_from_interface(3);
+                  unsigned int source = MENU_PARAMS_FIX_CHANGES;
+                  if(type_interface == USB_RECUEST) source = USB_PARAMS_FIX_CHANGES;
+                  else if(type_interface ==  RS485_RECUEST) source = RS485_PARAMS_FIX_CHANGES;
+
+                  unsigned int result = set_config_and_settings(1, source);
+                  if (result != 0)
+                  {
+                    error = ERROR_SLAVE_DEVICE_FAILURE;
+                    if (result == 2)
+                    {
+                      //Повідомляємо про критичну помилку
+                      current_state_menu2.edition = ED_ERROR;
+                    }
+                  }
                 }
                 else
                 {
                   //Відміна внесекних змін
-                  current_settings_interfaces = current_settings;
+                  unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
+                  if (result != 0)
+                  {
+                    //Повідомляємо про критичну помилку
+                    current_state_menu2.edition = ED_ERROR;
+                  }
                 }
-                type_of_settings_changed = 0;
-                _CLEAR_BIT(active_functions, RANG_SETTINGS_CHANGED);
+                config_settings_modified = 0;
+                type_of_settings_changed_from_interface = 0;
+//                _CLEAR_BIT(active_functions, RANG_SETTINGS_CHANGED);
               }
             }
             else
@@ -4664,8 +3200,8 @@ void modbus_rountines(unsigned int type_interface)
                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )                                       ) || /*ранжування*/
                   (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR                   )                                                                                                          || /*очищення реєстратора програмних подій*/        
                   (add_data == MA_DEFAULT_SETTINGS                             )                                                                                                          || /*встановлення мінімальної конфігурації*/        
-                  (add_data == MA_TEST_WATCHDOGS                               )                                                                                                          || /*тестування внутрішнього і зовнішнього watchdog*/        
-                  (add_data == MA_NUMBER_ITERATION_EL                          )                                                                                                             /*встановленнямаксимальної кількості ітераційдля розширеної логіки*/        
+                  (add_data == MA_TEST_WATCHDOGS                               )                                                                                                        /*||*//*тестування внутрішнього і зовнішнього watchdog*/        
+//                  (add_data == MA_NUMBER_ITERATION_EL                          )                                                                                                             /*встановленнямаксимальної кількості ітераційдля розширеної логіки*/        
                 )   
                )
             {
@@ -4711,11 +3247,11 @@ void modbus_rountines(unsigned int type_interface)
               {
                 //Враховуючи той факт, що зараз буде відбуватися ранжування, то скидаємо вказівник на редагуюче поле в 0
                 point_to_edited_rang = NULL;
-                for (unsigned int i = 0; i < N_BIG; i++)
-                {
-                  clear_array_rang[i] = 0;
-                  set_array_rang[i]   = 0;
-                }
+//                for (unsigned int i = 0; i < N_BIG; i++)
+//                {
+//                  clear_array_rang[i] = 0;
+//                  set_array_rang[i]   = 0;
+//                }
               }
               else if((add_data >= MA_ADDRESS_FIRST_USTUVANNJA) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA))/*амплітудні і фазні юстуючі коефіцієнти*/ 
               {
@@ -4809,8 +3345,8 @@ void modbus_rountines(unsigned int type_interface)
 //                ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4))) ||
                 ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) ||
                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) ||
-                ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) ||
-                (add_data == MA_NUMBER_ITERATION_EL)
+                ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  ))/*||*/
+//                (add_data == MA_NUMBER_ITERATION_EL)
                )
             {
               //Записуємо інформацю, яка відноситься до настройок
@@ -4824,7 +3360,7 @@ void modbus_rountines(unsigned int type_interface)
                 //Виключаємо той випадок, коли робилося зняття паролю доступу
                    
                 //Дійсно відбулася зміна настройки
-                _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//                _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
                 restart_timeout_idle_new_settings = true;
                     
                 if (
@@ -4843,12 +3379,12 @@ void modbus_rountines(unsigned int type_interface)
                     }
                     
                     //Записуємо інформацю по ранжуванню
-                    type_of_settings_changed |= (1 << RANGUVANNJA_DATA_CHANGED_BIT);
+                    type_of_settings_changed_from_interface |= (1 << RANGUVANNJA_DATA_CHANGED_BIT);
                   }
                   else
                   {
                     //Іде ранжування регістрів користувача
-                    type_of_settings_changed |= (1 << USER_REGISTRY_CHANGED_BIT);
+                    type_of_settings_changed_from_interface |= (1 << USER_REGISTRY_CHANGED_BIT);
                   }
                 }
                 else
@@ -4856,12 +3392,12 @@ void modbus_rountines(unsigned int type_interface)
                   if (add_data == MA_PASSWORD_INTERFACE) 
                   {
                     //Записуємо значення нового парголю доступу
-                    type_of_settings_changed |= (1 << NEW_PASSWORD_SET_BIT);
+                    type_of_settings_changed_from_interface |= (1 << NEW_PASSWORD_SET_BIT);
                   }
                   else
                   {
                     //Записуємо інформацю настройках (крім ранжування)
-                    type_of_settings_changed |= (1 << SETTINGS_DATA_CHANGED_BIT);
+                    type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
                   }
                 }
               }
@@ -4885,11 +3421,11 @@ void modbus_rountines(unsigned int type_interface)
             {
                    
               //Дійсно відбулася зміна настройки
-              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
               restart_timeout_idle_new_settings = true;
               
               //Відбулася успішна команда скидання у мінімальну конфігурацію
-              type_of_settings_changed = (1 << DEFAULT_SETTINGS_SET_BIT);
+              type_of_settings_changed_from_interface = (1 << DEFAULT_SETTINGS_SET_BIT);
             }
             /*****/
           }
@@ -4993,7 +3529,7 @@ void modbus_rountines(unsigned int type_interface)
                 //Операція запису є доступною
 
                 //Робимо копію таблиці настройок
-                edition_settings = current_settings_interfaces;
+//                edition_settings = current_settings_interfaces;
 
                 //Визначаємо початкову адресу читання/запису цілими словами
                 first_address_of_word_for_function_3_or_4 += (offset >> 4);
@@ -5174,16 +3710,34 @@ void modbus_rountines(unsigned int type_interface)
                   if (set_new_settings == true)
                   {
                     //Активація внесекних змін
-                    if(type_interface == USB_RECUEST) error = set_new_settings_from_interface(2);
-                    else if(type_interface ==  RS485_RECUEST) error = set_new_settings_from_interface(3);
+                    unsigned int source = MENU_PARAMS_FIX_CHANGES;
+                    if(type_interface == USB_RECUEST) source = USB_PARAMS_FIX_CHANGES;
+                    else if(type_interface ==  RS485_RECUEST) source = RS485_PARAMS_FIX_CHANGES;
+
+                    unsigned int result = set_config_and_settings(1, source);
+                    if (result != 0)
+                    {
+                      error = ERROR_SLAVE_DEVICE_FAILURE;
+                      if (result == 2)
+                      {
+                        //Повідомляємо про критичну помилку
+                        current_state_menu2.edition = ED_ERROR;
+                      }
+                    }
                   }
                   else
                   {
                     //Відміна внесекних змін
-                    current_settings_interfaces = current_settings;
+                    unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
+                    if (result != 0)
+                    {
+                      //Повідомляємо про критичну помилку
+                      current_state_menu2.edition = ED_ERROR;
+                    }
                   }
-                  type_of_settings_changed = 0;
-                  _CLEAR_BIT(active_functions, RANG_SETTINGS_CHANGED);
+                  config_settings_modified = 0;
+                  type_of_settings_changed_from_interface = 0;
+//                  _CLEAR_BIT(active_functions, RANG_SETTINGS_CHANGED);
                 }
               }
             }
@@ -5214,12 +3768,12 @@ void modbus_rountines(unsigned int type_interface)
             if (reinit_settings != 0)
             {
               //Копіюємо введені зміни у робочу структуру
-              current_settings_interfaces = edition_settings;
+//              current_settings_interfaces = edition_settings;
 
               //Відбулася зміна настройки
-              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
               restart_timeout_idle_new_settings = true;
-              type_of_settings_changed |= (1 << SETTINGS_DATA_CHANGED_BIT);
+              type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
             }
           }
           else
@@ -5291,8 +3845,8 @@ void modbus_rountines(unsigned int type_interface)
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) || /*ранжування*/
                    (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR                   )                                                                   || /*очищення реєстратора програмних подій*/
                    (add_data == MA_DEFAULT_SETTINGS                             )                                                                   || /*встановлення мінімальної конфігурації*/        
-                   (add_data == MA_TEST_WATCHDOGS                               )                                                                   || /*тестування внутрішнього і зовнішнього watchdog*/        
-                   (add_data == MA_NUMBER_ITERATION_EL                          )                                                                      /*встановленнямаксимальної кількості ітераційдля розширеної логіки*/        
+                   (add_data == MA_TEST_WATCHDOGS                               )                                                                 /*||*/ /*тестування внутрішнього і зовнішнього watchdog*/        
+//                   (add_data == MA_NUMBER_ITERATION_EL                          )                                                                      /*встановленнямаксимальної кількості ітераційдля розширеної логіки*/        
                  )
               {
                 if (
@@ -5340,15 +3894,15 @@ void modbus_rountines(unsigned int type_interface)
                      )
                   {
                     //Робимо копію таблиці настройок
-                    edition_settings  = current_settings_interfaces;
+//                    edition_settings  = current_settings_interfaces;
 
                     //Враховуючи той факт, що може зараз відбуватися ранжування, то скидаємо вказівник на редагуюче поле в 0
                     point_to_edited_rang = NULL;
-                    for (unsigned int j = 0; j < N_BIG; j++)
-                    {
-                      clear_array_rang[j] = 0;
-                      set_array_rang[j]   = 0;
-                    }
+//                    for (unsigned int j = 0; j < N_BIG; j++)
+//                    {
+//                      clear_array_rang[j] = 0;
+//                      set_array_rang[j]   = 0;
+//                    }
                   }
 
                   if (
@@ -5432,8 +3986,8 @@ void modbus_rountines(unsigned int type_interface)
 //                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4))) ||
                   ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) ||  
                   ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) ||
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) ||
-                  (add_data == MA_NUMBER_ITERATION_EL)
+                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  ))/* ||*/
+//                  (add_data == MA_NUMBER_ITERATION_EL)
                  )
               {
                 //Записуємо інформацю, яка відноситься до настройок
@@ -5581,35 +4135,35 @@ void modbus_rountines(unsigned int type_interface)
                )
             {
               //Копіюємо введені зміни у робочу структуру
-              current_settings_interfaces = edition_settings;
+//              current_settings_interfaces = edition_settings;
 
               //Відбулася зміна настройки
-              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
               restart_timeout_idle_new_settings = true;
               
               if (set_min_param != 0)
               {
-                type_of_settings_changed = (1 << DEFAULT_SETTINGS_SET_BIT);
+                type_of_settings_changed_from_interface = (1 << DEFAULT_SETTINGS_SET_BIT);
               }
               
               if (reinit_settings != 0)
               {
-                type_of_settings_changed |= (1 << SETTINGS_DATA_CHANGED_BIT);
+                type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
               }
 
               if (set_new_password != 0)
               {
-                type_of_settings_changed |= (1 << NEW_PASSWORD_SET_BIT);
+                type_of_settings_changed_from_interface |= (1 << NEW_PASSWORD_SET_BIT);
               }
 
               if (reinit_ranguvannja != 0)
               {
-                type_of_settings_changed |= (1 << RANGUVANNJA_DATA_CHANGED_BIT);
+                type_of_settings_changed_from_interface |= (1 << RANGUVANNJA_DATA_CHANGED_BIT);
               }
 
               if (reinit_user_register != 0)
               {
-                type_of_settings_changed |= (1 << USER_REGISTRY_CHANGED_BIT);
+                type_of_settings_changed_from_interface |= (1 << USER_REGISTRY_CHANGED_BIT);
               }
             }
             /*****/

@@ -1,8 +1,6 @@
 #ifndef __CONST_GLOBAL__
 #define __CONST_GLOBAL__
 
-#define N_BIG   7
-
 //Величина, яка необхідна для періодичної (період 1  мс   ) генерації переривань каналом 1 таймеру 2 з прескаллером 2000 = (1999 + 1)
 #define TIM2_CCR1_VAL                   30
 //Величина, яка необхідна для періодичної (період 10 мс   ) генерації переривань каналом 1 таймеру 4 з прескаллером 600 = (599 + 1)
@@ -17,15 +15,12 @@
 #define MAX_NUMBER_LINES_VMP            8
 
 #define DELTA_TIME_FOR_TIMERS           1
-#define PERIOD_SIGNAL_MEANDER           1000 /*мс*/
 
 #define NUMBER_ANALOG_CANALES_VAL_1     4
 
 #define NUMBER_ANALOG_CANALES           (                               \
                                          NUMBER_ANALOG_CANALES_VAL_1    \
                                         )
-
-#define NUMBER_ALARMS                   2
 
 #define NUMBER_INPUTS_1                 5
 #define NUMBER_INPUTS_2                 5
@@ -34,252 +29,21 @@
 #define NUMBER_OUTPUTS_2                4
 #define NUMBER_OUTPUTS                  (NUMBER_OUTPUTS_1 + NUMBER_OUTPUTS_2)
 
-enum _ID_RANG_SOURCE 
-{
-  ID_OUTPUT = 0,
-  ID_LED,
-  ID_DTIMER,
-  ID_DTRIGER,
-  ID_DAND,
-  ID_DOR,
-  ID_DXOR,
-  ID_DNOT,
-  
-  MAX_NUMBER_ID_RANG_SOURCE
-};
-
 #define NUMBER_LEDS                     8
 
-#define NUMBER_DEFINED_ELEMENTS         6
-#define NUMBER_DEFINED_FUNCTIONS        8
-#define NUMBER_DEFINED_TRIGGERS         4
-#define NUMBER_DEFINED_AND              8
-#define NUMBER_DEFINED_OR               8
-#define NUMBER_DEFINED_XOR              8
-#define NUMBER_DEFINED_NOT              16
+/*****************************************/
+//Константи для фіксації звідки були введені останні зміни
+/*****************************************/
+enum __source_fix_changes
+{
+  DEFAULT_PARAMS_FIX_CHANGES = 0,
+  MENU_PARAMS_FIX_CHANGES,
+  USB_PARAMS_FIX_CHANGES,
+  RS485_PARAMS_FIX_CHANGES,
 
-#define NUMBER_DEFINED_BUTTONS          6
-
-enum _configuration {
-CTRL_PHASE_BIT_CONFIGURATION,
-
-TOTAL_NUMBER_PROTECTION
+  NO_MATTER_PARAMS_FIX_CHANGES,
 };
-
 /*****************************************/
-//Константи для ранжування функціональних кнопок
-/*****************************************/
-enum __rang_button {
-RANG_TU_SILENCE  = 0,
-RANG_TU_RESET,
-RANG_TU_TEST,
-};
-
-#define NUMBER_GENERAL_SIGNAL_FOR_RANG_TU     3
-#define NUMBER_EL_SIGNAL_FOR_RANG_TU          0
-#define NUMBER_CTRL_PHASE_SIGNAL_FOR_RANG_TU  0
-
-#define NUMBER_TOTAL_SIGNAL_FOR_RANG_TU       (                                        \
-                                               NUMBER_GENERAL_SIGNAL_FOR_RANG_TU     + \
-                                               NUMBER_EL_SIGNAL_FOR_RANG_TU          + \
-                                               NUMBER_CTRL_PHASE_SIGNAL_FOR_RANG_TU    \
-                                              ) 
-/*****************************************/
-
-/*****************************************/
-//Константи для ранжування дискретних виходів-свтодіодів-О-функцій-реєстраторів
-/*****************************************/
-enum __rang_output_led_df_reg {
-RANG_SILENCE,
-RANG_RESET,
-RANG_TEST,
-RANG_ALARM1,
-RANG_ALARM2,
-RANG_DEFECT,
-RANG_AVAR_DEFECT,
-RANG_WORK_A_REJESTRATOR,
-RANG_WORK_D_REJESTRATOR,
-RANG_SETTINGS_CHANGED,
-RANG_MEANDER,
-RANG_DI1,
-RANG_DI2,
-RANG_DI3,
-RANG_DI4,
-RANG_DI5,
-RANG_DI6,
-RANG_DI7,
-RANG_DI8,
-RANG_DI9,
-RANG_DI10,
-
-RANG_DB1,
-RANG_DB2,
-
-RANG_DF1_IN,
-RANG_DF1_OUT,
-RANG_DF2_IN,
-RANG_DF2_OUT,
-RANG_DF3_IN,
-RANG_DF3_OUT,
-RANG_DF4_IN,
-RANG_DF4_OUT,
-RANG_DF5_IN,
-RANG_DF5_OUT,
-RANG_DF6_IN,
-RANG_DF6_OUT,
-RANG_DF7_IN,
-RANG_DF7_OUT,
-RANG_DF8_IN,
-RANG_DF8_OUT,
-RANG_DT1_SET,
-RANG_DT1_RESET,
-RANG_DT1_OUT,
-RANG_DT2_SET,
-RANG_DT2_RESET,
-RANG_DT2_OUT,
-RANG_DT3_SET,
-RANG_DT3_RESET,
-RANG_DT3_OUT,
-RANG_DT4_SET,
-RANG_DT4_RESET,
-RANG_DT4_OUT,
-RANG_D_AND1,
-RANG_D_AND2,
-RANG_D_AND3,
-RANG_D_AND4,
-RANG_D_AND5,
-RANG_D_AND6,
-RANG_D_AND7,
-RANG_D_AND8,
-RANG_D_OR1,
-RANG_D_OR2,
-RANG_D_OR3,
-RANG_D_OR4,
-RANG_D_OR5,
-RANG_D_OR6,
-RANG_D_OR7,
-RANG_D_OR8,
-RANG_D_XOR1,
-RANG_D_XOR2,
-RANG_D_XOR3,
-RANG_D_XOR4,
-RANG_D_XOR5,
-RANG_D_XOR6,
-RANG_D_XOR7,
-RANG_D_XOR8,
-RANG_D_NOT1,
-RANG_D_NOT2,
-RANG_D_NOT3,
-RANG_D_NOT4,
-RANG_D_NOT5,
-RANG_D_NOT6,
-RANG_D_NOT7,
-RANG_D_NOT8,
-RANG_D_NOT9,
-RANG_D_NOT10,
-RANG_D_NOT11,
-RANG_D_NOT12,
-RANG_D_NOT13,
-RANG_D_NOT14,
-RANG_D_NOT15,
-RANG_D_NOT16,
-RANG_ERROR_CONF_EL,
-
-RANG_ERROR_DELTA_U_CTRL_PHASE,
-RANG_ERROR_DELTA_PHI_CTRL_PHASE,
-RANG_ERROR_DELTA_F_CTRL_PHASE,
-RANG_ERROR_SEC_TN1_CTRL_PHASE,
-RANG_ERROR_SEC_TN2_CTRL_PHASE
-};
-
-#define NUMBER_GENERAL_SIGNAL_FOR_RANG     23
-#define NUMBER_EL_SIGNAL_FOR_RANG          69
-#define NUMBER_CTRL_PHASE_SIGNAL_FOR_RANG  5
-
-#define NUMBER_TOTAL_SIGNAL_FOR_RANG       (                                    \
-                                            NUMBER_GENERAL_SIGNAL_FOR_RANG    + \
-                                            NUMBER_EL_SIGNAL_FOR_RANG         + \
-                                            NUMBER_CTRL_PHASE_SIGNAL_FOR_RANG   \
-                                           ) 
-
-/*****************************************/
-
-
-
-/*****************************************/
-//Макски всіх сигналів Перевірки фазування
-/*****************************************/
-#define MASKA_CTRL_PHASE_SIGNALS_0                 0
-#define MASKA_CTRL_PHASE_SIGNALS_1                 0
-
-#define MASKA_CTRL_PHASE_SIGNALS_2 (unsigned int)(                \
-     (1 << (RANG_ERROR_DELTA_U_CTRL_PHASE - 64))            /*92*/\
-   | (1 << (RANG_ERROR_DELTA_PHI_CTRL_PHASE - 64))          /*93*/\
-   | (1 << (RANG_ERROR_DELTA_F_CTRL_PHASE - 64))            /*94*/\
-   | (1 << (RANG_ERROR_SEC_TN1_CTRL_PHASE - 64))            /*95*/\
-)
-
-#define MASKA_CTRL_PHASE_SIGNALS_3 (unsigned int)(                \
-     (1 << (RANG_ERROR_SEC_TN2_CTRL_PHASE - 96))            /*96*/\
-)
-
-#define MASKA_CTRL_PHASE_SIGNALS_4                 0
-#define MASKA_CTRL_PHASE_SIGNALS_5                 0
-#define MASKA_CTRL_PHASE_SIGNALS_6                 0
-/*****************************************/
-
-/*****************************************/
-//Макска інформативних сигналів
-/*****************************************/
-
-#define MASKA_INFO_SIGNALES_0  (unsigned int)(                      \
-     (1 << (RANG_DEFECT - 0))                                 /* 4*/\
-   | (1 << (RANG_WORK_A_REJESTRATOR - 0))                     /* 6*/\
-   | (1 << (RANG_WORK_D_REJESTRATOR - 0))                     /* 7*/\
-   | (1 << (RANG_SETTINGS_CHANGED - 0))                       /* 8*/\
-)     
-
-#define MASKA_INFO_SIGNALES_1                  0
-#define MASKA_INFO_SIGNALES_2                  0
-#define MASKA_INFO_SIGNALES_3                  0
-#define MASKA_INFO_SIGNALES_4                  0
-#define MASKA_INFO_SIGNALES_5                  0
-#define MASKA_INFO_SIGNALES_6                  0
-/*****************************************/
-
-/*****************************************/
-//Максимальна кількість сигналів (функцій), які можуть бути зранжовані на входи/виходи/світлоіндикатори/д.реєстратор/оф
-/*****************************************/
-//#define VAGA_MAX_FUNCTIONS_IN_INPUT             3
-//#define MAX_FUNCTIONS_IN_INPUT                  (1 << VAGA_MAX_FUNCTIONS_IN_INPUT)
-#define VAGA_MAX_FUNCTIONS_IN_OUTPUT            0
-#define MAX_FUNCTIONS_IN_OUTPUT                 (1 << VAGA_MAX_FUNCTIONS_IN_OUTPUT)
-#define VAGA_MAX_FUNCTIONS_IN_LED               0
-#define MAX_FUNCTIONS_IN_LED                    (1 << VAGA_MAX_FUNCTIONS_IN_LED)
-#define VAGA_MAX_FUNCTIONS_IN_DF                0
-#define MAX_FUNCTIONS_IN_DF                     (1 << VAGA_MAX_FUNCTIONS_IN_DF)
-#define VAGA_MAX_FUNCTIONS_IN_DT                0
-#define MAX_FUNCTIONS_IN_DT                     (1 << VAGA_MAX_FUNCTIONS_IN_DT)
-#define MAX_FUNCTIONS_IN_D_AND                  NUMBER_IN_AND
-#define MAX_FUNCTIONS_IN_D_OR                   NUMBER_IN_OR
-#define MAX_FUNCTIONS_IN_D_XOR                  2
-#define MAX_FUNCTIONS_IN_D_NOT                  1
-//#define VAGA_MAX_FUNCTIONS_IN_DB                3
-//#define MAX_FUNCTIONS_IN_DB                     (1 << VAGA_MAX_FUNCTIONS_IN_DB)
-#define VAGA_MAX_FUNCTIONS_IN_AREG              5
-#define MAX_FUNCTIONS_IN_AREG                   (1 << VAGA_MAX_FUNCTIONS_IN_AREG)
-#define VAGA_MAX_FUNCTIONS_IN_DREG              5
-#define MAX_FUNCTIONS_IN_DREG                   (1 << VAGA_MAX_FUNCTIONS_IN_DREG)
-#define VAGA_MAX_FUNCTIONS_IN_ALARMS            5
-#define MAX_FUNCTIONS_IN_ALARMS                 (1 << VAGA_MAX_FUNCTIONS_IN_ALARMS)
-#define VAGA_MAX_FUNCTIONS_IN_SILENCE           0
-#define MAX_FUNCTIONS_IN_SILENCE                (1 << VAGA_MAX_FUNCTIONS_IN_SILENCE)
-#define VAGA_MAX_FUNCTIONS_IN_RESET             0
-#define MAX_FUNCTIONS_IN_RESET                  (1 << VAGA_MAX_FUNCTIONS_IN_RESET)
-#define VAGA_MAX_FUNCTIONS_IN_TEST              0
-#define MAX_FUNCTIONS_IN_TEST                   (1 << VAGA_MAX_FUNCTIONS_IN_TEST)
-/*****************************************/
-
 
 /*****************************************/
 //Константи для комунікації
@@ -308,21 +72,15 @@ NUMBER_ODYNYCI_VYMIRJUVANNJA
 /*****************************************/
 
 /*****************************************/
-//Тип входів логічних елементів
-/*****************************************/
-#define TYPE_INPUT_0_1        0
-#define TYPE_INPUT_1_0        1
-/*****************************************/
-
-/*****************************************/
 //Індетифікатор типу набору юстуючих коефіцієнтів
 /*****************************************/
 //#define ADJUSTMENT_3I0_IA_IB_IC                             1
 //#define ADJUSTMENT_3I0_IA_IC_3U0                            2
 //#define ADJUSTMENT_3I0_IA_IB_IC_UA_UB_UC_UABTN2             3
 //#define ADJUSTMENT_3I0_IA_IB_IC_UA_UB_UC_3U0                4
-#define ADJUSTMENT_IA_IB_IC_UA1_UB1_UC1_UA2_UB2_UC2             5
-#define ADJUSTMENT_ID                                         ADJUSTMENT_IA_IB_IC_UA1_UB1_UC1_UA2_UB2_UC2
+//#define ADJUSTMENT_IA_IB_IC_UA1_UB1_UC1_UA2_UB2_UC2         5
+#define ADJUSTMENT_1_U_4_I                                  6
+#define ADJUSTMENT_ID                                         ADJUSTMENT_1_U_4_I
 /*****************************************/
 
 /*****************************************/

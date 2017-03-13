@@ -675,7 +675,7 @@ void TIM4_IRQHandler(void)
       periodical_tasks_TEST_CONFIG                  = 
       periodical_tasks_TEST_SETTINGS                = 
       periodical_tasks_TEST_USTUVANNJA              = 
-      periodical_tasks_TEST_TRG_FUNC                = 
+      /*periodical_tasks_TEST_TRG_FUNC                = */
       periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR = 
       periodical_tasks_TEST_FLASH_MEMORY            = true;
       
@@ -684,7 +684,8 @@ void TIM4_IRQHandler(void)
       //Робота з таймером очікування нових змін налаштувань
       if (
           (restart_timeout_idle_new_settings != 0) ||
-          (_CHECK_SET_BIT(active_functions, RANG_SETTINGS_CHANGED) == 0)  
+          (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_SETTINGS_CHANGED) == 0) ||
+          ((config_settings_modified & MASKA_MENU_LOCKS) != 0) 
          )
       {
         timeout_idle_new_settings  = 0;

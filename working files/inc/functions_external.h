@@ -162,8 +162,6 @@ extern void change_setting_language(unsigned int);
 extern __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *, __CONFIG *);
 extern __result_dym_mem_select action_after_changing_of_configuration(void);
 extern void calculate_namber_bit_waiting_for_rs_485(void);
-extern void fix_change_settings(unsigned int, unsigned int);
-extern unsigned int set_new_settings_from_interface(unsigned int);
 extern void restore_trigger_functions(unsigned int*);
 extern void changing_diagnostyka_state(void);
 extern unsigned int count_number_set_bit(unsigned int*, unsigned int);
@@ -185,10 +183,7 @@ extern void Error_modbus(unsigned int, unsigned int, unsigned int, unsigned char
 extern unsigned int Get_data(unsigned char *, unsigned int, unsigned int);
 extern unsigned int Set_data(unsigned short int, unsigned int, unsigned int, /*unsigned int,*/ unsigned int);
 //extern unsigned int Get_data_file(unsigned char*, unsigned char*, unsigned int*, unsigned int);
-extern void convert_order_list_function_to_gmm(unsigned int*, unsigned short int*);
-extern unsigned int convert_order_list_oldr_to_gmm(unsigned int, unsigned int, unsigned int);
 extern void set_previous_ranguvannja(void);
-extern unsigned int save_new_rang_oldr_from_gmm(unsigned int, unsigned int, unsigned int, unsigned short int, unsigned int);
 
 extern ErrorStatus check_errors_i2c(void);
 extern unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t volatile*, uint32_t);
@@ -222,7 +217,7 @@ extern void analize_received_data_dataflash(int);
 extern void control_config(unsigned int);
 extern void control_settings(unsigned int);
 extern void control_ustuvannja(void);
-extern void control_trg_func(void);
+//extern void control_trg_func(void);
 extern unsigned int control_info_rejestrator(__INFO_REJESTRATOR*, unsigned char);
 
 extern void test_external_SRAM(void);

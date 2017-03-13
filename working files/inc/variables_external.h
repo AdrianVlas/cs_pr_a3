@@ -50,13 +50,9 @@ extern unsigned int measurement_middle[NUMBER_ANALOG_CANALES];
 extern unsigned int measurement_low[NUMBER_ANALOG_CANALES]; 
 
 extern volatile unsigned int state_inputs;
-extern unsigned int state_outputs;
-extern volatile unsigned int state_leds;
-extern volatile unsigned int active_functions[N_BIG];
-extern unsigned int trigger_active_functions[N_BIG], trigger_active_functions_ctrl[N_BIG];
-extern unsigned char crc_trg_func, crc_trg_func_ctrl;
-extern volatile unsigned int active_functions_copy[N_BIG];
-extern volatile unsigned int active_functions_trg[N_BIG];
+extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS, 8)];
+//extern uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS, 8)];
+//extern unsigned char crc_trg_func, crc_trg_func_ctrl;
 extern unsigned int pressed_buttons;
 extern volatile unsigned int activation_function_from_interface;
 extern volatile unsigned int reset_trigger_function_from_interface;
@@ -66,8 +62,6 @@ extern volatile unsigned int set_diagnostyka[3];
 extern volatile unsigned int clear_diagnostyka[3];
 
 extern int global_timers[MAX_NUMBER_GLOBAL_TIMERS];
-extern unsigned int timer_meander;
-extern unsigned int output_timer_meander;
 
 extern unsigned int start_restart;
 
@@ -89,8 +83,8 @@ extern void *p_menu_param_1, *p_menu_param_2;
 extern volatile unsigned int periodical_tasks_TEST_CONFIG;
 extern volatile unsigned int periodical_tasks_TEST_SETTINGS;
 extern volatile unsigned int periodical_tasks_TEST_USTUVANNJA;
-extern volatile unsigned int periodical_tasks_TEST_TRG_FUNC;
-extern volatile unsigned int periodical_tasks_TEST_TRG_FUNC_LOCK;
+//extern volatile unsigned int periodical_tasks_TEST_TRG_FUNC;
+//extern volatile unsigned int periodical_tasks_TEST_TRG_FUNC_LOCK;
 extern volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR;
 extern volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK;
 extern volatile unsigned int periodical_tasks_TEST_FLASH_MEMORY;
@@ -118,9 +112,6 @@ extern unsigned char crc_config;
 extern __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;
 extern uint8_t crc_settings;
 extern unsigned int config_settings_modified;
-
-extern volatile unsigned int changed_settings; 
-extern __SETTINGS_OLD current_settings_prt, current_settings,  edition_settings,current_settings_interfaces;
 
 //Змінні для визначеня ресурсу процесора-програми
 extern volatile unsigned int restart_resurs_count;
@@ -245,12 +236,12 @@ extern uint16_t password_changed;
 extern uint16_t password_ustuvannja;
 extern uint32_t *point_to_edited_rang;
 extern uint16_t number_32bit_in_target;
-extern uint32_t clear_array_rang[N_BIG];
-extern uint32_t set_array_rang[N_BIG];
+//extern uint32_t clear_array_rang[N_BIG];
+//extern uint32_t set_array_rang[N_BIG];
 extern uint16_t restart_timeout_interface;
 extern unsigned int timeout_idle_new_settings;
 extern uint16_t restart_timeout_idle_new_settings;
-extern uint16_t type_of_settings_changed;
+extern uint16_t type_of_settings_changed_from_interface;
 
 extern unsigned int serial_number_dev;
 extern unsigned int edit_serial_number_dev;

@@ -201,7 +201,7 @@ inline void input_scan(void)
   for(unsigned int i = 0; i < NUMBER_INPUTS; i++)
   {
     unsigned int maska = 1<<i;
-    int max_value_timer = current_settings_prt.dopusk_dv[i];
+    int max_value_timer = /*current_settings_prt.dopusk_dv[i]*/60;
 
     if (global_timers[INDEX_TIMER_INPUT_START + i] < 0)
     {
@@ -233,7 +233,7 @@ inline void input_scan(void)
         //і ми перевіряємо чи не відбувся перехід "є сигнал"->"немає сигналу"
         //то поява сигналу під час тактування таймера допуску означає, що сигнал на вході є - 
         //а це означає, що треба зупинити nаймер, бо переходу "є сигнал"->"немає сигналу" на протязі тактування таймеру не зафіксовано 
-        if ((current_settings_prt.type_of_input_signal & maska) != 0)
+        if ((0/*current_settings_prt.type_of_input_signal*/ & maska) != 0)
         {
            if ((state_inputs_into_pin_trigger & maska) == 0)
            {
@@ -288,12 +288,6 @@ inline void clocking_global_timers(void)
       //Перевіряємо чи треба збільшувати величину таймеру, якщо він ще не досягнув свого максимуму
       if (global_timers[i] <= (0x7fffffff - DELTA_TIME_FOR_TIMERS)) global_timers[i] += DELTA_TIME_FOR_TIMERS;
     }
-  }
-  
-  if (++timer_meander >= PERIOD_SIGNAL_MEANDER)
-  {
-    timer_meander = 0;
-    output_timer_meander ^= true;
   }
 }
 /*****************************************************/
@@ -406,7 +400,7 @@ inline void main_protection(void)
       (diagnostyka_tmp[2] != 0)
      )   
   {
-    _SET_BIT(active_functions, RANG_DEFECT);
+    _SET_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
     /**************************/
     //Сигнал "Несправность Аварийная"
     /**************************/
@@ -416,24 +410,24 @@ inline void main_protection(void)
         ((diagnostyka_tmp[2] & MASKA_AVAR_ERROR_2) != 0)
        )   
     {
-      _SET_BIT(active_functions, RANG_AVAR_DEFECT);
+      _SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
     }
     else
     {
-      _CLEAR_BIT(active_functions, RANG_AVAR_DEFECT);
+      _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
     }
     /**************************/
   }
   else
   {
-    _CLEAR_BIT(active_functions, RANG_DEFECT);
-    _CLEAR_BIT(active_functions, RANG_AVAR_DEFECT);
+    _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
+    _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
   }
   /**************************/
 
   
   //Логічні схеми мають працювати тільки у тому випадку, якщо немє сигналу "Аварийная неисправность"
-  if (_CHECK_SET_BIT(active_functions, RANG_AVAR_DEFECT) == 0)
+  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
   {
     //Аварійна ситуація не зафіксована
 
@@ -445,7 +439,6 @@ inline void main_protection(void)
     //Скидаємо всі активні функції, крім інформативних
     
     //Деактивовуємо всі реле
-    state_outputs = 0;
     
     //Скидаємо всі таймери, які присутні у лозіці
     
@@ -465,20 +458,13 @@ inline void main_protection(void)
 //    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
 //  }
   /**************************/
-
-  /*
-  Робимо копію значення активних функцій для того, щоб коли ці знаення будуть
-  обновлятися, то можна було б іншим модулям  (запис у об'єднаний аналоговий
-  реєстратор) взяти попереднє, але достовірне значення
-  */
-  for (unsigned int i = 0; i < N_BIG; i++) active_functions_copy[i] = active_functions[i];
   /**************************/
 
   /**************************/
   //Вивід інформації на виходи
   /**************************/
   
-  if (_CHECK_SET_BIT(active_functions, RANG_AVAR_DEFECT) == 0)
+  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
   {
     //Не зафіксовано аварійної ситуації, тому встановлювати реле можна
     
@@ -488,21 +474,20 @@ inline void main_protection(void)
     //Зафіксовано аварійнe ситуацію, тому деактивуємо всі реле!!!
 
     //Деактивовуємо всі реле
-    state_outputs = 0;
   }
   
   //Виводимо інформацію по виходах на піни процесора (у зворотньому порядку)
   unsigned int temp_state_outputs = 0;
-  for (unsigned int index = 0; index < NUMBER_OUTPUTS; index++)
-  {
-    if ((state_outputs & (1 << index)) != 0)
-    {
-      if (index < NUMBER_OUTPUTS_1)
-        temp_state_outputs |= 1 << (NUMBER_OUTPUTS_1 - index - 1);
-      else
-        temp_state_outputs |= 1 << index;
-    }
-  }
+//  for (unsigned int index = 0; index < NUMBER_OUTPUTS; index++)
+//  {
+//    if ((state_outputs & (1 << index)) != 0)
+//    {
+//      if (index < NUMBER_OUTPUTS_1)
+//        temp_state_outputs |= 1 << (NUMBER_OUTPUTS_1 - index - 1);
+//      else
+//        temp_state_outputs |= 1 << index;
+//    }
+//  }
   unsigned int temp_state_outputs_1 =  temp_state_outputs                      & ((1 << NUMBER_OUTPUTS_1) - 1);
   unsigned int temp_state_outputs_2 = (temp_state_outputs >> NUMBER_OUTPUTS_1) & ((1 << NUMBER_OUTPUTS_2) - 1);
   _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1) = temp_state_outputs_1;
@@ -515,7 +500,7 @@ inline void main_protection(void)
   //Спочатку перевіряємо, чи не активовувалвся команда "Сблос индикации" - і якщо так, то попередньо скидаємо всю індикацію
   
   //Виводимо інформацію по світлоіндикаторах на світлодіоди
-  _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_LEDS) = state_leds;
+//  _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_LEDS) = state_leds;
   /**************************/
 
   /**************************/
@@ -551,24 +536,24 @@ void TIM2_IRQHandler(void)
     /***********************************************************/
     //Опрцювання функцій захистів
     /***********************************************************/
-    //Діагностика вузлів, яку треба проводити кожен раз перед початком опрацьовуванням логіки пристрою
-    unsigned int control_state_outputs_1 = (( (~((unsigned int)(_DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1)))) >> 8) & ((1 << NUMBER_OUTPUTS_1) - 1));
-    unsigned int control_state_outputs_2 = (( (~((unsigned int)(_DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_2)))) >> 8) & ((1 << NUMBER_OUTPUTS_2) - 1));
-    unsigned int control_state_outputs = control_state_outputs_1 | (control_state_outputs_2 << NUMBER_OUTPUTS_1);
-    //Формуємо стани виходів у відповідності до зміненої нумерації
-    unsigned int temp_state_outputs = 0;
-    for (unsigned int index = 0; index < NUMBER_OUTPUTS; index++)
-    {
-      if ((state_outputs & (1 << index)) != 0) 
-      {
-        if (index < NUMBER_OUTPUTS_1)
-          temp_state_outputs |= 1 << (NUMBER_OUTPUTS_1 - index - 1);
-        else
-          temp_state_outputs |= 1 << index;
-      }
-    }
-    if (control_state_outputs != temp_state_outputs) _SET_BIT(set_diagnostyka, ERROR_DIGITAL_OUTPUTS_BIT);
-//    else _SET_BIT(clear_diagnostyka, ERROR_DIGITAL_OUTPUTS_BIT);
+//    //Діагностика вузлів, яку треба проводити кожен раз перед початком опрацьовуванням логіки пристрою
+//    unsigned int control_state_outputs_1 = (( (~((unsigned int)(_DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1)))) >> 8) & ((1 << NUMBER_OUTPUTS_1) - 1));
+//    unsigned int control_state_outputs_2 = (( (~((unsigned int)(_DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_2)))) >> 8) & ((1 << NUMBER_OUTPUTS_2) - 1));
+//    unsigned int control_state_outputs = control_state_outputs_1 | (control_state_outputs_2 << NUMBER_OUTPUTS_1);
+//    //Формуємо стани виходів у відповідності до зміненої нумерації
+//    unsigned int temp_state_outputs = 0;
+//    for (unsigned int index = 0; index < NUMBER_OUTPUTS; index++)
+//    {
+//      if ((state_outputs & (1 << index)) != 0) 
+//      {
+//        if (index < NUMBER_OUTPUTS_1)
+//          temp_state_outputs |= 1 << (NUMBER_OUTPUTS_1 - index - 1);
+//        else
+//          temp_state_outputs |= 1 << index;
+//      }
+//    }
+//    if (control_state_outputs != temp_state_outputs) _SET_BIT(set_diagnostyka, ERROR_DIGITAL_OUTPUTS_BIT);
+////    else _SET_BIT(clear_diagnostyka, ERROR_DIGITAL_OUTPUTS_BIT);
     
     //Функції захистів
     main_protection();
@@ -578,35 +563,35 @@ void TIM2_IRQHandler(void)
     //Перевірка на необхідність зроботи резервні копії даних для самоконтролю
     /***********************************************************/
     //Триґерна інформація
-    if (periodical_tasks_TEST_TRG_FUNC != 0)
-    {
-      //Стоїть у черзі активна задача зроботи резервні копії даних
-      if ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) != 0)
-      {
-        //Робимо копію тільки тоді, коли триґерна інформація успішно зчитана і сформована контрольна сума
-        if (
-            (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT) == 0) &&
-            (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT    ) == 0) &&
-            (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT ) == 0) &&
-            (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT    ) == 0)
-           ) 
-        {
-          //На даний моммент не іде читання-запис триґерної інформації, тому можна здійснити копіювання
-          for (unsigned int i = 0; i < N_BIG; i++) trigger_active_functions_ctrl[i] = trigger_active_functions[i];
-          crc_trg_func_ctrl = crc_trg_func;
-
-          //Скидаємо активну задачу формування резервної копії 
-          periodical_tasks_TEST_TRG_FUNC = false;
-          //Виставляємо активну задачу контролю достовірності по резервній копії 
-          periodical_tasks_TEST_TRG_FUNC_LOCK = true;
-        }
-      }
-      else
-      {
-        //Скидаємо активну задачу формування резервної копії 
-        periodical_tasks_TEST_TRG_FUNC = false;
-      }
-    }
+//    if (periodical_tasks_TEST_TRG_FUNC != 0)
+//    {
+//      //Стоїть у черзі активна задача зроботи резервні копії даних
+//      if ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) != 0)
+//      {
+//        //Робимо копію тільки тоді, коли триґерна інформація успішно зчитана і сформована контрольна сума
+//        if (
+//            (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT) == 0) &&
+//            (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT    ) == 0) &&
+//            (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT ) == 0) &&
+//            (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT    ) == 0)
+//           ) 
+//        {
+//          //На даний моммент не іде читання-запис триґерної інформації, тому можна здійснити копіювання
+//          for (unsigned int i = 0; i < N_BIG; i++) trigger_active_functions_ctrl[i] = trigger_active_functions[i];
+//          crc_trg_func_ctrl = crc_trg_func;
+//
+//          //Скидаємо активну задачу формування резервної копії 
+//          periodical_tasks_TEST_TRG_FUNC = false;
+//          //Виставляємо активну задачу контролю достовірності по резервній копії 
+//          periodical_tasks_TEST_TRG_FUNC_LOCK = true;
+//        }
+//      }
+//      else
+//      {
+//        //Скидаємо активну задачу формування резервної копії 
+//        periodical_tasks_TEST_TRG_FUNC = false;
+//      }
+//    }
     /***********************************************************/
 
     /***********************************************************/

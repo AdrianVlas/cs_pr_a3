@@ -99,7 +99,7 @@ void make_ekran_time_config_or_settings(void)
   name_string[1][7 ] = ((*(point_to_target + 1)) & 0xf) + 0x30;
 
   //Повідомлення про джерело змін
-  if((*(point_to_target + 7)) == 0)
+  if((*(point_to_target + 7)) == DEFAULT_PARAMS_FIX_CHANGES)
   {
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 7] = ' ';
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 6] = ' ';
@@ -109,7 +109,7 @@ void make_ekran_time_config_or_settings(void)
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 2] = ' ';
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 1] = '0';
   }
-  else if((*(point_to_target + 7)) == 1)
+  else if((*(point_to_target + 7)) == MENU_PARAMS_FIX_CHANGES)
   {
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 7] = ' ';
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 6] = ' ';
@@ -119,7 +119,7 @@ void make_ekran_time_config_or_settings(void)
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 2] = ' ';
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 1] = 'K';
   }
-  else if((*(point_to_target + 7)) == 2)
+  else if((*(point_to_target + 7)) == USB_PARAMS_FIX_CHANGES)
   {
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 7] = ' ';
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 6] = ' ';
@@ -129,7 +129,7 @@ void make_ekran_time_config_or_settings(void)
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 2] = 'S';
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 1] = 'B';
   }
-  else if((*(point_to_target + 7)) == 3)
+  else if((*(point_to_target + 7)) == RS485_PARAMS_FIX_CHANGES)
   {
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 7] = ' ';
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 6] = 'R';

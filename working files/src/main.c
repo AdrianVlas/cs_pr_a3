@@ -100,12 +100,23 @@ inline void periodical_operations(void)
   //Робота з таймером очікування нових змін налаштувань
   if ((timeout_idle_new_settings >= settings_fix.timeout_idle_new_settings) && (restart_timeout_idle_new_settings == 0))
   {
-    if (_CHECK_SET_BIT(active_functions, RANG_SETTINGS_CHANGED) != 0) 
+    unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
+    if (result != 0)
     {
-      current_settings_interfaces = current_settings;
-      type_of_settings_changed = 0;
-      _CLEAR_BIT(active_functions, RANG_SETTINGS_CHANGED);
+      //Повідомляємо про критичну помилку
+      current_state_menu2.edition = ED_ERROR;
     }
+    config_settings_modified = 0;
+    type_of_settings_changed_from_interface = 0;
+  }
+  //Фіксація сигналу про те що налаштуванння/конфігурація змінені чи ні
+  if ((config_settings_modified & (MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS)) != 0) 
+  {
+    _SET_BIT(fix_block_active_state, FIX_BLOCK_SETTINGS_CHANGED);
+  }
+  else
+  {
+    _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_SETTINGS_CHANGED);
   }
   
   //Обмін по USB
@@ -247,15 +258,15 @@ inline void periodical_operations(void)
       periodical_tasks_TEST_USTUVANNJA = false;
     }
   }
-  else if (periodical_tasks_TEST_TRG_FUNC_LOCK != 0)
-  {
-    //Стоїть у черзі активна задача самоконтролю по резервній копії для триґерної інформації
-    //Виконуємо її
-    control_trg_func();
-      
-    //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації
-    periodical_tasks_TEST_TRG_FUNC_LOCK = false;
-  }
+//  else if (periodical_tasks_TEST_TRG_FUNC_LOCK != 0)
+//  {
+//    //Стоїть у черзі активна задача самоконтролю по резервній копії для триґерної інформації
+//    //Виконуємо її
+//    control_trg_func();
+//      
+//    //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації
+//    periodical_tasks_TEST_TRG_FUNC_LOCK = false;
+//  }
   else if (periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK != 0)
   {
     //Стоїть у черзі активна задача самоконтролю по резервній копії для реєстратора програмних подій
@@ -366,8 +377,8 @@ int main(void)
   
   if(
      ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD  ) != 0) &&
-     ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0) &&
-     ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) != 0)
+     ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0)/* &&
+     ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) != 0)*/
     )   
   {
     //Випадок, якщо настройки успішно зчитані
@@ -392,8 +403,8 @@ int main(void)
     //Якщо настройки не зчитані успішно з EEPROM, то спочатку виводимо на екран повідомлення про це
     while (
            ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD  ) == 0) ||
-           ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) == 0) ||
-           ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) == 0)
+           ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) == 0)/* ||
+           ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) == 0)*/
           )   
     {
       error_reading_with_eeprom();
@@ -406,7 +417,6 @@ int main(void)
   }
   changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
 
-  timeout_idle_new_settings = settings_fix.timeout_idle_new_settings;
   //Визначаємо, чи стоїть дозвіл запису через інтерфейси з паролем
   if (settings_fix.password_interface_RS485 == 0) password_set_RS485 = 0;
   else password_set_RS485 = 1;

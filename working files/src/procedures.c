@@ -58,179 +58,17 @@ void calculate_namber_bit_waiting_for_rs_485(void)
 }
 /*****************************************************/
 
-/******************************************************
-//Функція, яка фіксує зміни у настройках і запускає запис настройок у EEPROM
------------------------------------------------------
-setting_rang: 0 - запис уставок
-              1 - запис ранжування
-              2 - ігнорувати цей параметр
-
-source:       0 - мінімальні параметри
-              1 - клавіатура
-              2 - USB
-              3 - RS-485
----------------------------------------------------
-******************************************************/
-void fix_change_settings(unsigned int setting_rang, unsigned int source)
-{
-  if (setting_rang < 2)
-  {
-    unsigned char *point_to_target;
-  
-    if (setting_rang == 0) point_to_target = (&current_settings)->time_setpoints;
-    else point_to_target = (&current_settings)->time_ranguvannja;
-    
-    //Записуємо час останніх змін
-    unsigned char *label_to_time_array;
-    if (copying_time == 0) label_to_time_array = time;
-    else label_to_time_array = time_copy;
-    for (unsigned int i = 0; i < 7; i++) *(point_to_target + i) = *(label_to_time_array + i);
-    *(point_to_target + 7) = (unsigned char)(source & 0xff);
-  }
-  
-  //Помічаємо, що таблиця змінилася і її треба буде з системи захистів зкопіювати у таблицю з якою працює система захистів
-  changed_settings = CHANGED_ETAP_ENDED;
-  if (_CHECK_SET_BIT(active_functions, RANG_SETTINGS_CHANGED) == 0) current_settings_interfaces = current_settings;
-  
-  //Запускаємо запис у EEPROM
-  _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
-}
-/*****************************************************/
-
-/*****************************************************/
-/*
-Активація внесених змін у налаштування через інтерфейси
-*/
-/*****************************************************/
-unsigned int set_new_settings_from_interface(unsigned int source)
-{
-  unsigned int error = 0;
-  
-  //Вказівник на системний час
-  unsigned char *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
-  
-  if ((type_of_settings_changed & (1 << DEFAULT_SETTINGS_SET_BIT)) != 0)
-  {
-    for (unsigned int i = 0; i < 7; i++) current_settings_interfaces.time_setpoints[i] = current_settings_interfaces.time_ranguvannja[i] = *(label_to_time_array + i);
-    current_settings_interfaces.time_setpoints[7] = current_settings_interfaces.time_ranguvannja[7] = 0;
-  }
-  
-  if ((type_of_settings_changed & (1 << SETTINGS_DATA_CHANGED_BIT)) != 0)
-  {
-    for (unsigned int i = 0; i < 7; i++) current_settings_interfaces.time_setpoints[i] = *(label_to_time_array + i);
-    current_settings_interfaces.time_setpoints[7] = source;
-  }
-  
-  if ((type_of_settings_changed & (1 << RANGUVANNJA_DATA_CHANGED_BIT)) != 0)
-  {
-    for (unsigned int i = 0; i < 7; i++) current_settings_interfaces.time_ranguvannja[i] = *(label_to_time_array + i);
-    current_settings_interfaces.time_ranguvannja[7] = source;
-  }
-  
-  unsigned int reconfiguration_RS_485 = 0, reconfiguration_RS_485_with_reset_usart = 0;
-  if (
-      (current_settings.speed_RS485 != current_settings_interfaces.speed_RS485) ||
-      (current_settings.pare_bit_RS485 != current_settings_interfaces.pare_bit_RS485) ||
-      (current_settings.number_stop_bit_RS485 != current_settings_interfaces.number_stop_bit_RS485) ||
-      (current_settings.time_out_1_RS485 != current_settings_interfaces.time_out_1_RS485)
-     )
-  {
-    //Помічаємо, що треба переконфігурувати інтерфейс RS-485
-    reconfiguration_RS_485 = 1;
-    
-    if (
-        (current_settings.speed_RS485 != current_settings_interfaces.speed_RS485) ||
-        (current_settings.pare_bit_RS485 != current_settings_interfaces.pare_bit_RS485) ||
-        (current_settings.number_stop_bit_RS485 != current_settings_interfaces.number_stop_bit_RS485)
-       )
-    {
-      //Помічаємо, що треба переконфігурувати USART для інтерфейсу RS-485
-      reconfiguration_RS_485_with_reset_usart = 1;
-    }
-  }
-  
-  unsigned int set_password_USB = false;
-  if (
-      (current_settings.password_interface_USB != current_settings_interfaces.password_interface_USB) &&
-      (current_settings_interfaces.password_interface_USB != 0)  
-     )   
-  {
-    set_password_USB = true;
-  }
-  
-  unsigned int set_password_RS485 = false;
-  if (
-      (current_settings.password_interface_RS485 != current_settings_interfaces.password_interface_RS485) &&
-      (current_settings_interfaces.password_interface_RS485 != 0)  
-     )   
-  {
-    set_password_RS485 = true;
-  }
-  
-  if (error == 0)
-  {
-    if ((type_of_settings_changed & (1 << DEFAULT_SETTINGS_SET_BIT)) != 0)
-    {
-      //Переводимо меню у висхідний стан
-      for(enum _menu2_levels i = MAIN_MANU2_LEVEL; i < MAX_NUMBER_MENU2_LEVEL; i++)
-      {
-        if ((i == PASSWORD_MENU2_LEVEL) || (i == SET_NEW_PASSWORD_MENU2_LEVEL)) position_in_current_level_menu2[i] = INDEX_PASSWORD_M2_LINE1;
-        else  position_in_current_level_menu2[i] = 0;
-      }
-  
-      //Визначення початкового стану екрану
-      current_state_menu2.current_level = MAIN_MANU2_LEVEL;
-      current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
-      current_state_menu2.position_cursor_y = current_state_menu2.index_position;
-      current_state_menu2.p_max_row = NULL;
-      current_state_menu2.max_row = MAX_ROW_MAIN_M2;
-      current_state_menu2.func_move = move_into_main;
-      current_state_menu2.func_show = make_ekran_main;
-      current_state_menu2.func_press_enter = press_enter_in_main_and_list_passwords;
-      current_state_menu2.func_press_esc = NULL;
-      current_state_menu2.func_change = NULL;
-      current_state_menu2.binary_data = false;
-      current_state_menu2.edition = ED_VIEWING;
-    }
-    
-    if (set_password_USB   != false) password_set_USB   = 1;
-    if (set_password_RS485 != false) password_set_RS485 = 1;
-    
-    //Помічаємо, що поля структури зараз будуть змінені
-    changed_settings = CHANGED_ETAP_EXECUTION;
-              
-    //Копіюємо введені зміни у робочу структуру
-    current_settings = current_settings_interfaces;
-    if (reconfiguration_RS_485 != 0)
-    {
-      //Підраховуємо нову величину затримки у бітах, яка допускається між байтами у RS-485 згідно з визначеними настройками
-      calculate_namber_bit_waiting_for_rs_485();
-      //Виставляємо команду про переконфігурування RS-485
-      if (reconfiguration_RS_485_with_reset_usart != 0) make_reconfiguration_RS_485 = 0xff;
-    }
-    fix_change_settings(2, source);
-
-    //Виставляємо признак, що на екрані треба обновити інформацію
-    new_state_keyboard |= (1<<BIT_REWRITE);
-  }
-  
-  return error;
-}
-/*****************************************************/
-
-/******************************************************
-Відновлення триґерних функцій
-******************************************************/
-void restore_trigger_functions(unsigned int *active_functions_point)
-{
-  active_functions[RANG_DT1_OUT >> 5] |= _CHECK_SET_BIT(active_functions_point, RANG_DT1_OUT);
-  active_functions[RANG_DT2_OUT >> 5] |= _CHECK_SET_BIT(active_functions_point, RANG_DT2_OUT);
-  active_functions[RANG_DT3_OUT >> 5] |= _CHECK_SET_BIT(active_functions_point, RANG_DT3_OUT);
-  active_functions[RANG_DT4_OUT >> 5] |= _CHECK_SET_BIT(active_functions_point, RANG_DT4_OUT);
-}
-/*****************************************************/
+///******************************************************
+//Відновлення триґерних функцій
+//******************************************************/
+//void restore_trigger_functions(unsigned int *active_functions_point)
+//{
+//  active_functions[RANG_DT1_OUT >> 5] |= _CHECK_SET_BIT(active_functions_point, RANG_DT1_OUT);
+//  active_functions[RANG_DT2_OUT >> 5] |= _CHECK_SET_BIT(active_functions_point, RANG_DT2_OUT);
+//  active_functions[RANG_DT3_OUT >> 5] |= _CHECK_SET_BIT(active_functions_point, RANG_DT3_OUT);
+//  active_functions[RANG_DT4_OUT >> 5] |= _CHECK_SET_BIT(active_functions_point, RANG_DT4_OUT);
+//}
+///*****************************************************/
 
 /*****************************************************/
 //Функція зміни інформації по діагностиці
@@ -866,37 +704,37 @@ void control_ustuvannja(void)
 /*****************************************************/
 //Контроль достовірності триґерної інформації
 /*****************************************************/
-void control_trg_func(void)
-{
-  unsigned char crc_trg_func_tmp = 0, temp_value_1;
-  unsigned char  *point; 
-  unsigned int i;
-  
-  point = (unsigned char*)(trigger_active_functions_ctrl);
-  i = 0;  
-  while (i < sizeof(trigger_active_functions_ctrl))
-  {
-    temp_value_1 = *(point);
-    crc_trg_func_tmp += temp_value_1;
-    point++;
-    i++;
-  }
-  
-  if (crc_trg_func == crc_trg_func_tmp)
-  {
-    //Контроль достовірності юстування пройшов успішно
-    
-    //Скидаємо повідомлення у слові діагностики
-    _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
-  }
-  else
-  {
-    //Контроль достовірності юстування не пройшов
-
-    //Виствляємо повідомлення у слові діагностики
-    _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
-  }
-}
+//void control_trg_func(void)
+//{
+//  unsigned char crc_trg_func_tmp = 0, temp_value_1;
+//  unsigned char  *point; 
+//  unsigned int i;
+//  
+//  point = (unsigned char*)(trigger_active_functions_ctrl);
+//  i = 0;  
+//  while (i < sizeof(trigger_active_functions_ctrl))
+//  {
+//    temp_value_1 = *(point);
+//    crc_trg_func_tmp += temp_value_1;
+//    point++;
+//    i++;
+//  }
+//  
+//  if (crc_trg_func == crc_trg_func_tmp)
+//  {
+//    //Контроль достовірності юстування пройшов успішно
+//    
+//    //Скидаємо повідомлення у слові діагностики
+//    _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
+//  }
+//  else
+//  {
+//    //Контроль достовірності юстування не пройшов
+//
+//    //Виствляємо повідомлення у слові діагностики
+//    _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
+//  }
+//}
 /*****************************************************/
 
 /*****************************************************/
@@ -2153,11 +1991,7 @@ direction:
 1 - внести зміни у "для захистів" структурах і масивах
 0 - відновити попердній стан по "для захисту" у стуктурах і масивах "контейнера" і "для редагування"
 
-source:
-0 - мінімальні параметри
-1 - клавіатура
-2 - USB
-3 - RS-485
+source - елементи з перерахування enum __source_fix_changes
 
 
 Вихідна інформація про помилку
@@ -2172,25 +2006,42 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
   unsigned int error = 0;
   if (direction != 0)
   {
-    unsigned int reconfiguration_RS_485 = 0, reconfiguration_RS_485_with_reset_usart = 0;
+    unsigned int reconfiguration_RS_485 = false, reconfiguration_RS_485_with_reset_usart = false;
+      unsigned int set_password_USB = false, set_password_RS485 = false;
     if (
-        (settings_fix_prt.baud_RS485 != settings_fix.baud_RS485) ||
-        (settings_fix_prt.pare_bit_RS485 != settings_fix.pare_bit_RS485) ||
-        (settings_fix_prt.number_stop_bit_RS485 != settings_fix.number_stop_bit_RS485) ||
-        (settings_fix_prt.time_out_1_RS485 != settings_fix.time_out_1_RS485)
+        (settings_fix.baud_RS485 != settings_fix_prt.baud_RS485) ||
+        (settings_fix.pare_bit_RS485 != settings_fix_prt.pare_bit_RS485) ||
+        (settings_fix.number_stop_bit_RS485 != settings_fix_prt.number_stop_bit_RS485) ||
+        (settings_fix.time_out_1_RS485 != settings_fix_prt.time_out_1_RS485)
        )
     {
       //Помічаємо, що треба переконфігурувати інтерфейс RS-485
-      reconfiguration_RS_485 = 1;
+      reconfiguration_RS_485 = true;
     
       if (
-          (settings_fix_prt.baud_RS485 != settings_fix.baud_RS485) ||
-          (settings_fix_prt.pare_bit_RS485 != settings_fix.pare_bit_RS485) ||
-          (settings_fix_prt.number_stop_bit_RS485 != settings_fix.number_stop_bit_RS485)
+          (settings_fix.baud_RS485 != settings_fix_prt.baud_RS485) ||
+          (settings_fix.pare_bit_RS485 != settings_fix_prt.pare_bit_RS485) ||
+          (settings_fix.number_stop_bit_RS485 != settings_fix_prt.number_stop_bit_RS485)
          )
       {
         //Помічаємо, що треба переконфігурувати USART для інтерфейсу RS-485
-        reconfiguration_RS_485_with_reset_usart = 1;
+        reconfiguration_RS_485_with_reset_usart = true;
+      }
+      
+      if (
+          (settings_fix.password_interface_USB != settings_fix_prt.password_interface_USB) &&
+          (settings_fix.password_interface_USB != 0)  
+         )   
+      {
+        set_password_USB = true;
+      }
+  
+      if (
+          (settings_fix.password_interface_RS485 != settings_fix_prt.password_interface_RS485) &&
+          (settings_fix.password_interface_RS485 != 0)  
+         )   
+      {
+        set_password_RS485 = true;
       }
     }
 
@@ -2228,6 +2079,34 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     
     if (result == DYN_MEM_SELECT_OK)
     {
+      /*
+      Дії по встановленню мінімальних налаштувань
+      */
+      if (source == DEFAULT_PARAMS_FIX_CHANGES)
+      {
+        enum _menu2_levels temp_value_level = current_state_menu2.current_level;
+        while(
+              (temp_value_level >= __BEGIN_SETTINGS_MENU2_LEVEL) &&
+              (temp_value_level <  __NEXT_AFTER_SETTINGS_MENU2_LEVEL)
+             )
+        {
+          temp_value_level = previous_level_in_current_level_menu2[temp_value_level];
+        }
+        if (temp_value_level != current_state_menu2.current_level)
+        {
+          current_state_menu2.current_level = temp_value_level;
+          new_level_menu();
+        }
+        reconfiguration_RS_485 = true;
+        reconfiguration_RS_485_with_reset_usart = true;
+        set_password_USB = true;
+        set_password_RS485 = true;
+      }
+      /***/
+
+      /*
+      Дії по зміні налаштувань RS-485
+      */
       if (reconfiguration_RS_485 != 0)
       {
         //Підраховуємо нову величину затримки у бітах, яка допускається між байтами у RS-485 згідно з визначеними настройками
@@ -2235,6 +2114,9 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         //Виставляємо команду про переконфігурування RS-485
         if (reconfiguration_RS_485_with_reset_usart != 0) make_reconfiguration_RS_485 = 0xff;
       }
+      if (set_password_USB   != false) password_set_USB   = 1;
+      if (set_password_RS485 != false) password_set_RS485 = 1;
+      /***/
       
       _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
       
@@ -2251,7 +2133,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
         
         //Зміна конфігурції може змінити розміри налаштувань. а це може вплинути на розміщення триґерної інформації, тому її також записуємо
-        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+//        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
       }
       
       //Записуємо час останньої зміни конфігурації

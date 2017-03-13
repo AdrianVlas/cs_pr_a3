@@ -581,7 +581,7 @@ void main_manu_function_ver2(void)
               if (current_state_menu2.current_level == LIST_SETTINGS_MENU2_LEVEL)
               {
                 //Треба активувати нові налаштуваня
-                unsigned int result = set_config_and_settings(1, 1);
+                unsigned int result = set_config_and_settings(1, MENU_PARAMS_FIX_CHANGES);
                 if (result == 0)
                 {
                   //Знімаємо режим редагування
