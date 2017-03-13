@@ -5,6 +5,12 @@
 #define MASKA_CHANGED_CONFIGURATION     (1 << BIT_CHANGED_CONFIGURATION)
 #define BIT_CHANGED_SETTINGS            1
 #define MASKA_CHANGED_SETTINGS          (1 << BIT_CHANGED_SETTINGS)
+#define BIT_MENU_LOCKS                  2
+#define MASKA_MENU_LOCKS                (1 << BIT_MENU_LOCKS)
+#define BIT_USB_LOCKS                   3
+#define MASKA_USB_LOCKS                 (1 << BIT_USB_LOCKS)
+#define BIT_RS485_LOCKS                 4
+#define MASKA_RS485_LOCKS               (1 << BIT_RS485_LOCKS)
 
 #define NUMBER_IN_AND                   8
 #define NUMBER_IN_OR                    8

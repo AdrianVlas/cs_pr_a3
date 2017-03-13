@@ -6,7 +6,44 @@
 void main_manu_function_ver2(void)
 {
   //Перевіряємо чи якась кнопка натиснута
-  if (new_state_keyboard !=0)
+  if (current_state_menu2.edition == ED_ERROR) 
+  {
+    const uint8_t name_string_error[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+    {
+      {
+        " Дин.пам.недост.",
+        " Перезап.прибор "
+      },
+      {
+        " Дин.пам.недост.",
+        " Перезап.прилад "
+        ""
+      },
+      {
+        " Дин.пам.недост.",
+        " Restart device "
+      },
+      {
+        " Дин.пам.недост.",
+        " Перезап.прибор "
+      }
+    };
+    int index_language = index_language_in_array(select_struct_settings_fix()->language);
+    
+    //Копіюємо  рядки у робочий екран
+    for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    {
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i < 2) ? name_string_error[index_language][i][j] : ' ';
+    }
+  
+    //Курсор невидимий
+    current_state_menu2.cursor_on = 0;
+    //Курсор не мигає
+    current_state_menu2.cursor_blinking_on = 0;
+    //Обновити повністю весь екран
+    current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+  }
+  else if (new_state_keyboard !=0)
   {
 //    static enum _edition_stats prev_edit;
     
@@ -143,6 +180,11 @@ void main_manu_function_ver2(void)
                    )   
                 {
                   current_state_menu2.edition = ED_EDITION;
+                  if (current_state_menu2.current_level != TIME_MANU2_LEVEL) 
+                  {
+                    //Фіксуємо, що система меню захопила "монополію" на зміну конфігурації і налаштувань
+                    config_settings_modified = MASKA_MENU_LOCKS;
+                  }
                 }
                 else 
                 {
@@ -173,6 +215,16 @@ void main_manu_function_ver2(void)
               new_level_menu();
               
               current_state_menu2.edition = /*prev_edit*/ED_VIEWING;
+              
+              if ((config_settings_modified & MASKA_MENU_LOCKS) != 0 ) 
+              {
+                /*
+                Хоч, теоретично, цього випадку тут би ніколи не мало б бути, бо, 
+                коли ми вже захопили "монополію" на зміну налаштувань+ конфігурації,
+                 то запит на пароль не мав би з'являтися
+                */
+                config_settings_modified = 0;
+              }
             }
             current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
             current_state_menu2.position_cursor_x = previous_state_cursor.position_cursor_x;
@@ -287,7 +339,7 @@ void main_manu_function_ver2(void)
               number_symbols++;
               temp_value /= 10;
             }
-            if (number_symbols == 0) number_symbols = 1; //Це випадок коли current_settings.password1 = 0, тоді кількість символів рівна 0, бо число є "0"
+            if (number_symbols == 0) number_symbols = 1; //Це випадок коли password = 0, тоді кількість символів рівна 0, бо число є "0"
           }
           else if ((action = (new_state_keyboard & (1<<BIT_KEY_UP))) !=0)
           {
@@ -467,9 +519,7 @@ void main_manu_function_ver2(void)
     case DATE_TIME_INFO_MENU2_LEVEL:
       {
         //Формуємо маску кнопок, які можуть бути натиснутими
-        unsigned int maska_keyboard_bits = (1<<BIT_REWRITE);
-        
-        if (current_state_menu2.edition != ED_ERROR) maska_keyboard_bits |= (1<<BIT_KEY_ENTER);
+        unsigned int maska_keyboard_bits = (1<<BIT_REWRITE) | (1<<BIT_KEY_ENTER);
         
         if (current_state_menu2.edition == ED_CONFIRM_CHANGES) 
           maska_keyboard_bits |= (1<<BIT_KEY_ESC);
@@ -524,7 +574,7 @@ void main_manu_function_ver2(void)
               /*
               Натискування ENTER у режимі підтвердження дії має виконати цю дію.
               У залежності від результату виконання цієї дії треба або вивести повідомлення
-              про попредження, помилку або перейти у режим сполядання (з переходом) у те меню
+              про попредження, помилку або перейти у режим споглядання (з переходом) у те меню
               в яке спрямовувавося воно перед активацєю дій, які зараз будуть виконуватися
               */
               //Треба ввести у дію внесені зміни
@@ -552,7 +602,7 @@ void main_manu_function_ver2(void)
               }
               else
               {
-                //Знімаємро режим редагування
+                //Знімаємро режим редагування (поки що ця ситуація не використовується. Написана на майбутнє)
                 current_state_menu2.edition = ED_VIEWING;
               }
               
@@ -1027,9 +1077,7 @@ void main_manu_function_ver2(void)
     case TIMEOUT_RS485_MENU2_LEVEL:
       {
         //Формуємо маску кнопок, які можуть бути натиснутими
-        unsigned int maska_keyboard_bits = (1<<BIT_REWRITE);
-        
-        if (current_state_menu2.edition != ED_ERROR) maska_keyboard_bits |= (1<<BIT_KEY_ENTER);
+        unsigned int maska_keyboard_bits = (1<<BIT_REWRITE) | (1<<BIT_KEY_ENTER);
         
         if (
             (current_state_menu2.edition == ED_CONFIRM_CHANGES) ||
@@ -1156,6 +1204,9 @@ void main_manu_function_ver2(void)
               {
                 //Переходимо у режим редагування
                 current_state_menu2.edition = ED_EDITION;
+
+                //Фіксуємо, що система меню захопила "монополію" на зміну конфігурації і налаштувань
+                config_settings_modified = MASKA_MENU_LOCKS;
               }
               else
               {

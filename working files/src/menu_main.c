@@ -182,6 +182,9 @@ enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords
       {
         //Входимо з правом подальшого редагування
         current_state_menu2.edition = ED_CAN_BE_EDITED;
+
+        //Фіксуємо, що система меню захопила "монополію" на зміну конфігурації і налаштувань
+        config_settings_modified = MASKA_MENU_LOCKS;
       }
       else
       {

@@ -103,8 +103,6 @@ void move_into_list_settings(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_list_settings(void)
 {
-  int index_language = index_language_in_array(select_struct_settings_fix()->language);
-    
   if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
   {
     make_ekran_ask_rewrite();
@@ -134,40 +132,6 @@ void make_ekran_list_settings(void)
     };
 
     make_ekran_about_info(false, ((current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
-  }
-  else if (current_state_menu2.edition == ED_ERROR) 
-  {
-    const uint8_t name_string_error[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-    {
-      {
-        " Дин.пам.недост.",
-        " Перезап.прибор "
-      },
-      {
-        " Дин.пам.недост.",
-        " Перезап.прилад "
-        ""
-      },
-      {
-        " Дин.пам.недост.",
-        " Restart device "
-      },
-      {
-        " Дин.пам.недост.",
-        " Перезап.прибор "
-      }
-    };
-    
-    //Копіюємо  рядки у робочий екран
-    for (size_t i = 0; i < MAX_ROW_LCD; i++)
-    {
-      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i < 2) ? name_string_error[index_language][i][j] : ' ';
-    }
-  
-    //Курсор невидимий
-    current_state_menu2.cursor_on = 0;
-    //Курсор не мигає
-    current_state_menu2.cursor_blinking_on = 0;
   }
   else
   {
@@ -222,6 +186,7 @@ void make_ekran_list_settings(void)
         " Пароли         "
       }
     };
+    int index_language = index_language_in_array(select_struct_settings_fix()->language);
 
     unsigned int additional_current = 0;
     unsigned int position_temp = current_state_menu2.index_position;
@@ -322,28 +287,35 @@ void make_ekran_list_settings(void)
 /*****************************************************/
 void press_esc_in_list_settings(void)
 {
-  if (config_settings_modified != 0)
+  if ((config_settings_modified & MASKA_MENU_LOCKS) != 0)
   {
-    if (current_state_menu2.edition == ED_CAN_BE_EDITED)
+    if ((config_settings_modified & (MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS)) != 0)
     {
-      //Треба спитатися дозвіл на внесення змін
-      current_state_menu2.edition = ED_CONFIRM_CHANGES;
-    }
-    else if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
-    {
-      //Треба відмініти введення нових налаштувань
-      unsigned int result = set_config_and_settings(0, 1);
-      if (result == 0)
+      if (current_state_menu2.edition == ED_CAN_BE_EDITED)
       {
-        //Знімаємро режим редагування
-        current_state_menu2.edition = ED_VIEWING;
+        //Треба спитатися дозвіл на внесення змін
+        current_state_menu2.edition = ED_CONFIRM_CHANGES;
       }
-      else
+      else if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
       {
-        //Повідомляємо про критичну помилку
-        current_state_menu2.edition = ED_ERROR;
-      }
+        //Треба відмініти введення нових налаштувань
+        unsigned int result = set_config_and_settings(0, 1);
+        if (result == 0)
+        {
+          //Знімаємро режим редагування
+          current_state_menu2.edition = ED_VIEWING;
+        }
+        else
+        {
+          //Повідомляємо про критичну помилку
+          current_state_menu2.edition = ED_ERROR;
+        }
       
+        config_settings_modified = 0;
+      }
+    }
+    else
+    {
       config_settings_modified = 0;
     }
   }

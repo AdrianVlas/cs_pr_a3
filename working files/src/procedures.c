@@ -2283,7 +2283,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       (direction == 0)
      ) 
   {
-    //Повернення до пстану до редагування
+    //Повернення до стану до редагування
     if (
         (error == 1) ||
         (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
