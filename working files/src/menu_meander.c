@@ -75,7 +75,7 @@ void make_ekran_delay_meander(void)
 
           switch (index_in_ekran_tmp)
           {
-          case INDEX_DELAY_MEANDER_M2_PERIOD:
+          case INDEX_DELAY_MEANDER_PERIOD:
             {
               vaga = 10000; //максимальний ваговий коефіцієнт
               col_begin = COL_DELAY_MEANDER_PERIOD_BEGIN;
@@ -119,7 +119,7 @@ void make_ekran_delay_meander(void)
       int last_position_cursor_x = MAX_COL_LCD;
       switch (current_state_menu2.index_position)
       {
-      case INDEX_DELAY_MEANDER_M2_PERIOD:
+      case INDEX_DELAY_MEANDER_PERIOD:
         {
           current_state_menu2.position_cursor_x = COL_DELAY_MEANDER_PERIOD_BEGIN;
           last_position_cursor_x = COL_DELAY_MEANDER_PERIOD_END;
@@ -171,7 +171,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_meander(void)
     {
       switch (current_state_menu2.index_position)
       {
-      case INDEX_DELAY_MEANDER_M2_PERIOD:
+      case INDEX_DELAY_MEANDER_PERIOD:
         {
           current_state_menu2.position_cursor_x = COL_DELAY_MEANDER_PERIOD_BEGIN;
           break;
@@ -188,7 +188,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_meander(void)
       __settings_for_MEANDER *p_settings_for_meander_cont = (((__settings_for_MEANDER*)sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       switch (current_state_menu2.index_position)
       {
-      case INDEX_DELAY_MEANDER_M2_PERIOD:
+      case INDEX_DELAY_MEANDER_PERIOD:
         {
           if (p_settings_for_meander_cont->set_delay[MEANDER_SET_DELAY_PERIOD] != p_settings_for_meander_edit->set_delay[MEANDER_SET_DELAY_PERIOD]) 
           {
@@ -224,7 +224,7 @@ void press_esc_in_delay_meander(void)
   __settings_for_MEANDER *p_settings_for_meander_cont = (((__settings_for_MEANDER*)sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
   switch (current_state_menu2.index_position)
   {
-  case INDEX_DELAY_MEANDER_M2_PERIOD:
+  case INDEX_DELAY_MEANDER_PERIOD:
     {
       p_settings_for_meander_edit->set_delay[MEANDER_SET_DELAY_PERIOD] = p_settings_for_meander_cont->set_delay[MEANDER_SET_DELAY_PERIOD];
       break;
@@ -254,7 +254,7 @@ void change_delay_meander(unsigned int action)
     unsigned int col_end, col_comma;
     switch (current_state_menu2.index_position)
     {
-    case INDEX_DELAY_MEANDER_M2_PERIOD:
+    case INDEX_DELAY_MEANDER_PERIOD:
       {
         col_end = COL_DELAY_MEANDER_PERIOD_END;
         col_comma = COL_DELAY_MEANDER_PERIOD_COMMA;
@@ -273,7 +273,7 @@ void change_delay_meander(unsigned int action)
     int col_begin, col_end, col_comma;
     switch (current_state_menu2.index_position)
     {
-    case INDEX_DELAY_MEANDER_M2_PERIOD:
+    case INDEX_DELAY_MEANDER_PERIOD:
       {
         col_begin = COL_DELAY_MEANDER_PERIOD_BEGIN;
         col_end = COL_DELAY_MEANDER_PERIOD_END;

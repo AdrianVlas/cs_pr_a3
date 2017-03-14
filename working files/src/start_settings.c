@@ -1243,14 +1243,15 @@ void min_config(__CONFIG *target_label)
   target_label->n_output = NUMBER_OUTPUTS;
   target_label->n_led = NUMBER_LEDS;
   
-  target_label->n_timer = 0;
-  target_label->n_trigger = 0;
+  target_label->n_alarm = 0;
+  target_label->n_group_alarm = 0;
   target_label->n_and = 0;
   target_label->n_or = 0;
   target_label->n_xor = 0;
   target_label->n_not = 0;
+  target_label->n_timer = 0;
+  target_label->n_trigger = 0;
   
-  target_label->n_alarm = 0;
   target_label->n_meander = 0;
   
   for(unsigned int i = 0; i < (7+1); i++)

@@ -28,14 +28,29 @@ void make_ekran_configuration(void)
       " Дин.пам.недост."
     };
     
+    const uint8_t information_about_out_of_range[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      " Вых.за диапазон",
+      " Вих.за діапазон",
+      "  Out of Limits ",
+      "Вых.за диапазон "
+    };
+    
+    const uint8_t (*p_information)[MAX_COL_LCD + 1];
+    
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info( ((edition == ED_WARNING_ENTER_ESC) ? true : false), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    if (edition == ED_WARNING_EDITION_BUSY) p_information = information_about_info;
+    else if (edition == ED_WARNING_ENTER_ESC) p_information = information_about_out_of_range;
+    else p_information = information_about_error;
+    make_ekran_about_info( ((edition == ED_WARNING_ENTER_ESC) ? true : false), p_information);
   }
   else 
   {
     const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGURATION][MAX_COL_LCD + 1] = 
     {
       {
+        "      СЗС       ",
+        "      ШГС       ",
         "       И        ",
         "      ИЛИ       ",
         "    Искл.ИЛИ    ",
@@ -45,6 +60,8 @@ void make_ekran_configuration(void)
         "      ГПС       "
       },
       {
+        "      СЗС       ",
+        "      ШГС       ",
         "       І        ",
         "      АБО       ",
         "    Викл.АБО    ",
@@ -54,6 +71,8 @@ void make_ekran_configuration(void)
         "      ГПС       "
       },
       {
+        "      СЗС       ",
+        "      ШГС       ",
         "      AND       ",
         "       OR       ",
         "      XOR       ",
@@ -63,6 +82,8 @@ void make_ekran_configuration(void)
         "      PSG       "
       },
       {
+        "      СЗС       ",
+        "      ШГС       ",
         "       И        ",
         "      ИЛИ       ",
         "    Искл.ИЛИ    ",
@@ -100,6 +121,28 @@ void make_ekran_configuration(void)
 
           switch (index_in_ekran_tmp)
           {
+          case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_alarm;
+
+              break;
+            }
+          case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES_VAL_1 - 1);
+              vaga = 1; //максимальний ваговий коефіцієнт
+              for (unsigned int j = 0; j < (max_number_digit - 1); j++) vaga *= 10;
+              col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
+              col_end = col_begin + max_number_digit - 1;
+
+              value = p_current_config->n_group_alarm;
+
+              break;
+            }
           case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
             {
               vaga = 100; //максимальний ваговий коефіцієнт
@@ -200,6 +243,7 @@ void make_ekran_configuration(void)
       int last_position_cursor_x = MAX_COL_LCD;
       switch (current_state_menu2.index_position)
       {
+      case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
@@ -210,6 +254,16 @@ void make_ekran_configuration(void)
         {
           current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
           last_position_cursor_x = COL_CONF_3DIGIT_END;
+          break;
+        }
+      case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES_VAL_1 - 1);
+          col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
+          col_end = col_begin + max_number_digit - 1;
+
+          current_state_menu2.position_cursor_x = col_begin;
+          last_position_cursor_x = col_end;
           break;
         }
       default:
@@ -264,6 +318,7 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
     {
       switch (current_state_menu2.index_position)
       {
+      case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
@@ -275,6 +330,14 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
           current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
           break;
         }
+      case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES_VAL_1 - 1);
+          int col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
+
+          current_state_menu2.position_cursor_x = col_begin;
+          break;
+        }
       }
       break;
     }
@@ -284,6 +347,22 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
       result = RPEDE_DATA_NOT_CHANGED;
       switch (current_state_menu2.index_position)
       {
+      case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_alarm != current_config.n_alarm) result = RPEDE_DATA_CHANGED_OK;
+          break;
+        }
+      case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_group_alarm != current_config.n_group_alarm) 
+          {
+            if (check_data_setpoint(current_config_edit.n_group_alarm, 0, (NUMBER_ANALOG_CANALES_VAL_1 - 1)) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
+          break;
+        }
       case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
         {
           if (current_config_edit.n_and != current_config.n_and) result = RPEDE_DATA_CHANGED_OK;
@@ -352,6 +431,16 @@ void press_esc_in_configuration(void)
 {
   switch (current_state_menu2.index_position)
   {
+  case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_alarm = current_config.n_alarm;
+      break;
+    }
+  case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_group_alarm = current_config.n_group_alarm;
+      break;
+    }
   case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
     {
       current_config_edit.n_and = current_config.n_and;
@@ -412,6 +501,19 @@ void change_configuration(unsigned int action)
     unsigned int col_end;
     switch (current_state_menu2.index_position)
     {
+    case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_alarm;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_group_alarm;
+        unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES_VAL_1 - 1);
+        col_end = ((MAX_COL_LCD + max_number_digit) >> 1) - 1;/*після спрощення цього виразу ((MAX_COL_LCD - max_number_digit) >> 1) + max_number_digit - 1*/
+        break;
+      }
     case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
       {
         p_value = &current_config_edit.n_and;
@@ -469,6 +571,7 @@ void change_configuration(unsigned int action)
     int col_begin, col_end;
     switch (current_state_menu2.index_position)
     {
+    case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
     case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
     case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
     case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
@@ -479,6 +582,13 @@ void change_configuration(unsigned int action)
       {
         col_begin = COL_CONF_3DIGIT_BEGIN;
         col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES_VAL_1 - 1);
+        col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
+        col_end = col_begin + max_number_digit - 1;
         break;
       }
     }

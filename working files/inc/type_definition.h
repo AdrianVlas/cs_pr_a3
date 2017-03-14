@@ -132,6 +132,52 @@ typedef struct
 /**********/
 
 /**********
+Світлозвукова сигналізація
+**********/
+typedef struct
+{
+  int32_t set_delay[ALARM_SET_DELAYS];
+  uint32_t control;
+  uint32_t param[ALARM_SIGNALS_IN];
+  
+} __settings_for_ALARM;
+
+typedef struct
+{
+  __settings_for_ALARM settings;
+
+  int32_t work_delay[ALARM_WORK_DELAYS];
+  uint8_t active_state[DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8)];
+
+} __LN_ALARM;
+/**********/
+
+/**********
+ШГС
+**********/
+typedef struct
+{
+  int32_t pickup[GROUP_ALARM_PICKUPS];
+  int32_t set_delay[GROUP_ALARM_SET_DELAYS];
+  uint32_t control;
+  uint32_t analog_input_control;
+  
+} __settings_for_GROUP_ALARM;
+
+typedef struct
+{
+  __settings_for_GROUP_ALARM settings;
+
+  int32_t work_delay[GROUP_ALARM_WORK_DELAYS];
+  uint8_t active_state[DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8)];
+  uint32_t NNC; /*New number of Curcuit*/
+
+} __LN_GROUP_ALARM;
+/**********/
+
+/**********
 Елемент стандартної логіки "І"
 **********/
 typedef struct
@@ -305,6 +351,8 @@ typedef struct
   uint32_t n_output;                    //Кількість дискретних виходів
   uint32_t n_led;                       //Кількість дискретних світлоіндикаторів
   
+  uint32_t n_alarm;                     //Кількість блоків сигналізацій
+  uint32_t n_group_alarm;               //Ввімк./Вимк. Контролю приростів струмів
   uint32_t n_and;                       //Кількість елементів "І"
   uint32_t n_or;                        //Кількість елементів "АБО"
   uint32_t n_xor;                       //Кількість елементів "Викл.АБО"
@@ -313,8 +361,6 @@ typedef struct
   uint32_t n_trigger;                   //Кількість триґерів
 
   uint32_t n_meander;                   //Кількість генераторів меандру
-  uint32_t n_alarm;                     //Кількість блоків сигналізацій
-  uint32_t n_ctrl_analog_inputs;        //Ввімк./Вимк. Контролю приростів струмів
 
 
   uint8_t time_config[7+1];       //Час останніх змін уставок-витримок-управління
@@ -420,11 +466,12 @@ typedef struct
 
 } __DRIVER_SPI_DF;
 
-typedef enum __STATE_READING_ADCs {
-STATE_READING_ADCs_NONE = 0,
-STATE_READING_WRITE,
-STATE_READING_WRITE_READ,
-STATE_READING_READ
+typedef enum __STATE_READING_ADCs 
+{
+  STATE_READING_ADCs_NONE = 0,
+  STATE_READING_WRITE,
+  STATE_READING_WRITE_READ,
+  STATE_READING_READ
 } STATE_READING_ADCs;
 
 typedef struct
@@ -440,13 +487,5 @@ typedef struct
   int value;
 } EXTENDED_SAMPLE;
 
-typedef struct
-{
-  unsigned int present;
-  int start_index;
-  int stop_index;
-  int number_per_index;
-  int real_number;
-} EL_FILTER_STRUCT;
 
 #endif

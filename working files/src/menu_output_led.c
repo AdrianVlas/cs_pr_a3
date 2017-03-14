@@ -117,7 +117,7 @@ void make_ekran_control_output_led(void)
         else
         {
           //У парному номері рядку виводимо значення
-          if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_N_T)  
+          if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_N_T)  
           {
             const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
             {
@@ -136,14 +136,14 @@ void make_ekran_control_output_led(void)
           
             for (size_t j = 0; j < MAX_COL_LCD; j++) 
             {
-              working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_N_T) & 0x1][j];
+              working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_N_T) & 0x1][j];
             }
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_N_T) & 0x1];
+              current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_N_T) & 0x1];
             }
           }
-          else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_C_I)  
+          else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_C_I)  
           {
             const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
             {
@@ -162,14 +162,14 @@ void make_ekran_control_output_led(void)
           
             for (size_t j = 0; j < MAX_COL_LCD; j++)
             {
-              working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_C_I) & 0x1][j];
+              working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_C_I) & 0x1][j];
             }
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_C_I) & 0x1];
+              current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_C_I) & 0x1];
             }
           }
-          else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_SI_EI)  
+          else if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_SI_EI)  
           {
             const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
             {
@@ -188,20 +188,20 @@ void make_ekran_control_output_led(void)
           
             for (size_t j = 0; j < MAX_COL_LCD; j++) 
             {
-              working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_SI_EI) & 0x1][j];
+              working_ekran[i][j] = information[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_SI_EI) & 0x1][j];
             }
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_M2_SI_EI) & 0x1];
+              current_state_menu2.position_cursor_x = cursor_x[index_language][(((current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->control : ((__settings_for_LED*)p_settings)->control) >> INDEX_CTRL_OUTPUT_LED_SI_EI) & 0x1];
             }
           }
           else if (
-                   (index_in_ekran_tmp >= INDEX_CTRL_OUTPUT_LED_M2_MEANDER1) &&
-                   (index_in_ekran_tmp <= INDEX_CTRL_OUTPUT_LED_M2_MEANDER2)
+                   (index_in_ekran_tmp >= INDEX_CTRL_OUTPUT_LED_MEANDER1) &&
+                   (index_in_ekran_tmp <= INDEX_CTRL_OUTPUT_LED_MEANDER2)
                   )   
           {
             unsigned int param_input;
-            if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_M2_MEANDER1)
+            if (index_in_ekran_tmp == INDEX_CTRL_OUTPUT_LED_MEANDER1)
               param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->param[OUTPUT_MEANDER1] : ((__settings_for_LED*)p_settings)->param[LED_MEANDER1];
             else
               param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? ((__settings_for_OUTPUT*)p_settings)->param[OUTPUT_MEANDER2] : ((__settings_for_LED*)p_settings)->param[LED_MEANDER2];
@@ -443,9 +443,9 @@ void change_control_output_led(unsigned int action)
   {
     int16_t index_position = current_state_menu2.index_position;
     if (
-        (index_position == INDEX_CTRL_OUTPUT_LED_M2_N_T) ||
-        (index_position == INDEX_CTRL_OUTPUT_LED_M2_C_I) ||
-        (index_position == INDEX_CTRL_OUTPUT_LED_M2_SI_EI)
+        (index_position == INDEX_CTRL_OUTPUT_LED_N_T) ||
+        (index_position == INDEX_CTRL_OUTPUT_LED_C_I) ||
+        (index_position == INDEX_CTRL_OUTPUT_LED_SI_EI)
        )  
     {
       if (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL)
@@ -463,7 +463,7 @@ void change_control_output_led(unsigned int action)
       if (n_meander > 0)
       {
         uint32_t *param_input;
-        if (index_position == INDEX_CTRL_OUTPUT_LED_M2_MEANDER1)
+        if (index_position == INDEX_CTRL_OUTPUT_LED_MEANDER1)
         {
           param_input = (current_state_menu2.current_level == CTRL_OUTPUT_MENU2_LEVEL) ? &(((__settings_for_OUTPUT*)p_settings_edit)->param[OUTPUT_MEANDER1]) : &(((__settings_for_LED*)p_settings_edit)->param[LED_MEANDER1]);
         }

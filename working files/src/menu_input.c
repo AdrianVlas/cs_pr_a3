@@ -70,7 +70,7 @@ void make_ekran_control_input(void)
         else
         {
           //У парному номері рядку виводимо значення
-          if (index_in_ekran_tmp == INDEX_CTRL_INPUT_M2_TYPE_SIGNAL)  
+          if (index_in_ekran_tmp == INDEX_CTRL_INPUT_TYPE_SIGNAL)  
           {
             const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
             {
@@ -135,7 +135,7 @@ enum _result_pressed_enter_during_edition press_enter_in_control_input(void)
       {
         if ((p_settings_edit->control & ((uint32_t)(~MASKA_CTRL_INPUT_M2))) == 0)
         {
-          if ((p_settings_edit->control & (1 << INDEX_CTRL_INPUT_M2_TYPE_SIGNAL)) != 0)
+          if ((p_settings_edit->control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) != 0)
           {
             int32_t delay = p_settings_edit->set_delay[INPUT_SET_DELAY_DOPUSK];
             if (delay < KOEF_DOPUSK_DV_ZMIN_MIN)
@@ -398,7 +398,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_input(void)
         {
           if (p_settings_for_input_cont->set_delay[INPUT_SET_DELAY_DOPUSK] != p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK]) 
           {
-            unsigned int min_porig = ((p_settings_for_input_edit->control & (1 << INDEX_CTRL_INPUT_M2_TYPE_SIGNAL)) == 0  ) ? KOEF_DOPUSK_DV_POST_MIN : KOEF_DOPUSK_DV_ZMIN_MIN;
+            unsigned int min_porig = ((p_settings_for_input_edit->control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) == 0  ) ? KOEF_DOPUSK_DV_POST_MIN : KOEF_DOPUSK_DV_ZMIN_MIN;
             if (check_data_setpoint(p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK], min_porig, KOEF_DOPUSK_DV_MAX) == 1)
             {
               p_settings_for_input_cont->set_delay[INPUT_SET_DELAY_DOPUSK] = p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK];
@@ -484,7 +484,7 @@ void change_delay_input(unsigned int action)
         col_begin = COL_DELAY_INPUT_DOPUSK_BEGIN;
         col_end = COL_DELAY_INPUT_DOPUSK_END;
 
-        if (((((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control & (1 << INDEX_CTRL_INPUT_M2_TYPE_SIGNAL)) != 0)
+        if (((((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) != 0)
         {
           col_end -= 1;
         }

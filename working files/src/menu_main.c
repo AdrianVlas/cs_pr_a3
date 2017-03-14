@@ -20,7 +20,7 @@ void move_into_main(unsigned int action, int max_row)
       if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
       while (
              (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
-             (current_config_prt.n_ctrl_analog_inputs == 0)
+             (current_config_prt.n_group_alarm == 0)
             )
       {
         if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
@@ -36,7 +36,7 @@ void move_into_main(unsigned int action, int max_row)
       if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
       while (
              (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
-             (current_config_prt.n_ctrl_analog_inputs == 0)
+             (current_config_prt.n_group_alarm == 0)
             )
       {
         if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
@@ -106,7 +106,7 @@ void make_ekran_main(void)
   {
     if (
         (index_1 == INDEX_MAIN_M2_MEASURMENTS) &&
-        (current_config_prt.n_ctrl_analog_inputs == 0)
+        (current_config_prt.n_group_alarm == 0)
        )
     {
       if ((index_1 - additional_current) < position_temp) position_temp--;

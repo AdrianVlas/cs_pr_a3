@@ -45,21 +45,23 @@ enum _id_fb
 
       _ID_FB_FIRST_VAR_CHANGED = _ID_FB_LAST_VAR_NONE_CHANGED,          /*5*/
       
-        ID_FB_AND = _ID_FB_FIRST_VAR_CHANGED,                           /*5*/
-        ID_FB_OR,                                                       /*6*/
-        ID_FB_XOR,                                                      /*7*/
-        ID_FB_NOT,                                                      /*8*/
+        ID_FB_ALARM = _ID_FB_FIRST_VAR_CHANGED,                         /*5*/
+        ID_FB_GROUP_ALARM,                                              /*6*/
+        ID_FB_AND,                                                      /*7*/
+        ID_FB_OR,                                                       /*8*/
+        ID_FB_XOR,                                                      /*9*/
+        ID_FB_NOT,                                                      /*10*/
 
-        ID_FB_TIMER,                                                    /*9*/
-        ID_FB_TRIGGER,                                                  /*10*/
+        ID_FB_TIMER,                                                    /*11*/
+        ID_FB_TRIGGER,                                                  /*12*/
 
-        ID_FB_MEANDER,                                                  /*11*/
+        ID_FB_MEANDER,                                                  /*13*/
   
-      _ID_FB_LAST_VAR_CHANGED,                                          /*12*/
+      _ID_FB_LAST_VAR_CHANGED,                                          /*14*/
       
-    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*12*/
+    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*14*/
 
-  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*12*/
+  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*14*/
 };
 
 #define NUMBER_FIX_BLOCKS       (_ID_FB_LAST_FIX - _ID_FB_FIRST_FIX)
@@ -70,15 +72,31 @@ enum _id_fb
 #define NUMBER_VAR_BLOCKS       (NUMBER_VAR_BLOCKS_NONE_CHANGED + NUMBER_VAR_BLOCKS_CHANGED)
 #define NUMBER_ALL_BLOCKS       (NUMBER_FIX_BLOCKS + NUMBER_VAR_BLOCKS)
 
-enum _signals_of_fix_block 
+/*
+Блок загальних функцій
+*/
+enum _FIX_BLOCK_output_signals 
 {
   FIX_BLOCK_DEFECT = 0,
   FIX_BLOCK_AVAR_DEFECT,
   FIX_BLOCK_SETTINGS_CHANGED,
   
-  FIX_BLOCK_SIGNALS
+  FIX_BLOCK_OUT
 };
 
+enum _FIX_BLOCK_input_signals
+{
+  FIX_BLOCK_ALARM = 0,
+  FIX_BLOCK_MUTE,
+  FIX_BLOCK_BLOCK,
+  
+  FIX_BLOCK_SIGNALS_IN
+};
+/***/
+
+/*
+Дискретні входи
+*/
 enum _settings_delay_of_INPUT
 {
   INPUT_SET_DELAY_DOPUSK = 0,
@@ -93,23 +111,26 @@ enum _work_delay_of_INPUT
   INPUT_WORK_DELAYS
 };
 
-enum __index_ctrl_input_m2
+enum __index_ctrl_input
 {
-  INDEX_CTRL_INPUT_M2_TYPE_SIGNAL = 0,
+  INDEX_CTRL_INPUT_TYPE_SIGNAL = 0,
   
   MAX_INDEX_CTRL_INPUT
 };
 
-
-enum _signals_of_INPUT
+enum _INPUT_output_signals
 {
   INPUT_OUT = 0,
   
   INPUT_SIGNALS_OUT
     
 };
+/***/
 
-enum _signals_of_OUTPUT
+/*
+Дискретні виходи
+*/
+enum _OUTPUT_output_signals
 {
   OUTPUT_OUT = 0,
   OUTPUT_BOARD,
@@ -117,7 +138,7 @@ enum _signals_of_OUTPUT
   OUTPUT_SIGNALS_OUT
     
 };
-enum _output_input_signals
+enum _OUTPUT_input_signals
 {
   OUTPUT_LOGIC_INPUT = 0,
   OUTPUT_RESET,
@@ -126,23 +147,32 @@ enum _output_input_signals
   
   OUTPUT_SIGNALS_IN
 };
+/***/
 
-enum __index_ctrl_output_led_m2
+/*
+Дискретні виходи+світлоіндикатори
+*/
+
+enum __index_ctrl_output_led
 {
-  INDEX_CTRL_OUTPUT_LED_M2_N_T = 0, /*N - normal; T - trigger*/
-  INDEX_CTRL_OUTPUT_LED_M2_C_I, /*C - Constant; I - impulse*/
-  INDEX_CTRL_OUTPUT_LED_M2_SI_EI, /*SI - simple impulse; EI - expanded impulse*/
+  INDEX_CTRL_OUTPUT_LED_N_T = 0, /*N - normal; T - trigger*/
+  INDEX_CTRL_OUTPUT_LED_C_I, /*C - Constant; I - impulse*/
+  INDEX_CTRL_OUTPUT_LED_SI_EI, /*SI - simple impulse; EI - expanded impulse*/
 
   _MAX_INDEX_CTRL_OUTPUT_LED_BITS_SETTINGS,
   
-  INDEX_CTRL_OUTPUT_LED_M2_MEANDER1 = _MAX_INDEX_CTRL_OUTPUT_LED_BITS_SETTINGS,
-  INDEX_CTRL_OUTPUT_LED_M2_MEANDER2,
+  INDEX_CTRL_OUTPUT_LED_MEANDER1 = _MAX_INDEX_CTRL_OUTPUT_LED_BITS_SETTINGS,
+  INDEX_CTRL_OUTPUT_LED_MEANDER2,
   
   MAX_INDEX_CTRL_OUTPUT_LED
 };
+/***/
 
 
-enum _signals_of_LED
+/*
+Дискретні світлоіндикатори
+*/
+enum _LED_output_signals
 {
   LED_OUT = 0,
   LED_BOARD,
@@ -150,7 +180,7 @@ enum _signals_of_LED
   LED_SIGNALS_OUT
     
 };
-enum _led_input_signals
+enum _LED_input_signals
 {
   LED_LOGIC_INPUT = 0,
   LED_RESET,
@@ -159,40 +189,160 @@ enum _led_input_signals
   
   LED_SIGNALS_IN
 };
+/***/
 
+/*
+Світлозвукова сигналізація
+*/
+enum _settings_delay_of_ALARM
+{
+  ALARM_SET_DELAY_PERIOD = 0,
+  
+  ALARM_SET_DELAYS
+};
 
-enum _signals_of_AND
+enum _work_delay_of_ALARM
+{
+  ALARM_WORK_DELAY_PERIOD = 0,
+  
+  ALARM_WORK_DELAYS
+};
+
+enum _ALARM_output_signals
+{
+  ALARM_OUT_ALARM = 0,
+  ALARM_OUT_MUTE,
+  ALARM_OUT_BLOCK,
+  
+  ALARM_SIGNALS_OUT
+    
+};
+enum _ALARM_input_signals
+{
+  ALARM_LOGIC_INPUT = 0,
+  ALARM_IN_MUTE,
+  ALARM_IN_BLOCK,
+  ALARM_RESET,
+  
+  ALARM_SIGNALS_IN
+};
+
+enum __index_ctrl_alarm
+{
+  _MAX_INDEX_CTRL_ALARM_BITS_SETTINGS = 0,
+  
+  INDEX_CTRL_ALARM_MODE = _MAX_INDEX_CTRL_ALARM_BITS_SETTINGS,
+  
+  MAX_INDEX_CTRL_ALARM
+};
+/***/
+
+/*
+ШГС
+*/
+enum _settings_pickup_of_GROUP_ALARM
+{
+  GROUP_ALARM_PICKUP_DELTA_I = 0,
+  
+  GROUP_ALARM_PICKUPS
+};
+
+enum _settings_delay_of_GROUP_ALARM
+{
+  GROUP_ALARM_SET_DELAY_DELAY = 0,
+  GROUP_ALARM_SET_DELAY_RESET,
+  
+  GROUP_ALARM_SET_DELAYS
+};
+
+enum _work_delay_of_GROUP_ALARM
+{
+  GROUP_ALARM_WORK_DELAY_DELAY = 0,
+  GROUP_ALARM_WORK_DELAY_RESET,
+  
+  GROUP_ALARM_WORK_DELAYS
+};
+
+enum _GROUP_ALARM_output_signals
+{
+  GROUP_ALARM_OUT_NNP = 0,
+  GROUP_ALARM_OUT_NNM,
+  GROUP_ALARM_OUT_CC,
+  GROUP_ALARM_OUT_CE,
+  GROUP_ALARM_OUT_OC,
+  
+  GROUP_ALARM_SIGNALS_OUT
+    
+};
+
+enum _GROUP_ALARM_analog_input
+{
+  GROUP_ALARM_ANALOG_INPUT_I = 0,
+  
+  GROUP_ALARM_ANALOG_INPUTS
+};
+
+enum __index_ctrl_group_alarm
+{
+  INDEX_CTRL_GROUP_ALARM_STATE = 0,
+  INDEX_CTRL_GROUP_ALARM_CTRL_STATE,
+
+  
+  MAX_INDEX_CTRL_GROUP_ALARM
+};
+/***/
+
+/*
+"І"
+*/
+enum _AND_output_signals
 {
   AND_OUT = 0,
   
   AND_SIGNALS_OUT
     
 };
+/***/
 
-enum _signals_of_OR
+/*
+"АБО"
+*/
+enum _OR_output_signals
 {
   OR_OUT = 0,
   
   OR_SIGNALS_OUT
     
 };
+/***/
 
-enum _signals_of_XOR
+/*
+"Викл.АБО"
+*/
+enum _XOR_output_signals
 {
   XOR_OUT = 0,
   
   XOR_SIGNALS_OUT
     
 };
+/***/
 
-enum _signals_of_NOT
+/*
+"НЕ"
+*/
+enum _NOT_output_signals
 {
   NOT_OUT = 0,
   
   NOT_SIGNALS_OUT
     
 };
+/***/
 
+/*
+"БФ-Таймер"
+*/
 enum _settings_delay_of_TIMER
 {
   TIMER_SET_DELAY_PAUSE = 0,
@@ -212,22 +362,26 @@ enum _work_delay_of_TIMER
   TIMER_WORK_DELAYS
 };
 
-enum _signals_of_TIMER
+enum _TIMER_output_signals
 {
   TIMER_OUT = 0,
   
   TIMER_SIGNALS_OUT
     
 };
-enum _output_timer_signals
+enum _TIMER_input_signals
 {
   TIMER_LOGIC_INPUT = 0,
   TIMER_RESET,
   
   TIMER_SIGNALS_IN
 };
+/***/
 
-enum _signals_of_TRIGGER
+/*
+Триґер
+*/
+enum _TRIGGER_output_signals
 {
   TRIGGER_OUT = 0,
   TRIGGER_OUT_INV,
@@ -236,7 +390,7 @@ enum _signals_of_TRIGGER
     
 };
 
-enum _input_signals_of_TRIGGER
+enum _TRIGGER_input_signals
 {
   INPUT_TRIGGER_SET = 0,
   INPUT_TRIGGER_RESET,
@@ -246,7 +400,11 @@ enum _input_signals_of_TRIGGER
   TRIGGER_SIGNALS_IN
     
 };
+/***/
 
+/*
+ГПС
+*/
 enum _settings_delay_of_MEANDER
 {
   MEANDER_SET_DELAY_PERIOD = 0,
@@ -261,7 +419,7 @@ enum _work_delay_of_MEANDER
   MEANDER_WORK_DELAYS
 };
 
-enum _signals_of_MEANDER
+enum _MEANDER_output_signals
 {
   MEANDER_OUT = 0,
   
@@ -269,12 +427,12 @@ enum _signals_of_MEANDER
     
 };
 
-enum __index_delay_meander_m2
+enum __index_delay_meander
 {
-  INDEX_DELAY_MEANDER_M2_PERIOD = 0,
+  INDEX_DELAY_MEANDER_PERIOD = 0,
   
   MAX_INDEX_DELAY_MEANDER
 };
-
+/***/
 
 #endif

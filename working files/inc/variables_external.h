@@ -50,8 +50,9 @@ extern unsigned int measurement_middle[NUMBER_ANALOG_CANALES];
 extern unsigned int measurement_low[NUMBER_ANALOG_CANALES]; 
 
 extern volatile unsigned int state_inputs;
-extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS, 8)];
-//extern uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS, 8)];
+extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
+extern uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
+//extern uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
 //extern unsigned char crc_trg_func, crc_trg_func_ctrl;
 extern unsigned int pressed_buttons;
 extern volatile unsigned int activation_function_from_interface;

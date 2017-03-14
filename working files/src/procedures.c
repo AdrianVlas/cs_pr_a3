@@ -472,6 +472,32 @@ void control_settings(unsigned int modified)
 
           break;
         }
+      case ID_FB_ALARM:
+        {
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_ALARM);
+            n_item = current_config_prt.n_alarm;
+          }
+
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_ALARM*)sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + item);
+          point_1 = (uint8_t *)(&(((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + item)->settings) ;
+
+          break;
+        }
+      case ID_FB_GROUP_ALARM:
+        {
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_GROUP_ALARM);
+            n_item = current_config_prt.n_group_alarm;
+          }
+
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + item);
+          point_1 = (uint8_t *)(&(((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + item)->settings) ;
+
+          break;
+        }
       case ID_FB_AND:
         {
           if (item == 0)
@@ -857,6 +883,28 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_LED) : sizeof(__settings_for_LED));
           break;
         }
+      case ID_FB_ALARM:
+        {
+          //Елемент "СЗС"
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_alarm : 0;
+          p_current_field = &current->n_alarm;
+          n_cur = edited->n_alarm;
+          
+          min_param = min_settings_ALARM;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_ALARM) : sizeof(__settings_for_ALARM));
+          break;
+        }
+      case ID_FB_GROUP_ALARM:
+        {
+          //Елемент "ШГС"
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_group_alarm : 0;
+          p_current_field = &current->n_group_alarm;
+          n_cur = edited->n_group_alarm;
+          
+          min_param = min_settings_GROUP_ALARM;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_GROUP_ALARM) : sizeof(__settings_for_GROUP_ALARM));
+          break;
+        }
       case ID_FB_AND:
         {
           //Елемент "І"
@@ -1074,6 +1122,26 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         
         copy_settings_LN = copy_settings_LED;
         size = n_prev*sizeof(__settings_for_LED);
+        break;
+      }
+    case ID_FB_ALARM:
+      {
+        //Елемент "СЗС"
+        n_cur  = current->n_alarm;
+        current->n_alarm = n_prev = control->n_alarm;
+        
+        copy_settings_LN = copy_settings_ALARM;
+        size = n_prev*sizeof(__settings_for_ALARM);
+        break;
+      }
+    case ID_FB_GROUP_ALARM:
+      {
+        //Елемент "ШГС"
+        n_cur  = current->n_group_alarm;
+        current->n_group_alarm = n_prev = control->n_group_alarm;
+        
+        copy_settings_LN = copy_settings_GROUP_ALARM;
+        size = n_prev*sizeof(__settings_for_GROUP_ALARM);
         break;
       }
     case ID_FB_AND:
@@ -1373,6 +1441,148 @@ void copy_settings_LED(unsigned int mem_to_prt, unsigned int mem_from_prt, uintp
     {
       //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
       total_error_sw_fixed(92);
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для елементу "СЗС"
+/*****************************************************/
+void min_settings_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    if (mem_to_prt == true) 
+    {
+      ((__LN_ALARM *)(base) + shift)->settings.set_delay[ALARM_SET_DELAY_PERIOD] = TIMEOUT_ALARM_PERIOD_MIN;
+      ((__LN_ALARM *)(base) + shift)->settings.control = 0;
+      for (size_t i = 0; i < ALARM_SIGNALS_IN; i++) ((__LN_ALARM *)(base) + shift)->settings.param[i] = 0;
+    }
+    else 
+    {
+      ((__settings_for_ALARM *)(base) + shift)->set_delay[ALARM_SET_DELAY_PERIOD] = TIMEOUT_ALARM_PERIOD_MIN;
+      ((__settings_for_ALARM *)(base) + shift)->control = 0;
+      for (size_t i = 0; i < ALARM_SIGNALS_IN; i++) ((__settings_for_ALARM *)(base) + shift)->param[i] = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < ALARM_WORK_DELAYS; i++) ((__LN_ALARM *)(base) + shift)->work_delay[i] = -1;
+      for (size_t i = 0; i < DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8); i++)
+      {
+        ((__LN_ALARM *)(base) + shift)->active_state[i] = 0;
+        ((__LN_ALARM *)(base) + shift)->trigger_state[i] = 0;
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для елементу "СЗС"
+/*****************************************************/
+void copy_settings_ALARM(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    if ((mem_to_prt == false) && (mem_from_prt == true))
+    {
+      for (size_t i = 0; i < ALARM_SET_DELAYS; i++) ((__settings_for_ALARM *)(base_target) + shift)->set_delay[i] = ((__LN_ALARM *)(base_source) + shift)->settings.set_delay[i];
+      ((__settings_for_ALARM *)(base_target) + shift)->control = ((__LN_ALARM *)(base_source) + shift)->settings.control;
+      for (size_t i = 0; i < ALARM_SIGNALS_IN; i++) ((__settings_for_ALARM *)(base_target) + shift)->param[i] = ((__LN_ALARM *)(base_source) + shift)->settings.param[i];
+    }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      for (size_t i = 0; i < ALARM_SET_DELAYS; i++)((__LN_ALARM *)(base_target) + shift)->settings.set_delay[i] = ((__settings_for_ALARM *)(base_source) + shift)->set_delay[i];
+      ((__LN_ALARM *)(base_target) + shift)->settings.control = ((__settings_for_ALARM *)(base_source) + shift)->control;
+      for (size_t i = 0; i < ALARM_SIGNALS_IN; i++) ((__LN_ALARM *)(base_target) + shift)->settings.param[i] = ((__settings_for_ALARM *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      for (size_t i = 0; i < ALARM_SET_DELAYS; i++)((__settings_for_ALARM *)(base_target) + shift)->set_delay[i] = ((__settings_for_ALARM *)(base_source) + shift)->set_delay[i];
+      ((__settings_for_ALARM *)(base_target) + shift)->control = ((__settings_for_ALARM *)(base_source) + shift)->control;
+      for (size_t i = 0; i < ALARM_SIGNALS_IN; i++) ((__settings_for_ALARM *)(base_target) + shift)->param[i] = ((__settings_for_ALARM *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+      total_error_sw_fixed(12);
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для елементу "ШГС"
+/*****************************************************/
+void min_settings_GROUP_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    if (mem_to_prt == true) 
+    {
+      ((__LN_GROUP_ALARM *)(base) + shift)->settings.pickup[GROUP_ALARM_PICKUP_DELTA_I] = PICKUP_ALARM_DELTA_I_MIN;
+      ((__LN_GROUP_ALARM *)(base) + shift)->settings.set_delay[GROUP_ALARM_SET_DELAY_DELAY] = TIMEOUT_GROUP_ALARM_DELAY_MIN;
+      ((__LN_GROUP_ALARM *)(base) + shift)->settings.set_delay[GROUP_ALARM_SET_DELAY_RESET] = TIMEOUT_GROUP_ALARM_RESET_MIN;
+      ((__LN_GROUP_ALARM *)(base) + shift)->settings.control = 0;
+      ((__LN_GROUP_ALARM *)(base) + shift)->settings.analog_input_control = 0;
+    }
+    else 
+    {
+      ((__settings_for_GROUP_ALARM *)(base) + shift)->pickup[GROUP_ALARM_PICKUP_DELTA_I] = PICKUP_ALARM_DELTA_I_MIN;
+      ((__settings_for_GROUP_ALARM *)(base) + shift)->set_delay[GROUP_ALARM_SET_DELAY_DELAY] = TIMEOUT_GROUP_ALARM_DELAY_MIN;
+      ((__settings_for_GROUP_ALARM *)(base) + shift)->set_delay[GROUP_ALARM_SET_DELAY_RESET] = TIMEOUT_GROUP_ALARM_RESET_MIN;
+      ((__settings_for_GROUP_ALARM *)(base) + shift)->control = 0;
+      ((__settings_for_GROUP_ALARM *)(base) + shift)->analog_input_control = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < GROUP_ALARM_WORK_DELAYS; i++) ((__LN_GROUP_ALARM *)(base) + shift)->work_delay[i] = -1;
+      for (size_t i = 0; i < DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8); i++)
+      {
+        ((__LN_GROUP_ALARM *)(base) + shift)->active_state[i] = 0;
+        ((__LN_GROUP_ALARM *)(base) + shift)->trigger_state[i] = 0;
+        ((__LN_GROUP_ALARM *)(base) + shift)->NNC = 0;
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для елементу "ШГС"
+/*****************************************************/
+void copy_settings_GROUP_ALARM(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    if ((mem_to_prt == false) && (mem_from_prt == true))
+    {
+      for (size_t i = 0; i < GROUP_ALARM_PICKUPS; i++) ((__settings_for_GROUP_ALARM *)(base_target) + shift)->pickup[i] = ((__LN_GROUP_ALARM *)(base_source) + shift)->settings.pickup[i];
+      for (size_t i = 0; i < GROUP_ALARM_SET_DELAYS; i++) ((__settings_for_GROUP_ALARM *)(base_target) + shift)->set_delay[i] = ((__LN_GROUP_ALARM *)(base_source) + shift)->settings.set_delay[i];
+      ((__settings_for_GROUP_ALARM *)(base_target) + shift)->control = ((__LN_GROUP_ALARM *)(base_source) + shift)->settings.control;
+      ((__settings_for_GROUP_ALARM *)(base_target) + shift)->analog_input_control = ((__LN_GROUP_ALARM *)(base_source) + shift)->settings.analog_input_control;
+    }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      for (size_t i = 0; i < GROUP_ALARM_PICKUPS; i++)((__LN_GROUP_ALARM *)(base_target) + shift)->settings.pickup[i] = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->pickup[i];
+      for (size_t i = 0; i < GROUP_ALARM_SET_DELAYS; i++)((__LN_GROUP_ALARM *)(base_target) + shift)->settings.set_delay[i] = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->set_delay[i];
+      ((__LN_GROUP_ALARM *)(base_target) + shift)->settings.control = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->control;
+      ((__LN_GROUP_ALARM *)(base_target) + shift)->settings.analog_input_control = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->analog_input_control;
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      for (size_t i = 0; i < GROUP_ALARM_PICKUPS; i++)((__settings_for_GROUP_ALARM *)(base_target) + shift)->pickup[i] = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->pickup[i];
+      for (size_t i = 0; i < GROUP_ALARM_SET_DELAYS; i++)((__settings_for_GROUP_ALARM *)(base_target) + shift)->set_delay[i] = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->set_delay[i];
+      ((__settings_for_GROUP_ALARM *)(base_target) + shift)->control = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->control;
+      ((__settings_for_GROUP_ALARM *)(base_target) + shift)->analog_input_control = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->analog_input_control;
+    }
+    else
+    {
+      //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+      total_error_sw_fixed(32);
     }
   }
 }
@@ -1798,6 +2008,16 @@ size_t size_all_settings(void)
         size_block = current_config.n_led*sizeof(__settings_for_LED);
         break;
       }
+    case ID_FB_ALARM:
+      {
+        size_block = current_config.n_alarm*sizeof(__settings_for_ALARM);
+        break;
+      }
+    case ID_FB_GROUP_ALARM:
+      {
+        size_block = current_config.n_group_alarm*sizeof(__settings_for_GROUP_ALARM);
+        break;
+      }
     case ID_FB_AND:
       {
         size_block = current_config.n_and*sizeof(__settings_for_AND);
@@ -1891,6 +2111,22 @@ void copy_settings(
             //Світлоіндимкатор
             n_prev = source_conf->n_led;
             copy_settings_LN = copy_settings_LED;
+
+            break;
+          }
+        case ID_FB_ALARM:
+          {
+            //Елемент "СЗС"
+            n_prev = source_conf->n_alarm;
+            copy_settings_LN = copy_settings_ALARM;
+
+            break;
+          }
+        case ID_FB_GROUP_ALARM:
+          {
+            //Елемент "ШГС"
+            n_prev = source_conf->n_group_alarm;
+            copy_settings_LN = copy_settings_GROUP_ALARM;
 
             break;
           }
@@ -2243,8 +2479,9 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
     for (enum _id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
     {
       if (
-           (i != ID_FB_INPUT) &&
-           (i != ID_FB_MEANDER)
+          (i != ID_FB_GROUP_ALARM) &&
+          (i != ID_FB_INPUT) &&
+          (i != ID_FB_MEANDER)
          )
       {
         uint32_t *p_param, *p_param_edit;
@@ -2266,6 +2503,13 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
               _n = LED_SIGNALS_IN;
               p_param      = (((__settings_for_LED*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_LED*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_ALARM:
+            {
+              _n = ALARM_SIGNALS_IN;
+              p_param      = (((__settings_for_ALARM*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_ALARM*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_AND:
