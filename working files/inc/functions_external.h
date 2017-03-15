@@ -47,6 +47,7 @@ extern size_t size_all_settings(void);
 extern void copy_settings(__CONFIG *, __SETTINGS_FIX *, __SETTINGS_FIX *, uintptr_t *[], uintptr_t *[]);
 extern unsigned int set_config_and_settings(unsigned int, unsigned int);
 extern void error_reading_with_eeprom(void);
+extern void move_into_param_list_logical_nodes(unsigned int, int);
 
 extern void Interrupts_Config(void);
 

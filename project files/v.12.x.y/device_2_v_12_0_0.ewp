@@ -4598,6 +4598,9 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_output_led.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_param_list_logical_nodes.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_registrators.c</name>
         </file>
         <file>

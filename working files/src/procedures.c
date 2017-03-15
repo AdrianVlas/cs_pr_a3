@@ -1593,7 +1593,7 @@ void min_settings_AND(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < NUMBER_IN_AND; i++)
+    for (size_t i = 0; i < AND_SIGNALS_IN; i++)
     {
       if (mem_to_prt == true) ((__LN_AND *)(base) + shift)->settings.param[i] = 0;
       else ((__settings_for_AND *)(base) + shift)->param[i] = 0;
@@ -1618,7 +1618,7 @@ void copy_settings_AND(unsigned int mem_to_prt, unsigned int mem_from_prt, uintp
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < NUMBER_IN_AND; i++)
+    for (size_t i = 0; i < AND_SIGNALS_IN; i++)
     {
       if ((mem_to_prt == false) && (mem_from_prt == true))
       {
@@ -1649,7 +1649,7 @@ void min_settings_OR(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < NUMBER_IN_OR; i++)
+    for (size_t i = 0; i < OR_SIGNALS_IN; i++)
     {
       if (mem_to_prt == true) ((__LN_OR *)(base) + shift)->settings.param[i] = 0;
       else ((__settings_for_OR *)(base) + shift)->param[i] = 0;
@@ -1674,7 +1674,7 @@ void copy_settings_OR(unsigned int mem_to_prt, unsigned int mem_from_prt, uintpt
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < NUMBER_IN_OR; i++)
+    for (size_t i = 0; i < OR_SIGNALS_IN; i++)
     {
       if ((mem_to_prt == false) && (mem_from_prt == true))
       {
@@ -2514,7 +2514,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
             }
           case ID_FB_AND:
             {
-              _n = NUMBER_IN_AND;
+              _n = AND_SIGNALS_IN;
               moveable_inputs = true;
               p_param      = (((__settings_for_AND*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_AND*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
@@ -2522,7 +2522,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
             }
           case ID_FB_OR:
             {
-              _n = NUMBER_IN_OR;
+              _n = OR_SIGNALS_IN;
               moveable_inputs = true;
               p_param      = (((__settings_for_OR*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_OR*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);

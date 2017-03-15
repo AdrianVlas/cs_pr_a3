@@ -12,8 +12,8 @@
 #define BIT_RS485_LOCKS                 4
 #define MASKA_RS485_LOCKS               (1 << BIT_RS485_LOCKS)
 
-#define NUMBER_IN_AND                   8
-#define NUMBER_IN_OR                    8
+#define AND_SIGNALS_IN                  8
+#define OR_SIGNALS_IN                   8
 
 #define SFIFT_PARAM_ID                  24
 #define SFIFT_PARAM_N                   16
@@ -282,19 +282,15 @@ enum _GROUP_ALARM_output_signals
     
 };
 
-enum _GROUP_ALARM_analog_input
-{
-  GROUP_ALARM_ANALOG_INPUT_I = 0,
-  
-  GROUP_ALARM_ANALOG_INPUTS
-};
-
 enum __index_ctrl_group_alarm
 {
   INDEX_CTRL_GROUP_ALARM_STATE = 0,
   INDEX_CTRL_GROUP_ALARM_CTRL_STATE,
-  INDEX_CTRL_GROUP_ALARM_I,
 
+  _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS,
+  
+  INDEX_CTRL_GROUP_ALARM_I = _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS,
+  
   MAX_INDEX_CTRL_GROUP_ALARM
 };
 /***/

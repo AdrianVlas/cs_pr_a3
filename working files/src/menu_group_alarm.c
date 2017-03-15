@@ -60,10 +60,10 @@ void make_ekran_control_group_alarm(void)
     //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
     unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
 
-    uint32_t *p_control;
-    if (current_state_menu2.edition == ED_VIEWING) p_control = &((((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings.control);
-    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_control = &((((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
-    else p_control = &((((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
+    __settings_for_GROUP_ALARM *p_settings;
+    if (current_state_menu2.edition == ED_VIEWING) p_settings = &((((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings);
+    else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_settings = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    else p_settings = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
   
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
@@ -98,15 +98,15 @@ void make_ekran_control_group_alarm(void)
               {4, 4}
             };
           
-            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][((*p_control) >> group_alarm_ctrl_patten[index_in_ekran_tmp][0]) & ((1 << group_alarm_ctrl_patten[index_in_ekran_tmp][1]) - 1)][j];
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][(p_settings->control >> index_in_ekran_tmp) & 0x1][j];
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x[index_language][((*p_control) >> index_in_ekran_tmp) & 0x1];
+              current_state_menu2.position_cursor_x = cursor_x[index_language][(p_settings->control >> index_in_ekran_tmp) & 0x1];
             }
           }
           else if (index_in_ekran_tmp == INDEX_CTRL_GROUP_ALARM_I)
           {
-            uint32_t I_number = ((*p_control) >> group_alarm_ctrl_patten[index_in_ekran_tmp][0]) & ((1 << group_alarm_ctrl_patten[index_in_ekran_tmp][1]) - 1);
+            uint32_t I_number = (p_settings->analog_input_control >> group_alarm_analog_ctrl_patten[index_in_ekran_tmp - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) & ((1 << group_alarm_analog_ctrl_patten[index_in_ekran_tmp - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
             if (I_number == 0)
             {
               const uint8_t information_empty[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
@@ -185,11 +185,22 @@ enum _result_pressed_enter_during_edition press_enter_in_control_group_alarm(voi
       
       __settings_for_GROUP_ALARM *p_settings_edit = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
       __settings_for_GROUP_ALARM *p_settings_cont = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
-      if (p_settings_cont->control != p_settings_edit->control) 
+      if (
+          (p_settings_cont->control != p_settings_edit->control) ||
+          (p_settings_cont->analog_input_control != p_settings_edit->analog_input_control) 
+         )   
       {
-        if ((p_settings_edit->control & ((uint32_t)(~MASKA_CTRL_GROUP_ALARM_M2))) == 0)
+        if (
+            ((p_settings_edit->control & ((uint32_t)(~MASKA_CTRL_GROUP_ALARM_M2))) == 0) &&
+#if NUMBER_ANALOG_CANALES <= 1
+            (p_settings_edit->analog_input_control == 0) 
+#else
+            (p_settings_edit->analog_input_control <= (NUMBER_ANALOG_CANALES - 1))  
+#endif
+           )   
         {
           p_settings_cont->control = p_settings_edit->control;
+          p_settings_cont->analog_input_control = p_settings_edit->analog_input_control;
           
           config_settings_modified |= MASKA_CHANGED_SETTINGS;
           result = RPEDE_DATA_CHANGED_OK;
@@ -212,9 +223,10 @@ enum _result_pressed_enter_during_edition press_enter_in_control_group_alarm(voi
 /*****************************************************/
 void press_esc_in_control_group_alarm(void)
 {
-  uint32_t *p_control_edit = &((((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
-  uint32_t *p_control_cont = &((((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
-  *p_control_edit = *p_control_cont;
+  __settings_for_GROUP_ALARM *p_settings_edit = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+  __settings_for_GROUP_ALARM *p_settings_cont = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+  p_settings_edit->control = p_settings_cont->control;
+  p_settings_edit->analog_input_control = p_settings_cont->analog_input_control;
 }
 /*****************************************************/
 
@@ -231,43 +243,42 @@ void press_esc_in_control_group_alarm(void)
 void change_control_group_alarm(unsigned int action)
 {
   //Вводимо число у відповідне поле
-  uint32_t *p_control_edit = &((((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
+  __settings_for_GROUP_ALARM *p_control_edit = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
   if (
       ((action & (1 << BIT_KEY_LEFT )) != 0) ||
       ((action & (1 << BIT_KEY_RIGHT)) != 0)
      )   
   {
     int index_position = current_state_menu2.index_position;
-    uint32_t maska = (1 << group_alarm_ctrl_patten[index_position][1]) - 1;
-    uint32_t shift = group_alarm_ctrl_patten[index_position][0];
-
-    int32_t data_tmp = ((*p_control_edit) >> shift) & maska;
-    if ((action & (1 << BIT_KEY_RIGHT)) != 0) data_tmp++;
-    else data_tmp--;
-    
-    int32_t min_data, max_data;
     if (
         (index_position == INDEX_CTRL_GROUP_ALARM_STATE) ||
         (index_position == INDEX_CTRL_GROUP_ALARM_CTRL_STATE)  
        ) 
     {
-      min_data = 0;
-      max_data = 1;
+      p_control_edit->control ^= (uint32_t)(1 << index_position);
     }
     else if  (index_position == INDEX_CTRL_GROUP_ALARM_I)
     {
+      uint32_t maska = (1 << group_alarm_analog_ctrl_patten[index_position - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1;
+      uint32_t shift = group_alarm_analog_ctrl_patten[index_position - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0];
+
+      int32_t data_tmp = (p_control_edit->analog_input_control >> shift) & maska;
+      if ((action & (1 << BIT_KEY_RIGHT)) != 0) data_tmp++;
+      else data_tmp--;
+    
+      int32_t min_data, max_data;
 #if NUMBER_ANALOG_CANALES <= 1
       min_data = max_data = 0;
 #else
       min_data = 1;
       max_data = NUMBER_ANALOG_CANALES - 1;
 #endif
-    }
 
-    if (data_tmp < min_data) data_tmp = max_data;
-    else if (data_tmp > max_data) data_tmp = min_data;
+      if (data_tmp < min_data) data_tmp = max_data;
+      else if (data_tmp > max_data) data_tmp = min_data;
     
-    *p_control_edit = ((*p_control_edit) & ((uint32_t)(~(maska << shift)))) | (data_tmp << shift);
+      p_control_edit->analog_input_control = (p_control_edit->analog_input_control & ((uint32_t)(~(maska << shift)))) | (data_tmp << shift);
+    }
   }
 }
 /*****************************************************/

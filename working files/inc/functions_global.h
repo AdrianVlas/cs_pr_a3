@@ -92,6 +92,7 @@ void press_esc_in_timeout_RS485(void);
 void change_timeout_RS485(unsigned int);
 void make_ekran_choose_passwords(void);
 void make_ekran_password(void);
+void move_into_param_list_logical_nodes(unsigned int, int);
 
 void inc_or_dec_value(unsigned int *, unsigned int);
 unsigned int bcd_to_int(unsigned char);

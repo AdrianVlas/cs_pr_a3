@@ -9,6 +9,6 @@
 #define COL_DELAY_GROUP_ALARM_DELAY_COMMA                8
 #define COL_DELAY_GROUP_ALARM_DELAY_END                  9
 
-#define MASKA_CTRL_GROUP_ALARM_M2 ((1 << (group_alarm_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - 1][0] + group_alarm_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - 1][1])) - 1)
+#define MASKA_CTRL_GROUP_ALARM_M2 ((1 << _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS) - 1)
 
 #endif 

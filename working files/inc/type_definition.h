@@ -183,7 +183,7 @@ typedef struct
 typedef struct
 {
   
-  uint32_t param[NUMBER_IN_AND];
+  uint32_t param[AND_SIGNALS_IN];
   
 } __settings_for_AND;
 
@@ -203,7 +203,7 @@ typedef struct
 typedef struct
 {
   
-  uint32_t param[NUMBER_IN_OR];
+  uint32_t param[OR_SIGNALS_IN];
   
 } __settings_for_OR;
 
