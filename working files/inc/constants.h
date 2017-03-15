@@ -24,6 +24,7 @@
 #include "const_menu2_output_led.h"
 #include "const_menu2_setting_language.h"
 #include "const_menu2_choose_communication_parameters.h"
+#include "const_menu2_alarm.h"
 
 #include "const_lcd_and_keyboard.h"
 #include "const_watchdog.h"

@@ -4397,6 +4397,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_lcd_and_keyboard.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_alarm.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_choose_communication_parameters.h</name>
         </file>
         <file>
@@ -4542,6 +4545,9 @@
         <name>menu</name>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\driver_lcd.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_alarm.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_choose_communication_parameters.c</name>

@@ -3,20 +3,6 @@
 
 #define MAX_TIME_REWRITE_EKRAN  100 //x10 - Максимальний час у мс для автоматичного обновлення екранів меню, які треба обновляти
 
-#define INDEX_VIEWING_DF                            0
-#define INDEX_VIEWING_OUTPUT                        1
-#define INDEX_VIEWING_LED                           2
-#define INDEX_VIEWING_A_REG                         3
-#define INDEX_VIEWING_D_REG                         4
-#define INDEX_VIEWING_ALARMS                        5
-#define INDEX_VIEWING_DT                            6
-#define INDEX_VIEWING_D_AND                         7
-#define INDEX_VIEWING_D_OR                          8
-#define INDEX_VIEWING_D_XOR                         9
-#define INDEX_VIEWING_D_NOT                         10
-#define INDEX_VIEWING_SILENCE                       11
-#define INDEX_VIEWING_RESET                         12
-
 #define LCD_BASE          Bank1_SRAM3_ADDR
 
 #define POWER_MAX_COL_LCD       4

@@ -5,24 +5,6 @@
 /*****************************************************/
 void make_ekran_list_logical_nodes(void)
 {
-  const uint8_t name_timer[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    {" ÁÔ-Òàéìåð      "},
-    {" ÁÔ-Òàéìåð      "},
-    {" MF-Timer       "},
-    {" ÁÔ-Òàéìåð      "}
-  };
-  const unsigned int first_index_number_timer[MAX_NAMBER_LANGUAGE] = {10, 10, 9, 10};
-
-  const uint8_t name_meander[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    {" ÃÏÑ            "},
-    {" ÃÏÑ            "},
-    {" PSG            "},
-    {" ÃÏÑ            "}
-  };
-  const unsigned int first_index_number_meander[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
-
   const uint8_t name_input[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
   {
     {" Ä.Âõ.          "},
@@ -49,6 +31,34 @@ void make_ekran_list_logical_nodes(void)
     {" Ñâ.             "}
   };
   const unsigned int first_index_number_led[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
+
+  const uint8_t name_alarm[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    {" ÑÇÑ            "},
+    {" ÑÇÑ            "},
+    {" Alarm          "},
+    {" ÑÇÑ            "}
+  };
+  const unsigned int first_index_number_alarm[MAX_NAMBER_LANGUAGE] = {4, 4, 6, 4};
+
+  const uint8_t name_timer[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    {" ÁÔ-Òàéìåð      "},
+    {" ÁÔ-Òàéìåð      "},
+    {" MF-Timer       "},
+    {" ÁÔ-Òàéìåð      "}
+  };
+  const unsigned int first_index_number_timer[MAX_NAMBER_LANGUAGE] = {10, 10, 9, 10};
+
+  const uint8_t name_meander[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    {" ÃÏÑ            "},
+    {" ÃÏÑ            "},
+    {" PSG            "},
+    {" ÃÏÑ            "}
+  };
+  const unsigned int first_index_number_meander[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
+
   
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
@@ -56,18 +66,6 @@ void make_ekran_list_logical_nodes(void)
   const unsigned int *p_first_index_number;
   switch (current_state_menu2.current_level)
   {
-  case LIST_TIMERS_MENU2_LEVEL:
-    {
-      p_name = name_timer[index_language];
-      p_first_index_number = &first_index_number_timer[index_language];
-      break;
-    }
-  case LIST_MEANDERS_MENU2_LEVEL:
-    {
-      p_name = name_meander[index_language];
-      p_first_index_number = &first_index_number_meander[index_language];
-      break;
-    }
   case LIST_INPUTS_MENU2_LEVEL:
     {
       p_name = name_input[index_language];
@@ -84,6 +82,24 @@ void make_ekran_list_logical_nodes(void)
     {
       p_name = name_led[index_language];
       p_first_index_number = &first_index_number_led[index_language];
+      break;
+    }
+  case LIST_ALARMS_MENU2_LEVEL:
+    {
+      p_name = name_alarm[index_language];
+      p_first_index_number = &first_index_number_alarm[index_language];
+      break;
+    }
+  case LIST_TIMERS_MENU2_LEVEL:
+    {
+      p_name = name_timer[index_language];
+      p_first_index_number = &first_index_number_timer[index_language];
+      break;
+    }
+  case LIST_MEANDERS_MENU2_LEVEL:
+    {
+      p_name = name_meander[index_language];
+      p_first_index_number = &first_index_number_meander[index_language];
       break;
     }
   default:

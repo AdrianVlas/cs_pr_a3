@@ -70,6 +70,7 @@ unsigned int measurement_high[2][NUMBER_ANALOG_CANALES] , bank_measurement_high 
 unsigned int measurement_middle[NUMBER_ANALOG_CANALES]; 
 unsigned int measurement_low[NUMBER_ANALOG_CANALES]; 
 
+const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2] = {0, 2};
 volatile unsigned int state_inputs = 0; //"є сигнал " - відповідає встановленому біту (1); "немає сигналу" - відповідає скинутому біту (0)
 uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
 uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];

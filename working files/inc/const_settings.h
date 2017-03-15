@@ -235,6 +235,15 @@ enum __index_ctrl_alarm
   
   MAX_INDEX_CTRL_ALARM
 };
+
+enum _ALARM_modes
+{
+  ALARM_MODE_SIMPLE = 0,
+  ALARM_MODE_TRIGGER,
+  ALARM_MODE_PERIOD,
+  
+  ALARM_MODES_NUMBER
+};
 /***/
 
 /*

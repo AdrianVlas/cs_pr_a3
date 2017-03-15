@@ -496,10 +496,6 @@ void main_manu_function_ver2(void)
     case OUTPUTS_MENU2_LEVEL:
     case REGISTRATORS_MENU2_LEVEL:
     case LIST_SETTINGS_MENU2_LEVEL:
-    case LIST_TIMERS_MENU2_LEVEL:
-    case LIST_SETTINGS_TIMER_MENU2_LEVEL:
-    case LIST_MEANDERS_MENU2_LEVEL:
-    case LIST_SETTINGS_MEANDER_MENU2_LEVEL:
     case LIST_SETTINGS_BIOS_MENU2_LEVEL:
     case LIST_INPUTS_MENU2_LEVEL:
     case LIST_SETTINGS_INPUT_MENU2_LEVEL:
@@ -507,6 +503,12 @@ void main_manu_function_ver2(void)
     case LIST_SETTINGS_OUTPUT_MENU2_LEVEL:
     case LIST_LEDS_MENU2_LEVEL:
     case LIST_SETTINGS_LED_MENU2_LEVEL:
+    case LIST_ALARMS_MENU2_LEVEL:
+    case LIST_SETTINGS_ALARM_MENU2_LEVEL:
+    case LIST_TIMERS_MENU2_LEVEL:
+    case LIST_SETTINGS_TIMER_MENU2_LEVEL:
+    case LIST_MEANDERS_MENU2_LEVEL:
+    case LIST_SETTINGS_MEANDER_MENU2_LEVEL:
     case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
     case NAME_OF_CELL_MENU2_LEVEL:
     case SETTINGS_RS485_MENU2_LEVEL:
@@ -655,11 +657,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
               const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
               const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_SETTINGS_BIOS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_MEANDERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LANGUAGE_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL, LIST_PASSWORDS_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_TIMER_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_meanders_menu2 = LIST_SETTINGS_MEANDER_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_meander_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_MEANDER_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_SETTINGS_BIOS_MENU2_LEVEL, LIST_ALARMS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_MEANDERS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, LANGUAGE_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL, LIST_PASSWORDS_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_bios_menu2[MAX_ROW_LIST_SETTINGS_BIOS_M2] = {LIST_INPUTS_MENU2_LEVEL, LIST_OUTPUTS_MENU2_LEVEL, LIST_LEDS_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_inputs_menu2 = LIST_SETTINGS_INPUT_MENU2_LEVEL;
               const enum _menu2_levels next_for_list_settings_input_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_INPUT_MENU2_LEVEL, CTRL_INPUT_MENU2_LEVEL};
@@ -667,6 +665,12 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_settings_output_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_OUTPUT_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_leds_menu2 = LIST_SETTINGS_LED_MENU2_LEVEL;
               const enum _menu2_levels next_for_list_settings_led_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_LED_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_alarms_menu2 = LIST_SETTINGS_ALARM_MENU2_LEVEL;
+              const enum _menu2_levels next_for_list_settings_alarm_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_ALARM_MENU2_LEVEL, CTRL_ALARM_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_LEVEL;
+              const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_TIMER_MENU2_LEVEL};
+              const enum _menu2_levels next_for_list_meanders_menu2 = LIST_SETTINGS_MEANDER_MENU2_LEVEL;
+              const enum _menu2_levels next_for_list_settings_meander_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_MEANDER_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_passwords_menu2[MAX_ROW_LIST_PASSWORDS_M2] = {SET_NEW_PASSWORD_MENU2_LEVEL, SET_NEW_PASSWORD_MENU2_LEVEL};
@@ -692,36 +696,6 @@ void main_manu_function_ver2(void)
               case LIST_SETTINGS_MENU2_LEVEL:
                 {
                   p = &next_for_list_settings_menu2[current_state_menu2.index_position];
-                  break;
-                }
-              case LIST_TIMERS_MENU2_LEVEL:
-                {
-                  p = &next_for_list_timers_menu2;
-                  current_state_menu2.number_selection = current_state_menu2.index_position;
-                  
-                  position_in_current_level_menu2[LIST_SETTINGS_TIMER_MENU2_LEVEL] = 
-                  position_in_current_level_menu2[DELAY_TIMER_MENU2_LEVEL]         = 0;
-                  
-                  break;
-                }
-              case LIST_SETTINGS_TIMER_MENU2_LEVEL:
-                {
-                  p = &next_for_list_settings_timer_menu2[current_state_menu2.index_position];
-                  break;
-                }
-              case LIST_MEANDERS_MENU2_LEVEL:
-                {
-                  p = &next_for_list_meanders_menu2;
-                  current_state_menu2.number_selection = current_state_menu2.index_position;
-                  
-                  position_in_current_level_menu2[LIST_SETTINGS_MEANDER_MENU2_LEVEL] = 
-                  position_in_current_level_menu2[DELAY_MEANDER_MENU2_LEVEL]         = 0;
-                  
-                  break;
-                }
-              case LIST_SETTINGS_MEANDER_MENU2_LEVEL:
-                {
-                  p = &next_for_list_settings_meander_menu2[current_state_menu2.index_position];
                   break;
                 }
               case LIST_SETTINGS_BIOS_MENU2_LEVEL:
@@ -773,6 +747,52 @@ void main_manu_function_ver2(void)
               case LIST_SETTINGS_LED_MENU2_LEVEL:
                 {
                   p = &next_for_list_settings_led_menu2[current_state_menu2.index_position];
+                  break;
+                }
+              case LIST_ALARMS_MENU2_LEVEL:
+                {
+                  p = &next_for_list_alarms_menu2;
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
+                  
+                  position_in_current_level_menu2[LIST_SETTINGS_ALARM_MENU2_LEVEL] = 
+                  position_in_current_level_menu2[DELAY_ALARM_MENU2_LEVEL]         = 
+                  position_in_current_level_menu2[CTRL_ALARM_MENU2_LEVEL]          = 0;
+                  
+                  break;
+                }
+              case LIST_SETTINGS_ALARM_MENU2_LEVEL:
+                {
+                  p = &next_for_list_settings_alarm_menu2[current_state_menu2.index_position];
+                  break;
+                }
+              case LIST_TIMERS_MENU2_LEVEL:
+                {
+                  p = &next_for_list_timers_menu2;
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
+                  
+                  position_in_current_level_menu2[LIST_SETTINGS_TIMER_MENU2_LEVEL] = 
+                  position_in_current_level_menu2[DELAY_TIMER_MENU2_LEVEL]         = 0;
+                  
+                  break;
+                }
+              case LIST_SETTINGS_TIMER_MENU2_LEVEL:
+                {
+                  p = &next_for_list_settings_timer_menu2[current_state_menu2.index_position];
+                  break;
+                }
+              case LIST_MEANDERS_MENU2_LEVEL:
+                {
+                  p = &next_for_list_meanders_menu2;
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
+                  
+                  position_in_current_level_menu2[LIST_SETTINGS_MEANDER_MENU2_LEVEL] = 
+                  position_in_current_level_menu2[DELAY_MEANDER_MENU2_LEVEL]         = 0;
+                  
+                  break;
+                }
+              case LIST_SETTINGS_MEANDER_MENU2_LEVEL:
+                {
+                  p = &next_for_list_settings_meander_menu2[current_state_menu2.index_position];
                   break;
                 }
               case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
@@ -1061,6 +1081,8 @@ void main_manu_function_ver2(void)
         break;
       }
     case CONFIGURATION_MENU2_LEVEL:
+    case DELAY_ALARM_MENU2_LEVEL:
+    case CTRL_ALARM_MENU2_LEVEL:
     case DELAY_TIMER_MENU2_LEVEL:
     case DELAY_MEANDER_MENU2_LEVEL:
     case DELAY_INPUT_MENU2_LEVEL:
@@ -1695,24 +1717,15 @@ void new_level_menu(void)
       */
       break;
     }
-  case LIST_TIMERS_MENU2_LEVEL:
-  case LIST_MEANDERS_MENU2_LEVEL:
   case LIST_INPUTS_MENU2_LEVEL:
   case LIST_OUTPUTS_MENU2_LEVEL:
   case LIST_LEDS_MENU2_LEVEL:
+  case LIST_ALARMS_MENU2_LEVEL:
+  case LIST_TIMERS_MENU2_LEVEL:
+  case LIST_MEANDERS_MENU2_LEVEL:
     {
       switch (current_state_menu2.current_level)
       {
-      case LIST_TIMERS_MENU2_LEVEL:
-        {
-          current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
-          break;
-        }
-      case LIST_MEANDERS_MENU2_LEVEL:
-        {
-          current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_meander : (int*)&current_config.n_meander;
-          break;
-        }
       case LIST_INPUTS_MENU2_LEVEL:
         {
           current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_input : (int*)&current_config.n_input;
@@ -1726,6 +1739,21 @@ void new_level_menu(void)
       case LIST_LEDS_MENU2_LEVEL:
         {
           current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_led : (int*)&current_config.n_led;
+          break;
+        }
+      case LIST_ALARMS_MENU2_LEVEL:
+        {
+          current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_alarm : (int*)&current_config.n_alarm;
+          break;
+        }
+      case LIST_TIMERS_MENU2_LEVEL:
+        {
+          current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_timer : (int*)&current_config.n_timer;
+          break;
+        }
+      case LIST_MEANDERS_MENU2_LEVEL:
+        {
+          current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_meander : (int*)&current_config.n_meander;
           break;
         }
       default:
@@ -1748,8 +1776,26 @@ void new_level_menu(void)
       break;
     }
   case LIST_SETTINGS_INPUT_MENU2_LEVEL:
+  case LIST_SETTINGS_ALARM_MENU2_LEVEL:
     {
-      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_input : (int*)&current_config.n_input;
+      switch (current_state_menu2.current_level)
+      {
+        case LIST_SETTINGS_INPUT_MENU2_LEVEL:
+          {
+            current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_input : (int*)&current_config.n_input;
+            break;
+          }
+        case LIST_SETTINGS_ALARM_MENU2_LEVEL:
+          {
+            current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_alarm : (int*)&current_config.n_alarm;
+            break;
+          }
+      default:
+        {
+          //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+          total_error_sw_fixed(47);
+        }
+      }
       current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_DC_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_choose_delay_control;
@@ -1825,6 +1871,38 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
+      /*
+      current_state_menu2.edition не встановлюЇмо бо в≥н залежить в≥д поперднього 
+      в≥дкритого в≥кна
+      */
+      break;
+    }
+  case DELAY_ALARM_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_alarm : (int*)&current_config.n_alarm;
+      current_state_menu2.max_row = ALARM_SET_DELAYS;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_delay_alarm;
+      current_state_menu2.func_press_enter = press_enter_in_delay_alarm;
+      current_state_menu2.func_press_esc = press_esc_in_delay_alarm;
+      current_state_menu2.func_change = change_delay_alarm;
+      current_state_menu2.binary_data = false;
+      /*
+      current_state_menu2.edition не встановлюЇмо бо в≥н залежить в≥д поперднього 
+      в≥дкритого в≥кна
+      */
+      break;
+    }
+  case CTRL_ALARM_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_alarm : (int*)&current_config.n_alarm;
+      current_state_menu2.max_row = MAX_INDEX_CTRL_ALARM;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_control_alarm;
+      current_state_menu2.func_press_enter = press_enter_in_control_alarm;
+      current_state_menu2.func_press_esc = press_esc_in_control_alarm;
+      current_state_menu2.func_change = change_control_alarm;
+      current_state_menu2.binary_data = true;
       /*
       current_state_menu2.edition не встановлюЇмо бо в≥н залежить в≥д поперднього 
       в≥дкритого в≥кна
