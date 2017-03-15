@@ -3,6 +3,9 @@
 
 #define MAX_TIME_REWRITE_EKRAN  100 //x10 - Максимальний час у мс для автоматичного обновлення екранів меню, які треба обновляти
 
+#define MAX_NYMBER_EXTENDED_ASCII_SYMBOLS        69
+#define MAX_NYMBER_EXTRA_EXTENDED_ASCII_SYMBOLS  13
+
 #define LCD_BASE          Bank1_SRAM3_ADDR
 
 #define POWER_MAX_COL_LCD       4

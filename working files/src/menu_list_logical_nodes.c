@@ -41,6 +41,15 @@ void make_ekran_list_logical_nodes(void)
   };
   const unsigned int first_index_number_alarm[MAX_NAMBER_LANGUAGE] = {4, 4, 6, 4};
 
+  const uint8_t name_group_alarm[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    {" ÿ√—            "},
+    {" ÿ√—            "},
+    {" Gr.Alarm       "},
+    {" ÿ√—            "}
+  };
+  const unsigned int first_index_number_group_alarm[MAX_NAMBER_LANGUAGE] = {4, 4, 9, 4};
+
   const uint8_t name_timer[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
   {
     {" ¡‘-“‡ÈÏÂ      "},
@@ -88,6 +97,12 @@ void make_ekran_list_logical_nodes(void)
     {
       p_name = name_alarm[index_language];
       p_first_index_number = &first_index_number_alarm[index_language];
+      break;
+    }
+  case LIST_GROUP_ALARMS_MENU2_LEVEL:
+    {
+      p_name = name_group_alarm[index_language];
+      p_first_index_number = &first_index_number_group_alarm[index_language];
       break;
     }
   case LIST_TIMERS_MENU2_LEVEL:

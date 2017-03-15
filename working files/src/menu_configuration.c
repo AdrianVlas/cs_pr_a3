@@ -133,7 +133,7 @@ void make_ekran_configuration(void)
             }
           case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
             {
-              unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES_VAL_1 - 1);
+              unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES - 1);
               vaga = 1; //максимальний ваговий коефіцієнт
               for (unsigned int j = 0; j < (max_number_digit - 1); j++) vaga *= 10;
               col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
@@ -258,7 +258,7 @@ void make_ekran_configuration(void)
         }
       case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
         {
-          unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES_VAL_1 - 1);
+          unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES - 1);
           col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
           col_end = col_begin + max_number_digit - 1;
 
@@ -332,7 +332,7 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
         }
       case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
         {
-          unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES_VAL_1 - 1);
+          unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES - 1);
           int col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
 
           current_state_menu2.position_cursor_x = col_begin;
@@ -356,7 +356,7 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
         {
           if (current_config_edit.n_group_alarm != current_config.n_group_alarm) 
           {
-            if (check_data_setpoint(current_config_edit.n_group_alarm, 0, (NUMBER_ANALOG_CANALES_VAL_1 - 1)) == 1)
+            if (check_data_setpoint(current_config_edit.n_group_alarm, 0, (NUMBER_ANALOG_CANALES - 1)) == 1)
               result = RPEDE_DATA_CHANGED_OK;
             else
               result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
@@ -510,7 +510,7 @@ void change_configuration(unsigned int action)
     case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
       {
         p_value = &current_config_edit.n_group_alarm;
-        unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES_VAL_1 - 1);
+        unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES - 1);
         col_end = ((MAX_COL_LCD + max_number_digit) >> 1) - 1;/*після спрощення цього виразу ((MAX_COL_LCD - max_number_digit) >> 1) + max_number_digit - 1*/
         break;
       }
@@ -586,7 +586,7 @@ void change_configuration(unsigned int action)
       }
     case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
       {
-        unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES_VAL_1 - 1);
+        unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES - 1);
         col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
         col_end = col_begin + max_number_digit - 1;
         break;

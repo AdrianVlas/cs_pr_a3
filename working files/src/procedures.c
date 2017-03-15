@@ -1524,7 +1524,6 @@ void min_settings_GROUP_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t i
     {
       ((__LN_GROUP_ALARM *)(base) + shift)->settings.pickup[GROUP_ALARM_PICKUP_DELTA_I] = PICKUP_ALARM_DELTA_I_MIN;
       ((__LN_GROUP_ALARM *)(base) + shift)->settings.set_delay[GROUP_ALARM_SET_DELAY_DELAY] = TIMEOUT_GROUP_ALARM_DELAY_MIN;
-      ((__LN_GROUP_ALARM *)(base) + shift)->settings.set_delay[GROUP_ALARM_SET_DELAY_RESET] = TIMEOUT_GROUP_ALARM_RESET_MIN;
       ((__LN_GROUP_ALARM *)(base) + shift)->settings.control = 0;
       ((__LN_GROUP_ALARM *)(base) + shift)->settings.analog_input_control = 0;
     }
@@ -1532,7 +1531,6 @@ void min_settings_GROUP_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t i
     {
       ((__settings_for_GROUP_ALARM *)(base) + shift)->pickup[GROUP_ALARM_PICKUP_DELTA_I] = PICKUP_ALARM_DELTA_I_MIN;
       ((__settings_for_GROUP_ALARM *)(base) + shift)->set_delay[GROUP_ALARM_SET_DELAY_DELAY] = TIMEOUT_GROUP_ALARM_DELAY_MIN;
-      ((__settings_for_GROUP_ALARM *)(base) + shift)->set_delay[GROUP_ALARM_SET_DELAY_RESET] = TIMEOUT_GROUP_ALARM_RESET_MIN;
       ((__settings_for_GROUP_ALARM *)(base) + shift)->control = 0;
       ((__settings_for_GROUP_ALARM *)(base) + shift)->analog_input_control = 0;
     }
@@ -2468,6 +2466,8 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_input, 
                                           current_config.n_output,
                                           current_config.n_led, 
+                                          current_config.n_alarm,
+                                          current_config.n_group_alarm,
                                           current_config.n_and,
                                           current_config.n_or,
                                           current_config.n_xor,

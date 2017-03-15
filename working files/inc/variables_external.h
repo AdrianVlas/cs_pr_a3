@@ -50,6 +50,7 @@ extern unsigned int measurement_middle[NUMBER_ANALOG_CANALES];
 extern unsigned int measurement_low[NUMBER_ANALOG_CANALES]; 
 
 extern const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2];
+extern const uint32_t group_alarm_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM][2];
 extern volatile unsigned int state_inputs;
 extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
 extern uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
@@ -184,8 +185,8 @@ extern unsigned int number_record_of_pr_err_into_RS485;
 //Очистка інформації по реєстраторах
 extern volatile unsigned int clean_rejestrators;
 
-extern const unsigned char letters[69][2];
-extern const unsigned char extra_letters[12][1 + MAX_NAMBER_LANGUAGE];
+extern const uint8_t letters[MAX_NYMBER_EXTENDED_ASCII_SYMBOLS][2];
+extern const uint8_t extra_letters[MAX_NYMBER_EXTRA_EXTENDED_ASCII_SYMBOLS][1 + MAX_NAMBER_LANGUAGE];
 
 extern int current_language;
 

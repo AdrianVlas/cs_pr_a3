@@ -170,7 +170,7 @@ enum __index_ctrl_output_led
 
 
 /*
-Дискретні світлоіндикатори
+Світлоіндикатори
 */
 enum _LED_output_signals
 {
@@ -259,7 +259,6 @@ enum _settings_pickup_of_GROUP_ALARM
 enum _settings_delay_of_GROUP_ALARM
 {
   GROUP_ALARM_SET_DELAY_DELAY = 0,
-  GROUP_ALARM_SET_DELAY_RESET,
   
   GROUP_ALARM_SET_DELAYS
 };
@@ -267,7 +266,6 @@ enum _settings_delay_of_GROUP_ALARM
 enum _work_delay_of_GROUP_ALARM
 {
   GROUP_ALARM_WORK_DELAY_DELAY = 0,
-  GROUP_ALARM_WORK_DELAY_RESET,
   
   GROUP_ALARM_WORK_DELAYS
 };
@@ -295,8 +293,8 @@ enum __index_ctrl_group_alarm
 {
   INDEX_CTRL_GROUP_ALARM_STATE = 0,
   INDEX_CTRL_GROUP_ALARM_CTRL_STATE,
+  INDEX_CTRL_GROUP_ALARM_I,
 
-  
   MAX_INDEX_CTRL_GROUP_ALARM
 };
 /***/

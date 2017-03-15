@@ -4412,6 +4412,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_diagnostyka.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_group_alarm.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_info.h</name>
         </file>
         <file>
@@ -4560,6 +4563,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_diagnostyka.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_group_alarm.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_info.c</name>

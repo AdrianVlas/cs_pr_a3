@@ -71,6 +71,7 @@ unsigned int measurement_middle[NUMBER_ANALOG_CANALES];
 unsigned int measurement_low[NUMBER_ANALOG_CANALES]; 
 
 const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2] = {0, 2};
+const uint32_t group_alarm_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM][2] = {{0, 1}, {1, 1}, {2, 8}};
 volatile unsigned int state_inputs = 0; //"є сигнал " - відповідає встановленому біту (1); "немає сигналу" - відповідає скинутому біту (0)
 uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
 uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
@@ -278,7 +279,7 @@ unsigned int test_watchdogs = 0;
 //Змінна глобальної помилки
 unsigned int total_error;
 
-const unsigned char letters[69][2] =
+const uint8_t letters[MAX_NYMBER_EXTENDED_ASCII_SYMBOLS][2] =
 {
 { 176, 223 },  //°
 { 178, 73  }, // І
@@ -351,7 +352,7 @@ const unsigned char letters[69][2] =
 { 255, 199 } // я
 };
 
-const unsigned char extra_letters[12][1 + MAX_NAMBER_LANGUAGE] =
+const uint8_t extra_letters[MAX_NYMBER_EXTRA_EXTENDED_ASCII_SYMBOLS][1 + MAX_NAMBER_LANGUAGE] =
 {
 /*CODE   RU    UA    EN    KZ     */  
 { 0xAF, 0xFF, 0x00, 0x00, 0xFF}, // Ї або велика біква Омега для англійської розкладки клавіатури
@@ -365,7 +366,8 @@ const unsigned char extra_letters[12][1 + MAX_NAMBER_LANGUAGE] =
 { 0xBD, 0xFF, 0xFF, 0xFF, 0x02}, // Ѕ - замінний символ з даним кодом для WIN1251
 { 0xBE, 0xFF, 0xFF, 0xFF, 0x03}, // ѕ - замінний символ з даним кодом для WIN1251
 { 0x80, 0xFF, 0xFF, 0xFF, 0x04}, // Ђ - замінний символ з даним кодом для WIN1251
-{ 0x90, 0xFF, 0xFF, 0xFF, 0x05}  // ђ - замінний символ з даним кодом для WIN1251
+{ 0x90, 0xFF, 0xFF, 0xFF, 0x05},  // ђ - замінний символ з даним кодом для WIN1251
+{ 0x89, 0x00, 0x06, 0x01, 0x06}  // ‰ - замінний символ з даним кодом для WIN1251
 };
 
 int current_language = LANGUAGE_ABSENT;

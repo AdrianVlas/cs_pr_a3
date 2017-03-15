@@ -279,7 +279,7 @@ void make_ekran_delay_alarm(void)
               col_end = COL_DELAY_ALARM_PERIOD_END;
               col_comma = COL_DELAY_ALARM_PERIOD_COMMA;
             
-              value = p_set_delay[TIMER_SET_DELAY_PAUSE];
+              value = p_set_delay[ALARM_SET_DELAY_PERIOD];
             
               break;
             }

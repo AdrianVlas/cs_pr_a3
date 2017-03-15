@@ -92,7 +92,7 @@ inline unsigned int Win1251toHd44780 (unsigned int win1251Letter)
   return win1251Letter;
 
   //Підбір коду символу з стандартного кириличного набору CGRAM
-  for (unsigned int i = 0; i < 69; i ++ )
+  for (unsigned int i = 0; i < MAX_NYMBER_EXTENDED_ASCII_SYMBOLS; i ++ )
   {
     if ( letters [i] [0] == win1251Letter )
     return letters [i][1];
@@ -102,9 +102,9 @@ inline unsigned int Win1251toHd44780 (unsigned int win1251Letter)
   if ((current_language >= LANGUAGE_RU) && (current_language <= LANGUAGE_KZ))
   {
     //Ця умова мала б виконуватися завжди
-    for (unsigned int i = 0; i < 12; i ++ )
+    for (unsigned int i = 0; i < MAX_NYMBER_EXTRA_EXTENDED_ASCII_SYMBOLS; i ++ )
     {
-      if ( extra_letters [i][0] == win1251Letter )
+      if ( extra_letters[i][0] == win1251Letter )
       return extra_letters[i][current_language];
     }
   }
@@ -484,46 +484,50 @@ int index_language_in_array(int language)
 
     current_language = language_tmp;
           
-    if (
-        (current_language == LANGUAGE_EN) ||
-        (current_language == LANGUAGE_UA) ||
-        (current_language == LANGUAGE_KZ)  
-       )
+    const unsigned char matrix[16][8] = {
+                                         {0x0A, 0x00, 0x0E, 0x04, 0x04, 0x04, 0x0E, 0x00}, // Ї
+                                         {0x00, 0x0A, 0x00, 0x0C, 0x04, 0x04, 0x0E, 0x00}, // ї
+                                         {0x01, 0x1F, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00}, // Ґ
+                                         {0x00, 0x00, 0x01, 0x1F, 0x10, 0x10, 0x10, 0x00}, // ґ
+                                         {0x0E, 0x11, 0x10, 0x1C, 0x10, 0x11, 0x0E, 0x00}, // Є
+                                         {0x00, 0x00, 0x0E, 0x11, 0x1C, 0x11, 0x0E, 0x00}, // є
+                                         {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
+                                         {0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Љ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                         {0x00, 0x00, 0x0E, 0x11, 0x1F, 0x11, 0x0E, 0x00}, // љ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                         {0x0E, 0x11, 0x01, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                         {0x00, 0x00, 0x0E, 0x01, 0x1F, 0x11, 0x0E, 0x00}, // ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                         {0x11, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04, 0x00}, // Ђ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                         {0x00, 0x00, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04},  // ђ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                         {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
+                                         {0x0E, 0x11, 0x11, 0x11, 0x11, 0x0A, 0x1B, 0x00}, // Ї, як замынник  великоъ букви Омега для англійської розкладки клавіатури
+                                         {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}  // ‰, як замінник грецької літери "дельта"
+                                        }; 
+            
+    unsigned int number_new_extra_symbols = 0, index_for_symbol;
+            
+    if (current_language == LANGUAGE_EN)
     {
-      const unsigned char matrix[13][8] = {
-                                           {0x0A, 0x00, 0x0E, 0x04, 0x04, 0x04, 0x0E, 0x00}, // Ї
-                                           {0x00, 0x0A, 0x00, 0x0C, 0x04, 0x04, 0x0E, 0x00}, // ї
-                                           {0x01, 0x1F, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00}, // Ґ
-                                           {0x00, 0x00, 0x01, 0x1F, 0x10, 0x10, 0x10, 0x00}, // ґ
-                                           {0x0E, 0x11, 0x10, 0x1C, 0x10, 0x11, 0x0E, 0x00}, // Є
-                                           {0x00, 0x00, 0x0E, 0x11, 0x1C, 0x11, 0x0E, 0x00}, // є
-                                           {0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Љ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                           {0x00, 0x00, 0x0E, 0x11, 0x1F, 0x11, 0x0E, 0x00}, // љ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                           {0x0E, 0x11, 0x01, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                           {0x00, 0x00, 0x0E, 0x01, 0x1F, 0x11, 0x0E, 0x00}, // ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                           {0x11, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04, 0x00}, // Ђ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                           {0x00, 0x00, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04},  // ђ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                           {0x0E, 0x11, 0x11, 0x11, 0x11, 0x0A, 0x1B, 0x00}  // Ї, як замынник  великоъ букви Омега для англійської розкладки клавіатури
-                                          }; 
-            
-      unsigned int number_new_extra_symbols, index_for_symbol;
-            
-      if (current_language == LANGUAGE_EN)
-      {
-        number_new_extra_symbols = 1;
-        index_for_symbol = 12;
-      }
-      else if (current_language == LANGUAGE_UA)
-      {
-        number_new_extra_symbols = 3*2;
-        index_for_symbol = 0;
-      }
-      else
-      {
-        number_new_extra_symbols = 3*2;
-        index_for_symbol = 6;
-      }
-                                 
+      number_new_extra_symbols = 2;
+      index_for_symbol = 14;
+    }
+    else if (current_language == LANGUAGE_UA)
+    {
+      number_new_extra_symbols = 3*2 + 1;
+      index_for_symbol = 0;
+    }
+    else if (current_language == LANGUAGE_KZ)
+    {
+      number_new_extra_symbols = 3*2 + 1;
+      index_for_symbol = 7;
+    }
+    else if (current_language == LANGUAGE_RU)
+    {
+      number_new_extra_symbols = 1;
+      index_for_symbol = 15;
+    }
+      
+    if (number_new_extra_symbols != 0)
+    {
       //Встановлюємо адресу AC в 0x00 CGRAM
       error_LCD = write_command_to_lcd(0x40 | 0x00);
   

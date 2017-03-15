@@ -165,7 +165,7 @@ void make_ekran_list_settings(void)
         " Configuration  ",
         " BIOS           ",
         " Alarms         ",
-        " Group Alarms   ",
+        " Gr.Alarms      ",
         " MF-Timer       ",
         " PSG            ",
         " Parametrization",
