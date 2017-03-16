@@ -4442,6 +4442,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_output_led.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_param_list_logical_nodes.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_password.h</name>
         </file>
         <file>

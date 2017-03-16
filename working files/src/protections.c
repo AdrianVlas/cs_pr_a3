@@ -137,24 +137,29 @@ inline void calc_measurement(void)
     //Розраховуємо діюче значення 3I0 по інтегральній сформулі
     /***/
     /*Добуваємо квадратний корінь*/
-    sum_sqr_data_local[i] = sqrt_64(sum_sqr_data[i][bank_sum_sqr_data_tmp]);
+    sum_sqr_data_local[i] = sqrt_64(sum_sqr_data[bank_sum_sqr_data_tmp][i]);
   
-    /*Для приведення цього значення у мА треба помножити на свій коефіцієнт*/
+    /*Для приведення цього значення у мА/мВ треба помножити на свій коефіцієнт*/
     /*Ще сигнал зараз є підсиленим у 16 раз, тому ділим його на 16*/
 
     /*
     Ми маємо ще отримане число поділити на корнь з NUMBER_POINT = 32 = 16*2
     Тобто ми маємо поділити на 4*sqrt(2)
     4 це зміщення на 2
-    ((MNOGNYK_I_D * X )>> VAGA_DILENNJA_I_D)/sqrt(2) тотожне
-   (MNOGNYK_I_DIJUCHE_D * X )>> VAGA_DILENNJA_I_DIJUCHE_D 
-  
-    Якщо робити через пари (MNOGNYK_I_DIJUCHE_D;VAGA_DILENNJA_I_DIJUCHE_D) і (MNOGNYK_I_D;VAGA_DILENNJA_I_D)
+    ((MNOGNYK_I * X )>> VAGA_DILENNJA_I)/sqrt(2) тотожне
+   (MNOGNYK_I_DIJUCHE * X )>> VAGA_DILENNJA_I_DIJUCHE 
+
+    ((MNOGNYK_U * X )>> VAGA_DILENNJA_U)/sqrt(2) тотожне
+   (MNOGNYK_U_DIJUCHE * X )>> VAGA_DILENNJA_D_DIJUCHE 
+    
+    Якщо робити через пари (MNOGNYK_I_DIJUCHE;VAGA_DILENNJA_I_DIJUCHE)/(MNOGNYK_U_DIJUCHE;VAGA_DILENNJA_U_DIJUCHE) і (MNOGNYK_I;VAGA_DILENNJA_I)/(MNOGNYK_U;VAGA_DILENNJA_U)
     то виникає похибка при розрахунку вищих гармонік (що було коли для захистів велися такі розрахунки. У ЦС їх немає).
     Тому треба іти на такі спрощення виразів
     */
-    float value_i_float = (unsigned int)(MNOGNYK_I_DIJUCHE_FLOAT*((float)sum_sqr_data_local[i])/(64.0f)); /*64 = 4*16. 16 - це підсилення каналів "Analog Input"; 4 - це sqrt(16), а 16 береться з того, що 32 = 16*2 */
-    measurement[i] = (unsigned int)value_i_float; 
+    
+    float mnognyk = (i < (NUMBER_ANALOG_CANALES - 1)) ? MNOGNYK_I_DIJUCHE_FLOAT : MNOGNYK_U_DIJUCHE_FLOAT;
+    float value_float = mnognyk*((float)sum_sqr_data_local[i])/(64.0f); /*64 = 4*16. 16 - це підсилення каналів "Analog Input"; 4 - це sqrt(16), а 16 береться з того, що 32 = 16*2 */
+    measurement[i] = (unsigned int)value_float; 
     /***/
   }
 }

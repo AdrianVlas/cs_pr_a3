@@ -26,6 +26,7 @@
 #include "const_menu2_choose_communication_parameters.h"
 #include "const_menu2_alarm.h"
 #include "const_menu2_group_alarm.h"
+#include "const_menu2_param_list_logical_nodes.h"
 
 #include "const_lcd_and_keyboard.h"
 #include "const_watchdog.h"

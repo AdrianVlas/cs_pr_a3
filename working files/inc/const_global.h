@@ -16,7 +16,7 @@
 
 #define DELTA_TIME_FOR_TIMERS           1
 
-#define NUMBER_ANALOG_CANALES_VAL_1     4
+#define NUMBER_ANALOG_CANALES_VAL_1     5
 
 #define NUMBER_ANALOG_CANALES           (                               \
                                          NUMBER_ANALOG_CANALES_VAL_1    \

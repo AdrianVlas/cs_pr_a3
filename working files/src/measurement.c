@@ -211,7 +211,7 @@ void method_sum_sqr_data(void)
 
   //Копіювання для інших систем
   unsigned int bank_sum_sqr_data_tmp = bank_sum_sqr_data;
-  for(unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++ ) sum_sqr_data[i][bank_sum_sqr_data_tmp] = sum_sqr_data_irq[i];
+  for(unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++ ) sum_sqr_data[bank_sum_sqr_data_tmp][i] = sum_sqr_data_irq[i];
 }
 /*************************************************************************/
 
@@ -283,7 +283,7 @@ void SPI_ADC_IRQHandler(void)
     unsigned int command_word = 0;
     if ((status_adc_read_work & DATA_VAL_READ) != 0)
     {
-      command_word |= (1 << I_AIN1 ) | (1 << I_AIN2 ) | (1 << I_AIN3 )  | (1 << I_AIN4 );
+      command_word |= (1 << I_I1 ) | (1 << I_I2 ) | (1 << I_I3 )/*  | (1 << I_I4 )*/  | (1 << I_U);
     }
       
     uint32_t _x1, _x2, _DX, _dx;
@@ -295,25 +295,25 @@ void SPI_ADC_IRQHandler(void)
 
     uint32_t _x = previous_tick_VAL;
     /*****/
-    //Формуємо значення Analog Input 1
+    //Формуємо значення I1
     /*****/
-    if ((command_word & (1 << I_AIN1)) != 0)
+    if ((command_word & (1 << I_I1)) != 0)
     {
-      _x1 = ADCs_data_raw[I_AIN1].tick;
-      _y1 = ADCs_data_raw[I_AIN1].value;
+      _x1 = ADCs_data_raw[I_I1].tick;
+      _y1 = ADCs_data_raw[I_I1].value;
         
-      _y2 = output_adc[C_AIN1_1].value - gnd_adc_tmp - vref_adc_tmp;
+      _y2 = output_adc[C_I1_1].value - gnd_adc_tmp - vref_adc_tmp;
       if (abs(_y2) > 87)
       {
-        _x2 = output_adc[C_AIN1_1].tick;
-        _y2 = (int)(_y2*ustuvannja_meas[I_AIN1])>>(USTUVANNJA_VAGA - 4);
+        _x2 = output_adc[C_I1_1].tick;
+        _y2 = (int)(_y2*ustuvannja_meas[I_I1])>>(USTUVANNJA_VAGA - 4);
       }
       else
       {
-        _y2 = output_adc[C_AIN1_16].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_I1_16].value - gnd_adc_tmp - vref_adc_tmp;
 
-        _x2 = output_adc[C_AIN1_16].tick;
-        _y2 = (int)((-_y2)*ustuvannja_meas[I_AIN1])>>(USTUVANNJA_VAGA);
+        _x2 = output_adc[C_I1_16].tick;
+        _y2 = (int)((-_y2)*ustuvannja_meas[I_I1])>>(USTUVANNJA_VAGA);
       }
       
       if (_x2 > _x1) _DX = _x2 - _x1;
@@ -330,33 +330,33 @@ void SPI_ADC_IRQHandler(void)
       }
       _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
 
-      ADCs_data[I_AIN1] = _y;
+      ADCs_data[I_I1] = _y;
       
-      ADCs_data_raw[I_AIN1].tick = _x2;
-      ADCs_data_raw[I_AIN1].value = _y2;
+      ADCs_data_raw[I_I1].tick = _x2;
+      ADCs_data_raw[I_I1].value = _y2;
     }
     /*****/
 
     /*****/
-    //Формуємо значення Analog Input 2
+    //Формуємо значення I2
     /*****/
-    if ((command_word & (1 << I_AIN2)) != 0)
+    if ((command_word & (1 << I_I2)) != 0)
     {
-      _x1 = ADCs_data_raw[I_AIN2].tick;
-      _y1 = ADCs_data_raw[I_AIN2].value;
+      _x1 = ADCs_data_raw[I_I2].tick;
+      _y1 = ADCs_data_raw[I_I2].value;
         
-      _y2 = output_adc[C_AIN2_1].value - gnd_adc_tmp - vref_adc_tmp;
+      _y2 = output_adc[C_I2_1].value - gnd_adc_tmp - vref_adc_tmp;
       if (abs(_y2) > 87)
       {
-        _x2 = output_adc[C_AIN2_1].tick;
-        _y2 = (int)(_y2*ustuvannja_meas[I_AIN2])>>(USTUVANNJA_VAGA - 4);
+        _x2 = output_adc[C_I2_1].tick;
+        _y2 = (int)(_y2*ustuvannja_meas[I_I2])>>(USTUVANNJA_VAGA - 4);
       }
       else
       {
-        _y2 = output_adc[C_AIN2_16].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_I2_16].value - gnd_adc_tmp - vref_adc_tmp;
 
-        _x2 = output_adc[C_AIN2_16].tick;
-        _y2 = (int)((-_y2)*ustuvannja_meas[I_AIN2])>>(USTUVANNJA_VAGA);
+        _x2 = output_adc[C_I2_16].tick;
+        _y2 = (int)((-_y2)*ustuvannja_meas[I_I2])>>(USTUVANNJA_VAGA);
       }
       
       if (_x2 > _x1) _DX = _x2 - _x1;
@@ -373,33 +373,33 @@ void SPI_ADC_IRQHandler(void)
       }
       _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
 
-      ADCs_data[I_AIN2] = _y;
+      ADCs_data[I_I2] = _y;
       
-      ADCs_data_raw[I_AIN2].tick = _x2;
-      ADCs_data_raw[I_AIN2].value = _y2;
+      ADCs_data_raw[I_I2].tick = _x2;
+      ADCs_data_raw[I_I2].value = _y2;
     }
     /*****/
     
     /*****/
-    //Формуємо значення Analog Input 3
+    //Формуємо значення I3
     /*****/
-    if ((command_word & (1 << I_AIN3)) != 0)
+    if ((command_word & (1 << I_I3)) != 0)
     {
-      _x1 = ADCs_data_raw[I_AIN3].tick;
-      _y1 = ADCs_data_raw[I_AIN3].value;
+      _x1 = ADCs_data_raw[I_I3].tick;
+      _y1 = ADCs_data_raw[I_I3].value;
         
-      _y2 = output_adc[C_AIN3_1].value - gnd_adc_tmp - vref_adc_tmp;
+      _y2 = output_adc[C_I3_1].value - gnd_adc_tmp - vref_adc_tmp;
       if (abs(_y2) > 87)
       {
-        _x2 = output_adc[C_AIN3_1].tick;
-        _y2 = (int)(_y2*ustuvannja_meas[I_AIN3])>>(USTUVANNJA_VAGA - 4);
+        _x2 = output_adc[C_I3_1].tick;
+        _y2 = (int)(_y2*ustuvannja_meas[I_I3])>>(USTUVANNJA_VAGA - 4);
       }
       else
       {
-        _y2 = output_adc[C_AIN3_16].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_I3_16].value - gnd_adc_tmp - vref_adc_tmp;
 
-        _x2 = output_adc[C_AIN3_16].tick;
-        _y2 = (int)((-_y2)*ustuvannja_meas[I_AIN3])>>(USTUVANNJA_VAGA);
+        _x2 = output_adc[C_I3_16].tick;
+        _y2 = (int)((-_y2)*ustuvannja_meas[I_I3])>>(USTUVANNJA_VAGA);
       }
       
       if (_x2 > _x1) _DX = _x2 - _x1;
@@ -416,33 +416,33 @@ void SPI_ADC_IRQHandler(void)
       }
       _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
 
-      ADCs_data[I_AIN3] = _y;
+      ADCs_data[I_I3] = _y;
       
-      ADCs_data_raw[I_AIN3].tick = _x2;
-      ADCs_data_raw[I_AIN3].value = _y2;
+      ADCs_data_raw[I_I3].tick = _x2;
+      ADCs_data_raw[I_I3].value = _y2;
     }
     /*****/
 
     /*****/
-    //Формуємо значення Analog Input 4
+    //Формуємо значення U
     /*****/
-    if ((command_word & (1 << I_AIN4)) != 0)
+    if ((command_word & (1 << I_U)) != 0)
     {
-      _x1 = ADCs_data_raw[I_AIN4].tick;
-      _y1 = ADCs_data_raw[I_AIN4].value;
+      _x1 = ADCs_data_raw[I_U].tick;
+      _y1 = ADCs_data_raw[I_U].value;
         
-      _y2 = output_adc[C_AIN4_1].value - gnd_adc_tmp - vref_adc_tmp;
+      _y2 = output_adc[C_U_1].value - gnd_adc_tmp - vref_adc_tmp;
       if (abs(_y2) > 87)
       {
-        _x2 = output_adc[C_AIN4_1].tick;
-        _y2 = (int)(_y2*ustuvannja_meas[I_AIN4])>>(USTUVANNJA_VAGA - 4);
+        _x2 = output_adc[C_U_1].tick;
+        _y2 = (int)(_y2*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA - 4);
       }
       else
       {
-        _y2 = output_adc[C_AIN4_16].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_U_16].value - gnd_adc_tmp - vref_adc_tmp;
 
-        _x2 = output_adc[C_AIN4_16].tick;
-        _y2 = (int)((-_y2)*ustuvannja_meas[I_AIN4])>>(USTUVANNJA_VAGA);
+        _x2 = output_adc[C_U_16].tick;
+        _y2 = (int)((-_y2)*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA);
       }
       
       if (_x2 > _x1) _DX = _x2 - _x1;
@@ -459,10 +459,10 @@ void SPI_ADC_IRQHandler(void)
       }
       _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
 
-      ADCs_data[I_AIN4] = _y;
+      ADCs_data[I_U] = _y;
       
-      ADCs_data_raw[I_AIN4].tick = _x2;
-      ADCs_data_raw[I_AIN4].value = _y2;
+      ADCs_data_raw[I_U].tick = _x2;
+      ADCs_data_raw[I_U].value = _y2;
     }
     /*****/
 
