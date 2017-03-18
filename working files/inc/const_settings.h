@@ -23,47 +23,6 @@
 #define MASKA_PARAM_N                   ((1 << (SFIFT_PARAM_ID     - SFIFT_PARAM_N  )) - 1)
 #define MASKA_PARAM_OUT                 ((1 << (SFIFT_PARAM_N      - SFIFT_PARAM_OUT)) - 1)
 
-enum _id_fb
-{
-  _ID_FB_FIRST_ALL = 1,                                                 /*1*/
-  
-    _ID_FB_FIRST_FIX = _ID_FB_FIRST_ALL,                                /*1*/
-
-      ID_FB_CONTROL_BLOCK = _ID_FB_FIRST_FIX,                           /*1*/
-      
-    _ID_FB_LAST_FIX,                                                    /*2*/
-
-    _ID_FB_FIRST_VAR = _ID_FB_LAST_FIX,                                 /*2*/
-    
-      _ID_FB_FIRST_VAR_NONE_CHANGED = _ID_FB_FIRST_VAR,                 /*2*/
-
-        ID_FB_INPUT = _ID_FB_FIRST_VAR_NONE_CHANGED,                    /*2*/
-        ID_FB_OUTPUT,                                                   /*3*/
-        ID_FB_LED,                                                      /*4*/
-
-      _ID_FB_LAST_VAR_NONE_CHANGED,                                     /*5*/
-
-      _ID_FB_FIRST_VAR_CHANGED = _ID_FB_LAST_VAR_NONE_CHANGED,          /*5*/
-      
-        ID_FB_ALARM = _ID_FB_FIRST_VAR_CHANGED,                         /*5*/
-        ID_FB_GROUP_ALARM,                                              /*6*/
-        ID_FB_AND,                                                      /*7*/
-        ID_FB_OR,                                                       /*8*/
-        ID_FB_XOR,                                                      /*9*/
-        ID_FB_NOT,                                                      /*10*/
-
-        ID_FB_TIMER,                                                    /*11*/
-        ID_FB_TRIGGER,                                                  /*12*/
-
-        ID_FB_MEANDER,                                                  /*13*/
-  
-      _ID_FB_LAST_VAR_CHANGED,                                          /*14*/
-      
-    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*14*/
-
-  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*14*/
-};
-
 #define NUMBER_FIX_BLOCKS       (_ID_FB_LAST_FIX - _ID_FB_FIRST_FIX)
 
 #define NUMBER_VAR_BLOCKS_NONE_CHANGED  (_ID_FB_LAST_VAR_NONE_CHANGED - _ID_FB_FIRST_VAR_NONE_CHANGED)
@@ -79,6 +38,7 @@ enum _FIX_BLOCK_output_signals
 {
   FIX_BLOCK_DEFECT = 0,
   FIX_BLOCK_AVAR_DEFECT,
+  FIX_BLOCK_SETTINGS_LOG_WORK,
   FIX_BLOCK_SETTINGS_CHANGED,
   
   FIX_BLOCK_OUT
@@ -128,30 +88,29 @@ enum _INPUT_output_signals
 /***/
 
 /*
-Дискретні виходи
+Дискретні виходи+світлоіндикатори
 */
 enum _OUTPUT_output_signals
 {
-  OUTPUT_OUT = 0,
-  OUTPUT_BOARD,
+  OUTPUT_LED_OUT = 0,
+  OUTPUT_LED_BOARD,
   
-  OUTPUT_SIGNALS_OUT
+  OUTPUT_LED_SIGNALS_OUT
     
 };
-enum _OUTPUT_input_signals
-{
-  OUTPUT_LOGIC_INPUT = 0,
-  OUTPUT_RESET,
-  OUTPUT_MEANDER1,
-  OUTPUT_MEANDER2,
-  
-  OUTPUT_SIGNALS_IN
-};
-/***/
 
-/*
-Дискретні виходи+світлоіндикатори
-*/
+enum _OUTPUT_LED_input_signals
+{
+  OUTPUT_LED_LOGIC_INPUT = 0,
+  OUTPUT_LED_RESET,
+
+  OUTPUT_LED_SIGNALS_IN,
+  
+  OUTPUT_LED_MEANDER1 = OUTPUT_LED_SIGNALS_IN,
+  OUTPUT_LED_MEANDER2,
+  
+  OUTPUT_LED_SIGNALS_IN_TOTAL
+};
 
 enum __index_ctrl_output_led
 {
@@ -165,29 +124,6 @@ enum __index_ctrl_output_led
   INDEX_CTRL_OUTPUT_LED_MEANDER2,
   
   MAX_INDEX_CTRL_OUTPUT_LED
-};
-/***/
-
-
-/*
-Світлоіндикатори
-*/
-enum _LED_output_signals
-{
-  LED_OUT = 0,
-  LED_BOARD,
-  
-  LED_SIGNALS_OUT
-    
-};
-enum _LED_input_signals
-{
-  LED_LOGIC_INPUT = 0,
-  LED_RESET,
-  LED_MEANDER1,
-  LED_MEANDER2,
-  
-  LED_SIGNALS_IN
 };
 /***/
 

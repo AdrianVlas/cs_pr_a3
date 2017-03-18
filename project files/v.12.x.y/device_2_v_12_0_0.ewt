@@ -1418,6 +1418,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_diagnostyka.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_fix_block.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_group_alarm.h</name>
         </file>
         <file>
@@ -1460,6 +1463,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_setting_language.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_standard_logic.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_state_inputs_outputs.h</name>
         </file>
         <file>
@@ -1467,6 +1473,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_timer.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_trigger.h</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu_ver2.h</name>

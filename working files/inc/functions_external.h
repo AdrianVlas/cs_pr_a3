@@ -21,10 +21,8 @@ extern void min_config(__CONFIG *);
 extern void min_settings(__SETTINGS_FIX *);
 extern void min_settings_INPUT(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_INPUT(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
-extern void min_settings_OUTPUT(unsigned int, uintptr_t *, size_t, size_t);
-extern void copy_settings_OUTPUT(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
-extern void min_settings_LED(unsigned int, uintptr_t *, size_t, size_t);
-extern void copy_settings_LED(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
+extern void min_settings_OUTPUT_LED(unsigned int, uintptr_t *, size_t, size_t);
+extern void copy_settings_OUTPUT_LED(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_ALARM(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_ALARM(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_GROUP_ALARM(unsigned int, uintptr_t *, size_t, size_t);
@@ -49,6 +47,7 @@ extern unsigned int set_config_and_settings(unsigned int, unsigned int);
 extern void error_reading_with_eeprom(void);
 extern void move_into_param_list_logical_nodes(unsigned int, int);
 extern void make_ekran_param_list_logical_node(void);
+extern void make_ekran_param_list_inputs_of_selected_logical_node(void);
 
 extern void Interrupts_Config(void);
 

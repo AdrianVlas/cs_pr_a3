@@ -3,28 +3,46 @@
 
 #define SRAM1 _Pragma("location=\"variables_RAM1\"")
 
-enum _edition_stats
+typedef enum _id_fb
 {
-  ED_VIEWING = 0,               /* 0 - вікно зараз не в режимі редагується  */
-  ED_CAN_BE_EDITED,             /* 1 - вікно зараз не в режимі редагується але з правом переходу в режим редагування без додаткої перевірки паролю  */
-  ED_EDITION,                   /* 2 - вікно зараз в режимі редагування  */
-  ED_CONFIRM_CHANGES,           /* 3 - вікно чекає підтвердження редагування  */ 
-  ED_WARNING_EDITION_BUSY,      /* 4 - у процесі виконання виникнула помилка  про неможливість переходу у режим редагування (виводиться вікно про помилку з єдиною кнопкою Enter функцією make_ekran_about_info. По натискуванні Enter залишаємося у тому самому вікні)*/
-  ED_WARNING_ENTER_ESC,         /* 5 - у процесі виконання виникнула помилка  (виводиться вікно про помилку з двома Enter/Esc кнопками функцією make_ekran_about_info. По натискуванні Enter залишаємося у тому самому вікні)*/
-  ED_WARNING_ENTER,             /* 6 - у процесі виконання виникнула помилка  (виводиться вікно про помилку з єдиною кнопкою Enter функцією make_ekran_about_info. По натискуванні Enter залишаємося у тому самому вікні)*/
-  ED_INFO,                      /* 7 - у процесі виконання виникнуло необхідність проінформувати на екрані певне повідомлення  (виводиться вікно інформації з єдиною кнопкою Enter функцією make_ekran_about_info) По натискуванні Enter повертаємося у попереднє вікно*/
-  ED_ERROR                      /* 8 - у процесі виконання виникнула критична помилка  (виводимо інформацію без будь-якої можливості натиснути будь-яку кнопку)*/
-};
+  _ID_FB_FIRST_ALL = 1,                                                 /*1*/
+  
+    _ID_FB_FIRST_FIX = _ID_FB_FIRST_ALL,                                /*1*/
 
-enum _result_pressed_enter_during_edition
-{
-  RPEDE_NONE = 0,
-  RPEDE_DATA_NOT_CHANGED,
-  RPEDE_DATA_CHANGED_OK,
-  RPEDE_DATA_CHANGED_OUT_OF_RANGE,
-  RPEDE_DATA_CHANGED_WRONG_RETURN_OK,
-  RPEDE_DATA_CHANGED_WRONG_RETURN_BAD,
-};
+      ID_FB_CONTROL_BLOCK = _ID_FB_FIRST_FIX,                           /*1*/
+      
+    _ID_FB_LAST_FIX,                                                    /*2*/
+
+    _ID_FB_FIRST_VAR = _ID_FB_LAST_FIX,                                 /*2*/
+    
+      _ID_FB_FIRST_VAR_NONE_CHANGED = _ID_FB_FIRST_VAR,                 /*2*/
+
+        ID_FB_INPUT = _ID_FB_FIRST_VAR_NONE_CHANGED,                    /*2*/
+        ID_FB_OUTPUT,                                                   /*3*/
+        ID_FB_LED,                                                      /*4*/
+
+      _ID_FB_LAST_VAR_NONE_CHANGED,                                     /*5*/
+
+      _ID_FB_FIRST_VAR_CHANGED = _ID_FB_LAST_VAR_NONE_CHANGED,          /*5*/
+      
+        ID_FB_ALARM = _ID_FB_FIRST_VAR_CHANGED,                         /*5*/
+        ID_FB_GROUP_ALARM,                                              /*6*/
+        ID_FB_AND,                                                      /*7*/
+        ID_FB_OR,                                                       /*8*/
+        ID_FB_XOR,                                                      /*9*/
+        ID_FB_NOT,                                                      /*10*/
+
+        ID_FB_TIMER,                                                    /*11*/
+        ID_FB_TRIGGER,                                                  /*12*/
+
+        ID_FB_MEANDER,                                                  /*13*/
+  
+      _ID_FB_LAST_VAR_CHANGED,                                          /*14*/
+      
+    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*14*/
+
+  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*14*/
+} __id_fb;
 
 typedef struct
 {
@@ -89,46 +107,24 @@ typedef struct
 /**********/
 
 /**********
-Дискретний вхід (Реле)
+Дискретний вхід (Реле)+ Світлоіндикатор
 **********/
 typedef struct
 {
   
   uint32_t control;
-  uint32_t param[OUTPUT_SIGNALS_IN];
+  uint32_t param[OUTPUT_LED_SIGNALS_IN_TOTAL];
   
-} __settings_for_OUTPUT;
+} __settings_for_OUTPUT_LED;
 
 typedef struct
 {
-  __settings_for_OUTPUT settings;
+  __settings_for_OUTPUT_LED settings;
 
-  uint8_t active_state[DIV_TO_HIGHER(OUTPUT_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_SIGNALS_OUT, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT, 8)];
 
-} __LN_OUTPUT;
-/**********/
-
-/**********
-Світлоіндикатор
-**********/
-
-typedef struct
-{
-  
-  uint32_t control;
-  uint32_t param[LED_SIGNALS_IN];
-  
-} __settings_for_LED;
-
-typedef struct
-{
-  __settings_for_LED settings;
-
-  uint8_t active_state[DIV_TO_HIGHER(LED_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(LED_SIGNALS_OUT, 8)];
-
-} __LN_LED;
+} __LN_OUTPUT_LED;
 /**********/
 
 /**********

@@ -409,7 +409,7 @@ void control_settings(unsigned int modified)
   size_t size_of_block = 0;
   uint32_t n_item = 0;
   unsigned int item = 0, shift = 0;
-  enum _id_fb block = _ID_FB_FIRST_ALL;
+  __id_fb block = _ID_FB_FIRST_ALL;
   while(
         (difference == 0) &&
         (block < _ID_FB_LAST_ALL)
@@ -447,28 +447,16 @@ void control_settings(unsigned int modified)
           break;
         }
       case ID_FB_OUTPUT:
-        {
-          if (item == 0)
-          {
-            size_of_block = sizeof(__settings_for_OUTPUT);
-            n_item = current_config_prt.n_output;
-          }
-
-          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_OUTPUT*)sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + item);
-          point_1 = (uint8_t *)(&(((__LN_OUTPUT*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]) + item)->settings) ;
-
-          break;
-        }
       case ID_FB_LED:
         {
           if (item == 0)
           {
-            size_of_block = sizeof(__settings_for_LED);
-            n_item = current_config_prt.n_led;
+            size_of_block = sizeof(__settings_for_OUTPUT_LED);
+            n_item = (block == ID_FB_OUTPUT) ? current_config_prt.n_output : current_config_prt.n_led;
           }
 
-          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_LED*)sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]) + item);
-          point_1 = (uint8_t *)(&(((__LN_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]) + item)->settings) ;
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_OUTPUT_LED*)sca_of_p[block - _ID_FB_FIRST_VAR]) + item);
+          point_1 = (uint8_t *)(&(((__LN_OUTPUT_LED*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
@@ -833,7 +821,7 @@ int str_to_int_DATE_Mmm(void)
 __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select make_remake_restore, unsigned int mem_for_prt, uintptr_t *p_sca_of_p_current[], uintptr_t *p_sca_of_p_control[], __CONFIG *current, __CONFIG *edited, __CONFIG *control)
 {
   __result_dym_mem_select result = DYN_MEM_SELECT_OK;
-  enum _id_fb index_1;
+  __id_fb index_1;
   unsigned int can_be_restore = true;
   
   if (make_remake_restore != RESTORE_DYN_MEM)
@@ -862,25 +850,24 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           break;
         }
       case ID_FB_OUTPUT:
-        {
-          //Дискретний вихід
-          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_output : 0;
-          p_current_field = &current->n_output;
-          n_cur = edited->n_output;
-          
-          min_param = min_settings_OUTPUT;
-          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OUTPUT) : sizeof(__settings_for_OUTPUT));
-          break;
-        }
       case ID_FB_LED:
         {
-          //Світлоіндикатор
-          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_led : 0;
-          p_current_field = &current->n_led;
-          n_cur = edited->n_led;
+          //Дискретний вихід або Світлоіндикатор
+          if (index_1 == ID_FB_OUTPUT)
+          {
+            n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_output : 0;
+            p_current_field = &current->n_output;
+            n_cur = edited->n_output;
+          }
+          else
+          {
+            n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_led : 0;
+            p_current_field = &current->n_led;
+            n_cur = edited->n_led;
+          }
           
-          min_param = min_settings_LED;
-          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_LED) : sizeof(__settings_for_LED));
+          min_param = min_settings_OUTPUT_LED;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OUTPUT_LED) : sizeof(__settings_for_OUTPUT_LED));
           break;
         }
       case ID_FB_ALARM:
@@ -1105,23 +1092,22 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         break;
       }
     case ID_FB_OUTPUT:
-      {
-        //Дискретний вихід
-        n_cur  = current->n_output;
-        current->n_output = n_prev = control->n_output;
-        
-        copy_settings_LN = copy_settings_OUTPUT;
-        size = n_prev*sizeof(__settings_for_OUTPUT);
-        break;
-      }
     case ID_FB_LED:
       {
-        //Світлоіндимкатор
-        n_cur  = current->n_led;
-        current->n_led = n_prev = control->n_led;
+        //Дискретний вихід або Світлоіндимкатор
+        if (index_1 == ID_FB_OUTPUT)
+        {
+          n_cur  = current->n_output;
+          current->n_output = n_prev = control->n_output;
+        }
+        else
+        {
+          n_cur  = current->n_led;
+          current->n_led = n_prev = control->n_led;
+        }
         
-        copy_settings_LN = copy_settings_LED;
-        size = n_prev*sizeof(__settings_for_LED);
+        copy_settings_LN = copy_settings_OUTPUT_LED;
+        size = n_prev*sizeof(__settings_for_OUTPUT_LED);
         break;
       }
     case ID_FB_ALARM:
@@ -1327,28 +1313,28 @@ void copy_settings_INPUT(unsigned int mem_to_prt, unsigned int mem_from_prt, uin
 /*****************************************************/
 
 /*****************************************************/
-//Встановлення мінімальних параметрів для дискретного виходу
+//Встановлення мінімальних параметрів для дискретного виходу/світлоіндикатора
 /*****************************************************/
-void min_settings_OUTPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+void min_settings_OUTPUT_LED(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
     if (mem_to_prt == true) 
     {
-      ((__LN_OUTPUT *)(base) + shift)->settings.control = 0;
-      for (size_t i = 0; i < OUTPUT_SIGNALS_IN; i++) ((__LN_OUTPUT *)(base) + shift)->settings.param[i] = 0;
+      ((__LN_OUTPUT_LED *)(base) + shift)->settings.control = 0;
+      for (size_t i = 0; i < OUTPUT_LED_SIGNALS_IN_TOTAL; i++) ((__LN_OUTPUT_LED *)(base) + shift)->settings.param[i] = 0;
     }
     else 
     {
-      ((__settings_for_OUTPUT *)(base) + shift)->control = 0;
-      for (size_t i = 0; i < OUTPUT_SIGNALS_IN; i++) ((__settings_for_OUTPUT *)(base) + shift)->param[i] = 0;
+      ((__settings_for_OUTPUT_LED *)(base) + shift)->control = 0;
+      for (size_t i = 0; i < OUTPUT_LED_SIGNALS_IN_TOTAL; i++) ((__settings_for_OUTPUT_LED *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_SIGNALS_OUT, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT, 8); i++)
       {
-        ((__LN_OUTPUT *)(base) + shift)->active_state[i] = 0;
+        ((__LN_OUTPUT_LED *)(base) + shift)->active_state[i] = 0;
       }
     }
   }
@@ -1356,91 +1342,31 @@ void min_settings_OUTPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_
 /*****************************************************/
 
 /*****************************************************/
-//Відновлення попередніх параметрів для дискретного виходу
+//Відновлення попередніх параметрів для дискретного виходу/світлоіндикатора
 /*****************************************************/
-void copy_settings_OUTPUT(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+void copy_settings_OUTPUT_LED(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      ((__settings_for_OUTPUT *)(base_target) + shift)->control = ((__LN_OUTPUT *)(base_source) + shift)->settings.control;
-      for (size_t i = 0; i < OUTPUT_SIGNALS_IN; i++) ((__settings_for_OUTPUT *)(base_target) + shift)->param[i] = ((__LN_OUTPUT *)(base_source) + shift)->settings.param[i];
+      ((__settings_for_OUTPUT_LED *)(base_target) + shift)->control = ((__LN_OUTPUT_LED *)(base_source) + shift)->settings.control;
+      for (size_t i = 0; i < OUTPUT_LED_SIGNALS_IN_TOTAL; i++) ((__settings_for_OUTPUT_LED *)(base_target) + shift)->param[i] = ((__LN_OUTPUT_LED *)(base_source) + shift)->settings.param[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
-      ((__LN_OUTPUT *)(base_target) + shift)->settings.control = ((__settings_for_OUTPUT *)(base_source) + shift)->control;
-      for (size_t i = 0; i < OUTPUT_SIGNALS_IN; i++) ((__LN_OUTPUT *)(base_target) + shift)->settings.param[i] = ((__settings_for_OUTPUT *)(base_source) + shift)->param[i];
+      ((__LN_OUTPUT_LED *)(base_target) + shift)->settings.control = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->control;
+      for (size_t i = 0; i < OUTPUT_LED_SIGNALS_IN_TOTAL; i++) ((__LN_OUTPUT_LED *)(base_target) + shift)->settings.param[i] = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->param[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
-      ((__settings_for_OUTPUT *)(base_target) + shift)->control = ((__settings_for_OUTPUT *)(base_source) + shift)->control;
-      for (size_t i = 0; i < OUTPUT_SIGNALS_IN; i++) ((__settings_for_OUTPUT *)(base_target) + shift)->param[i] = ((__settings_for_OUTPUT *)(base_source) + shift)->param[i];
+      ((__settings_for_OUTPUT_LED *)(base_target) + shift)->control = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->control;
+      for (size_t i = 0; i < OUTPUT_LED_SIGNALS_IN_TOTAL; i++) ((__settings_for_OUTPUT_LED *)(base_target) + shift)->param[i] = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->param[i];
     }
     else
     {
       //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
       total_error_sw_fixed(91);
-    }
-  }
-}
-/*****************************************************/
-
-/*****************************************************/
-//Встановлення мінімальних параметрів для світлоіндикатора
-/*****************************************************/
-void min_settings_LED(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
-{
-  for (size_t shift = index_first; shift < index_last; shift++)
-  {
-    if (mem_to_prt == true) 
-    {
-      ((__LN_LED *)(base) + shift)->settings.control = 0;
-      for (size_t i = 0; i < LED_SIGNALS_IN; i++) ((__LN_LED *)(base) + shift)->settings.param[i] = 0;
-    }
-    else 
-    {
-      ((__settings_for_LED *)(base) + shift)->control = 0;
-      for (size_t i = 0; i < LED_SIGNALS_IN; i++) ((__settings_for_LED *)(base) + shift)->param[i] = 0;
-    }
-    
-    if (mem_to_prt == true)
-    {
-      for (size_t i = 0; i < DIV_TO_HIGHER(LED_SIGNALS_OUT, 8); i++)
-      {
-        ((__LN_LED *)(base) + shift)->active_state[i] = 0;
-      }
-    }
-  }
-}
-/*****************************************************/
-
-/*****************************************************/
-//Відновлення попередніх параметрів для світлоіндикатора
-/*****************************************************/
-void copy_settings_LED(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
-{
-  for (size_t shift = index_target; shift < index_source; shift++)
-  {
-    if ((mem_to_prt == false) && (mem_from_prt == true))
-    {
-      ((__settings_for_LED *)(base_target) + shift)->control = ((__LN_LED *)(base_source) + shift)->settings.control;
-      for (size_t i = 0; i < LED_SIGNALS_IN; i++) ((__settings_for_LED *)(base_target) + shift)->param[i] = ((__LN_LED *)(base_source) + shift)->settings.param[i];
-    }
-    else if ((mem_to_prt == true) && (mem_from_prt == false))
-    {
-      ((__LN_LED *)(base_target) + shift)->settings.control = ((__settings_for_LED *)(base_source) + shift)->control;
-      for (size_t i = 0; i < LED_SIGNALS_IN; i++) ((__LN_LED *)(base_target) + shift)->settings.param[i] = ((__settings_for_LED *)(base_source) + shift)->param[i];
-    }
-    else if ((mem_to_prt == false) && (mem_from_prt == false))
-    {
-      ((__settings_for_LED *)(base_target) + shift)->control = ((__settings_for_LED *)(base_source) + shift)->control;
-      for (size_t i = 0; i < LED_SIGNALS_IN; i++) ((__settings_for_LED *)(base_target) + shift)->param[i] = ((__settings_for_LED *)(base_source) + shift)->param[i];
-    }
-    else
-    {
-      //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-      total_error_sw_fixed(92);
     }
   }
 }
@@ -1986,7 +1912,7 @@ void copy_settings_MEANDER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
 size_t size_all_settings(void)
 {
   size_t size = sizeof(__SETTINGS_FIX);
-  for (enum _id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
+  for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
   {
     size_t size_block;
     switch (i)
@@ -1997,13 +1923,9 @@ size_t size_all_settings(void)
         break;
       }
     case ID_FB_OUTPUT:
-      {
-        size_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
-        break;
-      }
     case ID_FB_LED:
       {
-        size_block = current_config.n_led*sizeof(__settings_for_LED);
+        size_block = ((i == ID_FB_OUTPUT) ? current_config.n_output : current_config.n_led)*sizeof(__settings_for_OUTPUT_LED);
         break;
       }
     case ID_FB_ALARM:
@@ -2080,7 +2002,7 @@ void copy_settings(
 {
   *target_fix = *source_fix;
   
-  for (enum _id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
+  for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
   {
     if (source_dyn[i - _ID_FB_FIRST_VAR] != NULL)
     {
@@ -2097,18 +2019,11 @@ void copy_settings(
             break;
           }
         case ID_FB_OUTPUT:
-          {
-            //Дискретний вихід
-            n_prev = source_conf->n_output;
-            copy_settings_LN = copy_settings_OUTPUT;
-
-            break;
-          }
         case ID_FB_LED:
           {
-            //Світлоіндимкатор
-            n_prev = source_conf->n_led;
-            copy_settings_LN = copy_settings_LED;
+            //Дискретний вихід або Світлоіндимкатор
+            n_prev = (i == ID_FB_OUTPUT) ? source_conf->n_output : source_conf->n_led;
+            copy_settings_LN = copy_settings_OUTPUT_LED;
 
             break;
           }
@@ -2476,7 +2391,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_trigger,
                                           current_config.n_meander
                                          };
-    for (enum _id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
+    for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
     {
       if (
           (i != ID_FB_GROUP_ALARM) &&
@@ -2492,17 +2407,11 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
           switch (i)
           {
           case ID_FB_OUTPUT:
-            {
-              _n = OUTPUT_SIGNALS_IN;
-              p_param      = (((__settings_for_OUTPUT*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
-              p_param_edit = (((__settings_for_OUTPUT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
-              break;
-            }
           case ID_FB_LED:
             {
-              _n = LED_SIGNALS_IN;
-              p_param      = (((__settings_for_LED*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
-              p_param_edit = (((__settings_for_LED*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              _n = OUTPUT_LED_SIGNALS_IN_TOTAL;
+              p_param      = (((__settings_for_OUTPUT_LED*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_OUTPUT_LED*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_ALARM:

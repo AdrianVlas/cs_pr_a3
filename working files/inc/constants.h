@@ -24,7 +24,10 @@
 #include "const_menu2_output_led.h"
 #include "const_menu2_setting_language.h"
 #include "const_menu2_choose_communication_parameters.h"
+#include "const_menu2_fix_block.h"
+#include "const_menu2_standard_logic.h"
 #include "const_menu2_alarm.h"
+#include "const_menu2_trigger.h"
 #include "const_menu2_group_alarm.h"
 #include "const_menu2_param_list_logical_nodes.h"
 

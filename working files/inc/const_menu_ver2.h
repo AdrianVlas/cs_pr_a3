@@ -1,6 +1,29 @@
 #ifndef __CONST_MENU_VER2__
 #define __CONST_MENU_VER2__
 
+enum _edition_stats
+{
+  ED_VIEWING = 0,               /* 0 - вікно зараз не в режимі редагується  */
+  ED_CAN_BE_EDITED,             /* 1 - вікно зараз не в режимі редагується але з правом переходу в режим редагування без додаткої перевірки паролю  */
+  ED_EDITION,                   /* 2 - вікно зараз в режимі редагування  */
+  ED_CONFIRM_CHANGES,           /* 3 - вікно чекає підтвердження редагування  */ 
+  ED_WARNING_EDITION_BUSY,      /* 4 - у процесі виконання виникнула помилка  про неможливість переходу у режим редагування (виводиться вікно про помилку з єдиною кнопкою Enter функцією make_ekran_about_info. По натискуванні Enter залишаємося у тому самому вікні)*/
+  ED_WARNING_ENTER_ESC,         /* 5 - у процесі виконання виникнула помилка  (виводиться вікно про помилку з двома Enter/Esc кнопками функцією make_ekran_about_info. По натискуванні Enter залишаємося у тому самому вікні)*/
+  ED_WARNING_ENTER,             /* 6 - у процесі виконання виникнула помилка  (виводиться вікно про помилку з єдиною кнопкою Enter функцією make_ekran_about_info. По натискуванні Enter залишаємося у тому самому вікні)*/
+  ED_INFO,                      /* 7 - у процесі виконання виникнуло необхідність проінформувати на екрані певне повідомлення  (виводиться вікно інформації з єдиною кнопкою Enter функцією make_ekran_about_info) По натискуванні Enter повертаємося у попереднє вікно*/
+  ED_ERROR                      /* 8 - у процесі виконання виникнула критична помилка  (виводимо інформацію без будь-якої можливості натиснути будь-яку кнопку)*/
+};
+
+enum _result_pressed_enter_during_edition
+{
+  RPEDE_NONE = 0,
+  RPEDE_DATA_NOT_CHANGED,
+  RPEDE_DATA_CHANGED_OK,
+  RPEDE_DATA_CHANGED_OUT_OF_RANGE,
+  RPEDE_DATA_CHANGED_WRONG_RETURN_OK,
+  RPEDE_DATA_CHANGED_WRONG_RETURN_BAD,
+};
+
 enum _menu2_levels
 {
   MAIN_MANU2_LEVEL = 0,
@@ -43,6 +66,7 @@ enum _menu2_levels
           DELAY_MEANDER_MENU2_LEVEL,
       PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL,
         PARAM_LIST_SELECTED_LOGICAL_NODES_MENU2_LEVEL,
+          PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL,
       LANGUAGE_MENU2_LEVEL,
       LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL,
         NAME_OF_CELL_MENU2_LEVEL,

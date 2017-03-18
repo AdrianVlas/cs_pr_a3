@@ -512,7 +512,7 @@ void main_routines_for_i2c(void)
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT) !=0)
     {
       //Запускаємо процес читання настройок
-      static enum _id_fb block;
+      static __id_fb block;
       static unsigned int shift;
 
       if (
@@ -548,13 +548,9 @@ void main_routines_for_i2c(void)
               break;
             }
           case ID_FB_OUTPUT:
-            {
-              size_of_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
-              break;
-            }
           case ID_FB_LED:
             {
-              size_of_block = current_config.n_led*sizeof(__settings_for_LED);
+              size_of_block = ((block == ID_FB_OUTPUT) ? current_config.n_output : current_config.n_led)*sizeof(__settings_for_OUTPUT_LED);
               break;
             }
           case ID_FB_ALARM:
@@ -780,7 +776,7 @@ void main_routines_for_i2c(void)
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) !=0)
     {
       //Стоїть умова початку запису нової порції інформації по налаштуваннях у EEPROM
-      static enum _id_fb block;
+      static __id_fb block;
       static unsigned int shift;
       static uint8_t crc_eeprom_settings;
 
@@ -823,13 +819,9 @@ void main_routines_for_i2c(void)
               break;
             }
           case ID_FB_OUTPUT:
-            {
-              size_of_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
-              break;
-            }
           case ID_FB_LED:
             {
-              size_of_block = current_config.n_led*sizeof(__settings_for_LED);
+              size_of_block = ((block == ID_FB_OUTPUT) ? current_config.n_output : current_config.n_led)*sizeof(__settings_for_OUTPUT_LED);
               break;
             }
           case ID_FB_ALARM:
@@ -1308,7 +1300,7 @@ void main_routines_for_i2c(void)
                 _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
                 
                 //Звільняємо всю пам'ять
-                for (enum _id_fb index_1 = _ID_FB_FIRST_VAR; index_1 < _ID_FB_LAST_VAR; index_1++)
+                for (__id_fb index_1 = _ID_FB_FIRST_VAR; index_1 < _ID_FB_LAST_VAR; index_1++)
                 {
                   free(sca_of_p_edit[index_1 - _ID_FB_FIRST_VAR]);
                   free(sca_of_p[index_1 - _ID_FB_FIRST_VAR]);
@@ -1411,7 +1403,7 @@ void main_routines_for_i2c(void)
       size_settings = 0; /*Цим повідомляємо інші блоки, що читання успішно даного блоку відбувся*/
 
       //Спочатку аналізуємо скільки і який блок налаштування прочитано
-      enum _id_fb block = _ID_FB_FIRST_ALL;
+      __id_fb block = _ID_FB_FIRST_ALL;
       unsigned int shift = 0;
       
       size_t size_of_block = 0;
@@ -1438,13 +1430,9 @@ void main_routines_for_i2c(void)
               break;
             }
           case ID_FB_OUTPUT:
-            {
-              size_of_block = current_config.n_output*sizeof(__settings_for_OUTPUT);
-              break;
-            }
           case ID_FB_LED:
             {
-              size_of_block = current_config.n_led*sizeof(__settings_for_LED);
+              size_of_block = ((block == ID_FB_OUTPUT) ? current_config.n_output : current_config.n_led)*sizeof(__settings_for_OUTPUT_LED);
               break;
             }
           case ID_FB_ALARM:
