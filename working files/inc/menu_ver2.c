@@ -510,7 +510,17 @@ void main_manu_function_ver2(void)
     case LIST_MEANDERS_MENU2_LEVEL:
     case LIST_SETTINGS_MEANDER_MENU2_LEVEL:
     case PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL:
-    case PARAM_LIST_SELECTED_LOGICAL_NODES_MENU2_LEVEL:
+    case PARAM_LIST_INPUTS_MENU2_LEVEL:
+    case PARAM_LIST_OUTPUTS_MENU2_LEVEL:
+    case PARAM_LIST_LEDS_MENU2_LEVEL:
+    case PARAM_LIST_ALARMS_MENU2_LEVEL:
+    case PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL:
+    case PARAM_LIST_ANDS_MENU2_LEVEL:
+    case PARAM_LIST_ORS_MENU2_LEVEL:
+    case PARAM_LIST_XORS_MENU2_LEVEL:
+    case PARAM_LIST_NOTS_MENU2_LEVEL:
+    case PARAM_LIST_TIMERS_MENU2_LEVEL:
+    case PARAM_LIST_TRIGGERS_MENU2_LEVEL:
     case PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
     case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
     case NAME_OF_CELL_MENU2_LEVEL:
@@ -679,7 +689,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_passwords_menu2[MAX_ROW_LIST_PASSWORDS_M2] = {SET_NEW_PASSWORD_MENU2_LEVEL, SET_NEW_PASSWORD_MENU2_LEVEL};
-              const enum _menu2_levels next_for_param_list_logical_nodes[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, PARAM_LIST_SELECTED_LOGICAL_NODES_MENU2_LEVEL};
+              const enum _menu2_levels next_for_param_list_logical_nodes[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, PARAM_LIST_INPUTS_MENU2_LEVEL, PARAM_LIST_OUTPUTS_MENU2_LEVEL, PARAM_LIST_LEDS_MENU2_LEVEL, PARAM_LIST_ALARMS_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL, PARAM_LIST_ANDS_MENU2_LEVEL, PARAM_LIST_ORS_MENU2_LEVEL, PARAM_LIST_XORS_MENU2_LEVEL, PARAM_LIST_NOTS_MENU2_LEVEL, PARAM_LIST_TIMERS_MENU2_LEVEL, PARAM_LIST_TRIGGERS_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_input_of_selected_logical_node_menu2 = PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
 
               const enum _menu2_levels *p = NULL;
@@ -715,6 +725,7 @@ void main_manu_function_ver2(void)
                   p = &next_for_list_inputs_menu2;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
                   
+                  position_in_current_level_menu2[LIST_SETTINGS_INPUT_MENU2_LEVEL] = 
                   position_in_current_level_menu2[DELAY_INPUT_MENU2_LEVEL]         = 
                   position_in_current_level_menu2[CTRL_INPUT_MENU2_LEVEL]          = 0;
                   
@@ -730,6 +741,7 @@ void main_manu_function_ver2(void)
                   p = &next_for_list_outputs_menu2;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
                   
+                  position_in_current_level_menu2[LIST_SETTINGS_OUTPUT_MENU2_LEVEL] = 0;
                   position_in_current_level_menu2[CTRL_OUTPUT_MENU2_LEVEL]          = 0;
                   
                   break;
@@ -744,6 +756,7 @@ void main_manu_function_ver2(void)
                   p = &next_for_list_leds_menu2;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
                   
+                  position_in_current_level_menu2[LIST_SETTINGS_LED_MENU2_LEVEL] = 0;
                   position_in_current_level_menu2[CTRL_LED_MENU2_LEVEL]          = 0;
                   
                   break;
@@ -758,6 +771,7 @@ void main_manu_function_ver2(void)
                   p = &next_for_list_alarms_menu2;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
                   
+                  position_in_current_level_menu2[LIST_SETTINGS_ALARM_MENU2_LEVEL] = 
                   position_in_current_level_menu2[DELAY_ALARM_MENU2_LEVEL]         = 
                   position_in_current_level_menu2[CTRL_ALARM_MENU2_LEVEL]          = 0;
                   
@@ -773,6 +787,7 @@ void main_manu_function_ver2(void)
                   p = &next_for_list_group_alarms_menu2;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
                   
+                  position_in_current_level_menu2[LIST_SETTINGS_GROUP_ALARM_MENU2_LEVEL] = 
                   position_in_current_level_menu2[PICKUP_GROUP_ALARM_MENU2_LEVEL]        = 
                   position_in_current_level_menu2[DELAY_GROUP_ALARM_MENU2_LEVEL]         = 
                   position_in_current_level_menu2[CTRL_GROUP_ALARM_MENU2_LEVEL]          = 0;
@@ -789,6 +804,7 @@ void main_manu_function_ver2(void)
                   p = &next_for_list_timers_menu2;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
                   
+                  position_in_current_level_menu2[LIST_SETTINGS_TIMER_MENU2_LEVEL] = 
                   position_in_current_level_menu2[DELAY_TIMER_MENU2_LEVEL]         = 0;
                   
                   break;
@@ -803,6 +819,7 @@ void main_manu_function_ver2(void)
                   p = &next_for_list_meanders_menu2;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
                   
+                  position_in_current_level_menu2[LIST_SETTINGS_MEANDER_MENU2_LEVEL] = 
                   position_in_current_level_menu2[DELAY_MEANDER_MENU2_LEVEL]         = 0;
                   
                   break;
@@ -814,12 +831,25 @@ void main_manu_function_ver2(void)
                 }
               case PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL:
                 {
-                  p = &next_for_param_list_logical_nodes[(current_state_menu2.index_position != INDEX_PARAM_LIST_LOGICAL_NODES_M2_GENERAL_BLOCK)];
+                  p = &next_for_param_list_logical_nodes[current_state_menu2.index_position];
                   break;
                 }
-              case PARAM_LIST_SELECTED_LOGICAL_NODES_MENU2_LEVEL:
+              case PARAM_LIST_INPUTS_MENU2_LEVEL:
+              case PARAM_LIST_OUTPUTS_MENU2_LEVEL:
+              case PARAM_LIST_LEDS_MENU2_LEVEL:
+              case PARAM_LIST_ALARMS_MENU2_LEVEL:
+              case PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL:
+              case PARAM_LIST_ANDS_MENU2_LEVEL:
+              case PARAM_LIST_ORS_MENU2_LEVEL:
+              case PARAM_LIST_XORS_MENU2_LEVEL:
+              case PARAM_LIST_NOTS_MENU2_LEVEL:
+              case PARAM_LIST_TIMERS_MENU2_LEVEL:
+              case PARAM_LIST_TRIGGERS_MENU2_LEVEL:
                 {
                   p = &next_for_list_input_of_selected_logical_node_menu2;
+
+                  position_in_current_level_menu2[PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+
                   break;
                 }
               case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
@@ -1754,10 +1784,32 @@ void new_level_menu(void)
   case LIST_GROUP_ALARMS_MENU2_LEVEL:
   case LIST_TIMERS_MENU2_LEVEL:
   case LIST_MEANDERS_MENU2_LEVEL:
-  case PARAM_LIST_SELECTED_LOGICAL_NODES_MENU2_LEVEL:
+  case PARAM_LIST_INPUTS_MENU2_LEVEL:
+  case PARAM_LIST_OUTPUTS_MENU2_LEVEL:
+  case PARAM_LIST_LEDS_MENU2_LEVEL:
+  case PARAM_LIST_ALARMS_MENU2_LEVEL:
+  case PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL:
+  case PARAM_LIST_ANDS_MENU2_LEVEL:
+  case PARAM_LIST_ORS_MENU2_LEVEL:
+  case PARAM_LIST_XORS_MENU2_LEVEL:
+  case PARAM_LIST_NOTS_MENU2_LEVEL:
+  case PARAM_LIST_TIMERS_MENU2_LEVEL:
+  case PARAM_LIST_TRIGGERS_MENU2_LEVEL:
     {
       __CONFIG *p_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
-      if (current_state_menu2.current_level == PARAM_LIST_SELECTED_LOGICAL_NODES_MENU2_LEVEL)
+      if (
+          (current_state_menu2.current_level == PARAM_LIST_INPUTS_MENU2_LEVEL      ) ||
+          (current_state_menu2.current_level == PARAM_LIST_OUTPUTS_MENU2_LEVEL     ) ||
+          (current_state_menu2.current_level == PARAM_LIST_LEDS_MENU2_LEVEL        ) ||
+          (current_state_menu2.current_level == PARAM_LIST_ALARMS_MENU2_LEVEL      ) ||
+          (current_state_menu2.current_level == PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL) ||
+          (current_state_menu2.current_level == PARAM_LIST_ANDS_MENU2_LEVEL        ) ||
+          (current_state_menu2.current_level == PARAM_LIST_ORS_MENU2_LEVEL         ) ||
+          (current_state_menu2.current_level == PARAM_LIST_XORS_MENU2_LEVEL        ) ||
+          (current_state_menu2.current_level == PARAM_LIST_NOTS_MENU2_LEVEL        ) ||
+          (current_state_menu2.current_level == PARAM_LIST_TIMERS_MENU2_LEVEL      ) ||
+          (current_state_menu2.current_level == PARAM_LIST_TRIGGERS_MENU2_LEVEL    )
+         )   
       {
         int *p_number[NUMBER_VAR_BLOCKS] = 
         {
@@ -1777,8 +1829,6 @@ void new_level_menu(void)
 
         intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]] - NUMBER_FIX_BLOCKS; 
         current_state_menu2.p_max_row = p_number[index];
-        
-        current_state_menu2.index_position = 0;
       }
       else
       {
@@ -1843,7 +1893,6 @@ void new_level_menu(void)
     {
       current_state_menu2.p_max_row = (current_state_menu2.edition == ED_VIEWING) ? (int*)&current_config_prt.n_group_alarm : (int*)&current_config.n_group_alarm;
       current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_PDC_M2;
-      current_state_menu2.index_position = 0;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_choose_pickup_delay_control;
       current_state_menu2.func_press_enter = NULL;
@@ -1878,7 +1927,6 @@ void new_level_menu(void)
         }
       }
       current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_DC_M2;
-      current_state_menu2.index_position = 0;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_choose_delay_control;
       current_state_menu2.func_press_enter = NULL;
@@ -1913,7 +1961,6 @@ void new_level_menu(void)
         }
       }
       current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_D_M2;
-      current_state_menu2.index_position = 0;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_choose_delay;
       current_state_menu2.func_press_enter = NULL;
@@ -1948,7 +1995,6 @@ void new_level_menu(void)
         }
       }
       current_state_menu2.max_row = MAX_ROW_LIST_SETTINGS_C_M2;
-      current_state_menu2.index_position = 0;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_choose_control;
       current_state_menu2.func_press_enter = NULL;
@@ -2177,7 +2223,24 @@ void new_level_menu(void)
 //      unsigned int number_logical_node;
 
       enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-      if (ekran_before == PARAM_LIST_SELECTED_LOGICAL_NODES_MENU2_LEVEL)
+      if (ekran_before == PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL)
+      {
+//        number_logical_node = 1;
+        type_logical_node = ID_FB_CONTROL_BLOCK;
+      }
+      else if (
+              (ekran_before == PARAM_LIST_INPUTS_MENU2_LEVEL      ) ||
+              (ekran_before == PARAM_LIST_OUTPUTS_MENU2_LEVEL     ) ||
+              (ekran_before == PARAM_LIST_LEDS_MENU2_LEVEL        ) ||
+              (ekran_before == PARAM_LIST_ALARMS_MENU2_LEVEL      ) ||
+              (ekran_before == PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL) ||
+              (ekran_before == PARAM_LIST_ANDS_MENU2_LEVEL        ) ||
+              (ekran_before == PARAM_LIST_ORS_MENU2_LEVEL         ) ||
+              (ekran_before == PARAM_LIST_XORS_MENU2_LEVEL        ) ||
+              (ekran_before == PARAM_LIST_NOTS_MENU2_LEVEL        ) ||
+              (ekran_before == PARAM_LIST_TIMERS_MENU2_LEVEL      ) ||
+              (ekran_before == PARAM_LIST_TRIGGERS_MENU2_LEVEL    )
+             )   
       {
 //        number_logical_node = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
     
@@ -2186,11 +2249,6 @@ void new_level_menu(void)
         {
           type_logical_node = _ID_FB_FIRST_ALL + position_in_current_level_menu2[ekran_before];
         }
-      }
-      else if (ekran_before == PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL)
-      {
-//        number_logical_node = 1;
-        type_logical_node = ID_FB_CONTROL_BLOCK;
       }
 
       if (ekran_before == PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL)
@@ -2241,7 +2299,6 @@ void new_level_menu(void)
         current_state_menu2.max_row = 0;
       }
       
-      current_state_menu2.index_position = 0;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_param_list_inputs_of_selected_logical_node;
       current_state_menu2.func_press_enter = NULL;

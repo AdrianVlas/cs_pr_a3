@@ -2,28 +2,28 @@
 #define __CONST_TRIGGERS_MENU2__
 
 #define NAME_TRIGGER_IN_SIGNALS_RU      \
-  " Set-¬ход       ",                   \
-  " Reset-¬ход     ",                   \
-  " D-¬ход         ",                   \
-  " C-¬ход         "                    \
+  "Set             ",                   \
+  "Clr.            ",                   \
+  "D               ",                   \
+  "C               "                    \
 
 #define NAME_TRIGGER_IN_SIGNALS_UA      \
-  " Set-¬х≥д       ",                   \
-  " Reset-¬х≥д     ",                   \
-  " D-¬х≥д         ",                   \
-  " C-¬х≥д         "                    \
+  "Set             ",                   \
+  "Clr.            ",                   \
+  "D               ",                   \
+  "C               "                    \
 
 
 #define NAME_TRIGGER_IN_SIGNALS_EN      \
-  " Set-Input      ",                   \
-  " Reset-Input    ",                   \
-  " D-Input        ",                   \
-  " C-Input        "                    \
+  "Set             ",                   \
+  "Clr.            ",                   \
+  "D               ",                   \
+  "C               "                    \
 
 #define NAME_TRIGGER_IN_SIGNALS_KZ      \
-  " Set-¬ход       ",                   \
-  " Reset-¬ход     ",                   \
-  " D-¬ход         ",                   \
-  " C-¬ход         "                    \
+  "Set             ",                   \
+  "Clr.            ",                   \
+  "D               ",                   \
+  "C               "                    \
 
 #endif 

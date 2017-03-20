@@ -203,6 +203,70 @@ void make_ekran_param_list_logical_node(void)
 /*****************************************************/
 void make_ekran_param_list_inputs_of_selected_logical_node(void)
 {
+  const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES][MAX_COL_LCD + 1] = 
+  {
+    {
+      "                ",
+      " Д.Вх           ",
+      " В.Р            ",
+      " Св             ",
+      " СЗС            ",
+      " ШГС            ",
+      " И              ",
+      " ИЛИ            ",
+      " И-ИЛИ          ",
+      " НЕ             ",
+      " МФТ            ",
+      " D-Тр           ",
+      " ГПС            "
+    },
+    {
+      "                ",
+      "Д.Вх            ",
+      "В.Р             ",
+      "Св              ",
+      "СЗС             ",
+      "ШГС             ",
+      "І               ",
+      "АБО             ",
+      "В.АБО           ",
+      "НЕ              ",
+      "МФТ             ",
+      "D-Тр            ",
+      "ГПС             "
+    },
+    {
+      "                ",
+      "D.In            ",
+      "O.R             ",
+      "LED             ",
+      "СЗС             ",
+      "ШГС             ",
+      "AND             ",
+      "OR              ",
+      "XOR             ",
+      "NOT             ",
+      "MFT             ",
+      "D-Tr            ",
+      "PSG             "
+    },
+    {
+      "                ",
+      "Д.Вх            ",
+      "В.Р             ",
+      "Св              ",
+      "СЗС             ",
+      "ШГС             ",
+      "И               ",
+      "ИЛИ             ",
+      "И-ИЛИ           ",
+      "НЕ              ",
+      "МФТ             ",
+      "D-Тр            ",
+      "ГПС             "
+    }
+  };
+  
   const uint8_t name_fix_block_in_signals[MAX_NAMBER_LANGUAGE][FIX_BLOCK_SIGNALS_IN][MAX_COL_LCD + 1] =
   {
     {NAME_FIX_BLOCK_IN_SIGNALS_RU},  
@@ -235,14 +299,6 @@ void make_ekran_param_list_inputs_of_selected_logical_node(void)
     {NAME_STANDARD_LOGIC_IN_SIGNALS_KZ}
   };
 
-  const uint8_t name_not_in_signals[MAX_NAMBER_LANGUAGE][1][MAX_COL_LCD + 1] =
-  {
-    {NAME_NOT_IN_SIGNALS_RU},  
-    {NAME_NOT_IN_SIGNALS_UA},  
-    {NAME_NOT_IN_SIGNALS_EN},  
-    {NAME_NOT_IN_SIGNALS_KZ}
-  };
-  
   const uint8_t name_timer_in_signals[MAX_NAMBER_LANGUAGE][TIMER_SIGNALS_IN][MAX_COL_LCD + 1] =
   {
     {NAME_TIMER_IN_SIGNALS_RU},  
@@ -270,7 +326,7 @@ void make_ekran_param_list_inputs_of_selected_logical_node(void)
     (const uint8_t*)name_standard_logic_in_signals, 
     (const uint8_t*)name_standard_logic_in_signals, 
     (const uint8_t*)name_standard_logic_in_signals, 
-    (const uint8_t*)name_not_in_signals, 
+    (const uint8_t*)name_standard_logic_in_signals, 
     (const uint8_t*)name_timer_in_signals, 
     (const uint8_t*)name_trigger_in_signals, 
     NULL
@@ -278,23 +334,35 @@ void make_ekran_param_list_inputs_of_selected_logical_node(void)
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
   unsigned int position_temp = current_state_menu2.index_position;
   
-  unsigned int type_logical_node/*, number_logical_node*/;
+  unsigned int type_logical_node, number_logical_node;
 
   enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-  if (ekran_before == PARAM_LIST_SELECTED_LOGICAL_NODES_MENU2_LEVEL)
+  if (ekran_before == PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL)
   {
-//    number_logical_node = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
+    number_logical_node = 1;
+    type_logical_node = ID_FB_CONTROL_BLOCK;
+  }
+  else if (
+           (ekran_before == PARAM_LIST_INPUTS_MENU2_LEVEL      ) ||
+           (ekran_before == PARAM_LIST_OUTPUTS_MENU2_LEVEL     ) ||
+           (ekran_before == PARAM_LIST_LEDS_MENU2_LEVEL        ) ||
+           (ekran_before == PARAM_LIST_ALARMS_MENU2_LEVEL      ) ||
+           (ekran_before == PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL) ||
+           (ekran_before == PARAM_LIST_ANDS_MENU2_LEVEL        ) ||
+           (ekran_before == PARAM_LIST_ORS_MENU2_LEVEL         ) ||
+           (ekran_before == PARAM_LIST_XORS_MENU2_LEVEL        ) ||
+           (ekran_before == PARAM_LIST_NOTS_MENU2_LEVEL        ) ||
+           (ekran_before == PARAM_LIST_TIMERS_MENU2_LEVEL      ) ||
+           (ekran_before == PARAM_LIST_TRIGGERS_MENU2_LEVEL    )
+          )   
+  {
+    number_logical_node = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
     
     ekran_before = previous_level_in_current_level_menu2[ekran_before];
     if (ekran_before == PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL)
     {
       type_logical_node = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
     }
-  }
-  else if (ekran_before == PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL)
-  {
-//    number_logical_node = 1;
-    type_logical_node = ID_FB_CONTROL_BLOCK;
   }
   
   unsigned int error = false;
@@ -313,8 +381,77 @@ void make_ekran_param_list_inputs_of_selected_logical_node(void)
       //Наступні рядки треба перевірити, чи їх требе відображати
       if (index_in_ekran < max_row)
       {
+        unsigned int part = 0;
         uint8_t *p = ((uint8_t*)array_p_name[type_logical_node - _ID_FB_FIRST_ALL]) + (index_language*max_row + index_in_ekran)*(MAX_COL_LCD + 1);
-        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = *(p + j);
+        unsigned int number_digit, first_index_number, number_logical_node_tmp = number_logical_node;
+        size_t k = 0;
+        for (size_t j = 0; j < MAX_COL_LCD; j++) 
+        {
+          switch (part)
+          {
+          case 0:
+            {
+              working_ekran[i][j] = ' ';
+              part++;
+              k = 0;
+              
+              break;
+            }
+          case 1:
+            {
+              uint8_t symbol = name_f_blocks[index_language][type_logical_node - _ID_FB_FIRST_ALL][k];
+              
+              if (symbol != ' ') 
+              {
+                working_ekran[i][j] = symbol;
+                k++;
+                
+                break;
+              }
+              else 
+              {
+                if (type_logical_node == ID_FB_CONTROL_BLOCK) part += 2;
+                else 
+                {
+                  number_digit = max_number_digit_in_number(number_logical_node);
+                  first_index_number = j;
+                  part++;
+                }
+                k = 0;
+              }
+            }
+          case 2:
+            {
+              if (part == 2)
+              {
+                if (number_logical_node_tmp != 0)
+                {
+                  /*
+                  Заповнюємо значення зправа  на ліво
+                  індекс = first_index_number + number_digit - 1 - (j - first_index_number) =
+                  = first_index_number + number_digit - 1 - j + first_index_number =
+                  = 2xfirst_index_number + number_digit - 1 - j =
+                  */
+                  working_ekran[i][2*first_index_number + number_digit - 1 - j] = (number_logical_node_tmp % 10) + 0x30;
+                  number_logical_node_tmp /= 10;
+                }
+                else
+                {
+                  working_ekran[i][j] = '.';
+                  part++;
+                  k = 0;
+                }
+              
+                break;
+              }
+            }
+          default:
+            {
+              working_ekran[i][j] = *(p + k++);
+              break;
+            }
+          }
+        }
       }
       else
       {

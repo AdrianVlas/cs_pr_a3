@@ -11,21 +11,21 @@
 
 
 #define NAME_TIMER_IN_SIGNALS_RU        \
-  " Л.Вход         ",                   \
-  " Сброс          "                    
+  "Л.Вх.           ",                   \
+  "Сброс           "                    
 
 #define NAME_TIMER_IN_SIGNALS_UA        \
-  " Л.Вхід         ",                   \
-  " Скидання       "                    
+  "Л.Вх.           ",                   \
+  "Скид.           "                    
 
 
 #define NAME_TIMER_IN_SIGNALS_EN        \
-  " L.Input         ",                  \
-  " Reset           "                    
+  "L.In.            ",                  \
+  "Reset            "                    
 
 #define NAME_TIMER_IN_SIGNALS_KZ        \
-  " Л.Вход         ",                   \
-  " Сброс          "                    
+  "Л.Вх.           ",                   \
+  "Сброс           "                    
 
 
 #endif 

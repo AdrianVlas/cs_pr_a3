@@ -118,7 +118,20 @@ void make_ekran_list_logical_nodes(void)
   
   const uint8_t *p_name;
   const unsigned int *p_first_index_number;
-  if (current_state_menu2.current_level == PARAM_LIST_SELECTED_LOGICAL_NODES_MENU2_LEVEL)
+  enum _menu2_levels current_level = current_state_menu2.current_level;
+  if (
+      (current_level == PARAM_LIST_INPUTS_MENU2_LEVEL      ) ||
+      (current_level == PARAM_LIST_OUTPUTS_MENU2_LEVEL     ) ||
+      (current_level == PARAM_LIST_LEDS_MENU2_LEVEL        ) ||
+      (current_level == PARAM_LIST_ALARMS_MENU2_LEVEL      ) ||
+      (current_level == PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL) ||
+      (current_level == PARAM_LIST_ANDS_MENU2_LEVEL        ) ||
+      (current_level == PARAM_LIST_ORS_MENU2_LEVEL         ) ||
+      (current_level == PARAM_LIST_XORS_MENU2_LEVEL        ) ||
+      (current_level == PARAM_LIST_NOTS_MENU2_LEVEL        ) ||
+      (current_level == PARAM_LIST_TIMERS_MENU2_LEVEL      ) ||
+      (current_level == PARAM_LIST_TRIGGERS_MENU2_LEVEL    )
+     )   
   {
     const uint8_t (* const array_p_name[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
@@ -151,13 +164,13 @@ void make_ekran_list_logical_nodes(void)
       &first_index_number_meander
     };
     
-    intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]] - NUMBER_FIX_BLOCKS; 
+    intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_level]] - NUMBER_FIX_BLOCKS; 
     p_name = (*array_p_name[index])[index_language];
     p_first_index_number = &(*array_p_first_index_number[index])[index_language];
   }
   else
   {
-    switch (current_state_menu2.current_level)
+    switch (current_level)
     {
     case LIST_INPUTS_MENU2_LEVEL:
       {
