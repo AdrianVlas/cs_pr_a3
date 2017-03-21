@@ -103,7 +103,7 @@ void main_manu_function_ver2(void);
 void new_level_menu(void);
 void make_ekran_main(void);
 void move_into_main(unsigned int, int);
-enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords(void);
+enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void);
 void make_ekran_time(void);
 void move_into_time(unsigned int, int);
 void change_time(unsigned int);

@@ -102,7 +102,7 @@ extern void main_manu_function_ver2(void);
 extern void new_level_menu(void);
 extern void make_ekran_main(void);
 extern void move_into_main(unsigned int, int);
-extern enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords(void);
+extern enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void);
 extern void make_ekran_time(void);
 extern void move_into_time(unsigned int, int);
 extern void change_time(unsigned int);
