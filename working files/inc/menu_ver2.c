@@ -514,20 +514,33 @@ void main_manu_function_ver2(void)
     case LIST_MEANDERS_MENU2_LEVEL:
     case LIST_SETTINGS_MEANDER_MENU2_LEVEL:
     case PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL:
-    case PARAM_LIST_INPUTS_MENU2_LEVEL:
-    case PARAM_LIST_OUTPUTS_MENU2_LEVEL:
-    case PARAM_LIST_LEDS_MENU2_LEVEL:
-    case PARAM_LIST_ALARMS_MENU2_LEVEL:
-    case PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL:
-    case PARAM_LIST_ANDS_MENU2_LEVEL:
-    case PARAM_LIST_ORS_MENU2_LEVEL:
-    case PARAM_LIST_XORS_MENU2_LEVEL:
-    case PARAM_LIST_NOTS_MENU2_LEVEL:
-    case PARAM_LIST_TIMERS_MENU2_LEVEL:
-    case PARAM_LIST_TRIGGERS_MENU2_LEVEL:
+    case PARAM_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_LEDS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_ANDS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_ORS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_XORS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_NOTS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL:
     case PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
     case PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
     case PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
     case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
     case NAME_OF_CELL_MENU2_LEVEL:
     case SETTINGS_RS485_MENU2_LEVEL:
@@ -695,11 +708,13 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_passwords_menu2[MAX_ROW_LIST_PASSWORDS_M2] = {SET_NEW_PASSWORD_MENU2_LEVEL, SET_NEW_PASSWORD_MENU2_LEVEL};
-              const enum _menu2_levels next_for_param_list_logical_nodes_for_input[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, PARAM_LIST_INPUTS_MENU2_LEVEL, PARAM_LIST_OUTPUTS_MENU2_LEVEL, PARAM_LIST_LEDS_MENU2_LEVEL, PARAM_LIST_ALARMS_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL, PARAM_LIST_ANDS_MENU2_LEVEL, PARAM_LIST_ORS_MENU2_LEVEL, PARAM_LIST_XORS_MENU2_LEVEL, PARAM_LIST_NOTS_MENU2_LEVEL, PARAM_LIST_TIMERS_MENU2_LEVEL, PARAM_LIST_TRIGGERS_MENU2_LEVEL};
-              const enum _menu2_levels next_for_param_list_selcted_logical_node_type = PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
+              const enum _menu2_levels next_for_param_list_logical_nodes_for_input[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, PARAM_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_LEDS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_ANDS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_ORS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_XORS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_NOTS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL};
+              const enum _menu2_levels next_for_param_list_selcted_logical_node_type_for_input = PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               const enum _menu2_levels next_for_param_list_input_of_selcted_logical_node = PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               const enum _menu2_levels next_for_param_view_chosen_signal_of_selected_logical_node = PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
-
+              const enum _menu2_levels next_for_param_list_logical_nodes_for_output[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL/*PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL*/, PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL};
+//              const enum _menu2_levels next_for_param_list_selcted_logical_node_type_for_output = PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
+              
               const enum _menu2_levels *p = NULL;
               
               switch (current_state_menu2.current_level)
@@ -842,22 +857,48 @@ void main_manu_function_ver2(void)
                   p = &next_for_param_list_logical_nodes_for_input[current_state_menu2.index_position];
                   break;
                 }
-              case PARAM_LIST_INPUTS_MENU2_LEVEL:
-              case PARAM_LIST_OUTPUTS_MENU2_LEVEL:
-              case PARAM_LIST_LEDS_MENU2_LEVEL:
-              case PARAM_LIST_ALARMS_MENU2_LEVEL:
-              case PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL:
-              case PARAM_LIST_ANDS_MENU2_LEVEL:
-              case PARAM_LIST_ORS_MENU2_LEVEL:
-              case PARAM_LIST_XORS_MENU2_LEVEL:
-              case PARAM_LIST_NOTS_MENU2_LEVEL:
-              case PARAM_LIST_TIMERS_MENU2_LEVEL:
-              case PARAM_LIST_TRIGGERS_MENU2_LEVEL:
+              case PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL:
                 {
-                  p = &next_for_param_list_selcted_logical_node_type;
+                  p = &next_for_param_list_logical_nodes_for_output[current_state_menu2.index_position];
+                  break;
+                }
+              case PARAM_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_LEDS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_ANDS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_ORS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_XORS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_NOTS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL:
+                {
+                  p = &next_for_param_list_selcted_logical_node_type_for_input;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
                   
                   position_in_current_level_menu2[PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+
+                  break;
+                }
+              case PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
+                {
+//                  p = &next_for_param_list_selcted_logical_node_type_for_output;
+//                  current_state_menu2.number_selection = current_state_menu2.index_position;
+//                  
+//                  position_in_current_level_menu2[PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
 
                   break;
                 }
@@ -937,7 +978,6 @@ void main_manu_function_ver2(void)
               
               if (current_state_menu2.edition <= ED_EDITION)
               {
-                if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
                 //Переходимо у попереднє меню
                 current_state_menu2.current_level = previous_level_in_current_level_menu2[current_state_menu2.current_level];
                 current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
@@ -1776,10 +1816,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = press_esc_in_list_settings;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case CONFIGURATION_MENU2_LEVEL:
@@ -1805,22 +1842,61 @@ void new_level_menu(void)
   case LIST_GROUP_ALARMS_MENU2_LEVEL:
   case LIST_TIMERS_MENU2_LEVEL:
   case LIST_MEANDERS_MENU2_LEVEL:
-  case PARAM_LIST_INPUTS_MENU2_LEVEL:
-  case PARAM_LIST_OUTPUTS_MENU2_LEVEL:
-  case PARAM_LIST_LEDS_MENU2_LEVEL:
-  case PARAM_LIST_ALARMS_MENU2_LEVEL:
-  case PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL:
-  case PARAM_LIST_ANDS_MENU2_LEVEL:
-  case PARAM_LIST_ORS_MENU2_LEVEL:
-  case PARAM_LIST_XORS_MENU2_LEVEL:
-  case PARAM_LIST_NOTS_MENU2_LEVEL:
-  case PARAM_LIST_TIMERS_MENU2_LEVEL:
-  case PARAM_LIST_TRIGGERS_MENU2_LEVEL:
+  case PARAM_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_LEDS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_ANDS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_ORS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_XORS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_NOTS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
     {
-      __CONFIG *p_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
+      __CONFIG *p_config;
+      switch (current_state_menu2.edition)
+      {
+      case ED_VIEWING:
+        {
+          p_config = &current_config_prt;
+          break;
+        }
+      case ED_CAN_BE_EDITED:
+        {
+          p_config = &current_config;
+          break;
+        }
+      default:
+        {
+          p_config = &current_config_edit;
+          break;
+        }
+      }
+      
       if (
-          (current_state_menu2.current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
-          (current_state_menu2.current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
+          (
+           (current_state_menu2.current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+           (current_state_menu2.current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+          )
+          ||
+          (
+           (current_state_menu2.current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
+           (current_state_menu2.current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
+          )
          )   
       {
         int *p_number[NUMBER_VAR_BLOCKS] = 
@@ -1841,6 +1917,14 @@ void new_level_menu(void)
 
         intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]] - NUMBER_FIX_BLOCKS; 
         current_state_menu2.p_max_row = p_number[index];
+        if (
+            (
+             (current_state_menu2.current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+             (current_state_menu2.current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+            )
+            &&  
+            (current_state_menu2.edition == ED_EDITION)
+           )current_state_menu2.edition = ED_CAN_BE_EDITED;
       }
       else
       {
@@ -1887,6 +1971,7 @@ void new_level_menu(void)
             total_error_sw_fixed(104);
           }
         }
+        if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       }
       current_state_menu2.max_row = 0;
       current_state_menu2.func_move = move_into_ekran_simple;
@@ -1895,10 +1980,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+
       break;
     }
   case LIST_SETTINGS_GROUP_ALARM_MENU2_LEVEL:
@@ -1911,10 +1993,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case LIST_SETTINGS_INPUT_MENU2_LEVEL:
@@ -1945,10 +2024,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case LIST_SETTINGS_TIMER_MENU2_LEVEL:
@@ -1979,10 +2055,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case LIST_SETTINGS_OUTPUT_MENU2_LEVEL:
@@ -2013,10 +2086,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case DELAY_ALARM_MENU2_LEVEL:
@@ -2141,10 +2211,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case DELAY_INPUT_MENU2_LEVEL:
@@ -2224,10 +2291,10 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (
+          (current_state_menu2.current_level == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL) &&
+          (current_state_menu2.edition == ED_EDITION)
+         )current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
@@ -2242,8 +2309,8 @@ void new_level_menu(void)
         type_logical_node = ID_FB_CONTROL_BLOCK;
       }
       else if (
-               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
-               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
+               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
               )   
       {
 //        number_logical_node = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
@@ -2309,10 +2376,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
@@ -2334,8 +2398,8 @@ void new_level_menu(void)
           type_logical_node = ID_FB_CONTROL_BLOCK;
         }
         else if (
-                 (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
-                 (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
+                 (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+                 (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
                 )   
         {
 //          number_logical_node = current_state_menu2.number_selection + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
@@ -2386,10 +2450,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case LANGUAGE_MENU2_LEVEL:
@@ -2418,10 +2479,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case NAME_OF_CELL_MENU2_LEVEL:
@@ -2434,10 +2492,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case ADDRESS_MENU2_LEVEL:
@@ -2466,10 +2521,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case BAUD_RS485_MENU2_LEVEL:
@@ -2546,10 +2598,7 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case DIAGNOSTICS_MENU2_LEVEL:

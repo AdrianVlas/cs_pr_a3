@@ -76,7 +76,25 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_
 /*****************************************************/
 void move_into_param_list_logical_nodes(unsigned int action, int max_row)
 {
-  __CONFIG *p_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
+  __CONFIG *p_config;
+  switch (current_state_menu2.edition)
+  {
+  case ED_VIEWING:
+    {
+      p_config = &current_config_prt;
+      break;
+    }
+  case ED_CAN_BE_EDITED:
+    {
+      p_config = &current_config;
+      break;
+    }
+  default:
+    {
+      p_config = &current_config_edit;
+      break;
+    }
+  }
   unsigned int logical_node_shown[NUMBER_ALL_BLOCKS];
   if (current_state_menu2.current_level == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
   {
@@ -160,7 +178,25 @@ void make_ekran_param_list_logical_node(void)
   }
   else
   {
-    __CONFIG *p_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
+    __CONFIG *p_config;
+    switch (current_state_menu2.edition)
+    {
+    case ED_VIEWING:
+      {
+        p_config = &current_config_prt;
+        break;
+      }
+    case ED_CAN_BE_EDITED:
+      {
+        p_config = &current_config;
+        break;
+      }
+    default:
+      {
+        p_config = &current_config_edit;
+        break;
+      }
+    }
     unsigned int logical_node_shown[NUMBER_ALL_BLOCKS];
     if (current_state_menu2.current_level == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
     {
@@ -223,7 +259,7 @@ void make_ekran_param_list_logical_node(void)
         " АБО            ",
         " Викл.АБО       ",
         " НЕ             ",
-        " МФ-Таймер      ",
+        " БФ-Таймер      ",
         " D-Триґер       ",
         " ГПС            "
       },
@@ -407,8 +443,8 @@ void make_ekran_param_list_inputs_of_selected_logical_node(void)
       type_logical_node = ID_FB_CONTROL_BLOCK;
     }
     else if (
-             (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
-             (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
+             (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+             (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
             )   
     {
       number_logical_node = current_state_menu2.number_selection + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
@@ -581,8 +617,8 @@ void move_into_param_view_chosen_of_selected_logical_node(unsigned int action, i
         type_logical_node = ID_FB_CONTROL_BLOCK;
       }
       else if (
-               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
-               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
+               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
               )   
       {
         number_logical_node = current_state_menu2.number_selection + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
@@ -834,8 +870,8 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         type_logical_node = ID_FB_CONTROL_BLOCK;
       }
       else if (
-               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
-               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
+               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
               )   
       {
         number_logical_node = current_state_menu2.number_selection + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/

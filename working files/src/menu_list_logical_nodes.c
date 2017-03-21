@@ -120,8 +120,15 @@ void make_ekran_list_logical_nodes(void)
   const unsigned int *p_first_index_number;
   enum _menu2_levels current_level = current_state_menu2.current_level;
   if (
-      (current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
-      (current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
+      (
+       (current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+       (current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+      )
+      ||  
+      (
+       (current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
+       (current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
+      )
      )   
   {
     const uint8_t (* const array_p_name[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
@@ -260,7 +267,7 @@ void make_ekran_list_logical_nodes(void)
   //Курсор видимий
   current_state_menu2.cursor_on = 1;
   //Курсор не мигає
-  current_state_menu2.cursor_blinking_on = 0;
+  current_state_menu2.cursor_blinking_on = (current_state_menu2.edition < ED_EDITION) ? 0 : 1;
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
