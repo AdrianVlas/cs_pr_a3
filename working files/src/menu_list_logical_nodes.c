@@ -120,17 +120,8 @@ void make_ekran_list_logical_nodes(void)
   const unsigned int *p_first_index_number;
   enum _menu2_levels current_level = current_state_menu2.current_level;
   if (
-      (current_level == PARAM_LIST_INPUTS_MENU2_LEVEL      ) ||
-      (current_level == PARAM_LIST_OUTPUTS_MENU2_LEVEL     ) ||
-      (current_level == PARAM_LIST_LEDS_MENU2_LEVEL        ) ||
-      (current_level == PARAM_LIST_ALARMS_MENU2_LEVEL      ) ||
-      (current_level == PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL) ||
-      (current_level == PARAM_LIST_ANDS_MENU2_LEVEL        ) ||
-      (current_level == PARAM_LIST_ORS_MENU2_LEVEL         ) ||
-      (current_level == PARAM_LIST_XORS_MENU2_LEVEL        ) ||
-      (current_level == PARAM_LIST_NOTS_MENU2_LEVEL        ) ||
-      (current_level == PARAM_LIST_TIMERS_MENU2_LEVEL      ) ||
-      (current_level == PARAM_LIST_TRIGGERS_MENU2_LEVEL    )
+      (current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
+      (current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
      )   
   {
     const uint8_t (* const array_p_name[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 

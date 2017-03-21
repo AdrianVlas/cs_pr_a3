@@ -85,6 +85,88 @@ typedef struct
 } __PREVIOUS_STATE_CURSOR;
 
 /**********
+Конфігурація
+**********/
+typedef struct
+{
+  uint32_t device_id;                   //Тип пристрою
+  
+  uint32_t n_input;                     //Кількість дискретних входів
+  uint32_t n_output;                    //Кількість дискретних виходів
+  uint32_t n_led;                       //Кількість дискретних світлоіндикаторів
+  
+  uint32_t n_alarm;                     //Кількість блоків сигналізацій
+  uint32_t n_group_alarm;               //Ввімк./Вимк. Контролю приростів струмів
+  uint32_t n_and;                       //Кількість елементів "І"
+  uint32_t n_or;                        //Кількість елементів "АБО"
+  uint32_t n_xor;                       //Кількість елементів "Викл.АБО"
+  uint32_t n_not;                       //Кількість елементів "НЕ"
+  uint32_t n_timer;                     //Кількість таймерів
+  uint32_t n_trigger;                   //Кількість триґерів
+
+  uint32_t n_meander;                   //Кількість генераторів меандру
+
+
+  uint8_t time_config[7+1];       //Час останніх змін уставок-витримок-управління
+                                        //Останній байт масиву сигналізує мітку звідки зміни були проведені
+                                        //0 - мінімальні параметри
+                                        //1 - клавіатура
+                                        //2 - USB
+                                        //3 - RS-485
+  
+} __CONFIG;
+/**********/
+
+/**********
+Налаштування, які завжди присутні у даному тппі пристрою
+**********/
+typedef struct
+{
+  uint32_t param[FIX_BLOCK_SIGNALS_IN];                         //Сигнали на входах
+  
+  uint32_t password_1;                                          //Пароль для проглядання з меню
+  uint32_t password_2;                                          //Пароль для редагування з меню
+  uint32_t timeout_deactivation_password_interface_USB;         //Час деактивації паролю для редагування з інтерфейсу USB
+  uint32_t password_interface_USB;                              //Пароль для редагування з інтерфейсу USB
+  uint32_t timeout_deactivation_password_interface_RS485;       //Час деактивації паролю для редагування з інтерфейсу RS485
+  uint32_t password_interface_RS485;                             //Пароль для редагування з інтерфейсу RS485
+  
+  uint32_t timeout_idle_new_settings;
+  
+  //Комунікація
+  uint8_t name_of_cell[MAX_CHAR_IN_NAME_OF_CELL];              //І'мя ячейки
+  uint16_t user_register[(M_ADDRESS_LAST_USER_REGISTER_DATA - M_ADDRESS_FIRST_USER_REGISTER_DATA) + 1]; //Регістри користувача
+  uint32_t address;                                             //Адреса
+  int32_t baud_RS485;                                           //швидкість обміну
+                                                                // 0 - 9600
+                                                                // 1 - 14400
+                                                                // 2 - 19200
+                                                                // 3 - 28800
+                                                                // 4 - 38400
+                                                                // 5 - 57600
+                                                                // 6 - 115200
+  int32_t pare_bit_RS485;                                       //паритет
+                                                                // 0 - NONE
+                                                                // 1 - ODD
+                                                                // 2 - EVEN
+  int32_t number_stop_bit_RS485;                                //кількість стоп-біт
+                                                                // 0 - 1 stop-bit
+                                                                // 1 - 2 stop-bits
+  uint32_t time_out_1_RS485;                                    //time-out наступного символу = X/10 символу
+  
+  int32_t language;                                             //мова меню  0= змінна мов не підтримується; 1=RU; 2=UA; 3=EN; 4=KZ; 5=др.
+  
+  unsigned char time_setpoints[7+1];                            //Час останніх змін уставок-витримок-управління
+                                                                //Останній байт масиву сигналізує мітку звідки зміни були проведені
+                                                                //0 - мінімальні параметри
+                                                                //1 - клавіатура
+                                                                //2 - USB
+                                                                //3 - RS-485
+  
+} __SETTINGS_FIX;
+/**********/
+
+/**********
 Дискретний вхід
 **********/
 typedef struct
@@ -121,8 +203,8 @@ typedef struct
 {
   __settings_for_OUTPUT_LED settings;
 
-  uint8_t active_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8)];
 
 } __LN_OUTPUT_LED;
 /**********/
@@ -187,8 +269,8 @@ typedef struct
 {
   __settings_for_AND settings;
 
-  uint8_t active_state[DIV_TO_HIGHER(AND_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(AND_SIGNALS_OUT, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
 
 } __LN_AND;
 /**********/
@@ -208,8 +290,8 @@ typedef struct
   
   __settings_for_OR settings;
 
-  uint8_t active_state[DIV_TO_HIGHER(OR_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(OR_SIGNALS_OUT, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
   
 } __LN_OR;
 /**********/
@@ -228,8 +310,8 @@ typedef struct
 {
   __settings_for_XOR settings;
   
-  uint8_t active_state[DIV_TO_HIGHER(XOR_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(XOR_SIGNALS_OUT, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
   
 } __LN_XOR;
 /**********/
@@ -249,8 +331,8 @@ typedef struct
   
   __settings_for_NOT settings;
   
-  uint8_t active_state[DIV_TO_HIGHER(NOT_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(NOT_SIGNALS_OUT, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
   
 } __LN_NOT;
 /**********/
@@ -335,86 +417,6 @@ typedef enum _result_dyn_mem_select
   DYN_MEM_SELECT_OK
     
 } __result_dym_mem_select;
-
-/**********
-Конфігурація
-**********/
-typedef struct
-{
-  uint32_t device_id;                   //Тип пристрою
-  
-  uint32_t n_input;                     //Кількість дискретних входів
-  uint32_t n_output;                    //Кількість дискретних виходів
-  uint32_t n_led;                       //Кількість дискретних світлоіндикаторів
-  
-  uint32_t n_alarm;                     //Кількість блоків сигналізацій
-  uint32_t n_group_alarm;               //Ввімк./Вимк. Контролю приростів струмів
-  uint32_t n_and;                       //Кількість елементів "І"
-  uint32_t n_or;                        //Кількість елементів "АБО"
-  uint32_t n_xor;                       //Кількість елементів "Викл.АБО"
-  uint32_t n_not;                       //Кількість елементів "НЕ"
-  uint32_t n_timer;                     //Кількість таймерів
-  uint32_t n_trigger;                   //Кількість триґерів
-
-  uint32_t n_meander;                   //Кількість генераторів меандру
-
-
-  uint8_t time_config[7+1];       //Час останніх змін уставок-витримок-управління
-                                        //Останній байт масиву сигналізує мітку звідки зміни були проведені
-                                        //0 - мінімальні параметри
-                                        //1 - клавіатура
-                                        //2 - USB
-                                        //3 - RS-485
-  
-} __CONFIG;
-/**********/
-
-/**********
-Налаштування, які завжди присутні у даному тппі пристрою
-**********/
-typedef struct
-{
-  uint32_t password_1;                                          //Пароль для проглядання з меню
-  uint32_t password_2;                                          //Пароль для редагування з меню
-  uint32_t timeout_deactivation_password_interface_USB;         //Час деактивації паролю для редагування з інтерфейсу USB
-  uint32_t password_interface_USB;                              //Пароль для редагування з інтерфейсу USB
-  uint32_t timeout_deactivation_password_interface_RS485;       //Час деактивації паролю для редагування з інтерфейсу RS485
-  uint32_t password_interface_RS485;                             //Пароль для редагування з інтерфейсу RS485
-  
-  uint32_t timeout_idle_new_settings;
-  
-  //Комунікація
-  uint8_t name_of_cell[MAX_CHAR_IN_NAME_OF_CELL];              //І'мя ячейки
-  uint16_t user_register[(M_ADDRESS_LAST_USER_REGISTER_DATA - M_ADDRESS_FIRST_USER_REGISTER_DATA) + 1]; //Регістри користувача
-  uint32_t address;                                             //Адреса
-  int32_t baud_RS485;                                           //швидкість обміну
-                                                                // 0 - 9600
-                                                                // 1 - 14400
-                                                                // 2 - 19200
-                                                                // 3 - 28800
-                                                                // 4 - 38400
-                                                                // 5 - 57600
-                                                                // 6 - 115200
-  int32_t pare_bit_RS485;                                       //паритет
-                                                                // 0 - NONE
-                                                                // 1 - ODD
-                                                                // 2 - EVEN
-  int32_t number_stop_bit_RS485;                                //кількість стоп-біт
-                                                                // 0 - 1 stop-bit
-                                                                // 1 - 2 stop-bits
-  uint32_t time_out_1_RS485;                                    //time-out наступного символу = X/10 символу
-  
-  int32_t language;                                             //мова меню  0= змінна мов не підтримується; 1=RU; 2=UA; 3=EN; 4=KZ; 5=др.
-  
-  unsigned char time_setpoints[7+1];                            //Час останніх змін уставок-витримок-управління
-                                                                //Останній байт масиву сигналізує мітку звідки зміни були проведені
-                                                                //0 - мінімальні параметри
-                                                                //1 - клавіатура
-                                                                //2 - USB
-                                                                //3 - RS-485
-  
-} __SETTINGS_FIX;
-/**********/
 
 typedef struct
 {

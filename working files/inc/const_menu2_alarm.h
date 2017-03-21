@@ -32,4 +32,25 @@
   "Блок.           ",                   \
   "Сброс           "                    
 
+    
+#define NAME_ALARM_OUT_SIGNALS_RU       \
+  "Тривога         ",                   \
+  "Тишина          ",                   \
+  "Блок.           "
+
+#define NAME_ALARM_OUT_SIGNALS_UA       \
+  "Тривога         ",                   \
+  "Тиша            ",                   \
+  "Блок.           "
+
+#define NAME_ALARM_OUT_SIGNALS_EN       \
+  "Alarm            ",                  \
+  "Mute             ",                  \
+  "Block            "
+
+#define NAME_ALARM_OUT_SIGNALS_KZ       \
+  "Тривога         ",                   \
+  "Тишина          ",                   \
+  "Блок.           "
+    
 #endif 

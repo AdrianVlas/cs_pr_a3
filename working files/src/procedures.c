@@ -1332,7 +1332,7 @@ void min_settings_OUTPUT_LED(unsigned int mem_to_prt, uintptr_t *base, size_t in
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8); i++)
       {
         ((__LN_OUTPUT_LED *)(base) + shift)->active_state[i] = 0;
       }
@@ -1527,7 +1527,7 @@ void min_settings_AND(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(AND_SIGNALS_OUT, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8); i++)
       {
         ((__LN_AND *)(base) + shift)->active_state[i] = 0;
         ((__LN_AND *)(base) + shift)->trigger_state[i] = 0;
@@ -1583,7 +1583,7 @@ void min_settings_OR(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(OR_SIGNALS_OUT, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8); i++)
       {
         ((__LN_OR *)(base) + shift)->active_state[i] = 0;
         ((__LN_OR *)(base) + shift)->trigger_state[i] = 0;
@@ -1639,7 +1639,7 @@ void min_settings_XOR(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(XOR_SIGNALS_OUT, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8); i++)
       {
         ((__LN_XOR *)(base) + shift)->active_state[i] = 0;
         ((__LN_XOR *)(base) + shift)->trigger_state[i] = 0;
@@ -1692,7 +1692,7 @@ void min_settings_NOT(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(NOT_SIGNALS_OUT, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8); i++)
       {
         ((__LN_NOT *)(base) + shift)->active_state[i] = 0;
         ((__LN_NOT *)(base) + shift)->trigger_state[i] = 0;

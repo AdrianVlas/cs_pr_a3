@@ -27,5 +27,25 @@
   "Л.Вх.           ",                   \
   "Сброс           "                    
 
+    
+#define NAME_TIMER_OUT_SIGNALS_RU       \
+  "Виход1          ",                   \
+  "Виход2          ",                   \
+  "Виход3          "
+
+#define NAME_TIMER_OUT_SIGNALS_UA       \
+  "Вихід1          ",                   \
+  "Вихід2          ",                   \
+  "Вихід3          "
+
+#define NAME_TIMER_OUT_SIGNALS_EN       \
+  "Output1         ",                   \
+  "Output2         ",                   \
+  "Output3         "
+
+#define NAME_TIMER_OUT_SIGNALS_KZ       \
+  "Виход1          ",                   \
+  "Виход2          ",                   \
+  "Виход3          "
 
 #endif 

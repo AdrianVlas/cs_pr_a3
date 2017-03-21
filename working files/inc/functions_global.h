@@ -93,6 +93,8 @@ void make_ekran_password(void);
 void move_into_param_list_logical_nodes(unsigned int, int);
 void make_ekran_param_list_logical_node(void);
 void make_ekran_param_list_inputs_of_selected_logical_node(void);
+void move_into_param_view_chosen_of_selected_logical_node(unsigned int, int);
+void make_ekran_param_view_chosen_of_selected_logical_node(void);
 
 void inc_or_dec_value(unsigned int *, unsigned int);
 unsigned int bcd_to_int(unsigned char);

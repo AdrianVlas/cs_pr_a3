@@ -4,22 +4,46 @@
 #define NAME_FIX_BLOCK_IN_SIGNALS_RU    \
   "Тревога         ",                   \
   "Тишина          ",                   \
-  "Блок.           ",                   \
+  "Блок.           "
 
 #define NAME_FIX_BLOCK_IN_SIGNALS_UA    \
   "Тривога         ",                   \
   "Тиша            ",                   \
-  "Блок.           ",                   \
+  "Блок.           "
 
 
 #define NAME_FIX_BLOCK_IN_SIGNALS_EN    \
   "Alarm            ",                  \
   "Mute             ",                  \
-  "Block            ",                  \
+  "Block            "
 
 #define NAME_FIX_BLOCK_IN_SIGNALS_KZ    \
   "Тревога         ",                   \
   "Тишина          ",                   \
-  "Блокировка      ",                   \
+  "Блокировка      "
+
+#define NAME_FIX_BLOCK_OUT_SIGNALS_RU   \
+  "Общ.Неиспр.     ",                   \
+  "Авар.Неиспр.    ",                   \
+  "Журнал событий  ",                   \
+  "Изм.настроек    "
+
+#define NAME_FIX_BLOCK_OUT_SIGNALS_UA   \
+  "Заг.Неспр.      ",                   \
+  "Авар.Неспр.     ",                   \
+  "Журнал подій    ",                   \
+  "Зм.налашт.      "
+
+#define NAME_FIX_BLOCK_OUT_SIGNALS_EN   \
+  "Total Fault     ",                   \
+  "Emergence Fault ",                   \
+  "Event log       ",                   \
+  "Changed settings"
+
+#define NAME_FIX_BLOCK_OUT_SIGNALS_KZ   \
+  "Неиспр.         ",                   \
+  "Авар.Неиспр.    ",                   \
+  "Журнал событий  ",                   \
+  "Изм.настроек    "
 
 #endif 

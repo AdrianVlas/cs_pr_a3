@@ -41,7 +41,7 @@ enum _FIX_BLOCK_output_signals
   FIX_BLOCK_SETTINGS_LOG_WORK,
   FIX_BLOCK_SETTINGS_CHANGED,
   
-  FIX_BLOCK_OUT
+  FIX_BLOCK_SIGNALS_OUT
 };
 
 enum _FIX_BLOCK_input_signals
@@ -93,10 +93,12 @@ enum _INPUT_output_signals
 enum _OUTPUT_output_signals
 {
   OUTPUT_LED_OUT = 0,
-  OUTPUT_LED_BOARD,
   
-  OUTPUT_LED_SIGNALS_OUT
+  OUTPUT_LED_SIGNALS_OUT,
+
+  OUTPUT_LED_BOARD = OUTPUT_LED_SIGNALS_OUT,
     
+  OUTPUT_LED_SIGNALS_OUT_TOTAL
 };
 
 enum _OUTPUT_LED_input_signals
@@ -232,49 +234,13 @@ enum __index_ctrl_group_alarm
 /***/
 
 /*
-"І"
+"Стандартна логіка" ("І", "АБО", "Викл.АБО", "НЕ")
 */
-enum _AND_output_signals
+enum _STANDARD_LOGIC_output_signals
 {
-  AND_OUT = 0,
+  STANDARD_LOGIC_OUT = 0,
   
-  AND_SIGNALS_OUT
-    
-};
-/***/
-
-/*
-"АБО"
-*/
-enum _OR_output_signals
-{
-  OR_OUT = 0,
-  
-  OR_SIGNALS_OUT
-    
-};
-/***/
-
-/*
-"Викл.АБО"
-*/
-enum _XOR_output_signals
-{
-  XOR_OUT = 0,
-  
-  XOR_SIGNALS_OUT
-    
-};
-/***/
-
-/*
-"НЕ"
-*/
-enum _NOT_output_signals
-{
-  NOT_OUT = 0,
-  
-  NOT_SIGNALS_OUT
+  STANDARD_LOGIC_SIGNALS_OUT
     
 };
 /***/
@@ -303,7 +269,9 @@ enum _work_delay_of_TIMER
 
 enum _TIMER_output_signals
 {
-  TIMER_OUT = 0,
+  TIMER_OUT_RISE_IMPULSE = 0,
+  TIMER_OUT_RISE_DELAY,
+  TIMER_OUT_FALL_IMPULSE,
   
   TIMER_SIGNALS_OUT
     

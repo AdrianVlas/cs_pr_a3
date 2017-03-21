@@ -73,9 +73,9 @@ unsigned int measurement_low[NUMBER_ANALOG_CANALES];
 const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2] = {0, 2};
 const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2] = {{0, 8}};
 volatile unsigned int state_inputs = 0; //"є сигнал " - відповідає встановленому біту (1); "немає сигналу" - відповідає скинутому біту (0)
-uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
-uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
-//uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
+uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
+uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
+//uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 //unsigned char crc_trg_func, crc_trg_func_ctrl;
 unsigned int pressed_buttons = 0;
 volatile unsigned int activation_function_from_interface = 0;

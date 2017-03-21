@@ -20,5 +20,19 @@
   "Л.Вх.           ",                   \
   "Сброс           "                    
 
+    
+#define NAME_OUTPUT_LED_OUT_SIGNALS_RU  \
+  "Виход           "
+
+#define NAME_OUTPUT_LED_OUT_SIGNALS_UA  \
+  "Вихід           "
+
+#define NAME_OUTPUT_LED_OUT_SIGNALS_EN  \
+  "Output          "
+
+#define NAME_OUTPUT_LED_OUT_SIGNALS_KZ  \
+  "Виход           "
+
+
 
 #endif 

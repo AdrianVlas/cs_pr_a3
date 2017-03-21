@@ -522,6 +522,7 @@ void main_manu_function_ver2(void)
     case PARAM_LIST_TIMERS_MENU2_LEVEL:
     case PARAM_LIST_TRIGGERS_MENU2_LEVEL:
     case PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
+    case PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
     case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
     case NAME_OF_CELL_MENU2_LEVEL:
     case SETTINGS_RS485_MENU2_LEVEL:
@@ -690,7 +691,8 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_passwords_menu2[MAX_ROW_LIST_PASSWORDS_M2] = {SET_NEW_PASSWORD_MENU2_LEVEL, SET_NEW_PASSWORD_MENU2_LEVEL};
               const enum _menu2_levels next_for_param_list_logical_nodes[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, PARAM_LIST_INPUTS_MENU2_LEVEL, PARAM_LIST_OUTPUTS_MENU2_LEVEL, PARAM_LIST_LEDS_MENU2_LEVEL, PARAM_LIST_ALARMS_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL, PARAM_LIST_ANDS_MENU2_LEVEL, PARAM_LIST_ORS_MENU2_LEVEL, PARAM_LIST_XORS_MENU2_LEVEL, PARAM_LIST_NOTS_MENU2_LEVEL, PARAM_LIST_TIMERS_MENU2_LEVEL, PARAM_LIST_TRIGGERS_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_input_of_selected_logical_node_menu2 = PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
+              const enum _menu2_levels next_for_param_list_selcted_logical_node_type = PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
+              const enum _menu2_levels next_for_param_list_input_of_selcted_logical_node = PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
 
               const enum _menu2_levels *p = NULL;
               
@@ -846,10 +848,17 @@ void main_manu_function_ver2(void)
               case PARAM_LIST_TIMERS_MENU2_LEVEL:
               case PARAM_LIST_TRIGGERS_MENU2_LEVEL:
                 {
-                  p = &next_for_list_input_of_selected_logical_node_menu2;
-
+                  p = &next_for_param_list_selcted_logical_node_type;
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
+                  
                   position_in_current_level_menu2[PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
 
+                  break;
+                }
+              case PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
+                {
+                  p = &next_for_param_list_input_of_selcted_logical_node;
+                  position_in_current_level_menu2[PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
                   break;
                 }
               case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
@@ -1798,17 +1807,8 @@ void new_level_menu(void)
     {
       __CONFIG *p_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
       if (
-          (current_state_menu2.current_level == PARAM_LIST_INPUTS_MENU2_LEVEL      ) ||
-          (current_state_menu2.current_level == PARAM_LIST_OUTPUTS_MENU2_LEVEL     ) ||
-          (current_state_menu2.current_level == PARAM_LIST_LEDS_MENU2_LEVEL        ) ||
-          (current_state_menu2.current_level == PARAM_LIST_ALARMS_MENU2_LEVEL      ) ||
-          (current_state_menu2.current_level == PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL) ||
-          (current_state_menu2.current_level == PARAM_LIST_ANDS_MENU2_LEVEL        ) ||
-          (current_state_menu2.current_level == PARAM_LIST_ORS_MENU2_LEVEL         ) ||
-          (current_state_menu2.current_level == PARAM_LIST_XORS_MENU2_LEVEL        ) ||
-          (current_state_menu2.current_level == PARAM_LIST_NOTS_MENU2_LEVEL        ) ||
-          (current_state_menu2.current_level == PARAM_LIST_TIMERS_MENU2_LEVEL      ) ||
-          (current_state_menu2.current_level == PARAM_LIST_TRIGGERS_MENU2_LEVEL    )
+          (current_state_menu2.current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
+          (current_state_menu2.current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
          )   
       {
         int *p_number[NUMBER_VAR_BLOCKS] = 
@@ -2229,18 +2229,9 @@ void new_level_menu(void)
         type_logical_node = ID_FB_CONTROL_BLOCK;
       }
       else if (
-              (ekran_before == PARAM_LIST_INPUTS_MENU2_LEVEL      ) ||
-              (ekran_before == PARAM_LIST_OUTPUTS_MENU2_LEVEL     ) ||
-              (ekran_before == PARAM_LIST_LEDS_MENU2_LEVEL        ) ||
-              (ekran_before == PARAM_LIST_ALARMS_MENU2_LEVEL      ) ||
-              (ekran_before == PARAM_LIST_GROUP_ALARMS_MENU2_LEVEL) ||
-              (ekran_before == PARAM_LIST_ANDS_MENU2_LEVEL        ) ||
-              (ekran_before == PARAM_LIST_ORS_MENU2_LEVEL         ) ||
-              (ekran_before == PARAM_LIST_XORS_MENU2_LEVEL        ) ||
-              (ekran_before == PARAM_LIST_NOTS_MENU2_LEVEL        ) ||
-              (ekran_before == PARAM_LIST_TIMERS_MENU2_LEVEL      ) ||
-              (ekran_before == PARAM_LIST_TRIGGERS_MENU2_LEVEL    )
-             )   
+               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
+               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
+              )   
       {
 //        number_logical_node = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
     
@@ -2301,6 +2292,83 @@ void new_level_menu(void)
       
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_param_list_inputs_of_selected_logical_node;
+      current_state_menu2.func_press_enter = NULL;
+      current_state_menu2.func_press_esc = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+  case PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
+    {
+      unsigned int type_logical_node/*, number_logical_node*/;
+//      int index;
+
+      unsigned int error = false;
+
+      enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+      if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+      {
+//        index = position_in_current_level_menu2[ekran_before];
+
+        ekran_before = previous_level_in_current_level_menu2[ekran_before];
+        if (ekran_before == PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL)
+        {
+//          number_logical_node = 1;
+          type_logical_node = ID_FB_CONTROL_BLOCK;
+        }
+        else if (
+                 (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL) &&
+                 (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_MENU2_LEVEL)
+                )   
+        {
+//          number_logical_node = current_state_menu2.number_selection + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
+    
+          ekran_before = previous_level_in_current_level_menu2[ekran_before];
+          if (ekran_before == PARAM_LIST_LOGICAL_NODES_MENU2_LEVEL)
+          {
+            type_logical_node = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
+          }
+        }
+        else error = true;
+      }
+      else error = true;
+
+      if (error == false)
+      {
+        const size_t array_max_rows[NUMBER_ALL_BLOCKS] = 
+        {
+          1, 
+          0, 
+          1, 
+          1, 
+          1, 
+          0, 
+          AND_SIGNALS_IN, 
+          OR_SIGNALS_IN, 
+          2, 
+          1, 
+          1, 
+          1, 
+          0
+        };
+
+        /*current_state_menu2.p_max_row і current_state_menu2.number_selection залишаються незмінними*/
+        current_state_menu2.max_row = array_max_rows[type_logical_node - _ID_FB_FIRST_FIX];
+        
+      }
+      else
+      {
+        //Цього при правильній роботі програми не мало б бути
+        current_state_menu2.p_max_row = NULL;
+        current_state_menu2.max_row = 0;
+      }
+      
+      current_state_menu2.func_move = move_into_param_view_chosen_of_selected_logical_node;
+      current_state_menu2.func_show = make_ekran_param_view_chosen_of_selected_logical_node;
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
