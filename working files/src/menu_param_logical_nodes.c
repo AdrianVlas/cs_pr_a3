@@ -1176,6 +1176,312 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
 /*****************************************************/
 
 /*****************************************************/
+//Формуємо екран
+/*****************************************************/
+void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
+{
+  if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY)
+  {
+    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    {
+      "Ред.не разрешено",
+      "Ред.не дозволене",
+      "Ed.isn't allowed",
+      "Ред.не разрешено",
+    };
+
+    make_ekran_about_info(false, information_about_info);
+  }
+  else
+  {
+    const uint8_t name_fix_block_out_signals[MAX_NAMBER_LANGUAGE][FIX_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1] =
+    {
+      {NAME_FIX_BLOCK_OUT_SIGNALS_RU},  
+      {NAME_FIX_BLOCK_OUT_SIGNALS_UA},  
+      {NAME_FIX_BLOCK_OUT_SIGNALS_EN},  
+      {NAME_FIX_BLOCK_OUT_SIGNALS_KZ}
+    };
+  
+    const uint8_t name_input_out_signals[MAX_NAMBER_LANGUAGE][INPUT_SIGNALS_OUT][MAX_COL_LCD + 1] =
+    {
+      {NAME_INPUT_OUT_SIGNALS_RU},  
+      {NAME_INPUT_OUT_SIGNALS_UA},  
+      {NAME_INPUT_OUT_SIGNALS_EN},  
+      {NAME_INPUT_OUT_SIGNALS_KZ}
+    };
+  
+    const uint8_t name_output_led_out_signals[MAX_NAMBER_LANGUAGE][OUTPUT_LED_SIGNALS_OUT][MAX_COL_LCD + 1] =
+    {
+      {NAME_OUTPUT_LED_OUT_SIGNALS_RU},  
+      {NAME_OUTPUT_LED_OUT_SIGNALS_UA},  
+      {NAME_OUTPUT_LED_OUT_SIGNALS_EN},  
+      {NAME_OUTPUT_LED_OUT_SIGNALS_KZ}
+    };
+  
+    const uint8_t name_alarm_out_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
+    {
+      {NAME_ALARM_OUT_SIGNALS_RU},  
+      {NAME_ALARM_OUT_SIGNALS_UA},  
+      {NAME_ALARM_OUT_SIGNALS_EN},  
+      {NAME_ALARM_OUT_SIGNALS_KZ}
+    };
+
+    const uint8_t name_group_alarm_out_signals[MAX_NAMBER_LANGUAGE][GROUP_ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
+    {
+      {NAME_GROUP_ALARM_OUT_SIGNALS_RU},  
+      {NAME_GROUP_ALARM_OUT_SIGNALS_UA},  
+      {NAME_GROUP_ALARM_OUT_SIGNALS_EN},  
+      {NAME_GROUP_ALARM_OUT_SIGNALS_KZ}
+    };
+
+    const uint8_t name_standard_logic_out_signals[MAX_NAMBER_LANGUAGE][1][MAX_COL_LCD + 1] =
+    {
+      {NAME_STANDARD_LOGIC_OUT_SIGNALS_RU},  
+      {NAME_STANDARD_LOGIC_OUT_SIGNALS_UA},  
+      {NAME_STANDARD_LOGIC_OUT_SIGNALS_EN},  
+      {NAME_STANDARD_LOGIC_OUT_SIGNALS_KZ}
+    };
+
+    const uint8_t name_timer_out_signals[MAX_NAMBER_LANGUAGE][TIMER_SIGNALS_OUT][MAX_COL_LCD + 1] =
+    {
+      {NAME_TIMER_OUT_SIGNALS_RU},  
+      {NAME_TIMER_OUT_SIGNALS_UA},  
+      {NAME_TIMER_OUT_SIGNALS_EN},  
+      {NAME_TIMER_OUT_SIGNALS_KZ}
+    };
+  
+    const uint8_t name_trigger_out_signals[MAX_NAMBER_LANGUAGE][TRIGGER_SIGNALS_OUT][MAX_COL_LCD + 1] =
+    {
+      {NAME_TRIGGER_OUT_SIGNALS_RU},  
+      {NAME_TRIGGER_OUT_SIGNALS_UA},  
+      {NAME_TRIGGER_OUT_SIGNALS_EN},  
+      {NAME_TRIGGER_OUT_SIGNALS_KZ}
+    };
+
+    const uint8_t name_meander_out_signals[MAX_NAMBER_LANGUAGE][MEANDER_SIGNALS_OUT][MAX_COL_LCD + 1] =
+    {
+      {NAME_MEANDER_OUT_SIGNALS_RU},  
+      {NAME_MEANDER_OUT_SIGNALS_UA},  
+      {NAME_MEANDER_OUT_SIGNALS_EN},  
+      {NAME_MEANDER_OUT_SIGNALS_KZ}
+    };
+
+    const uint8_t * const array_p_name[NUMBER_ALL_BLOCKS] = 
+    {
+      (const uint8_t*)name_fix_block_out_signals, 
+      (const uint8_t*)name_input_out_signals, 
+      (const uint8_t*)name_output_led_out_signals, 
+      (const uint8_t*)name_output_led_out_signals, 
+      (const uint8_t*)name_alarm_out_signals, 
+      (const uint8_t*)name_group_alarm_out_signals, 
+      (const uint8_t*)name_standard_logic_out_signals, 
+      (const uint8_t*)name_standard_logic_out_signals, 
+      (const uint8_t*)name_standard_logic_out_signals, 
+      (const uint8_t*)name_standard_logic_out_signals, 
+      (const uint8_t*)name_timer_out_signals, 
+      (const uint8_t*)name_trigger_out_signals, 
+      (const uint8_t*)name_meander_out_signals 
+    };
+    int index_language = index_language_in_array(select_struct_settings_fix()->language);
+    unsigned int position_temp = current_state_menu2.index_position;
+  
+    unsigned int type_logical_node_out, number_logical_node_out;
+
+    enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+    if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+    {
+      number_logical_node_out = 1;
+      type_logical_node_out = ID_FB_CONTROL_BLOCK;
+    }
+    else if (
+             (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
+             (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
+            )   
+    {
+      number_logical_node_out = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
+    
+      ekran_before = previous_level_in_current_level_menu2[ekran_before];
+      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+      {
+        type_logical_node_out = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
+      }
+    }
+  
+    unsigned int error = false;
+    unsigned int max_row = current_state_menu2.max_row;
+    if (
+        (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
+        (max_row != 0) &&
+        (array_p_name[type_logical_node_out - _ID_FB_FIRST_ALL] != NULL)
+       )   
+    {
+      unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  
+      //Формуємо рядки  рядки у робочий екран
+      for (size_t i = 0; i < MAX_ROW_LCD; i++)
+      {
+        unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+        //Наступні рядки треба перевірити, чи їх требе відображати
+        if (index_in_ekran_tmp < max_row)
+        {
+          if ((i & 0x1) == 0)
+          {
+            //У непарному номері рядку виводимо заголовок
+            unsigned int part = 0;
+            uint8_t *p = ((uint8_t*)array_p_name[type_logical_node_out - _ID_FB_FIRST_ALL]) + (index_language*max_row + index_in_ekran_tmp)*(MAX_COL_LCD + 1);
+            unsigned int number_digit, first_index_number, number_logical_node_tmp = number_logical_node_out;
+            intptr_t k = 0, l = 0, m = 0;
+            for (size_t j = 0; j < MAX_COL_LCD; j++) 
+            {
+              switch (part)
+              {
+              case 0:
+                {
+                  uint8_t symbol = name_f_blocks[index_language][type_logical_node_out - _ID_FB_FIRST_ALL][k];
+              
+                  if (symbol != ' ') 
+                  {
+                    working_ekran[i][j] = symbol;
+                    k++;
+                
+                    break;
+                  }
+                  else 
+                  {
+                    if (type_logical_node_out == ID_FB_CONTROL_BLOCK) part += 2;
+                    else 
+                    {
+                      number_digit = max_number_digit_in_number(number_logical_node_out);
+                      first_index_number = j;
+                      part++;
+                    }
+                    l += k;
+                    k = 0;
+                  }
+                }
+              case 1:
+                {
+                  if (part == 1)
+                  {
+                    if (number_logical_node_tmp != 0)
+                    {
+                      /*
+                      Заповнюємо значення зправа  на ліво
+                      індекс = first_index_number + number_digit - 1 - (j - first_index_number) =
+                      = first_index_number + number_digit - 1 - j + first_index_number =
+                      = 2xfirst_index_number + number_digit - 1 - j =
+                      */
+                      working_ekran[i][2*first_index_number + number_digit - 1 - j] = (number_logical_node_tmp % 10) + 0x30;
+                      number_logical_node_tmp /= 10;
+                      k++;
+                    }
+                    else
+                    {
+                      working_ekran[i][j] = '.';
+                      part++;
+                      l += (++k);
+                      k = 0;
+                    }
+              
+                    break;
+                  }
+                }
+              default:
+                {
+                  uint8_t symbol = *(p + k++);
+                  working_ekran[i][j] = symbol;
+                  if (symbol != ' ') m = k;
+                  break;
+                }
+              }
+            }
+            l += m;
+            
+            //Виводимо напис на середину
+            k = MAX_COL_LCD - l;
+            if (k > 0)
+            {
+              m = (k >> 1) + ((k & 0x1) != 0);
+              for (intptr_t j = m; j < MAX_COL_LCD; j++)
+              {
+                if ((j - m) < l)
+                {
+                  working_ekran[i][MAX_COL_LCD - 1 - j] = working_ekran[i][MAX_COL_LCD - 1 - k++];
+                }
+                else
+                {
+                  working_ekran[i][MAX_COL_LCD - 1 - j] = ' ';
+                }
+              }
+            }
+          }
+          else
+          {
+            const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+            {
+              {"     Откл.      ", "      Вкл.      "},
+              {"     Вимк.      ", "     Ввімк.     "},
+              {"      Off       ", "       On       "},
+              {"     Сљнд.      ", "     Косу.      "}
+            };
+            const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
+            {
+              {4, 5},
+              {4, 4},
+              {5, 6},
+              {4, 4}
+            };
+          
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][0][j];
+            if (position_temp == index_in_ekran_tmp)
+            {
+              current_state_menu2.position_cursor_x = cursor_x[index_language][0];
+            }
+          }
+        }
+        else
+        {
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+        }
+
+        index_in_ekran++;
+      }
+    }
+    else
+    {
+      //Цього при правильній роботі програми не мало б бути
+      error = true;
+      const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+      {
+        "     Ошибка     ",
+        "    Помилка     ",
+        "     Error      ",
+        "     Ошибка     "
+      };
+
+      for (size_t i = 0; i < MAX_ROW_LCD; i++)
+      {
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i == 0) ? information_error[index_language][j] : ' ';
+      }
+    }
+  
+
+    //Курсор по горизонталі відображається на першій позиції
+    if (error != false) current_state_menu2.position_cursor_x = 0;
+    //Відображення курору по вертикалі
+    current_state_menu2.position_cursor_y = (error == false) ? (((position_temp << 1) + 1) & (MAX_ROW_LCD - 1)) : 0;
+    //Курсор видимий
+    current_state_menu2.cursor_on = (error == false) ? 1 : 0;
+    //Курсор не мигає або мигає (взагалі, це вікно мабо б відображатися тільки у режимі редагування)
+    if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    else current_state_menu2.cursor_blinking_on = 1;
+  }
+  //Обновити повністю весь екран
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+}
+/*****************************************************/
+
+/*****************************************************/
 //
 /*****************************************************/
 /*****************************************************/

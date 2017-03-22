@@ -541,6 +541,7 @@ void main_manu_function_ver2(void)
     case PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL:
     case PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
     case PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
     case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
     case NAME_OF_CELL_MENU2_LEVEL:
     case SETTINGS_RS485_MENU2_LEVEL:
@@ -712,8 +713,8 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_param_list_selcted_logical_node_type_for_input = PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               const enum _menu2_levels next_for_param_list_input_of_selcted_logical_node = PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               const enum _menu2_levels next_for_param_view_chosen_signal_of_selected_logical_node = PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
-              const enum _menu2_levels next_for_param_list_logical_nodes_for_output[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL/*PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL*/, PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL};
-//              const enum _menu2_levels next_for_param_list_selcted_logical_node_type_for_output = PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
+              const enum _menu2_levels next_for_param_list_logical_nodes_for_output[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL};
+              const enum _menu2_levels next_for_param_list_selcted_logical_node_type_for_output = PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               
               const enum _menu2_levels *p = NULL;
               
@@ -895,10 +896,10 @@ void main_manu_function_ver2(void)
               case PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
               case PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
                 {
-//                  p = &next_for_param_list_selcted_logical_node_type_for_output;
-//                  current_state_menu2.number_selection = current_state_menu2.index_position;
-//                  
-//                  position_in_current_level_menu2[PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+                  p = &next_for_param_list_selcted_logical_node_type_for_output;
+                  current_state_menu2.number_selection = current_state_menu2.index_position;
+                  
+                  position_in_current_level_menu2[PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
 
                   break;
                 }
@@ -2379,6 +2380,87 @@ void new_level_menu(void)
       if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
+  case PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
+    {
+      unsigned int type_logical_node;
+//      unsigned int number_logical_node;
+
+      enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
+      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+      {
+//        number_logical_node = 1;
+        type_logical_node = ID_FB_CONTROL_BLOCK;
+      }
+      else if (
+               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
+               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
+              )   
+      {
+//        number_logical_node = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
+    
+        ekran_before = previous_level_in_current_level_menu2[ekran_before];
+        if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+        {
+          type_logical_node = _ID_FB_FIRST_ALL + position_in_current_level_menu2[ekran_before];
+        }
+      }
+
+      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+      {
+        const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
+        {
+          FIX_BLOCK_SIGNALS_OUT,
+          INPUT_SIGNALS_OUT,
+          OUTPUT_LED_SIGNALS_OUT,
+          OUTPUT_LED_SIGNALS_OUT,
+          ALARM_SIGNALS_OUT,
+          GROUP_ALARM_SIGNALS_OUT,
+          STANDARD_LOGIC_SIGNALS_OUT,
+          STANDARD_LOGIC_SIGNALS_OUT,
+          STANDARD_LOGIC_SIGNALS_OUT,
+          STANDARD_LOGIC_SIGNALS_OUT,
+          TIMER_SIGNALS_OUT,
+          TRIGGER_SIGNALS_OUT,
+          MEANDER_SIGNALS_OUT
+        };
+
+        __CONFIG *p_config = &current_config_edit;
+        int *p_max_row[NUMBER_ALL_BLOCKS] = 
+        {
+          NULL,
+          (int*)&p_config->n_input,
+          (int*)&p_config->n_output,
+          (int*)&p_config->n_led,
+          (int*)&p_config->n_alarm,
+          (int*)&p_config->n_group_alarm,
+          (int*)&p_config->n_and,
+          (int*)&p_config->n_or,
+          (int*)&p_config->n_xor,
+          (int*)&p_config->n_not,
+          (int*)&p_config->n_timer,
+          (int*)&p_config->n_trigger,
+          (int*)&p_config->n_meander
+        };
+  
+        unsigned int number_output = number_output_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_FIX];
+        current_state_menu2.p_max_row = (number_output != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_FIX] : NULL;
+        current_state_menu2.max_row = number_output;
+      }
+      else
+      {
+        //Цього при правильній роботі програми не мало б бути
+        current_state_menu2.p_max_row = NULL;
+        current_state_menu2.max_row = 0;
+      }
+      
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_param_edit_list_outputs_of_selected_logical_node;
+      current_state_menu2.func_press_enter = NULL;
+      current_state_menu2.func_press_esc = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
+      break;
+    }
   case PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
     {
       unsigned int type_logical_node/*, number_logical_node*/;
@@ -2433,8 +2515,27 @@ void new_level_menu(void)
           0
         };
 
-        /*current_state_menu2.p_max_row і current_state_menu2.number_selection залишаються незмінними*/
-        current_state_menu2.max_row = array_max_rows[type_logical_node - _ID_FB_FIRST_FIX];
+        __CONFIG *p_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
+        int *p_max_row[NUMBER_ALL_BLOCKS] = 
+        {
+          NULL,
+          (int*)&p_config->n_input,
+          (int*)&p_config->n_output,
+          (int*)&p_config->n_led,
+          (int*)&p_config->n_alarm,
+          (int*)&p_config->n_group_alarm,
+          (int*)&p_config->n_and,
+          (int*)&p_config->n_or,
+          (int*)&p_config->n_xor,
+          (int*)&p_config->n_not,
+          (int*)&p_config->n_timer,
+          (int*)&p_config->n_trigger,
+          (int*)&p_config->n_meander
+        };
+  
+        size_t number_row = array_max_rows[type_logical_node - _ID_FB_FIRST_FIX];
+        current_state_menu2.p_max_row = (number_row != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_FIX] : NULL;
+        current_state_menu2.max_row = number_row;
         
       }
       else
