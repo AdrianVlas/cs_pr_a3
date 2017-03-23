@@ -101,6 +101,23 @@ SRAM1 int16_t position_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL]; //Масив у
 SRAM1 enum _menu2_levels previous_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL]; //Масив у якому збкрігається занчення попередніх екранів для даного рівня меню
 SRAM1 enum _menu2_levels next_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL];    //Масив у якому збкрігається занчення екранів куди ми хочемо перейти з поточного екрану
 SRAM1 void *p_menu_param_1, *p_menu_param_2;
+const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS] = 
+{
+  1, 
+  0, 
+  1, 
+  1, 
+  1, 
+  0, 
+  AND_SIGNALS_IN, 
+  OR_SIGNALS_IN, 
+  2, 
+  1, 
+  1, 
+  1, 
+  0
+};
+
 
 volatile unsigned int periodical_tasks_TEST_CONFIG = false;
 volatile unsigned int periodical_tasks_TEST_SETTINGS = false;

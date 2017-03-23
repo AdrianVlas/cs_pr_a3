@@ -27,7 +27,7 @@ void make_ekran_control_alarm(void)
     };
 
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else
   {
@@ -224,7 +224,7 @@ void make_ekran_delay_alarm(void)
     };
 
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else
   {

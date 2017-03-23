@@ -131,7 +131,7 @@ void make_ekran_list_settings(void)
       " Дин.пам.недост."
     };
 
-    make_ekran_about_info(false, ((current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(0, ((current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
   }
   else
   {

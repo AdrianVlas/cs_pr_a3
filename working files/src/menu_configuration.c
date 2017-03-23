@@ -42,7 +42,7 @@ void make_ekran_configuration(void)
     if (edition == ED_WARNING_EDITION_BUSY) p_information = information_about_info;
     else if (edition == ED_WARNING_ENTER_ESC) p_information = information_about_out_of_range;
     else p_information = information_about_error;
-    make_ekran_about_info( ((edition == ED_WARNING_ENTER_ESC) ? true : false), p_information);
+    make_ekran_about_info( ((edition == ED_WARNING_ENTER_ESC) ? 1 : 0), p_information);
   }
   else 
   {

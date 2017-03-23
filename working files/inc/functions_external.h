@@ -47,10 +47,13 @@ extern unsigned int set_config_and_settings(unsigned int, unsigned int);
 extern void error_reading_with_eeprom(void);
 extern void move_into_param_list_logical_nodes(unsigned int, int);
 extern void make_ekran_param_list_logical_node(void);
+extern enum _result_pressed_enter_during_edition  press_enter_in_param_list_logical_node(void);
+extern void press_esc_in_param_list_logical_node(void);
 extern void make_ekran_param_list_inputs_of_selected_logical_node(void);
 extern void move_into_param_view_chosen_of_selected_logical_node(unsigned int, int);
 extern void make_ekran_param_view_chosen_of_selected_logical_node(void);
 extern void make_ekran_param_edit_list_outputs_of_selected_logical_node(void);
+extern void change_set_signal(unsigned int);
 
 extern void Interrupts_Config(void);
 
