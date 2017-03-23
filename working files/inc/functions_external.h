@@ -52,8 +52,9 @@ extern void press_esc_in_param_list_logical_node(void);
 extern void make_ekran_param_list_inputs_of_selected_logical_node(void);
 extern void move_into_param_view_chosen_of_selected_logical_node(unsigned int, int);
 extern void make_ekran_param_view_chosen_of_selected_logical_node(void);
-extern void make_ekran_param_edit_list_outputs_of_selected_logical_node(void);
 extern void change_set_signal(unsigned int);
+extern void make_ekran_param_edit_list_outputs_of_selected_logical_node(void);
+extern void select_input_signal_ln(void);
 
 extern void Interrupts_Config(void);
 

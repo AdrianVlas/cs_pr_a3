@@ -322,7 +322,7 @@ typedef struct
 typedef struct
 {
   
-  uint32_t param;
+  uint32_t param[1];
   
 } __settings_for_NOT;
 

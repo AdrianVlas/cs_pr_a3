@@ -606,6 +606,7 @@ enum _result_pressed_enter_during_edition press_enter_in_param_list_logical_node
 {
   unsigned int error = false;
   unsigned int type_logical_node_in, number_logical_node_in;
+  int index;
   size_t n_similar_input_signals;
   uint32_t *p_param_cont, *p_param_edit;
 
@@ -616,23 +617,30 @@ enum _result_pressed_enter_during_edition press_enter_in_param_list_logical_node
                                                                                                                                                                         |
                                                                                                                                                                         ->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
   */
-  enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]]];
-  if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
-  {   
-    number_logical_node_in = 1;
-    type_logical_node_in = ID_FB_CONTROL_BLOCK;
-  }
-  else if (
-           (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-           (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
-          )   
+  enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]];
+  if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
   {
-    number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
-  
+    index = position_in_current_level_menu2[ekran_before];
+    
     ekran_before = previous_level_in_current_level_menu2[ekran_before];
     if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    {   
+      number_logical_node_in = 1;
+      type_logical_node_in = ID_FB_CONTROL_BLOCK;
+    }
+    else if (
+             (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+             (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+            )   
     {
-      type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
+      number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
+  
+      ekran_before = previous_level_in_current_level_menu2[ekran_before];
+      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      {
+        type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
+      }
+      else error = true;
     }
     else error = true;
   }
@@ -640,64 +648,64 @@ enum _result_pressed_enter_during_edition press_enter_in_param_list_logical_node
       
   if (error == false)
   {
-    n_similar_input_signals = array_n_similar_input_signals[type_logical_node_in - _ID_FB_FIRST_FIX];
+    n_similar_input_signals = array_n_similar_input_signals[type_logical_node_in - _ID_FB_FIRST_ALL];
     if (n_similar_input_signals != 0) 
     {
       switch (type_logical_node_in)
       {
       case ID_FB_CONTROL_BLOCK:
         {
-          p_param_cont = settings_fix.param;
-          p_param_edit = settings_fix_edit.param;
+          p_param_cont = &settings_fix.param[index*n_similar_input_signals];
+          p_param_edit = &settings_fix_edit.param[index*n_similar_input_signals];
           break;
         }
       case ID_FB_OUTPUT:
       case ID_FB_LED:
         {
-          p_param_cont = ((__settings_for_OUTPUT_LED*)sca_of_p[type_logical_node_in - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_OUTPUT_LED*)sca_of_p_edit[type_logical_node_in - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_OUTPUT_LED*)sca_of_p[type_logical_node_in - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_OUTPUT_LED*)sca_of_p_edit[type_logical_node_in - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_ALARM:
         {
-          p_param_cont = ((__settings_for_ALARM*)sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_ALARM*)sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_ALARM*)sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_ALARM*)sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_AND:
         {
-          p_param_cont = ((__settings_for_AND*)sca_of_p[ID_FB_AND - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_AND*)sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_AND*)sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_AND*)sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_OR:
         {
-          p_param_cont = ((__settings_for_OR*)sca_of_p[ID_FB_OR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_OR*)sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_OR*)sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_OR*)sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_XOR:
         {
-          p_param_cont = ((__settings_for_XOR*)sca_of_p[ID_FB_XOR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_XOR*)sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_XOR*)sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_XOR*)sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_NOT:
         {
-          p_param_cont = &(((__settings_for_NOT*)sca_of_p[ID_FB_NOT - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param);
-          p_param_edit = &(((__settings_for_NOT*)sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param);
+          p_param_cont = &(((__settings_for_NOT*)sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_NOT*)sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
        case ID_FB_TIMER:
         {
-          p_param_cont = ((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_TRIGGER:
         {
-          p_param_cont = ((__settings_for_TRIGGER*)sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_TRIGGER*)sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       default:
@@ -732,6 +740,7 @@ void press_esc_in_param_list_logical_node(void)
 {
   unsigned int error = false;
   unsigned int type_logical_node_in, number_logical_node_in;
+  int index;
   size_t n_similar_input_signals;
   uint32_t *p_param_cont, *p_param_edit;
 
@@ -742,23 +751,30 @@ void press_esc_in_param_list_logical_node(void)
                                                                                                                                                                         |
                                                                                                                                                                         ->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
   */
-  enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]]];
-  if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
-  {   
-    number_logical_node_in = 1;
-    type_logical_node_in = ID_FB_CONTROL_BLOCK;
-  }
-  else if (
-           (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-           (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
-          )   
+  enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]];
+  if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
   {
-    number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
-  
+    index = position_in_current_level_menu2[ekran_before];
+    
     ekran_before = previous_level_in_current_level_menu2[ekran_before];
     if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    {   
+      number_logical_node_in = 1;
+      type_logical_node_in = ID_FB_CONTROL_BLOCK;
+    }
+    else if (
+             (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+             (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+            )   
     {
-      type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
+      number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
+  
+      ekran_before = previous_level_in_current_level_menu2[ekran_before];
+      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      {
+        type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
+      }
+      else error = true;
     }
     else error = true;
   }
@@ -766,64 +782,64 @@ void press_esc_in_param_list_logical_node(void)
       
   if (error == false)
   {
-    n_similar_input_signals = array_n_similar_input_signals[type_logical_node_in - _ID_FB_FIRST_FIX];
+    n_similar_input_signals = array_n_similar_input_signals[type_logical_node_in - _ID_FB_FIRST_ALL];
     if (n_similar_input_signals != 0) 
     {
       switch (type_logical_node_in)
       {
       case ID_FB_CONTROL_BLOCK:
         {
-          p_param_cont = settings_fix.param;
-          p_param_edit = settings_fix_edit.param;
+          p_param_cont = &settings_fix.param[index*n_similar_input_signals];
+          p_param_edit = &settings_fix_edit.param[index*n_similar_input_signals];
           break;
         }
       case ID_FB_OUTPUT:
       case ID_FB_LED:
         {
-          p_param_cont = ((__settings_for_OUTPUT_LED*)sca_of_p[type_logical_node_in - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_OUTPUT_LED*)sca_of_p_edit[type_logical_node_in - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_OUTPUT_LED*)sca_of_p[type_logical_node_in - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_OUTPUT_LED*)sca_of_p_edit[type_logical_node_in - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_ALARM:
         {
-          p_param_cont = ((__settings_for_ALARM*)sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_ALARM*)sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_ALARM*)sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_ALARM*)sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_AND:
         {
-          p_param_cont = ((__settings_for_AND*)sca_of_p[ID_FB_AND - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_AND*)sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_AND*)sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_AND*)sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_OR:
         {
-          p_param_cont = ((__settings_for_OR*)sca_of_p[ID_FB_OR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_OR*)sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_OR*)sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_OR*)sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_XOR:
         {
-          p_param_cont = ((__settings_for_XOR*)sca_of_p[ID_FB_XOR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_XOR*)sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_XOR*)sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_XOR*)sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_NOT:
         {
-          p_param_cont = &(((__settings_for_NOT*)sca_of_p[ID_FB_NOT - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param);
-          p_param_edit = &(((__settings_for_NOT*)sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param);
+          p_param_cont = &(((__settings_for_NOT*)sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_NOT*)sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
        case ID_FB_TIMER:
         {
-          p_param_cont = ((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_TRIGGER:
         {
-          p_param_cont = ((__settings_for_TRIGGER*)sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
-          p_param_edit = ((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+          p_param_cont = &(((__settings_for_TRIGGER*)sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       default:
@@ -917,6 +933,13 @@ void move_into_param_view_chosen_of_selected_logical_node(unsigned int action, i
     }
     else error = true;
 
+    size_t n_similar_input_signals;
+    if (error == false) 
+    {
+      n_similar_input_signals = array_n_similar_input_signals[type_logical_node - _ID_FB_FIRST_ALL];
+      if (n_similar_input_signals == 0) error = true;
+    }
+
     if (error == false)
     {
       uint32_t *p_param;
@@ -932,11 +955,11 @@ void move_into_param_view_chosen_of_selected_logical_node(unsigned int action, i
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = ((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param;
+            p_param = &(((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index*n_similar_input_signals]);
           }
           else
           {
-            p_param = ((__settings_for_AND*)sca_of_p[ID_FB_AND - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param;
+            p_param = &(((__settings_for_AND*)sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals]);
           }
             
           break;
@@ -945,11 +968,11 @@ void move_into_param_view_chosen_of_selected_logical_node(unsigned int action, i
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = ((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param;
+            p_param = &(((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index*n_similar_input_signals]);
           }
           else
           {
-            p_param = ((__settings_for_OR*)sca_of_p[ID_FB_OR - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param;
+            p_param = &(((__settings_for_OR*)sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals]);
           }
       
           break;
@@ -958,11 +981,11 @@ void move_into_param_view_chosen_of_selected_logical_node(unsigned int action, i
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = ((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param;
+            p_param = &(((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index*n_similar_input_signals]);
           }
           else
           {
-            p_param = ((__settings_for_XOR*)sca_of_p[ID_FB_XOR - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param;
+            p_param = &(((__settings_for_XOR*)sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals]);
           }
       
           break;
@@ -1140,6 +1163,7 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
   
     unsigned int type_logical_node, number_logical_node;
     int index;
+    size_t n_similar_input_signals;
     unsigned int error = false;
 
     enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
@@ -1171,6 +1195,11 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
     else error = true;
   
     unsigned int max_row = current_state_menu2.max_row;
+    if (error == false) 
+    {
+      n_similar_input_signals = array_n_similar_input_signals[type_logical_node - _ID_FB_FIRST_ALL];
+      if (n_similar_input_signals == 0) error = true;
+    }
     if (
         (error == false) &&
         (max_row != 0) &&
@@ -1184,7 +1213,7 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
       case ID_FB_CONTROL_BLOCK:
         {
           __SETTINGS_FIX *p_settings_fix = (current_state_menu2.edition == ED_VIEWING) ? &settings_fix_prt : &settings_fix;
-          p_param = &p_settings_fix->param[index];
+          p_param = &p_settings_fix->param[index*n_similar_input_signals];
           break;
         }
       case ID_FB_OUTPUT:
@@ -1192,11 +1221,11 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = &(((__LN_OUTPUT_LED*)spca_of_p_prt[type_logical_node - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param[index]);
+            p_param = &(((__LN_OUTPUT_LED*)spca_of_p_prt[type_logical_node - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index*n_similar_input_signals]);
           }
           else
           { 
-            p_param = &(((__settings_for_OUTPUT_LED*)sca_of_p[type_logical_node - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param[index]);
+            p_param = &(((__settings_for_OUTPUT_LED*)sca_of_p[type_logical_node - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals]);
           }
             
           break;
@@ -1205,11 +1234,11 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = &(((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param[index]);
+            p_param = &(((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index*n_similar_input_signals]);
           }
           else
           {
-            p_param = &(((__settings_for_ALARM*)sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param[index]);
+            p_param = &(((__settings_for_ALARM*)sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals]);
           }
             
           break;
@@ -1218,11 +1247,11 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = ((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param;
+            p_param = &(((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index*n_similar_input_signals]);
           }
           else
           {
-            p_param = ((__settings_for_AND*)sca_of_p[ID_FB_AND - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param;
+            p_param = &(((__settings_for_AND*)sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals]);
           }
             
           break;
@@ -1231,11 +1260,11 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = ((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param;
+            p_param = &(((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index*n_similar_input_signals]);
           }
           else
           {
-            p_param = ((__settings_for_OR*)sca_of_p[ID_FB_OR - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param;
+            p_param = &(((__settings_for_OR*)sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals]);
           }
             
           break;
@@ -1244,11 +1273,11 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = ((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param;
+            p_param = &(((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index*n_similar_input_signals]);
           }
           else
           {
-            p_param = ((__settings_for_XOR*)sca_of_p[ID_FB_XOR - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param;
+            p_param = &(((__settings_for_XOR*)sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals]);
           }
             
           break;
@@ -1257,11 +1286,11 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = &(((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param);
+            p_param = &(((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index*n_similar_input_signals]);
           }
           else
           {
-            p_param = &(((__settings_for_NOT*)sca_of_p[ID_FB_NOT - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param);
+            p_param = &(((__settings_for_NOT*)sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals]);
           }
             
           break;
@@ -1270,11 +1299,11 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = &(((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param[index]);
+            p_param = &(((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index]);
           }
           else
           {
-            p_param = &(((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param[index]);
+            p_param = &(((__settings_for_TIMER*)sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index]);
           }
           
           break;
@@ -1283,11 +1312,11 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
-            p_param = &(((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->settings.param[index]);
+            p_param = &(((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index]);
           }
           else
           {
-            p_param = &(((__settings_for_TRIGGER*)sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_ALL] + (number_logical_node - 1))->param[index]);
+            p_param = &(((__settings_for_TRIGGER*)sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index]);
           }
           
           break;
@@ -1299,9 +1328,6 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         }
       }
       
-      for(size_t i = 0; i < max_row; i++)
-      {
-      }
       unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   
       for (size_t i = 0; i < MAX_ROW_LCD; i++)
@@ -1599,6 +1625,7 @@ void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
   
     unsigned int max_row = current_state_menu2.max_row;
     unsigned int type_logical_node_in, number_logical_node_in;
+    int index_in;
     size_t n_similar_input_signals;
     uint32_t *p_param;
 
@@ -1615,23 +1642,30 @@ void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
                                                                                                                                                                             |
                                                                                                                                                                             ->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
       */
-      ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[ekran_before]]];
-      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
-      {   
-        number_logical_node_in = 1;
-        type_logical_node_in = ID_FB_CONTROL_BLOCK;
-      }
-      else if (
-               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
-              )   
+      ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[ekran_before]];
+      if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
       {
-        number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
+        index_in = position_in_current_level_menu2[ekran_before];
     
         ekran_before = previous_level_in_current_level_menu2[ekran_before];
         if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+        {   
+          number_logical_node_in = 1;
+          type_logical_node_in = ID_FB_CONTROL_BLOCK;
+        }
+        else if (
+                 (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+                 (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+                )   
         {
-          type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
+          number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
+    
+          ekran_before = previous_level_in_current_level_menu2[ekran_before];
+          if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+          {
+            type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
+          }
+          else error = true;
         }
         else error = true;
       }
@@ -1639,55 +1673,55 @@ void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
       
       if (error == false)
       {
-        n_similar_input_signals = array_n_similar_input_signals[type_logical_node_in - _ID_FB_FIRST_FIX];
+        n_similar_input_signals = array_n_similar_input_signals[type_logical_node_in - _ID_FB_FIRST_ALL];
         if (n_similar_input_signals != 0) 
         {
           switch (type_logical_node_in)
           {
           case ID_FB_CONTROL_BLOCK:
             {
-              p_param = settings_fix_edit.param;
+              p_param = &settings_fix_edit.param[index_in*n_similar_input_signals];
               break;
             }
           case ID_FB_OUTPUT:
           case ID_FB_LED:
             {
-              p_param = ((__settings_for_OUTPUT_LED*)sca_of_p_edit[type_logical_node_in - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+              p_param = &(((__settings_for_OUTPUT_LED*)sca_of_p_edit[type_logical_node_in - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
               break;
             }
           case ID_FB_ALARM:
             {
-              p_param = ((__settings_for_ALARM*)sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+              p_param = &(((__settings_for_ALARM*)sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
               break;
             }
           case ID_FB_AND:
             {
-              p_param = ((__settings_for_AND*)sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+              p_param = &(((__settings_for_AND*)sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
               break;
             }
           case ID_FB_OR:
             {
-              p_param = ((__settings_for_OR*)sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+              p_param = &(((__settings_for_OR*)sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
               break;
             }
           case ID_FB_XOR:
             {
-              p_param = ((__settings_for_XOR*)sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+              p_param = &(((__settings_for_XOR*)sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
               break;
             }
           case ID_FB_NOT:
             {
-              p_param = &(((__settings_for_NOT*)sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param);
+              p_param = &(((__settings_for_NOT*)sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
               break;
             }
            case ID_FB_TIMER:
             {
-              p_param = ((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+              p_param = &(((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
               break;
             }
           case ID_FB_TRIGGER:
             {
-              p_param = ((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+              p_param = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
               break;
             }
           default:
@@ -1928,6 +1962,7 @@ void change_set_signal(unsigned int action)
   else error = true;
   
   unsigned int type_logical_node_in, number_logical_node_in;
+  int index_in;
   size_t n_similar_input_signals;
   uint32_t *p_param;
 
@@ -1940,23 +1975,30 @@ void change_set_signal(unsigned int action)
                                                                                                                                                                           |
                                                                                                                                                                           ->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
     */
-    ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[ekran_before]]];
-    if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
-    {   
-      number_logical_node_in = 1;
-      type_logical_node_in = ID_FB_CONTROL_BLOCK;
-    }
-    else if (
-             (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-             (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
-            )   
+    ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[ekran_before]];
+    if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
     {
-      number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
-  
+      index_in = position_in_current_level_menu2[ekran_before];
+    
       ekran_before = previous_level_in_current_level_menu2[ekran_before];
       if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      {   
+        number_logical_node_in = 1;
+        type_logical_node_in = ID_FB_CONTROL_BLOCK;
+      }
+      else if (
+               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+              )   
       {
-        type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
+        number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
+  
+        ekran_before = previous_level_in_current_level_menu2[ekran_before];
+        if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+        {
+          type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
+        }
+        else error = true;
       }
       else error = true;
     }
@@ -1964,55 +2006,55 @@ void change_set_signal(unsigned int action)
       
     if (error == false)
     {
-      n_similar_input_signals = array_n_similar_input_signals[type_logical_node_in - _ID_FB_FIRST_FIX];
+      n_similar_input_signals = array_n_similar_input_signals[type_logical_node_in - _ID_FB_FIRST_ALL];
       if (n_similar_input_signals != 0) 
       {
         switch (type_logical_node_in)
         {
         case ID_FB_CONTROL_BLOCK:
           {
-            p_param = settings_fix_edit.param;
+            p_param = &settings_fix_edit.param[index_in*n_similar_input_signals];
             break;
           }
         case ID_FB_OUTPUT:
         case ID_FB_LED:
           {
-            p_param = ((__settings_for_OUTPUT_LED*)sca_of_p_edit[type_logical_node_in - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+            p_param = &(((__settings_for_OUTPUT_LED*)sca_of_p_edit[type_logical_node_in - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
         case ID_FB_ALARM:
           {
-            p_param = ((__settings_for_ALARM*)sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+            p_param = &(((__settings_for_ALARM*)sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
         case ID_FB_AND:
           {
-            p_param = ((__settings_for_AND*)sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+            p_param = &(((__settings_for_AND*)sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
         case ID_FB_OR:
           {
-            p_param = ((__settings_for_OR*)sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+            p_param = &(((__settings_for_OR*)sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
         case ID_FB_XOR:
           {
-            p_param = ((__settings_for_XOR*)sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+            p_param = &(((__settings_for_XOR*)sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
         case ID_FB_NOT:
           {
-            p_param = &(((__settings_for_NOT*)sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param);
+            p_param = &(((__settings_for_NOT*)sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
          case ID_FB_TIMER:
           {
-            p_param = ((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+            p_param = &(((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
         case ID_FB_TRIGGER:
           {
-            p_param = ((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_ALL] + (number_logical_node_in - 1))->param;
+            p_param = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
         default:
@@ -2055,7 +2097,7 @@ void change_set_signal(unsigned int action)
           /*Знімаємо цей сигнал Ввімк.->Вимк. і зсуваємо всі наступні, щоб не було пропусків*/
           size_t j = (i + 1);
           while (j < n_similar_input_signals)
-          {
+          {     
             param =  p_param[j - 1] = p_param[j];
             if (param == 0) break;
             
@@ -2123,6 +2165,146 @@ void change_set_signal(unsigned int action)
 }
 /*****************************************************/
 
+/*****************************************************/
+/*
+Дії по  переходу на редагування сигналу, який заводиться на конкретний вхід функцонального елементу
+*/
+/*****************************************************/
+void select_input_signal_ln(void)
+{
+  int position = position_in_current_level_menu2[PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL];
+  enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL];
+  
+  int index = position_in_current_level_menu2[ekran_before];
+  unsigned int number_logical_node;
+  unsigned int type_logical_node;
+
+  ekran_before = previous_level_in_current_level_menu2[ekran_before];
+  if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+  {
+    number_logical_node = 1;
+    type_logical_node = ID_FB_CONTROL_BLOCK;
+  }
+  else if (
+           (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+           (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+          )   
+  {
+    number_logical_node = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
+    
+    ekran_before = previous_level_in_current_level_menu2[ekran_before];
+    if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    {
+      type_logical_node = _ID_FB_FIRST_ALL + position_in_current_level_menu2[ekran_before];
+    }
+  }
+
+  if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+  {
+    size_t n_similar_input_signals = array_n_similar_input_signals[type_logical_node - _ID_FB_FIRST_ALL];
+    if (n_similar_input_signals != 0)
+    {
+      uint32_t param;
+      switch (type_logical_node)
+      {
+      case ID_FB_CONTROL_BLOCK:
+        {
+          param = settings_fix_edit.param[index*n_similar_input_signals + position];
+          break;
+        }
+      case ID_FB_OUTPUT:
+      case ID_FB_LED:
+        {
+          param = ((__settings_for_OUTPUT_LED*)sca_of_p_edit[type_logical_node - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          break;
+        }
+      case ID_FB_ALARM:
+        {
+          param = ((__settings_for_ALARM*)sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          break;
+        }
+      case ID_FB_AND:
+        {
+          param = ((__settings_for_AND*)sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          break;
+        }
+      case ID_FB_OR:
+        {
+          param = ((__settings_for_OR*)sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          break;
+        }
+      case ID_FB_XOR:
+        {
+          param = ((__settings_for_XOR*)sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          break;
+        }
+      case ID_FB_NOT:
+        {
+          param = ((__settings_for_NOT*)sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          break;
+        }
+      case ID_FB_TIMER:
+        {
+          param = ((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          break;
+        }
+      case ID_FB_TRIGGER:
+        {
+          param = ((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          break;
+        }
+      default:
+        {
+          //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+          total_error_sw_fixed(122);
+        }
+      }
+    
+      if (param != 0)
+      {
+        //До переходу у режим редагування був вибраний конкретний сигнал (а не була ситуація, коли ще жоден сигнал не був вибраним)
+        unsigned int id_input   = (param >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;
+        unsigned int n_input    = (param >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
+        unsigned int out_input  = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
+ 
+        current_state_menu2.current_level = PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
+        position_in_current_level_menu2[PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = out_input - 1;
+      
+        if (id_input == ID_FB_CONTROL_BLOCK)
+        {
+          previous_level_in_current_level_menu2[PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
+          position_in_current_level_menu2[PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = 0;
+        }
+        else
+        {
+          const enum _menu2_levels levels_tmp[__NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL - __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL] =
+          {
+            PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL
+          };
+          enum _menu2_levels tmp = previous_level_in_current_level_menu2[PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = levels_tmp[(id_input - 1) - 1];
+          current_state_menu2.number_selection = position_in_current_level_menu2[tmp] = n_input - 1;
+        
+          previous_level_in_current_level_menu2[tmp] = PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
+          position_in_current_level_menu2[PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = id_input - 1;
+        }
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
 /*****************************************************/
 //
 /*****************************************************/

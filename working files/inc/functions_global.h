@@ -97,8 +97,9 @@ void press_esc_in_param_list_logical_node(void);
 void make_ekran_param_list_inputs_of_selected_logical_node(void);
 void move_into_param_view_chosen_of_selected_logical_node(unsigned int, int);
 void make_ekran_param_view_chosen_of_selected_logical_node(void);
-void make_ekran_param_edit_list_outputs_of_selected_logical_node(void);
 void change_set_signal(unsigned int);
+void make_ekran_param_edit_list_outputs_of_selected_logical_node(void);
+void select_input_signal_ln(void);
 
 void inc_or_dec_value(unsigned int *, unsigned int);
 unsigned int bcd_to_int(unsigned char);

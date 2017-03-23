@@ -1687,8 +1687,11 @@ void min_settings_NOT(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    if (mem_to_prt == true) ((__LN_NOT *)(base) + shift)->settings.param = 0;
-    else ((__settings_for_NOT *)(base) + shift)->param = 0;
+    for (size_t i = 0; i < 1; i++)
+    {
+      if (mem_to_prt == true) ((__LN_NOT *)(base) + shift)->settings.param[i] = 0;
+      else ((__settings_for_NOT *)(base) + shift)->param[i] = 0;
+    }
     
     if (mem_to_prt == true)
     {
@@ -1709,22 +1712,25 @@ void copy_settings_NOT(unsigned int mem_to_prt, unsigned int mem_from_prt, uintp
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    if ((mem_to_prt == false) && (mem_from_prt == true))
+    for (size_t i = 0; i < 1; i++)
     {
-      ((__settings_for_NOT *)(base_target) + shift)->param = ((__LN_NOT *)(base_source) + shift)->settings.param;
-    }
-    else if ((mem_to_prt == true) && (mem_from_prt == false))
-    {
-      ((__LN_NOT *)(base_target) + shift)->settings.param = ((__settings_for_NOT *)(base_source) + shift)->param;
-    }
-    else if ((mem_to_prt == false) && (mem_from_prt == false))
-    {
-      ((__settings_for_NOT *)(base_target) + shift)->param = ((__settings_for_NOT *)(base_source) + shift)->param;
-    }
-    else
-    {
-      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-      total_error_sw_fixed(96);
+      if ((mem_to_prt == false) && (mem_from_prt == true))
+      {
+        ((__settings_for_NOT *)(base_target) + shift)->param[i] = ((__LN_NOT *)(base_source) + shift)->settings.param[i];
+      }
+      else if ((mem_to_prt == true) && (mem_from_prt == false))
+      {
+        ((__LN_NOT *)(base_target) + shift)->settings.param[i] = ((__settings_for_NOT *)(base_source) + shift)->param[i];
+      }
+      else if ((mem_to_prt == false) && (mem_from_prt == false))
+      {
+        ((__settings_for_NOT *)(base_target) + shift)->param[i] = ((__settings_for_NOT *)(base_source) + shift)->param[i];
+      }
+      else
+      {
+        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+        total_error_sw_fixed(96);
+      }
     }
   }
 }
@@ -2448,8 +2454,8 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
           case ID_FB_NOT:
             {
               _n = 1;
-              p_param      = &(((__settings_for_NOT*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
-              p_param_edit = &(((__settings_for_NOT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param      = (((__settings_for_NOT*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_NOT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_TIMER:

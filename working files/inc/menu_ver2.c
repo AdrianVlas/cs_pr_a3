@@ -184,6 +184,12 @@ void main_manu_function_ver2(void)
                   {
                     //Фіксуємо, що система меню захопила "монополію" на зміну конфігурації і налаштувань
                     config_settings_modified = MASKA_MENU_LOCKS;
+                    
+                    if (current_state_menu2.current_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+                    {
+                      //Робимо корекцію на вибраний рівень ,якщо ми переходимо на редагування вхідного сигналу
+                      select_input_signal_ln();
+                    }
                   }
                 }
                 else 
@@ -978,10 +984,14 @@ void main_manu_function_ver2(void)
                 }
                 if (current_state_menu2.current_level != temp_current_level) 
                 {
-                
                   previous_level_in_current_level_menu2[temp_current_level] = current_state_menu2.current_level;
                 
                   current_state_menu2.current_level = temp_current_level;
+                  if (current_state_menu2.current_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+                  {
+                    //Робимо корекцію на вибраний рівень ,якщо ми переходимо на редагування вхідного сигналу
+                    select_input_signal_ln();
+                  }
                   current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
                   new_level_menu();
 
@@ -2509,23 +2519,6 @@ void new_level_menu(void)
 
       if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
       {
-        const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
-        {
-          FIX_BLOCK_SIGNALS_IN,
-          0,
-          OUTPUT_LED_SIGNALS_IN,
-          OUTPUT_LED_SIGNALS_IN,
-          ALARM_SIGNALS_IN,
-          0,
-          1,
-          1,
-          1,
-          1,
-          TIMER_SIGNALS_IN,
-          TRIGGER_SIGNALS_IN,
-          0,
-        };
-
         __CONFIG *p_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
         int *p_max_row[NUMBER_ALL_BLOCKS] = 
         {
@@ -2544,8 +2537,8 @@ void new_level_menu(void)
           (int*)&p_config->n_meander
         };
   
-        unsigned int number_input = number_input_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_FIX];
-        current_state_menu2.p_max_row = (number_input != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_FIX] : NULL;
+        unsigned int number_input = number_input_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_ALL];
+        current_state_menu2.p_max_row = (number_input != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_ALL] : NULL;
         current_state_menu2.max_row = number_input;
       }
       else
@@ -2626,8 +2619,8 @@ void new_level_menu(void)
           (int*)&p_config->n_meander
         };
   
-        unsigned int number_output = number_output_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_FIX];
-        current_state_menu2.p_max_row = (number_output != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_FIX] : NULL;
+        unsigned int number_output = number_output_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_ALL];
+        current_state_menu2.p_max_row = (number_output != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_ALL] : NULL;
         current_state_menu2.max_row = number_output;
       }
       else
@@ -2697,8 +2690,8 @@ void new_level_menu(void)
           (int*)&p_config->n_meander
         };
   
-        size_t number_row = array_n_similar_input_signals[type_logical_node - _ID_FB_FIRST_FIX];
-        current_state_menu2.p_max_row = (number_row != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_FIX] : NULL;
+        size_t number_row = array_n_similar_input_signals[type_logical_node - _ID_FB_FIRST_ALL];
+        current_state_menu2.p_max_row = (number_row != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_ALL] : NULL;
         current_state_menu2.max_row = number_row;
         
       }

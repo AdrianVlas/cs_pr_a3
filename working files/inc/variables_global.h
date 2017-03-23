@@ -117,7 +117,22 @@ const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS] =
   1, 
   0
 };
-
+const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
+{
+  FIX_BLOCK_SIGNALS_IN,
+  0,
+  OUTPUT_LED_SIGNALS_IN,
+  OUTPUT_LED_SIGNALS_IN,
+  ALARM_SIGNALS_IN,
+  0,
+  1,
+  1,
+  1,
+  1,
+  TIMER_SIGNALS_IN,
+  TRIGGER_SIGNALS_IN,
+  0,
+};
 
 volatile unsigned int periodical_tasks_TEST_CONFIG = false;
 volatile unsigned int periodical_tasks_TEST_SETTINGS = false;
