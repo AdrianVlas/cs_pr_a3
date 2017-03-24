@@ -188,7 +188,6 @@
           <state>USE_STDPERIPH_DRIVER</state>
           <state>STM32F2XX</state>
           <state>USE_USB_OTG_FS</state>
-          <state>KEYBOARD_VER_1</state>
           <state>SYSTEM_VIEWER_ENABLE</state>
         </option>
         <option>
