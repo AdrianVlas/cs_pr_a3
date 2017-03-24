@@ -1,5 +1,6 @@
 #include "header.h"
-
+#include "../v_A_shm/I_Shm.h"
+#include "../v_A_shm/prtTmr.h"
 /*****************************************************/
 //Діагностика АЦП
 /*****************************************************/
@@ -312,7 +313,11 @@ inline void main_protection(void)
     reset_trigger_function_from_interface = 0;
   }
   /**************************/
-
+  RdHrdIn((void*)&DiHrdStateUI32Bit);
+  SetHrdOut((void*)&DoStateUI32Bit);
+  SetHrdLed((void*)&LedStateUI32Bit);
+  TmrCalls();
+  DoCalcWrp();
   /**************************/
   //Опрацьовуємо натиснуті кнопки
   /**************************/
