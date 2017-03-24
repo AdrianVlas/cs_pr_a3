@@ -523,6 +523,7 @@ void main_manu_function_ver2(void)
     case PARAM_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL:
     case PARAM_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL:
     case PARAM_LIST_LEDS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL:
     case PARAM_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL:
     case PARAM_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL:
     case PARAM_LIST_ANDS_FOR_INPUT_MENU2_LEVEL:
@@ -532,12 +533,14 @@ void main_manu_function_ver2(void)
     case PARAM_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL:
     case PARAM_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL:
     case PARAM_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL:
+    case PARAM_LIST_TUS_FOR_INPUT_MENU2_LEVEL:
     case PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
     case PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
     case PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL:
     case PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL:
     case PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL:
     case PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL:
     case PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
     case PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
     case PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL:
@@ -547,6 +550,7 @@ void main_manu_function_ver2(void)
     case PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL:
     case PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
     case PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
+    case PARAM_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL:
     case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
     case NAME_OF_CELL_MENU2_LEVEL:
     case SETTINGS_RS485_MENU2_LEVEL:
@@ -740,11 +744,11 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_passwords_menu2[MAX_ROW_LIST_PASSWORDS_M2] = {SET_NEW_PASSWORD_MENU2_LEVEL, SET_NEW_PASSWORD_MENU2_LEVEL};
-              const enum _menu2_levels next_for_param_list_logical_nodes_for_input[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, PARAM_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_LEDS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_ANDS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_ORS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_XORS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_NOTS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL};
+              const enum _menu2_levels next_for_param_list_logical_nodes_for_input[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, PARAM_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_LEDS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_ANDS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_ORS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_XORS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_NOTS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL, PARAM_LIST_TUS_FOR_INPUT_MENU2_LEVEL};
               const enum _menu2_levels next_for_param_list_selcted_logical_node_type_for_input = PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               const enum _menu2_levels next_for_param_list_input_of_selcted_logical_node = PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               const enum _menu2_levels next_for_param_view_chosen_signal_of_selected_logical_node = PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
-              const enum _menu2_levels next_for_param_list_logical_nodes_for_output[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL};
+              const enum _menu2_levels next_for_param_list_logical_nodes_for_output[MAX_ROW_PARAM_LIST_LOGICAL_NODES_M2] = {PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL, PARAM_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL};
               const enum _menu2_levels next_for_param_list_selcted_logical_node_type_for_output = PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               
               const enum _menu2_levels *p = NULL;
@@ -897,6 +901,7 @@ void main_manu_function_ver2(void)
               case PARAM_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL:
               case PARAM_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL:
               case PARAM_LIST_LEDS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL:
               case PARAM_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL:
               case PARAM_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL:
               case PARAM_LIST_ANDS_FOR_INPUT_MENU2_LEVEL:
@@ -906,6 +911,7 @@ void main_manu_function_ver2(void)
               case PARAM_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL:
               case PARAM_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL:
               case PARAM_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL:
+              case PARAM_LIST_TUS_FOR_INPUT_MENU2_LEVEL:
                 {
                   p = &next_for_param_list_selcted_logical_node_type_for_input;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
@@ -916,6 +922,7 @@ void main_manu_function_ver2(void)
                 }
               case PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL:
               case PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL:
               case PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL:
               case PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
               case PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
@@ -926,6 +933,7 @@ void main_manu_function_ver2(void)
               case PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL:
               case PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
               case PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
+              case PARAM_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL:
                 {
                   p = &next_for_param_list_selcted_logical_node_type_for_output;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
@@ -2033,6 +2041,7 @@ void new_level_menu(void)
   case PARAM_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL:
   case PARAM_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL:
   case PARAM_LIST_LEDS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL:
   case PARAM_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL:
   case PARAM_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL:
   case PARAM_LIST_ANDS_FOR_INPUT_MENU2_LEVEL:
@@ -2042,9 +2051,11 @@ void new_level_menu(void)
   case PARAM_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL:
   case PARAM_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL:
   case PARAM_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL:
+  case PARAM_LIST_TUS_FOR_INPUT_MENU2_LEVEL:
   case PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL:
   case PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL:
   case PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL:
   case PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
   case PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL:
   case PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL:
@@ -2054,6 +2065,7 @@ void new_level_menu(void)
   case PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL:
   case PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
   case PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
+  case PARAM_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL:
     {
       __CONFIG *p_config;
       switch (current_state_menu2.edition)
@@ -2092,6 +2104,7 @@ void new_level_menu(void)
           (int*)&p_config->n_input, 
           (int*)&p_config->n_output,
           (int*)&p_config->n_led, 
+          (int*)&p_config->n_button, 
           (int*)&p_config->n_alarm,
           (int*)&p_config->n_group_alarm,
           (int*)&p_config->n_and,
@@ -2100,7 +2113,8 @@ void new_level_menu(void)
           (int*)&p_config->n_not,
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
-          (int*)&p_config->n_meander
+          (int*)&p_config->n_meander,
+          (int*)&p_config->n_tu 
         };
 
         intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]] - NUMBER_FIX_BLOCKS; 
@@ -2526,6 +2540,7 @@ void new_level_menu(void)
           (int*)&p_config->n_input,
           (int*)&p_config->n_output,
           (int*)&p_config->n_led,
+          (int*)&p_config->n_button,
           (int*)&p_config->n_alarm,
           (int*)&p_config->n_group_alarm,
           (int*)&p_config->n_and,
@@ -2534,7 +2549,8 @@ void new_level_menu(void)
           (int*)&p_config->n_not,
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
-          (int*)&p_config->n_meander
+          (int*)&p_config->n_meander,
+          (int*)&p_config->n_tu
         };
   
         unsigned int number_input = number_input_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_ALL];
@@ -2590,6 +2606,7 @@ void new_level_menu(void)
           INPUT_SIGNALS_OUT,
           OUTPUT_LED_SIGNALS_OUT,
           OUTPUT_LED_SIGNALS_OUT,
+          BUTTON_TU_SIGNALS_OUT,
           ALARM_SIGNALS_OUT,
           GROUP_ALARM_SIGNALS_OUT,
           STANDARD_LOGIC_SIGNALS_OUT,
@@ -2598,7 +2615,8 @@ void new_level_menu(void)
           STANDARD_LOGIC_SIGNALS_OUT,
           TIMER_SIGNALS_OUT,
           TRIGGER_SIGNALS_OUT,
-          MEANDER_SIGNALS_OUT
+          MEANDER_SIGNALS_OUT,
+          BUTTON_TU_SIGNALS_OUT
         };
 
         __CONFIG *p_config = &current_config_edit;
@@ -2608,6 +2626,7 @@ void new_level_menu(void)
           (int*)&p_config->n_input,
           (int*)&p_config->n_output,
           (int*)&p_config->n_led,
+          (int*)&p_config->n_button,
           (int*)&p_config->n_alarm,
           (int*)&p_config->n_group_alarm,
           (int*)&p_config->n_and,
@@ -2616,7 +2635,8 @@ void new_level_menu(void)
           (int*)&p_config->n_not,
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
-          (int*)&p_config->n_meander
+          (int*)&p_config->n_meander,
+          (int*)&p_config->n_tu
         };
   
         unsigned int number_output = number_output_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_ALL];
@@ -2679,6 +2699,7 @@ void new_level_menu(void)
           (int*)&p_config->n_input,
           (int*)&p_config->n_output,
           (int*)&p_config->n_led,
+          (int*)&p_config->n_button,
           (int*)&p_config->n_alarm,
           (int*)&p_config->n_group_alarm,
           (int*)&p_config->n_and,
@@ -2687,7 +2708,8 @@ void new_level_menu(void)
           (int*)&p_config->n_not,
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
-          (int*)&p_config->n_meander
+          (int*)&p_config->n_meander,
+          (int*)&p_config->n_tu
         };
   
         size_t number_row = array_n_similar_input_signals[type_logical_node - _ID_FB_FIRST_ALL];

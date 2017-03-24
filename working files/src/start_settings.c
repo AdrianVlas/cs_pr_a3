@@ -88,7 +88,7 @@ void global_vareiables_installation(void)
   /**************************/
   //Ініціалізація глобальних таймерів
   /**************************/
-  for(unsigned int i = 0; i < MAX_NUMBER_GLOBAL_TIMERS; i++) global_timers[i] = -1;
+//  for(unsigned int i = 0; i < MAX_NUMBER_GLOBAL_TIMERS; i++) global_timers[i] = -1;
   /**************************/
 
   /**************************/
@@ -1081,7 +1081,7 @@ void start_settings_peripherals(void)
     GPIO_SetBits(CON_L, CON_L_PIN);
 
     //Виводимо інформацію по виходах на піни процесора (у зворотньому порядку)
-    unsigned int temp_state_outputs = 0;
+//    unsigned int temp_state_outputs = 0;
 //    for (unsigned int index = 0; index < NUMBER_OUTPUTS; index++)
 //    {
 //      if ((state_outputs & (1 << index)) != 0)
@@ -1092,10 +1092,10 @@ void start_settings_peripherals(void)
 //          temp_state_outputs |= 1 << index;
 //      }
 //    }
-    unsigned int temp_state_outputs_1 =  temp_state_outputs                      & ((1 << NUMBER_OUTPUTS_1) - 1);
-    unsigned int temp_state_outputs_2 = (temp_state_outputs >> NUMBER_OUTPUTS_1) & ((1 << NUMBER_OUTPUTS_2) - 1);
-    _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1) = temp_state_outputs_1;
-    _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_2) = temp_state_outputs_2;
+//    unsigned int temp_state_outputs_1 =  temp_state_outputs                      & ((1 << NUMBER_OUTPUTS_1) - 1);
+//    unsigned int temp_state_outputs_2 = (temp_state_outputs >> NUMBER_OUTPUTS_1) & ((1 << NUMBER_OUTPUTS_2) - 1);
+//    _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1) = temp_state_outputs_1;
+//    _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_2) = temp_state_outputs_2;
     //Виставляємо пін CON-OUTPUTS-1, щоб можна було управляти виходами
     GPIO_SetBits(CON_OUTPUTS, CON_1_OUTPUTS_PIN);
     //Знімаємо пін CON-OUTPUTS-2, щоб можна було управляти виходамии
@@ -1242,6 +1242,7 @@ void min_config(__CONFIG *target_label)
   target_label->n_input = NUMBER_INPUTS;
   target_label->n_output = NUMBER_OUTPUTS;
   target_label->n_led = NUMBER_LEDS;
+  target_label->n_button = NUMBER_BUTTONS;
   
   target_label->n_alarm = 0;
   target_label->n_group_alarm = 0;
@@ -1253,6 +1254,8 @@ void min_config(__CONFIG *target_label)
   target_label->n_trigger = 0;
   
   target_label->n_meander = 0;
+
+  target_label->n_tu = 0;
   
   for(unsigned int i = 0; i < (7+1); i++)
   {

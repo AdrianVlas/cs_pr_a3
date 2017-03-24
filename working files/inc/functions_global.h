@@ -26,6 +26,7 @@ void min_settings_INPUT(unsigned int, uintptr_t *, size_t, size_t);
 void copy_settings_INPUT(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 void min_settings_OUTPUT_LED(unsigned int, uintptr_t *, size_t, size_t);
 void copy_settings_OUTPUT_LED(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
+void min_settings_BUTTON_TU(unsigned int, uintptr_t *, size_t, size_t);
 void min_settings_ALARM(unsigned int, uintptr_t *, size_t, size_t);
 void copy_settings_ALARM(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 void min_settings_GROUP_ALARM(unsigned int, uintptr_t *, size_t, size_t);
@@ -200,8 +201,8 @@ void restore_trigger_functions(unsigned int*);
 void changing_diagnostyka_state(void);
 unsigned int count_number_set_bit(unsigned int*, unsigned int);
 
-void input_scan(void);
-void clocking_global_timers(void);
+//void input_scan(void);
+//void clocking_global_timers(void);
 void main_protection(void);
 void diagnostyca_adc_execution(void);
 

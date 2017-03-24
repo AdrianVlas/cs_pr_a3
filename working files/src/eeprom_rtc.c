@@ -553,6 +553,12 @@ void main_routines_for_i2c(void)
               size_of_block = ((block == ID_FB_OUTPUT) ? current_config.n_output : current_config.n_led)*sizeof(__settings_for_OUTPUT_LED);
               break;
             }
+          case ID_FB_BUTTON:
+          case ID_FB_TU:
+            {
+              size_of_block = ((block == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
+              break;
+            }
           case ID_FB_ALARM:
             {
               size_of_block = current_config.n_alarm*sizeof(__settings_for_ALARM);
@@ -822,6 +828,12 @@ void main_routines_for_i2c(void)
           case ID_FB_LED:
             {
               size_of_block = ((block == ID_FB_OUTPUT) ? current_config.n_output : current_config.n_led)*sizeof(__settings_for_OUTPUT_LED);
+              break;
+            }
+          case ID_FB_BUTTON:
+          case ID_FB_TU:
+            {
+              size_of_block = ((block == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
               break;
             }
           case ID_FB_ALARM:
@@ -1433,6 +1445,12 @@ void main_routines_for_i2c(void)
           case ID_FB_LED:
             {
               size_of_block = ((block == ID_FB_OUTPUT) ? current_config.n_output : current_config.n_led)*sizeof(__settings_for_OUTPUT_LED);
+              break;
+            }
+          case ID_FB_BUTTON:
+          case ID_FB_TU:
+            {
+              size_of_block = ((block == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
               break;
             }
           case ID_FB_ALARM:

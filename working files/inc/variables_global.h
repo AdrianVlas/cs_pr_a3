@@ -85,7 +85,7 @@ volatile unsigned int diagnostyka[3] = {0, 0, 0};
 volatile unsigned int set_diagnostyka[3] = {0, 0, 0};
 volatile unsigned int clear_diagnostyka[3] = {0, 0, 0};
 
-SRAM1 int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
+//SRAM1 int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
 
 SRAM1 unsigned char working_ekran[MAX_ROW_LCD][MAX_COL_LCD];
 SRAM1 uint16_t rewrite_ekran_once_more/* = 0*/;
@@ -107,6 +107,7 @@ const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS] =
   0, 
   1, 
   1, 
+  0,
   1, 
   0, 
   AND_SIGNALS_IN, 
@@ -115,6 +116,7 @@ const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS] =
   1, 
   1, 
   1, 
+  0,
   0
 };
 const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
@@ -123,6 +125,7 @@ const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   0,
   OUTPUT_LED_SIGNALS_IN,
   OUTPUT_LED_SIGNALS_IN,
+  0,
   ALARM_SIGNALS_IN,
   0,
   1,
@@ -132,6 +135,7 @@ const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   TIMER_SIGNALS_IN,
   TRIGGER_SIGNALS_IN,
   0,
+  0
 };
 
 volatile unsigned int periodical_tasks_TEST_CONFIG = false;

@@ -23,6 +23,7 @@ extern void min_settings_INPUT(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_INPUT(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_OUTPUT_LED(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_OUTPUT_LED(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
+extern void min_settings_BUTTON_TU(unsigned int, uintptr_t *, size_t, size_t);
 extern void min_settings_ALARM(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_ALARM(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_GROUP_ALARM(unsigned int, uintptr_t *, size_t, size_t);
@@ -197,8 +198,8 @@ extern unsigned int count_number_set_bit(unsigned int*, unsigned int);
 
 extern void set_bit(unsigned int*, unsigned int);
 extern void clear_bit(unsigned int*, unsigned int);
-extern void input_scan(void);
-extern void clocking_global_timers(void);
+//extern void input_scan(void);
+//extern void clocking_global_timers(void);
 extern void main_protection(void);
 extern void diagnostyca_adc_execution(void);
 

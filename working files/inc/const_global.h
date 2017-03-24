@@ -22,14 +22,16 @@
                                          NUMBER_ANALOG_CANALES_VAL_1    \
                                         )
 
-#define NUMBER_INPUTS_1                 5
-#define NUMBER_INPUTS_2                 5
-#define NUMBER_INPUTS                   (NUMBER_INPUTS_1 + NUMBER_INPUTS_2)
-#define NUMBER_OUTPUTS_1                6
-#define NUMBER_OUTPUTS_2                4
-#define NUMBER_OUTPUTS                  (NUMBER_OUTPUTS_1 + NUMBER_OUTPUTS_2)
+//#define NUMBER_INPUTS_1                 5
+//#define NUMBER_INPUTS_2                 5
+#define NUMBER_INPUTS                   /*(NUMBER_INPUTS_1 + NUMBER_INPUTS_2)*/19
+//#define NUMBER_OUTPUTS_1                6
+//#define NUMBER_OUTPUTS_2                4
+#define NUMBER_OUTPUTS                  /*(NUMBER_OUTPUTS_1 + NUMBER_OUTPUTS_2)*/7
 
-#define NUMBER_LEDS                     8
+#define NUMBER_LEDS                    22
+
+#define NUMBER_BUTTONS                 2
 
 /*****************************************/
 //Константи для фіксації звідки були введені останні зміни

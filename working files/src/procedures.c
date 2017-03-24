@@ -460,6 +460,20 @@ void control_settings(unsigned int modified)
 
           break;
         }
+      case ID_FB_BUTTON:
+      case ID_FB_TU:
+        {
+          if (item == 0)
+          {
+            size_of_block = 0;
+            n_item = (block == ID_FB_BUTTON) ? current_config_prt.n_button : current_config_prt.n_tu;
+          }
+
+          if  (modified == 0) point_2 = NULL;
+          point_1 = NULL;
+
+          break;
+        }
       case ID_FB_ALARM:
         {
           if (item == 0)
@@ -870,6 +884,27 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_OUTPUT_LED) : sizeof(__settings_for_OUTPUT_LED));
           break;
         }
+      case ID_FB_BUTTON:
+      case ID_FB_TU:
+        {
+          //ФК і ТУ
+          if (index_1 == ID_FB_BUTTON)
+          {
+            n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_button : 0;
+            p_current_field = &current->n_button;
+            n_cur = edited->n_button;
+          }
+          else
+          {
+            n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_tu : 0;
+            p_current_field = &current->n_tu;
+            n_cur = edited->n_tu;
+          }
+          
+          min_param = min_settings_BUTTON_TU;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_BUTTON_TU) : 0);
+          break;
+        }
       case ID_FB_ALARM:
         {
           //Елемент "СЗС"
@@ -995,7 +1030,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
             if (n_cur > n_prev)
             {
               //Викликаємо функцію встановлення нових налаштувань у мінімальні значення
-              (*min_param)(mem_for_prt, ptr, n_prev, n_cur);
+              if (min_param != NULL) (*min_param)(mem_for_prt, ptr, n_prev, n_cur);
             }
           }
           else 
@@ -1108,6 +1143,25 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         
         copy_settings_LN = copy_settings_OUTPUT_LED;
         size = n_prev*sizeof(__settings_for_OUTPUT_LED);
+        break;
+      }
+    case ID_FB_BUTTON:
+    case ID_FB_TU:
+      {
+        //ФК і ТУ
+        if (index_1 == ID_FB_BUTTON)
+        {
+          n_cur  = current->n_button;
+          current->n_button = n_prev = control->n_button;
+        }
+        else
+        {
+          n_cur  = current->n_tu;
+          current->n_tu = n_prev = control->n_tu;
+        }
+        
+        copy_settings_LN = NULL;
+        size = n_prev*0;
         break;
       }
     case ID_FB_ALARM:
@@ -1230,7 +1284,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
                )   
             {
               //Викликаємо функцію повернення нових налаштувань у попередні значення
-              (*copy_settings_LN)(false, (p_sca_of_p_control == spca_of_p_prt), ptr, p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR], n_cur, n_prev);
+              if (copy_settings_LN != NULL) (*copy_settings_LN)(false, (p_sca_of_p_control == spca_of_p_prt), ptr, p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR], n_cur, n_prev);
             }
             else
             {
@@ -1275,6 +1329,7 @@ void min_settings_INPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
       for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8); i++)
       {
         ((__LN_INPUT *)(base) + shift)->active_state[i] = 0;
+        ((__LN_INPUT *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -1335,6 +1390,7 @@ void min_settings_OUTPUT_LED(unsigned int mem_to_prt, uintptr_t *base, size_t in
       for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8); i++)
       {
         ((__LN_OUTPUT_LED *)(base) + shift)->active_state[i] = 0;
+        ((__LN_OUTPUT_LED *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -1367,6 +1423,25 @@ void copy_settings_OUTPUT_LED(unsigned int mem_to_prt, unsigned int mem_from_prt
     {
       //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
       total_error_sw_fixed(91);
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для ФК/ТУ
+/*****************************************************/
+void min_settings_BUTTON_TU(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(BUTTON_TU_SIGNALS_OUT, 8); i++)
+      {
+        ((__LN_BUTTON_TU *)(base) + shift)->active_state[i] = 0;
+        ((__LN_BUTTON_TU *)(base) + shift)->trigger_state[i] = 0;
+      }
     }
   }
 }
@@ -1934,6 +2009,12 @@ size_t size_all_settings(void)
         size_block = ((i == ID_FB_OUTPUT) ? current_config.n_output : current_config.n_led)*sizeof(__settings_for_OUTPUT_LED);
         break;
       }
+    case ID_FB_BUTTON:
+    case ID_FB_TU:
+      {
+        size_block = ((i == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
+        break;
+      }
     case ID_FB_ALARM:
       {
         size_block = current_config.n_alarm*sizeof(__settings_for_ALARM);
@@ -2033,6 +2114,15 @@ void copy_settings(
 
             break;
           }
+        case ID_FB_BUTTON:
+        case ID_FB_TU:
+          {
+            //ФК і ТУ
+            n_prev = (i == ID_FB_BUTTON) ? source_conf->n_button : source_conf->n_tu;
+            copy_settings_LN = NULL;
+
+            break;
+          }
         case ID_FB_ALARM:
           {
             //Елемент "СЗС"
@@ -2115,7 +2205,7 @@ void copy_settings(
       if ((n_prev != 0) && (target_dyn[i - _ID_FB_FIRST_VAR] != NULL))
       {
         //Викликаємо функцію повернення нових налаштувань у попередні значення
-        (*copy_settings_LN)((target_dyn == spca_of_p_prt), (source_dyn == spca_of_p_prt), target_dyn[i - _ID_FB_FIRST_VAR], source_dyn[i - _ID_FB_FIRST_VAR], 0, n_prev);
+        if (copy_settings_LN != NULL) (*copy_settings_LN)((target_dyn == spca_of_p_prt), (source_dyn == spca_of_p_prt), target_dyn[i - _ID_FB_FIRST_VAR], source_dyn[i - _ID_FB_FIRST_VAR], 0, n_prev);
       }
       else
       {
@@ -2387,6 +2477,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_input, 
                                           current_config.n_output,
                                           current_config.n_led, 
+                                          current_config.n_button, 
                                           current_config.n_alarm,
                                           current_config.n_group_alarm,
                                           current_config.n_and,
@@ -2395,14 +2486,17 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_not,
                                           current_config.n_timer,
                                           current_config.n_trigger,
-                                          current_config.n_meander
+                                          current_config.n_meander,
+                                          current_config.n_tu
                                          };
     for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
     {
       if (
           (i != ID_FB_GROUP_ALARM) &&
           (i != ID_FB_INPUT) &&
-          (i != ID_FB_MEANDER)
+          (i != ID_FB_BUTTON) &&
+          (i != ID_FB_MEANDER) &&
+          (i != ID_FB_TU)
          )
       {
         uint32_t *p_param, *p_param_edit;

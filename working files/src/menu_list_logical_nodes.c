@@ -32,6 +32,15 @@ void make_ekran_list_logical_nodes(void)
   };
   const unsigned int first_index_number_led[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
 
+  const uint8_t name_button[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    " ÔÊ             ",
+    " ÔÊ             ",
+    " DB             ",
+    " ÔÊ             "
+  };
+  const unsigned int first_index_number_button[MAX_NAMBER_LANGUAGE] = {3, 3, 3, 3};
+  
   const uint8_t name_alarm[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
   {
     " ÑÇÑ            ",
@@ -113,6 +122,15 @@ void make_ekran_list_logical_nodes(void)
   };
   const unsigned int first_index_number_meander[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
 
+  const uint8_t name_tu[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    " ÒÓ             ",
+    " ÒÓ             ",
+    " TC             ",
+    " ÒÓ             "
+  };
+  const unsigned int first_index_number_tu[MAX_NAMBER_LANGUAGE] = {3, 3, 3, 3};
+
   
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
@@ -136,6 +154,7 @@ void make_ekran_list_logical_nodes(void)
       &name_input,
       &name_output,
       &name_led,
+      &name_button,
       &name_alarm,
       &name_group_alarm,
       &name_and,
@@ -144,13 +163,15 @@ void make_ekran_list_logical_nodes(void)
       &name_not,
       &name_timer,
       &name_trigger,
-      &name_meander
+      &name_meander,
+      &name_tu
     };
     const unsigned int (* const array_p_first_index_number[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE] = 
     {
       &first_index_number_input,
       &first_index_number_output,
       &first_index_number_led,
+      &first_index_number_button,
       &first_index_number_alarm,
       &first_index_number_group_alarm,
       &first_index_number_and,
@@ -159,7 +180,8 @@ void make_ekran_list_logical_nodes(void)
       &first_index_number_not,
       &first_index_number_timer,
       &first_index_number_trigger,
-      &first_index_number_meander
+      &first_index_number_meander,
+      &first_index_number_tu
     };
     
     intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_level]] - NUMBER_FIX_BLOCKS; 

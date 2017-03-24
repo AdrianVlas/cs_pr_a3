@@ -20,28 +20,30 @@ typedef enum _id_fb
         ID_FB_INPUT = _ID_FB_FIRST_VAR_NONE_CHANGED,                    /*2*/
         ID_FB_OUTPUT,                                                   /*3*/
         ID_FB_LED,                                                      /*4*/
+        ID_FB_BUTTON,                                                   /*5*/
 
-      _ID_FB_LAST_VAR_NONE_CHANGED,                                     /*5*/
+      _ID_FB_LAST_VAR_NONE_CHANGED,                                     /*6*/
 
-      _ID_FB_FIRST_VAR_CHANGED = _ID_FB_LAST_VAR_NONE_CHANGED,          /*5*/
+      _ID_FB_FIRST_VAR_CHANGED = _ID_FB_LAST_VAR_NONE_CHANGED,          /*6*/
       
-        ID_FB_ALARM = _ID_FB_FIRST_VAR_CHANGED,                         /*5*/
-        ID_FB_GROUP_ALARM,                                              /*6*/
-        ID_FB_AND,                                                      /*7*/
-        ID_FB_OR,                                                       /*8*/
-        ID_FB_XOR,                                                      /*9*/
-        ID_FB_NOT,                                                      /*10*/
+        ID_FB_ALARM = _ID_FB_FIRST_VAR_CHANGED,                         /*6*/
+        ID_FB_GROUP_ALARM,                                              /*7*/
+        ID_FB_AND,                                                      /*8*/
+        ID_FB_OR,                                                       /*9*/
+        ID_FB_XOR,                                                      /*10*/
+        ID_FB_NOT,                                                      /*11*/
 
-        ID_FB_TIMER,                                                    /*11*/
-        ID_FB_TRIGGER,                                                  /*12*/
+        ID_FB_TIMER,                                                    /*12*/
+        ID_FB_TRIGGER,                                                  /*13*/
 
-        ID_FB_MEANDER,                                                  /*13*/
+        ID_FB_MEANDER,                                                  /*14*/
+        ID_FB_TU,                                                       /*15*/
   
-      _ID_FB_LAST_VAR_CHANGED,                                          /*14*/
+      _ID_FB_LAST_VAR_CHANGED,                                          /*16*/
       
-    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*14*/
+    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*16*/
 
-  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*14*/
+  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*16*/
 } __id_fb;
 
 typedef struct
@@ -94,6 +96,7 @@ typedef struct
   uint32_t n_input;                     //Кількість дискретних входів
   uint32_t n_output;                    //Кількість дискретних виходів
   uint32_t n_led;                       //Кількість дискретних світлоіндикаторів
+  uint32_t n_button;                    //Кількість ФК
   
   uint32_t n_alarm;                     //Кількість блоків сигналізацій
   uint32_t n_group_alarm;               //Ввімк./Вимк. Контролю приростів струмів
@@ -106,6 +109,8 @@ typedef struct
 
   uint32_t n_meander;                   //Кількість генераторів меандру
 
+  uint32_t n_tu;                        //Кількість ТУ
+  
 
   uint8_t time_config[7+1];       //Час останніх змін уставок-витримок-управління
                                         //Останній байт масиву сигналізує мітку звідки зміни були проведені
@@ -189,7 +194,7 @@ typedef struct
 /**********/
 
 /**********
-Дискретний вхід (Реле)+ Світлоіндикатор
+Дискретний вихід (Реле)+ Світлоіндикатор
 **********/
 typedef struct
 {
@@ -207,6 +212,17 @@ typedef struct
   uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8)];
 
 } __LN_OUTPUT_LED;
+/**********/
+
+/**********
+ФК + ТУ
+**********/
+typedef struct
+{
+  uint8_t active_state[DIV_TO_HIGHER(BUTTON_TU_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(BUTTON_TU_SIGNALS_OUT, 8)];
+
+} __LN_BUTTON_TU;
 /**********/
 
 /**********

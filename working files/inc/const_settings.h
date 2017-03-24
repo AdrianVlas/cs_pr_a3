@@ -90,7 +90,7 @@ enum _INPUT_output_signals
 /*
 Дискретні виходи+світлоіндикатори
 */
-enum _OUTPUT_output_signals
+enum _OUTPUT_LED_output_signals
 {
   OUTPUT_LED_OUT = 0,
   
@@ -126,6 +126,17 @@ enum __index_ctrl_output_led
   INDEX_CTRL_OUTPUT_LED_MEANDER2,
   
   MAX_INDEX_CTRL_OUTPUT_LED
+};
+/***/
+
+/*
+ФК+ТУ
+*/
+enum _BUTTON_TU_output_signals
+{
+  BUTTON_TU_OUT = 0,
+  
+  BUTTON_TU_SIGNALS_OUT,
 };
 /***/
 

@@ -64,7 +64,7 @@ extern volatile unsigned int diagnostyka[3];
 extern volatile unsigned int set_diagnostyka[3];
 extern volatile unsigned int clear_diagnostyka[3];
 
-extern int global_timers[MAX_NUMBER_GLOBAL_TIMERS];
+//extern int global_timers[MAX_NUMBER_GLOBAL_TIMERS];
 
 extern unsigned int start_restart;
 

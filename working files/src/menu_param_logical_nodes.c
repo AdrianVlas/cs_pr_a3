@@ -4,24 +4,27 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_
 {
   {
     "                ",
-    " Ä.Âõ           ",
-    " Â.Ð            ",
-    " Ñâ             ",
-    " ÑÇÑ            ",
-    " ØÃÑ            ",
-    " È              ",
-    " ÈËÈ            ",
-    " È-ÈËÈ          ",
-    " ÍÅ             ",
-    " ÌÔÒ            ",
-    " D-Òð           ",
-    " ÃÏÑ            "
-  },
+    "Ä.Âõ            ",
+    "Â.Ð             ",
+    "Ñâ              ",
+    "ÑÇÑ             ",
+    "ÔÊ              ",
+    "ØÃÑ             ",
+    "È               ",
+    "ÈËÈ             ",
+    "È-ÈËÈ           ",
+    "ÍÅ              ",
+    "ÌÔÒ             ",
+    "D-Òð            ",
+    "ÃÏÑ             ",
+    "ÒÓ              "
+},
   {
     "                ",
     "Ä.Âõ            ",
     "Â.Ð             ",
     "Ñâ              ",
+    "ÔÊ              ",
     "ÑÇÑ             ",
     "ØÃÑ             ",
     "²               ",
@@ -30,13 +33,15 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_
     "ÍÅ              ",
     "ÌÔÒ             ",
     "D-Òð            ",
-    "ÃÏÑ             "
+    "ÃÏÑ             ",
+    "ÒÓ              "
   },
   {
     "                ",
     "D.In            ",
     "O.R             ",
     "LED             ",
+    "DB              ",
     "ÑÇÑ             ",
     "ØÃÑ             ",
     "AND             ",
@@ -45,13 +50,15 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_
     "NOT             ",
     "MFT             ",
     "D-Tr            ",
-    "PSG             "
+    "PSG             ",
+    "TC              "
   },
   {
     "                ",
     "Ä.Âõ            ",
     "Â.Ð             ",
     "Ñâ              ",
+    "ÔÊ              ",
     "ÑÇÑ             ",
     "ØÃÑ             ",
     "È               ",
@@ -60,10 +67,91 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_
     "ÍÅ              ",
     "ÌÔÒ             ",
     "D-Òð            ",
-    "ÃÏÑ             "
+    "ÃÏÑ             ",
+    "ÒÓ              "
   }
 };
   
+const uint8_t name_fix_block_out_signals[MAX_NAMBER_LANGUAGE][FIX_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_FIX_BLOCK_OUT_SIGNALS_RU},  
+  {NAME_FIX_BLOCK_OUT_SIGNALS_UA},  
+  {NAME_FIX_BLOCK_OUT_SIGNALS_EN},  
+  {NAME_FIX_BLOCK_OUT_SIGNALS_KZ}
+};
+  
+const uint8_t name_input_out_signals[MAX_NAMBER_LANGUAGE][INPUT_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_INPUT_OUT_SIGNALS_RU},  
+  {NAME_INPUT_OUT_SIGNALS_UA},  
+  {NAME_INPUT_OUT_SIGNALS_EN},  
+  {NAME_INPUT_OUT_SIGNALS_KZ}
+};
+  
+const uint8_t name_output_led_out_signals[MAX_NAMBER_LANGUAGE][OUTPUT_LED_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_OUTPUT_LED_OUT_SIGNALS_RU},  
+  {NAME_OUTPUT_LED_OUT_SIGNALS_UA},  
+  {NAME_OUTPUT_LED_OUT_SIGNALS_EN},  
+  {NAME_OUTPUT_LED_OUT_SIGNALS_KZ}
+};
+  
+const uint8_t name_button_tu_out_signals[MAX_NAMBER_LANGUAGE][BUTTON_TU_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_BUTTON_TU_OUT_SIGNALS_RU},  
+  {NAME_BUTTON_TU_OUT_SIGNALS_UA},  
+  {NAME_BUTTON_TU_OUT_SIGNALS_EN},  
+  {NAME_BUTTON_TU_OUT_SIGNALS_KZ}
+};
+
+const uint8_t name_alarm_out_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_ALARM_OUT_SIGNALS_RU},  
+  {NAME_ALARM_OUT_SIGNALS_UA},  
+  {NAME_ALARM_OUT_SIGNALS_EN},  
+  {NAME_ALARM_OUT_SIGNALS_KZ}
+};
+
+const uint8_t name_group_alarm_out_signals[MAX_NAMBER_LANGUAGE][GROUP_ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_GROUP_ALARM_OUT_SIGNALS_RU},  
+  {NAME_GROUP_ALARM_OUT_SIGNALS_UA},  
+  {NAME_GROUP_ALARM_OUT_SIGNALS_EN},  
+  {NAME_GROUP_ALARM_OUT_SIGNALS_KZ}
+};
+
+const uint8_t name_standard_logic_out_signals[MAX_NAMBER_LANGUAGE][STANDARD_LOGIC_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_STANDARD_LOGIC_OUT_SIGNALS_RU},  
+  {NAME_STANDARD_LOGIC_OUT_SIGNALS_UA},  
+  {NAME_STANDARD_LOGIC_OUT_SIGNALS_EN},  
+  {NAME_STANDARD_LOGIC_OUT_SIGNALS_KZ}
+};
+
+const uint8_t name_timer_out_signals[MAX_NAMBER_LANGUAGE][TIMER_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_TIMER_OUT_SIGNALS_RU},  
+  {NAME_TIMER_OUT_SIGNALS_UA},  
+  {NAME_TIMER_OUT_SIGNALS_EN},  
+  {NAME_TIMER_OUT_SIGNALS_KZ}
+};
+  
+const uint8_t name_trigger_out_signals[MAX_NAMBER_LANGUAGE][TRIGGER_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_TRIGGER_OUT_SIGNALS_RU},  
+  {NAME_TRIGGER_OUT_SIGNALS_UA},  
+  {NAME_TRIGGER_OUT_SIGNALS_EN},  
+  {NAME_TRIGGER_OUT_SIGNALS_KZ}
+};
+
+const uint8_t name_meander_out_signals[MAX_NAMBER_LANGUAGE][MEANDER_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_MEANDER_OUT_SIGNALS_RU},  
+  {NAME_MEANDER_OUT_SIGNALS_UA},  
+  {NAME_MEANDER_OUT_SIGNALS_EN},  
+  {NAME_MEANDER_OUT_SIGNALS_KZ}
+};
+
 /*****************************************************/
 /*
 Ôóíêö³ÿ ïåðåì³ùåííÿ ïî ìåíþ
@@ -103,15 +191,17 @@ void move_into_param_list_logical_nodes(unsigned int action, int max_row)
     logical_node_shown[ 1] = ((p_config->n_input*0                     ) != 0);
     logical_node_shown[ 2] = ((p_config->n_output*OUTPUT_LED_SIGNALS_IN) != 0);
     logical_node_shown[ 3] = ((p_config->n_led*OUTPUT_LED_SIGNALS_IN   ) != 0);
-    logical_node_shown[ 4] = ((p_config->n_alarm*ALARM_SIGNALS_IN      ) != 0);
-    logical_node_shown[ 5] = ((p_config->n_group_alarm*0               ) != 0);
-    logical_node_shown[ 6] = ((p_config->n_and*AND_SIGNALS_IN          ) != 0);
-    logical_node_shown[ 7] = ((p_config->n_or*OR_SIGNALS_IN            ) != 0);
-    logical_node_shown[ 8] = ((p_config->n_xor*2                       ) != 0);
-    logical_node_shown[ 9] = ((p_config->n_not*1                       ) != 0);
-    logical_node_shown[10] = ((p_config->n_timer*TIMER_SIGNALS_IN      ) != 0);
-    logical_node_shown[11] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN  ) != 0);
-    logical_node_shown[12] = ((p_config->n_meander*0                   ) != 0);
+    logical_node_shown[ 4] = ((p_config->n_button*0                    ) != 0);
+    logical_node_shown[ 5] = ((p_config->n_alarm*ALARM_SIGNALS_IN      ) != 0);
+    logical_node_shown[ 6] = ((p_config->n_group_alarm*0               ) != 0);
+    logical_node_shown[ 7] = ((p_config->n_and*AND_SIGNALS_IN          ) != 0);
+    logical_node_shown[ 8] = ((p_config->n_or*OR_SIGNALS_IN            ) != 0);
+    logical_node_shown[ 9] = ((p_config->n_xor*2                       ) != 0);
+    logical_node_shown[10] = ((p_config->n_not*1                       ) != 0);
+    logical_node_shown[11] = ((p_config->n_timer*TIMER_SIGNALS_IN      ) != 0);
+    logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN  ) != 0);
+    logical_node_shown[13] = ((p_config->n_meander*0                   ) != 0);
+    logical_node_shown[14] = ((p_config->n_tu*0                        ) != 0);
   }
   else
   {
@@ -119,15 +209,17 @@ void move_into_param_list_logical_nodes(unsigned int action, int max_row)
     logical_node_shown[ 1] = ((p_config->n_input*INPUT_SIGNALS_OUT            ) != 0);
     logical_node_shown[ 2] = ((p_config->n_output*OUTPUT_LED_SIGNALS_OUT      ) != 0);
     logical_node_shown[ 3] = ((p_config->n_led*OUTPUT_LED_SIGNALS_OUT         ) != 0);
-    logical_node_shown[ 4] = ((p_config->n_alarm*ALARM_SIGNALS_OUT            ) != 0);
-    logical_node_shown[ 5] = ((p_config->n_group_alarm*GROUP_ALARM_SIGNALS_OUT) != 0);
-    logical_node_shown[ 6] = ((p_config->n_and*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
-    logical_node_shown[ 7] = ((p_config->n_or*STANDARD_LOGIC_SIGNALS_OUT      ) != 0);
-    logical_node_shown[ 8] = ((p_config->n_xor*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
-    logical_node_shown[ 9] = ((p_config->n_not*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
-    logical_node_shown[10] = ((p_config->n_timer*TIMER_SIGNALS_OUT            ) != 0);
-    logical_node_shown[11] = ((p_config->n_trigger*TRIGGER_SIGNALS_OUT        ) != 0);
-    logical_node_shown[12] = ((p_config->n_meander*MEANDER_SIGNALS_OUT        ) != 0);
+    logical_node_shown[ 4] = ((p_config->n_button*BUTTON_TU_SIGNALS_OUT       ) != 0);
+    logical_node_shown[ 5] = ((p_config->n_alarm*ALARM_SIGNALS_OUT            ) != 0);
+    logical_node_shown[ 6] = ((p_config->n_group_alarm*GROUP_ALARM_SIGNALS_OUT) != 0);
+    logical_node_shown[ 7] = ((p_config->n_and*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
+    logical_node_shown[ 8] = ((p_config->n_or*STANDARD_LOGIC_SIGNALS_OUT      ) != 0);
+    logical_node_shown[ 9] = ((p_config->n_xor*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
+    logical_node_shown[10] = ((p_config->n_not*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
+    logical_node_shown[11] = ((p_config->n_timer*TIMER_SIGNALS_OUT            ) != 0);
+    logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_OUT        ) != 0);
+    logical_node_shown[13] = ((p_config->n_meander*MEANDER_SIGNALS_OUT        ) != 0);
+    logical_node_shown[14] = ((p_config->n_tu*BUTTON_TU_SIGNALS_OUT           ) != 0);
   };
   
   if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
@@ -216,15 +308,17 @@ void make_ekran_param_list_logical_node(void)
       logical_node_shown[ 1] = ((p_config->n_input*0                     ) != 0);
       logical_node_shown[ 2] = ((p_config->n_output*OUTPUT_LED_SIGNALS_IN) != 0);
       logical_node_shown[ 3] = ((p_config->n_led*OUTPUT_LED_SIGNALS_IN   ) != 0);
-      logical_node_shown[ 4] = ((p_config->n_alarm*ALARM_SIGNALS_IN      ) != 0);
-      logical_node_shown[ 5] = ((p_config->n_group_alarm*0               ) != 0);
-      logical_node_shown[ 6] = ((p_config->n_and*AND_SIGNALS_IN          ) != 0);
-      logical_node_shown[ 7] = ((p_config->n_or*OR_SIGNALS_IN            ) != 0);
-      logical_node_shown[ 8] = ((p_config->n_xor*2                       ) != 0);
-      logical_node_shown[ 9] = ((p_config->n_not*1                       ) != 0);
-      logical_node_shown[10] = ((p_config->n_timer*TIMER_SIGNALS_IN      ) != 0);
-      logical_node_shown[11] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN  ) != 0);
-      logical_node_shown[12] = ((p_config->n_meander*0                   ) != 0);
+      logical_node_shown[ 4] = ((p_config->n_button*0                    ) != 0);
+      logical_node_shown[ 5] = ((p_config->n_alarm*ALARM_SIGNALS_IN      ) != 0);
+      logical_node_shown[ 6] = ((p_config->n_group_alarm*0               ) != 0);
+      logical_node_shown[ 7] = ((p_config->n_and*AND_SIGNALS_IN          ) != 0);
+      logical_node_shown[ 8] = ((p_config->n_or*OR_SIGNALS_IN            ) != 0);
+      logical_node_shown[ 9] = ((p_config->n_xor*2                       ) != 0);
+      logical_node_shown[10] = ((p_config->n_not*1                       ) != 0);
+      logical_node_shown[11] = ((p_config->n_timer*TIMER_SIGNALS_IN      ) != 0);
+      logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN  ) != 0);
+      logical_node_shown[13] = ((p_config->n_meander*0                   ) != 0);
+      logical_node_shown[14] = ((p_config->n_tu*0                        ) != 0);
     }     
     else
     {
@@ -232,15 +326,17 @@ void make_ekran_param_list_logical_node(void)
       logical_node_shown[ 1] = ((p_config->n_input*INPUT_SIGNALS_OUT            ) != 0);
       logical_node_shown[ 2] = ((p_config->n_output*OUTPUT_LED_SIGNALS_OUT      ) != 0);
       logical_node_shown[ 3] = ((p_config->n_led*OUTPUT_LED_SIGNALS_OUT         ) != 0);
-      logical_node_shown[ 4] = ((p_config->n_alarm*ALARM_SIGNALS_OUT            ) != 0);
-      logical_node_shown[ 5] = ((p_config->n_group_alarm*GROUP_ALARM_SIGNALS_OUT) != 0);
-      logical_node_shown[ 6] = ((p_config->n_and*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
-      logical_node_shown[ 7] = ((p_config->n_or*STANDARD_LOGIC_SIGNALS_OUT      ) != 0);
-      logical_node_shown[ 8] = ((p_config->n_xor*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
-      logical_node_shown[ 9] = ((p_config->n_not*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
-      logical_node_shown[10] = ((p_config->n_timer*TIMER_SIGNALS_OUT            ) != 0);
-      logical_node_shown[11] = ((p_config->n_trigger*TRIGGER_SIGNALS_OUT        ) != 0);
-      logical_node_shown[12] = ((p_config->n_meander*MEANDER_SIGNALS_OUT        ) != 0);
+      logical_node_shown[ 4] = ((p_config->n_button*BUTTON_TU_SIGNALS_OUT       ) != 0);
+      logical_node_shown[ 5] = ((p_config->n_alarm*ALARM_SIGNALS_OUT            ) != 0);
+      logical_node_shown[ 6] = ((p_config->n_group_alarm*GROUP_ALARM_SIGNALS_OUT) != 0);
+      logical_node_shown[ 7] = ((p_config->n_and*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
+      logical_node_shown[ 8] = ((p_config->n_or*STANDARD_LOGIC_SIGNALS_OUT      ) != 0);
+      logical_node_shown[ 9] = ((p_config->n_xor*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
+      logical_node_shown[10] = ((p_config->n_not*STANDARD_LOGIC_SIGNALS_OUT     ) != 0);
+      logical_node_shown[11] = ((p_config->n_timer*TIMER_SIGNALS_OUT            ) != 0);
+      logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_OUT        ) != 0);
+      logical_node_shown[13] = ((p_config->n_meander*MEANDER_SIGNALS_OUT        ) != 0);
+      logical_node_shown[14] = ((p_config->n_tu*BUTTON_TU_OUT                   ) != 0);
     };
   
     const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES][MAX_COL_LCD + 1] = 
@@ -250,6 +346,7 @@ void make_ekran_param_list_logical_node(void)
         " Ä.Âõîäû        ",
         " Â.Ðåëå         ",
         " Ñâåòîèíäèêàòîðû",
+        " ÔÊ             ",
         " ÑÇÑ            ",
         " ØÃÑ            ",
         " È              ",
@@ -258,13 +355,15 @@ void make_ekran_param_list_logical_node(void)
         " ÍÅ             ",
         " ÌÔ-Òàéìåð      ",
         " D-Òðèããåð      ",
-        " ÃÏÑ            "
+        " ÃÏÑ            ",
+        " ÒÓ             "
       },
       {
         " Çàãàëüíèé áëîê ",
         " Ä.Âõîäè        ",
         " Â.Ðåëå         ",
         " Ñâ³òî³íäèêàòîðè",
+        " ÔÊ             ",
         " ÑÇÑ            ",
         " ØÃÑ            ",
         " ²              ",
@@ -273,13 +372,15 @@ void make_ekran_param_list_logical_node(void)
         " ÍÅ             ",
         " ÁÔ-Òàéìåð      ",
         " D-Òðè´åð       ",
-        " ÃÏÑ            "
+        " ÃÏÑ            ",
+        " ÒÓ             "
       },
       {
         " General block  ",
         " D.Inputs       ",
         " O.Relays       ",
         " LEDs           ",
+        " DB             ",
         " ÑÇÑ            ",
         " ØÃÑ            ",
         " AND            ",
@@ -288,13 +389,15 @@ void make_ekran_param_list_logical_node(void)
         " NOT            ",
         " MF-Timer       ",
         " D-Trigger      ",
-        " PSG            "
+        " PSG            ",
+        " TC             "
       },
       {
         " Îáùèé áëîê     ",
         " Ä.Âõîäû        ",
         " Â.Ðåëå         ",
         " Ñâåòîèíäèêàòîðû",
+        " ÔÊ             ",
         " ÑÇÑ            ",
         " ØÃÑ            ",
         " È              ",
@@ -303,7 +406,8 @@ void make_ekran_param_list_logical_node(void)
         " ÍÅ             ",
         " ÌÔ-Òàéìåð      ",
         " D-Òðèããåð      ",
-        " ÃÏÑ            "
+        " ÃÏÑ            ",
+        " ÒÓ             "
       }
     };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
@@ -433,6 +537,7 @@ void make_ekran_param_list_inputs_of_selected_logical_node(void)
       NULL, 
       (const uint8_t*)name_output_led_in_signals, 
       (const uint8_t*)name_output_led_in_signals, 
+      NULL, 
       (const uint8_t*)name_alarm_in_signals, 
       NULL, 
       (const uint8_t*)name_standard_logic_in_signals, 
@@ -441,6 +546,7 @@ void make_ekran_param_list_inputs_of_selected_logical_node(void)
       (const uint8_t*)name_standard_logic_in_signals, 
       (const uint8_t*)name_timer_in_signals, 
       (const uint8_t*)name_trigger_in_signals, 
+      NULL, 
       NULL
     };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
@@ -1053,84 +1159,13 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
   }
   else
   {
-    const uint8_t name_fix_block_out_signals[MAX_NAMBER_LANGUAGE][FIX_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_FIX_BLOCK_OUT_SIGNALS_RU},  
-      {NAME_FIX_BLOCK_OUT_SIGNALS_UA},  
-      {NAME_FIX_BLOCK_OUT_SIGNALS_EN},  
-      {NAME_FIX_BLOCK_OUT_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_input_out_signals[MAX_NAMBER_LANGUAGE][INPUT_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_INPUT_OUT_SIGNALS_RU},  
-      {NAME_INPUT_OUT_SIGNALS_UA},  
-      {NAME_INPUT_OUT_SIGNALS_EN},  
-      {NAME_INPUT_OUT_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_output_led_out_signals[MAX_NAMBER_LANGUAGE][OUTPUT_LED_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_OUTPUT_LED_OUT_SIGNALS_RU},  
-      {NAME_OUTPUT_LED_OUT_SIGNALS_UA},  
-      {NAME_OUTPUT_LED_OUT_SIGNALS_EN},  
-      {NAME_OUTPUT_LED_OUT_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_alarm_out_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_ALARM_OUT_SIGNALS_RU},  
-      {NAME_ALARM_OUT_SIGNALS_UA},  
-      {NAME_ALARM_OUT_SIGNALS_EN},  
-      {NAME_ALARM_OUT_SIGNALS_KZ}
-    };
-
-    const uint8_t name_group_alarm_out_signals[MAX_NAMBER_LANGUAGE][GROUP_ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_GROUP_ALARM_OUT_SIGNALS_RU},  
-      {NAME_GROUP_ALARM_OUT_SIGNALS_UA},  
-      {NAME_GROUP_ALARM_OUT_SIGNALS_EN},  
-      {NAME_GROUP_ALARM_OUT_SIGNALS_KZ}
-    };
-
-    const uint8_t name_standard_logic_out_signals[MAX_NAMBER_LANGUAGE][STANDARD_LOGIC_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_STANDARD_LOGIC_OUT_SIGNALS_RU},  
-      {NAME_STANDARD_LOGIC_OUT_SIGNALS_UA},  
-      {NAME_STANDARD_LOGIC_OUT_SIGNALS_EN},  
-      {NAME_STANDARD_LOGIC_OUT_SIGNALS_KZ}
-    };
-
-    const uint8_t name_timer_out_signals[MAX_NAMBER_LANGUAGE][TIMER_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_TIMER_OUT_SIGNALS_RU},  
-      {NAME_TIMER_OUT_SIGNALS_UA},  
-      {NAME_TIMER_OUT_SIGNALS_EN},  
-      {NAME_TIMER_OUT_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_trigger_out_signals[MAX_NAMBER_LANGUAGE][TRIGGER_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_TRIGGER_OUT_SIGNALS_RU},  
-      {NAME_TRIGGER_OUT_SIGNALS_UA},  
-      {NAME_TRIGGER_OUT_SIGNALS_EN},  
-      {NAME_TRIGGER_OUT_SIGNALS_KZ}
-    };
-
-    const uint8_t name_meander_out_signals[MAX_NAMBER_LANGUAGE][MEANDER_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_MEANDER_OUT_SIGNALS_RU},  
-      {NAME_MEANDER_OUT_SIGNALS_UA},  
-      {NAME_MEANDER_OUT_SIGNALS_EN},  
-      {NAME_MEANDER_OUT_SIGNALS_KZ}
-    };
-
     const uint8_t * const array_p_name[NUMBER_ALL_BLOCKS] = 
     {
       (const uint8_t*)name_fix_block_out_signals, 
       (const uint8_t*)name_input_out_signals, 
       (const uint8_t*)name_output_led_out_signals, 
       (const uint8_t*)name_output_led_out_signals, 
+      (const uint8_t*)name_button_tu_out_signals, 
       (const uint8_t*)name_alarm_out_signals, 
       (const uint8_t*)name_group_alarm_out_signals, 
       (const uint8_t*)name_standard_logic_out_signals, 
@@ -1139,7 +1174,8 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
       (const uint8_t*)name_standard_logic_out_signals, 
       (const uint8_t*)name_timer_out_signals, 
       (const uint8_t*)name_trigger_out_signals, 
-      (const uint8_t*)name_meander_out_signals
+      (const uint8_t*)name_meander_out_signals,
+      (const uint8_t*)name_button_tu_out_signals
     };
     const unsigned int array_max_signal_out[NUMBER_ALL_BLOCKS] = 
     {
@@ -1147,6 +1183,7 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
       INPUT_SIGNALS_OUT, 
       OUTPUT_LED_SIGNALS_OUT, 
       OUTPUT_LED_SIGNALS_OUT, 
+      BUTTON_TU_SIGNALS_OUT, 
       ALARM_SIGNALS_OUT, 
       GROUP_ALARM_SIGNALS_OUT, 
       STANDARD_LOGIC_SIGNALS_OUT, 
@@ -1155,7 +1192,8 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
       STANDARD_LOGIC_SIGNALS_OUT, 
       TIMER_SIGNALS_OUT, 
       TRIGGER_SIGNALS_OUT, 
-      MEANDER_SIGNALS_OUT
+      MEANDER_SIGNALS_OUT,
+      BUTTON_TU_SIGNALS_OUT 
     };
 
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
@@ -1507,84 +1545,13 @@ void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
   }
   else
   {
-    const uint8_t name_fix_block_out_signals[MAX_NAMBER_LANGUAGE][FIX_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_FIX_BLOCK_OUT_SIGNALS_RU},  
-      {NAME_FIX_BLOCK_OUT_SIGNALS_UA},  
-      {NAME_FIX_BLOCK_OUT_SIGNALS_EN},  
-      {NAME_FIX_BLOCK_OUT_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_input_out_signals[MAX_NAMBER_LANGUAGE][INPUT_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_INPUT_OUT_SIGNALS_RU},  
-      {NAME_INPUT_OUT_SIGNALS_UA},  
-      {NAME_INPUT_OUT_SIGNALS_EN},  
-      {NAME_INPUT_OUT_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_output_led_out_signals[MAX_NAMBER_LANGUAGE][OUTPUT_LED_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_OUTPUT_LED_OUT_SIGNALS_RU},  
-      {NAME_OUTPUT_LED_OUT_SIGNALS_UA},  
-      {NAME_OUTPUT_LED_OUT_SIGNALS_EN},  
-      {NAME_OUTPUT_LED_OUT_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_alarm_out_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_ALARM_OUT_SIGNALS_RU},  
-      {NAME_ALARM_OUT_SIGNALS_UA},  
-      {NAME_ALARM_OUT_SIGNALS_EN},  
-      {NAME_ALARM_OUT_SIGNALS_KZ}
-    };
-
-    const uint8_t name_group_alarm_out_signals[MAX_NAMBER_LANGUAGE][GROUP_ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_GROUP_ALARM_OUT_SIGNALS_RU},  
-      {NAME_GROUP_ALARM_OUT_SIGNALS_UA},  
-      {NAME_GROUP_ALARM_OUT_SIGNALS_EN},  
-      {NAME_GROUP_ALARM_OUT_SIGNALS_KZ}
-    };
-
-    const uint8_t name_standard_logic_out_signals[MAX_NAMBER_LANGUAGE][1][MAX_COL_LCD + 1] =
-    {
-      {NAME_STANDARD_LOGIC_OUT_SIGNALS_RU},  
-      {NAME_STANDARD_LOGIC_OUT_SIGNALS_UA},  
-      {NAME_STANDARD_LOGIC_OUT_SIGNALS_EN},  
-      {NAME_STANDARD_LOGIC_OUT_SIGNALS_KZ}
-    };
-
-    const uint8_t name_timer_out_signals[MAX_NAMBER_LANGUAGE][TIMER_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_TIMER_OUT_SIGNALS_RU},  
-      {NAME_TIMER_OUT_SIGNALS_UA},  
-      {NAME_TIMER_OUT_SIGNALS_EN},  
-      {NAME_TIMER_OUT_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_trigger_out_signals[MAX_NAMBER_LANGUAGE][TRIGGER_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_TRIGGER_OUT_SIGNALS_RU},  
-      {NAME_TRIGGER_OUT_SIGNALS_UA},  
-      {NAME_TRIGGER_OUT_SIGNALS_EN},  
-      {NAME_TRIGGER_OUT_SIGNALS_KZ}
-    };
-
-    const uint8_t name_meander_out_signals[MAX_NAMBER_LANGUAGE][MEANDER_SIGNALS_OUT][MAX_COL_LCD + 1] =
-    {
-      {NAME_MEANDER_OUT_SIGNALS_RU},  
-      {NAME_MEANDER_OUT_SIGNALS_UA},  
-      {NAME_MEANDER_OUT_SIGNALS_EN},  
-      {NAME_MEANDER_OUT_SIGNALS_KZ}
-    };
-
     const uint8_t * const array_p_name[NUMBER_ALL_BLOCKS] = 
     {
       (const uint8_t*)name_fix_block_out_signals, 
       (const uint8_t*)name_input_out_signals, 
       (const uint8_t*)name_output_led_out_signals, 
       (const uint8_t*)name_output_led_out_signals, 
+      (const uint8_t*)name_button_tu_out_signals, 
       (const uint8_t*)name_alarm_out_signals, 
       (const uint8_t*)name_group_alarm_out_signals, 
       (const uint8_t*)name_standard_logic_out_signals, 
@@ -1593,7 +1560,8 @@ void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
       (const uint8_t*)name_standard_logic_out_signals, 
       (const uint8_t*)name_timer_out_signals, 
       (const uint8_t*)name_trigger_out_signals, 
-      (const uint8_t*)name_meander_out_signals 
+      (const uint8_t*)name_meander_out_signals,
+      (const uint8_t*)name_button_tu_out_signals
     };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
     unsigned int position_temp = current_state_menu2.index_position;
@@ -2282,6 +2250,7 @@ void select_input_signal_ln(void)
             PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL,
             PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL,
             PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL,
             PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
             PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
             PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL,
@@ -2290,7 +2259,8 @@ void select_input_signal_ln(void)
             PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL,
             PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL,
             PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL
+            PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL,
+            PARAM_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL
           };
           enum _menu2_levels tmp = previous_level_in_current_level_menu2[PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = levels_tmp[(id_input - 1) - 1];
           current_state_menu2.number_selection = position_in_current_level_menu2[tmp] = n_input - 1;

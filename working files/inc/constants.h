@@ -22,6 +22,7 @@
 #include "const_menu2_list_settings_bios.h"
 #include "const_menu2_input.h"
 #include "const_menu2_output_led.h"
+#include "const_menu2_button_tu.h"
 #include "const_menu2_setting_language.h"
 #include "const_menu2_choose_communication_parameters.h"
 #include "const_menu2_fix_block.h"
