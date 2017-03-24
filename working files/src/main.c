@@ -3,6 +3,8 @@
 #include "libraries.h"
 #include "variables_global.h"
 #include "functions_global.h"
+#include "../v_A_shm/I_Shm.h"
+#include <intrinsics.h.>
 
 /*******************************************************************************/
 //Робота з Wotchdog
@@ -464,7 +466,10 @@ int main(void)
   
   time_2_watchdog_input = time_2_watchdog_output = TIM4->CNT;
   restart_timing_watchdog = 0xff;
-  
+   asm(
+       "bkpt 1"
+       );
+  long res = InitSchematic();
 
   /* Періодичні задачі */
   while (1)
