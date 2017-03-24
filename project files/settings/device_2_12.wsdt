@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+  <CurrentConfigs><Project>device_2_v_12_0_0/Flash-Debug</Project></CurrentConfigs></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>411</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+      </Workspace>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>31</ColumnWidth0><ColumnWidth1>484</ColumnWidth1><ColumnWidth2>113</ColumnWidth2><ColumnWidth3>28</ColumnWidth3></Build>
+    <TerminalIO/></Static>
+    <Windows>
+      
+      
+    <Wnd3>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-12627-2081</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>device_2_v_12_0_0</ExpandedNode><ExpandedNode>device_2_v_12_0_0/CMSIS</ExpandedNode><ExpandedNode>device_2_v_12_0_0/CMSIS/src</ExpandedNode><ExpandedNode>device_2_v_12_0_0/Startup</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/inc</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/inc/microcontriller</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/src</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/src/general</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/src/microcontroller</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/src/protection</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/v_A_shm</ExpandedNode></NodeDict></Session>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd3><Wnd4>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-14781-7567</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd4></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\v_A_shm\LUBgsp1.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>3</YPos2><SelStart2>445</SelStart2><SelEnd2>445</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\src\main.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>398</YPos2><SelStart2>15837</SelStart2><SelEnd2>15837</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\v_A_shm\low_level_init.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>45</YPos2><SelStart2>1659</SelStart2><SelEnd2>1659</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\v_A_shm\prtTmr.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>282</YPos2><SelStart2>10924</SelStart2><SelEnd2>10924</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\src\fsmc_sram.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>4</YPos2><SelStart2>446</SelStart2><SelEnd2>446</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\src\start_settings.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>1446</YPos2><SelStart2>57818</SelStart2><SelEnd2>57818</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\src\protections.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>308</YPos2><SelStart2>11839</SelStart2><SelEnd2>11839</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\inc\platform_config.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>18</YPos2><SelStart2>1333</SelStart2><SelEnd2>1347</SelEnd2></Tab><ActiveTab>7</ActiveTab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-02B538F8><key>iaridepm.enu1</key></Toolbar-02B538F8></Sizes></Row0></Top><Left><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>609</Bottom><Right>508</Right><x>-2</x><y>-2</y><xscreen>200</xscreen><yscreen>200</yscreen><sizeHorzCX>136147</sizeHorzCX><sizeHorzCY>233918</sizeHorzCY><sizeVertCX>347175</sizeVertCX><sizeVertCY>714620</sizeVertCY></Rect></Wnd3></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd4><Rect><Top>-2</Top><Left>-2</Left><Bottom>198</Bottom><Right>1471</Right><x>-2</x><y>-2</y><xscreen>1473</xscreen><yscreen>200</yscreen><sizeHorzCX>1002723</sizeHorzCX><sizeHorzCY>233918</sizeHorzCY><sizeVertCX>136147</sizeVertCX><sizeVertCY>233918</sizeVertCY></Rect></Wnd4></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+

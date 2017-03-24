@@ -1529,6 +1529,9 @@
       <group>
         <name>general</name>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\v_A_shm\low_level_init.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\src\main.c</name>
         </file>
         <file>
@@ -1703,6 +1706,87 @@
           </configuration>
         </file>
       </group>
+    </group>
+    <group>
+      <name>v_A_shm</name>
+      <group>
+        <name>v_A_shm_C</name>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\v_A_shm\I_Shm.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c</name>
+        </file>
+        <configuration>
+          <name>Flash-Debug</name>
+        </configuration>
+      </group>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\andstng.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\ExtPoint.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\InPoint.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUAlt.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUAnd_8_1.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUBase.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUBase.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUBGS.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUDInput_0_1.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUDout_1_0.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUDout_1_0.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUNot_1_1.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUOr_8_1.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUXor_8_1.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\Mft.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.hpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.h</name>
+      </file>
+      <configuration>
+        <name>Flash-Debug</name>
+      </configuration>
     </group>
   </group>
 </project>

@@ -1,0 +1,311 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:57
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_info.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_info.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\menu_info.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\menu_info.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\menu_info.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          //Формуємо екран відображення інформації по версії програмного забезпечення і версії карти пам'яті
+      5          /*****************************************************/
+      6          void make_ekran_info()
+      7          {
+      8            const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_INFO_M2][MAX_COL_LCD + 1] = 
+      9            {
+     10              {
+     11                "   Версия ПО    ",
+     12                "   Версия КП    "
+     13              },
+     14              {
+     15                "   Версія ПЗ    ",
+     16                "   Версія КП    "
+     17              },
+     18              {
+     19                "   VER.of F/W   ",
+     20                "   VER.of MM    "
+     21              },
+     22              {
+     23                "   Версия ПО    ",
+     24                "   Версия КП    "
+     25              }
+     26            };
+     27          
+     28            int index_language = index_language_in_array(settings_fix_prt.language);
+     29            
+     30            unsigned int position_temp = current_state_menu2.index_position;
+     31            unsigned char value_str[MAX_COL_LCD + 1] = "                ";
+     32            
+     33            //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+     34            unsigned int index_in_ekran = ((position_temp<<1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+     35            int first_char_row1, last_chat_row1;
+     36            
+     37            for (size_t i = 0; i < MAX_ROW_LCD; i++)
+     38            {
+     39              if (index_in_ekran < (MAX_ROW_INFO_M2 << 1))//Множення на два константи MAX_ROW_INFO_M2 потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+     40              {
+     41                if ((i & 0x1) == 0)
+     42                {
+     43                  //У непарному номері рядку виводимо заголовок
+     44                  for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran>>1][j];
+     45                  
+     46                  if ((index_in_ekran >> 1) == INDEX_INFO_M2_FIWMWARE)
+     47                  {
+     48                    unsigned int index_tmp = 0;
+     49          
+     50          #if VERSIA_PZ > 9
+     51                    value_str[index_tmp++] = (VERSIA_PZ / 10) + 0x30;
+     52                    value_str[index_tmp++] = (VERSIA_PZ % 10) + 0x30;
+     53          #else
+     54                    value_str[index_tmp++] = VERSIA_PZ + 0x30;
+     55          #endif
+     56          
+     57                    value_str[index_tmp++] = '.';
+     58                    
+     59          #if MODYFIKACIA_VERSII_PZ > 9
+     60                    value_str[index_tmp++] = (MODYFIKACIA_VERSII_PZ / 10) + 0x30;
+     61                    value_str[index_tmp++] = (MODYFIKACIA_VERSII_PZ % 10) + 0x30;
+     62          #else
+     63                    value_str[index_tmp++] = MODYFIKACIA_VERSII_PZ + 0x30;
+     64          #endif
+     65          
+     66                    value_str[index_tmp++] = '.';
+     67                    
+     68          #if ZBIRKA_VERSII_PZ > 9
+     69                    value_str[index_tmp++] = (ZBIRKA_VERSII_PZ / 10) + 0x30;
+     70                    value_str[index_tmp++] = (ZBIRKA_VERSII_PZ % 10) + 0x30;
+     71          #else
+     72                    value_str[index_tmp++] = ZBIRKA_VERSII_PZ + 0x30;
+     73          #endif
+     74                    unsigned int shift = (MAX_COL_LCD - index_tmp) >> 1;
+     75                    first_char_row1 = shift;
+     76                    last_chat_row1 = first_char_row1 + index_tmp;
+     77                    index_tmp--;
+     78                    for (int k = index_tmp; k >= 0; k-- ) 
+     79                    {
+     80                      value_str[k + shift] = value_str[k];
+     81                      value_str[k] = ' ';
+     82                    }
+     83                    
+     84                  }
+     85                  else if ((index_in_ekran>>1) == INDEX_INFO_M2_MEMORY_MAP)
+     86                  {
+     87          #if VERSIA_GMM > 9
+     88                    value_str[COL_INFO_BEGIN_2 + 0] = (VERSIA_GMM / 10) + 0x30;
+     89                    value_str[COL_INFO_BEGIN_2 + 1] = (VERSIA_GMM % 10) + 0x30;
+     90          #else
+     91                    value_str[COL_INFO_BEGIN_2 + 0] = ' ';
+     92                    value_str[COL_INFO_BEGIN_2 + 1] = VERSIA_GMM + 0x30;
+     93          #endif
+     94          
+     95                    value_str[COL_INFO_BEGIN_2 + 2] = '.';
+     96                    
+     97          #if MODYFIKACIA_VERSII_GMM > 9
+     98                    value_str[COL_INFO_BEGIN_2 + 3] = (MODYFIKACIA_VERSII_GMM / 10) + 0x30;
+     99                    value_str[COL_INFO_BEGIN_2 + 4] = (MODYFIKACIA_VERSII_GMM % 10) + 0x30;
+    100          #else
+    101                    value_str[COL_INFO_BEGIN_2 + 3] = MODYFIKACIA_VERSII_GMM + 0x30;
+    102                    value_str[COL_INFO_BEGIN_2 + 4] = ' ';
+    103          #endif
+    104                  }
+    105                  
+    106                }
+    107                else
+    108                {
+    109                  //У парному номері рядку виводимо значення
+    110                  for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = value_str[j];
+    111                }
+    112              }
+    113              else
+    114                for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    115          
+    116              index_in_ekran++;
+    117            }
+    118          
+    119            //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    120            current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    121            int last_position_cursor_x = MAX_COL_LCD;
+    122          
+    123            if (current_state_menu2.index_position == INDEX_INFO_M2_FIWMWARE)
+    124            {
+    125              current_state_menu2.position_cursor_x = first_char_row1;
+    126              last_position_cursor_x = last_chat_row1;
+    127            }
+    128            else
+    129            {
+    130              current_state_menu2.position_cursor_x = COL_INFO_BEGIN_2;
+    131              last_position_cursor_x = COL_END_END_2;
+    132            }
+    133          
+    134            //Підтягуємо курсор до першого символу
+    135            while (((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x + 1]) == ' ') && 
+    136                   (current_state_menu2.position_cursor_x < (last_position_cursor_x -1))) current_state_menu2.position_cursor_x++;
+    137          
+    138            //Курсор ставимо так, щоб він був перед числом
+    139            if (((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x]) != ' ') && 
+    140                (current_state_menu2.position_cursor_x > 0)) current_state_menu2.position_cursor_x--;
+    141          
+    142            //Курсор видимий
+    143            current_state_menu2.cursor_on = 1;
+    144            //Курсор не мигає
+    145            current_state_menu2.cursor_blinking_on = 0;
+    146            //Обновити повністю весь екран
+    147            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    148          }
+    149          /*****************************************************/
+    150          
+    151          /*****************************************************/
+    152          //Формуємо екран відображення міти дати і часу прошивки
+    153          /*****************************************************/
+    154          void make_ekran_date_time_pz(void)
+    155          {
+    156            uint8_t name_string[2*MAX_ROW_FOR_DATE_TIME_PZ][MAX_COL_LCD + 1] = 
+    157            {
+    158              "   XX-XX-20XX   ",
+    159              "     XX:XX      "
+    160            };
+    161            
+    162            unsigned int position_temp = current_state_menu2.index_position;
+    163            unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+    164          
+    165            /******************************************/
+    166            //Заповнюємо поля відповідними цифрами
+    167            /******************************************/
+    168            //День
+    169            name_string[0][3 ] = (DAY_VER >>  4) + 0x30;
+    170            name_string[0][4 ] = (DAY_VER & 0xf) + 0x30;
+    171          
+    172            //Місяць
+    173            name_string[0][6 ] = (MONTH_VER >>  4) + 0x30;
+    174            name_string[0][7 ] = (MONTH_VER & 0xf) + 0x30;
+    175          
+    176            //Рік
+    177            name_string[0][11] = (YEAR_VER >>  4) + 0x30;
+    178            name_string[0][12] = (YEAR_VER & 0xf) + 0x30;
+    179          
+    180            //Година
+    181            name_string[1][5 ] = (HOUR_VER >>  4) + 0x30;
+    182            name_string[1][6 ] = (HOUR_VER & 0xf) + 0x30;
+    183          
+    184            //Хвилини
+    185            name_string[1][8 ] = (MINUTE_VER >>  4) + 0x30;
+    186            name_string[1][9 ] = (MINUTE_VER & 0xf) + 0x30;
+    187            /******************************************/
+    188            
+    189            //Копіюємо  рядки у робочий екран
+    190            for (size_t i = 0; i< MAX_ROW_LCD; i++)
+    191            {
+    192              //Наступні рядки треба перевірити, чи їх требе відображати
+    193              for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (index_in_ekran < (2*MAX_ROW_FOR_DATE_TIME_PZ)) ? name_string[index_in_ekran][j] : ' ';
+    194          
+    195              index_in_ekran++;
+    196            }
+    197          
+    198            //Курсор по горизонталі поміщаємо на першій позиції
+    199            current_state_menu2.position_cursor_x = 0;
+    200            //Відображення курору по вертикалі в 0
+    201            current_state_menu2.position_cursor_y = 0;
+    202            current_state_menu2.position_cursor_y = 0;
+    203            //Курсор невидимий
+    204            current_state_menu2.cursor_on = 0;
+    205            //Курсор не мигає
+    206            current_state_menu2.cursor_blinking_on = 0;
+    207            //Обновити повністю весь екран
+    208            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    209          }
+    210          /*****************************************************/
+    211          
+    212          /*****************************************************/
+    213          //
+    214          /*****************************************************/
+    215          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      48   make_ekran_date_time_pz
+        48   -> __aeabi_memcpy4
+        48   -> str_to_int_DATE_Mmm
+     184   make_ekran_info
+       184   -> __aeabi_memcpy
+       184   -> __aeabi_memcpy4
+       184   -> index_language_in_array
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable1
+       4  ??DataTable1_1
+       4  ??DataTable1_2
+       4  ??DataTable1_3
+       4  ??DataTable1_4
+       4  ??DataTable1_5
+       4  ??DataTable1_6
+       4  ??DataTable1_7
+      20  ?_0
+      12  ?_1
+      12  ?_2
+     136  ?_3
+      36  ?_4
+     378  make_ekran_date_time_pz
+     488  make_ekran_info
+
+ 
+ 216 bytes in section .rodata
+ 898 bytes in section .text
+ 
+ 898 bytes of CODE  memory
+ 216 bytes of CONST memory
+
+Errors: none
+Warnings: none

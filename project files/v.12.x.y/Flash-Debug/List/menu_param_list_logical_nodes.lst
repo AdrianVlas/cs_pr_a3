@@ -1,0 +1,297 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:58
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_param_list_logical_nodes.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_param_list_logical_nodes.c" -D USE_STDPERIPH_DRIVER -D
+#        STM32F2XX -D USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE
+#        -lc "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\menu_param_list_logical_nodes.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\menu_param_list_logical_nodes.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\menu_param_list_logical_nodes.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          /*
+      5          Функція переміщення по меню
+      6          
+      7          Вхідні параметри
+      8          (1 << BIT_REWRITE) - перемалювати меню
+      9          (1 << BIT_KEY_DOWN) - рухатися вниз
+     10          (1 << BIT_KEY_UP) - рухатися вверх
+     11          */
+     12          /*****************************************************/
+     13          void move_into_param_list_logical_nodes(unsigned int action, int max_row)
+     14          {
+     15            __CONFIG *p_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
+     16            unsigned int logical_node_shown[NUMBER_ALL_BLOCKS] = 
+     17            {
+     18              true,
+     19              ((p_config->n_input*0                   ) != 0),
+     20              ((p_config->n_output*OUTPUT_SIGNALS_IN  ) != 0),
+     21              ((p_config->n_led*LED_SIGNALS_IN        ) != 0),
+     22              ((p_config->n_alarm*ALARM_SIGNALS_IN    ) != 0),
+     23              ((p_config->n_group_alarm*0             ) != 0),
+     24              ((p_config->n_and*AND_SIGNALS_IN        ) != 0),
+     25              ((p_config->n_or*OR_SIGNALS_IN          ) != 0),
+     26              ((p_config->n_xor*2                     ) != 0),
+     27              ((p_config->n_not*1                     ) != 0),
+     28              ((p_config->n_timer*TIMER_SIGNALS_IN    ) != 0),
+     29              ((p_config->n_trigger*TRIGGER_SIGNALS_IN) != 0),
+     30              ((p_config->n_meander*0                 ) != 0)
+     31            };
+     32            
+     33            if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
+     34            {
+     35              if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position++;
+     36              do
+     37              {
+     38                if (current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
+     39                while (logical_node_shown[current_state_menu2.index_position] != true)
+     40                {
+     41                  if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
+     42                }
+     43              }
+     44              while ((action & (1 << BIT_KEY_DOWN)) && (current_state_menu2.index_position >= max_row));
+     45            }
+     46            else if (action & (1 << BIT_KEY_UP))
+     47            {
+     48              current_state_menu2.index_position--;
+     49              do
+     50              {
+     51                if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
+     52                while (logical_node_shown[current_state_menu2.index_position] != true)
+     53                {
+     54                  if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
+     55                }
+     56              }
+     57              while (current_state_menu2.index_position < 0);
+     58            }
+     59          }
+     60          /*****************************************************/
+     61          
+     62          /*****************************************************/
+     63          //Формуємо екран
+     64          /*****************************************************/
+     65          void make_ekran_param_list_logical_node(void)
+     66          {
+     67            __CONFIG *p_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
+     68            unsigned int logical_node_shown[NUMBER_ALL_BLOCKS] = 
+     69            {
+     70              true,
+     71              ((p_config->n_input*0                   ) != 0),
+     72              ((p_config->n_output*OUTPUT_SIGNALS_IN  ) != 0),
+     73              ((p_config->n_led*LED_SIGNALS_IN        ) != 0),
+     74              ((p_config->n_alarm*ALARM_SIGNALS_IN    ) != 0),
+     75              ((p_config->n_group_alarm*0             ) != 0),
+     76              ((p_config->n_and*AND_SIGNALS_IN        ) != 0),
+     77              ((p_config->n_or*OR_SIGNALS_IN          ) != 0),
+     78              ((p_config->n_xor*2                     ) != 0),
+     79              ((p_config->n_not*1                     ) != 0),
+     80              ((p_config->n_timer*TIMER_SIGNALS_IN    ) != 0),
+     81              ((p_config->n_trigger*TRIGGER_SIGNALS_IN) != 0),
+     82              ((p_config->n_meander*0                 ) != 0)
+     83            };
+     84            
+     85            const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES][MAX_COL_LCD + 1] = 
+     86            {
+     87              {
+     88                " Общий блок     ",
+     89                " Д.Входы        ",
+     90                " В.Реле         ",
+     91                " Светоиндикаторы",
+     92                " СЗС            ",
+     93                " ШГС            ",
+     94                " И              ",
+     95                " ИЛИ            ",
+     96                " Искл.ИЛИ       ",
+     97                " НЕ             ",
+     98                " МФ-Таймер      ",
+     99                " D-Триггер      ",
+    100                " ГПС            "
+    101              },
+    102              {
+    103                " Загальний блок ",
+    104                " Д.Входи        ",
+    105                " В.Реле         ",
+    106                " Світоіндикатори",
+    107                " СЗС            ",
+    108                " ШГС            ",
+    109                " І              ",
+    110                " АБО            ",
+    111                " Викл.АБО       ",
+    112                " НЕ             ",
+    113                " МФ-Таймер      ",
+    114                " D-Триґер       ",
+    115                " ГПС            "
+    116              },
+    117              {
+    118                " General block  ",
+    119                " D.Inputs       ",
+    120                " O.Relays       ",
+    121                " LEDs           ",
+    122                " СЗС            ",
+    123                " ШГС            ",
+    124                " AND            ",
+    125                " OR             ",
+    126                " XOR            ",
+    127                " NOT            ",
+    128                " MF-Timer       ",
+    129                " D-Trigger      ",
+    130                " PSG            "
+    131              },
+    132              {
+    133                " Общий блок     ",
+    134                " Д.Входы        ",
+    135                " В.Реле         ",
+    136                " Светоиндикаторы",
+    137                " СЗС            ",
+    138                " ШГС            ",
+    139                " И              ",
+    140                " ИЛИ            ",
+    141                " Искл.ИЛИ       ",
+    142                " НЕ             ",
+    143                " МФ-Таймер      ",
+    144                " D-Триггер      ",
+    145                " ГПС            "
+    146              }
+    147            };
+    148            int index_language = index_language_in_array(select_struct_settings_fix()->language);
+    149            
+    150            unsigned int additional_current = 0;
+    151            unsigned int position_temp = current_state_menu2.index_position;
+    152          
+    153            uint8_t name_string_tmp[MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES][MAX_COL_LCD + 1];
+    154            for(size_t index_1 = 0; index_1 < MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES; index_1++)
+    155            {
+    156              if (logical_node_shown[index_1] != true)
+    157              {
+    158                if ((index_1 - additional_current) < position_temp) position_temp--;
+    159                additional_current++;
+    160          
+    161                for(size_t index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
+    162                {
+    163                  name_string_tmp[MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES - additional_current][index_2] = ' ';
+    164                }
+    165                name_string_tmp[MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES - additional_current][MAX_COL_LCD] = '\0';
+    166              }
+    167              else
+    168              {
+    169                for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
+    170                {
+    171                  name_string_tmp[index_1 - additional_current][index_2] = name_string[index_language][index_1][index_2];
+    172                }
+    173              }
+    174            }
+    175            unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+    176            
+    177            //Копіюємо  рядки у робочий екран
+    178            for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    179            {
+    180              //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
+    181              for (size_t j = 0; j < MAX_COL_LCD; j++) 
+    182              {
+    183                working_ekran[i][j] = (index_in_ekran < (MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES - additional_current)) ? name_string_tmp[index_in_ekran][j] : ' ';
+    184              }
+    185              index_in_ekran++;
+    186            }
+    187          
+    188            //Курсор по горизонталі відображається на першій позиції
+    189            current_state_menu2.position_cursor_x = 0;
+    190            //Відображення курору по вертикалі
+    191            current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+    192            //Курсор видимий
+    193            current_state_menu2.cursor_on = 1;
+    194            //Курсор не мигає
+    195            current_state_menu2.cursor_blinking_on = 0;
+    196            //Обновити повністю весь екран
+    197            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    198          }
+    199          /*****************************************************/
+    200          
+    201          /*****************************************************/
+    202          //
+    203          /*****************************************************/
+    204          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+    1184   make_ekran_param_list_logical_node
+      1184   -> __aeabi_memcpy4
+      1184   -> index_language_in_array
+      1184   -> select_struct_settings_fix
+      72   move_into_param_list_logical_nodes
+        72   -> __aeabi_memcpy4
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable1
+       4  ??DataTable1_1
+       4  ??DataTable1_2
+       4  ??DataTable1_3
+       4  ??DataTable1_4
+       4  ??DataTable1_5
+       4  ??DataTable1_6
+       4  ??DataTable1_7
+      52  ?_0
+      52  ?_1
+     884  ?_2
+     508  make_ekran_param_list_logical_node
+     450  move_into_param_list_logical_nodes
+
+ 
+ 988 bytes in section .rodata
+ 990 bytes in section .text
+ 
+ 990 bytes of CODE  memory
+ 988 bytes of CONST memory
+
+Errors: none
+Warnings: none

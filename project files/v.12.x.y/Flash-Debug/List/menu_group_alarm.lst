@@ -1,0 +1,1036 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:57
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_group_alarm.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_group_alarm.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\menu_group_alarm.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\menu_group_alarm.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\menu_group_alarm.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          //Формуємо екран відображення вікна відображення налаштувувань для дискретного вхроду
+      5          /*****************************************************/
+      6          void make_ekran_control_group_alarm(void)
+      7          {
+      8            if (
+      9                (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+     10                (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+     11               )   
+     12            {
+     13              const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+     14              {
+     15                "Ред.не разрешено",
+     16                "Ред.не дозволене",
+     17                "Ed.isn't allowed",
+     18                "Ред.не разрешено",
+     19              };
+     20          
+     21              const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+     22              {
+     23                " Вых.за диапазон",
+     24                " Вих.за діапазон",
+     25                "  Out of Limits ",
+     26                "Вых.за диапазон "
+     27              };
+     28          
+     29              enum _edition_stats edition = current_state_menu2.edition;
+     30              make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+     31            }
+     32            else
+     33            {
+     34              const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_INDEX_CTRL_GROUP_ALARM][MAX_COL_LCD + 1] = 
+     35              {
+     36                {
+     37                  "   Состояние    ",
+     38                  "  Контроль ШГС  ",
+     39                  "      Ток       "
+     40                },
+     41                {
+     42                  "      Стан      ",
+     43                  "  Контроль ШГС  ",
+     44                  "     Струм      "
+     45                },
+     46                {
+     47                  "      Стан      ",
+     48                  "  Контроль ШГС  ",
+     49                  "    Current     "
+     50                },
+     51                {
+     52                  "   Состояние    ",
+     53                  "  Контроль ШГС  ",
+     54                  "      Ток       "
+     55                }
+     56              };
+     57              int index_language = index_language_in_array(select_struct_settings_fix()->language);
+     58            
+     59              unsigned int position_temp = current_state_menu2.index_position;
+     60              //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+     61              unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+     62          
+     63              __settings_for_GROUP_ALARM *p_settings;
+     64              if (current_state_menu2.edition == ED_VIEWING) p_settings = &((((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings);
+     65              else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_settings = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+     66              else p_settings = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+     67            
+     68              for (size_t i = 0; i < MAX_ROW_LCD; i++)
+     69              {
+     70                unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+     71                if (index_in_ekran_tmp < MAX_INDEX_CTRL_GROUP_ALARM)
+     72                {
+     73                  if ((i & 0x1) == 0)
+     74                  {
+     75                    //У непарному номері рядку виводимо заголовок
+     76                    for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+     77                  }
+     78                  else
+     79                  {
+     80                    //У парному номері рядку виводимо значення
+     81                    if (
+     82                        (index_in_ekran_tmp == INDEX_CTRL_GROUP_ALARM_STATE) ||
+     83                        (index_in_ekran_tmp == INDEX_CTRL_GROUP_ALARM_CTRL_STATE)  
+     84                       ) 
+     85                    {
+     86                      const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+     87                      {
+     88                        {"     Откл.      ", "      Вкл.      "},
+     89                        {"     Вимк.      ", "     Ввімк.     "},
+     90                        {"      Off       ", "       On       "},
+     91                        {"     Сљнд.      ", "     Косу.      "}
+     92                      };
+     93                      const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
+     94                      {
+     95                        {4, 5},
+     96                        {4, 4},
+     97                        {5, 6},
+     98                        {4, 4}
+     99                      };
+    100                    
+    101                      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][(p_settings->control >> index_in_ekran_tmp) & 0x1][j];
+    102                      if (position_temp == index_in_ekran_tmp)
+    103                      {
+    104                        current_state_menu2.position_cursor_x = cursor_x[index_language][(p_settings->control >> index_in_ekran_tmp) & 0x1];
+    105                      }
+    106                    }
+    107                    else if (index_in_ekran_tmp == INDEX_CTRL_GROUP_ALARM_I)
+    108                    {
+    109                      uint32_t I_number = (p_settings->analog_input_control >> group_alarm_analog_ctrl_patten[index_in_ekran_tmp - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) & ((1 << group_alarm_analog_ctrl_patten[index_in_ekran_tmp - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
+    110                      if (I_number == 0)
+    111                      {
+    112                        const uint8_t information_empty[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    113                        {
+    114                          "      Нет       ",
+    115                          "      Нема      ",
+    116                          "      None      ",
+    117                          "      Нет       "
+    118                        };
+    119                        const uint32_t cursor_x_empty[MAX_NAMBER_LANGUAGE] = {5, 5, 5, 5};
+    120          
+    121                        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_empty[index_language][j];
+    122                        if (position_temp == index_in_ekran_tmp)
+    123                        {
+    124                          current_state_menu2.position_cursor_x = cursor_x_empty[index_language];
+    125                        }
+    126                      }
+    127                      else
+    128                      {
+    129                        unsigned int max_number_digit = max_number_digit_in_number(I_number);
+    130                        unsigned int first_symbol = 0;
+    131                        uint32_t vaga = 1; //максимальний ваговий коефіцієнт
+    132                        for (unsigned int j = 0; j < (max_number_digit - 1); j++) vaga *= 10;
+    133                        intptr_t col_begin = (MAX_COL_LCD - 1/*I*/ - max_number_digit) >> 1;
+    134                        intptr_t col_end = col_begin + 1/*I*/ + max_number_digit - 1;
+    135          
+    136                        for (intptr_t j = 0; j < MAX_COL_LCD; j++)
+    137                        {
+    138                          if ((j < col_begin) || (j > col_end))  working_ekran[i][j] = ' ';
+    139                          else if (j == col_begin)  working_ekran[i][j] = 'I';
+    140                          else calc_int_symbol_and_put_into_working_ekran((working_ekran[i] + j), &I_number, &vaga, &first_symbol);
+    141                        }
+    142          
+    143                        if (position_temp == index_in_ekran_tmp)
+    144                        {
+    145                          current_state_menu2.position_cursor_x = col_begin - 1;
+    146                        }
+    147                      }
+    148                    
+    149                    }
+    150                  }
+    151                }
+    152                else
+    153                  for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    154          
+    155                index_in_ekran++;
+    156              }
+    157          
+    158              //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    159              current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    160              //Курсор видимий
+    161              current_state_menu2.cursor_on = 1;
+    162              //Курсор не мигає
+    163              if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    164              else current_state_menu2.cursor_blinking_on = 1;
+    165            }
+    166            //Обновити повністю весь екран
+    167            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    168          }
+    169          /*****************************************************/
+    170          
+    171          /*****************************************************/
+    172          /*
+    173          Натискування Enter у вікні відображення налаштувань дискретного входу
+    174          */
+    175          /*****************************************************/
+    176          enum _result_pressed_enter_during_edition press_enter_in_control_group_alarm(void)
+    177          {
+    178            enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+    179            switch (current_state_menu2.edition)
+    180            {
+    181            case ED_EDITION:
+    182              {
+    183                //Перевіряємо, чи дані рельно змінилися
+    184                result = RPEDE_DATA_NOT_CHANGED;
+    185                
+    186                __settings_for_GROUP_ALARM *p_settings_edit = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    187                __settings_for_GROUP_ALARM *p_settings_cont = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    188                if (
+    189                    (p_settings_cont->control != p_settings_edit->control) ||
+    190                    (p_settings_cont->analog_input_control != p_settings_edit->analog_input_control) 
+    191                   )   
+    192                {
+    193                  if (
+    194                      ((p_settings_edit->control & ((uint32_t)(~MASKA_CTRL_GROUP_ALARM_M2))) == 0) &&
+    195          #if NUMBER_ANALOG_CANALES <= 1
+    196                      (p_settings_edit->analog_input_control == 0) 
+    197          #else
+    198                      (p_settings_edit->analog_input_control <= (NUMBER_ANALOG_CANALES - 1))  
+    199          #endif
+    200                     )   
+    201                  {
+    202                    p_settings_cont->control = p_settings_edit->control;
+    203                    p_settings_cont->analog_input_control = p_settings_edit->analog_input_control;
+    204                    
+    205                    config_settings_modified |= MASKA_CHANGED_SETTINGS;
+    206                    result = RPEDE_DATA_CHANGED_OK;
+    207                  }
+    208                  else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+    209                }
+    210          
+    211                break;
+    212              }
+    213            }
+    214            
+    215            return result;
+    216          }
+    217          /*****************************************************/
+    218          
+    219          /*****************************************************/
+    220          /*
+    221          Натискування ESC
+    222          */
+    223          /*****************************************************/
+    224          void press_esc_in_control_group_alarm(void)
+    225          {
+    226            __settings_for_GROUP_ALARM *p_settings_edit = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    227            __settings_for_GROUP_ALARM *p_settings_cont = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    228            p_settings_edit->control = p_settings_cont->control;
+    229            p_settings_edit->analog_input_control = p_settings_cont->analog_input_control;
+    230          }
+    231          /*****************************************************/
+    232          
+    233          /*****************************************************/
+    234          //Зміна налаштувань бінарної інформації
+    235          /*****************************************************
+    236          Вхідні параметри
+    237          (1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+    238          (1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+    239          
+    240          Вхідні параметри
+    241            Немає
+    242          *****************************************************/
+    243          void change_control_group_alarm(unsigned int action)
+    244          {
+    245            //Вводимо число у відповідне поле
+    246            __settings_for_GROUP_ALARM *p_control_edit = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    247            if (
+    248                ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+    249                ((action & (1 << BIT_KEY_RIGHT)) != 0)
+    250               )   
+    251            {
+    252              int index_position = current_state_menu2.index_position;
+    253              if (
+    254                  (index_position == INDEX_CTRL_GROUP_ALARM_STATE) ||
+    255                  (index_position == INDEX_CTRL_GROUP_ALARM_CTRL_STATE)  
+    256                 ) 
+    257              {
+    258                p_control_edit->control ^= (uint32_t)(1 << index_position);
+    259              }
+    260              else if  (index_position == INDEX_CTRL_GROUP_ALARM_I)
+    261              {
+    262                uint32_t maska = (1 << group_alarm_analog_ctrl_patten[index_position - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1;
+    263                uint32_t shift = group_alarm_analog_ctrl_patten[index_position - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0];
+    264          
+    265                int32_t data_tmp = (p_control_edit->analog_input_control >> shift) & maska;
+    266                if ((action & (1 << BIT_KEY_RIGHT)) != 0) data_tmp++;
+    267                else data_tmp--;
+    268              
+    269                int32_t min_data, max_data;
+    270          #if NUMBER_ANALOG_CANALES <= 1
+    271                min_data = max_data = 0;
+    272          #else
+    273                min_data = 1;
+    274                max_data = NUMBER_ANALOG_CANALES - 1;
+    275          #endif
+    276          
+    277                if (data_tmp < min_data) data_tmp = max_data;
+    278                else if (data_tmp > max_data) data_tmp = min_data;
+    279              
+    280                p_control_edit->analog_input_control = (p_control_edit->analog_input_control & ((uint32_t)(~(maska << shift)))) | (data_tmp << shift);
+    281              }
+    282            }
+    283          }
+    284          /*****************************************************/
+    285          
+    286          /*****************************************************/
+    287          //Формуємо екран відображення часових параметнів для дискретного входу
+    288          /*****************************************************/
+    289          void make_ekran_delay_group_alarm(void)
+    290          {
+    291            if (
+    292                (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+    293                (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+    294               )   
+    295            {
+    296              const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    297              {
+    298                "Ред.не разрешено",
+    299                "Ред.не дозволене",
+    300                "Ed.isn't allowed",
+    301                "Ред.не разрешено",
+    302              };
+    303          
+    304              const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    305              {
+    306                " Вых.за диапазон",
+    307                " Вих.за діапазон",
+    308                "  Out of Limits ",
+    309                "Вых.за диапазон "
+    310              };
+    311          
+    312              enum _edition_stats edition = current_state_menu2.edition;
+    313              make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    314            }
+    315            else
+    316            {
+    317              const uint8_t name_string[MAX_NAMBER_LANGUAGE][GROUP_ALARM_SET_DELAYS][MAX_COL_LCD + 1] = 
+    318              {
+    319                {
+    320                  "   T Задержки   ",
+    321                },
+    322                {
+    323                  "   T Затримки   ",
+    324                },
+    325                {
+    326                  "   T Задержки   ",
+    327                },
+    328                {
+    329                  "   T Задержки   ",
+    330                }
+    331              };
+    332              
+    333              int index_language = index_language_in_array(select_struct_settings_fix()->language);
+    334            
+    335              unsigned int position_temp = current_state_menu2.index_position;
+    336              //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    337              unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+    338            
+    339              unsigned int first_symbol;
+    340              uint32_t vaga, value;
+    341            
+    342              int32_t *p_set_delay;
+    343              if (current_state_menu2.edition == ED_VIEWING) p_set_delay = (((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings.set_delay;
+    344              else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_set_delay = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->set_delay;
+    345              else p_set_delay = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->set_delay;
+    346              size_t col_begin, col_end, col_comma;
+    347            
+    348              for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    349              {
+    350                unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+    351                if (index_in_ekran_tmp < GROUP_ALARM_SET_DELAYS)
+    352                {
+    353                  if ((i & 0x1) == 0)
+    354                  {
+    355                    //У непарному номері рядку виводимо заголовок
+    356                    for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+    357                    first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
+    358          
+    359                    switch (index_in_ekran_tmp)
+    360                    {
+    361                    case GROUP_ALARM_SET_DELAY_DELAY:
+    362                      {
+    363                        vaga = 10000; //максимальний ваговий коефіцієнт
+    364                        col_begin = COL_DELAY_GROUP_ALARM_DELAY_BEGIN;
+    365                        col_end = COL_DELAY_GROUP_ALARM_DELAY_END;
+    366                        col_comma = COL_DELAY_GROUP_ALARM_DELAY_COMMA;
+    367                      
+    368                        value = p_set_delay[GROUP_ALARM_SET_DELAY_DELAY];
+    369                      
+    370                        break;
+    371                      }
+    372                    }
+    373                  }
+    374                  else
+    375                  {
+    376                    //У парному номері рядку виводимо значення
+    377                    for (size_t j = 0; j < MAX_COL_LCD; j++)
+    378                    {
+    379                      if (
+    380                          ((j < col_begin) ||  (j > col_end )) &&
+    381                          (j != (col_end + 2))
+    382                         )working_ekran[i][j] = ' ';
+    383                      else if (j == col_comma )working_ekran[i][j] = ',';
+    384                      else if (j == (col_end + 2)) working_ekran[i][j] = odynyci_vymirjuvannja[index_language][INDEX_SECOND];
+    385                      else
+    386                        calc_symbol_and_put_into_working_ekran((working_ekran[i] + j), &value, &vaga, &first_symbol, j, col_comma, 0);
+    387                    }
+    388                  }
+    389                }
+    390                else
+    391                  for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    392          
+    393                index_in_ekran++;
+    394              }
+    395          
+    396              //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    397              current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    398          
+    399              if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
+    400              {
+    401                int last_position_cursor_x = MAX_COL_LCD;
+    402                switch (current_state_menu2.index_position)
+    403                {
+    404                case GROUP_ALARM_SET_DELAY_DELAY:
+    405                  {
+    406                    current_state_menu2.position_cursor_x = COL_DELAY_GROUP_ALARM_DELAY_BEGIN;
+    407                    last_position_cursor_x = COL_DELAY_GROUP_ALARM_DELAY_END;
+    408                    break;
+    409                  }
+    410                }
+    411          
+    412                //Підтягуємо курсор до першого символу
+    413                while (
+    414                       ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x + 1]) == ' ') && 
+    415                       (current_state_menu2.position_cursor_x < (last_position_cursor_x -1))
+    416                       )
+    417                {
+    418                  current_state_menu2.position_cursor_x++;
+    419                }
+    420          
+    421                //Курсор ставимо так, щоб він був перед числом
+    422                if (
+    423                    ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x]) != ' ') && 
+    424                    (current_state_menu2.position_cursor_x > 0)
+    425                   )
+    426                {
+    427                  current_state_menu2.position_cursor_x--;
+    428                }
+    429              }
+    430              //Курсор видимий
+    431              current_state_menu2.cursor_on = 1;
+    432              //Курсор не мигає
+    433              if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    434              else current_state_menu2.cursor_blinking_on = 1;
+    435            }
+    436            //Обновити повністю весь екран
+    437            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    438          }
+    439          /*****************************************************/
+    440          
+    441          /*****************************************************/
+    442          /*
+    443          Натискування Enter у вікні відображення витримок дискретного входу
+    444          */
+    445          /*****************************************************/
+    446          enum _result_pressed_enter_during_edition press_enter_in_delay_group_alarm(void)
+    447          {
+    448            enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+    449            switch (current_state_menu2.edition)
+    450            {
+    451            case ED_VIEWING:
+    452            case ED_CAN_BE_EDITED:
+    453              {
+    454                switch (current_state_menu2.index_position)
+    455                {
+    456                case GROUP_ALARM_SET_DELAY_DELAY:
+    457                  {
+    458                    current_state_menu2.position_cursor_x = COL_DELAY_GROUP_ALARM_DELAY_BEGIN;
+    459                    break;
+    460                  }
+    461                }
+    462                break;
+    463              }
+    464            case ED_EDITION:
+    465              {
+    466                //Перевіряємо, чи дані рельно змінилися
+    467                result = RPEDE_DATA_NOT_CHANGED;
+    468                
+    469                int32_t *p_set_delay_edit = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->set_delay;
+    470                int32_t *p_set_delay_cont = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->set_delay;
+    471                switch (current_state_menu2.index_position)
+    472                {
+    473                case GROUP_ALARM_SET_DELAY_DELAY:
+    474                  {
+    475                    if (p_set_delay_cont[GROUP_ALARM_SET_DELAY_DELAY] != p_set_delay_edit[GROUP_ALARM_SET_DELAY_DELAY]) 
+    476                    {
+    477                      if (check_data_setpoint(p_set_delay_edit[GROUP_ALARM_SET_DELAY_DELAY], TIMEOUT_GROUP_ALARM_DELAY_MIN, TIMEOUT_GROUP_ALARM_DELAY_MAX) == 1)
+    478                      {
+    479                        p_set_delay_cont[GROUP_ALARM_SET_DELAY_DELAY] = p_set_delay_edit[GROUP_ALARM_SET_DELAY_DELAY];
+    480                        config_settings_modified |= MASKA_CHANGED_SETTINGS;
+    481                        result = RPEDE_DATA_CHANGED_OK;
+    482                      }
+    483                      else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+    484                    }
+    485          
+    486                    break;
+    487                  }
+    488                }
+    489          
+    490                break;
+    491              }
+    492            }
+    493            
+    494            return result;
+    495          }
+    496          /*****************************************************/
+    497          
+    498          /*****************************************************/
+    499          /*
+    500          Натискування ESC у вікні витримок дискретного входу
+    501          */
+    502          /*****************************************************/
+    503          void press_esc_in_delay_group_alarm(void)
+    504          {
+    505            int32_t *p_set_delay_edit = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->set_delay;
+    506            int32_t *p_set_delay_cont = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->set_delay;
+    507          
+    508            int index = current_state_menu2.index_position;
+    509            p_set_delay_edit[index] = p_set_delay_cont[index];
+    510          }
+    511          /*****************************************************/
+    512          
+    513          /*****************************************************/
+    514          //Зміна налаштувань допуску дискретного входу
+    515          /*****************************************************
+    516          Вхідні параметри
+    517          (1 << BIT_KEY_DOWN) - натснуто кнопку вниз
+    518          (1 << BIT_KEY_UP)   - атиснуто кнопку вверх
+    519          (1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+    520          (1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+    521          
+    522          Вхідні параметри
+    523            Немає
+    524          *****************************************************/
+    525          void change_delay_group_alarm(unsigned int action)
+    526          {
+    527            //Вводимо число у відповідне поле
+    528            if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
+    529            {
+    530              int32_t *p_value = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->set_delay;
+    531              unsigned int col_end, col_comma;
+    532              switch (current_state_menu2.index_position)
+    533              {
+    534              case GROUP_ALARM_SET_DELAY_DELAY:
+    535                {
+    536                  col_end = COL_DELAY_GROUP_ALARM_DELAY_END;
+    537                  col_comma = COL_DELAY_GROUP_ALARM_DELAY_COMMA;
+    538                  break;
+    539                }
+    540              }
+    541              
+    542              intptr_t index = current_state_menu2.index_position;
+    543              p_value[index] = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0), p_value[index], 1, col_comma, col_end, 100);
+    544            }
+    545            else if (
+    546                     ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+    547                     ((action & (1 << BIT_KEY_RIGHT)) != 0)
+    548                    )   
+    549            {
+    550              int col_begin, col_end, col_comma;
+    551              switch (current_state_menu2.index_position)
+    552              {
+    553              case GROUP_ALARM_SET_DELAY_DELAY:
+    554                {
+    555                  col_begin = COL_DELAY_GROUP_ALARM_DELAY_BEGIN;
+    556                  col_end = COL_DELAY_GROUP_ALARM_DELAY_END;
+    557                  col_comma = COL_DELAY_GROUP_ALARM_DELAY_COMMA;
+    558                  break;
+    559                }
+    560              }
+    561              
+    562              if (action & (1 << BIT_KEY_LEFT ))
+    563              {
+    564                current_state_menu2.position_cursor_x--;
+    565                if (current_state_menu2.position_cursor_x == col_comma )current_state_menu2.position_cursor_x--;
+    566                if ((current_state_menu2.position_cursor_x < col_begin) ||
+    567                    (current_state_menu2.position_cursor_x > col_end))
+    568                  current_state_menu2.position_cursor_x = col_end;
+    569              }
+    570              else
+    571              {
+    572                current_state_menu2.position_cursor_x++;
+    573                if (current_state_menu2.position_cursor_x == col_comma )current_state_menu2.position_cursor_x++;
+    574                if ((current_state_menu2.position_cursor_x < col_begin) ||
+    575                    (current_state_menu2.position_cursor_x > col_end))
+    576                  current_state_menu2.position_cursor_x = col_begin;
+    577              }
+    578              
+    579            }
+    580          }
+    581          /*****************************************************/
+    582          
+    583          /*****************************************************/
+    584          //Формуємо екран відображення уставок для ШГС
+    585          /*****************************************************/
+    586          void make_ekran_pickup_group_alarm(void)
+    587          {
+    588            if (
+    589                (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+    590                (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+    591               )   
+    592            {
+    593              const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    594              {
+    595                "Ред.не разрешено",
+    596                "Ред.не дозволене",
+    597                "Ed.isn't allowed",
+    598                "Ред.не разрешено",
+    599              };
+    600          
+    601              const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    602              {
+    603                " Вых.за диапазон",
+    604                " Вих.за діапазон",
+    605                "  Out of Limits ",
+    606                "Вых.за диапазон "
+    607              };
+    608          
+    609              enum _edition_stats edition = current_state_menu2.edition;
+    610              make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    611            }
+    612            else
+    613            {
+    614              const uint8_t name_string[MAX_NAMBER_LANGUAGE][GROUP_ALARM_PICKUPS][MAX_COL_LCD + 1] = 
+    615              {
+    616                {
+    617                  "       ‰I       "
+    618                },
+    619                {
+    620                  "       ‰I       "
+    621                },
+    622                {
+    623                  "       ‰I       "
+    624                },
+    625                {
+    626                  "       ‰I       "
+    627                }
+    628              };
+    629              
+    630              int index_language = index_language_in_array(select_struct_settings_fix()->language);
+    631            
+    632              unsigned int position_temp = current_state_menu2.index_position;
+    633              //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    634              unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+    635            
+    636              unsigned int first_symbol;
+    637              uint32_t vaga, value;
+    638            
+    639              int32_t *p_set_pickup;
+    640              if (current_state_menu2.edition == ED_VIEWING) p_set_pickup = (((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings.pickup;
+    641              else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_set_pickup = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->pickup;
+    642              else p_set_pickup = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->pickup;
+    643              size_t col_begin, col_end, col_comma;
+    644            
+    645              for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    646              {
+    647                unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+    648                if (index_in_ekran_tmp < GROUP_ALARM_PICKUPS)
+    649                {
+    650                  if ((i & 0x1) == 0)
+    651                  {
+    652                    //У непарному номері рядку виводимо заголовок
+    653                    for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+    654                    first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
+    655          
+    656                    switch (index_in_ekran_tmp)
+    657                    {
+    658                    case GROUP_ALARM_SET_DELAY_DELAY:
+    659                      {
+    660                        vaga = 1000; //максимальний ваговий коефіцієнт
+    661                        col_begin = COL_PICKUP_GROUP_ALARM_DELTA_I_BEGIN;
+    662                        col_end = COL_PICKUP_GROUP_ALARM_DELTA_I_END;
+    663                        col_comma = COL_PICKUP_GROUP_ALARM_DELTA_I_COMMA;
+    664                      
+    665                        value = p_set_pickup[GROUP_ALARM_PICKUP_DELTA_I];
+    666                      
+    667                        break;
+    668                      }
+    669                    }
+    670                  }
+    671                  else
+    672                  {
+    673                    //У парному номері рядку виводимо значення
+    674                    for (size_t j = 0; j < MAX_COL_LCD; j++)
+    675                    {
+    676                      if (
+    677                          ((j < col_begin) ||  (j > col_end )) &&
+    678                          (j != (col_end + 2))
+    679                         )working_ekran[i][j] = ' ';
+    680                      else if (j == col_comma )working_ekran[i][j] = ',';
+    681                      else if (j == (col_end + 2)) working_ekran[i][j] = odynyci_vymirjuvannja[index_language][INDEX_A];
+    682                      else
+    683                        calc_symbol_and_put_into_working_ekran((working_ekran[i] + j), &value, &vaga, &first_symbol, j, col_comma, 0);
+    684                    }
+    685                  }
+    686                }
+    687                else
+    688                  for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    689          
+    690                index_in_ekran++;
+    691              }
+    692          
+    693              //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    694              current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    695          
+    696              if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
+    697              {
+    698                int last_position_cursor_x = MAX_COL_LCD;
+    699                switch (current_state_menu2.index_position)
+    700                {
+    701                case GROUP_ALARM_SET_DELAY_DELAY:
+    702                  {
+    703                    current_state_menu2.position_cursor_x = COL_PICKUP_GROUP_ALARM_DELTA_I_BEGIN;
+    704                    last_position_cursor_x = COL_PICKUP_GROUP_ALARM_DELTA_I_END;
+    705                    break;
+    706                  }
+    707                }
+    708          
+    709                //Підтягуємо курсор до першого символу
+    710                while (
+    711                       ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x + 1]) == ' ') && 
+    712                       (current_state_menu2.position_cursor_x < (last_position_cursor_x -1))
+    713                       )
+    714                {
+    715                  current_state_menu2.position_cursor_x++;
+    716                }
+    717          
+    718                //Курсор ставимо так, щоб він був перед числом
+    719                if (
+    720                    ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x]) != ' ') && 
+    721                    (current_state_menu2.position_cursor_x > 0)
+    722                   )
+    723                {
+    724                  current_state_menu2.position_cursor_x--;
+    725                }
+    726              }
+    727              //Курсор видимий
+    728              current_state_menu2.cursor_on = 1;
+    729              //Курсор не мигає
+    730              if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    731              else current_state_menu2.cursor_blinking_on = 1;
+    732            }
+    733            //Обновити повністю весь екран
+    734            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    735          }
+    736          /*****************************************************/
+    737          
+    738          /*****************************************************/
+    739          /*
+    740          Натискування Enter у вікні відображення уставок для ШГС
+    741          */
+    742          /*****************************************************/
+    743          enum _result_pressed_enter_during_edition press_enter_in_pickup_group_alarm(void)
+    744          {
+    745            enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+    746            switch (current_state_menu2.edition)
+    747            {
+    748            case ED_VIEWING:
+    749            case ED_CAN_BE_EDITED:
+    750              {
+    751                switch (current_state_menu2.index_position)
+    752                {
+    753                case GROUP_ALARM_PICKUP_DELTA_I:
+    754                  {
+    755                    current_state_menu2.position_cursor_x = COL_PICKUP_GROUP_ALARM_DELTA_I_BEGIN;
+    756                    break;
+    757                  }
+    758                }
+    759                break;
+    760              }
+    761            case ED_EDITION:
+    762              {
+    763                //Перевіряємо, чи дані рельно змінилися
+    764                result = RPEDE_DATA_NOT_CHANGED;
+    765                
+    766                int32_t *p_set_pickup_edit = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->pickup;
+    767                int32_t *p_set_pickup_cont = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->pickup;
+    768                switch (current_state_menu2.index_position)
+    769                {
+    770                case GROUP_ALARM_PICKUP_DELTA_I:
+    771                  {
+    772                    if (p_set_pickup_cont[GROUP_ALARM_PICKUP_DELTA_I] != p_set_pickup_edit[GROUP_ALARM_PICKUP_DELTA_I]) 
+    773                    {
+    774                      if (check_data_setpoint(p_set_pickup_edit[GROUP_ALARM_PICKUP_DELTA_I], PICKUP_ALARM_DELTA_I_MIN, PICKUP_ALARM_DELTA_I_MAX) == 1)
+    775                      {
+    776                        p_set_pickup_cont[GROUP_ALARM_PICKUP_DELTA_I] = p_set_pickup_edit[GROUP_ALARM_PICKUP_DELTA_I];
+    777                        config_settings_modified |= MASKA_CHANGED_SETTINGS;
+    778                        result = RPEDE_DATA_CHANGED_OK;
+    779                      }
+    780                      else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+    781                    }
+    782          
+    783                    break;
+    784                  }
+    785                }
+    786          
+    787                break;
+    788              }
+    789            }
+    790            
+    791            return result;
+    792          }
+    793          /*****************************************************/
+    794          
+    795          /*****************************************************/
+    796          /*
+    797          Натискування ESC у вікні уставок для ШГС
+    798          */
+    799          /*****************************************************/
+    800          void press_esc_in_pickup_group_alarm(void)
+    801          {
+    802            int32_t *p_set_pickup_edit = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->pickup;
+    803            int32_t *p_set_pickup_cont = (((__settings_for_GROUP_ALARM*)sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->pickup;
+    804          
+    805            int index = current_state_menu2.index_position;
+    806            p_set_pickup_edit[index] = p_set_pickup_cont[index];
+    807          }
+    808          /*****************************************************/
+    809          
+    810          /*****************************************************/
+    811          //Зміна налаштувань уставок для ШГС
+    812          /*****************************************************
+    813          Вхідні параметри
+    814          (1 << BIT_KEY_DOWN) - натснуто кнопку вниз
+    815          (1 << BIT_KEY_UP)   - атиснуто кнопку вверх
+    816          (1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+    817          (1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+    818          
+    819          Вхідні параметри
+    820            Немає
+    821          *****************************************************/
+    822          void change_pickup_group_alarm(unsigned int action)
+    823          {
+    824            //Вводимо число у відповідне поле
+    825            if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
+    826            {
+    827              int32_t *p_value = (((__settings_for_GROUP_ALARM*)sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->pickup;
+    828              unsigned int col_end, col_comma;
+    829              switch (current_state_menu2.index_position)
+    830              {
+    831              case GROUP_ALARM_PICKUP_DELTA_I:
+    832                {
+    833                  col_end = COL_PICKUP_GROUP_ALARM_DELTA_I_END;
+    834                  col_comma = COL_PICKUP_GROUP_ALARM_DELTA_I_COMMA;
+    835                  break;
+    836                }
+    837              }
+    838              
+    839              intptr_t index = current_state_menu2.index_position;
+    840              p_value[index] = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0), p_value[index], 1, col_comma, col_end, 1);
+    841            }
+    842            else if (
+    843                     ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+    844                     ((action & (1 << BIT_KEY_RIGHT)) != 0)
+    845                    )   
+    846            {
+    847              int col_begin, col_end, col_comma;
+    848              switch (current_state_menu2.index_position)
+    849              {
+    850              case GROUP_ALARM_PICKUP_DELTA_I:
+    851                {
+    852                  col_begin = COL_PICKUP_GROUP_ALARM_DELTA_I_BEGIN;
+    853                  col_end = COL_PICKUP_GROUP_ALARM_DELTA_I_END;
+    854                  col_comma = COL_PICKUP_GROUP_ALARM_DELTA_I_COMMA;
+    855                  break;
+    856                }
+    857              }
+    858              
+    859              if (action & (1 << BIT_KEY_LEFT ))
+    860              {
+    861                current_state_menu2.position_cursor_x--;
+    862                if (current_state_menu2.position_cursor_x == col_comma )current_state_menu2.position_cursor_x--;
+    863                if ((current_state_menu2.position_cursor_x < col_begin) ||
+    864                    (current_state_menu2.position_cursor_x > col_end))
+    865                  current_state_menu2.position_cursor_x = col_end;
+    866              }
+    867              else
+    868              {
+    869                current_state_menu2.position_cursor_x++;
+    870                if (current_state_menu2.position_cursor_x == col_comma )current_state_menu2.position_cursor_x++;
+    871                if ((current_state_menu2.position_cursor_x < col_begin) ||
+    872                    (current_state_menu2.position_cursor_x > col_end))
+    873                  current_state_menu2.position_cursor_x = col_begin;
+    874              }
+    875              
+    876            }
+    877          }
+    878          /*****************************************************/
+    879          
+    880          /*****************************************************/
+    881          //
+    882          /*****************************************************/
+    883          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      16   change_control_group_alarm
+      32   change_delay_group_alarm
+        32   -> edit_setpoint
+      32   change_pickup_group_alarm
+        32   -> edit_setpoint
+     648   make_ekran_control_group_alarm
+       648   -> __aeabi_memcpy4
+       648   -> calc_int_symbol_and_put_into_working_ekran
+       648   -> index_language_in_array
+       648   -> make_ekran_about_info
+       648   -> max_number_digit_in_number
+       648   -> select_struct_settings_fix
+     272   make_ekran_delay_group_alarm
+       272   -> __aeabi_memcpy4
+       272   -> calc_symbol_and_put_into_working_ekran
+       272   -> index_language_in_array
+       272   -> make_ekran_about_info
+       272   -> select_struct_settings_fix
+     272   make_ekran_pickup_group_alarm
+       272   -> __aeabi_memcpy4
+       272   -> calc_symbol_and_put_into_working_ekran
+       272   -> index_language_in_array
+       272   -> make_ekran_about_info
+       272   -> select_struct_settings_fix
+       4   press_enter_in_control_group_alarm
+      16   press_enter_in_delay_group_alarm
+        16   -> check_data_setpoint
+      16   press_enter_in_pickup_group_alarm
+        16   -> check_data_setpoint
+       0   press_esc_in_control_group_alarm
+       0   press_esc_in_delay_group_alarm
+       0   press_esc_in_pickup_group_alarm
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable10
+       4  ??DataTable10_1
+       4  ??DataTable10_2
+       4  ??DataTable10_3
+       4  ??DataTable10_4
+       4  ??DataTable11
+       4  ??DataTable11_1
+       4  ??DataTable11_10
+       4  ??DataTable11_11
+       4  ??DataTable11_12
+       4  ??DataTable11_13
+       4  ??DataTable11_14
+       4  ??DataTable11_15
+       4  ??DataTable11_2
+       4  ??DataTable11_3
+       4  ??DataTable11_4
+       4  ??DataTable11_5
+       4  ??DataTable11_6
+       4  ??DataTable11_7
+       4  ??DataTable11_8
+       4  ??DataTable11_9
+       4  ??DataTable9
+      32  ?_0
+      16  ?_1
+      68  ?_10
+      68  ?_11
+      68  ?_12
+      68  ?_2
+      68  ?_3
+     204  ?_4
+     136  ?_5
+      68  ?_6
+      68  ?_7
+      68  ?_8
+      68  ?_9
+     154  change_control_group_alarm
+     268  change_delay_group_alarm
+     224  change_pickup_group_alarm
+     768  make_ekran_control_group_alarm
+     698  make_ekran_delay_group_alarm
+     632  make_ekran_pickup_group_alarm
+     124  press_enter_in_control_group_alarm
+     156  press_enter_in_delay_group_alarm
+     132  press_enter_in_pickup_group_alarm
+      42  press_esc_in_control_group_alarm
+      54  press_esc_in_delay_group_alarm
+      40  press_esc_in_pickup_group_alarm
+
+ 
+ 1 000 bytes in section .rodata
+ 3 380 bytes in section .text
+ 
+ 3 380 bytes of CODE  memory
+ 1 000 bytes of CONST memory
+
+Errors: none
+Warnings: none

@@ -1,0 +1,140 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:58
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_registrators.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_registrators.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\menu_registrators.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\menu_registrators.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\menu_registrators.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          //Формуємо екран відображення заголовків реєстраторів
+      5          /*****************************************************/
+      6          void make_ekran_list_registrators(void)
+      7          {
+      8            const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_REGISTRATORS_M2][MAX_COL_LCD + 1] = 
+      9            {
+     10              {
+     11                " Журнал событий ",
+     12                " Архив диагност."
+     13              },
+     14              {
+     15                " Журнал подій   ",
+     16                " Архів діагност."
+     17              },
+     18              {
+     19                " Event Log      ",
+     20                " Diagn.Archive  "
+     21              },
+     22              {
+     23                " Журнал событий ",
+     24                " Архив диагност."
+     25              }
+     26            };
+     27          
+     28            int index_language = index_language_in_array(settings_fix_prt.language);
+     29            
+     30            unsigned int position_temp = current_state_menu2.index_position;
+     31            unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+     32            
+     33            //Копіюємо  рядки у робочий екран
+     34            for (size_t i = 0; i < MAX_ROW_LCD; i++)
+     35            {
+     36              //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
+     37              if (index_in_ekran < MAX_ROW_LIST_REGISTRATORS_M2)
+     38                for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran][j];
+     39              else
+     40                for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+     41          
+     42              index_in_ekran++;
+     43            }
+     44          
+     45            //Курсор по горизонталі відображається на першій позиції
+     46            current_state_menu2.position_cursor_x = 0;
+     47            //Відображення курору по вертикалі
+     48            current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+     49            //Курсор видимий
+     50            current_state_menu2.cursor_on = 1;
+     51            //Курсор не мигає
+     52            current_state_menu2.cursor_blinking_on = 0;
+     53            //Обновити повністю весь екран
+     54            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+     55          }
+     56          /*****************************************************/
+     57          
+     58          /*****************************************************/
+     59          //
+     60          /*****************************************************/
+     61          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+     152   make_ekran_list_registrators
+       152   -> __aeabi_memcpy4
+       152   -> index_language_in_array
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+     136  ?_0
+     156  make_ekran_list_registrators
+
+ 
+ 136 bytes in section .rodata
+ 156 bytes in section .text
+ 
+ 156 bytes of CODE  memory
+ 136 bytes of CONST memory
+
+Errors: none
+Warnings: none

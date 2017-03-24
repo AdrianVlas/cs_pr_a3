@@ -1,0 +1,736 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:56
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_configuration.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_configuration.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX
+#        -D USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\menu_configuration.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\menu_configuration.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\menu_configuration.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          //Формуємо екран конфігурації
+      5          /*****************************************************/
+      6          void make_ekran_configuration(void)
+      7          {
+      8            if (
+      9                (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+     10                (current_state_menu2.edition == ED_WARNING_ENTER_ESC) ||
+     11                (current_state_menu2.edition == ED_WARNING_ENTER)
+     12               )   
+     13                  
+     14            {
+     15              const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+     16              {
+     17                "Ред.не разрешено",
+     18                "Ред.не дозволене",
+     19                "Ed.isn't allowed",
+     20                "Ред.не разрешено",
+     21              };
+     22              
+     23              const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+     24              {
+     25                " Дин.пам.недост.",
+     26                " Дин.пам.недост.",
+     27                " Дин.пам.недост.",
+     28                " Дин.пам.недост."
+     29              };
+     30              
+     31              const uint8_t information_about_out_of_range[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+     32              {
+     33                " Вых.за диапазон",
+     34                " Вих.за діапазон",
+     35                "  Out of Limits ",
+     36                "Вых.за диапазон "
+     37              };
+     38              
+     39              const uint8_t (*p_information)[MAX_COL_LCD + 1];
+     40              
+     41              enum _edition_stats edition = current_state_menu2.edition;
+     42              if (edition == ED_WARNING_EDITION_BUSY) p_information = information_about_info;
+     43              else if (edition == ED_WARNING_ENTER_ESC) p_information = information_about_out_of_range;
+     44              else p_information = information_about_error;
+     45              make_ekran_about_info( ((edition == ED_WARNING_ENTER_ESC) ? true : false), p_information);
+     46            }
+     47            else 
+     48            {
+     49              const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGURATION][MAX_COL_LCD + 1] = 
+     50              {
+     51                {
+     52                  "      СЗС       ",
+     53                  "      ШГС       ",
+     54                  "       И        ",
+     55                  "      ИЛИ       ",
+     56                  "    Искл.ИЛИ    ",
+     57                  "       НЕ       ",
+     58                  "   МФ-Таймер    ",
+     59                  "   D-Триггер    ",
+     60                  "      ГПС       "
+     61                },
+     62                {
+     63                  "      СЗС       ",
+     64                  "      ШГС       ",
+     65                  "       І        ",
+     66                  "      АБО       ",
+     67                  "    Викл.АБО    ",
+     68                  "       НЕ       ",
+     69                  "   БФ-Таймер    ",
+     70                  "    D-Триґер    ",
+     71                  "      ГПС       "
+     72                },
+     73                {
+     74                  "      СЗС       ",
+     75                  "      ШГС       ",
+     76                  "      AND       ",
+     77                  "       OR       ",
+     78                  "      XOR       ",
+     79                  "      NOT       ",
+     80                  "    MF-Timer    ",
+     81                  "   D-Trigger    ",
+     82                  "      PSG       "
+     83                },
+     84                {
+     85                  "      СЗС       ",
+     86                  "      ШГС       ",
+     87                  "       И        ",
+     88                  "      ИЛИ       ",
+     89                  "    Искл.ИЛИ    ",
+     90                  "       НЕ       ",
+     91                  "   МФ-Таймер    ",
+     92                  "   D-Триггер    ",
+     93                  "      ГПС       "
+     94                }
+     95              };
+     96              int index_language = index_language_in_array(select_struct_settings_fix()->language);
+     97          
+     98              unsigned int position_temp = current_state_menu2.index_position;
+     99              //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    100              unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+    101          
+    102              unsigned int first_symbol;
+    103              uint32_t vaga, value;
+    104            
+    105              __CONFIG *p_current_config;
+    106              if (current_state_menu2.edition == ED_VIEWING) p_current_config = &current_config_prt;
+    107              else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_current_config = &current_config;
+    108              else p_current_config = &current_config_edit;
+    109              size_t col_begin, col_end;
+    110            
+    111              for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    112              {
+    113                unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+    114                if (index_in_ekran_tmp < MAX_ROW_FOR_CONFIGURATION)
+    115                {
+    116                  if ((i & 0x1) == 0)
+    117                  {
+    118                    //У непарному номері рядку виводимо заголовок
+    119                    for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+    120                    first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
+    121          
+    122                    switch (index_in_ekran_tmp)
+    123                    {
+    124                    case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    125                      {
+    126                        vaga = 100; //максимальний ваговий коефіцієнт
+    127                        col_begin = COL_CONF_3DIGIT_BEGIN;
+    128                        col_end = COL_CONF_3DIGIT_END;
+    129          
+    130                        value = p_current_config->n_alarm;
+    131          
+    132                        break;
+    133                      }
+    134                    case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    135                      {
+    136                        unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES - 1);
+    137                        vaga = 1; //максимальний ваговий коефіцієнт
+    138                        for (unsigned int j = 0; j < (max_number_digit - 1); j++) vaga *= 10;
+    139                        col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
+    140                        col_end = col_begin + max_number_digit - 1;
+    141          
+    142                        value = p_current_config->n_group_alarm;
+    143          
+    144                        break;
+    145                      }
+    146                    case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+    147                      {
+    148                        vaga = 100; //максимальний ваговий коефіцієнт
+    149                        col_begin = COL_CONF_3DIGIT_BEGIN;
+    150                        col_end = COL_CONF_3DIGIT_END;
+    151          
+    152                        value = p_current_config->n_and;
+    153          
+    154                        break;
+    155                      }
+    156                    case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+    157                      {
+    158                        vaga = 100; //максимальний ваговий коефіцієнт
+    159                        col_begin = COL_CONF_3DIGIT_BEGIN;
+    160                        col_end = COL_CONF_3DIGIT_END;
+    161          
+    162                        value = p_current_config->n_or;
+    163          
+    164                        break;
+    165                      }
+    166                    case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+    167                      {
+    168                        vaga = 100; //максимальний ваговий коефіцієнт
+    169                        col_begin = COL_CONF_3DIGIT_BEGIN;
+    170                        col_end = COL_CONF_3DIGIT_END;
+    171          
+    172                        value = p_current_config->n_xor;
+    173          
+    174                        break;
+    175                      }
+    176                    case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+    177                      {
+    178                        vaga = 100; //максимальний ваговий коефіцієнт
+    179                        col_begin = COL_CONF_3DIGIT_BEGIN;
+    180                        col_end = COL_CONF_3DIGIT_END;
+    181          
+    182                        value = p_current_config->n_not;
+    183          
+    184                        break;
+    185                      }
+    186                    case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+    187                      {
+    188                        vaga = 100; //максимальний ваговий коефіцієнт
+    189                        col_begin = COL_CONF_3DIGIT_BEGIN;
+    190                        col_end = COL_CONF_3DIGIT_END;
+    191          
+    192                        value = p_current_config->n_timer;
+    193          
+    194                        break;
+    195                      }
+    196                    case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+    197                      {
+    198                        vaga = 100; //максимальний ваговий коефіцієнт
+    199                        col_begin = COL_CONF_3DIGIT_BEGIN;
+    200                        col_end = COL_CONF_3DIGIT_END;
+    201          
+    202                        value = p_current_config->n_trigger;
+    203          
+    204                        break;
+    205                      }
+    206                    case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+    207                      {
+    208                        vaga = 100; //максимальний ваговий коефіцієнт
+    209                        col_begin = COL_CONF_3DIGIT_BEGIN;
+    210                        col_end = COL_CONF_3DIGIT_END;
+    211          
+    212                        value = p_current_config->n_meander;
+    213          
+    214                        break;
+    215                      }
+    216                    default:
+    217                      {
+    218                        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+    219                        total_error_sw_fixed(77);
+    220                      }
+    221                    }
+    222                  }
+    223                  else
+    224                  {
+    225                    for (size_t j = 0; j < MAX_COL_LCD; j++)
+    226                    {
+    227                      if ((j < col_begin) || (j > col_end )) working_ekran[i][j] = ' ';
+    228                      else calc_int_symbol_and_put_into_working_ekran((working_ekran[i] + j), &value, &vaga, &first_symbol);
+    229                    }
+    230                  }
+    231                }
+    232                else
+    233                  for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    234          
+    235                index_in_ekran++;
+    236              }
+    237          
+    238              //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням
+    239              current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    240              //Курсор по горизонталі відображається на першому символі у випадку, коли ми не в режимі редагування, інакше позиція буде визначена користувачем
+    241              if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
+    242              {
+    243                int last_position_cursor_x = MAX_COL_LCD;
+    244                switch (current_state_menu2.index_position)
+    245                {
+    246                case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    247                case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+    248                case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+    249                case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+    250                case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+    251                case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+    252                case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+    253                case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+    254                  {
+    255                    current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
+    256                    last_position_cursor_x = COL_CONF_3DIGIT_END;
+    257                    break;
+    258                  }
+    259                case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    260                  {
+    261                    unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES - 1);
+    262                    col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
+    263                    col_end = col_begin + max_number_digit - 1;
+    264          
+    265                    current_state_menu2.position_cursor_x = col_begin;
+    266                    last_position_cursor_x = col_end;
+    267                    break;
+    268                  }
+    269                default:
+    270                  {
+    271                    //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+    272                    total_error_sw_fixed(82);
+    273                  }
+    274                }
+    275          
+    276                //Підтягуємо курсор до першого символу
+    277                while (
+    278                       ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x + 1]) == ' ') && 
+    279                       (current_state_menu2.position_cursor_x < (last_position_cursor_x - 1))
+    280                      )
+    281                {
+    282                  current_state_menu2.position_cursor_x++;
+    283                }
+    284              
+    285                //Курсор ставимо так, щоб він був перед числом
+    286                if (
+    287                    ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x]) != ' ') && 
+    288                    (current_state_menu2.position_cursor_x > 0)
+    289                   )
+    290                {
+    291                  current_state_menu2.position_cursor_x--;
+    292                }
+    293              }
+    294              //Курсор видимий
+    295              current_state_menu2.cursor_on = 1;
+    296              //Курсор мигає/не мигає
+    297              if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    298              else current_state_menu2.cursor_blinking_on = 1;
+    299            }
+    300            
+    301            //Обновити повністю весь екран
+    302            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    303          }
+    304          /*****************************************************/
+    305          
+    306          /*****************************************************/
+    307          /*
+    308          Натискування Enter у вікні Конфігурації
+    309          */
+    310          /*****************************************************/
+    311          enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
+    312          {
+    313            enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+    314            switch (current_state_menu2.edition)
+    315            {
+    316            case ED_VIEWING:
+    317            case ED_CAN_BE_EDITED:
+    318              {
+    319                switch (current_state_menu2.index_position)
+    320                {
+    321                case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    322                case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+    323                case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+    324                case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+    325                case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+    326                case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+    327                case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+    328                case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+    329                  {
+    330                    current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
+    331                    break;
+    332                  }
+    333                case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    334                  {
+    335                    unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES - 1);
+    336                    int col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
+    337          
+    338                    current_state_menu2.position_cursor_x = col_begin;
+    339                    break;
+    340                  }
+    341                }
+    342                break;
+    343              }
+    344            case ED_EDITION:
+    345              {
+    346                //Перевіряємо, чи дані рельно змінилися
+    347                result = RPEDE_DATA_NOT_CHANGED;
+    348                switch (current_state_menu2.index_position)
+    349                {
+    350                case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    351                  {
+    352                    if (current_config_edit.n_alarm != current_config.n_alarm) result = RPEDE_DATA_CHANGED_OK;
+    353                    break;
+    354                  }
+    355                case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    356                  {
+    357                    if (current_config_edit.n_group_alarm != current_config.n_group_alarm) 
+    358                    {
+    359                      if (check_data_setpoint(current_config_edit.n_group_alarm, 0, (NUMBER_ANALOG_CANALES - 1)) == 1)
+    360                        result = RPEDE_DATA_CHANGED_OK;
+    361                      else
+    362                        result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+    363                    }
+    364                    break;
+    365                  }
+    366                case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+    367                  {
+    368                    if (current_config_edit.n_and != current_config.n_and) result = RPEDE_DATA_CHANGED_OK;
+    369                    break;
+    370                  }
+    371                case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+    372                  {
+    373                    if (current_config_edit.n_or != current_config.n_or) result = RPEDE_DATA_CHANGED_OK;
+    374                    break;
+    375                  }
+    376                case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+    377                  {
+    378                    if (current_config_edit.n_xor != current_config.n_xor) result = RPEDE_DATA_CHANGED_OK;
+    379                    break;
+    380                  }
+    381                case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+    382                  {
+    383                    if (current_config_edit.n_not != current_config.n_not) result = RPEDE_DATA_CHANGED_OK;
+    384                    break;
+    385                  }
+    386                case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+    387                  {
+    388                    if (current_config_edit.n_timer != current_config.n_timer) result = RPEDE_DATA_CHANGED_OK;
+    389                    break;
+    390                  }
+    391                case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+    392                  {
+    393                    if (current_config_edit.n_trigger != current_config.n_trigger) result = RPEDE_DATA_CHANGED_OK;
+    394                    break;
+    395                  }
+    396                case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+    397                  {
+    398                    if (current_config_edit.n_meander != current_config.n_meander) result = RPEDE_DATA_CHANGED_OK;
+    399                    break;
+    400                  }
+    401                }
+    402                
+    403                if (result == RPEDE_DATA_CHANGED_OK)
+    404                {
+    405                  //Треба виконати дії по зміні конфігурації
+    406                  __result_dym_mem_select result_1 = action_after_changing_of_configuration();
+    407                  if (result_1 == DYN_MEM_SELECT_OK) config_settings_modified |= MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS;
+    408                  else
+    409                  {
+    410                  
+    411                    result = (result_1 == DYN_MEM_NO_ENOUGH_MEM) ? RPEDE_DATA_CHANGED_WRONG_RETURN_OK : RPEDE_DATA_CHANGED_WRONG_RETURN_BAD;
+    412                    
+    413                    if (result == RPEDE_DATA_CHANGED_WRONG_RETURN_BAD) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+    414                  }
+    415                }
+    416          
+    417                break;
+    418              }
+    419            }
+    420            
+    421            return result;
+    422          }
+    423          /*****************************************************/
+    424          
+    425          /*****************************************************/
+    426          /*
+    427          Натискування ESC у вікні Конфігурації
+    428          */
+    429          /*****************************************************/
+    430          void press_esc_in_configuration(void)
+    431          {
+    432            switch (current_state_menu2.index_position)
+    433            {
+    434            case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    435              {
+    436                current_config_edit.n_alarm = current_config.n_alarm;
+    437                break;
+    438              }
+    439            case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    440              {
+    441                current_config_edit.n_group_alarm = current_config.n_group_alarm;
+    442                break;
+    443              }
+    444            case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+    445              {
+    446                current_config_edit.n_and = current_config.n_and;
+    447                break;
+    448              }
+    449            case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+    450              {
+    451                current_config_edit.n_or = current_config.n_or;
+    452                break;
+    453              }
+    454            case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+    455              {
+    456                current_config_edit.n_xor = current_config.n_xor;
+    457                break;
+    458              }
+    459            case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+    460              {
+    461                current_config_edit.n_not = current_config.n_not;
+    462                break;
+    463              }
+    464            case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+    465              {
+    466                current_config_edit.n_timer = current_config.n_timer;
+    467                break;
+    468              }
+    469            case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+    470              {
+    471                current_config_edit.n_trigger = current_config.n_trigger;
+    472                break;
+    473              }
+    474            case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+    475              {
+    476                current_config_edit.n_meander = current_config.n_meander;
+    477                break;
+    478              }
+    479            }
+    480          }
+    481          /*****************************************************/
+    482          
+    483          /*****************************************************/
+    484          //Зміна Конфігурації
+    485          /*****************************************************
+    486          Вхідні параметри
+    487          (1 << BIT_KEY_DOWN) - натснуто кнопку вниз
+    488          (1 << BIT_KEY_UP)   - атиснуто кнопку вверх
+    489          (1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+    490          (1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+    491          
+    492          Вхідні параметри
+    493            Немає
+    494          *****************************************************/
+    495          void change_configuration(unsigned int action)
+    496          {
+    497            //Вводимо число у відповідне поле
+    498            if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
+    499            {
+    500              uint32_t *p_value = NULL;
+    501              unsigned int col_end;
+    502              switch (current_state_menu2.index_position)
+    503              {
+    504              case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    505                {
+    506                  p_value = &current_config_edit.n_alarm;
+    507                  col_end = COL_CONF_3DIGIT_END;
+    508                  break;
+    509                }
+    510              case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    511                {
+    512                  p_value = &current_config_edit.n_group_alarm;
+    513                  unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES - 1);
+    514                  col_end = ((MAX_COL_LCD + max_number_digit) >> 1) - 1;/*після спрощення цього виразу ((MAX_COL_LCD - max_number_digit) >> 1) + max_number_digit - 1*/
+    515                  break;
+    516                }
+    517              case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+    518                {
+    519                  p_value = &current_config_edit.n_and;
+    520                  col_end = COL_CONF_3DIGIT_END;
+    521                  break;
+    522                }
+    523              case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+    524                {
+    525                  p_value = &current_config_edit.n_or;
+    526                  col_end = COL_CONF_3DIGIT_END;
+    527                  break;
+    528                }
+    529              case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+    530                {
+    531                  p_value = &current_config_edit.n_xor;
+    532                  col_end = COL_CONF_3DIGIT_END;
+    533                  break;
+    534                }
+    535              case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+    536                {
+    537                  p_value = &current_config_edit.n_not;
+    538                  col_end = COL_CONF_3DIGIT_END;
+    539                  break;
+    540                }
+    541              case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+    542                {
+    543                  p_value = &current_config_edit.n_timer;
+    544                  col_end = COL_CONF_3DIGIT_END;
+    545                  break;
+    546                }
+    547              case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+    548                {
+    549                  p_value = &current_config_edit.n_trigger;
+    550                  col_end = COL_CONF_3DIGIT_END;
+    551                  break;
+    552                }
+    553              case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+    554                {
+    555                  p_value = &current_config_edit.n_meander;
+    556                  col_end = COL_CONF_3DIGIT_END;
+    557                  break;
+    558                }
+    559              }
+    560              
+    561              if (p_value != NULL)
+    562              {
+    563                *p_value = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0), *p_value, 0, 0, col_end, 1);
+    564              }
+    565            }
+    566            else if (
+    567                     ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+    568                     ((action & (1 << BIT_KEY_RIGHT)) != 0)
+    569                    )   
+    570            {
+    571              int col_begin, col_end;
+    572              switch (current_state_menu2.index_position)
+    573              {
+    574              case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    575              case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
+    576              case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
+    577              case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
+    578              case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
+    579              case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
+    580              case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
+    581              case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+    582                {
+    583                  col_begin = COL_CONF_3DIGIT_BEGIN;
+    584                  col_end = COL_CONF_3DIGIT_END;
+    585                  break;
+    586                }
+    587              case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
+    588                {
+    589                  unsigned int max_number_digit = max_number_digit_in_number(NUMBER_ANALOG_CANALES - 1);
+    590                  col_begin = (MAX_COL_LCD - max_number_digit) >> 1;
+    591                  col_end = col_begin + max_number_digit - 1;
+    592                  break;
+    593                }
+    594              }
+    595              
+    596              if (action & (1 << BIT_KEY_LEFT ))
+    597              {
+    598                current_state_menu2.position_cursor_x--;
+    599                if ((current_state_menu2.position_cursor_x < col_begin) ||
+    600                    (current_state_menu2.position_cursor_x > col_end))
+    601                  current_state_menu2.position_cursor_x = col_end;
+    602              }
+    603              else
+    604              {
+    605                current_state_menu2.position_cursor_x++;
+    606                if ((current_state_menu2.position_cursor_x < col_begin) ||
+    607                    (current_state_menu2.position_cursor_x > col_end))
+    608                  current_state_menu2.position_cursor_x = col_begin;
+    609              }
+    610              
+    611            }
+    612          }
+    613          /*****************************************************/
+    614          
+    615          /*****************************************************/
+    616          //
+    617          /*****************************************************/
+    618          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      24   change_configuration
+        24   -> edit_setpoint
+        24   -> max_number_digit_in_number
+     872   make_ekran_configuration
+       872   -> __aeabi_memcpy4
+       872   -> calc_int_symbol_and_put_into_working_ekran
+       872   -> index_language_in_array
+       872   -> make_ekran_about_info
+       872   -> max_number_digit_in_number
+       872   -> select_struct_settings_fix
+       872   -> total_error_sw_fixed
+       8   press_enter_in_configuration
+         8   -> action_after_changing_of_configuration
+         8   -> check_data_setpoint
+         8   -> max_number_digit_in_number
+       0   press_esc_in_configuration
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable3
+       4  ??DataTable3_1
+       4  ??DataTable3_10
+       4  ??DataTable3_11
+       4  ??DataTable3_12
+       4  ??DataTable3_13
+       4  ??DataTable3_14
+       4  ??DataTable3_15
+       4  ??DataTable3_16
+       4  ??DataTable3_17
+       4  ??DataTable3_18
+       4  ??DataTable3_19
+       4  ??DataTable3_2
+       4  ??DataTable3_3
+       4  ??DataTable3_4
+       4  ??DataTable3_5
+       4  ??DataTable3_6
+       4  ??DataTable3_7
+       4  ??DataTable3_8
+       4  ??DataTable3_9
+      68  ?_0
+      68  ?_1
+      68  ?_2
+     612  ?_3
+     310  change_configuration
+     900  make_ekran_configuration
+     366  press_enter_in_configuration
+     126  press_esc_in_configuration
+
+ 
+   816 bytes in section .rodata
+ 1 782 bytes in section .text
+ 
+ 1 782 bytes of CODE  memory
+   816 bytes of CONST memory
+
+Errors: none
+Warnings: none

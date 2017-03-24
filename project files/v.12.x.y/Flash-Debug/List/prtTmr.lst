@@ -1,0 +1,753 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:59
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\v_A_shm\prtTmr.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\v_A_shm\prtTmr.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" -lB
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\prtTmr.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\prtTmr.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\prtTmr.c
+      1          
+      2          #include "prtTmr.h"
+      3          const unsigned char uCh_MAX_Amt_1_MS_TMR  = 200;
+      4          
+      5          
+      6          
+      7          char chGlSem;
+      8          //==================================================================================
+      9          //---            Main file for service prt Timers     -----------
+     10          //==================================================================================
+     11          //..................................................................................
+     12          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+     13          //~~~  
+     14          //~~~  
+     15          //~~~  
+     16          //~~~  
+     17          //~~~  
+     18          //~~~  
+     19          //~~~  
+     20          //~~~  
+     21          //,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+     22          short  sh1MsRegisteredTimers;
+     23          TmrNode *pHeadTmrNode = (TmrNode*)0; //Pointer on Firsst
+     24          TmrNode *pTailTmrNode = (TmrNode*)0;
+     25          TmrNode *PCurrNode    = (TmrNode*)0;
+     26          
+     27          void  TmrCalls(void){
+     28             
+     29              register TmrNode *pNode;
+     30              register long i;
+     31              register long lRegTmr = sh1MsRegisteredTimers;
+     32          
+     33              //Check Semafor Here
+     34              if (chGlSem == 0 && lRegTmr > 0){//Skip change Value
+     35                  pNode = pHeadTmrNode;
+     36                  do{
+     37                      //Look In Program
+     38                      i = pNode->lTmrVal;
+     39                      if (i)
+     40                          pNode->lTmrVal = --i;
+     41                      i = (long) pNode->next;
+     42                      if (i == 0)
+     43                          lRegTmr = 1; //Break
+     44                      else {
+     45                          pNode = (void*) i;
+     46                      }
+     47          
+     48                  }while (--lRegTmr);
+     49              }
+     50          //counter for 1ms Timers
+     51          //Pointer on Firsst
+     52          
+     53          //counter for 2ms Timers
+     54          //Pointer on Firsst
+     55          
+     56          //counter for 5ms Timers
+     57          //Pointer on Firsst
+     58          
+     59          //counter for 10 ms Timers
+     60          //Pointer on Firsst
+     61          }
+     62          
+     63          //counter for 50 ms Timers
+     64          //Pointer on Firsst
+     65          
+     66          //counter for 100 ms Timers
+     67          //Pointer on Firsst
+     68          
+     69          //Adding an item to the end of the list
+     70          long TallingList(TmrNode *pNode) {
+     71              register TmrNode *pCurrent;
+     72              //long i;
+     73              //volatile long lRegListNumber;
+     74              if ((sh1MsRegisteredTimers+1)> uCh_MAX_Amt_1_MS_TMR)
+     75                  return 0;
+     76              if (sh1MsRegisteredTimers++) {//
+     77                  pCurrent = pTailTmrNode;
+     78                  pCurrent-> next = (void*)pNode;
+     79                  pNode-> next = (void*) 0;
+     80                  pTailTmrNode = pNode;
+     81              } else {//First Insert
+     82                  //?if (pHeadTmrNode == pTailTmrNode == ((void *)0))
+     83                  pHeadTmrNode = pTailTmrNode = pNode;
+     84                  pNode->next  = (void *)0;
+     85                  sh1MsRegisteredTimers++;
+     86              }
+     87              return sh1MsRegisteredTimers;
+     88          }
+     89          //Adding an item to the beginning of the list (pushing to the list)
+     90          long PushTmrNode(TmrNode *pNode){
+     91          
+     92              if ((sh1MsRegisteredTimers+1)> uCh_MAX_Amt_1_MS_TMR)
+     93                  return 0;
+     94              if (sh1MsRegisteredTimers) {//
+     95                  pNode-> next = (void*)pHeadTmrNode;
+     96                  pHeadTmrNode = pNode;
+     97                  sh1MsRegisteredTimers++;
+     98              } else {//First Insert
+     99                  //?if (pHeadTmrNode == pTailTmrNode == ((void *)0))
+    100                  pHeadTmrNode = pTailTmrNode = pNode;
+    101                  pNode->next  = (void *)0;
+    102                  sh1MsRegisteredTimers++;
+    103              }
+    104              return sh1MsRegisteredTimers;
+    105          }
+    106          //Adding an item to the special position of the list (cutting to the list)
+    107          long IncreaseTmrList(TmrNode *pNode,long lPos){
+    108              register TmrNode *pCurrent;
+    109              void *pv;
+    110          
+    111              if ((sh1MsRegisteredTimers+1)< uCh_MAX_Amt_1_MS_TMR && lPos< sh1MsRegisteredTimers) {
+    112                  pCurrent = pHeadTmrNode;
+    113                  while (pCurrent->next != ((void *) 0) && lPos--) {
+    114                      pCurrent = (TmrNode*) pCurrent->next;
+    115                  }
+    116                  if ((lPos == 0) && pCurrent) {
+    117                      pv = (void*) pCurrent->next;
+    118                      pCurrent->next = (void*) pNode;
+    119                      pNode->next = pv;
+    120                      return ++sh1MsRegisteredTimers;
+    121                  }
+    122              }
+    123              return 0;
+    124          }
+    125          //Removing the first item (popping from the list)
+    126          long PopTmrNode(TmrNode *pNode) {
+    127              register TmrNode *pCurrent;
+    128              register long i;
+    129              if (sh1MsRegisteredTimers) {
+    130                  i = 0;
+    131                  pCurrent = pHeadTmrNode;
+    132                  if (pCurrent == pNode) {
+    133                      //Delete 1-st Element
+    134                      pHeadTmrNode = pCurrent->next;
+    135                      sh1MsRegisteredTimers--;
+    136                      return 1; //Registered Number
+    137                  }
+    138                  while (i < sh1MsRegisteredTimers) {
+    139                      if (pCurrent->next == (void*)pNode) {
+    140                          pCurrent->next = pNode->next;
+    141                          sh1MsRegisteredTimers--;
+    142                          return i; //Registered Number
+    143                      }
+    144                      i++;
+    145                  }
+    146              }
+    147              return 0;
+    148          }
+    149          /*
+    150          //Removing the last item of the list
+    151          long CuttingList(TmrNode *pNode){
+    152           
+    153              return 0;
+    154          }
+    155          //Removing a specific item
+    156          long DecreaseTmrList(TmrNode *pNode,long lPos){
+    157          
+    158              return 0;
+    159          }
+    160          */
+    161          #include "Ereg.h"
+    162          char chGbl__DIN1_DIN5__RD_VAL;
+    163          char chGbl__DIN6_DIN12__RD_VAL;
+    164          char chGbl__LedColumns__RW_VAL;
+    165          char chGbl_REL_1_6__ROWS_A_D__RW_VAL;
+    166          char chGbl__REL_1_6__RD_VAL;
+    167          char chGbl__REL7_REL14__RW_VAL;
+    168          char chGbl__REL7_REL14__RD_VAL;
+    169          
+    170          
+    171          
+    172          
+    173          UI32Bit DiHrdStateUI32Bit;//, DiHrdStateUI32Bit
+    174          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    175          //---
+    176          extern void RdHrdIn(void*pv);
+    177          //..................................................................................
+    178          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    179          //~~~     функция считывания состояния дискретных входов                       ~~~~~
+    180          //~~~     p_out_param должен указывать на область памяти 4 байта              ~~~~~
+    181          //~~~     возврат 3 - команда выполнена успешно                               ~~~~~
+    182          //~~~                                                                         ~~~~~
+    183          //~~~     Положение бит                                                       ~~~~~
+    184          //~~~     MSB ...LSB                                                          ~~~~~
+    185          //~~~     ДВ16  ДВ0                                                           ~~~~~
+    186          //,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    187          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    188          ////////////////////////////////////////////////////////////////////////////////////
+    189          void RdHrdIn(void *pv){
+    190              register long i,j;
+    191              register void *pvRlc;
+    192              //reinterpret_cast<void*>(NOR_PSRAM_BANK2);
+    193              pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_READ_DIN01__05<<1));
+    194              //((char*)pvRlc) += ;//
+    195              i = *((char*)pvRlc);//0-5 bits
+    196              i&= 0x1f;
+    197              ((UI32Bit*) pv)->ar_uch[0] = (char)i;
+    198              pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO__REL_1_6<<1));
+    199              i = *((short*)pvRlc);//9-15 bits
+    200              j = i & 600;
+    201              j >>= 3; 
+    202              ((UI32Bit*) pv)->ar_uch[0] |= (char)j;//6,7 - 9-10
+    203              ((UI32Bit*) pv)->ar_uch[1] = (i >> 3);//8-12
+    204              pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_READ_DIN06__12<<1));
+    205              i = *((char*)pvRlc);//13-17 5bit
+    206              j = i & 0x7;
+    207              ((UI32Bit*) pv)->ar_uch[1] |= (j<<5);
+    208              ((UI32Bit*) pv)->ar_uch[2] = i>>3;
+    209              pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO_REL7_REL14<<1));
+    210              i = *((short*)pvRlc);
+    211              j = i>>14;
+    212              ((UI32Bit*) pv)->ar_uch[2] |= (j<<2);
+    213          /*
+    214          sLV.pLAdr4 = reinterpret_cast<char*>( NOR_PSRAM_BANK2);
+    215          sLV.pLAdr4 += ADR_READ_DIN06__12<<1;
+    216          sLV.chVal = *(sLV.pLAdr3);
+    217          */
+    218          
+    219          
+    220             
+    221          }
+    222          UI32Bit DoStateUI32Bit;
+    223          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    224          //---
+    225          extern void SetHrdOut(void*pv);
+    226          //..................................................................................
+    227          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    228          //~~~     функция записи состояния дискретных входов                       ~~~~~
+    229          //~~~     p_out_param должен указывать на область памяти 4 байта              ~~~~~
+    230          //~~~     возврат 3 - команда выполнена успешно                               ~~~~~
+    231          //~~~                                                                         ~~~~~
+    232          //~~~     Положение бит                                                       ~~~~~
+    233          //~~~     MSB ...LSB                                                          ~~~~~
+    234          //~~~     ДВ16  ДВ0                                                           ~~~~~
+    235          //,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    236          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    237          //////////////////////////////////////////////////////////////////////////////////////////
+    238          void SetHrdOut(void*pv){
+    239              register long i,j;
+    240              register void *pvRlc;
+    241              i = ((UI32Bit*) pv)->ar_uch[0]; 
+    242              j = i&1;
+    243              
+    244              pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_WRITE_RDO__REL_1_6__ROWS_A__D<<1));
+    245              *((char*)pvRlc) = j;//???
+    246              pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO_REL7_REL14<<1));
+    247              i = ((UI32Bit*) pv)->ar_uch[0]; 
+    248              j = i>>1;
+    249              j &= 0x3f;
+    250              *((char*)pvRlc) = j;
+    251          
+    252              
+    253          }
+    254          #include "HlDefs.h"
+    255          enum LED_AUX_PARTS_OP { 
+    256          
+    257          LED_AUX_OP_INIT  = 0,  
+    258          LED_AUX_OP_SET   ,  
+    259          LED_AUX_OP_CLR   ,
+    260          LED_AUX_OP_EXIT  ,
+    261          TOTAL_LED_AUX_OP = LED_AUX_OP_EXIT + 1
+    262          };
+    263          const char chNumIndependentParts = TOTAL_LED_AUX_OP;
+    264          fnPLpvrL arrFnPtr[TOTAL_LED_AUX_OP] = {
+    265          LedAuxOp1,
+    266          LedAuxOp2,
+    267          LedAuxOp3,
+    268          LedAuxOp4
+    269          };
+    270          static long lGlbOperationReflector = 0;
+    271          char chCounterLedService = TOTAL_LED_AUX_OP;
+    272          UI32Bit LedStateUI32Bit,LedRawStateUI32Bit;
+    273          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    274          //---
+    275          extern void SetHrdLed(void*pv);
+    276          //..................................................................................
+    277          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    278          //~~~     функция записи состояния дискретных входов                       ~~~~~
+    279          //~~~     p_out_param должен указывать на область памяти 4 байта              ~~~~~
+    280          //~~~     возврат 3 - команда выполнена успешно                               ~~~~~
+    281          //~~~                                                                         ~~~~~
+    282          //~~~     Положение бит                                                       ~~~~~
+    283          //~~~     MSB ...LSB                                                          ~~~~~
+    284          //~~~     ДВ16  ДВ0                                                           ~~~~~
+    285          //,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    286          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    287          //////////////////////////////////////////////////////////////////////////////////////////
+    288          void SetHrdLed(void*pv){
+                                     ^
+Remark[Pe826]: parameter "pv" was never referenced
+    289          register long i,j;
+                                 ^
+Warning[Pe550]: variable "j" was set but never used
+    290           //   register void *pvRlc;
+    291              fnPLpvrL CurrAuxfunc; // 
+    292              volatile long lAuxVar = 0;
+    293              //volatile LedRegCode lcsLedRegCode;
+    294              i = chCounterLedService + 1;
+    295              if (i >= chNumIndependentParts){
+    296                  i = chCounterLedService = 0;
+    297                  lGlbOperationReflector = 0;
+    298                  LedRawStateUI32Bit.ul_val = LedStateUI32Bit.ul_val;
+    299              } else{
+    300                  chCounterLedService = i;
+    301              }
+    302          
+    303              i = chCounterLedService;
+    304              CurrAuxfunc = arrFnPtr[i];
+    305              j = CurrAuxfunc(i, (void*) &LedRawStateUI32Bit.ul_val);
+    306          
+    307          }
+    308          
+    309          
+    310          
+    311          
+    312          
+    313          
+    314          
+    315          
+    316          
+    317          const char CH_AMOUNT_DI = 19;
+    318          char arTimerDi[19] = {
+    319          0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    320          };
+    321          DICfgSuit sDiCfg;
+    322          
+    323          
+    324          
+    325          static long lCtr = 0; //char chTestStateIn = 1;char chOut;
+    326          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    327          //---
+    328          extern void UpdateStateDI (void);
+    329          //..................................................................................
+    330          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    331          //~~~     функция анализа состояния дискретных входов                       ~~~~~
+    332          //~~~     p_out_param должен указывать на область памяти 4 байта              ~~~~~
+    333          //~~~     возврат 3 - команда выполнена успешно                               ~~~~~
+    334          //~~~                                                                         ~~~~~
+    335          //~~~     Положение бит                                                       ~~~~~
+    336          //~~~     MSB ...LSB                                                          ~~~~~
+    337          //~~~     ДВ16  ДВ0                                                           ~~~~~
+    338          //,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    339          //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    340          //////////////////////////////////////////////////////////////////////////////////////////
+    341          void UpdateStateDI (void){
+    342              register long i, j;
+    343              register unsigned long ulrVal;
+    344              //register char *pCh;
+    345              register DICfgSuit *pDICfgSuit;
+    346              volatile char arChReferenceIdx[] = {
+    347              0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18    };//7, 15, 0, 0};
+    348              volatile long arU32Tst[] = {0, 0, 0, 0};
+    349              pDICfgSuit = &sDiCfg;
+    350              sDiCfg.pDITmr = arTimerDi;
+    351              pDICfgSuit->DiHrdStateUI32Bit.ul_val = DiHrdStateUI32Bit.ul_val;
+    352              for (i = 0; i < CH_AMOUNT_DI; i++){
+    353                  //Check Type Signal
+    354                  if (pDICfgSuit->DiTypeSignal.ul_val & (1 << i)){
+    355                      //Alternate Current
+    356                      j = pDICfgSuit->DiHrdStateUI32Bit.ul_val & (1 << i);
+    357                      if (j == 0)
+    358                        pDICfgSuit->DiAND.ul_val &= ~(1 << i);//pCh[OFF_BYTE_AND] &= ~(1 << i);
+    359          
+    360                      //pCh[OFF_BYTE_OR] |= pCh[OFF_BYTE_PIN] & (1 << i);
+    361                      pDICfgSuit->DiOR.ul_val |= pDICfgSuit->DiHrdStateUI32Bit.ul_val & (1 << i);
+    362                      j = lCtr;
+    363                      j++;
+    364                      if (j > 12)
+    365                      {
+    366                          lCtr = 0; //pCh[OFF_BYTE_DI_timer0+i];
+    367                          //Check 1
+    368                          //j = (pCh[OFF_BYTE_AND] & (1 << i));
+    369                          j = (pDICfgSuit->DiAND.ul_val & (1 << i));
+    370                          if ((j == 0) && (pDICfgSuit->DiOR.ul_val & (1 << i))){//Stable 1
+    371                              pDICfgSuit->DiStartUP.ul_val |= (1 << i);//pCh[OFF_BYTE_DI_StartUP] |= (1 << i);
+    372                          }else{
+    373                              pDICfgSuit->DiStartUP.ul_val &= ~(1 << i);
+    374                              arU32Tst[0] = pDICfgSuit->DiAND.ul_val;//pCh[OFF_BYTE_AND];
+    375                              arU32Tst[1] = pDICfgSuit->DiOR.ul_val;//pCh[OFF_BYTE_OR];
+    376                          }
+    377                          ulrVal = (pDICfgSuit->DiStartUP.ul_val & (1 << i));
+    378                          j = (pDICfgSuit->DiState.ul_val & (1 << i));
+    379                          ulrVal ^= j;
+    380                          if (ulrVal){
+    381                              ulrVal = pDICfgSuit->pDITmr[i];
+    382                              ulrVal++;
+    383                              j = arChReferenceIdx[i];
+    384                              //j = pprotect_cfg_tbl->ushDurationDI[j] + 1;
+    385                              j = pDICfgSuit->arChDurationDI[j] + 1;
+    386                              if (ulrVal > (unsigned)j){
+    387                                  pDICfgSuit->pDITmr[i] = 0;//pCh[OFF_BYTE_DI_timer0 + i] = 0;
+    388                                  //pCh[OFF_BYTE_DI_State] &= ~(1 << i);
+    389                                  //pCh[OFF_BYTE_DI_State] |= pCh[OFF_BYTE_DI_StartUP] & (1 << i);
+    390                                  pDICfgSuit->DiState.ul_val &= ~(1 << i);
+    391                                  pDICfgSuit->DiState.ul_val |= pDICfgSuit->DiStartUP.ul_val & (1 << i);
+    392                              }else
+    393                                  pDICfgSuit->pDITmr[i] =  ulrVal;//pCh[OFF_BYTE_DI_timer0 + i] = ulrVal;
+    394                          }else
+    395                              pDICfgSuit->pDITmr[i] = 0;//pCh[OFF_BYTE_DI_timer0 + i] = 0;
+    396                          pDICfgSuit->DiAND.ul_val |= (1 << i);//pCh[OFF_BYTE_AND] |= (1 << i);
+    397                          pDICfgSuit->DiOR.ul_val &= ~(1 << i);//pCh[OFF_BYTE_OR] &= ~(1 << i); //Now 2 Bits
+    398                      }
+    399                      else
+    400                          lCtr = j;
+    401                  }
+    402                  else
+    403                  {
+    404                      //Direct Current
+    405                      //ulrVal = (pCh[OFF_BYTE_DI_StartUP] & (1 << i)) ^ (pCh[OFF_BYTE_PIN] & (1 << i));
+    406                      ulrVal = (pDICfgSuit->DiStartUP.ul_val & (1 << i)) 
+    407                      ^ (pDICfgSuit->DiHrdStateUI32Bit.ul_val & (1 << i));
+    408                      if (ulrVal){
+    409                          //Set Di
+    410                          //j = pCh[OFF_BYTE_PIN] & (1 << i);
+    411                          //pCh[OFF_BYTE_DI_StartUP] &= ~(1 << i);
+    412                          //pCh[OFF_BYTE_DI_StartUP] |= j;
+    413                          //pCh[OFF_BYTE_AND] |= (1 << i);
+    414                          //pCh[OFF_BYTE_OR] &= ~(1 << i); //Now 2 Bits
+    415                          //pCh[OFF_BYTE_DI_timer0 + i] = 0;
+    416                          j = pDICfgSuit->DiHrdStateUI32Bit.ul_val & (1 << i);
+    417                          pDICfgSuit->DiStartUP.ul_val &= ~(1 << i);
+    418                          pDICfgSuit->DiStartUP.ul_val |= j;
+    419                          pDICfgSuit->DiAND.ul_val |= (1 << i);
+    420                          pDICfgSuit->DiOR.ul_val &= ~(1 << i);
+    421                          pDICfgSuit->pDITmr[i] = 0;
+    422                      }
+    423                      //if ((pCh[OFF_BYTE_DI_StartUP] & (1 << i)) == (pCh[OFF_BYTE_PIN] & (1 << i)))
+    424                      if ((pDICfgSuit->DiStartUP.ul_val & (1 << i)) 
+    425                      == (pDICfgSuit->DiHrdStateUI32Bit.ul_val & (1 << i))){
+    426                          //j = pCh[OFF_BYTE_PIN] & (1 << i);
+    427                          j = pDICfgSuit->DiHrdStateUI32Bit.ul_val & (1 << i);
+    428                          if (j == 0)
+    429                              //pCh[OFF_BYTE_AND] &= ~(1 << i); //Clr Bit
+    430                              pDICfgSuit->DiAND.ul_val &= ~(1 << i); //Clr Bit
+    431                          else
+    432                              //pCh[OFF_BYTE_OR] |= pCh[OFF_BYTE_PIN] & (1 << i);
+    433                              pDICfgSuit->DiOR.ul_val |= pDICfgSuit->DiHrdStateUI32Bit.ul_val & (1 << i);
+    434                          //j = pCh[OFF_BYTE_DI_timer0 + i];
+    435                          j = pDICfgSuit->pDITmr[i];
+    436                          j++;
+    437                          ulrVal = arChReferenceIdx[i];
+    438                          //if (j < pprotect_cfg_tbl->ushDurationDI[ulrVal]){
+    439                          if (j < pDICfgSuit->arChDurationDI[ulrVal]){
+    440                              //pCh[OFF_BYTE_DI_timer0 + i] = j;
+    441                              pDICfgSuit->pDITmr[i] = j;
+    442                          }
+    443                          else
+    444                          {
+    445                              //if ((pCh[OFF_BYTE_AND] & (1 << i)) == (pCh[OFF_BYTE_OR] & (1 << i))) //Stable 1
+    446                              if ((pDICfgSuit->DiAND.ul_val & (1 << i)) == (pDICfgSuit->DiOR.ul_val & (1 << i))) //Stable 1
+    447                              {
+    448                                  //Check Time
+    449                                  //pCh[OFF_BYTE_DI_State] &= ~(1 << i);
+    450                                  //pCh[OFF_BYTE_DI_State] |= pCh[OFF_BYTE_DI_StartUP] & (1 << i);
+    451                                  pDICfgSuit->DiState.ul_val &= ~(1 << i);
+    452                                  pDICfgSuit->DiState.ul_val |= pDICfgSuit->DiStartUP.ul_val & (1 << i);
+    453                                  //Check Inversion
+    454                                  //Put Result
+    455                              }
+    456                              else
+    457                              {
+    458                                  //reset
+    459                                  //pCh[OFF_BYTE_DI_StartUP] &= ~(1 << i);
+    460                                  //pCh[OFF_BYTE_DI_StartUP] |= pCh[OFF_BYTE_DI_State] & (1 << i);
+    461                                  //pCh[OFF_BYTE_AND] |= (1 << i);
+    462                                  //pCh[OFF_BYTE_OR] &= ~(1 << i); //Now 2 Bits
+    463                                  //pCh[OFF_BYTE_DI_timer0 + i] = 0;
+    464                                  j = pDICfgSuit->DiHrdStateUI32Bit.ul_val & (1 << i);
+    465                                  pDICfgSuit->DiStartUP.ul_val &= ~(1 << i);
+    466                                  pDICfgSuit->DiStartUP.ul_val |= j;
+    467                                  pDICfgSuit->DiAND.ul_val |= (1 << i);
+    468                                  pDICfgSuit->DiOR.ul_val &= ~(1 << i);
+    469                                  pDICfgSuit->pDITmr[i] = 0;
+    470                              }
+    471                          }
+    472                      }
+    473                  }
+    474              }
+    475          }
+    476          
+    477          long LedAuxOp1(long l,void *pv){
+    478              register long i,j;
+    479              register void *pvRlc;
+    480              i = lGlbOperationReflector;
+    481              i |= 1<<l;
+    482              lGlbOperationReflector = i;
+    483              //*((char*)pv) = i;
+    484          
+    485              pvRlc = (void *) (((long) NOR_PSRAM_BANK2) + (ADR_WRITE_RDO__REL_1_6__ROWS_A__D << 1));
+    486              *((char *) pvRlc) = chGbl_REL_1_6__ROWS_A_D__RW_VAL | (1<<HL_RA);
+    487              pvRlc = (void *) (((long) NOR_PSRAM_BANK2) + (ADR_WRITE_RI_COLUMNS01__06 << 1));
+    488              chGbl__LedColumns__RW_VAL = 0xff;
+    489              *((char *) pvRlc) = chGbl__LedColumns__RW_VAL;
+    490              //Select Led
+    491              for (i = 0; i < TOTAL_LEDS; i++) {
+    492                  if (((UI32Bit *) pv)->ul_val & (1 << i)) { //Set bit
+    493                      j = HLSelectorTable[i].row;
+    494                      if (j == HL_RA) {
+    495                          j = HLSelectorTable[i].column;
+    496                          chGbl__LedColumns__RW_VAL &= ~(1 << j);
+    497                      }
+    498                  }
+    499              }
+    500              *((char *) pvRlc) = chGbl__LedColumns__RW_VAL;
+    501          return i;
+    502          }
+    503          long LedAuxOp2(long l,void *pv){
+    504              register long i,j;
+    505              register void *pvRlc;
+    506              i = lGlbOperationReflector;
+    507              i |= 1 << l;
+    508              lGlbOperationReflector = i;
+    509              //*((char*)pv) = i;
+    510              pvRlc = (void *) (((long) NOR_PSRAM_BANK2) + (ADR_WRITE_RDO__REL_1_6__ROWS_A__D << 1));
+    511              *((char *) pvRlc) = chGbl_REL_1_6__ROWS_A_D__RW_VAL | (1<<HL_RB);
+    512              pvRlc = (void *) (((long) NOR_PSRAM_BANK2) + (ADR_WRITE_RI_COLUMNS01__06 << 1));
+    513              chGbl__LedColumns__RW_VAL = 0xff;
+    514              *((char *) pvRlc) = chGbl__LedColumns__RW_VAL;
+    515              //Select Led
+    516              for (i = 0; i < TOTAL_LEDS; i++) {
+    517                  if (((UI32Bit *) pv)->ul_val & (1 << i)) { //Set bit
+    518                      j = HLSelectorTable[i].row;
+    519                      if (j == HL_RB) {
+    520                          j = HLSelectorTable[i].column;
+    521                          chGbl__LedColumns__RW_VAL &= ~(1 << j);
+    522                      }
+    523                  }
+    524              }
+    525              *((char *) pvRlc) = chGbl__LedColumns__RW_VAL;
+    526          return i;
+    527          }
+    528          long LedAuxOp3(long l,void *pv){
+    529              register long i,j;
+    530              register void *pvRlc;
+    531              i = lGlbOperationReflector;
+    532              i |= 1 << l;
+    533              lGlbOperationReflector = i;
+    534              //*((char*)pv) = i;
+    535              pvRlc = (void *) (((long) NOR_PSRAM_BANK2) + (ADR_WRITE_RDO__REL_1_6__ROWS_A__D << 1));
+    536              *((char *) pvRlc) = chGbl_REL_1_6__ROWS_A_D__RW_VAL | (1 << HL_RC);
+    537              pvRlc = (void *) (((long) NOR_PSRAM_BANK2) + (ADR_WRITE_RI_COLUMNS01__06 << 1));
+    538              chGbl__LedColumns__RW_VAL = 0xff;
+    539              *((char *) pvRlc) = chGbl__LedColumns__RW_VAL;
+    540              //Select Led
+    541              for (i = 0; i < TOTAL_LEDS; i++) {
+    542                  if (((UI32Bit *) pv)->ul_val & (1 << i)) { //Set bit
+    543                      j = HLSelectorTable[i].row;
+    544                      if (j == HL_RC) {
+    545                          j = HLSelectorTable[i].column;
+    546                          chGbl__LedColumns__RW_VAL &= ~(1 << j);
+    547                      }
+    548                  }
+    549              }
+    550              *((char *) pvRlc) = chGbl__LedColumns__RW_VAL;
+    551          return i;
+    552          }
+    553          long LedAuxOp4(long l,void *pv){
+    554              register long i,j;
+    555              register void *pvRlc;
+    556              i = lGlbOperationReflector;
+    557              i |= 1 << l;
+    558              lGlbOperationReflector = i;
+    559              //*((char*)pv) = i;
+    560              pvRlc = (void *) (((long) NOR_PSRAM_BANK2) + (ADR_WRITE_RDO__REL_1_6__ROWS_A__D << 1));
+    561              *((char *) pvRlc) = chGbl_REL_1_6__ROWS_A_D__RW_VAL | (1 << HL_RD);
+    562              pvRlc = (void *) (((long) NOR_PSRAM_BANK2) + (ADR_WRITE_RI_COLUMNS01__06 << 1));
+    563              chGbl__LedColumns__RW_VAL = 0xff;
+    564              *((char *) pvRlc) = chGbl__LedColumns__RW_VAL;
+    565              //Select Led
+    566              for (i = 0; i < TOTAL_LEDS; i++) {
+    567                  if (((UI32Bit *) pv)->ul_val & (1 << i)) { //Set bit
+    568                      j = HLSelectorTable[i].row;
+    569                      if (j == HL_RD) {
+    570                          j = HLSelectorTable[i].column;
+    571                          chGbl__LedColumns__RW_VAL &= ~(1 << j);
+    572                      }
+    573                  }
+    574              }
+    575              *((char *) pvRlc) = chGbl__LedColumns__RW_VAL;
+    576          return i;
+    577          }
+    578          long LedAuxOp5(long l,void *pv){
+    579              register long i;
+    580          	register void *pvRlc;
+                 	               ^
+Warning[Pe177]: variable "pvRlc" was declared but never referenced
+    581                  i = lGlbOperationReflector;
+    582              i |= 1<<l;
+    583              lGlbOperationReflector = i;
+    584              *((char*)pv) = i;
+    585          return i;
+    586          }
+    587          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   IncreaseTmrList
+      12   LedAuxOp1
+      12   LedAuxOp2
+      12   LedAuxOp3
+      12   LedAuxOp4
+       0   LedAuxOp5
+       4   PopTmrNode
+       0   PushTmrNode
+       4   RdHrdIn
+      24   SetHrdLed
+        24   -- Indirect call
+       4   SetHrdOut
+       4   TallingList
+       0   TmrCalls
+      56   UpdateStateDI
+        56   -> __aeabi_memclr4
+        56   -> __aeabi_memcpy4
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable13
+       4  ??DataTable13_1
+       4  ??DataTable13_10
+       4  ??DataTable13_11
+       4  ??DataTable13_12
+       4  ??DataTable13_13
+       4  ??DataTable13_14
+       4  ??DataTable13_15
+       4  ??DataTable13_16
+       4  ??DataTable13_17
+       4  ??DataTable13_18
+       4  ??DataTable13_19
+       4  ??DataTable13_2
+       4  ??DataTable13_20
+       4  ??DataTable13_21
+       4  ??DataTable13_3
+       4  ??DataTable13_4
+       4  ??DataTable13_5
+       4  ??DataTable13_6
+       4  ??DataTable13_7
+       4  ??DataTable13_8
+       4  ??DataTable13_9
+      20  ?_0
+      16  ?_1
+       1  CH_AMOUNT_DI
+       4  DiHrdStateUI32Bit
+       4  DoStateUI32Bit
+      80  HLSelectorTable
+     108  IncreaseTmrList
+     126  LedAuxOp1
+     126  LedAuxOp2
+     126  LedAuxOp3
+     126  LedAuxOp4
+      22  LedAuxOp5
+       4  LedRawStateUI32Bit
+       4  LedStateUI32Bit
+       4  PCurrNode
+     108  PopTmrNode
+     114  PushTmrNode
+     104  RdHrdIn
+     102  SetHrdLed
+      44  SetHrdOut
+     120  TallingList
+      66  TmrCalls
+     574  UpdateStateDI
+      20  arTimerDi
+      16  arrFnPtr
+       1  chCounterLedService
+       1  chGbl_REL_1_6__ROWS_A_D__RW_VAL
+       1  chGbl__DIN1_DIN5__RD_VAL
+       1  chGbl__DIN6_DIN12__RD_VAL
+       1  chGbl__LedColumns__RW_VAL
+       1  chGbl__REL7_REL14__RD_VAL
+       1  chGbl__REL7_REL14__RW_VAL
+       1  chGbl__REL_1_6__RD_VAL
+       1  chGlSem
+       1  chNumIndependentParts
+       4  lCtr
+       4  lGlbOperationReflector
+       4  pHeadTmrNode
+       4  pTailTmrNode
+      48  sDiCfg
+       2  sh1MsRegisteredTimers
+       1  uCh_MAX_Amt_1_MS_TMR
+
+ 
+   114 bytes in section .bss
+    17 bytes in section .data
+   119 bytes in section .rodata
+ 1 954 bytes in section .text
+ 
+ 1 954 bytes of CODE  memory
+   119 bytes of CONST memory
+   131 bytes of DATA  memory
+
+Errors: none
+Warnings: 2

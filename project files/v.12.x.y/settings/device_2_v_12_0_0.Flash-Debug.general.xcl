@@ -1,0 +1,13 @@
+"G:\PRG\IAR7_50_2\arm\bin\armproc.dll" 
+
+"G:\PRG\IAR7_50_2\arm\bin\armjlink2.dll" 
+
+"G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project files\v.12.x.y\Flash-Debug\Exe\device_2_v_10_0_0.out" 
+
+--plugin "G:\PRG\IAR7_50_2\arm\bin\armbat.dll" 
+
+--device_macro "G:\PRG\IAR7_50_2\arm\config\debugger\ST\STM32F2xx.dmac" 
+
+
+
+

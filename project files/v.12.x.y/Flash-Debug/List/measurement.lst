@@ -1,0 +1,740 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:56
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\measurement.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\measurement.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\measurement.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\measurement.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\measurement.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          //Управління читанням даних з АЦП
+      5          /*****************************************************/
+      6          void control_reading_ADCs(void)
+      7          {
+      8            //Обновляємо робоче командне слово і вибираємо які канали треба оцифровувати
+      9            if (adc_DATA_VAL_read != 0)
+     10            {
+     11              adc_DATA_VAL_read = false;
+     12              status_adc_read_work |= DATA_VAL_READ;
+     13                
+     14              command_word_adc |= READ_DATA_VAL;
+     15            }
+     16            if (adc_TEST_VAL_read != 0) 
+     17            {
+     18              adc_TEST_VAL_read = false;
+     19              status_adc_read_work |= TEST_VAL_READ;
+     20                
+     21              command_word_adc |= READ_TEST_VAL;
+     22            }
+     23            
+     24            unsigned int command_word_adc_diff = command_word_adc ^ command_word_adc_work;
+     25            if (command_word_adc_diff != 0)
+     26            {
+     27              /*
+     28              Є канали, які чекають на оцифровку
+     29              */
+     30              while ((command_word_adc_diff & (1 << active_index_command_word_adc)) == 0)
+     31              {
+     32                /*
+     33                Ще не знайдено каналу, який треба оцифровувати
+     34                */
+     35                active_index_command_word_adc = (active_index_command_word_adc + 1) % NUMBER_INPUTs_ADCs;
+     36              }
+     37                
+     38              /*
+     39              Зараз active_index_command_word_adc вказує у масиві input_adc на канал, 
+     40              який треба оцифрувати
+     41              */
+     42                
+     43          //    /*
+     44          //    Визначаємо, який зараз активний АЦП
+     45          //    */
+     46          //    unsigned int active_adc_old = ((GPIO_SELECT_ADC->ODR & GPIO_SELECTPin_ADC) == 0) ? 1 : 2;
+     47          //
+     48              /*
+     49              Визначаємо, який зараз треба активовувати АЦП і які дані треба передати
+     50              */
+     51          //    unsigned int active_adc_new = input_adc[active_index_command_word_adc][0];
+     52              unsigned int command_word = input_adc[active_index_command_word_adc][1];
+     53              
+     54              //Визначаємо наступний стан
+     55              if (
+     56                  (state_reading_ADCs == STATE_READING_ADCs_NONE) ||
+     57                  (state_reading_ADCs == STATE_READING_READ     )
+     58                 )
+     59              {
+     60                state_reading_ADCs = STATE_READING_WRITE;
+     61          //      /*
+     62          //      Вибирваємо відповідний АЦП
+     63          //      */
+     64          //      switch (active_adc_new)
+     65          //      {
+     66          //      case 1:
+     67          //        {
+     68          //          //АЦП1
+     69          //          GPIO_SELECT_ADC->BSRRH = GPIO_SELECTPin_ADC;
+     70          //          break;
+     71          //        }
+     72          //      default:
+     73          //        {
+     74          //          //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+     75          //          total_error_sw_fixed(50);
+     76          //        } 
+     77          //      }
+     78              }
+     79              else
+     80              {
+     81          //      if (active_adc_old == active_adc_new)
+     82          //      {
+     83                  state_reading_ADCs = STATE_READING_WRITE_READ;
+     84          //      }
+     85          //      else
+     86          //      {
+     87          //        state_reading_ADCs = STATE_READING_READ;
+     88          //        command_word = 0;
+     89          //      }
+     90              }
+     91              
+     92              if (command_word != 0)
+     93              {
+     94                /*
+     95                Помічаємо, що зараз будемо нове командне слово передавати
+     96                */
+     97                command_word_adc_work |= (1 << active_index_command_word_adc);
+     98              }
+     99          
+    100              //Передаємо командне слово
+    101              while ((SPI_ADC->SR & SPI_I2S_FLAG_TXE) == RESET);      //Очікуємо, поки SPI стане вільним
+    102              GPIO_SPI_ADC->BSRRH = GPIO_NSSPin_ADC;                  //Виставляємо chip_select
+    103              SPI_ADC->DR = (uint16_t)command_word;                   //Відправляємо командне число
+    104            }
+    105            else 
+    106            {
+    107              if (
+    108                  (state_reading_ADCs == STATE_READING_READ     ) ||
+    109                  (state_reading_ADCs == STATE_READING_ADCs_NONE)
+    110                 )
+    111              {
+    112                //Усі канали вже оцифровані
+    113                state_reading_ADCs = STATE_READING_ADCs_NONE;
+    114          
+    115                command_word_adc = 0;
+    116                command_word_adc_work = 0;
+    117                active_index_command_word_adc = 0;
+    118              }
+    119              else
+    120              {
+    121                /*
+    122                Треба ще отримати значення з останнього каналуна, який зараз тільки
+    123                щоно оцифровувався
+    124                */
+    125                state_reading_ADCs = STATE_READING_READ;
+    126                while ((SPI_ADC->SR & SPI_I2S_FLAG_TXE) == RESET);      //Очікуємо, поки SPI стане вільним
+    127                GPIO_SPI_ADC->BSRRH = GPIO_NSSPin_ADC;                  //Виставляємо chip_select
+    128                SPI_ADC->DR = 0;                                        //Відправляємо число (але так, щоб нове контрольне слово не записувалося)
+    129              }
+    130            }
+    131          }
+    132          /*****************************************************/
+    133          
+    134          /*************************************************************************
+    135          Опрацьовуємо інтеграільні величини
+    136           *************************************************************************/
+    137          void operate_test_ADCs(void)
+    138          {
+    139            /*******************************************************
+    140            Вираховування середнього значення контрольних точок
+    141            *******************************************************/
+    142            unsigned int temp;
+    143          
+    144            //GND для АЦП
+    145            unsigned int gnd_tmp = 0;
+    146            for (unsigned int i = 0; i < NUMBER_GND_ADC; i++)
+    147            {
+    148              temp = output_adc[index_GND_ADC[i]].value;
+    149              gnd_adc_averange_sum[i] += temp;
+    150              gnd_adc_averange_sum[i] -= gnd_adc_moment_value[i][index_array_of_one_value];
+    151              gnd_adc_moment_value[i][index_array_of_one_value] = temp;
+    152              gnd_tmp += gnd_adc_averange[i] = gnd_adc_averange_sum[i] >> VAGA_NUMBER_POINT;
+    153              if (temp > 0xA1) _SET_BIT(set_diagnostyka, ERROR_GND_ADC_TEST_COARSE_BIT);
+    154              else _SET_BIT(clear_diagnostyka, ERROR_GND_ADC_TEST_COARSE_BIT);
+    155            }
+    156            gnd_adc = gnd_tmp / NUMBER_GND_ADC;
+    157            
+    158            //VREF для АЦП
+    159            temp = output_adc[C_VREF_ADC].value;
+    160            vref_adc_averange_sum += temp;
+    161            vref_adc_averange_sum -= vref_adc_moment_value[index_array_of_one_value];
+    162            vref_adc_moment_value[index_array_of_one_value] = temp;
+    163            vref_adc = vref_adc_averange_sum >> VAGA_NUMBER_POINT;
+    164            if ((temp < 0x614) || (temp > 0x9EB)) _SET_BIT(set_diagnostyka, ERROR_VREF_ADC_TEST_COARSE_BIT);
+    165            else _SET_BIT(clear_diagnostyka, ERROR_VREF_ADC_TEST_COARSE_BIT);
+    166            
+    167            //VDD для АЦП
+    168            temp = output_adc[C_VDD_ADC].value; 
+    169            vdd_adc_averange_sum += temp;
+    170            vdd_adc_averange_sum -= vdd_adc_moment_value[index_array_of_one_value];
+    171            vdd_adc_moment_value[index_array_of_one_value] = temp;
+    172            vdd_adc = vdd_adc_averange_sum >> VAGA_NUMBER_POINT;
+    173            if ((temp <0x6F2) || (temp > 0xD48)) _SET_BIT(set_diagnostyka, ERROR_VDD_ADC_TEST_COARSE_BIT);
+    174            else _SET_BIT(clear_diagnostyka, ERROR_VDD_ADC_TEST_COARSE_BIT);
+    175          
+    176            //Всі масиви одної величини ми вже опрацювали  
+    177            if((++index_array_of_one_value) == NUMBER_POINT)
+    178              index_array_of_one_value = 0;
+    179            else if (index_array_of_one_value > NUMBER_POINT)
+    180            {
+    181              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+    182              total_error_sw_fixed(21);
+    183            }
+    184            /*******************************************************/
+    185          }
+    186          /*************************************************************************/
+    187          
+    188          /*************************************************************************
+    189          Опрацьовуємо дані для методу суми квадратів миттєвих значень
+    190           *************************************************************************/
+    191          void method_sum_sqr_data(void)
+    192          {
+    193            uint32_t index_array_of_sqr_current_data_tmp = index_array_of_sqr_current_data;
+    194            for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++)
+    195            {
+    196              int32_t data = ADCs_data[i];
+    197              uint32_t square_data = data*data;
+    198              
+    199              sum_sqr_data_irq[i] += square_data;
+    200              sum_sqr_data_irq[i] -= sqr_current_data[index_array_of_sqr_current_data_tmp][i];
+    201              sqr_current_data[index_array_of_sqr_current_data_tmp][i] = square_data;
+    202            }
+    203              
+    204            if((++index_array_of_sqr_current_data_tmp) == NUMBER_POINT)
+    205              index_array_of_sqr_current_data = 0;
+    206            else if (index_array_of_sqr_current_data_tmp > NUMBER_POINT)
+    207            {
+    208              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+    209              total_error_sw_fixed(58);
+    210            }
+    211          
+    212            //Копіювання для інших систем
+    213            unsigned int bank_sum_sqr_data_tmp = bank_sum_sqr_data;
+    214            for(unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++ ) sum_sqr_data[bank_sum_sqr_data_tmp][i] = sum_sqr_data_irq[i];
+    215          }
+    216          /*************************************************************************/
+    217          
+    218          /*****************************************************/
+    219          //Переривання від прийнятого байту по канаду SPI, який обслуговує вимірювальну систему
+    220          /*****************************************************/
+    221          void SPI_ADC_IRQHandler(void)
+    222          {
+    223          //#ifdef SYSTEM_VIEWER_ENABLE
+    224          //  SEGGER_SYSVIEW_RecordEnterISR();
+    225          //#endif
+    226          
+    227            //Фіксуємо вхід у переривання обробки даних від АЦП
+    228            semaphore_adc_irq  = true;
+    229            
+    230            //Фіксуємо час оцифровки
+    231            uint32_t tick_output_adc_tmp = TIM5->CNT;
+    232            
+    233            //На самому початку знімаємо chip_select
+    234            GPIO_SPI_ADC->BSRRL = GPIO_NSSPin_ADC;
+    235            uint16_t read_value = SPI_ADC->DR;
+    236          
+    237            static uint32_t tick_output_adc_p;
+    238            /*
+    239            Аналізуємо прийняті дані
+    240            */
+    241            if (
+    242                (state_reading_ADCs == STATE_READING_WRITE_READ) ||
+    243                (state_reading_ADCs == STATE_READING_READ)
+    244               )
+    245            {
+    246          //    unsigned int shift = ((GPIO_SELECT_ADC->ODR & GPIO_SELECTPin_ADC) == 0) ? 0 : NUMBER_CANALs_ADC;
+    247              unsigned int number_canal = /*shift* + */((read_value >> 12) & 0xf);
+    248          
+    249              output_adc[number_canal].tick = tick_output_adc_p;
+    250              output_adc[number_canal].value = read_value & 0xfff;
+    251            }
+    252            tick_output_adc_p = tick_output_adc_tmp;
+    253            /***/
+    254            
+    255            //Виконуємо операції з читання АЦП
+    256            control_reading_ADCs();
+    257            
+    258            /*
+    259            Подальші діх виконуємо тільки тоді, коли всі канали вже оцифровані
+    260            */
+    261            if (state_reading_ADCs == STATE_READING_ADCs_NONE)
+    262            {
+    263          #ifdef SYSTEM_VIEWER_ENABLE
+    264            SEGGER_SYSVIEW_RecordEnterISR();
+    265          #endif
+    266            
+    267              /*******************************************************/
+    268              //Перевіряємо, чи відбувалися зміни юстування
+    269              /*******************************************************/
+    270              if (changed_ustuvannja == CHANGED_ETAP_ENDED) /*Це є умова, що нові дані підготовлені для передачі їх у роботу вимірювальною системою (і при цьому зараз дані не змінюються)*/
+    271              {
+    272                //Копіюємо масив юстування у копію цього масиву але з яким працює (читає і змінює) тільки вимірювальна захистема
+    273                for(unsigned int k = 0; k < NUMBER_ANALOG_CANALES; k++) 
+    274                {
+    275                  ustuvannja_meas[k] = ustuvannja[k];
+    276                }
+    277              }
+    278              /*****************************************************/
+    279          
+    280              /*
+    281              Формуємо значення оцифровуваних каналів
+    282              */
+    283              unsigned int command_word = 0;
+    284              if ((status_adc_read_work & DATA_VAL_READ) != 0)
+    285              {
+    286                command_word |= (1 << I_I1 ) | (1 << I_I2 ) | (1 << I_I3 )/*  | (1 << I_I4 )*/  | (1 << I_U);
+    287              }
+    288                
+    289              uint32_t _x1, _x2, _DX, _dx;
+    290              int _y1, _y2;
+    291              long long _y;
+    292                
+    293              unsigned int gnd_adc_tmp  = gnd_adc; 
+    294              unsigned int vref_adc_tmp = vref_adc; 
+    295          
+    296              uint32_t _x = previous_tick_VAL;
+    297              /*****/
+    298              //Формуємо значення I1
+    299              /*****/
+    300              if ((command_word & (1 << I_I1)) != 0)
+    301              {
+    302                _x1 = ADCs_data_raw[I_I1].tick;
+    303                _y1 = ADCs_data_raw[I_I1].value;
+    304                  
+    305                _y2 = output_adc[C_I1_1].value - gnd_adc_tmp - vref_adc_tmp;
+    306                if (abs(_y2) > 87)
+    307                {
+    308                  _x2 = output_adc[C_I1_1].tick;
+    309                  _y2 = (int)(_y2*ustuvannja_meas[I_I1])>>(USTUVANNJA_VAGA - 4);
+    310                }
+    311                else
+    312                {
+    313                  _y2 = output_adc[C_I1_16].value - gnd_adc_tmp - vref_adc_tmp;
+    314          
+    315                  _x2 = output_adc[C_I1_16].tick;
+    316                  _y2 = (int)((-_y2)*ustuvannja_meas[I_I1])>>(USTUVANNJA_VAGA);
+    317                }
+    318                
+    319                if (_x2 > _x1) _DX = _x2 - _x1;
+    320                else
+    321                {
+    322                  uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
+    323                  _DX = _DX_64;
+    324                }
+    325                if (_x >= _x1) _dx = _x - _x1;
+    326                else
+    327                {
+    328                  uint64_t _dx_64 = _x + 0x100000000 - _x1;
+    329                  _dx = _dx_64;
+    330                }
+    331                _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
+    332          
+    333                ADCs_data[I_I1] = _y;
+    334                
+    335                ADCs_data_raw[I_I1].tick = _x2;
+    336                ADCs_data_raw[I_I1].value = _y2;
+    337              }
+    338              /*****/
+    339          
+    340              /*****/
+    341              //Формуємо значення I2
+    342              /*****/
+    343              if ((command_word & (1 << I_I2)) != 0)
+    344              {
+    345                _x1 = ADCs_data_raw[I_I2].tick;
+    346                _y1 = ADCs_data_raw[I_I2].value;
+    347                  
+    348                _y2 = output_adc[C_I2_1].value - gnd_adc_tmp - vref_adc_tmp;
+    349                if (abs(_y2) > 87)
+    350                {
+    351                  _x2 = output_adc[C_I2_1].tick;
+    352                  _y2 = (int)(_y2*ustuvannja_meas[I_I2])>>(USTUVANNJA_VAGA - 4);
+    353                }
+    354                else
+    355                {
+    356                  _y2 = output_adc[C_I2_16].value - gnd_adc_tmp - vref_adc_tmp;
+    357          
+    358                  _x2 = output_adc[C_I2_16].tick;
+    359                  _y2 = (int)((-_y2)*ustuvannja_meas[I_I2])>>(USTUVANNJA_VAGA);
+    360                }
+    361                
+    362                if (_x2 > _x1) _DX = _x2 - _x1;
+    363                else
+    364                {
+    365                  uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
+    366                  _DX = _DX_64;
+    367                }
+    368                if (_x >= _x1) _dx = _x - _x1;
+    369                else
+    370                {
+    371                  uint64_t _dx_64 = _x + 0x100000000 - _x1;
+    372                  _dx = _dx_64;
+    373                }
+    374                _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
+    375          
+    376                ADCs_data[I_I2] = _y;
+    377                
+    378                ADCs_data_raw[I_I2].tick = _x2;
+    379                ADCs_data_raw[I_I2].value = _y2;
+    380              }
+    381              /*****/
+    382              
+    383              /*****/
+    384              //Формуємо значення I3
+    385              /*****/
+    386              if ((command_word & (1 << I_I3)) != 0)
+    387              {
+    388                _x1 = ADCs_data_raw[I_I3].tick;
+    389                _y1 = ADCs_data_raw[I_I3].value;
+    390                  
+    391                _y2 = output_adc[C_I3_1].value - gnd_adc_tmp - vref_adc_tmp;
+    392                if (abs(_y2) > 87)
+    393                {
+    394                  _x2 = output_adc[C_I3_1].tick;
+    395                  _y2 = (int)(_y2*ustuvannja_meas[I_I3])>>(USTUVANNJA_VAGA - 4);
+    396                }
+    397                else
+    398                {
+    399                  _y2 = output_adc[C_I3_16].value - gnd_adc_tmp - vref_adc_tmp;
+    400          
+    401                  _x2 = output_adc[C_I3_16].tick;
+    402                  _y2 = (int)((-_y2)*ustuvannja_meas[I_I3])>>(USTUVANNJA_VAGA);
+    403                }
+    404                
+    405                if (_x2 > _x1) _DX = _x2 - _x1;
+    406                else
+    407                {
+    408                  uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
+    409                  _DX = _DX_64;
+    410                }
+    411                if (_x >= _x1) _dx = _x - _x1;
+    412                else
+    413                {
+    414                  uint64_t _dx_64 = _x + 0x100000000 - _x1;
+    415                  _dx = _dx_64;
+    416                }
+    417                _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
+    418          
+    419                ADCs_data[I_I3] = _y;
+    420                
+    421                ADCs_data_raw[I_I3].tick = _x2;
+    422                ADCs_data_raw[I_I3].value = _y2;
+    423              }
+    424              /*****/
+    425          
+    426              /*****/
+    427              //Формуємо значення U
+    428              /*****/
+    429              if ((command_word & (1 << I_U)) != 0)
+    430              {
+    431                _x1 = ADCs_data_raw[I_U].tick;
+    432                _y1 = ADCs_data_raw[I_U].value;
+    433                  
+    434                _y2 = output_adc[C_U_1].value - gnd_adc_tmp - vref_adc_tmp;
+    435                if (abs(_y2) > 87)
+    436                {
+    437                  _x2 = output_adc[C_U_1].tick;
+    438                  _y2 = (int)(_y2*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA - 4);
+    439                }
+    440                else
+    441                {
+    442                  _y2 = output_adc[C_U_16].value - gnd_adc_tmp - vref_adc_tmp;
+    443          
+    444                  _x2 = output_adc[C_U_16].tick;
+    445                  _y2 = (int)((-_y2)*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA);
+    446                }
+    447                
+    448                if (_x2 > _x1) _DX = _x2 - _x1;
+    449                else
+    450                {
+    451                  uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
+    452                  _DX = _DX_64;
+    453                }
+    454                if (_x >= _x1) _dx = _x - _x1;
+    455                else
+    456                {
+    457                  uint64_t _dx_64 = _x + 0x100000000 - _x1;
+    458                  _dx = _dx_64;
+    459                }
+    460                _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
+    461          
+    462                ADCs_data[I_U] = _y;
+    463                
+    464                ADCs_data_raw[I_U].tick = _x2;
+    465                ADCs_data_raw[I_U].value = _y2;
+    466              }
+    467              /*****/
+    468          
+    469              if ((status_adc_read_work & DATA_VAL_READ) != 0)
+    470              {
+    471                method_sum_sqr_data();
+    472                  
+    473                status_adc_read_work &= (unsigned int)(~DATA_VAL_READ);
+    474          
+    475                /**************************************************/
+    476                //Виставляємо повідомлення про завершення оброки першої групи вимірювальних величин
+    477                /**************************************************/
+    478                control_word_of_watchdog |= WATCHDOG_MEASURE_STOP_VAL;
+    479                /**************************************************/
+    480              }
+    481              
+    482              /********************************************************
+    483              Формуємо масив миттєвих значень
+    484              ********************************************************/
+    485              for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++)
+    486              {
+    487                //Цифровий осцилограф
+    488                current_data[index_array_of_current_data_value++] = ADCs_data[i];
+    489              }
+    490              //Індекс цифрового осцилографа
+    491              if (index_array_of_current_data_value >= (NUMBER_ANALOG_CANALES*NUMBER_POINT*NUMBER_PERIOD_TRANSMIT)) index_array_of_current_data_value = 0;/*Умова мал аб бути ==, але щоб перестахуватися на невизначену помилку я поставив >=*/
+    492              /**************************************************/
+    493          
+    494              /**************************************************/
+    495              //При необхідності повідомляємо про вихід з формування миттєвих значень
+    496              /**************************************************/
+    497              if (wait_of_receiving_current_data  == true) wait_of_receiving_current_data  = false;
+    498              /**************************************************/
+    499          
+    500              if ((status_adc_read_work & TEST_VAL_READ) != 0)
+    501              {
+    502                //Треба опрацювати інтегральні величини
+    503                operate_test_ADCs();
+    504              
+    505                status_adc_read_work &= (unsigned int)(~TEST_VAL_READ);
+    506          
+    507                /**************************************************/
+    508                //Виставляємо повідомлення про завершення тестових величин
+    509                /**************************************************/
+    510                control_word_of_watchdog |= WATCHDOG_MEASURE_STOP_TEST_VAL;
+    511                /**************************************************/
+    512                
+    513                /**************************************************/
+    514                //Якщо зараз стоїть блокування то його знімаємо
+    515                /**************************************************/
+    516                if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
+    517                {
+    518                  //Повне роозблоковування обміну з мікросхемами для драйверу I2C
+    519                  _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+    520                }
+    521                /**************************************************/
+    522              }
+    523            
+    524          #ifdef SYSTEM_VIEWER_ENABLE
+    525            SEGGER_SYSVIEW_RecordExitISR();
+    526          #endif
+    527            }
+    528          
+    529            if ((GPIO_SPI_ADC->ODR & GPIO_NSSPin_ADC) != 0)
+    530            {
+    531              //Новий обмін не почався функцією control_reading_ADCs
+    532              
+    533              /*
+    534              Можливо з часу останнього виклику функції control_reading_ADCs до даного
+    535              моментк переривання від таймера поставило нові задачі на оцифровку
+    536              */
+    537              
+    538              /*
+    539              Забороняємо генерацію переривань, щоб поки ми аналізуємо чяи немає нових даних
+    540              на оцифровку ще новіші не появилися
+    541              */
+    542              __disable_interrupt();
+    543              
+    544              /*
+    545              Аналізуємо, чи немає нових даних на оцифровку і якщо до даного моменту нових
+    546              даних не появилося, то розблоковуємо можливість початку оцифровки з переривання
+    547              таймеру ( chip select виставлений у 1)
+    548              */
+    549              if (
+    550                  (adc_DATA_VAL_read == false) &&
+    551                  (adc_TEST_VAL_read == false)
+    552                 )
+    553              {
+    554                semaphore_adc_irq  = false;
+    555              }
+    556              
+    557              /*
+    558              Дозволяємо генерацію переривань
+    559              */
+    560               __enable_interrupt();
+    561            }
+    562            else semaphore_adc_irq  = false;
+    563          
+    564            
+    565            if (semaphore_adc_irq  != false)
+    566            {
+    567              /*
+    568              Ця умова може бути тільки у одному випадку: якщо при аналізі на нові дані на оцифровку
+    569              з моменту отаннього запуску функції control_reading_ADCs до заборони переривань
+    570              функцією __disable_interrupt дані всетаки появилися.
+    571              
+    572              Модемо і маємо запусти функцію control_reading_ADCs. Конфлікту не буде, бо
+    573              chip_select покищо виставлений у високий стан (це дає остання перевірка 
+    574              if ((GPIO_SPI_ADC->ODR & GPIO_NSSPin_ADC) != 0)) і змінна semaphore_adc_irq ще
+    575              не рівна false, а тим чином блокує запуск оцифровки х переривання таймеру
+    576              */
+    577              
+    578              control_reading_ADCs();
+    579              
+    580              /*
+    581              Скидаємо прапорець. який сигналізує що ми у перериванні обробки оцифрованих даних, які прийшли по SPI
+    582              інтерфейсу. Але цей прапорець вже нічого не блокує, бо запуск функції control_reading_ADCs
+    583              при гарантованій умові, що дані на оцифровку "стоять у черзі"  мусить почати
+    584              оцифровку - а це можливе тільки тоді, коли chip_select цією функцією буде вустановлено у низький рівень
+    585              
+    586              А встановиться chip_select назад у високий рівень тільки коли знову згенерується переривання від
+    587              каналі SPI
+    588              */
+    589              semaphore_adc_irq  = false;
+    590            }
+    591            
+    592          //#ifdef SYSTEM_VIEWER_ENABLE
+    593          //  SEGGER_SYSVIEW_RecordExitISR();
+    594          //#endif
+    595          }
+    596          /*****************************************************/
+    597          
+    598          /*****************************************************/
+    599          //
+    600          /*****************************************************/
+    601          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      80   SPI2_IRQHandler
+        80   -> SEGGER_SYSVIEW_RecordEnterISR
+        80   -> SEGGER_SYSVIEW_RecordExitISR
+        80   -> abs
+        80   -> control_reading_ADCs
+        80   -> method_sum_sqr_data
+        80   -> operate_test_ADCs
+        80 __aeabi_ldivmod
+       4   control_reading_ADCs
+      24   method_sum_sqr_data
+        24   -> total_error_sw_fixed
+      16   operate_test_ADCs
+        16   -> total_error_sw_fixed
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable3
+       4  ??DataTable3_1
+       4  ??DataTable3_10
+       4  ??DataTable3_11
+       4  ??DataTable3_12
+       4  ??DataTable3_13
+       4  ??DataTable3_14
+       4  ??DataTable3_15
+       4  ??DataTable3_16
+       4  ??DataTable3_17
+       4  ??DataTable3_18
+       4  ??DataTable3_19
+       4  ??DataTable3_2
+       4  ??DataTable3_20
+       4  ??DataTable3_21
+       4  ??DataTable3_22
+       4  ??DataTable3_23
+       4  ??DataTable3_24
+       4  ??DataTable3_25
+       4  ??DataTable3_26
+       4  ??DataTable3_27
+       4  ??DataTable3_28
+       4  ??DataTable3_29
+       4  ??DataTable3_3
+       4  ??DataTable3_30
+       4  ??DataTable3_31
+       4  ??DataTable3_32
+       4  ??DataTable3_33
+       4  ??DataTable3_34
+       4  ??DataTable3_35
+       4  ??DataTable3_36
+       4  ??DataTable3_37
+       4  ??DataTable3_38
+       4  ??DataTable3_39
+       4  ??DataTable3_4
+       4  ??DataTable3_40
+       4  ??DataTable3_41
+       4  ??DataTable3_42
+       4  ??DataTable3_43
+       4  ??DataTable3_44
+       4  ??DataTable3_45
+       4  ??DataTable3_46
+       4  ??DataTable3_5
+       4  ??DataTable3_6
+       4  ??DataTable3_7
+       4  ??DataTable3_8
+       4  ??DataTable3_9
+    1380  SPI2_IRQHandler
+     368  control_reading_ADCs
+     194  method_sum_sqr_data
+     496  operate_test_ADCs
+       4  tick_output_adc_p
+
+ 
+     4 bytes in section .bss
+ 2 626 bytes in section .text
+ 
+ 2 626 bytes of CODE memory
+     4 bytes of DATA memory
+
+Errors: none
+Warnings: none

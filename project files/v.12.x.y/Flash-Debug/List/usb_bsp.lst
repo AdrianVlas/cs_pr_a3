@@ -1,0 +1,401 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:55:01
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\usb\usb_bsp.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\usb\usb_bsp.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks --diag_suppress Pe826 -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\usb_bsp.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\usb_bsp.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\usb\usb_bsp.c
+      1          /**
+      2            ******************************************************************************
+      3            * @file    usb_bsp.c
+      4            * @author  MCD Application Team
+      5            * @version V1.1.0
+      6            * @date    19-March-2012
+      7            * @brief   This file is responsible to offer board support package and is 
+      8            *          configurable by user.
+      9            ******************************************************************************
+     10            * @attention
+     11            *
+     12            * <h2><center>&copy; COPYRIGHT 2012 STMicroelectronics</center></h2>
+     13            *
+     14            * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+     15            * You may not use this file except in compliance with the License.
+     16            * You may obtain a copy of the License at:
+     17            *
+     18            *        http://www.st.com/software_license_agreement_liberty_v2
+     19            *
+     20            * Unless required by applicable law or agreed to in writing, software 
+     21            * distributed under the License is distributed on an "AS IS" BASIS, 
+     22            * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     23            * See the License for the specific language governing permissions and
+     24            * limitations under the License.
+     25            *
+     26            ******************************************************************************
+     27            */ 
+     28          
+     29          /* Includes ------------------------------------------------------------------*/
+     30          #include "usb_bsp.h"
+     31          #include "usbd_conf.h"
+     32          
+     33          /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
+     34          * @{
+     35          */
+     36          
+     37          /** @defgroup USB_BSP
+     38          * @brief This file is responsible to offer board support package
+     39          * @{
+     40          */ 
+     41          
+     42          /** @defgroup USB_BSP_Private_Defines
+     43          * @{
+     44          */ 
+     45          /**
+     46          * @}
+     47          */ 
+     48          
+     49          
+     50          /** @defgroup USB_BSP_Private_TypesDefinitions
+     51          * @{
+     52          */ 
+     53          /**
+     54          * @}
+     55          */ 
+     56          
+     57          
+     58          
+     59          
+     60          
+     61          /** @defgroup USB_BSP_Private_Macros
+     62          * @{
+     63          */ 
+     64          /**
+     65          * @}
+     66          */ 
+     67          
+     68          /** @defgroup USBH_BSP_Private_Variables
+     69          * @{
+     70          */ 
+     71          
+     72          /**
+     73          * @}
+     74          */ 
+     75          
+     76          /** @defgroup USBH_BSP_Private_FunctionPrototypes
+     77          * @{
+     78          */ 
+     79          /**
+     80          * @}
+     81          */ 
+     82          
+     83          /** @defgroup USB_BSP_Private_Functions
+     84          * @{
+     85          */ 
+     86          
+     87          
+     88          /**
+     89          * @brief  USB_OTG_BSP_Init
+     90          *         Initilizes BSP configurations
+     91          * @param  None
+     92          * @retval None
+     93          */
+     94          
+     95          void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
+     96          {
+     97            GPIO_InitTypeDef GPIO_InitStructure;   
+     98           #ifdef USE_USB_OTG_FS 
+     99            RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_GPIOA , ENABLE);  
+    100            
+    101             /* Configure SOF ID DM DP Pins */
+    102            GPIO_InitStructure.GPIO_Pin = /*GPIO_Pin_8  |*/
+    103                                          GPIO_Pin_11 | 
+    104                                          GPIO_Pin_12;
+    105            
+    106            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    107            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    108            GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    109            GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+    110            GPIO_Init(GPIOA, &GPIO_InitStructure);  
+    111            
+    112          //  GPIO_PinAFConfig(GPIOA,GPIO_PinSource8,GPIO_AF_OTG1_FS) ;
+    113            GPIO_PinAFConfig(GPIOA,GPIO_PinSource11,GPIO_AF_OTG1_FS) ; 
+    114            GPIO_PinAFConfig(GPIOA,GPIO_PinSource12,GPIO_AF_OTG1_FS) ;
+    115            
+    116          //  /* Configure  VBUS Pin */
+    117          //  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+    118          //  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    119          //  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+    120          //  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+    121          //  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+    122          //  GPIO_Init(GPIOA, &GPIO_InitStructure);    
+    123            
+    124          //  /* Configure ID pin */
+    125          //  GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_10;
+    126          //  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+    127          //  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP ;  
+    128          //  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    129          //  GPIO_Init(GPIOA, &GPIO_InitStructure);  
+    130          //  GPIO_PinAFConfig(GPIOA,GPIO_PinSource10,GPIO_AF_OTG1_FS) ;   
+    131           
+    132            RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+    133            RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_OTG_FS, ENABLE) ; 
+    134           #else // USE_USB_OTG_HS 
+    135          
+    136            #ifdef USE_ULPI_PHY // ULPI
+    137            RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | 
+    138                                   RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOH | 
+    139                                     RCC_AHB1Periph_GPIOI, ENABLE);    
+    140            
+    141            
+    142            GPIO_PinAFConfig(GPIOA,GPIO_PinSource3, GPIO_AF_OTG2_HS) ; // D0
+    143            GPIO_PinAFConfig(GPIOA,GPIO_PinSource5, GPIO_AF_OTG2_HS) ; // CLK
+    144            GPIO_PinAFConfig(GPIOB,GPIO_PinSource0, GPIO_AF_OTG2_HS) ; // D1
+    145            GPIO_PinAFConfig(GPIOB,GPIO_PinSource1, GPIO_AF_OTG2_HS) ; // D2
+    146            GPIO_PinAFConfig(GPIOB,GPIO_PinSource5, GPIO_AF_OTG2_HS) ; // D7
+    147            GPIO_PinAFConfig(GPIOB,GPIO_PinSource10,GPIO_AF_OTG2_HS) ; // D3
+    148            GPIO_PinAFConfig(GPIOB,GPIO_PinSource11,GPIO_AF_OTG2_HS) ; // D4
+    149            GPIO_PinAFConfig(GPIOB,GPIO_PinSource12,GPIO_AF_OTG2_HS) ; // D5
+    150            GPIO_PinAFConfig(GPIOB,GPIO_PinSource13,GPIO_AF_OTG2_HS) ; // D6
+    151            GPIO_PinAFConfig(GPIOH,GPIO_PinSource4, GPIO_AF_OTG2_HS) ; // NXT
+    152            GPIO_PinAFConfig(GPIOI,GPIO_PinSource11,GPIO_AF_OTG2_HS) ; // DIR
+    153            GPIO_PinAFConfig(GPIOC,GPIO_PinSource0, GPIO_AF_OTG2_HS) ; // STP
+    154            
+    155            // CLK
+    156            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 ; 
+    157            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    158            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    159            GPIO_Init(GPIOA, &GPIO_InitStructure);  
+    160            
+    161            // D0
+    162            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3  ; 
+    163            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    164            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    165            GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    166            GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+    167            GPIO_Init(GPIOA, &GPIO_InitStructure);  
+    168            
+    169            
+    170            
+    171            // D1 D2 D3 D4 D5 D6 D7
+    172            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1  |
+    173              GPIO_Pin_5 | GPIO_Pin_10 | 
+    174                GPIO_Pin_11| GPIO_Pin_12 | 
+    175                  GPIO_Pin_13 ;
+    176            
+    177            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    178            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    179            GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    180            GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+    181            GPIO_Init(GPIOB, &GPIO_InitStructure);  
+    182            
+    183            
+    184            // STP
+    185            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0  ;
+    186            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    187            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    188            GPIO_Init(GPIOC, &GPIO_InitStructure);  
+    189            
+    190            //NXT  
+    191            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+    192            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    193            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    194            GPIO_Init(GPIOH, &GPIO_InitStructure);  
+    195            
+    196            
+    197            //DIR
+    198            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11 ; 
+    199            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    200            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    201            GPIO_Init(GPIOI, &GPIO_InitStructure);  
+    202            
+    203            
+    204            RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_OTG_HS | 
+    205                                   RCC_AHB1Periph_OTG_HS_ULPI, ENABLE) ;    
+    206             
+    207            #else
+    208            
+    209            RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB , ENABLE);
+    210            
+    211            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | 
+    212                                          GPIO_Pin_14 | 
+    213                                          GPIO_Pin_15;
+    214            
+    215            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    216            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    217            GPIO_Init(GPIOB, &GPIO_InitStructure);  
+    218            
+    219            GPIO_PinAFConfig(GPIOB,GPIO_PinSource12, GPIO_AF_OTG2_FS) ; 
+    220            GPIO_PinAFConfig(GPIOB,GPIO_PinSource14,GPIO_AF_OTG2_FS) ; 
+    221            GPIO_PinAFConfig(GPIOB,GPIO_PinSource15,GPIO_AF_OTG2_FS) ;
+    222            
+    223            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+    224            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    225            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+    226            GPIO_Init(GPIOB, &GPIO_InitStructure);  
+    227          
+    228            
+    229            RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_OTG_HS, ENABLE) ;  
+    230          
+    231            #endif
+    232           #endif //USB_OTG_HS
+    233          }
+    234          /**
+    235          * @brief  USB_OTG_BSP_EnableInterrupt
+    236          *         Enabele USB Global interrupt
+    237          * @param  None
+    238          * @retval None
+    239          */
+    240          void USB_OTG_BSP_EnableInterrupt(USB_OTG_CORE_HANDLE *pdev)
+    241          {
+    242            NVIC_InitTypeDef NVIC_InitStructure; 
+    243            
+    244          //  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+    245          #ifdef USE_USB_OTG_HS   
+    246            NVIC_InitStructure.NVIC_IRQChannel = OTG_HS_IRQn;
+    247          #else
+    248            NVIC_InitStructure.NVIC_IRQChannel = OTG_FS_IRQn;  
+    249          #endif
+    250            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = /*1*/3;
+    251            NVIC_InitStructure.NVIC_IRQChannelSubPriority = /*3*/0;
+    252            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    253            NVIC_Init(&NVIC_InitStructure);  
+    254          #ifdef USB_OTG_HS_DEDICATED_EP1_ENABLED
+    255            NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+    256            NVIC_InitStructure.NVIC_IRQChannel = OTG_HS_EP1_OUT_IRQn;
+    257            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    258            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    259            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    260            NVIC_Init(&NVIC_InitStructure);  
+    261            
+    262            NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+    263            NVIC_InitStructure.NVIC_IRQChannel = OTG_HS_EP1_IN_IRQn;
+    264            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    265            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    266            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    267            NVIC_Init(&NVIC_InitStructure);   
+    268          #endif
+    269          }
+    270          /**
+    271          * @brief  USB_OTG_BSP_uDelay
+    272          *         This function provides delay time in micro sec
+    273          * @param  usec : Value of delay required in micro sec
+    274          * @retval None
+    275          */
+    276          void USB_OTG_BSP_uDelay (const uint32_t usec)
+    277          {
+    278            uint32_t count = 0;
+    279            const uint32_t utime = (120 * usec / 7);
+    280            do
+    281            {
+    282              if ( ++count > utime )
+    283              {
+    284                return ;
+    285              }
+    286            }
+    287            while (1);
+    288          }
+    289          
+    290          
+    291          /**
+    292          * @brief  USB_OTG_BSP_mDelay
+    293          *          This function provides delay time in milli sec
+    294          * @param  msec : Value of delay required in milli sec
+    295          * @retval None
+    296          */
+    297          void USB_OTG_BSP_mDelay (const uint32_t msec)
+    298          {
+    299            USB_OTG_BSP_uDelay(msec * 1000);   
+    300          }
+    301          /**
+    302          * @}
+    303          */ 
+    304          
+    305          /**
+    306          * @}
+    307          */ 
+    308          
+    309          /**
+    310          * @}
+    311          */
+    312          
+    313          /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      16   USB_OTG_BSP_EnableInterrupt
+        16   -> NVIC_Init
+      16   USB_OTG_BSP_Init
+        16   -> GPIO_Init
+        16   -> GPIO_PinAFConfig
+        16   -> RCC_AHB1PeriphClockCmd
+        16   -> RCC_AHB2PeriphClockCmd
+        16   -> RCC_APB2PeriphClockCmd
+       8   USB_OTG_BSP_mDelay
+         8   -> USB_OTG_BSP_uDelay
+       0   USB_OTG_BSP_uDelay
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable0
+      38  USB_OTG_BSP_EnableInterrupt
+      90  USB_OTG_BSP_Init
+      18  USB_OTG_BSP_mDelay
+      24  USB_OTG_BSP_uDelay
+
+ 
+ 174 bytes in section .text
+ 
+ 174 bytes of CODE memory
+
+Errors: none
+Warnings: none

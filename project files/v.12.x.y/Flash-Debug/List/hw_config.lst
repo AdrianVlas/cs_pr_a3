@@ -1,0 +1,367 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:55
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\hw_config.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\hw_config.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\hw_config.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\hw_config.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\hw_config.c
+      1          /* Includes ------------------------------------------------------------------*/
+      2           #include "stm32f2xx_it.h"
+      3           
+      4          #include "hw_config.h"
+      5          #include "platform_config.h"
+      6          #include "header.h"
+      7          
+      8          /* Private typedef -----------------------------------------------------------*/
+      9          /* Private define ------------------------------------------------------------*/
+     10          /* Private macro -------------------------------------------------------------*/
+     11          /* Private variables ---------------------------------------------------------*/
+     12          
+     13          /* Extern variables ----------------------------------------------------------*/
+     14          
+     15          /* Private function prototypes -----------------------------------------------*/
+     16          /* Private functions ---------------------------------------------------------*/
+     17          /*******************************************************************************
+     18          * Function Name  : Set_System
+     19          * Description    : Configures Main system clocks & power
+     20          * Input          : None.
+     21          * Return         : None.
+     22          *******************************************************************************/
+     23          void Set_System(void)
+     24          {
+     25            //Запускаємо тактові клоки на периверію
+     26           
+     27            //AHB3
+     28          
+     29            //AHB1
+     30            RCC_AHB1PeriphClockCmd(
+     31                                   RCC_AHB1Periph_DMA1                    |
+     32                                   RCC_AHB1Periph_DMA2                    |
+     33                                   RCC_AHB1Periph_GPIO_LCD_RW             |
+     34                                   RCC_AHB1Periph_GPIO_LCD_RS             |
+     35                                   RCC_AHB1Periph_GPIO_LCD_BL             |
+     36                                   RCC_AHB1Periph_GPIO_CON_L              |
+     37                                   RCC_AHB1Periph_GPIO_KEYBOARD           |
+     38                                   RCC_AHB1Periph_GPIO_SELECT_ADC         |
+     39                                   RCC_AHB1Periph_GPIO_SPI_ADC            |
+     40                                   RCC_AHB1Periph_GPIO_I2C                |
+     41                                   RCC_AHB1Periph_GPIO_SPI_DF             |
+     42                                   RCC_AHB1Periph_GPIO_SPI_DF_TOGGLE      |
+     43                                   RCC_AHB1Periph_GPIO_CON_OUTPUTS        |
+     44                                   RCC_AHB1Periph_GPIO_USART_RS485        |
+     45                                   RCC_AHB1Periph_GPIO_485DE              |
+     46                                   RCC_AHB1Periph_GPIO_EXTERNAL_WATCHDOG  |
+     47                                   RCC_AHB1Periph_GPIO_POWER_CTRL,
+     48                                   
+     49                                   ENABLE);
+     50          
+     51            //APB2
+     52            RCC_APB2PeriphClockCmd(
+     53                                   RCC_APB2Periph_SYSCFG  |
+     54                                   RCC_APB2Periph_SPI_DF/*  |
+     55                                   RCC_USARTRS_485*/,
+     56                                   ENABLE);
+     57            
+     58            //APB1
+     59            RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C     |
+     60                                   RCC_APB1Periph_TIM2    |
+     61                                   RCC_APB1Periph_TIM5    |
+     62                                   RCC_APB1Periph_TIM4    |
+     63                                   RCC_APB1Periph_SPI_ADC |
+     64                                   RCC_USARTRS_485,
+     65                                   
+     66                                   ENABLE);
+     67          
+     68          }
+     69          
+     70          /*******************************************************************************
+     71          * Function Name  : Interrupts_Config
+     72          * Description    : Configures the USB interrupts
+     73          * Input          : None.
+     74          * Return         : None.
+     75          *******************************************************************************/
+     76          void Interrupts_Config(void)
+     77          {
+     78            NVIC_InitTypeDef NVIC_InitStructure;
+     79            
+     80          //#ifdef  VECT_TAB_RAM
+     81          //  /* Set the Vector Table base location at 0x20000000 */
+     82          //  NVIC_SetVectorTable(NVIC_VectTab_RAM, 0x0);
+     83          //#else  /* VECT_TAB_FLASH */
+     84          //  /* Set the Vector Table base location at 0x08000000 */
+     85          //  NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);
+     86          //#endif
+     87          
+     88            /*******************************/
+     89            //Настройки контролера переривань
+     90            /*
+     91            Пріоритет груп
+     92            4-біт на Pre-emption поле: 4 рівні [0-3] Pre-emption пріоритету. 0 - найвищий Pre-emption пріоритет
+     93            
+     94            Пріоритет всередині групи
+     95            4-біт на Subpriority поле: 4 рівні [0-3] Subpriority пріоритету. 0 - найвищий Subpriority пріоритет
+     96            */
+     97            /*******************************/
+     98            NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+     99            /*******************************/
+    100          
+    101            /*******************************/
+    102            /* Enable the I2C global events Interrupt */
+    103            /*
+    104            //За рекомендацією ST має бути найвищий приорітет
+    105            Pre-emption пріоритет = 0 
+    106            Subpriority пріоритет = 0 
+    107            */
+    108            /*******************************/
+    109            NVIC_InitStructure.NVIC_IRQChannel = I2C_EV_IRQn;
+    110            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    111            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    112            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    113            NVIC_Init(&NVIC_InitStructure);
+    114            /*******************************/
+    115          
+    116            /*******************************/
+    117            /* Enable the I2C global errors Interrupt */
+    118            /*
+    119            Pre-emption пріоритет = 0 
+    120            Subpriority пріоритет = 0 
+    121            */
+    122            /*******************************/
+    123            NVIC_InitStructure.NVIC_IRQChannel = I2C_ER_IRQn;
+    124            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    125            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    126            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    127            NVIC_Init(&NVIC_InitStructure);
+    128            /*******************************/
+    129          
+    130            /*******************************/
+    131            /* Переривання від TIM5, який запускається кожні 0,625мс для початку зняття даних з АЦП*/
+    132            /*
+    133            Pre-emption пріоритет = 0 
+    134            Subpriority пріоритет = 1 
+    135            */
+    136            /*******************************/
+    137            NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
+    138            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    139            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    140            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    141            NVIC_Init(&NVIC_InitStructure);
+    142            /*******************************/
+    143          
+    144            /*******************************/
+    145            /* Дозволяємо переривання від SPI вимірювальної системи */
+    146            /*
+    147            Pre-emption пріоритет = 0 
+    148            Subpriority пріоритет = 2
+    149            */
+    150            /*******************************/
+    151            NVIC_InitStructure.NVIC_IRQChannel = SPI_ADC_IRQn;
+    152            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    153            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    154            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    155            NVIC_Init(&NVIC_InitStructure);
+    156            /*******************************/
+    157            
+    158            /*******************************/
+    159            /* Переривання від TIM2, який запускається кожні 1мс для роботи модулів захистів*/
+    160            /*
+    161            Pre-emption пріоритет = 1 
+    162            Subpriority пріоритет = 1
+    163            */
+    164            /*******************************/
+    165            NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+    166            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    167            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    168            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    169            NVIC_Init(&NVIC_InitStructure);
+    170            /*******************************/
+    171          
+    172            /*******************************/
+    173            /* Дозволяємо переривання від SPI_DF - читання Dataflash */
+    174            /*
+    175            Pre-emption пріоритет = 2 
+    176            Subpriority пріоритет = 0  (найвищий у даній групі)
+    177            */
+    178            /*******************************/
+    179            NVIC_InitStructure.NVIC_IRQChannel = SPI_DF_IRQn;
+    180            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    181            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    182            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    183            NVIC_Init(&NVIC_InitStructure);
+    184            /*******************************/
+    185          
+    186            /*******************************/
+    187            /* Дозволяємо переривання від DMA_SPI_DF запису - читання Dataflash */
+    188            /*
+    189            Pre-emption пріоритет = 2 
+    190            Subpriority пріоритет = 1
+    191            */
+    192            /*******************************/
+    193            NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamSPI_DF_Rx_IRQn;
+    194            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    195            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    196            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    197            NVIC_Init(&NVIC_InitStructure);
+    198            /*******************************/
+    199          
+    200            /*******************************/
+    201            /* Переривання від USART2 для RS-485*/
+    202            /*
+    203            Pre-emption пріоритет = 2 
+    204            Subpriority пріоритет = 2
+    205            */
+    206            /*******************************/
+    207            NVIC_InitStructure.NVIC_IRQChannel = USARTRS485_IRQn;
+    208            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    209            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    210            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    211            NVIC_Init(&NVIC_InitStructure);
+    212            /*******************************/
+    213            
+    214            /*******************************/
+    215            /* Переривання від DMA1_ChannelRS485_TX*/
+    216            /*
+    217            Pre-emption пріоритет = 2 
+    218            Subpriority пріоритет = 2
+    219            */
+    220            /*******************************/
+    221            NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamRS485_Tx_IRQn;
+    222            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    223            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    224            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    225            NVIC_Init(&NVIC_InitStructure);
+    226            /*******************************/
+    227          
+    228            /*******************************/
+    229            /* Дозволяємо переривання від фронтів сигналу появдення/пропадання живлення на вході джерела живлення */
+    230            /*
+    231            Pre-emption пріоритет = 2 
+    232            Subpriority пріоритет = 3
+    233            */
+    234            /*******************************/
+    235            NVIC_InitStructure.NVIC_IRQChannel = EXITI_POWER_IRQn;
+    236            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    237            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+    238            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    239            NVIC_Init(&NVIC_InitStructure);
+    240            /*******************************/
+    241            
+    242            /*******************************/
+    243            /* Дозволяємо переривання від DMA_StreamI2C_Tx передача даних через I2C */
+    244            /*
+    245            Pre-emption пріоритет = 3 (найнижчий серед груп)
+    246            Subpriority пріоритет = 1 
+    247            */
+    248            /*******************************/
+    249            NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamI2C_Tx_IRQn;
+    250            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+    251            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    252            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    253            NVIC_Init(&NVIC_InitStructure);
+    254            /*******************************/
+    255            
+    256            /*******************************/
+    257            /* Дозволяємо переривання від DMA_ChannelI2C_Rx прийом даних з I2C */
+    258            /*
+    259            Pre-emption пріоритет = 3 (найнижчий серед груп)
+    260            Subpriority пріоритет = 1 
+    261            */
+    262            /*******************************/
+    263            NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamI2C_Rx_IRQn;
+    264            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+    265            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    266            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    267            NVIC_Init(&NVIC_InitStructure);
+    268            /*******************************/
+    269          
+    270            /*******************************/
+    271            /* Переривання від TIM4, обробка клавіатури і інші низькопріоритетні задачі*/
+    272            /*
+    273            Pre-emption пріоритет = 3 (найнижчий серед груп)
+    274            Subpriority пріоритет = 2 
+    275            */
+    276            /*******************************/
+    277            NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+    278            NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+    279            NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    280            NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    281            NVIC_Init(&NVIC_InitStructure);
+    282            /*******************************/
+    283          }
+    284          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   Interrupts_Config
+         8   -> NVIC_Init
+         8   -> NVIC_PriorityGroupConfig
+       8   Set_System
+         8   -> RCC_AHB1PeriphClockCmd
+         8   -> RCC_APB1PeriphClockCmd
+         8   -> RCC_APB2PeriphClockCmd
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable0
+       4  ??DataTable0_1
+     402  Interrupts_Config
+      30  Set_System
+
+ 
+ 440 bytes in section .text
+ 
+ 440 bytes of CODE memory
+
+Errors: none
+Warnings: none

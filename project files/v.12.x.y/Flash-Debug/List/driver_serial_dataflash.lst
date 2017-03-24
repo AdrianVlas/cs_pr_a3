@@ -1,0 +1,890 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:54
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\driver_serial_dataflash.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\driver_serial_dataflash.c" -D USE_STDPERIPH_DRIVER -D
+#        STM32F2XX -D USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE
+#        -lc "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\driver_serial_dataflash.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\driver_serial_dataflash.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\driver_serial_dataflash.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          //Запустити передачу і прийом по SPI
+      5          /*****************************************************/
+      6          void start_exchange_via_spi(int index_chip, unsigned int number_bytes_transfer)
+      7          {
+      8            //Фіксуємо скільки байт ми будем передавати (це потрібно на випадок винекнення помилки - щоб можна було повторно запустити цю операцію)
+      9            number_bytes_transfer_spi_df = number_bytes_transfer;
+     10            
+     11            //Зупиняємо потік DMA на прийом даних якщо він запущений
+     12            if ((DMA_StreamSPI_DF_Rx->CR & (uint32_t)DMA_SxCR_EN) !=0) DMA_StreamSPI_DF_Rx->CR &= ~(uint32_t)DMA_SxCR_EN;
+     13            DMA_StreamSPI_DF_Rx->NDTR = number_bytes_transfer;
+     14            //Зупиняємо потік DMA на передачу даних якщо він запущений
+     15            if ((DMA_StreamSPI_DF_Tx->CR & (uint32_t)DMA_SxCR_EN) !=0) DMA_StreamSPI_DF_Tx->CR &= ~(uint32_t)DMA_SxCR_EN;
+     16            DMA_StreamSPI_DF_Tx->NDTR = number_bytes_transfer;
+     17            
+     18            //Очищаємо прапореці, що сигналізує про завершення прийом/передачі даних для DMA1 по каналу SPI_DF_Rx і SPI_DF_Tx
+     19            DMA_ClearFlag(DMA_StreamSPI_DF_Rx, DMA_FLAG_TCSPI_DF_Rx | DMA_FLAG_HTSPI_DF_Rx | DMA_FLAG_TEISPI_DF_Rx | DMA_FLAG_DMEISPI_DF_Rx | DMA_FLAG_FEISPI_DF_Rx);
+     20            DMA_ClearFlag(DMA_StreamSPI_DF_Tx, DMA_FLAG_TCSPI_DF_Tx | DMA_FLAG_HTSPI_DF_Tx | DMA_FLAG_TEISPI_DF_Tx | DMA_FLAG_DMEISPI_DF_Tx | DMA_FLAG_FEISPI_DF_Tx);
+     21            
+     22            //Дозволяємо передачу через DMA
+     23            if ((SPI_DF->CR2 & SPI_I2S_DMAReq_Tx) == 0) SPI_DF->CR2 |= SPI_I2S_DMAReq_Tx;
+     24            //Дозволяємо прийом через DMA
+     25            if ((SPI_DF->CR2 & SPI_I2S_DMAReq_Rx) == 0) SPI_DF->CR2 |= SPI_I2S_DMAReq_Rx;
+     26          
+     27            //Виставляємо chip_select  з встановленням у драйвері повідомлення, що іде обмін
+     28            if (index_chip == INDEX_DATAFLASH_1) GPIO_SPI_DF_TOGGLE->BSRRH = GPIO_SPI_DF_TOGGLE_Pin;//DF_TOGGLE - пін переводимо у 0 
+     29            else if (index_chip == INDEX_DATAFLASH_2)GPIO_SPI_DF_TOGGLE->BSRRL = GPIO_SPI_DF_TOGGLE_Pin;//DF_TOGGLE - пін переводимо у 1
+     30            else
+     31            {
+     32              //Відбцлася невизначена помилка, тому треба піти на перезавантаження
+     33              total_error_sw_fixed(6);
+     34            }
+     35            driver_spi_df[index_chip].state_execution = TRANSACTION_EXECUTING;
+     36            GPIO_SPI_DF->BSRRH = GPIO_NSSPin_DF; //Виставляємо Chip_select переводом NSS  у 0
+     37          
+     38            //Дозволяэмо генерацыю переривань від потоку DMA_StreamSPI_DF_Rx
+     39            DMA_StreamSPI_DF_Rx->CR |= DMA_IT_TC;
+     40            
+     41            //Очищаємо можливі помилкит
+     42            SPI_DF->DR;
+     43            SPI_DF->SR;
+     44          
+     45            //Запускаємо прийом-передачу 
+     46            DMA_StreamSPI_DF_Rx->CR |= (uint32_t)DMA_SxCR_EN;
+     47            DMA_StreamSPI_DF_Tx->CR |= (uint32_t)DMA_SxCR_EN;
+     48          }
+     49          /*****************************************************/
+     50          
+     51          /*****************************************************/
+     52          //Запуск зчитування статусу з мікросхеми dataFlash
+     53          /*****************************************************/
+     54          void dataflash_status_read(int index_chip)
+     55          {
+     56            if ((index_chip == INDEX_DATAFLASH_1) || (index_chip == INDEX_DATAFLASH_2))
+     57            {
+     58              driver_spi_df[index_chip].code_operation = CODE_OPERATION_STATUS_READ;
+     59              TxBuffer_SPI_DF[0] = 0xD7;
+     60              start_exchange_via_spi(index_chip, 2);
+     61            }
+     62            else
+     63            {
+     64              //Відбулася невизначена помилка, тому треба піти на перезавантаження
+     65              total_error_sw_fixed(7);
+     66            }
+     67            
+     68          }
+     69          /*****************************************************/
+     70          
+     71          /*****************************************************/
+     72          //Подача команди на переконфігурацію DataFlash на розмір сторінки 256Б
+     73          /*****************************************************/
+     74          void dataflash_set_pagesize_256(int index_chip)
+     75          {
+     76            if ((index_chip == INDEX_DATAFLASH_1) || (index_chip == INDEX_DATAFLASH_2))
+     77            {
+     78              driver_spi_df[index_chip].code_operation = CODE_OPERATION_PAGESIZE_256;
+     79              TxBuffer_SPI_DF[0] = 0x3D;
+     80              TxBuffer_SPI_DF[1] = 0x2A;
+     81              TxBuffer_SPI_DF[2] = 0x80;
+     82              TxBuffer_SPI_DF[3] = 0xA6;
+     83              start_exchange_via_spi(index_chip, 4);
+     84            }
+     85            else
+     86            {
+     87              //Відбулася невизначена помилка, тому треба піти на перезавантаження
+     88              total_error_sw_fixed(8);
+     89            }
+     90            
+     91          }
+     92          /*****************************************************/
+     93          
+     94          /*****************************************************/
+     95          //Подача команди повного стирання мікросхеми
+     96          /*****************************************************/
+     97          void dataflash_erase(int index_chip)
+     98          {
+     99            if ((index_chip == INDEX_DATAFLASH_1) || (index_chip == INDEX_DATAFLASH_2))
+    100            {
+    101              driver_spi_df[index_chip].code_operation = CODE_OPERATION_ERASE;
+    102              TxBuffer_SPI_DF[0] = 0xC7;
+    103              TxBuffer_SPI_DF[1] = 0x94;
+    104              TxBuffer_SPI_DF[2] = 0x80;
+    105              TxBuffer_SPI_DF[3] = 0x9A;
+    106              start_exchange_via_spi(index_chip, 4);
+    107            }
+    108            else
+    109            {
+    110              //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    111              total_error_sw_fixed(9);
+    112            }
+    113            
+    114          }
+    115          /*****************************************************/
+    116          
+    117          /*****************************************************/
+    118          //Запис даних у буфер з подальшим стиранням і перепрограмуванням
+    119          /*****************************************************/
+    120          void dataflash_mamory_page_program_through_buffer(int index_chip)
+    121          {
+    122            unsigned int size_page;
+    123            driver_spi_df[index_chip].code_operation = CODE_OPERATION_WRITE_PAGE_THROUGH_BUFFER;
+    124            TxBuffer_SPI_DF[0] = 0x82;
+    125            
+    126            if (index_chip == INDEX_DATAFLASH_1)
+    127            {
+    128              size_page = SIZE_PAGE_DATAFLASH_1;
+    129            }
+    130            else if (index_chip == INDEX_DATAFLASH_2)
+    131            {
+    132              size_page = SIZE_PAGE_DATAFLASH_2;
+    133            }
+    134            else
+    135            {
+    136              //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    137              total_error_sw_fixed(11);
+    138            }
+    139            
+    140            //Запускаємо процес запису
+    141            start_exchange_via_spi(index_chip, (4 + size_page));
+    142          }
+    143          /*****************************************************/
+    144          
+    145          /*****************************************************/
+    146          //Зчитування даних на швидкості до 66МГц
+    147          /*****************************************************/
+    148          void dataflash_mamory_read(int index_chip)
+    149          {
+    150            driver_spi_df[index_chip].code_operation = CODE_OPERATION_READ_HIGH_FREQ;
+    151            TxBuffer_SPI_DF[0] = 0x0B;
+    152          
+    153            int temp_value_for_address;
+    154              
+    155            if (index_chip == INDEX_DATAFLASH_1)
+    156            {
+    157              if(false)
+    158              {
+    159              }
+    160              else if (
+    161                       (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU ) ||
+    162                       (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB  ) ||
+    163                       (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_RS485)
+    164                      )   
+    165              {
+    166                //Читання даних реєстратора програмних помилок
+    167                unsigned int number_record;
+    168                if (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU)
+    169                {
+    170                  number_record = number_record_of_pr_err_into_menu;
+    171                }
+    172                else if (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB)
+    173                {
+    174                  number_record = number_record_of_pr_err_into_USB;
+    175                }
+    176                else
+    177                {
+    178                  number_record = number_record_of_pr_err_into_RS485;
+    179                }
+    180          
+    181                //Визначаємо початкову адресу запису, яку треба зчитати
+    182                temp_value_for_address = info_rejestrator_pr_err.next_address - ((number_record + 1)<<VAGA_SIZE_ONE_RECORD_PR_ERR);
+    183                while (temp_value_for_address < MIN_ADDRESS_PR_ERR_AREA) temp_value_for_address = temp_value_for_address + SIZE_PR_ERR_AREA; 
+    184                  
+    185                TxBuffer_SPI_DF[1] = (temp_value_for_address >> 16) & 0x0f; 
+    186                TxBuffer_SPI_DF[2] = (temp_value_for_address >> 8 ) & 0xff; 
+    187                TxBuffer_SPI_DF[3] = (temp_value_for_address      ) & 0xff; 
+    188          
+    189                //Після адреси має іти один додатковй байт як буфер перед початком отримування реальних даних
+    190                  
+    191                //Подальше вмістиме не має значення
+    192          
+    193                //Запускаємо процес запису
+    194                start_exchange_via_spi(index_chip, (5 + SIZE_ONE_RECORD_PR_ERR));
+    195              }
+    196              else
+    197              {
+    198                //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    199                total_error_sw_fixed(13);
+    200              }
+    201            }
+    202            else if (index_chip == INDEX_DATAFLASH_2)
+    203            {
+    204            }
+    205            else
+    206            {
+    207              //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    208              total_error_sw_fixed(14);
+    209            }
+    210          }
+    211          /*****************************************************/
+    212          
+    213          /*****************************************************/
+    214          //Зчитування сторінки пам'яті DataFlash у буфер
+    215          /*****************************************************/
+    216          void dataflash_mamory_page_into_buffer(int index_chip)
+    217          {
+    218            unsigned int address_into_dataflash;
+    219            driver_spi_df[index_chip].code_operation = CODE_OPERATION_READ_PAGE_INTO_BUFFER;
+    220            TxBuffer_SPI_DF[0] = 0x53;
+    221            
+    222            if (index_chip == INDEX_DATAFLASH_1)
+    223            {
+    224              //Формуємо адресу сторінки для зчитування у буфер DataFlash
+    225              address_into_dataflash = info_rejestrator_pr_err.next_address;
+    226          
+    227              TxBuffer_SPI_DF[1] = (address_into_dataflash >> 16) & 0x0f; 
+    228              TxBuffer_SPI_DF[2] = (address_into_dataflash >> 8 ) & 0xff; 
+    229              TxBuffer_SPI_DF[3] = 0; 
+    230            }
+    231            else if (index_chip == INDEX_DATAFLASH_2)
+    232            {
+    233            }
+    234            else
+    235            {
+    236              //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    237              total_error_sw_fixed(15);
+    238            }
+    239          
+    240            //Запускаємо процес запису
+    241            start_exchange_via_spi(index_chip, 4);
+    242          }
+    243          /*****************************************************/
+    244          
+    245          /*****************************************************/
+    246          //Запис нових даних у буфер мікрсхеми DataFlash
+    247          /*****************************************************/
+    248          void dataflash_mamory_write_buffer(int index_chip)
+    249          {
+    250            unsigned int size_page;
+    251          
+    252            driver_spi_df[index_chip].code_operation = CODE_OPERATION_WRITE_BUFFER;
+    253            TxBuffer_SPI_DF[0] = 0x84;
+    254          
+    255            if (index_chip == INDEX_DATAFLASH_1)
+    256            {
+    257              size_page = SIZE_PAGE_DATAFLASH_1;
+    258          
+    259              //Запис даних реєстратора програмних подій з останнього свобідного місця і або всі дані, або стільки скільки може вміститися до кінця сторінки
+    260                
+    261              //Формуємо адресу для запису
+    262              unsigned int next_address_into_buffer = info_rejestrator_pr_err.next_address & 0xff;
+    263                  
+    264              TxBuffer_SPI_DF[1] = 0; 
+    265              TxBuffer_SPI_DF[2] = 0; 
+    266              TxBuffer_SPI_DF[3] = next_address_into_buffer; 
+    267              
+    268              //Починаємо заповнювати буфер для передачі у буфер мікросхеми DataFlash даними для запису
+    269              number_recods_writing_into_dataflash_now = 0;
+    270              unsigned int head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
+    271              while(
+    272                    ((next_address_into_buffer + SIZE_ONE_RECORD_PR_ERR - 1) < size_page) &&
+    273                    (tail != head)
+    274                   )
+    275              {
+    276                //Заповнюємо дальше буфер даними, які треба записати 
+    277                for (unsigned int i = 0; i < SIZE_ONE_RECORD_PR_ERR; i++ )
+    278                  TxBuffer_SPI_DF[4 + number_recods_writing_into_dataflash_now*SIZE_ONE_RECORD_PR_ERR + i] =
+    279                    buffer_pr_err_records[tail*SIZE_ONE_RECORD_PR_ERR + i];
+    280                
+    281                //Змінюємо контролюючі змінні
+    282                number_recods_writing_into_dataflash_now++;
+    283                next_address_into_buffer += SIZE_ONE_RECORD_PR_ERR;
+    284                tail++;
+    285                if(tail >= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER) tail = 0;
+    286              }
+    287          
+    288              //Запускаємо процес запису
+    289              start_exchange_via_spi(index_chip, (4 + number_recods_writing_into_dataflash_now*SIZE_ONE_RECORD_PR_ERR));
+    290            }
+    291            else if (index_chip == INDEX_DATAFLASH_2)
+    292            {
+    293            }
+    294            else
+    295            {
+    296              //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    297              total_error_sw_fixed(16);
+    298            }
+    299          }
+    300          /*****************************************************/
+    301          
+    302          /*****************************************************/
+    303          //Запис буфер DataFlash у пам'ять мікросхеми DataFlash
+    304          /*****************************************************/
+    305          void dataflash_mamory_buffer_into_memory(int index_chip)
+    306          {
+    307            //Запис внутрішнбього буферу (буферу 1) пам'ять DataFlash
+    308            driver_spi_df[index_chip].code_operation = CODE_OPERATION_WRITE_BUFFER_INTO_MEMORY_WITH_ERASE;
+    309            TxBuffer_SPI_DF[0] = 0x83;
+    310          
+    311            if (index_chip == INDEX_DATAFLASH_1)
+    312            {
+    313              //У структурі по інформації стану реєстраторів виставляємо повідомлення, що почався запис і ще не закінчився
+    314              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
+    315              info_rejestrator_pr_err.saving_execution = 1;
+    316              
+    317              //Формуємо адресу для запису
+    318              unsigned int address_into_dataflash = info_rejestrator_pr_err.next_address;
+    319                  
+    320              TxBuffer_SPI_DF[1] = (address_into_dataflash >> 16) & 0x0f; 
+    321              TxBuffer_SPI_DF[2] = (address_into_dataflash >> 8 ) & 0xff; 
+    322              TxBuffer_SPI_DF[3] = 0; 
+    323            }
+    324            else if (index_chip == INDEX_DATAFLASH_2)
+    325            {
+    326            }
+    327            else
+    328            {
+    329              //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    330              total_error_sw_fixed(17);
+    331            }
+    332          
+    333            //Запускаємо процес запису
+    334            start_exchange_via_spi(index_chip, 4);
+    335          }
+    336          /*****************************************************/
+    337          
+    338          
+    339          /*****************************************************/
+    340          //аналіз отриманих даних після запиту
+    341          /*****************************************************/
+    342          inline void analize_received_data_dataflash(int index_chip)
+    343          {
+    344            switch (driver_spi_df[index_chip].code_operation)
+    345            {
+    346            case CODE_OPERATION_STATUS_READ:
+    347              {
+    348                if ((index_chip == INDEX_DATAFLASH_1) || (index_chip == INDEX_DATAFLASH_2))
+    349                {
+    350                  //Виконувалася операція зчитування статусу мікросхеми DataFlash
+    351                  if ((RxBuffer_SPI_DF[1] & (1<< 7)) != 0) dataflash_not_busy |= (1 << index_chip);
+    352                  else dataflash_not_busy &= (unsigned int)(~(1 << index_chip));
+    353                  
+    354                  driver_spi_df[index_chip].state_execution = TRANSACTION_EXECUTING_NONE;
+    355                  driver_spi_df[index_chip].code_operation = CODE_OPERATION_NONE;
+    356                }
+    357                else
+    358                {
+    359                  //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    360                  total_error_sw_fixed(26);
+    361                }
+    362                break;
+    363              }
+    364            case CODE_OPERATION_ERASE:
+    365              {
+    366                //Подана команда повного стирання мікросхеми
+    367               
+    368                //Знімаємо з черги запуск повного стирання
+    369                if (index_chip == INDEX_DATAFLASH_1) control_tasks_dataflash &= (unsigned int)(~TASK_ERASE_DATAFLASH_1);
+    370                else if (index_chip == INDEX_DATAFLASH_2) control_tasks_dataflash &= (unsigned int)(~TASK_ERASE_DATAFLASH_2);
+    371                else
+    372                {
+    373                  //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    374                  total_error_sw_fixed(18);
+    375                }
+    376          
+    377                //Зараз іде стирання, яке займає певний проміжок часу, тому помічаємо, що мікросхема є зайнятою і регістром статусу визначаємо, коли ця операція повністю закінчиться
+    378                dataflash_not_busy &= (unsigned int)(~(1 << index_chip));
+    379                
+    380                driver_spi_df[index_chip].state_execution = TRANSACTION_EXECUTING_NONE;
+    381                driver_spi_df[index_chip].code_operation = CODE_OPERATION_NONE;
+    382                break;
+    383              }
+    384            case CODE_OPERATION_WRITE_PAGE_THROUGH_BUFFER:
+    385              {
+    386                if (index_chip == INDEX_DATAFLASH_1)
+    387                {
+    388                }
+    389                else if (index_chip == INDEX_DATAFLASH_2)
+    390                {
+    391                }
+    392                else
+    393                {
+    394                  //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    395                  total_error_sw_fixed(27);
+    396                }
+    397                 
+    398                //Зараз іде процес запису, який займає певний проміжок часу, тому помічаємо, що мікросхема є зайнятою і регістром статусу визначаємо, коли ця операція повністю закінчиться
+    399                dataflash_not_busy &= (unsigned int)(~(1 << index_chip));
+    400                
+    401                driver_spi_df[index_chip].state_execution = TRANSACTION_EXECUTING_NONE;
+    402                driver_spi_df[index_chip].code_operation = CODE_OPERATION_NONE;
+    403                break;
+    404              }
+    405            case CODE_OPERATION_READ_HIGH_FREQ:
+    406              {
+    407                //Копіюємо прочитані дані у буфер
+    408                unsigned char *point_buffer;
+    409                unsigned int number_byte_copy_into_target_buffer;
+    410          //      unsigned int size_page;
+    411          
+    412                if (index_chip == INDEX_DATAFLASH_1)
+    413                {
+    414          //        size_page = SIZE_PAGE_DATAFLASH_1;
+    415          //        unsigned int *point_part_reading;
+    416          
+    417                  if (
+    418                      (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU )||
+    419                      (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB  )||
+    420                      (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_RS485)
+    421                     )   
+    422                  {
+    423                    if (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU)
+    424                      point_buffer = (unsigned char *)(buffer_for_manu_read_record);
+    425                    else if (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB)
+    426                      point_buffer = (unsigned char *)(buffer_for_USB_read_record_pr_err);
+    427                    else
+    428                      point_buffer = (unsigned char *)(buffer_for_RS485_read_record_pr_err);
+    429                    
+    430                    number_byte_copy_into_target_buffer = SIZE_ONE_RECORD_PR_ERR;
+    431                  }
+    432                  
+    433                  if (
+    434                      (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU ) ||
+    435                      (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB  ) ||  
+    436                      (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_RS485)  
+    437                     )
+    438                  {
+    439                    //По ідеї ця умова завжди має виконуватися
+    440                    for (unsigned int i = 0; i < number_byte_copy_into_target_buffer; i++ )
+    441                      *(point_buffer + i) = RxBuffer_SPI_DF[5 + i];
+    442                  }
+    443                  else
+    444                  {
+    445                    //Теоретично цього ніколи не мало б бути
+    446                    total_error_sw_fixed(46);
+    447                  }
+    448          
+    449                  if (
+    450                      (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU ) ||
+    451                      (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB  ) ||  
+    452                      (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_RS485)  
+    453                     )
+    454                  {
+    455                    //Відбувалося зчитування реєстратора програмних подій
+    456                    //Знімаємо з черги запуск зчитування запису реєстратора програмних подій
+    457                    if (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_MENU)
+    458                    {
+    459                      control_tasks_dataflash &= (unsigned int)(~TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU);
+    460          
+    461                      /*Подаємо команду на обновлення екрану на LCD, хоч він десь за 
+    462                      час <= 1c обновиться автоматично, бо система меню чекає, поки
+    463                      буде зчитано запис
+    464                      */
+    465                      new_state_keyboard |= (1<<BIT_REWRITE);
+    466                    }
+    467                    else if (what_we_are_reading_from_dataflash_1 == READING_PR_ERR_FOR_USB)
+    468                      control_tasks_dataflash &= (unsigned int)(~TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB);
+    469                    else
+    470                      control_tasks_dataflash &= (unsigned int)(~TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485);
+    471                  }
+    472                }
+    473                else if (index_chip == INDEX_DATAFLASH_2)
+    474                {
+    475                }
+    476                else
+    477                {
+    478                  //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    479                  total_error_sw_fixed(33);
+    480                }
+    481                    
+    482                 
+    483                driver_spi_df[index_chip].state_execution = TRANSACTION_EXECUTING_NONE;
+    484                driver_spi_df[index_chip].code_operation = CODE_OPERATION_NONE;
+    485                break;
+    486              }
+    487            case CODE_OPERATION_READ_PAGE_INTO_BUFFER:
+    488              {
+    489                //Завершилося подача команди зчитування пам'яті програм у буфер мікросхеми DataFlash
+    490                unsigned int *label_to_etap_writing;
+    491                if (index_chip == INDEX_DATAFLASH_1) label_to_etap_writing = &etap_writing_pr_err_into_dataflash;
+    492                else if (index_chip == INDEX_DATAFLASH_2){}
+    493                else
+    494                {
+    495                  //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    496                  total_error_sw_fixed(28);
+    497                }
+    498                
+    499                //Переводимо режим запису відповідного реєстратора у запис нових значень
+    500                if (*label_to_etap_writing == ETAP_READ_MEMORY_INTO_BUFFER)
+    501                  *label_to_etap_writing = ETAP_HAVE_READ_MEMORY_INTO_BUFFER;
+    502                else 
+    503                  *label_to_etap_writing = ETAP_ERROR_BEFALLEN;
+    504                
+    505                //Зараз іде процес зчитування у буфер, який займає певний проміжок часу, тому помічаємо, що мікросхема є зайнятою і регістром статусу визначаємо, коли ця операція повністю закінчиться
+    506                dataflash_not_busy &= (unsigned int)(~(1 << index_chip));
+    507                
+    508                driver_spi_df[index_chip].state_execution = TRANSACTION_EXECUTING_NONE;
+    509                driver_spi_df[index_chip].code_operation = CODE_OPERATION_NONE;
+    510                break;
+    511              }
+    512            case CODE_OPERATION_WRITE_BUFFER:
+    513              {
+    514                //Завершилося передача даних у буфер мікросхеми DataFlash
+    515                unsigned int *label_to_etap_writing;
+    516                if (index_chip == INDEX_DATAFLASH_1) label_to_etap_writing = &etap_writing_pr_err_into_dataflash;
+    517                else if (index_chip == INDEX_DATAFLASH_2){}
+    518                else
+    519                {
+    520                  //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    521                  total_error_sw_fixed(29);
+    522                }
+    523                
+    524                //Переводимо режим запису у запершення модифікації фуферу DataFlah
+    525                if (*label_to_etap_writing == ETAP_MODIFY_AND_WRITE_BUFFER)
+    526                  *label_to_etap_writing = ETAP_MODIFIED_AND_WRITTEN_BUFFER;
+    527                else 
+    528                  *label_to_etap_writing = ETAP_ERROR_BEFALLEN;
+    529                
+    530                //Помічаємо, що мікросхема є зайнятою і регістром статусу визначаємо, коли ця операція повністю закінчиться
+    531                dataflash_not_busy &= (unsigned int)(~(1 << index_chip));
+    532                
+    533                driver_spi_df[index_chip].state_execution = TRANSACTION_EXECUTING_NONE;
+    534                driver_spi_df[index_chip].code_operation = CODE_OPERATION_NONE;
+    535                break;
+    536              }
+    537            case CODE_OPERATION_WRITE_BUFFER_INTO_MEMORY_WITH_ERASE:
+    538              {
+    539                if (index_chip == INDEX_DATAFLASH_1)
+    540                {
+    541                  if (etap_writing_pr_err_into_dataflash == ETAP_WRITE_BUFFER_INTO_MEMORY)
+    542                  {
+    543                    //Виставляємо команду запису структури реєстратора програмних подій у EEPROM
+    544                    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
+    545                    //Визначаємо нову адресу наступного запису, нову кількість записів і знімаємо сигналізацію, що зараз іде запис
+    546                    unsigned int temp_value_for_address = (info_rejestrator_pr_err.next_address + number_recods_writing_into_dataflash_now*SIZE_ONE_RECORD_PR_ERR);
+    547                    while (temp_value_for_address > MAX_ADDRESS_PR_ERR_AREA) temp_value_for_address = temp_value_for_address - SIZE_PR_ERR_AREA; 
+    548                    info_rejestrator_pr_err.next_address = temp_value_for_address;
+    549                    info_rejestrator_pr_err.saving_execution = 0;
+    550                    if ((info_rejestrator_pr_err.number_records + number_recods_writing_into_dataflash_now) <= MAX_NUMBER_RECORDS_INTO_PR_ERR) info_rejestrator_pr_err.number_records += number_recods_writing_into_dataflash_now;
+    551                    else info_rejestrator_pr_err.number_records = MAX_NUMBER_RECORDS_INTO_PR_ERR;
+    552                  
+    553                    //Змінюємо індекси буферу типу FIFO 
+    554                    tail_fifo_buffer_pr_err_records += number_recods_writing_into_dataflash_now;
+    555                    while(tail_fifo_buffer_pr_err_records >= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER) tail_fifo_buffer_pr_err_records -= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
+    556                    number_recods_writing_into_dataflash_now = 0;
+    557                  
+    558                    if (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) != 0)
+    559                    {
+    560                      //Треба спробувати зняти повідомлення про переповнення буферу FIFO програмних подій
+    561                      _SET_BIT(clear_diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
+    562                    }
+    563          
+    564                    //Знімаємо з черги запуск запису у реєстратор програмних подій
+    565                    etap_writing_pr_err_into_dataflash = ETAP_NONE;
+    566                    control_tasks_dataflash &= (unsigned int)(~TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH);
+    567                  }
+    568                  else 
+    569                    etap_writing_pr_err_into_dataflash = ETAP_ERROR_BEFALLEN;
+    570                }
+    571                else if (index_chip == INDEX_DATAFLASH_2)
+    572                {
+    573                }
+    574                else
+    575                {
+    576                  //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    577                  total_error_sw_fixed(30);
+    578                }
+    579                 
+    580                //Зараз іде процес запису, який займає певний проміжок часу, тому помічаємо, що мікросхема є зайнятою і регістром статусу визначаємо, коли ця операція повністю закінчиться
+    581                dataflash_not_busy &= (unsigned int)(~(1 << index_chip));
+    582                
+    583                driver_spi_df[index_chip].state_execution = TRANSACTION_EXECUTING_NONE;
+    584                driver_spi_df[index_chip].code_operation = CODE_OPERATION_NONE;
+    585                break;
+    586              }
+    587            default:
+    588              {
+    589                //По ідеї, сюди програма ніколи не мала б попадати. 
+    590                //Якщо ми сюди попали, то треба виставити повідомлення, що не знаєм чи мікросхема є вільною і скидаємо всі опреації
+    591                dataflash_not_busy &= (unsigned int)(~(1 << index_chip));
+    592                driver_spi_df[index_chip].state_execution = TRANSACTION_EXECUTING_NONE;
+    593                driver_spi_df[index_chip].code_operation = CODE_OPERATION_NONE;
+    594                break;
+    595              }
+    596            }
+    597          }
+    598          /*****************************************************/
+    599          
+    600          /*****************************************************/
+    601          //Основна функція обробки даних по управлінню DataFlash (обробка прийнятих даних)
+    602          /*****************************************************/
+    603          void main_function_for_dataflash_resp(int index_chip)
+    604          {
+    605            if ((index_chip >= INDEX_DATAFLASH_1) && (index_chip <= INDEX_DATAFLASH_2))
+    606            {
+    607              if(driver_spi_df[index_chip].state_execution == TRANSACTION_EXECUTED_WAIT_ANALIZE)
+    608              {
+    609                //Виконуємо функцію обробки даних по завершення трансакції
+    610                analize_received_data_dataflash(index_chip);
+    611              }
+    612            }
+    613            else
+    614            {
+    615              //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    616              total_error_sw_fixed(19);
+    617            }
+    618          }
+    619          /*****************************************************/
+    620          
+    621          /*****************************************************/
+    622          //Основна функція обробки даних по управлінню DataFlash (подача нової команди даних)
+    623          /*****************************************************/
+    624          void main_function_for_dataflash_req(int index_chip)
+    625          {
+    626            if ((index_chip >= INDEX_DATAFLASH_1) && (index_chip <= INDEX_DATAFLASH_2))
+    627            {
+    628              if (driver_spi_df[index_chip].state_execution == TRANSACTION_EXECUTING_NONE)
+    629              {
+    630                //Якщо зараз не запущено ніякрої операції, то можна при потребі нову трансакцію
+    631                if((dataflash_not_busy & (1 << index_chip)) == 0)
+    632                {
+    633                  //Попередній раз прийшло повідомлення про те, що мікросхема є занятою, тому треба повторно зчитувати статус поки вона не зтане незанятою
+    634                  dataflash_status_read(index_chip);
+    635                }
+    636                else
+    637                {
+    638                  //мікросхема зараз є вільною. тому можна запускати при необхідності нові трансакції
+    639                  unsigned int tasks_register;
+    640                  if (index_chip == INDEX_DATAFLASH_1) tasks_register = control_tasks_dataflash & 0xffff;
+    641                  else tasks_register = control_tasks_dataflash & 0xffff0000;
+    642                  
+    643                  if (tasks_register !=0)
+    644                  {
+    645                    //Зараз стоять у черзці операції, які треба виконати
+    646                    if (
+    647                        ((tasks_register & TASK_ERASE_DATAFLASH_1) !=0) ||
+    648                        ((tasks_register & TASK_ERASE_DATAFLASH_2) !=0)
+    649                       )
+    650                    {
+    651                      //Треба виконати команду повного стирання мікросхеми
+    652                      dataflash_erase(index_chip);
+    653                    }
+    654                    else if ((tasks_register & TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH) !=0 )
+    655                    {
+    656                      //Треба виконати команди: зчитування у буфер, зміна буферу, запис буферу зпопереднім його стиранням для реєстратора програмних подій
+    657                      if (etap_writing_pr_err_into_dataflash > ETAP_ERROR_BEFALLEN)
+    658                        etap_writing_pr_err_into_dataflash = ETAP_ERROR_BEFALLEN;
+    659                      
+    660                      switch (etap_writing_pr_err_into_dataflash)
+    661                      {
+    662                      case ETAP_NONE:
+    663                        {
+    664                          etap_writing_pr_err_into_dataflash = ETAP_READ_MEMORY_INTO_BUFFER;
+    665                          dataflash_mamory_page_into_buffer(index_chip);
+    666                          break;
+    667                        }
+    668                      case ETAP_HAVE_READ_MEMORY_INTO_BUFFER:
+    669                        {
+    670                          //Переходимо у режим запису даних у буфер
+    671                          etap_writing_pr_err_into_dataflash = ETAP_MODIFY_AND_WRITE_BUFFER;
+    672                          //Треба виконати команду запису даних реєстратора програмних подій у буфер мыкросхеми
+    673                          dataflash_mamory_write_buffer(index_chip);
+    674                          break;
+    675                        }
+    676                      case ETAP_MODIFIED_AND_WRITTEN_BUFFER:
+    677                        {
+    678                          //Переходимо у режим запису даних з буферу у пам'ять мікросхеми DataFlash
+    679                          etap_writing_pr_err_into_dataflash = ETAP_WRITE_BUFFER_INTO_MEMORY;
+    680                          //Треба виконати команду запису даних реєстратора програмних подій у буфер мыкросхеми
+    681                          dataflash_mamory_buffer_into_memory(index_chip);
+    682                          break;
+    683                        }
+    684                      default:
+    685                        {
+    686                          /*
+    687                          Сюди може зайти програма, якщо якась виникла помилка, 
+    688                          тоді знімаємо режим запису реєстратора програмних помилок і переводимо все у висхідний стан
+    689                          запис має початися з наступного разу  
+    690                          */
+    691                          etap_writing_pr_err_into_dataflash = ETAP_NONE;
+    692                          //Знімаємо з черги запуск запису у реєстратор програмних подій
+    693                          control_tasks_dataflash &= (unsigned int)(~TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH);
+    694                          
+    695                          break;
+    696                        }
+    697                      }   
+    698                    }   
+    699                    else if ((tasks_register & TASK_MAMORY_PAGE_PROGRAM_THROUGH_BUFFER_DATAFLASH_FOR_DR) !=0)
+    700                    {
+    701                      //Треба виконати команду запису даних у сторінку через буфер з попереднім стиранням
+    702                      dataflash_mamory_page_program_through_buffer(index_chip);
+    703                    }
+    704                    else if (
+    705                             ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU ) !=0 ) ||
+    706                             ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB  ) !=0 ) ||
+    707                             ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485) !=0 )
+    708                            )   
+    709                    {
+    710                      
+    711                      //Може виконуватися тільки одна операція для одної мікросхеми DataFlash(причому більi пріоритетна може переривати менш пріоритетну, якщо задача виконується у декілька етапів)
+    712                      //DataFlash1
+    713                      if ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB) !=0 )
+    714                        what_we_are_reading_from_dataflash_1 = READING_PR_ERR_FOR_USB;//Читання для USB завжди має більший пріоритет порівняно з читанням для RS-485 і меню
+    715                      else if ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485) !=0 )
+    716                        what_we_are_reading_from_dataflash_1 = READING_PR_ERR_FOR_RS485;//Читання для RS-485 завжди має більший пріоритет порівняно з читанням для меню
+    717                      else if ((tasks_register & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU) !=0 )
+    718                        what_we_are_reading_from_dataflash_1 = READING_PR_ERR_FOR_MENU;
+    719                      
+    720                      //Треба виконати команду читання даних
+    721                      dataflash_mamory_read(index_chip);
+    722                    }
+    723                  }
+    724                }
+    725              }
+    726            }
+    727            else
+    728            {
+    729              //Відбулася невизначена помилка, тому треба піти на перезавантаження
+    730              total_error_sw_fixed(24);
+    731            }
+    732          }
+    733          /*****************************************************/
+    734          
+    735          /*****************************************************/
+    736          //
+    737          /*****************************************************/
+    738          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      16   analize_received_data_dataflash
+        16   -> total_error_sw_fixed
+       8   dataflash_erase
+         8   -> start_exchange_via_spi
+         8   -> total_error_sw_fixed
+       8   dataflash_mamory_buffer_into_memory
+         8   -> start_exchange_via_spi
+         8   -> total_error_sw_fixed
+      16   dataflash_mamory_page_into_buffer
+        16   -> start_exchange_via_spi
+        16   -> total_error_sw_fixed
+      16   dataflash_mamory_page_program_through_buffer
+        16   -> start_exchange_via_spi
+        16   -> total_error_sw_fixed
+      16   dataflash_mamory_read
+        16   -> start_exchange_via_spi
+        16   -> total_error_sw_fixed
+      24   dataflash_mamory_write_buffer
+        24   -> start_exchange_via_spi
+        24   -> total_error_sw_fixed
+       8   dataflash_set_pagesize_256
+         8   -> start_exchange_via_spi
+         8   -> total_error_sw_fixed
+       8   dataflash_status_read
+         8   -> start_exchange_via_spi
+         8   -> total_error_sw_fixed
+      16   main_function_for_dataflash_req
+        16   -> dataflash_erase
+        16   -> dataflash_mamory_buffer_into_memory
+        16   -> dataflash_mamory_page_into_buffer
+        16   -> dataflash_mamory_page_program_through_buffer
+        16   -> dataflash_mamory_read
+        16   -> dataflash_mamory_write_buffer
+        16   -> dataflash_status_read
+        16   -> total_error_sw_fixed
+       8   main_function_for_dataflash_resp
+         8   -> analize_received_data_dataflash
+         8   -> total_error_sw_fixed
+      16   start_exchange_via_spi
+        16   -> DMA_ClearFlag
+        16   -> total_error_sw_fixed
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable10
+       4  ??DataTable10_1
+       4  ??DataTable10_10
+       4  ??DataTable10_11
+       4  ??DataTable10_12
+       4  ??DataTable10_13
+       4  ??DataTable10_14
+       4  ??DataTable10_15
+       4  ??DataTable10_16
+       4  ??DataTable10_17
+       4  ??DataTable10_18
+       4  ??DataTable10_19
+       4  ??DataTable10_2
+       4  ??DataTable10_20
+       4  ??DataTable10_21
+       4  ??DataTable10_22
+       4  ??DataTable10_23
+       4  ??DataTable10_24
+       4  ??DataTable10_25
+       4  ??DataTable10_26
+       4  ??DataTable10_3
+       4  ??DataTable10_4
+       4  ??DataTable10_5
+       4  ??DataTable10_6
+       4  ??DataTable10_7
+       4  ??DataTable10_8
+       4  ??DataTable10_9
+     976  analize_received_data_dataflash
+      74  dataflash_erase
+      90  dataflash_mamory_buffer_into_memory
+      74  dataflash_mamory_page_into_buffer
+      64  dataflash_mamory_page_program_through_buffer
+     174  dataflash_mamory_read
+     172  dataflash_mamory_write_buffer
+      74  dataflash_set_pagesize_256
+      50  dataflash_status_read
+     248  main_function_for_dataflash_req
+      38  main_function_for_dataflash_resp
+     270  start_exchange_via_spi
+
+ 
+ 2 412 bytes in section .text
+ 
+ 1 436 bytes of CODE memory (+ 976 bytes shared)
+
+Errors: none
+Warnings: none

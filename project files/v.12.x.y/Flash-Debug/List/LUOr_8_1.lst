@@ -1,0 +1,131 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:55
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\v_A_shm\LUOr_8_1.cpp
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\v_A_shm\LUOr_8_1.cpp" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" -lB
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --eec++ -I
+#        G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\LUOr_8_1.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\LUOr_8_1.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUOr_8_1.cpp
+      1          #ifdef VISUAL_STUDIO
+      2          #include "StdAfx.h"
+      3          #endif
+      4          #include "LUOr_8_1.h"
+      5          
+      6          void OR_Op_8_1    (void *pObj)
+                                          ^
+Remark[Pe826]: parameter "pObj" was never referenced
+      7          {
+      8          //CLUNot_1_1& refCLUNot_1_1 = pObj;
+      9          //CLUOr_8_1 *pCLUOr_8_1 = (CLUOr_8_1*)pObj;
+     10          
+     11          }
+     12          
+     13          CLUOr_8_1::CLUOr_8_1(void)
+     14          {
+     15          }
+     16          
+     17          CLUOr_8_1::CLUOr_8_1(char chM,char chI)//,LUOutDsc* pLUOutDsc)
+     18          {
+     19          	chMaxIteratoin = chM;
+     20          	chIteration = chI;
+     21          	chNumInput  = static_cast<char>(shCLUOr_8_1_AmtIn );
+     22          	chNumOutput = static_cast<char>(shCLUOr_8_1_AmtOut);
+     23          	chTypeLogicFunction = LU_OP_NOT;
+     24          	LogicFunc  = NOT_Op;//???
+     25          
+     26          	//Set Input parameters
+     27          	pIn = reinterpret_cast<void*>(arrPchIn);
+     28          
+     29          	//Set OutPut parameters
+     30          	pOut = reinterpret_cast<void*>(arrOut);
+     31          }
+     32          CLUOr_8_1::~CLUOr_8_1(void)
+     33          {
+     34          }
+     35          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   CLUOr_8_1::CLUOr_8_1()
+         8   -> CLUBase::subobject CLUBase()
+      16   CLUOr_8_1::CLUOr_8_1(char, char)
+        16   -> CLUBase::subobject CLUBase()
+       8   CLUOr_8_1::subobject CLUOr_8_1()
+         8   -> CLUOr_8_1::CLUOr_8_1()
+       8   CLUOr_8_1::subobject CLUOr_8_1(char, char)
+         8   -> CLUOr_8_1::CLUOr_8_1(char, char)
+       8   CLUOr_8_1::subobject ~CLUOr_8_1()
+         8   -> CLUOr_8_1::~CLUOr_8_1()
+       8   CLUOr_8_1::~CLUOr_8_1()
+         8   -> CLUBase::subobject ~CLUBase()
+       0   OR_Op_8_1(void *)
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable0
+      14  CLUOr_8_1::CLUOr_8_1()
+      50  CLUOr_8_1::CLUOr_8_1(char, char)
+      12  CLUOr_8_1::subobject CLUOr_8_1()
+      16  CLUOr_8_1::subobject CLUOr_8_1(char, char)
+      12  CLUOr_8_1::subobject ~CLUOr_8_1()
+      14  CLUOr_8_1::~CLUOr_8_1()
+       2  OR_Op_8_1(void *)
+
+ 
+ 124 bytes in section .text
+ 
+ 124 bytes of CODE memory
+
+Errors: none
+Warnings: none

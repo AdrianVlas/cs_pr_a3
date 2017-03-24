@@ -1,0 +1,337 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       23/Mar/2017  18:11:36
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\v_A_shm\LUBgsp1.cpp
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\v_A_shm\LUBgsp1.cpp" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" -lB
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --eec++ -I
+#        G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\LUBgsp1.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\LUBgsp1.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUBgsp1.cpp
+      1          #ifndef LU_BGS_SCHEMATIC_DSC_CONST_C
+      2          #define LU_BGS_SCHEMATIC_DSC_CONST_C
+      3          
+      4          const short arShOffsets[TOTAL_BGS_LU_CALC_POINT] = {
+                                         ^
+Error[Pe020]: identifier "TOTAL_BGS_LU_CALC_POINT" is undefined
+      5          OFFSET_OUT_EvalDeltaIbus_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalDeltaIbus_1" is undefined
+      6          OFFSET_OUT_StoreIfixTimeFix_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_StoreIfixTimeFix_1" is undefined
+      7          OFFSET_OUT_D_TRG_03__3_2,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_D_TRG_03__3_2" is undefined
+      8          OFFSET_OUT_TIMER_04_1_1,  
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_TIMER_04_1_1" is undefined
+      9          OFFSET_OUT_OR_05__2_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_OR_05__2_1" is undefined
+     10          OFFSET_OUT_And06__2_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_And06__2_1" is undefined
+     11          OFFSET_OUT_Not07__1_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_Not07__1_1" is undefined
+     12          OFFSET_OUT_EvalDeltaIbusFix_3_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalDeltaIbusFix_3_1" is undefined
+     13          OFFSET_OUT_TDELAY_1_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_TDELAY_1_1" is undefined
+     14          OFFSET_OUT_Not10__1_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_Not10__1_1" is undefined
+     15          OFFSET_OUT_And11__2_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_And11__2_1" is undefined
+     16          OFFSET_OUT_And12__2_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_And12__2_1" is undefined
+     17          OFFSET_OUT_And13__2_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_And13__2_1" is undefined
+     18          OFFSET_OUT_And14__2_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_And14__2_1" is undefined
+     19          OFFSET_OUT_EvalNNC_NCH_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalNNC_NCH_1" is undefined
+     20          OFFSET_OUT_EvalNNP_NCH_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalNNP_NCH_1" is undefined
+     21          OFFSET_OUT_EvalNNC_CH_1 ,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalNNC_CH_1" is undefined
+     22          OFFSET_OUT_EvalNNP_CH_1 ,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalNNP_CH_1" is undefined
+     23          OFFSET_OUT_EvalCE_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalCE_1" is undefined
+     24          OFFSET_OUT_EvalOC_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalOC_1" is undefined
+     25          OFFSET_OUT_EvalIptp_1, 
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalIptp_1" is undefined
+     26          OFFSET_OUT_EvalIctc_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalIctc_1" is undefined
+     27          OFFSET_OUT_MUX21_3_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_MUX21_3_1" is undefined
+     28          OFFSET_OUT_MUX22_3_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_MUX22_3_1" is undefined
+     29          OFFSET_OUT_EvalNNP_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalNNP_1" is undefined
+     30          OFFSET_OUT_EvalNNM_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalNNM_1" is undefined
+     31          OFFSET_OUT_EvalNCC_1,
+                 ^
+Error[Pe020]: identifier "OFFSET_OUT_EvalNCC_1" is undefined
+     32          TOTAL_BGS_LU_CALC_POINT
+     33          };
+     34          
+     35          
+     36          //RS_12__2_2 ,
+     37          const LUShcemasInDataDsc arDTrg_03__3_2InDataDsc[3] = {
+                       ^
+Error[Pe020]: identifier "LUShcemasInDataDsc" is undefined
+     38          {BGS_VCC, 0},{EvalDeltaIbus_1, 0},{TIMER_04_1_1,0}//not Led In
+                  ^
+Error[Pe020]: identifier "BGS_VCC" is undefined
+
+  {BGS_VCC, 0},{EvalDeltaIbus_1, 0},{TIMER_04_1_1,0}//not Led In
+                ^
+"G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUBgsp1.cpp",38  Error[Pe020]: 
+          identifier "EvalDeltaIbus_1" is undefined
+
+  {BGS_VCC, 0},{EvalDeltaIbus_1, 0},{TIMER_04_1_1,0}//not Led In
+                                     ^
+"G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUBgsp1.cpp",38  Error[Pe020]: 
+          identifier "TIMER_04_1_1" is undefined
+     39          };
+     40          const LUShcemasDscRecord DTrg_03__3_2DscRec = {
+                       ^
+Error[Pe020]: identifier "LUShcemasDscRecord" is undefined
+     41          3,2,LU_GEN_OP_D_TRIGGER_TYPE3,
+                     ^
+Error[Pe020]: identifier "LU_GEN_OP_D_TRIGGER_TYPE3" is undefined
+     42          &arDTrg_03__3_2InDataDsc[0]
+     43          }; 
+     44          
+     45          //OR_05__2_1 ,
+     46          const LUShcemasInDataDsc arOr_05__2_1InDataDsc[2] = {
+                       ^
+Error[Pe020]: identifier "LUShcemasInDataDsc" is undefined
+     47          {And06__2_1, 0},{TDELAY_1_1,0}//not Led In
+                  ^
+Error[Pe020]: identifier "And06__2_1" is undefined
+
+  {And06__2_1, 0},{TDELAY_1_1,0}//not Led In
+                   ^
+"G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUBgsp1.cpp",47  Error[Pe020]: 
+          identifier "TDELAY_1_1" is undefined
+     48          };
+     49          const LUShcemasDscRecord Or_05__2_1DscRec = {
+                       ^
+Error[Pe020]: identifier "LUShcemasDscRecord" is undefined
+     50          2,1,LU_GEN_OP_OR,
+                     ^
+Error[Pe020]: identifier "LU_GEN_OP_OR" is undefined
+     51          &arOr_05__2_1InDataDsc[0]
+     52          }; 
+     53          //And06__2_1 ,
+     54          const LUShcemasInDataDsc arAnd06__2_1InDataDsc[2] = {
+                       ^
+Error[Pe020]: identifier "LUShcemasInDataDsc" is undefined
+     55          {Not07__1_1, 0},{D_TRG_03__3_2,0}
+                  ^
+Error[Pe020]: identifier "Not07__1_1" is undefined
+
+  {Not07__1_1, 0},{D_TRG_03__3_2,0}
+                   ^
+"G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUBgsp1.cpp",55  Error[Pe020]: 
+          identifier "D_TRG_03__3_2" is undefined
+     56          };
+     57          const LUShcemasDscRecord And06__2_1DscRec = {
+                       ^
+Error[Pe020]: identifier "LUShcemasDscRecord" is undefined
+     58          2,1,LU_GEN_OP_AND,
+                     ^
+Error[Pe020]: identifier "LU_GEN_OP_AND" is undefined
+     59          &arAnd06__2_1InDataDsc[0]
+     60          };
+     61          
+     62          const LUShcemasInDataDsc arNot07__1_1InDataDsc[1] = {
+                       ^
+Error[Pe020]: identifier "LUShcemasInDataDsc" is undefined
+     63          EvalDeltaIbusFix_3_1, 0
+                 ^
+Error[Pe020]: identifier "EvalDeltaIbusFix_3_1" is undefined
+
+  EvalDeltaIbusFix_3_1, 0
+                        ^
+"G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUBgsp1.cpp",63  Error[Pe146]: 
+          too many initializer values
+     64          };
+     65          const LUShcemasDscRecord Not07__1_1DscRec = {
+                       ^
+Error[Pe020]: identifier "LUShcemasDscRecord" is undefined
+     66          1,1,LU_GEN_OP_NOT,
+                     ^
+Error[Pe020]: identifier "LU_GEN_OP_NOT" is undefined
+     67          &arNot07__1_1InDataDsc[0]
+     68          };
+     69          
+     70          const LUShcemasInDataDsc EvDeltaIbusFix_3_1InDataDsc[1] = {
+                       ^
+Error[Pe020]: identifier "LUShcemasInDataDsc" is undefined
+     71          D_TRG_03__3_2, 0
+                                ^
+Error[Pe146]: too many initializer values
+     72          };
+     73          const LUShcemasDscRecord EvDeltaIbusFix_3_1DscRec = {
+                       ^
+Error[Pe020]: identifier "LUShcemasDscRecord" is undefined
+     74          1,1,LU_GEN_OP_EV_FIX_IBUS,
+                     ^
+Error[Pe020]: identifier "LU_GEN_OP_EV_FIX_IBUS" is undefined
+     75          &arNot07__1_1InDataDsc[0]
+     76          };
+     77          
+     78          //Not10__1_1,
+     79          const LUShcemasInDataDsc arNot10__1_1InDataDsc[1] = {
+                       ^
+Error[Pe020]: identifier "LUShcemasInDataDsc" is undefined
+     80          IN_BGS_MNU_STATE_CHECK_BGS_SELECTOR, 0
+                 ^
+Error[Pe020]: identifier "IN_BGS_MNU_STATE_CHECK_BGS_SELECTOR" is undefined
+
+  IN_BGS_MNU_STATE_CHECK_BGS_SELECTOR, 0
+                                       ^
+"G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUBgsp1.cpp",80  Error[Pe146]: 
+          too many initializer values
+     81          };
+     82          const LUShcemasDscRecord Not10__1_1DscRec = {
+                       ^
+Error[Pe020]: identifier "LUShcemasDscRecord" is undefined
+     83          1,1,LU_GEN_OP_NOT,
+     84          &arNot10__1_1InDataDsc[0]
+     85          };
+     86          
+     87          
+     88          //And11__2_1 ,
+     89          const LUShcemasInDataDsc arAnd11__2_1InDataDsc[2] = {
+                       ^
+Error[Pe020]: identifier "LUShcemasInDataDsc" is undefined
+     90          {Not10__1_1, 0},{TDELAY_1_1,0}//not Led In
+                  ^
+Error[Pe020]: identifier "Not10__1_1" is undefined
+     91          };
+     92          const LUShcemasDscRecord And11__2_1DscRec = {
+                       ^
+Error[Pe020]: identifier "LUShcemasDscRecord" is undefined
+     93          2,1,LU_GEN_OP_AND,
+     94          &arAnd11__2_1InDataDsc[0]
+     95          };
+     96          //And12__2_1 ,
+     97          const LUShcemasInDataDsc arAnd12__2_1InDataDsc[2] = {
+                       ^
+Error[Pe020]: identifier "LUShcemasInDataDsc" is undefined
+     98          {TDELAY_1_1, 0},{Not10__1_1,0}//not Led In
+     99          };
+    100          const LUShcemasDscRecord And12__2_1DscRec = {
+                       ^
+Error[Pe020]: identifier "LUShcemasDscRecord" is undefined
+    101          2,1,LU_GEN_OP_AND,
+    102          &arAnd12__2_1InDataDsc[0]
+    103          };  
+    104          
+    105          //And13__2_1 ,
+    106          const LUShcemasInDataDsc arAnd13__2_1InDataDsc[2] = {
+                       ^
+Error[Pe020]: identifier "LUShcemasInDataDsc" is undefined
+    107          {TDELAY_1_1, 0},{Not10__1_1,0}//not Led In
+    108          };
+    109          const LUShcemasDscRecord And13__2_1DscRec = {
+                       ^
+Error[Pe020]: identifier "LUShcemasDscRecord" is undefined
+    110          2,1,LU_GEN_OP_AND,
+    111          &arAnd13__2_1InDataDsc[0]
+    112          };
+    113          //And14__2_1 ,
+    114          const LUShcemasInDataDsc arAnd14__2_1InDataDsc[2] = {
+                       ^
+Error[Pe020]: identifier "LUShcemasInDataDsc" is undefined
+    115          {TDELAY_1_1, 0},{Not10__1_1,0}//not Led In
+    116          };
+    117          const LUShcemasDscRecord And14__2_1DscRec = {
+                       ^
+Error[Pe020]: identifier "LUShcemasDscRecord" is undefined
+
+  const LUShcemasInDataDsc EvDeltaIbusFix_3_1InDataDsc[1] = {
+                           ^
+"G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUBgsp1.cpp",70  Warning[Pe177]: 
+          variable "EvDeltaIbusFix_3_1InDataDsc" was declared but never
+          referenced
+    118          2,1,LU_GEN_OP_AND,
+    119          &arAnd14__2_1InDataDsc[0]
+    120          };  
+    121          
+    122          
+    123          #endif
+    124          
+
+Errors: 66
+Warnings: 1

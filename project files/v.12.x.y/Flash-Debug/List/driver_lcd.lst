@@ -1,0 +1,696 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:54
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\driver_lcd.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\driver_lcd.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\driver_lcd.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\driver_lcd.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\driver_lcd.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          //Очікування, поки контролер LCD буде вільним
+      5          /*****************************************************/
+      6          inline unsigned int wait_lcd_ready(void)
+      7          {
+      8            uint16_t current_count_tim4, new_count_tim4;
+      9            unsigned int delta;
+     10            unsigned int error_LCD = 0;
+     11            
+     12            unsigned char temp_data;
+     13            //Виставляємо лінію LCD_RS = 0
+     14            GPIO_ResetBits(LCD_RS, LCD_RS_PIN);
+     15          
+     16            //Виставляємо лінію LCD_RW = 1
+     17            GPIO_SetBits(LCD_RW, LCD_RW_PIN);
+     18            
+     19            /*
+     20            Витримаємо павзу максимум 10,01 мс (найдовша затримка може бути, згідно документації, порядку одиниць мілісекунд)
+     21            Тому коли буде встановлено, що затримка становить 10,01 мс - то це означає, LCD несправне
+     22            */
+     23            current_count_tim4 = ((uint16_t)TIM4->CNT);
+     24            delta = 0;
+     25          
+     26            //Читаємо IR-регістр і поки біь BF буде рівним 0
+     27            unsigned int count = 0;
+     28            do
+     29            {
+     30              //Затримка на неменше ніж 40 нс
+     31              _DELAY_ABOUT_40NS();
+     32              temp_data =  *((unsigned char *) LCD_BASE);
+     33              //Затримка на неменше ніж 10 нс
+     34              _DELAY_ABOUT_10NS();
+     35          
+     36              new_count_tim4 = ((uint16_t)TIM4->CNT);
+     37              if (new_count_tim4 >= current_count_tim4) delta = new_count_tim4 - current_count_tim4;
+     38              else delta = (0x10000 - current_count_tim4) + new_count_tim4; //0x10000 - це повний період таймера, бо ми настроїли його тактуватиу інтервалі [0; 65535]
+     39              
+     40              if (delta >= 1001) //(1000 + 1)* 0,01(мс) = 10,01(мс)
+     41              {
+     42                error_LCD = 1; //Пройшов час більше 10,01 мс з а який LCD не підтвердив операцію
+     43          
+     44                //Виставляємо повідомлення про цю подію
+     45                _SET_BIT(set_diagnostyka, ERROR_LCD_BIT);
+     46              }
+     47              
+     48              if ((temp_data & (1<<BF_BIT)) != 0) count = 0;
+     49              else count++;
+     50            }
+     51            while (
+     52                   (count      < 2) &&
+     53                   (error_LCD == 0) 
+     54                  );
+     55            
+     56            return error_LCD;
+     57            
+     58          }
+     59          /*****************************************************/
+     60          
+     61          /*****************************************************/
+     62          //Запис даних у контролер LCD
+     63          /*****************************************************/
+     64          inline unsigned int write_data_to_lcd(unsigned char letter)
+     65          {
+     66            //Очікуємо поки LCD будк вільним
+     67            unsigned int error_LCD = wait_lcd_ready();
+     68            if (error_LCD == 0)
+     69            {
+     70              //Виставляємо лінію LCD_RS = 1
+     71              GPIO_SetBits(LCD_RS, LCD_RS_PIN);
+     72              //Виставляємо лінію LCD_RW = 0
+     73              GPIO_ResetBits(LCD_RW, LCD_RW_PIN);
+     74              //Затримка на неменше ніж 40 нс
+     75              _DELAY_ABOUT_40NS();
+     76              *((unsigned char *) LCD_BASE) = letter;
+     77              //Затримка на неменше ніж 10 нс
+     78              _DELAY_ABOUT_10NS();
+     79            }
+     80            
+     81            return error_LCD;
+     82          }
+     83          /*****************************************************/
+     84          
+     85          
+     86          /*****************************************************/
+     87          //Конвертмація ASCII у код LCD
+     88          /*****************************************************/
+     89          inline unsigned int Win1251toHd44780 (unsigned int win1251Letter)
+     90          { 
+     91            if ( win1251Letter < 128 )
+     92            return win1251Letter;
+     93          
+     94            //Підбір коду символу з стандартного кириличного набору CGRAM
+     95            for (unsigned int i = 0; i < MAX_NYMBER_EXTENDED_ASCII_SYMBOLS; i ++ )
+     96            {
+     97              if ( letters [i] [0] == win1251Letter )
+     98              return letters [i][1];
+     99            }
+    100            
+    101            //Підбір коду символу з створеного символу в CGRAM
+    102            if ((current_language >= LANGUAGE_RU) && (current_language <= LANGUAGE_KZ))
+    103            {
+    104              //Ця умова мала б виконуватися завжди
+    105              for (unsigned int i = 0; i < MAX_NYMBER_EXTRA_EXTENDED_ASCII_SYMBOLS; i ++ )
+    106              {
+    107                if ( extra_letters[i][0] == win1251Letter )
+    108                return extra_letters[i][current_language];
+    109              }
+    110            }
+    111          
+    112            return 0xff;
+    113          }
+    114          /*****************************************************/
+    115          
+    116          
+    117          /*****************************************************/
+    118          //Запис команди у контролер LCD
+    119          /*****************************************************/
+    120          inline unsigned int write_command_to_lcd(unsigned char command)
+    121          {
+    122            //Очікуємо поки LCD будк вільним
+    123            unsigned int error_LCD = wait_lcd_ready();
+    124            if (error_LCD == 0)
+    125            {
+    126              //Виставляємо лінію LCD_RS = 0
+    127              GPIO_ResetBits(LCD_RS, LCD_RS_PIN);
+    128              //Виставляємо лінію LCD_RW = 0
+    129              GPIO_ResetBits(LCD_RW, LCD_RW_PIN);
+    130              //Затримка на неменше ніж 40 нс
+    131              _DELAY_ABOUT_40NS();
+    132              *((unsigned char *) LCD_BASE) = command;
+    133              //Затримка на неменше ніж 10 нс
+    134              _DELAY_ABOUT_10NS();
+    135            }
+    136            
+    137            return error_LCD;
+    138          }
+    139          /*****************************************************/
+    140          
+    141          /*****************************************************/
+    142          //Стартова ініціалізація
+    143          /*****************************************************/
+    144          void lcd_init(void)
+    145          {
+    146            uint16_t current_count_tim4, new_count_tim4;
+    147            unsigned int delta;
+    148            //Враховуємо той факт, що TIM4 тактує з чатотою 100кГц - тобто 10мкс = 0,01 мс
+    149            
+    150            //Витримаємо павзу 15 мс
+    151            current_count_tim4 = ((uint16_t)TIM4->CNT);
+    152            delta = 0;
+    153            while (delta < 1501) //(1500 + 1)* 0,01(мс) = 15,01(мс)
+    154            {
+    155              //Робота з watchdogs
+    156              if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+    157              {
+    158                //Змінюємо стан біту зовнішнього Watchdog на протилежний
+    159                GPIO_WriteBit(
+    160                              GPIO_EXTERNAL_WATCHDOG,
+    161                              GPIO_PIN_EXTERNAL_WATCHDOG,
+    162                              (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+    163                             );
+    164              }
+    165              
+    166              new_count_tim4 = ((uint16_t)TIM4->CNT);
+    167              if (new_count_tim4 >= current_count_tim4) delta = new_count_tim4 - current_count_tim4;
+    168              else delta = (0x10000 - current_count_tim4) + new_count_tim4; //0x10000 - це повний період таймера, бо ми настроїли його тактуватиу інтервалі [0; 65535]
+    169            }
+    170            //Затримка на неменше ніж 40 нс
+    171            _DELAY_ABOUT_40NS();
+    172            //Вводимо в контролер LCD число 0x3A (2 рядки і розмір шрифту 5*7 і таблицю символів з кириличними символами)
+    173            *((unsigned char *) LCD_BASE) = 0x3A;
+    174            //Затримка на неменше ніж 10 нс
+    175            _DELAY_ABOUT_10NS();
+    176          
+    177            //Витримаємо павзу 4,1 мс
+    178            current_count_tim4 = ((uint16_t)TIM4->CNT);
+    179            delta = 0;
+    180            while (delta < 411) //(410 + 1)* 0,01(мс) = 4,11(мс)
+    181            {
+    182              //Робота з watchdogs
+    183              if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+    184              {
+    185                //Змінюємо стан біту зовнішнього Watchdog на протилежний
+    186                GPIO_WriteBit(
+    187                              GPIO_EXTERNAL_WATCHDOG,
+    188                              GPIO_PIN_EXTERNAL_WATCHDOG,
+    189                              (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+    190                             );
+    191              }
+    192              new_count_tim4 = ((uint16_t)TIM4->CNT);
+    193              if (new_count_tim4 >= current_count_tim4) delta = new_count_tim4 - current_count_tim4;
+    194              else delta = (0x10000 - current_count_tim4) + new_count_tim4; //0x10000 - це повний період таймера, бо ми настроїли його тактуватиу інтервалі [0; 65535]
+    195            }
+    196            //Затримка на неменше ніж 40 нс
+    197            _DELAY_ABOUT_40NS();
+    198            //Повторно вводимо в контролер LCD число 0x3A (2 рядки і розмір шрифту 5*7 і таблицю символів з кириличними символами)
+    199            *((unsigned char *) LCD_BASE) = 0x3A;
+    200            //Затримка на неменше ніж 10 нс
+    201            _DELAY_ABOUT_10NS();
+    202          
+    203            //Витримаємо павзу 100 мкс 
+    204            current_count_tim4 = ((uint16_t)TIM4->CNT);
+    205            delta = 0;
+    206            while (delta < 11) //(10 + 1)* 10(мкс) = 110(мкс)
+    207            {
+    208              //Робота з watchdogs
+    209              if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+    210              {
+    211                //Змінюємо стан біту зовнішнього Watchdog на протилежний
+    212                GPIO_WriteBit(
+    213                              GPIO_EXTERNAL_WATCHDOG,
+    214                              GPIO_PIN_EXTERNAL_WATCHDOG,
+    215                              (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+    216                             );
+    217              }
+    218              new_count_tim4 = ((uint16_t)TIM4->CNT);
+    219              if (new_count_tim4 >= current_count_tim4) delta = new_count_tim4 - current_count_tim4;
+    220              else delta = (0x10000 - current_count_tim4) + new_count_tim4; //0x10000 - це повний період таймера, бо ми настроїли його тактуватиу інтервалі [0; 65535]
+    221            }
+    222            //Затримка на неменше ніж 40 нс
+    223            _DELAY_ABOUT_40NS();
+    224            //Третій раз вводимо в контролер LCD число 0x3A (2 рядки і розмір шрифту 5*7 і таблицю символів з кириличними символами)
+    225            *((unsigned char *) LCD_BASE) = 0x3A;
+    226            //Затримка на неменше ніж 10 нс
+    227            _DELAY_ABOUT_10NS();
+    228          
+    229            //Робота з watchdogs
+    230            if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+    231            {
+    232              //Змінюємо стан біту зовнішнього Watchdog на протилежний
+    233              GPIO_WriteBit(
+    234                            GPIO_EXTERNAL_WATCHDOG,
+    235                            GPIO_PIN_EXTERNAL_WATCHDOG,
+    236                            (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+    237                           );
+    238            }
+    239          
+    240            //Встановлюємо 2 рядки і розмір шрифту 5*7 і таблицю символів з кириличними символами
+    241            unsigned int error_LCD = write_command_to_lcd(0x3A);
+    242          
+    243            //Відключаємо LCD
+    244            if (error_LCD == 0) write_command_to_lcd(0x08);
+    245          
+    246            //Очищаємо LCD
+    247            if (error_LCD == 0) write_command_to_lcd(0x01);
+    248          
+    249            //Виконуємо команду "Return Home"
+    250            if (error_LCD == 0) write_command_to_lcd(0x02);
+    251          
+    252            //Встановлюємо режим LCD: лічильник збільшується, екран не зміщується
+    253            if (error_LCD == 0) write_command_to_lcd(0x06);
+    254          
+    255            //Відображення включено, курсор є і не мигає
+    256            if (error_LCD == 0) write_command_to_lcd(0x0E);
+    257          
+    258            //Робота з watchdogs
+    259            if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+    260            {
+    261              //Змінюємо стан біту зовнішнього Watchdog на протилежний
+    262              GPIO_WriteBit(
+    263                            GPIO_EXTERNAL_WATCHDOG,
+    264                            GPIO_PIN_EXTERNAL_WATCHDOG,
+    265                            (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+    266                           );
+    267            }
+    268          }
+    269          /*****************************************************/
+    270          
+    271          
+    272          /*****************************************************/
+    273          //Очистка LCD
+    274          /*****************************************************/
+    275          unsigned int clear_lcd(void)
+    276          {
+    277            unsigned int error_LCD = write_command_to_lcd(0x1);
+    278            
+    279            return error_LCD;
+    280          }
+    281          /*****************************************************/
+    282          
+    283          /*****************************************************/
+    284          //Режим відображення
+    285          /*****************************************************/
+    286          unsigned int mode_viewing(unsigned int ecran_on, unsigned int cursor_on, unsigned int cursor_blinking)
+    287          {
+    288            unsigned char temp_data = 0x8;
+    289          
+    290            //Формуємо командне слово
+    291            if(ecran_on != 0) temp_data |= (1<<2);
+    292            if(cursor_on != 0) temp_data |= (1<<1);
+    293            if(cursor_blinking != 0) temp_data |= (1<<0);
+    294          
+    295            unsigned int error_LCD = write_command_to_lcd(temp_data);
+    296            
+    297            return error_LCD;
+    298          }
+    299          /*****************************************************/
+    300          
+    301          /*****************************************************/
+    302          //Вивід рядка на LCD
+    303          /*****************************************************/
+    304          unsigned int hd44780_puts (unsigned char *s, unsigned int len)
+    305          {
+    306            unsigned int letter, error_LCD = 0;
+    307            
+    308            unsigned int i = 0;
+    309            while(
+    310                  (i < len       ) &&
+    311                  (error_LCD == 0)  
+    312                 )
+    313            { 
+    314              letter = Win1251toHd44780 (s [i++]); // байт даних
+    315              error_LCD = write_data_to_lcd(letter);
+    316            }
+    317            
+    318            return error_LCD;
+    319          } 
+    320          /*****************************************************/
+    321          
+    322          /*****************************************************/
+    323          //Перенос курсору у вказану позицію
+    324          /*****************************************************/
+    325          unsigned int hd44780_gotoxy(unsigned char x, unsigned char y)
+    326          {
+    327            unsigned char address, writeValue;
+    328          
+    329            //Вирахувати адрес курсору (0x40 - адрес початку другого рядка)
+    330            // address = y * 0x40 + x;
+    331            address = 0; // default
+    332            switch (y)
+    333            { 
+    334              case 0: // 0-ий рядок
+    335                { 
+    336                  address = 0x00;
+    337                  break;
+    338                }
+    339          
+    340              case 1: // 1-ий рядок
+    341                {
+    342                  address = 0x40;
+    343                  break;
+    344                }
+    345            }
+    346          
+    347            // додати стовбець
+    348            if ( x < MAX_COL_LCD ) address += x; 
+    349          
+    350            //Кінцева команда
+    351            writeValue = 0x80 | ( address & 0x7F );
+    352          
+    353            unsigned int error_LCD = write_command_to_lcd(writeValue);
+    354            
+    355            return error_LCD;
+    356          }
+    357          /*****************************************************/
+    358          
+    359          /*****************************************************/
+    360          //Вивід рядка у вказану позицію
+    361          /*****************************************************/
+    362          unsigned int hd44780_puts_xy (unsigned char x, unsigned char y, unsigned char *s)
+    363          {
+    364            unsigned int error_LCD = hd44780_gotoxy (x,y);
+    365            if (error_LCD == 0) error_LCD = hd44780_puts (s, MAX_COL_LCD);
+    366            
+    367            return error_LCD;
+    368          }
+    369          /*****************************************************/
+    370          
+    371          /*****************************************************/
+    372          //Відображення всього екрану
+    373          /*****************************************************/
+    374          void view_whole_ekran(void)
+    375          {
+    376            if (current_state_menu2.current_action != ACTION_WITH_CARRENT_EKRANE_NONE)
+    377            {
+    378              if (
+    379                  (_CHECK_SET_BIT(    diagnostyka, ERROR_LCD_BIT) == 0) ||
+    380                  (_CHECK_SET_BIT(set_diagnostyka, ERROR_LCD_BIT) == 0)
+    381                 )   
+    382              {
+    383                unsigned int error_LCD = 0;
+    384                
+    385                if(current_state_menu2.current_action == ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE)
+    386                {
+    387                  //Виводимо інформацію
+    388                  unsigned int i = 0;
+    389                  while (
+    390                         (i < MAX_ROW_LCD) &&
+    391                         (error_LCD == 0 )  
+    392                        )
+    393                  {
+    394                    error_LCD = hd44780_puts_xy(0,i, working_ekran[i]); 
+    395                    i++;
+    396                  }
+    397                }
+    398              
+    399                //Переводимо курсор у вказану позицю
+    400                if (error_LCD == 0) error_LCD = hd44780_gotoxy ((current_state_menu2.position_cursor_x & (MAX_COL_LCD -1)),(current_state_menu2.position_cursor_y & (MAX_ROW_LCD -1)));
+    401                //Виставляємо стан курсора: включено-виключено; мигає- не мигає
+    402                if (error_LCD == 0) error_LCD = mode_viewing(1, current_state_menu2.cursor_on, current_state_menu2.cursor_blinking_on);
+    403              }
+    404              
+    405              //Знімаємо повідомлення, що екран требе зараз обновити
+    406              current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_NONE;
+    407            }
+    408          }
+    409          /*****************************************************/
+    410          
+    411          /*****************************************************/
+    412          //Вибір з якої структури брати налаштування для мови
+    413          /*****************************************************/
+    414          __SETTINGS_FIX* select_struct_settings_fix(void)
+    415          {
+    416            __SETTINGS_FIX *result;
+    417            if (current_state_menu2.edition == ED_VIEWING) result = &settings_fix_prt;
+    418            else if (
+    419                     (current_state_menu2.edition == ED_EDITION) ||
+    420                     (current_state_menu2.edition == ED_CONFIRM_CHANGES)
+    421                    )  
+    422            {
+    423              result = &settings_fix_edit;
+    424            }
+    425            else
+    426            {
+    427              result = &settings_fix;
+    428            }
+    429            return result;
+    430          }
+    431          /*****************************************************/
+    432          
+    433          /*****************************************************/
+    434          //Вибір індексу для вибраної мови
+    435          /*****************************************************/
+    436          int index_language_in_array(int language)
+    437          {
+    438            int language_tmp = language, result;
+    439            
+    440            if ((language_tmp < LANGUAGE_ABSENT) || (language_tmp > LANGUAGE_KZ))
+    441            {
+    442              language_tmp = LANGUAGE_ABSENT;
+    443            }
+    444              
+    445            switch (language_tmp)
+    446            {
+    447              case LANGUAGE_RU:
+    448                {
+    449                  result = INDEX_LANGUAGE_RU;
+    450                  break;
+    451                }
+    452              case LANGUAGE_UA:
+    453                {
+    454                  result = INDEX_LANGUAGE_UA;
+    455                  break;
+    456                }
+    457              case LANGUAGE_EN:
+    458                {
+    459                  result = INDEX_LANGUAGE_EN;
+    460                  break;
+    461                }
+    462              case LANGUAGE_KZ:
+    463                {
+    464                  result = INDEX_LANGUAGE_KZ;
+    465                  break;
+    466                }
+    467            default:
+    468              {
+    469                result = INDEX_LANGUAGE_EN;
+    470                break;
+    471              }
+    472            }
+    473          
+    474                  
+    475            //Перевіряємо чи не треба догрузити особливі символи особливої мови
+    476            if (
+    477                (current_language == LANGUAGE_ABSENT) ||
+    478                (current_language != language_tmp   )
+    479               )
+    480            {
+    481              unsigned int error_LCD = 0;
+    482              //Очищаємо екран
+    483              error_LCD = clear_lcd();
+    484          
+    485              current_language = language_tmp;
+    486                    
+    487              const unsigned char matrix[16][8] = {
+    488                                                   {0x0A, 0x00, 0x0E, 0x04, 0x04, 0x04, 0x0E, 0x00}, // Ї
+    489                                                   {0x00, 0x0A, 0x00, 0x0C, 0x04, 0x04, 0x0E, 0x00}, // ї
+    490                                                   {0x01, 0x1F, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00}, // Ґ
+    491                                                   {0x00, 0x00, 0x01, 0x1F, 0x10, 0x10, 0x10, 0x00}, // ґ
+    492                                                   {0x0E, 0x11, 0x10, 0x1C, 0x10, 0x11, 0x0E, 0x00}, // Є
+    493                                                   {0x00, 0x00, 0x0E, 0x11, 0x1C, 0x11, 0x0E, 0x00}, // є
+    494                                                   {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
+    495                                                   {0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Љ - замінний символ з даним кодом для WIN1251 для казазської мови
+    496                                                   {0x00, 0x00, 0x0E, 0x11, 0x1F, 0x11, 0x0E, 0x00}, // љ - замінний символ з даним кодом для WIN1251 для казазської мови
+    497                                                   {0x0E, 0x11, 0x01, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
+    498                                                   {0x00, 0x00, 0x0E, 0x01, 0x1F, 0x11, 0x0E, 0x00}, // ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
+    499                                                   {0x11, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04, 0x00}, // Ђ - замінний символ з даним кодом для WIN1251 для казазської мови
+    500                                                   {0x00, 0x00, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04},  // ђ - замінний символ з даним кодом для WIN1251 для казазської мови
+    501                                                   {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
+    502                                                   {0x0E, 0x11, 0x11, 0x11, 0x11, 0x0A, 0x1B, 0x00}, // Ї, як замынник  великоъ букви Омега для англійської розкладки клавіатури
+    503                                                   {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}  // ‰, як замінник грецької літери "дельта"
+    504                                                  }; 
+    505                      
+    506              unsigned int number_new_extra_symbols = 0, index_for_symbol;
+    507                      
+    508              if (current_language == LANGUAGE_EN)
+    509              {
+    510                number_new_extra_symbols = 2;
+    511                index_for_symbol = 14;
+    512              }
+    513              else if (current_language == LANGUAGE_UA)
+    514              {
+    515                number_new_extra_symbols = 3*2 + 1;
+    516                index_for_symbol = 0;
+    517              }
+    518              else if (current_language == LANGUAGE_KZ)
+    519              {
+    520                number_new_extra_symbols = 3*2 + 1;
+    521                index_for_symbol = 7;
+    522              }
+    523              else if (current_language == LANGUAGE_RU)
+    524              {
+    525                number_new_extra_symbols = 1;
+    526                index_for_symbol = 15;
+    527              }
+    528                
+    529              if (number_new_extra_symbols != 0)
+    530              {
+    531                //Встановлюємо адресу AC в 0x00 CGRAM
+    532                error_LCD = write_command_to_lcd(0x40 | 0x00);
+    533            
+    534                //Записуємо маттрицю символа
+    535                unsigned int i = 0, j = index_for_symbol, k = 0;
+    536                while(
+    537                      (i < number_new_extra_symbols) &&
+    538                      (error_LCD == 0)  
+    539                     )
+    540                { 
+    541                  error_LCD = write_data_to_lcd(matrix[j][k++]);
+    542                  if (k >= 8)
+    543                  {
+    544                    k = 0;
+    545                    j++;
+    546                    i++;
+    547                  }
+    548                }
+    549              }
+    550            }
+    551            
+    552            return result;
+    553          }
+    554          /*****************************************************/
+    555          
+    556          /*****************************************************/
+    557          /*****************************************************/
+    558          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       0   Win1251toHd44780
+       8   clear_lcd
+         8   -> write_command_to_lcd
+      24   hd44780_gotoxy
+        24   -> write_command_to_lcd
+      24   hd44780_puts
+        24   -> Win1251toHd44780
+        24   -> write_data_to_lcd
+      24   hd44780_puts_xy
+        24   -> hd44780_gotoxy
+        24   -> hd44780_puts
+     168   index_language_in_array
+       168   -> __aeabi_memcpy4
+       168   -> clear_lcd
+       168   -> write_command_to_lcd
+       168   -> write_data_to_lcd
+      24   lcd_init
+        24   -> GPIO_ReadOutputDataBit
+        24   -> GPIO_WriteBit
+        24   -> write_command_to_lcd
+      24   mode_viewing
+        24   -> write_command_to_lcd
+       0   select_struct_settings_fix
+      16   view_whole_ekran
+        16   -> hd44780_gotoxy
+        16   -> hd44780_puts_xy
+        16   -> mode_viewing
+      24   wait_lcd_ready
+        24   -> GPIO_ResetBits
+        24   -> GPIO_SetBits
+      16   write_command_to_lcd
+        16   -> GPIO_ResetBits
+        16   -> wait_lcd_ready
+      16   write_data_to_lcd
+        16   -> GPIO_ResetBits
+        16   -> GPIO_SetBits
+        16   -> wait_lcd_ready
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable3
+       4  ??DataTable3_1
+       4  ??DataTable3_10
+       4  ??DataTable3_11
+       4  ??DataTable3_12
+       4  ??DataTable3_2
+       4  ??DataTable3_3
+       4  ??DataTable3_4
+       4  ??DataTable3_5
+       4  ??DataTable3_6
+       4  ??DataTable3_7
+       4  ??DataTable3_8
+       4  ??DataTable3_9
+     128  ?_0
+     112  Win1251toHd44780
+      10  clear_lcd
+      56  hd44780_gotoxy
+      54  hd44780_puts
+      40  hd44780_puts_xy
+     268  index_language_in_array
+     492  lcd_init
+      44  mode_viewing
+      48  select_struct_settings_fix
+     122  view_whole_ekran
+     160  wait_lcd_ready
+      64  write_command_to_lcd
+      64  write_data_to_lcd
+
+ 
+   128 bytes in section .rodata
+ 1 586 bytes in section .text
+ 
+ 1 186 bytes of CODE  memory (+ 400 bytes shared)
+   128 bytes of CONST memory
+
+Errors: none
+Warnings: none

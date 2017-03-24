@@ -1,0 +1,886 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:56
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\main.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\main.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\main.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\main.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\main.c
+      1          /* Includes ------------------------------------------------------------------*/
+      2          #include "constants.h"
+      3          #include "libraries.h"
+      4          #include "variables_global.h"
+      5          #include "functions_global.h"
+      6          #include "../v_A_shm/I_Shm.h"
+      7          #include <intrinsics.h.>
+      8          
+      9          /*******************************************************************************/
+     10          //Робота з Wotchdog
+     11          /*******************************************************************************/
+     12          inline void watchdog_routine(void)
+     13          {
+     14            time_1_watchdog_input = time_2_watchdog_input;
+     15            time_2_watchdog_input = TIM4->CNT;
+     16            unsigned int delta_time;
+     17            if (time_2_watchdog_input >= time_1_watchdog_input) delta_time = time_2_watchdog_input - time_1_watchdog_input;
+     18            else delta_time = time_2_watchdog_input + 0xffff - time_1_watchdog_input;
+     19            time_delta_watchdog_input = delta_time* 10;
+     20            
+     21            //Робота з watchdogs з контролем всіх інших систем
+     22            if((control_word_of_watchdog & UNITED_BITS_WATCHDOG) == UNITED_BITS_WATCHDOG)
+     23            {
+     24              //Змінюємо стан біту зовнішнього Watchdog на протилежний
+     25              if (test_watchdogs != CMD_TEST_EXTERNAL_WATCHDOG)
+     26              {
+     27                GPIO_WriteBit(
+     28                              GPIO_EXTERNAL_WATCHDOG,
+     29                              GPIO_PIN_EXTERNAL_WATCHDOG,
+     30                              (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+     31                             );
+     32          
+     33                time_1_watchdog_output = time_2_watchdog_output;
+     34                time_2_watchdog_output = TIM4->CNT;
+     35                if (time_2_watchdog_output >= time_1_watchdog_output) delta_time = time_2_watchdog_output - time_1_watchdog_output;
+     36                else delta_time = time_2_watchdog_output + 0xffff - time_1_watchdog_output;
+     37                time_delta_watchdog_output = delta_time* 10;
+     38              }
+     39          
+     40              control_word_of_watchdog =  0;
+     41            }
+     42          #ifdef DEBUG_TEST
+     43            else
+     44            {
+     45              unsigned int time_1_watchdog_output_tmp = time_2_watchdog_output;
+     46              unsigned int time_2_watchdog_output_tmp = TIM4->CNT;
+     47              if (time_2_watchdog_output_tmp >= time_1_watchdog_output_tmp) delta_time = time_2_watchdog_output_tmp - time_1_watchdog_output_tmp;
+     48              else delta_time = time_2_watchdog_output_tmp + 0xffff - time_1_watchdog_output_tmp;
+     49              unsigned int time_delta_watchdog_output_tmp = delta_time* 10;
+     50              
+     51              if (time_delta_watchdog_output_tmp > 100000)
+     52              {
+     53                while(time_delta_watchdog_output_tmp != 0);
+     54              }
+     55            }
+     56          #endif
+     57          
+     58            if (restart_timing_watchdog == 0)
+     59            {
+     60              if (time_delta_watchdog_input < time_delta_watchdog_input_min) time_delta_watchdog_input_min = time_delta_watchdog_input;
+     61              if (time_delta_watchdog_input > time_delta_watchdog_input_max) time_delta_watchdog_input_max = time_delta_watchdog_input;
+     62          
+     63              if (time_delta_watchdog_output < time_delta_watchdog_output_min) time_delta_watchdog_output_min = time_delta_watchdog_output;
+     64              if (time_delta_watchdog_output > time_delta_watchdog_output_max) time_delta_watchdog_output_max = time_delta_watchdog_output;
+     65            }
+     66            else
+     67            {
+     68              restart_timing_watchdog = 0;
+     69                  
+     70              time_delta_watchdog_input = 0;
+     71              time_delta_watchdog_input_min = 0xffff*10;
+     72              time_delta_watchdog_input_max = 0;
+     73                  
+     74              time_delta_watchdog_output = 0;
+     75              time_delta_watchdog_output_min = 0xffff*10;
+     76              time_delta_watchdog_output_max = 0;
+     77            }
+     78          }
+     79          /*******************************************************************************/
+     80          
+     81          /*************************************************************************
+     82          Періодичні низькопріоритетні задачі
+     83          *************************************************************************/
+     84          inline void periodical_operations(void)
+     85          {
+     86            //Обміну через I2C
+     87            if (
+     88                (control_i2c_taskes[0]     != 0) || 
+     89                (control_i2c_taskes[1]     != 0) || 
+     90                (driver_i2c.state_execution > 0)
+     91               )
+     92              main_routines_for_i2c();
+     93          
+     94            //Обробка дій системи меню
+     95            main_manu_function_ver2();
+     96            //Обновляємо інформацію на екрані
+     97            view_whole_ekran();
+     98              
+     99            //Робота з Watchdog
+    100            watchdog_routine();
+    101          
+    102            //Робота з таймером очікування нових змін налаштувань
+    103            if ((timeout_idle_new_settings >= settings_fix.timeout_idle_new_settings) && (restart_timeout_idle_new_settings == 0))
+    104            {
+    105              unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
+    106              if (result != 0)
+    107              {
+    108                //Повідомляємо про критичну помилку
+    109                current_state_menu2.edition = ED_ERROR;
+    110              }
+    111              config_settings_modified = 0;
+    112              type_of_settings_changed_from_interface = 0;
+    113            }
+    114            //Фіксація сигналу про те що налаштуванння/конфігурація змінені чи ні
+    115            if ((config_settings_modified & (MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS)) != 0) 
+    116            {
+    117              _SET_BIT(fix_block_active_state, FIX_BLOCK_SETTINGS_CHANGED);
+    118            }
+    119            else
+    120            {
+    121              _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_SETTINGS_CHANGED);
+    122            }
+    123            
+    124            //Обмін по USB
+    125            if (settings_fix.password_interface_USB)
+    126            {
+    127              unsigned int timeout = settings_fix.timeout_deactivation_password_interface_USB;
+    128              if ((timeout != 0) && (timeout_idle_USB >= timeout) && ((restart_timeout_interface & (1 << USB_RECUEST)) == 0)) password_set_USB = 1;
+    129            }
+    130            Usb_routines();
+    131          
+    132            //Обмін по RS-485
+    133            if (settings_fix.password_interface_RS485)
+    134            {
+    135              unsigned int timeout = settings_fix.timeout_deactivation_password_interface_RS485;
+    136              if ((timeout != 0) && (timeout_idle_RS485 >= timeout) && ((restart_timeout_interface & (1 << RS485_RECUEST)) == 0)) password_set_RS485 = 1;
+    137            }
+    138            if(
+    139               ((DMA_StreamRS485_Rx->CR & (uint32_t)DMA_SxCR_EN) == 0) &&
+    140               (RxBuffer_RS485_count != 0) &&
+    141               (make_reconfiguration_RS_485 == 0)
+    142              )
+    143            {
+    144              //Це є умовою, що дані стоять у черзі  на обробку
+    145                
+    146              //Робота з Watchdog
+    147              watchdog_routine();
+    148          
+    149              //Обробляємо запит
+    150              modbus_rountines(RS485_RECUEST);
+    151            }
+    152            else if (make_reconfiguration_RS_485 != 0)
+    153            {
+    154              //Стоїть умова переконфігурувати RS-485
+    155                
+    156              //Перевіряємо чи на даний моент не іде передача даних на верхній рівень
+    157              if (GPIO_ReadOutputDataBit(GPIO_485DE, GPIO_PIN_485DE) == Bit_RESET)
+    158              {
+    159          
+    160                //Переконфігуровуємо USART для RS-485
+    161                USART_RS485_Configure();
+    162          
+    163                //Відновлюємо моніторинг каналу RS-485
+    164                restart_monitoring_RS485();
+    165                
+    166                //Знімаємо індикацю про невикану переконфігупацію інтерфейсу RS-485
+    167                make_reconfiguration_RS_485 = 0;
+    168              }
+    169            }
+    170          
+    171            /*******************/
+    172            //Контроль достовірності важливих даних
+    173            /*******************/
+    174            /*
+    175            Я перевіряю поставлені задачі через
+    176            if ()
+    177            else if()
+    178            else if()
+    179            ...
+    180            else if ()
+    181            Щоб за один оберт виконувалася тільки одна перевірка, тобто щоб в одному оберті
+    182            не було надто довга затримка на фонову перевірку, хоч і важливу.
+    183            */
+    184            if (periodical_tasks_TEST_CONFIG != 0)
+    185            {
+    186              //Стоїть у черзі активна задача самоконтролю конфігурації
+    187              if ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD) != 0)
+    188              {
+    189                //Перевірку здійснюємо тільки тоді, коли конфігурація була успішно прочитана
+    190                if (
+    191                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT) == 0) &&
+    192                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT    ) == 0) &&
+    193                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT ) == 0) &&
+    194                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_CONFIG_EEPROM_BIT    ) == 0)
+    195                   ) 
+    196                {
+    197                  //На даний моммент не іде читання-запис конфігурації, тому можна здійснити контроль достовірності
+    198                  control_config(config_settings_modified);
+    199          
+    200                  //Скидаємо активну задачу самоконтролю конфігурації
+    201                  periodical_tasks_TEST_CONFIG = false;
+    202                }
+    203              }
+    204              else
+    205              {
+    206                //Скидаємо активну задачу самоконтролю таблиці конфігурації, бо не було її успішне зчитування
+    207                periodical_tasks_TEST_CONFIG = false;
+    208              }
+    209            }
+    210            else if (periodical_tasks_TEST_SETTINGS != 0)
+    211            {
+    212              //Стоїть у черзі активна задача самоконтролю таблиці настройок
+    213              if ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0)
+    214              {
+    215                //Перевірку здійснюємо тільки тоді, коли таблиця настройок була успішно прочитана
+    216                if (
+    217                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) == 0) &&
+    218                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT    ) == 0) &&
+    219                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT ) == 0) &&
+    220                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT    ) == 0)
+    221                   ) 
+    222                {
+    223                  //На даний моммент не іде читання-запис таблиці настройок, тому можна здійснити контроль достовірності
+    224                  control_settings(config_settings_modified);
+    225          
+    226                  //Скидаємо активну задачу самоконтролю таблиці настройок
+    227                  periodical_tasks_TEST_SETTINGS = false;
+    228                }
+    229              }
+    230              else
+    231              {
+    232                //Скидаємо активну задачу самоконтролю таблиці настройок, бо не було її успішне зчитування
+    233                periodical_tasks_TEST_SETTINGS = false;
+    234              }
+    235            }
+    236            else if (periodical_tasks_TEST_USTUVANNJA != 0)
+    237            {
+    238              //Стоїть у черзі активна задача самоконтролю юстування (і щоб не ускладнювати задачу і серійного номеру пристрою)
+    239              if ((state_i2c_task & STATE_USTUVANNJA_EEPROM_GOOD) != 0)
+    240              {
+    241                //Перевірку здійснюємо тільки тоді, коли юстування було успішно прочитане
+    242                if (
+    243                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT) == 0) &&
+    244                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_USTUVANNJA_EEPROM_BIT    ) == 0) &&
+    245                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_USTUVANNJA_EEPROM_BIT ) == 0) &&
+    246                    (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_USTUVANNJA_EEPROM_BIT    ) == 0) &&
+    247                    (changed_ustuvannja == CHANGED_ETAP_NONE)  
+    248                   ) 
+    249                {
+    250                  //На даний моммент не іде читання-запис юстування, тому можна здійснити контроль достовірності
+    251                  control_ustuvannja();
+    252          
+    253                  //Скидаємо активну задачу самоконтролю юстування
+    254                  periodical_tasks_TEST_USTUVANNJA = false;
+    255                }
+    256              }
+    257              else
+    258              {
+    259                //Скидаємо активну задачу самоконтролю таблиці настройок, бо не було її успішне зчитування
+    260                periodical_tasks_TEST_USTUVANNJA = false;
+    261              }
+    262            }
+    263          //  else if (periodical_tasks_TEST_TRG_FUNC_LOCK != 0)
+    264          //  {
+    265          //    //Стоїть у черзі активна задача самоконтролю по резервній копії для триґерної інформації
+    266          //    //Виконуємо її
+    267          //    control_trg_func();
+    268          //      
+    269          //    //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації
+    270          //    periodical_tasks_TEST_TRG_FUNC_LOCK = false;
+    271          //  }
+    272            else if (periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK != 0)
+    273            {
+    274              //Стоїть у черзі активна задача самоконтролю по резервній копії для реєстратора програмних подій
+    275              //Виконуємо її
+    276              unsigned int result;
+    277              result = control_info_rejestrator(&info_rejestrator_pr_err_ctrl, crc_info_rejestrator_pr_err_ctrl);
+    278                
+    279              if (result == 1)
+    280              {
+    281                //Контроль достовірності реєстратора пройшов успішно
+    282              
+    283                //Скидаємо повідомлення у слові діагностики
+    284                _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
+    285              }
+    286              else
+    287              {
+    288                //Контроль достовірності реєстратора не пройшов
+    289          
+    290                //Виствляємо повідомлення у слові діагностики
+    291                _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
+    292              }
+    293          
+    294              //Скидаємо активну задачу самоконтролю по резервній копії для аналогового реєстратора
+    295              periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK = false;
+    296            }
+    297            /*******************/
+    298          
+    299            /*******************/
+    300            //Копіювання даних миттєвого масиву для передавання у інші системи
+    301            /*******************/
+    302            if(command_to_receive_current_data == true)
+    303            {
+    304              unsigned int i, index;
+    305              //Виставляємо очікування останнього виходу з вимірювальної системи для синохронізації подій
+    306              wait_of_receiving_current_data  = true;
+    307              while(wait_of_receiving_current_data  == true);
+    308              index = index_array_of_current_data_value;
+    309              for (i = 0; i < (NUMBER_ANALOG_CANALES*NUMBER_POINT*NUMBER_PERIOD_TRANSMIT); i++)
+    310              {
+    311                current_data_transmit[i] = current_data[index++];
+    312                if (index == (NUMBER_ANALOG_CANALES*NUMBER_POINT*NUMBER_PERIOD_TRANSMIT)) index = 0;
+    313              }
+    314              //Сигналізуємо про завершення процесу копіювання
+    315              action_is_continued = false;
+    316              command_to_receive_current_data = false;
+    317            }
+    318            /*******************/
+    319              
+    320            //Підрахунок вільного ресуру процесор-програма
+    321            if(resurs_temp < 0xfffffffe) resurs_temp++;
+    322          
+    323            watchdog_routine();
+    324          }
+    325          /*************************************************************************/
+    326          
+    327          /*******************************************************************************
+    328          * Function Name  : main
+    329          * Description    : Main program.
+    330          * Input          : None
+    331          * Output         : None
+    332          * Return         : None
+    333          *******************************************************************************/
+    334          int main(void)
+    335          {
+    336          //  /************************************************************/
+    337          //  //Перевірка контрольної суми програми
+    338          //  /************************************************************/
+    339          //  {
+    340          //    unsigned short sum = 0;
+    341          //    unsigned char *point = ((unsigned char *)&__checksum_begin);
+    342          //    for (unsigned int i = ((unsigned int)&__checksum_end -(unsigned int)&__checksum_begin +1); i > 0; i--)
+    343          //      sum += *point++;
+    344          //    if (sum != (unsigned short)__checksum)
+    345          //    {
+    346          //      while(1);
+    347          //    }
+    348          //  }
+    349          //  /************************************************************/
+    350            
+    351            /************************************************************/
+    352            //Стартова ініціалізація
+    353            /************************************************************/
+    354          #ifdef SYSTEM_VIEWER_ENABLE
+    355            SEGGER_SYSVIEW_Conf();            /* Configure and initialize SystemView  */
+    356          #endif
+    357            
+    358            //Виставляємо подію про зупинку пристрою у попередньому сеансі роботи, а час встановиться пізніше, RTC запм'ятовує час пропадання живлення
+    359            _SET_BIT(set_diagnostyka, EVENT_STOP_SYSTEM_BIT);
+    360            changing_diagnostyka_state();//Підготовлюємо новий запис для реєстратора програмних подій
+    361            
+    362            //Перевіряємо, що відбулося: запуск приладу, чи перезапуск (перезапуск роботи приладу без зняття оперативного живлення) 
+    363            if (RCC_GetFlagStatus(RCC_FLAG_PORRST) != SET)
+    364            {
+    365              //Виставляємо подію про перезапуск пристрою (бо не зафіксовано подію Power-on/Power-down)
+    366              _SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT);
+    367            }
+    368            else
+    369            {
+    370              //Виставляємо подію про запуск пристрою 
+    371              _SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT);
+    372            }
+    373            //Очищаємо прапорці
+    374            RCC->CSR |= RCC_CSR_RMVF;
+    375            changing_diagnostyka_state();//Підготовлюємо новий запис для реєстратора програмних подій
+    376          
+    377            //Стартова настройка периферії процесора
+    378            start_settings_peripherals();
+    379            
+    380            if(
+    381               ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD  ) != 0) &&
+    382               ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0)/* &&
+    383               ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) != 0)*/
+    384              )   
+    385            {
+    386              //Випадок, якщо настройки успішно зчитані
+    387                    
+    388              //Дозволяєм роботу таймера вимірювальної системи
+    389              TIM_Cmd(TIM5, ENABLE);
+    390              // Дозволяєм роботу таймера системи захистів
+    391              TIM_Cmd(TIM2, ENABLE);
+    392          
+    393              //Ініціалізація LCD
+    394              lcd_init();
+    395              changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+    396            }
+    397            else
+    398            {
+    399              //Випадок, якщо настройки успішно не зчитані, або їх взагалі немає
+    400              
+    401              //Ініціалізація LCD
+    402              lcd_init();
+    403              changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+    404            
+    405              //Якщо настройки не зчитані успішно з EEPROM, то спочатку виводимо на екран повідомлення про це
+    406              while (
+    407                     ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD  ) == 0) ||
+    408                     ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) == 0)/* ||
+    409                     ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) == 0)*/
+    410                    )   
+    411              {
+    412                error_reading_with_eeprom();
+    413              }
+    414          
+    415              //Дозволяєм роботу таймера вимірювальної системи
+    416              TIM_Cmd(TIM5, ENABLE);
+    417              //Дозволяєм роботу таймера системи захистів
+    418              TIM_Cmd(TIM2, ENABLE);
+    419            }
+    420            changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+    421          
+    422            //Визначаємо, чи стоїть дозвіл запису через інтерфейси з паролем
+    423            if (settings_fix.password_interface_RS485 == 0) password_set_RS485 = 0;
+    424            else password_set_RS485 = 1;
+    425            timeout_idle_RS485 = settings_fix.timeout_deactivation_password_interface_RS485;
+    426            
+    427            if (settings_fix.password_interface_USB   == 0) password_set_USB   = 0;
+    428            else password_set_USB   = 1;
+    429            timeout_idle_USB = settings_fix.timeout_deactivation_password_interface_USB;
+    430            
+    431            //Перевірка параметрування мікросхем DataFlash
+    432            start_checking_dataflash();
+    433            
+    434            //Запускаємо генерацію переривань кожну кожну 1 мс від каналу 2 таймеру 4 для виконання періодичних низькопріоритетних задач
+    435            start_tim4_canal2_for_interrupt_1mc();
+    436            
+    437            //Підраховуємо величину затримки у бітах, яка допускається між байтами у RS-485 згідно з визначеними настройками
+    438            calculate_namber_bit_waiting_for_rs_485();
+    439            //Запускаємо генерацію переривань з плаваючим періодом (час очікування наступного символа) від каналу 3 таймеру 4 для RS-485
+    440            start_tim4_canal3_for_interrupt_10mkc();
+    441            //Настроюємо USART на роботу з RS-485
+    442            USART_RS485_Configure();
+    443            //Починаємо моніторинг каналу RS-485
+    444            restart_monitoring_RS485();
+    445            /************************************************************/
+    446          
+    447            //Виставляємо признак, що на екрані треба обновити стартову інформацію
+    448            new_state_keyboard |= (1<<BIT_REWRITE);
+    449            
+    450            //Виставляємо признак, що требаа прочитати всі регістри RTC, а потім, при потребі відкоректувати його поля
+    451            //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
+    452            _SET_BIT(control_i2c_taskes, TASK_START_READ_RTC_BIT);
+    453            _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+    454            
+    455            //Робота з watchdogs
+    456            if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+    457            {
+    458              //Змінюємо стан біту зовнішнього Watchdog на протилежний
+    459              GPIO_WriteBit(
+    460                            GPIO_EXTERNAL_WATCHDOG,
+    461                            GPIO_PIN_EXTERNAL_WATCHDOG,
+    462                            (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+    463                           );
+    464            }
+    465            restart_resurs_count = 0xff;/*Ненульове значення перезапускає лічильники*/
+    466            
+    467            time_2_watchdog_input = time_2_watchdog_output = TIM4->CNT;
+    468            restart_timing_watchdog = 0xff;
+    469             asm(
+    470                 "bkpt 1"
+    471                 );
+    472            long res = InitSchematic();
+                        ^
+Remark[Pe177]: variable "res" was declared but never referenced
+    473          
+    474            /* Періодичні задачі */
+    475            while (1)
+    476            {
+    477              if (periodical_tasks_TEST_FLASH_MEMORY != 0)
+    478              {
+    479                /************************************************************/
+    480                //Перевірка контрольної суми програми
+    481                /************************************************************/
+    482                unsigned short sum = 0;
+    483                unsigned char *point = ((unsigned char *)&__checksum_begin);
+    484                for (unsigned int i = ((unsigned int)&__checksum_end -(unsigned int)&__checksum_begin +1); i > 0; i--)
+    485                {
+    486                  sum += *point++;
+    487                  periodical_operations();
+    488                }
+    489                if (sum != (unsigned short)__checksum) _SET_BIT(set_diagnostyka, ERROR_INTERNAL_FLASH_BIT);
+    490                else _SET_BIT(clear_diagnostyka, ERROR_INTERNAL_FLASH_BIT);
+    491                /************************************************************/
+    492          
+    493                periodical_tasks_TEST_FLASH_MEMORY = false;
+    494              }
+    495              else periodical_operations();
+    496            }
+    497          }
+    498          /*******************************************************************************/
+    499          
+    500          /*******************************************************************************/
+    501          //Глобальна помилка програмного забеспечення
+    502          /*******************************************************************************/
+    503          void total_error_sw_fixed(unsigned int number)
+    504          {
+    505            total_error = number;
+    506            while (1);
+    507          }
+    508          /*******************************************************************************/
+    509          
+    510          #ifdef  USE_FULL_ASSERT
+    511          /*******************************************************************************
+    512          * Function Name  : assert_failed
+    513          * Description    : Reports the name of the source file and the source line number
+    514          *                  where the assert_param error has occurred.
+    515          * Input          : - file: pointer to the source file name
+    516          *                  - line: assert_param error line source number
+    517          * Output         : None
+    518          * Return         : None
+    519          *******************************************************************************/
+    520          void assert_failed(u8* file, u32 line)
+    521          { 
+    522            /* User can add his own implementation to report the file name and line number,
+    523               ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+    524          
+    525            /* Infinite loop */
+    526            while (1)
+    527            {
+    528            }
+    529          }
+    530          #endif
+    531          
+    532          /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      24   main
+        24   -> GPIO_ReadOutputDataBit
+        24   -> GPIO_WriteBit
+        24   -> InitSchematic
+        24   -> RCC_GetFlagStatus
+        24   -> SEGGER_SYSVIEW_Conf
+        24   -> TIM_Cmd
+        24   -> USART_RS485_Configure
+        24   -> calculate_namber_bit_waiting_for_rs_485
+        24   -> changing_diagnostyka_state
+        24   -> error_reading_with_eeprom
+        24   -> lcd_init
+        24   -> periodical_operations
+        24   -> restart_monitoring_RS485
+        24   -> start_checking_dataflash
+        24   -> start_settings_peripherals
+        24   -> start_tim4_canal2_for_interrupt_1mc
+        24   -> start_tim4_canal3_for_interrupt_10mkc
+       8   periodical_operations
+         8   -> GPIO_ReadOutputDataBit
+         8   -> USART_RS485_Configure
+         8   -> Usb_routines
+         8   -> control_config
+         8   -> control_info_rejestrator
+         8   -> control_settings
+         8   -> control_ustuvannja
+         8   -> main_manu_function_ver2
+         8   -> main_routines_for_i2c
+         8   -> modbus_rountines
+         8   -> restart_monitoring_RS485
+         8   -> set_config_and_settings
+         8   -> view_whole_ekran
+         8   -> watchdog_routine
+       0   total_error_sw_fixed
+       8   watchdog_routine
+         8   -> GPIO_ReadOutputDataBit
+         8   -> GPIO_WriteBit
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable1
+       4  ??DataTable1_1
+       4  ??DataTable1_10
+       4  ??DataTable1_11
+       4  ??DataTable1_12
+       4  ??DataTable1_13
+       4  ??DataTable1_14
+       4  ??DataTable1_15
+       4  ??DataTable1_16
+       4  ??DataTable1_17
+       4  ??DataTable1_18
+       4  ??DataTable1_19
+       4  ??DataTable1_2
+       4  ??DataTable1_20
+       4  ??DataTable1_21
+       4  ??DataTable1_22
+       4  ??DataTable1_23
+       4  ??DataTable1_3
+       4  ??DataTable1_4
+       4  ??DataTable1_5
+       4  ??DataTable1_6
+       4  ??DataTable1_7
+       4  ??DataTable1_8
+       4  ??DataTable1_9
+      20  ADCs_data
+      40  ADCs_data_raw
+     256  RxBuffer_RS485
+       4  RxBuffer_RS485_count
+       4  RxBuffer_RS485_count_previous
+     524  RxBuffer_SPI_DF
+      68  Temporaty_I2C_Buffer
+     256  TxBuffer_RS485
+       4  TxBuffer_RS485_count
+     524  TxBuffer_SPI_DF
+     524  TxBuffer_SPI_DF_copy
+    2048  USART_Rx_Buffer
+       4  USART_Rx_length
+       4  USART_Rx_ptr_in
+       4  USART_Rx_ptr_out
+    1524  USB_OTG_dev
+       2  action_is_continued
+       4  activation_function_from_interface
+       4  active_index_command_word_adc
+       4  adc_DATA_VAL_read
+       4  adc_TEST_VAL_read
+       8  alarm_ctrl_patten
+       4  bank_measurement_high
+       4  bank_sum_sqr_data
+      32  buffer_for_RS485_read_record_pr_err
+      32  buffer_for_USB_read_record_pr_err
+      32  buffer_for_manu_read_record
+     256  buffer_out
+    1024  buffer_pr_err_records
+       1  calibration
+       1  calibration_copy
+       1  calibration_edit
+       4  changed_ustuvannja
+       4  clean_rejestrators
+      12  clear_diagnostyka
+       4  code_operation_copy
+       2  command_to_receive_current_data
+       4  command_word_adc
+       4  command_word_adc_work
+       2  comparison_writing
+       4  config_settings_modified
+       8  control_i2c_taskes
+       4  control_tasks_dataflash
+       4  control_word_of_watchdog
+       2  copy_register8_RTC
+       2  copying_time
+       4  count_out
+       4  count_out_previous
+       1  crc_config
+       1  crc_info_rejestrator_pr_err
+       1  crc_info_rejestrator_pr_err_ctrl
+       1  crc_settings
+       1  crc_ustuvannja
+      60  current_config
+      60  current_config_edit
+      60  current_config_prt
+    6400  current_data
+    3200  current_data_transmit
+       4  current_language
+      60  current_state_menu2
+       1  data_usb_transmiting
+       4  data_write_to_memory
+       4  dataflash_not_busy
+      12  diagnostyka
+      12  diagnostyka_before
+      16  driver_i2c
+      16  driver_spi_df
+       4  edit_serial_number_dev
+      20  edit_ustuvannja
+       4  error_into_spi_df
+       2  etap_reset_of_bit
+       2  etap_settings_test_frequency
+       4  etap_writing_pr_err_into_dataflash
+      68  extra_letters
+       1  fix_block_active_state
+       1  fix_block_trigger_state
+       2  fixed_power_down_into_RTC
+      44  global_timers
+       4  gnd_adc
+      20  gnd_adc_averange
+      20  gnd_adc_averange_sum
+     640  gnd_adc_moment_value
+       8  group_alarm_analog_ctrl_patten
+       4  head_fifo_buffer_pr_err_records
+      20  index_GND_ADC
+       4  index_array_of_current_data_value
+       4  index_array_of_one_value
+       4  index_array_of_sqr_current_data
+      12  info_rejestrator_pr_err
+      12  info_rejestrator_pr_err_ctrl
+     128  input_adc
+     140  letters
+       2  low_speed_i2c
+     440  main
+       2  make_reconfiguration_RS_485
+       2  mark_current_tick_RS_485
+       4  max_reaction_time_rs_485
+      20  measurement
+      40  measurement_high
+      20  measurement_low
+      20  measurement_middle
+       4  new_state_keyboard
+      56  next_level_in_current_level_menu2
+       2  number_32bit_in_target
+       2  number_bits_rs_485_waiting
+       2  number_busy_state
+       4  number_bytes_transfer_spi_df
+       4  number_bytes_transfer_spi_df_copy
+       4  number_chip_dataflsh_exchange
+       4  number_inputs_for_fix_one_second
+       4  number_recods_writing_into_dataflash_now
+       4  number_record_of_pr_err_into_RS485
+       4  number_record_of_pr_err_into_USB
+       4  number_record_of_pr_err_into_menu
+       2  number_registers_read
+      12  odynyci_vymirjuvannja
+     128  output_adc
+       4  p_menu_param_1
+       4  p_menu_param_2
+       2  part_transmit_carrent_data
+       2  password_changed
+       2  password_set_RS485
+       2  password_set_USB
+       2  password_ustuvannja
+     740  periodical_operations
+       4  periodical_tasks_TEST_CONFIG
+       4  periodical_tasks_TEST_FLASH_MEMORY
+       4  periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR
+       4  periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK
+       4  periodical_tasks_TEST_SETTINGS
+       4  periodical_tasks_TEST_USTUVANNJA
+       4  point_to_edited_rang
+     112  position_in_current_level_menu2
+       4  pressed_buttons
+       2  previous_count_tim4_USB
+      56  previous_level_in_current_level_menu2
+       4  previous_tick_VAL
+     256  read_write_i2c_buffer
+       4  registers_address_read
+       4  registers_address_write
+     128  registers_values
+       4  reset_trigger_function_from_interface
+       4  restart_resurs_count
+       2  restart_timeout_idle_new_settings
+       2  restart_timeout_interface
+       4  restart_timing_watchdog
+       4  resurs_global
+       4  resurs_global_max
+       4  resurs_global_min
+       4  resurs_temp
+       2  rewrite_ekran_once_more
+      48  sca_of_p
+      48  sca_of_p_edit
+       4  semaphore_adc_irq
+       4  semaphore_measure_values_low1
+       4  serial_number_dev
+      12  set_diagnostyka
+     260  settings_fix
+     260  settings_fix_edit
+     260  settings_fix_prt
+      48  spca_of_p_prt
+     640  sqr_current_data
+       4  state_i2c_task
+       4  state_inputs
+       4  state_reading_ADCs
+       4  status_adc_read_work
+      80  sum_sqr_data
+      40  sum_sqr_data_irq
+       4  tail_fifo_buffer_pr_err_records
+       2  temp_register_rtc
+       4  temporary_block_writing_records_pr_err_into_DataFlash
+       4  test_watchdogs
+       8  time
+       4  time_1_watchdog_input
+       4  time_1_watchdog_output
+       4  time_2_watchdog_input
+       4  time_2_watchdog_output
+       8  time_copy
+       4  time_delta_watchdog_input
+       4  time_delta_watchdog_input_max
+       4  time_delta_watchdog_input_min
+       4  time_delta_watchdog_output
+       4  time_delta_watchdog_output_max
+       4  time_delta_watchdog_output_min
+       8  time_edit
+       4  time_last_receive_byte
+       2  time_rewrite
+      12  time_set_keyboard
+       4  timeout_idle_RS485
+       4  timeout_idle_USB
+       4  timeout_idle_new_settings
+       4  total_error
+       6  total_error_sw_fixed
+       2  type_error_of_exchanging_via_i2c
+       2  type_of_settings_changed_from_interface
+     256  usb_received
+       4  usb_received_count
+     256  usb_transmiting
+       4  usb_transmiting_count
+      20  ustuvannja
+      20  ustuvannja_meas
+       4  vdd_adc
+       4  vdd_adc_averange_sum
+     128  vdd_adc_moment_value
+       4  vref_adc
+       4  vref_adc_averange_sum
+     128  vref_adc_moment_value
+       2  wait_of_receiving_current_data
+     396  watchdog_routine
+       4  what_we_are_reading_from_dataflash_1
+       4  what_we_are_reading_from_dataflash_2
+       2  word_SRAM1
+      32  working_ekran
+
+ 
+ 20 202 bytes in section .bss
+     48 bytes in section .data
+    384 bytes in section .rodata
+  1 678 bytes in section .text
+  1 457 bytes in section variables_RAM1
+ 
+    542 bytes of CODE  memory (+ 1 136 bytes shared)
+    384 bytes of CONST memory
+ 21 707 bytes of DATA  memory
+
+Errors: none
+Warnings: none

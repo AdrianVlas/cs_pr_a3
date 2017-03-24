@@ -1,0 +1,279 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:55
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\v_A_shm\LUDout_1_0.cpp
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\v_A_shm\LUDout_1_0.cpp" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" -lB
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --eec++ -I
+#        G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\LUDout_1_0.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\LUDout_1_0.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUDout_1_0.cpp
+      1          #ifdef VISUAL_STUDIO
+      2          #include "StdAfx.h"
+      3          #endif
+      4          #include "LUDout_1_0.h"
+      5          
+      6          
+      7          void PUT_Op_1_0    (void *pObj)
+      8          {
+      9          CLUDout_1_0& refCLUDout_1_0 = *(static_cast<CLUDout_1_0*>(pObj));
+     10          //CLUDout_1_0 *pCLUDout_1_0 = (CLUDout_1_0*)pObj;
+     11          refCLUDout_1_0.CalcReleySchematic();
+     12          }
+     13          
+     14          
+     15          
+     16          CLUDout_1_0::CLUDout_1_0(void)
+     17          {
+     18          }
+     19          CLUDout_1_0::CLUDout_1_0(char chM,char chI)//,LUOutDsc* pLUOutDsc)
+     20          {
+     21              chMaxIteratoin = chM;
+     22              chIteration = chI;
+     23              chNumInput  = static_cast<char>(shCLUDout_1_0_AmtIn );
+     24              chNumOutput = static_cast<char>(shCLUDout_1_0_AmtOut);
+     25              //chTypeLogicFunction = LU_OP_SET_OUT;
+     26              //LogicFunc  = SET_OUT_Op;//???
+     27          
+     28              //Set Input parameters
+     29              //pIn = (void*)arrPchIn;
+     30              //pOut = (void*)arrOut;
+     31              //Set OutPut parameters
+     32          
+     33          }
+     34          
+     35          
+     36          CLUDout_1_0::~CLUDout_1_0(void)
+     37          {
+     38          }
+     39          
+     40          void SET_OUT_Op(void *pObj)
+     41          {
+     42              //CLUDout_1_0 *pCLUDout_1_0 = reinterpret_cast<CLUDout_1_0 *>(pObj);
+     43              CLUDout_1_0& rCLUDout_1_0 = *(static_cast<CLUDout_1_0*> (pObj));
+                                  ^
+Warning[Pe177]: variable "rCLUDout_1_0" was declared but never referenced
+     44          /*    asm(
+     45                          "bkpt 1"
+     46                          );
+     47              rCLUDout_1_0.CalcReleySchematic();   */
+     48          }
+     49          #include "Rele_p1.cpp"
+     50          static char chGLB_QTrg = 0;
+     51          void CLUDout_1_0::CalcReleySchematic(void){
+     52          register long rl_Val,i;
+     53          
+     54          #pragma data_alignment=4
+     55          char arChIntermediaResult[(TOTAL_RELE_LU_CALC_POINT)];
+     56          const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
+     57          arChIntermediaResult[OFFSET_OUT_IN_RELE_TRIGGER_SELECTOR         ] = 0;//Now Default
+     58          arChIntermediaResult[OFFSET_OUT_IN_RELE_STABLE_SELECTOR          ] = 0;//Now Default
+     59          arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SELECTOR           ] = 0;//Now Default
+     60          arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SIMPLE_SELECTOR    ] = 0;//Now Default
+     61          arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_EXTANDED_SELECTOR  ] = 0;//Now Default
+     62          arChIntermediaResult[OFFSET_OUT_IN_RELE__RIN                     ] = 0;//Now Default
+     63          arChIntermediaResult[OFFSET_OUT_IN_RELE__RESET                   ] = 0;//Now Default
+     64          arChIntermediaResult[OFFSET_OUT_IN_RELE__BL_IMP                  ] = 0;//Now Default
+     65          arChIntermediaResult[OFFSET_OUT_IN_RELE__C1_C2                   ] = 0;//Now Default
+     66          arChIntermediaResult[OFFSET_OUT_IN_RELE_C1                       ] = 0;//Now Default
+     67          arChIntermediaResult[OFFSET_OUT_IN_RELE_C2                       ] = 0;//Now Default
+     68          
+     69          rl_Val = 0;
+     70          long k, j, l;
+     71          short shCounterProcessedRec = RELE_Not01__1_1;
+     72            do {
+     73              pLUShcemasDscRec = arPReleShcemasDscRecords[shCounterProcessedRec - RELE_Not01__1_1];
+     74              i = pLUShcemasDscRec->chTypeOperation;
+     75              switch (i) {
+     76                  case LU_GEN_OP_AND:
+     77                      rl_Val = 1;
+     78                      for (i = 0; (i < pLUShcemasDscRec->chAmtOut) &&(rl_Val == 1); i++) {
+     79                          k = pLUShcemasDscRec->pInputDscData[i].shOrderNumLU;
+     80                          l = arReleShOffsets[k];
+     81                          j = l + pLUShcemasDscRec->pInputDscData[i].shIndexOut;
+     82                          rl_Val &= arChIntermediaResult[j];
+     83                      }
+     84                      arChIntermediaResult[shCounterProcessedRec++] = rl_Val;
+     85                      break;
+     86                  case LU_GEN_OP_OR:
+     87                      rl_Val = 0;
+     88                      for (i = 0; (i < pLUShcemasDscRec->chAmtOut) &&(rl_Val == 0); i++) {
+     89                          k = pLUShcemasDscRec->pInputDscData[i].shOrderNumLU;
+     90                          l = arReleShOffsets[k];
+     91                          j = l + pLUShcemasDscRec->pInputDscData[i].shIndexOut;
+     92                          rl_Val |= arChIntermediaResult[j];
+     93                      }
+     94                      arChIntermediaResult[shCounterProcessedRec++] = rl_Val;
+     95                      break;
+     96                  case LU_GEN_OP_XOR:
+     97                      i = pLUShcemasDscRec->pInputDscData[0].shOrderNumLU;
+     98                      rl_Val = arReleShOffsets[i];
+     99                      i = rl_Val + pLUShcemasDscRec->pInputDscData[0].shIndexOut;
+    100                      j = arChIntermediaResult[i];
+    101                      i = pLUShcemasDscRec->pInputDscData[1].shOrderNumLU;
+    102                      rl_Val = arReleShOffsets[i];
+    103                      i = rl_Val + pLUShcemasDscRec->pInputDscData[1].shIndexOut;
+    104                      rl_Val = j^arChIntermediaResult[i];
+    105                      arChIntermediaResult[shCounterProcessedRec++] = rl_Val;
+    106                      break;
+    107                  case LU_GEN_OP_NOT:
+    108                      LUShcemasInDataDsc const *pLUShcemasInDataDsc;
+    109                      rl_Val = 0;
+    110                      pLUShcemasInDataDsc = pLUShcemasDscRec->pInputDscData;
+    111                      i = pLUShcemasInDataDsc[0].shOrderNumLU;
+    112                      rl_Val = arReleShOffsets[i];
+    113                      i = rl_Val + pLUShcemasInDataDsc[0].shIndexOut;
+    114                      rl_Val = arChIntermediaResult[i];
+    115          
+    116                      arChIntermediaResult[shCounterProcessedRec++] = rl_Val;
+    117                      break;
+    118                  case LU_GEN_OP_RS_TRIGGER:
+    119                      rl_Val = 0;
+    120                      rl_Val = chGLB_QTrg;
+    121                      arChIntermediaResult[shCounterProcessedRec++] = rl_Val;
+    122                      arChIntermediaResult[shCounterProcessedRec++] = !rl_Val;
+    123                      break;
+    124                      //Read Input Data
+    125          
+    126                      //Eval Function
+    127                      //Put Result
+    128          
+    129                  default:
+    130                      ;
+    131              }
+    132          
+    133            } while (shCounterProcessedRec < IN_RELE_NORMAL_SELECTOR);
+    134          
+    135          }
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   CLUDout_1_0::CLUDout_1_0()
+         8   -> CLUBase::subobject CLUBase()
+      16   CLUDout_1_0::CLUDout_1_0(char, char)
+        16   -> CLUBase::subobject CLUBase()
+      60   CLUDout_1_0::CalcReleySchematic()
+       8   CLUDout_1_0::subobject CLUDout_1_0()
+         8   -> CLUDout_1_0::CLUDout_1_0()
+       8   CLUDout_1_0::subobject CLUDout_1_0(char, char)
+         8   -> CLUDout_1_0::CLUDout_1_0(char, char)
+       8   CLUDout_1_0::subobject ~CLUDout_1_0()
+         8   -> CLUDout_1_0::~CLUDout_1_0()
+       8   CLUDout_1_0::~CLUDout_1_0()
+         8   -> CLUBase::subobject ~CLUBase()
+       8   PUT_Op_1_0(void *)
+         8   -> CLUDout_1_0::CalcReleySchematic()
+       0   SET_OUT_Op(void *)
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable0
+       4  ??DataTable0_1
+       4  ??DataTable0_2
+       8  And02__2_1DscRec
+       8  And03__2_1DscRec
+       8  And04__2_1DscRec
+       8  And07__2_1DscRec
+       8  And09__2_1DscRec
+       8  And10__2_1DscRec
+       8  And11__2_1DscRec
+       8  And15__3_1DscRec
+       8  And16__3_1DscRec
+      14  CLUDout_1_0::CLUDout_1_0()
+      30  CLUDout_1_0::CLUDout_1_0(char, char)
+     554  CLUDout_1_0::CalcReleySchematic()
+      12  CLUDout_1_0::subobject CLUDout_1_0()
+      16  CLUDout_1_0::subobject CLUDout_1_0(char, char)
+      12  CLUDout_1_0::subobject ~CLUDout_1_0()
+      14  CLUDout_1_0::~CLUDout_1_0()
+       8  Not01__1_1DscRec
+       8  Not14__1_1DscRec
+       8  Or17__3_1DscRec
+       8  Or_05__2_1DscRec
+       8  Or_08__2_1DscRec
+       8  Or_12__2_1DscRec
+       8  Or_13__2_1DscRec
+      12  PUT_Op_1_0(void *)
+       8  RS_06__2_2DscRec
+       2  SET_OUT_Op(void *)
+       8  arAnd02__2_1InDataDsc
+       8  arAnd03__2_1InDataDsc
+       8  arAnd04__2_1InDataDsc
+       8  arAnd07__2_1InDataDsc
+       8  arAnd09__2_1InDataDsc
+       8  arAnd10__2_1InDataDsc
+       8  arAnd11__2_1InDataDsc
+      12  arAnd15__3_1InDataDsc
+      12  arAnd16__3_1InDataDsc
+       4  arNot01__1_1InDataDsc
+       4  arNot14__1_1InDataDsc
+      12  arOr17__3_1InDataDsc
+       8  arOr_05__2_1InDataDsc
+       8  arOr_08__2_1InDataDsc
+       8  arOr_12__2_1InDataDsc
+       8  arOr_13__2_1InDataDsc
+      68  arPReleShcemasDscRecords
+       8  arRS_06__2_2InDataDsc
+      60  arReleShOffsets
+       1  chGLB_QTrg
+
+ 
+   1 byte  in section .bss
+ 404 bytes in section .rodata
+ 678 bytes in section .text
+ 
+ 678 bytes of CODE  memory
+ 404 bytes of CONST memory
+   1 byte  of DATA  memory
+
+Errors: none
+Warnings: 1

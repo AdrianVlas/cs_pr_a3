@@ -1,0 +1,315 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:58
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_main.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_main.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\menu_main.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\menu_main.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\menu_main.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          /*
+      5          Функція переміщення по меню
+      6          
+      7          Вхідні параметри
+      8          (1 << BIT_REWRITE) - перемалювати меню
+      9          (1 << BIT_KEY_DOWN) - рухатися вниз
+     10          (1 << BIT_KEY_UP) - рухатися вверх
+     11          */
+     12          /*****************************************************/
+     13          void move_into_main(unsigned int action, int max_row)
+     14          {
+     15            if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
+     16            {
+     17              if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position++;
+     18              do
+     19              {
+     20                if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
+     21                while (
+     22                       (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
+     23                       (current_config_prt.n_group_alarm == 0)
+     24                      )
+     25                {
+     26                  if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
+     27                }
+     28              }
+     29              while ((action & (1 << BIT_KEY_DOWN)) && (current_state_menu2.index_position >= max_row));
+     30            }
+     31            else if (action & (1 << BIT_KEY_UP))
+     32            {
+     33              current_state_menu2.index_position--;
+     34              do
+     35              {
+     36                if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
+     37                while (
+     38                       (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
+     39                       (current_config_prt.n_group_alarm == 0)
+     40                      )
+     41                {
+     42                  if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
+     43                }
+     44              }
+     45              while (current_state_menu2.index_position < 0);
+     46            }
+     47          }
+     48          /*****************************************************/
+     49          
+     50          /*****************************************************/
+     51          //Формуємо екран головного меню
+     52          /*****************************************************/
+     53          void make_ekran_main(void)
+     54          {
+     55            const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_MAIN_M2][MAX_COL_LCD + 1] = 
+     56            {
+     57              {
+     58               " Часы           ",
+     59               " Измерения      ",
+     60               " Входы-Выходы   ",
+     61               " Регистраторы   ",
+     62               " Настройки      ",
+     63               " Диагностика    ",
+     64               " Метка настроек ",
+     65               " Версия ПО и КП "
+     66              },
+     67              {
+     68               " Годинник       ",
+     69               " Вимірювання    ",
+     70               " Входи-Виходи   ",
+     71               " Реєстратори    ",
+     72               " Налаштування   ",
+     73               " Діагностика    ",
+     74               " Мітка налашт.  ",
+     75               " Версія ПЗ і КП "
+     76              },
+     77              {
+     78               " Clock          ",
+     79               " Measurement    ",
+     80               " Inputs-Outputs ",
+     81               " Recorders      ",
+     82               " Settings       ",
+     83               " Diagnostic     ",
+     84               " Settings Mark  ",
+     85               " VER.of F/W & MM"
+     86              },
+     87              {
+     88               " Саfат          ",
+     89               " Љлшем          ",
+     90               " Кіріс-Шыfыс    ",
+     91               " Тіркегіштер    ",
+     92               " Реттегіш       ",
+     93               " Диагностика    ",
+     94               " Метка настроек ",
+     95               " Версия ПО и КП "
+     96              }
+     97            };
+     98          
+     99            int index_language = index_language_in_array(settings_fix_prt.language);
+    100            
+    101            unsigned int additional_current = 0;
+    102            unsigned int position_temp = current_state_menu2.index_position;
+    103          
+    104            uint8_t name_string_tmp[MAX_ROW_MAIN_M2][MAX_COL_LCD + 1];
+    105            for(size_t index_1 = 0; index_1 < MAX_ROW_MAIN_M2; index_1++)
+    106            {
+    107              if (
+    108                  (index_1 == INDEX_MAIN_M2_MEASURMENTS) &&
+    109                  (current_config_prt.n_group_alarm == 0)
+    110                 )
+    111              {
+    112                if ((index_1 - additional_current) < position_temp) position_temp--;
+    113                additional_current++;
+    114          
+    115                for(size_t index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
+    116                {
+    117                  name_string_tmp[MAX_ROW_MAIN_M2 - additional_current][index_2] = ' ';
+    118                }
+    119                name_string_tmp[MAX_ROW_MAIN_M2 - additional_current][MAX_COL_LCD] = '\0';
+    120              }
+    121              else
+    122              {
+    123                for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
+    124                {
+    125                  name_string_tmp[index_1 - additional_current][index_2] = name_string[index_language][index_1][index_2];
+    126                }
+    127              }
+    128            }
+    129            unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+    130            
+    131            //Копіюємо  рядки у робочий екран
+    132            for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    133            {
+    134              //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
+    135              for (size_t j = 0; j < MAX_COL_LCD; j++) 
+    136              {
+    137                working_ekran[i][j] = (index_in_ekran < (MAX_ROW_MAIN_M2 - additional_current)) ? name_string_tmp[index_in_ekran][j] : ' ';
+    138              }
+    139              index_in_ekran++;
+    140            }
+    141          
+    142            //Курсор по горизонталі відображається на першій позиції
+    143            current_state_menu2.position_cursor_x = 0;
+    144            //Відображення курору по вертикалі
+    145            current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+    146            //Курсор видимий
+    147            current_state_menu2.cursor_on = 1;
+    148            //Курсор не мигає
+    149            current_state_menu2.cursor_blinking_on = 0;
+    150            //Обновити повністю весь екран
+    151            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    152          }
+    153          /*****************************************************/
+    154          
+    155          /*****************************************************/
+    156          /*
+    157          Функція обробки натискування кнопки Enter
+    158          */
+    159          /*****************************************************/
+    160          enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords(void)
+    161          {
+    162            enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+    163            
+    164            enum _menu2_levels new_level = *((enum _menu2_levels*)p_menu_param_1);
+    165            if (
+    166                (new_level != current_state_menu2.current_level)
+    167                &&  
+    168                (
+    169                 (new_level == LIST_SETTINGS_MENU2_LEVEL)
+    170                 ||  
+    171                 (
+    172                  (new_level == SET_NEW_PASSWORD_MENU2_LEVEL) &&
+    173                  (current_state_menu2.edition == ED_VIEWING)
+    174                 )
+    175                )   
+    176               )   
+    177            {
+    178              //Є спроба перейти у вікно списку налаштувань
+    179              if (settings_fix_prt.password_2 == 0)
+    180              {
+    181                if (config_settings_modified == 0)
+    182                {
+    183                  //Входимо з правом подальшого редагування
+    184                  current_state_menu2.edition = ED_CAN_BE_EDITED;
+    185          
+    186                  //Фіксуємо, що система меню захопила "монополію" на зміну конфігурації і налаштувань
+    187                  config_settings_modified = MASKA_MENU_LOCKS;
+    188                }
+    189                else
+    190                {
+    191                  //Повідомляємо про те, що режим редагування зараз недоступний
+    192                  current_state_menu2.edition = ED_WARNING_EDITION_BUSY;
+    193                  if (new_level == SET_NEW_PASSWORD_MENU2_LEVEL)
+    194                  {
+    195                    //Не дозволяємо заходити у ті вікна, у які без дозволу редагування заходити неможна
+    196                    *((enum _menu2_levels*)p_menu_param_1) = current_state_menu2.current_level;
+    197                    
+    198                    //Виставляємо команду на обновлекння екрану
+    199                    new_state_keyboard |= (1<<BIT_REWRITE);
+    200          
+    201                  }
+    202                }
+    203              }
+    204              else if (
+    205                       (new_level == SET_NEW_PASSWORD_MENU2_LEVEL) ||
+    206                       (settings_fix_prt.password_1 != 0)
+    207                      )   
+    208              {
+    209                //Переходимо на меню запиту паролю
+    210                next_level_in_current_level_menu2[PASSWORD_MENU2_LEVEL] = new_level;
+    211                *((enum _menu2_levels*)p_menu_param_1) = PASSWORD_MENU2_LEVEL;
+    212              }
+    213            }
+    214                            
+    215            return result;
+    216          }
+    217          /*****************************************************/
+    218          
+    219          /*****************************************************/
+    220          //
+    221          /*****************************************************/
+    222          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+     704   make_ekran_main
+       704   -> __aeabi_memcpy4
+       704   -> index_language_in_array
+       0   move_into_main
+       0   press_enter_in_main_and_list_passwords
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable2
+       4  ??DataTable2_1
+       4  ??DataTable2_2
+       4  ??DataTable2_3
+       4  ??DataTable2_4
+       4  ??DataTable2_5
+       4  ??DataTable2_6
+       4  ??DataTable2_7
+       4  ??DataTable2_8
+       4  ??DataTable2_9
+     544  ?_0
+     246  make_ekran_main
+     190  move_into_main
+     142  press_enter_in_main_and_list_passwords
+
+ 
+ 544 bytes in section .rodata
+ 618 bytes in section .text
+ 
+ 618 bytes of CODE  memory
+ 544 bytes of CONST memory
+
+Errors: none
+Warnings: none

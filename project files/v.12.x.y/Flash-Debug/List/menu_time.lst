@@ -1,0 +1,671 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:59
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_time.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_time.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\menu_time.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\menu_time.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\menu_time.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          /*
+      5          Функція переміщення
+      6          
+      7          Вхідні параметри
+      8          (1 << BIT_REWRITE) - перемалювати меню
+      9          (1 << BIT_KEY_DOWN) - рухатися вниз
+     10          (1 << BIT_KEY_UP) - рухатися вверх
+     11          */
+     12          /*****************************************************/
+     13          void move_into_time(unsigned int action, int max_row)
+     14          {
+     15            if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
+     16            {
+     17              if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position += MAX_ROW_LCD;
+     18              if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
+     19            }
+     20            else if (action & (1 << BIT_KEY_UP))
+     21            {
+     22              current_state_menu2.index_position -= MAX_ROW_LCD;
+     23              if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - MAX_ROW_LCD;
+     24            }
+     25            
+     26            /**************************************************/
+     27            //Курсор має бути на першому символі рядка з даними
+     28            /**************************************************/
+     29            if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_TIME)
+     30            {
+     31              current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_DATE;
+     32            }
+     33            else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_NAME_CALIBRATION)
+     34            {
+     35              current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION;
+     36            }
+     37          
+     38            if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
+     39            {
+     40              current_state_menu2.position_cursor_x = COL_DY1;
+     41            }
+     42            else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION)
+     43            {
+     44              current_state_menu2.position_cursor_x = COL_SK1;
+     45            }
+     46            /**************************************************/
+     47          }
+     48          /*****************************************************/
+     49          
+     50          /*****************************************************/
+     51          //Формуємо екран година-час
+     52          /*****************************************************/
+     53          void make_ekran_time(void)
+     54          {
+     55            if (current_state_menu2.edition == ED_CONFIRM_CHANGES)
+     56            {
+     57              make_ekran_ask_rewrite();
+     58            }
+     59            else if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+     60            {
+     61              const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+     62              {
+     63                " Вых.за диапазон",
+     64                " Вих.за діапазон",
+     65                "  Out of Limits ",
+     66                "Вых.за диапазон "
+     67              };
+     68              make_ekran_about_info(true, information_about_error);
+     69            }
+     70            else
+     71            {
+     72              uint8_t name_string[MAX_ROW_TIME_CALIBRATION_M2][MAX_COL_LCD + 1] = 
+     73              {
+     74                "   XX-XX-20XX   ",
+     75                "    XX:XX:XX    ",
+     76                "                ",
+     77                "      X XX      "
+     78              };
+     79            
+     80              const uint8_t calibrating[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+     81              {
+     82                "   Калибровка   ",
+     83                "  Калібрування  ",
+     84                "  Calibration   ",
+     85                "   Калибровка   "
+     86              };
+     87            
+     88              int index_language = index_language_in_array(settings_fix_prt.language);
+     89              
+     90              for(size_t index_1 = 0; index_1 < (MAX_COL_LCD + 1); index_1++)
+     91                name_string[INDEX_TIME_CALIBRATION_M2_NAME_CALIBRATION][index_1] = calibrating[index_language][index_1];
+     92            
+     93              unsigned int position_temp = current_state_menu2.index_position;
+     94              unsigned int index_in_ekran;
+     95            
+     96              /******************************************/
+     97              //Заповнюємо поля відповідними цифрами
+     98              /******************************************/
+     99              /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function_ver2() і make_ekran_time() викликаються з найнижчого рівня*/ 
+    100              uint8_t *time_tmp = (current_state_menu2.edition <= ED_CAN_BE_EDITED) ? time : time_edit;
+    101              uint8_t *calibration_tmp = (current_state_menu2.edition <= ED_CAN_BE_EDITED) ? &calibration : &calibration_edit;
+    102              //День
+    103              name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_DY1] = (time_tmp[4] >>  4) + 0x30;
+    104              name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_DY2] = (time_tmp[4] & 0xf) + 0x30;
+    105          
+    106              //Місяць
+    107              name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_MY1] = (time_tmp[5] >>  4) + 0x30;
+    108              name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_MY2] = (time_tmp[5] & 0xf) + 0x30;
+    109          
+    110              //Рік
+    111              name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_SY1] = (time_tmp[6] >>  4) + 0x30;
+    112              name_string[INDEX_TIME_CALIBRATION_M2_DATE][COL_SY2] = (time_tmp[6] & 0xf) + 0x30;
+    113          
+    114              //Година
+    115              name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_HT1] = (time_tmp[3] >>  4) + 0x30;
+    116              name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_HT2] = (time_tmp[3] & 0xf) + 0x30;
+    117          
+    118              //Хвилини
+    119              name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_MT1] = (time_tmp[2] >>  4) + 0x30;
+    120              name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_MT2] = (time_tmp[2] & 0xf) + 0x30;
+    121          
+    122              //Секунди
+    123              name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_ST1] = (time_tmp[1] >>  4) + 0x30;
+    124              name_string[INDEX_TIME_CALIBRATION_M2_TIME][COL_ST2] = (time_tmp[1] & 0xf) + 0x30;
+    125          
+    126              //Калібровка
+    127              if((*calibration_tmp & (1<<5)) == 0) name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_SK1] = '-';
+    128              else name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_SK1] = '+';
+    129             
+    130              name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_VK2] =((*calibration_tmp & 0x1f) % 10) + 0x30;
+    131              name_string[INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION][COL_VK1] =((*calibration_tmp & 0x1f) / 10) + 0x30;
+    132              /******************************************/
+    133            
+    134              index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+    135          
+    136            
+    137              //Копіюємо  рядки у робочий екран
+    138              for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    139              {
+    140                //Наступні рядки треба перевірити, чи їх требе відображати
+    141                for (size_t j = 0; j < MAX_COL_LCD; j++)
+    142                {
+    143                  working_ekran[i][j] = (index_in_ekran < MAX_ROW_TIME_CALIBRATION_M2) ? name_string[index_in_ekran][j] : ' ';
+    144                }
+    145                index_in_ekran++;
+    146              }
+    147          
+    148              //Відображення курору по вертикалі
+    149              current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+    150              if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
+    151              {
+    152                //Курсор невидимий
+    153                current_state_menu2.cursor_on = 0;
+    154                current_state_menu2.cursor_blinking_on = 0;
+    155              }
+    156              else
+    157              {
+    158                //Курсор видимий
+    159                current_state_menu2.cursor_on = 1;
+    160                //Курсор мигає
+    161                current_state_menu2.cursor_blinking_on = 1;
+    162              }
+    163            }
+    164            
+    165            //Обновити повністю весь екран
+    166            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    167          }
+    168          /*****************************************************/
+    169          
+    170          /*****************************************************/
+    171          /*
+    172          Редагування дати і часу
+    173          */
+    174          /*****************************************************/
+    175          enum _result_pressed_enter_during_edition press_enter_in_time(void)
+    176          {
+    177            enum _result_pressed_enter_during_edition result;
+    178            switch (current_state_menu2.edition)
+    179            {
+    180            case ED_VIEWING:
+    181              {
+    182                //Копіюємо дані для редагування
+    183                for(size_t i = 0; i < 7; i++) time_edit[i] = time[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function_ver2() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
+    184                calibration_edit = calibration;
+    185                
+    186                result = RPEDE_NONE;
+    187                
+    188                break;
+    189              }
+    190            case ED_EDITION:
+    191              {
+    192                //Перевіряємо, чи дані рельно змінилися
+    193                result = RPEDE_DATA_NOT_CHANGED;
+    194                for(size_t i = 0; ((i < 7) && (result == RPEDE_DATA_NOT_CHANGED)); i++)
+    195                {
+    196                  if (time[i] != time_edit[i]) result = RPEDE_DATA_CHANGED_OK;
+    197                }
+    198                if (result == RPEDE_DATA_NOT_CHANGED)
+    199                {
+    200                  if (calibration != calibration_edit) result = RPEDE_DATA_CHANGED_OK;
+    201                }
+    202                
+    203                if (result == RPEDE_DATA_CHANGED_OK)
+    204                {
+    205                  if (check_data_for_data_time_menu() != 1) result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+    206                }
+    207                break;
+    208              }
+    209            case ED_CONFIRM_CHANGES:
+    210              {
+    211                //Копіюємо дані після редагування
+    212                for(size_t i = 0; i < 7; i++) time[i] = time_edit[i]; /*використовувати time_copy і calibration_copy не треба бо ф-ції main_manu_function_ver2() і main_routines_for_i2c() викликаються з найнижчого рівня*/ 
+    213                calibration = calibration_edit;
+    214                
+    215                //Виставляємо повідомлення запису часу в RTC
+    216                //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
+    217                _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+    218                _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+    219                
+    220                result = RPEDE_NONE;
+    221                
+    222                break;
+    223              }
+    224            case ED_CAN_BE_EDITED:
+    225            case ED_WARNING_ENTER_ESC:
+    226              {
+    227                result = RPEDE_NONE;
+    228                break;
+    229              }
+    230            }
+    231            
+    232            return result;
+    233          }
+    234          /*****************************************************/
+    235          
+    236          /*****************************************************/
+    237          //Зміна часу з системи меню
+    238          /*****************************************************
+    239          Вхідні параметри
+    240          (1 << BIT_KEY_DOWN) - натснуто кнопку вниз
+    241          (1 << BIT_KEY_UP)   - атиснуто кнопку вверх
+    242          (1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+    243          (1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+    244          
+    245          Вхідні параметри
+    246            Немає
+    247          *****************************************************/
+    248          void change_time(unsigned int action)
+    249          {
+    250            //Вводимо число у відповідне поле
+    251            if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
+    252            {
+    253              if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
+    254              {
+    255                if(current_state_menu2.position_cursor_x == COL_DY1)
+    256                {
+    257                  unsigned int temp_value = time_edit[4] >> 4;
+    258                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    259                
+    260                  time_edit[4] &= 0xf;
+    261                  time_edit[4] |= (temp_value << 4);
+    262                }
+    263                else if(current_state_menu2.position_cursor_x == COL_DY2)
+    264                {
+    265                  unsigned int temp_value = time_edit[4] & 0xf;
+    266                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    267          
+    268                  time_edit[4] &= 0xf0;
+    269                  time_edit[4] |= temp_value;
+    270                }
+    271                else if(current_state_menu2.position_cursor_x == COL_MY1)
+    272                {
+    273                  unsigned int temp_value = time_edit[5] >> 4;
+    274                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    275          
+    276                  time_edit[5] &= 0xf;
+    277                  time_edit[5] |= (temp_value << 4);
+    278                }
+    279                else if(current_state_menu2.position_cursor_x == COL_MY2)
+    280                {
+    281                  unsigned int temp_value = time_edit[5] & 0xf;
+    282                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    283          
+    284                  time_edit[5] &= 0xf0;
+    285                  time_edit[5] |= temp_value;
+    286                }
+    287                else if(current_state_menu2.position_cursor_x == COL_SY1)
+    288                {
+    289                  unsigned int temp_value = time_edit[6] >> 4;
+    290                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    291          
+    292                  time_edit[6] &= 0xf;
+    293                  time_edit[6] |= (temp_value << 4);
+    294                }
+    295                else if(current_state_menu2.position_cursor_x == COL_SY2)
+    296                {
+    297                  unsigned int temp_value = time_edit[6] & 0xf;
+    298                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    299          
+    300                  time_edit[6] &= 0xf0;
+    301                  time_edit[6] |= temp_value;
+    302                }
+    303              }
+    304              else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_TIME)
+    305              {
+    306                if(current_state_menu2.position_cursor_x == COL_HT1)
+    307                {
+    308                  unsigned int temp_value = time_edit[3] >> 4;
+    309                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    310          
+    311                  time_edit[3] &= 0xf;
+    312                  time_edit[3] |= (temp_value << 4);
+    313                }
+    314                else if(current_state_menu2.position_cursor_x == COL_HT2)
+    315                {
+    316                  unsigned int temp_value = time_edit[3] & 0xf;
+    317                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    318          
+    319                  time_edit[3] &= 0xf0;
+    320                  time_edit[3] |= temp_value;
+    321                }
+    322                else if(current_state_menu2.position_cursor_x == COL_MT1)
+    323                {
+    324                  unsigned int temp_value = time_edit[2] >> 4;
+    325                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    326          
+    327                  time_edit[2] &= 0xf;
+    328                  time_edit[2] |= (temp_value << 4);
+    329                }
+    330                else if(current_state_menu2.position_cursor_x == COL_MT2)
+    331                {
+    332                  unsigned int temp_value = time_edit[2] & 0xf;
+    333                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    334          
+    335                  time_edit[2] &= 0xf0;
+    336                  time_edit[2] |= temp_value;
+    337                }
+    338                else if(current_state_menu2.position_cursor_x == COL_ST1)
+    339                {
+    340                  unsigned int temp_value = time_edit[1] >> 4;
+    341                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    342          
+    343                  time_edit[1] &= 0xf;
+    344                  time_edit[1] |= (temp_value << 4);
+    345                }
+    346                else if(current_state_menu2.position_cursor_x == COL_ST2)
+    347                {
+    348                  unsigned int temp_value = time_edit[1] & 0xf;
+    349                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    350          
+    351                  time_edit[1] &= 0xf0;
+    352                  time_edit[1] |= temp_value;
+    353                }
+    354              }
+    355              else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION)
+    356              {
+    357                if(current_state_menu2.position_cursor_x == COL_SK1) 
+    358                {
+    359                  if ((calibration_edit & 0x20) != 0) calibration_edit &= 0x1f;
+    360                  else calibration_edit |= 0x20;
+    361                }
+    362                else if(current_state_menu2.position_cursor_x == COL_VK1)
+    363                {
+    364                  unsigned char temp_1 = calibration_edit & 0x20, temp_2 = calibration_edit & 0x1f;
+    365                  unsigned int temp_value = temp_2 / 10;
+    366                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    367          
+    368                  temp_2 %= 10;
+    369                  temp_2 += temp_value*10;
+    370                  if (temp_2 > 31) temp_2 = 31;
+    371                  calibration_edit = temp_1 | temp_2;
+    372                          
+    373                }
+    374                else if(current_state_menu2.position_cursor_x == COL_VK2)
+    375                {
+    376                  unsigned char temp_1 = calibration_edit & 0x20, temp_2 = calibration_edit & 0x1f;
+    377                  unsigned int temp_value = temp_2 % 10;
+    378                  inc_or_dec_value(&temp_value, ((action & (1 << BIT_KEY_UP)) != 0));
+    379          
+    380                  temp_2 = (temp_2 / 10) *10;
+    381                  temp_2 += temp_value;
+    382                  if (temp_2 > 31) temp_2 = 31;
+    383                  calibration_edit = temp_1 | temp_2;
+    384                }
+    385              }
+    386            }
+    387            else if (action & (1 << BIT_KEY_LEFT))
+    388            {
+    389              if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
+    390              {
+    391                if(current_state_menu2.position_cursor_x == COL_SY2) current_state_menu2.position_cursor_x = COL_SY1;
+    392                else if(current_state_menu2.position_cursor_x == COL_SY1) current_state_menu2.position_cursor_x = COL_MY2;
+    393                else if(current_state_menu2.position_cursor_x == COL_MY2) current_state_menu2.position_cursor_x = COL_MY1;
+    394                else if(current_state_menu2.position_cursor_x == COL_MY1) current_state_menu2.position_cursor_x = COL_DY2;
+    395                else if(current_state_menu2.position_cursor_x == COL_DY2) current_state_menu2.position_cursor_x = COL_DY1;
+    396                else if(current_state_menu2.position_cursor_x == COL_DY1)
+    397                {
+    398                  current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION;
+    399                  current_state_menu2.position_cursor_x = COL_VK2;
+    400                }
+    401              }
+    402              else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_TIME)
+    403              {
+    404                if(current_state_menu2.position_cursor_x == COL_ST2) current_state_menu2.position_cursor_x = COL_ST1;
+    405                else if(current_state_menu2.position_cursor_x == COL_ST1) current_state_menu2.position_cursor_x = COL_MT2;
+    406                else if(current_state_menu2.position_cursor_x == COL_MT2) current_state_menu2.position_cursor_x = COL_MT1;
+    407                else if(current_state_menu2.position_cursor_x == COL_MT1) current_state_menu2.position_cursor_x = COL_HT2;
+    408                else if(current_state_menu2.position_cursor_x == COL_HT2) current_state_menu2.position_cursor_x = COL_HT1;
+    409                else if(current_state_menu2.position_cursor_x == COL_HT1)
+    410                {
+    411                  current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_DATE;
+    412                  current_state_menu2.position_cursor_x = COL_SY2;
+    413                }
+    414              }
+    415              else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION)
+    416              {
+    417                if(current_state_menu2.position_cursor_x == COL_VK2) current_state_menu2.position_cursor_x = COL_VK1;
+    418                else if(current_state_menu2.position_cursor_x == COL_VK1) current_state_menu2.position_cursor_x = COL_SK1;
+    419                else if(current_state_menu2.position_cursor_x == COL_SK1)
+    420                {
+    421                  current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_TIME;
+    422                  current_state_menu2.position_cursor_x = COL_ST2;
+    423                }
+    424              }
+    425            }
+    426            else if (action & (1 << BIT_KEY_RIGHT))
+    427            {
+    428              if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_DATE)
+    429              {
+    430                if(current_state_menu2.position_cursor_x == COL_DY1) current_state_menu2.position_cursor_x = COL_DY2;
+    431                else if(current_state_menu2.position_cursor_x == COL_DY2) current_state_menu2.position_cursor_x = COL_MY1;
+    432                else if(current_state_menu2.position_cursor_x == COL_MY1) current_state_menu2.position_cursor_x = COL_MY2;
+    433                else if(current_state_menu2.position_cursor_x == COL_MY2) current_state_menu2.position_cursor_x = COL_SY1;
+    434                else if(current_state_menu2.position_cursor_x == COL_SY1) current_state_menu2.position_cursor_x = COL_SY2;
+    435                else if(current_state_menu2.position_cursor_x == COL_SY2)
+    436                {
+    437                  current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_TIME;
+    438                  current_state_menu2.position_cursor_x = COL_HT1;
+    439                }
+    440              }
+    441              else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_TIME)
+    442              {
+    443                if(current_state_menu2.position_cursor_x == COL_HT1) current_state_menu2.position_cursor_x = COL_HT2;
+    444                else if(current_state_menu2.position_cursor_x == COL_HT2) current_state_menu2.position_cursor_x = COL_MT1;
+    445                else if(current_state_menu2.position_cursor_x == COL_MT1) current_state_menu2.position_cursor_x = COL_MT2;
+    446                else if(current_state_menu2.position_cursor_x == COL_MT2) current_state_menu2.position_cursor_x = COL_ST1;
+    447                else if(current_state_menu2.position_cursor_x == COL_ST1) current_state_menu2.position_cursor_x = COL_ST2;
+    448                else if(current_state_menu2.position_cursor_x == COL_ST2)
+    449                {
+    450                  current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION;
+    451                  current_state_menu2.position_cursor_x = COL_SK1;
+    452                }
+    453              }
+    454              else if(current_state_menu2.index_position == INDEX_TIME_CALIBRATION_M2_VALUE_CALIBRATION)
+    455              {
+    456                if(current_state_menu2.position_cursor_x == COL_SK1) current_state_menu2.position_cursor_x = COL_VK1;
+    457                else if(current_state_menu2.position_cursor_x == COL_VK1) current_state_menu2.position_cursor_x = COL_VK2;
+    458                else if(current_state_menu2.position_cursor_x == COL_VK2)
+    459                {
+    460                  current_state_menu2.index_position = INDEX_TIME_CALIBRATION_M2_DATE;
+    461                  current_state_menu2.position_cursor_x = COL_DY1;
+    462                }
+    463              }
+    464            }
+    465          }
+    466          /*****************************************************/
+    467          
+    468          /*****************************************************/
+    469          //Перевіряємо достовірність даних
+    470          /*
+    471          Результат
+    472            1 - дані достовірні
+    473            0 - дані недостовірні
+    474          */
+    475          /*****************************************************/
+    476          unsigned int check_data_for_data_time_menu(void)
+    477          {
+    478            unsigned int temp_data_1, temp_data_2;
+    479            
+    480            /*******/
+    481            //Рік
+    482            /*******/
+    483            temp_data_1 = bcd_to_int(time_edit[6]);
+    484            if( temp_data_1 > 99 ) return 0;
+    485          
+    486            /*******/
+    487            //Місяць
+    488            /*******/
+    489            temp_data_1 = bcd_to_int(time_edit[5]);
+    490            if( (temp_data_1 == 0) || (temp_data_1 > 12)) return 0;
+    491            
+    492            /*******/
+    493            //День місяця
+    494            /*******/
+    495            temp_data_2 = bcd_to_int(time_edit[4]);
+    496            if((temp_data_2 == 0) || (temp_data_2 > 31)) return 0;
+    497            //Додатков перевірка на місяць у якого є тільки 30 днів
+    498            if (((temp_data_1 == 4) || (temp_data_1 == 6) || (temp_data_1 == 9) || (temp_data_1 == 11)) &&
+    499                (temp_data_2 > 30)) return 0;
+    500          
+    501            //Додатков перевірка на місяць місяць лютий з врахування року високосного чи не високосного
+    502            if((temp_data_1 == 2) && (temp_data_2 > 29)) return 0;
+    503            else if ((temp_data_1 == 2) && (temp_data_2 == 29))
+    504            {
+    505              //Змінну temp_data_1 визначаємо, як номер року, бо вже надалі номер місяця нам не буде потрібен
+    506              temp_data_1 = bcd_to_int(time_edit[6]);
+    507              if ((temp_data_1 % 4) !=0) return 0;
+    508            }
+    509            /*******/
+    510          
+    511            /*******/
+    512            //Година
+    513            /*******/
+    514            temp_data_2 = bcd_to_int(time_edit[3]);
+    515            if(temp_data_2 > 23) return 0;
+    516            /*******/
+    517          
+    518            /*******/
+    519            //Хвилини
+    520            /*******/
+    521            temp_data_2 = bcd_to_int(time_edit[2]);
+    522            if(temp_data_2 > 59) return 0;
+    523            /*******/
+    524          
+    525            /*******/
+    526            //Секунди
+    527            /*******/
+    528            temp_data_2 = bcd_to_int(time_edit[1]);
+    529            if(temp_data_2 > 59) return 0;
+    530            /*******/
+    531          
+    532            /*******/
+    533            //Соті секунди
+    534            /*******/
+    535            temp_data_1 = bcd_to_int(time_edit[0]);
+    536            if( temp_data_1 > 99 ) return 0;
+    537          
+    538            //Вихід з повідомленням, що всі параметри у  межах допуску
+    539            return 1;
+    540          }
+    541          /*****************************************************/
+    542          
+    543          
+    544          /*****************************************************/
+    545          //Перевід числа з формату BCD в int 
+    546          /*****************************************************/
+    547          unsigned int bcd_to_int(unsigned char input)
+    548          {
+    549            unsigned int output, temp_data;
+    550            
+    551            temp_data = input >> 4;
+    552            output = temp_data*10;
+    553            output +=input & 0xf;
+    554            
+    555            return output;
+    556          }
+    557          /*****************************************************/
+    558          
+    559          
+    560          /*****************************************************/
+    561          // 
+    562          /*****************************************************/
+    563          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       0   bcd_to_int
+      72   change_time
+        72   -> inc_or_dec_value
+      16   check_data_for_data_time_menu
+        16   -> bcd_to_int
+     224   make_ekran_time
+       224   -> __aeabi_memcpy4
+       224   -> index_language_in_array
+       224   -> make_ekran_about_info
+       224   -> make_ekran_ask_rewrite
+       0   move_into_time
+       8   press_enter_in_time
+         8   -> check_data_for_data_time_menu
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable4
+       4  ??DataTable4_1
+       4  ??DataTable4_10
+       4  ??DataTable4_11
+       4  ??DataTable4_2
+       4  ??DataTable4_3
+       4  ??DataTable4_4
+       4  ??DataTable4_5
+       4  ??DataTable4_6
+       4  ??DataTable4_7
+       4  ??DataTable4_8
+       4  ??DataTable4_9
+      68  ?_0
+      68  ?_1
+      68  ?_2
+      30  bcd_to_int
+    1870  change_time
+     212  check_data_for_data_time_menu
+     504  make_ekran_time
+     174  move_into_time
+     240  press_enter_in_time
+
+ 
+   204 bytes in section .rodata
+ 3 078 bytes in section .text
+ 
+ 3 078 bytes of CODE  memory
+   204 bytes of CONST memory
+
+Errors: none
+Warnings: none

@@ -1,0 +1,642 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.50.2.10312/W32 for ARM       24/Mar/2017  12:54:57
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_input.c
+#    Command line =  
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working
+#        files\src\menu_input.c" -D USE_STDPERIPH_DRIVER -D STM32F2XX -D
+#        USE_USB_OTG_FS -D KEYBOARD_VER_1 -D SYSTEM_VIEWER_ENABLE -lc
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List" --remarks -o
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj" --no_cse --no_unroll --no_inline
+#        --no_code_motion --no_tbaa --no_clustering --no_scheduling --debug
+#        --endian=little --cpu=Cortex-M3 -e --enable_multibytes --fpu=None
+#        --dlib_config G:\PRG\IAR7_50_2\arm\INC\c\DLib_Config_Full.h -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\working files\usb\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_OTG_Driver\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Core\inc\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc\"
+#        -I "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\Config\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\OS\" -I
+#        "G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\..\..\SystemView\SEGGER\" -On --use_c++_inline
+#        --require_prototypes -I G:\PRG\IAR7_50_2\arm\CMSIS\Include\ -D
+#        ARM_MATH_CM3
+#    List file    =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\List\menu_input.lst
+#    Object file  =  
+#        G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project
+#        files\v.12.x.y\Flash-Debug\Obj\menu_input.o
+#
+###############################################################################
+
+G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\menu_input.c
+      1          #include "header.h"
+      2          
+      3          /*****************************************************/
+      4          //Формуємо екран відображення вікна відображення налаштувувань для дискретного вхроду
+      5          /*****************************************************/
+      6          void make_ekran_control_input(void)
+      7          {
+      8            if (
+      9                (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+     10                (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+     11               )   
+     12            {
+     13              const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+     14              {
+     15                "Ред.не разрешено",
+     16                "Ред.не дозволене",
+     17                "Ed.isn't allowed",
+     18                "Ред.не разрешено",
+     19              };
+     20          
+     21              const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+     22              {
+     23                " Вых.за диапазон",
+     24                " Вих.за діапазон",
+     25                "  Out of Limits ",
+     26                "Вых.за диапазон "
+     27              };
+     28          
+     29              enum _edition_stats edition = current_state_menu2.edition;
+     30              make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+     31            }
+     32            else
+     33            {
+     34              const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_INDEX_CTRL_INPUT][MAX_COL_LCD + 1] = 
+     35              {
+     36                {
+     37                  " Входной сигнал "
+     38                },
+     39                {
+     40                  " Вхідний сигнал "
+     41                },
+     42                {
+     43                  "  Input signal  "
+     44                },
+     45                {
+     46                  " Входной сигнал "
+     47                }
+     48              };
+     49              int index_language = index_language_in_array(select_struct_settings_fix()->language);
+     50            
+     51              unsigned int position_temp = current_state_menu2.index_position;
+     52              //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+     53              unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+     54          
+     55              uint32_t *p_control;
+     56              if (current_state_menu2.edition == ED_VIEWING) p_control = &((((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings.control);
+     57              else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_control = &((((__settings_for_INPUT*)sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
+     58              else p_control = &((((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
+     59            
+     60              for (size_t i = 0; i < MAX_ROW_LCD; i++)
+     61              {
+     62                unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+     63                if (index_in_ekran_tmp < MAX_INDEX_CTRL_INPUT)
+     64                {
+     65                  if ((i & 0x1) == 0)
+     66                  {
+     67                    //У непарному номері рядку виводимо заголовок
+     68                    for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+     69                  }
+     70                  else
+     71                  {
+     72                    //У парному номері рядку виводимо значення
+     73                    if (index_in_ekran_tmp == INDEX_CTRL_INPUT_TYPE_SIGNAL)  
+     74                    {
+     75                      const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+     76                      {
+     77                        {"   ПОСТОЯННЫЙ   ", "   ПЕРЕМЕННЫЙ   "},
+     78                        {"   ПОСТІЙНИЙ    ", "    ЗМІННИЙ     "},
+     79                        {"     DIRECT     ", "   ALTERNATE    "},
+     80                        {"   ПОСТОЯННЫЙ   ", "   ПЕРЕМЕННЫЙ   "}
+     81                      };
+     82                      const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
+     83                      {
+     84                        {2, 2},
+     85                        {2, 3},
+     86                        {4, 2},
+     87                        {2, 2}
+     88                      };
+     89                    
+     90                      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][((*p_control) >> index_in_ekran_tmp) & 0x1][j];
+     91                      if (position_temp == index_in_ekran_tmp)
+     92                      {
+     93                        current_state_menu2.position_cursor_x = cursor_x[index_language][((*p_control) >> index_in_ekran_tmp) & 0x1];
+     94                      }
+     95                    }
+     96                  }
+     97                }
+     98                else
+     99                  for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    100          
+    101                index_in_ekran++;
+    102              }
+    103          
+    104              //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    105              current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
+    106              //Курсор видимий
+    107              current_state_menu2.cursor_on = 1;
+    108              //Курсор не мигає
+    109              if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    110              else current_state_menu2.cursor_blinking_on = 1;
+    111            }
+    112            //Обновити повністю весь екран
+    113            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    114          }
+    115          /*****************************************************/
+    116          
+    117          /*****************************************************/
+    118          /*
+    119          Натискування Enter у вікні відображення налаштувань дискретного входу
+    120          */
+    121          /*****************************************************/
+    122          enum _result_pressed_enter_during_edition press_enter_in_control_input(void)
+    123          {
+    124            enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+    125            switch (current_state_menu2.edition)
+    126            {
+    127            case ED_EDITION:
+    128              {
+    129                //Перевіряємо, чи дані рельно змінилися
+    130                result = RPEDE_DATA_NOT_CHANGED;
+    131                
+    132                __settings_for_INPUT *p_settings_edit = (((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    133                __settings_for_INPUT *p_settings_cont = (((__settings_for_INPUT*)sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    134                if (p_settings_cont->control != p_settings_edit->control) 
+    135                {
+    136                  if ((p_settings_edit->control & ((uint32_t)(~MASKA_CTRL_INPUT_M2))) == 0)
+    137                  {
+    138                    if ((p_settings_edit->control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) != 0)
+    139                    {
+    140                      int32_t delay = p_settings_edit->set_delay[INPUT_SET_DELAY_DOPUSK];
+    141                      if (delay < KOEF_DOPUSK_DV_ZMIN_MIN)
+    142                      {
+    143                        delay = KOEF_DOPUSK_DV_ZMIN_MIN;
+    144                      }
+    145                      else if ((delay % 10) != 0)
+    146                      {
+    147                        delay = (delay / 10)*10;
+    148                      }
+    149                      
+    150                      if (delay != p_settings_edit->set_delay[INPUT_SET_DELAY_DOPUSK])
+    151                      {
+    152                        p_settings_cont->set_delay[INPUT_SET_DELAY_DOPUSK] = p_settings_edit->set_delay[INPUT_SET_DELAY_DOPUSK] = delay;
+    153                      }
+    154                    }
+    155                    
+    156                    p_settings_cont->control = p_settings_edit->control;
+    157                    config_settings_modified |= MASKA_CHANGED_SETTINGS;
+    158                    result = RPEDE_DATA_CHANGED_OK;
+    159                  }
+    160                  else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+    161                }
+    162          
+    163                break;
+    164              }
+    165            }
+    166            
+    167            return result;
+    168          }
+    169          /*****************************************************/
+    170          
+    171          /*****************************************************/
+    172          /*
+    173          Натискування ESC у вікні налаштувань дискретного входу
+    174          */
+    175          /*****************************************************/
+    176          void press_esc_in_control_input(void)
+    177          {
+    178            uint32_t *p_control_edit = &((((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
+    179            uint32_t *p_control_cont = &((((__settings_for_INPUT*)sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
+    180            *p_control_edit = *p_control_cont;
+    181          }
+    182          /*****************************************************/
+    183          
+    184          /*****************************************************/
+    185          //Зміна налаштувань бінарної інформації для дискретних входів
+    186          /*****************************************************
+    187          Вхідні параметри
+    188          (1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+    189          (1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+    190          
+    191          Вхідні параметри
+    192            Немає
+    193          *****************************************************/
+    194          void change_control_input(unsigned int action)
+    195          {
+    196            //Вводимо число у відповідне поле
+    197            uint32_t *p_control_edit = &((((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control);
+    198            if (
+    199                ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+    200                ((action & (1 << BIT_KEY_RIGHT)) != 0)
+    201               )   
+    202            {
+    203              *p_control_edit ^= (uint32_t)(1 << current_state_menu2.index_position);
+    204            }
+    205          }
+    206          /*****************************************************/
+    207          
+    208          /*****************************************************/
+    209          //Формуємо екран відображення часових параметнів для дискретного входу
+    210          /*****************************************************/
+    211          void make_ekran_delay_input(void)
+    212          {
+    213            if (
+    214                (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
+    215                (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
+    216               )   
+    217            {
+    218              const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    219              {
+    220                "Ред.не разрешено",
+    221                "Ред.не дозволене",
+    222                "Ed.isn't allowed",
+    223                "Ред.не разрешено",
+    224              };
+    225          
+    226              const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+    227              {
+    228                " Вых.за диапазон",
+    229                " Вих.за діапазон",
+    230                "  Out of Limits ",
+    231                "Вых.за диапазон "
+    232              };
+    233          
+    234              enum _edition_stats edition = current_state_menu2.edition;
+    235              make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? false : true), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    236            }
+    237            else
+    238            {
+    239              const uint8_t name_string[MAX_NAMBER_LANGUAGE][INPUT_SET_DELAYS][MAX_COL_LCD + 1] = 
+    240              {
+    241                {
+    242                  " Допуск д.входа "
+    243                },
+    244                {
+    245                  " Допуск д.входу "
+    246                },
+    247                {
+    248                  " BIN Tolerance  "
+    249                },
+    250                {
+    251                  " Допуск д.входа "
+    252                }
+    253              };
+    254              const uint8_t ms[MAX_NAMBER_LANGUAGE][2] = {"мс", "мс", "ms", "мс"};
+    255              
+    256              int index_language = index_language_in_array(select_struct_settings_fix()->language);
+    257            
+    258              unsigned int position_temp = current_state_menu2.index_position;
+    259              //Множення на два величини position_temp потрібне для того, бо на одну позицію ми використовуємо два рядки (назва + значення)
+    260              unsigned int index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+    261            
+    262              unsigned int first_symbol;
+    263              uint32_t vaga, value;
+    264            
+    265              __settings_for_INPUT *p_settings_for_input;
+    266              if (current_state_menu2.edition == ED_VIEWING) p_settings_for_input = &((((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->settings);
+    267              else if (current_state_menu2.edition == ED_CAN_BE_EDITED) p_settings_for_input = (((__settings_for_INPUT*)sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    268              else p_settings_for_input = (((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    269              size_t col_begin, col_end;
+    270            
+    271              for (size_t i = 0; i < MAX_ROW_LCD; i++)
+    272              {
+    273                unsigned int index_in_ekran_tmp = index_in_ekran >> 1;
+    274                if (index_in_ekran_tmp < INPUT_SET_DELAYS)
+    275                {
+    276                  if ((i & 0x1) == 0)
+    277                  {
+    278                    //У непарному номері рядку виводимо заголовок
+    279                    for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+    280                    first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
+    281          
+    282                    switch (index_in_ekran_tmp)
+    283                    {
+    284                    case INPUT_SET_DELAY_DOPUSK:
+    285                      {
+    286                        vaga = 10; //максимальний ваговий коефіцієнт
+    287                        col_begin = COL_DELAY_INPUT_DOPUSK_BEGIN;
+    288                        col_end = COL_DELAY_INPUT_DOPUSK_END;
+    289                      
+    290                        value = p_settings_for_input->set_delay[INPUT_SET_DELAY_DOPUSK];
+    291                      
+    292                        break;
+    293                      }
+    294                    }
+    295                  }
+    296                  else
+    297                  {
+    298                    //У парному номері рядку виводимо значення
+    299                    for (size_t j = 0; j < MAX_COL_LCD; j++)
+    300                    {
+    301                      if (
+    302                          ((j < col_begin) ||  (j > col_end )) &&
+    303                          (
+    304                           !((j >= (col_end + 2)) && (j <= (col_end + 3)))
+    305                          )    
+    306                         )working_ekran[i][j] = ' ';
+    307                      else if ((j >= (col_end + 2)) && (j <= (col_end + 3))) 
+    308                        working_ekran[i][j] = ms[index_language][j - (col_end + 2)];
+    309                      else
+    310                        calc_int_symbol_and_put_into_working_ekran((working_ekran[i] + j), &value, &vaga, &first_symbol);
+    311                    }
+    312                  }
+    313                }
+    314                else
+    315                  for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
+    316          
+    317                index_in_ekran++;
+    318              }
+    319          
+    320              //Відображення курору по вертикалі і курсор завжди має бути у полі із значенням устаки
+    321              current_state_menu2.position_cursor_y = ((position_temp<<1) + 1) & (MAX_ROW_LCD - 1);
+    322          
+    323              if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
+    324              {
+    325                int last_position_cursor_x = MAX_COL_LCD;
+    326                switch (current_state_menu2.index_position)
+    327                {
+    328                case INPUT_SET_DELAY_DOPUSK:
+    329                  {
+    330                    current_state_menu2.position_cursor_x = COL_DELAY_INPUT_DOPUSK_BEGIN;
+    331                    last_position_cursor_x = COL_DELAY_INPUT_DOPUSK_END;
+    332                    break;
+    333                  }
+    334                }
+    335          
+    336                //Підтягуємо курсор до першого символу
+    337                while (
+    338                       ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x + 1]) == ' ') && 
+    339                       (current_state_menu2.position_cursor_x < (last_position_cursor_x -1))
+    340                       )
+    341                {
+    342                  current_state_menu2.position_cursor_x++;
+    343                }
+    344          
+    345                //Курсор ставимо так, щоб він був перед числом
+    346                if (
+    347                    ((working_ekran[current_state_menu2.position_cursor_y][current_state_menu2.position_cursor_x]) != ' ') && 
+    348                    (current_state_menu2.position_cursor_x > 0)
+    349                   )
+    350                {
+    351                  current_state_menu2.position_cursor_x--;
+    352                }
+    353              }
+    354              //Курсор видимий
+    355              current_state_menu2.cursor_on = 1;
+    356              //Курсор не мигає
+    357              if(current_state_menu2.edition <= ED_CAN_BE_EDITED) current_state_menu2.cursor_blinking_on = 0;
+    358              else current_state_menu2.cursor_blinking_on = 1;
+    359            }
+    360            //Обновити повністю весь екран
+    361            current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+    362          }
+    363          /*****************************************************/
+    364          
+    365          /*****************************************************/
+    366          /*
+    367          Натискування Enter у вікні відображення витримок дискретного входу
+    368          */
+    369          /*****************************************************/
+    370          enum _result_pressed_enter_during_edition press_enter_in_delay_input(void)
+    371          {
+    372            enum _result_pressed_enter_during_edition result = RPEDE_NONE;
+    373            switch (current_state_menu2.edition)
+    374            {
+    375            case ED_VIEWING:
+    376            case ED_CAN_BE_EDITED:
+    377              {
+    378                switch (current_state_menu2.index_position)
+    379                {
+    380                case INPUT_SET_DELAY_DOPUSK:
+    381                  {
+    382                    current_state_menu2.position_cursor_x = COL_DELAY_INPUT_DOPUSK_BEGIN;
+    383                    break;
+    384                  }
+    385                }
+    386                break;
+    387              }
+    388            case ED_EDITION:
+    389              {
+    390                //Перевіряємо, чи дані рельно змінилися
+    391                result = RPEDE_DATA_NOT_CHANGED;
+    392                
+    393                __settings_for_INPUT *p_settings_for_input_edit = (((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    394                __settings_for_INPUT *p_settings_for_input_cont = (((__settings_for_INPUT*)sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    395                switch (current_state_menu2.index_position)
+    396                {
+    397                case INPUT_SET_DELAY_DOPUSK:
+    398                  {
+    399                    if (p_settings_for_input_cont->set_delay[INPUT_SET_DELAY_DOPUSK] != p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK]) 
+    400                    {
+    401                      unsigned int min_porig = ((p_settings_for_input_edit->control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) == 0  ) ? KOEF_DOPUSK_DV_POST_MIN : KOEF_DOPUSK_DV_ZMIN_MIN;
+    402                      if (check_data_setpoint(p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK], min_porig, KOEF_DOPUSK_DV_MAX) == 1)
+    403                      {
+    404                        p_settings_for_input_cont->set_delay[INPUT_SET_DELAY_DOPUSK] = p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK];
+    405                        config_settings_modified |= MASKA_CHANGED_SETTINGS;
+    406                        result = RPEDE_DATA_CHANGED_OK;
+    407                      }
+    408                      else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+    409                    }
+    410          
+    411                    break;
+    412                  }
+    413                }
+    414          
+    415                break;
+    416              }
+    417            }
+    418            
+    419            return result;
+    420          }
+    421          /*****************************************************/
+    422          
+    423          /*****************************************************/
+    424          /*
+    425          Натискування ESC у вікні витримок дискретного входу
+    426          */
+    427          /*****************************************************/
+    428          void press_esc_in_delay_input(void)
+    429          {
+    430            __settings_for_INPUT *p_settings_for_input_edit = (((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    431            __settings_for_INPUT *p_settings_for_input_cont = (((__settings_for_INPUT*)sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection);
+    432            switch (current_state_menu2.index_position)
+    433            {
+    434            case INPUT_SET_DELAY_DOPUSK:
+    435              {
+    436                p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK] = p_settings_for_input_cont->set_delay[INPUT_SET_DELAY_DOPUSK];
+    437                break;
+    438              }
+    439            }
+    440          }
+    441          /*****************************************************/
+    442          
+    443          /*****************************************************/
+    444          //Зміна налаштувань допуску дискретного входу
+    445          /*****************************************************
+    446          Вхідні параметри
+    447          (1 << BIT_KEY_DOWN) - натснуто кнопку вниз
+    448          (1 << BIT_KEY_UP)   - атиснуто кнопку вверх
+    449          (1 << BIT_KEY_RIGHT)- натснуто кнопку праворуч
+    450          (1 << BIT_KEY_LEFT) - атиснуто кнопку ліворуч
+    451          
+    452          Вхідні параметри
+    453            Немає
+    454          *****************************************************/
+    455          void change_delay_input(unsigned int action)
+    456          {
+    457            //Вводимо число у відповідне поле
+    458            if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
+    459            {
+    460              int32_t *p_value = (((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->set_delay;
+    461              unsigned int col_end;
+    462              switch (current_state_menu2.index_position)
+    463              {
+    464              case INPUT_SET_DELAY_DOPUSK:
+    465                {
+    466                  col_end = COL_DELAY_INPUT_DOPUSK_END;
+    467                  break;
+    468                }
+    469              }
+    470              
+    471              intptr_t index = current_state_menu2.index_position;
+    472               p_value[index] = edit_setpoint(((action & (1 << BIT_KEY_UP)) != 0),  p_value[index], 0, 0, col_end, 1);
+    473            }
+    474            else if (
+    475                     ((action & (1 << BIT_KEY_LEFT )) != 0) ||
+    476                     ((action & (1 << BIT_KEY_RIGHT)) != 0)
+    477                    )   
+    478            {
+    479              int col_begin, col_end;
+    480              switch (current_state_menu2.index_position)
+    481              {
+    482              case INPUT_SET_DELAY_DOPUSK:
+    483                {
+    484                  col_begin = COL_DELAY_INPUT_DOPUSK_BEGIN;
+    485                  col_end = COL_DELAY_INPUT_DOPUSK_END;
+    486          
+    487                  if (((((__settings_for_INPUT*)sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]) + current_state_menu2.number_selection)->control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) != 0)
+    488                  {
+    489                    col_end -= 1;
+    490                  }
+    491                  break;
+    492                }
+    493              }
+    494              
+    495              if (action & (1 << BIT_KEY_LEFT ))
+    496              {
+    497                current_state_menu2.position_cursor_x--;
+    498                if ((current_state_menu2.position_cursor_x < col_begin) ||
+    499                    (current_state_menu2.position_cursor_x > col_end))
+    500                  current_state_menu2.position_cursor_x = col_end;
+    501              }
+    502              else
+    503              {
+    504                current_state_menu2.position_cursor_x++;
+    505                if ((current_state_menu2.position_cursor_x < col_begin) ||
+    506                    (current_state_menu2.position_cursor_x > col_end))
+    507                  current_state_menu2.position_cursor_x = col_begin;
+    508              }
+    509              
+    510            }
+    511          }
+    512          /*****************************************************/
+    513          
+    514          /*****************************************************/
+    515          //
+    516          /*****************************************************/
+    517          /*****************************************************/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       4   change_control_input
+      32   change_delay_input
+        32   -> edit_setpoint
+     400   make_ekran_control_input
+       400   -> __aeabi_memcpy4
+       400   -> index_language_in_array
+       400   -> make_ekran_about_info
+       400   -> select_struct_settings_fix
+     264   make_ekran_delay_input
+       264   -> __aeabi_memcpy4
+       264   -> calc_int_symbol_and_put_into_working_ekran
+       264   -> index_language_in_array
+       264   -> make_ekran_about_info
+       264   -> select_struct_settings_fix
+       8   press_enter_in_control_input
+      24   press_enter_in_delay_input
+        24   -> check_data_setpoint
+       0   press_esc_in_control_input
+       0   press_esc_in_delay_input
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable7
+       4  ??DataTable7_1
+       4  ??DataTable7_10
+       4  ??DataTable7_11
+       4  ??DataTable7_12
+       4  ??DataTable7_13
+       4  ??DataTable7_14
+       4  ??DataTable7_2
+       4  ??DataTable7_3
+       4  ??DataTable7_4
+       4  ??DataTable7_5
+       4  ??DataTable7_6
+       4  ??DataTable7_7
+       4  ??DataTable7_8
+       4  ??DataTable7_9
+      32  ?_0
+      68  ?_1
+      68  ?_2
+      68  ?_3
+     136  ?_4
+      68  ?_5
+      68  ?_6
+      68  ?_7
+       8  ?_8
+      46  change_control_input
+     194  change_delay_input
+     476  make_ekran_control_input
+     634  make_ekran_delay_input
+     160  press_enter_in_control_input
+     142  press_enter_in_delay_input
+      42  press_esc_in_control_input
+      40  press_esc_in_delay_input
+
+ 
+   584 bytes in section .rodata
+ 1 794 bytes in section .text
+ 
+ 1 794 bytes of CODE  memory
+   584 bytes of CONST memory
+
+Errors: none
+Warnings: none
