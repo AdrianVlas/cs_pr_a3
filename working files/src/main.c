@@ -466,9 +466,6 @@ int main(void)
   
   time_2_watchdog_input = time_2_watchdog_output = TIM4->CNT;
   restart_timing_watchdog = 0xff;
-   asm(
-       "bkpt 1"
-       );
   long res = InitSchematic();
 
   /* Періодичні задачі */
