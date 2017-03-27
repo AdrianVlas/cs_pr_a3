@@ -136,7 +136,7 @@ enum _BUTTON_TU_output_signals
 {
   BUTTON_TU_OUT = 0,
   
-  BUTTON_TU_SIGNALS_OUT,
+  BUTTON_TU_SIGNALS_OUT
 };
 /***/
 

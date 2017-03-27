@@ -71,7 +71,14 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_
     "ТУ              "
   }
 };
-  
+
+const uint8_t name_fix_buttons[NUMBER_FIX_BUTTONS][MAX_COL_LCD + 1] = 
+{
+  "MUTE            ",
+  "RESET           ",
+  "TEST            "
+};
+
 const uint8_t name_fix_block_out_signals[MAX_NAMBER_LANGUAGE][FIX_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1] =
 {
   {NAME_FIX_BLOCK_OUT_SIGNALS_RU},  
@@ -1392,7 +1399,18 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
         
             unsigned int part = 0;
             uint8_t *p = ((uint8_t*)array_p_name[id_input - _ID_FB_FIRST_ALL]) + (index_language*array_max_signal_out[id_input - _ID_FB_FIRST_ALL] + (out_input - 1))*(MAX_COL_LCD + 1);
-            unsigned int number_digit, first_index_number, number_logical_node_tmp = n_input;
+            unsigned int number_digit, first_index_number;
+            
+            unsigned int number_logical_node_tmp;
+            if (
+                (id_input == ID_FB_BUTTON) &&
+                ((n_input - 1) >= NUMBER_FIX_BUTTONS)  
+               )
+            {
+              number_logical_node_tmp = n_input - NUMBER_FIX_BUTTONS;
+            }
+            else number_logical_node_tmp = n_input;
+            
             size_t k = 0;
             for (size_t j = 0; j < MAX_COL_LCD; j++) 
             {
@@ -1408,7 +1426,18 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
                 }
               case 1:
                 {
-                  uint8_t symbol = name_f_blocks[index_language][id_input - _ID_FB_FIRST_ALL][k];
+                  uint8_t symbol;
+                  if (
+                      (id_input == ID_FB_BUTTON) &&
+                      ((n_input - 1) < NUMBER_FIX_BUTTONS)  
+                     )
+                  {
+                    symbol = name_fix_buttons[n_input - 1][k];
+                  }
+                  else
+                  {
+                    symbol = name_f_blocks[index_language][id_input - _ID_FB_FIRST_ALL][k];
+                  }
               
                   if (symbol != ' ') 
                   {
@@ -1422,8 +1451,18 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
                     if (id_input == ID_FB_CONTROL_BLOCK) part += 2;
                     else 
                     {
-                      number_digit = max_number_digit_in_number(n_input);
-                      first_index_number = j;
+                      if (
+                          (id_input == ID_FB_BUTTON) &&
+                          ((n_input - 1) < NUMBER_FIX_BUTTONS)  
+                         )   
+                      {
+                        number_logical_node_tmp = 0;
+                      }
+                      else
+                      {
+                        number_digit = max_number_digit_in_number(number_logical_node_tmp);
+                        first_index_number = j;
+                      }
                       part++;
                     }
                     k = 0;
@@ -1719,8 +1758,20 @@ void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
           {
             //У непарному номері рядку виводимо заголовок
             unsigned int part = 0;
+            
             uint8_t *p = ((uint8_t*)array_p_name[type_logical_node_out - _ID_FB_FIRST_ALL]) + (index_language*max_row + index_in_ekran_tmp)*(MAX_COL_LCD + 1);
-            unsigned int number_digit, first_index_number, number_logical_node_tmp = number_logical_node_out;
+            unsigned int number_digit, first_index_number;
+            
+            unsigned int number_logical_node_tmp;
+            if (
+                (type_logical_node_out == ID_FB_BUTTON) &&
+                ((number_logical_node_out - 1) >= NUMBER_FIX_BUTTONS)  
+               )
+            {
+              number_logical_node_tmp = number_logical_node_out - NUMBER_FIX_BUTTONS;
+            }
+            else number_logical_node_tmp = number_logical_node_out;
+            
             intptr_t k = 0, l = 0, m = 0;
             for (size_t j = 0; j < MAX_COL_LCD; j++) 
             {
@@ -1728,8 +1779,19 @@ void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
               {
               case 0:
                 {
-                  uint8_t symbol = name_f_blocks[index_language][type_logical_node_out - _ID_FB_FIRST_ALL][k];
-              
+                  uint8_t symbol;
+                  if (
+                      (type_logical_node_out == ID_FB_BUTTON) &&
+                      ((number_logical_node_out - 1) < NUMBER_FIX_BUTTONS)  
+                     )
+                  {
+                    symbol = name_fix_buttons[number_logical_node_out - 1][j];
+                  }
+                  else
+                  {
+                    symbol = name_f_blocks[index_language][type_logical_node_out - _ID_FB_FIRST_ALL][k];
+                  }
+             
                   if (symbol != ' ') 
                   {
                     working_ekran[i][j] = symbol;
@@ -1742,8 +1804,18 @@ void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
                     if (type_logical_node_out == ID_FB_CONTROL_BLOCK) part += 2;
                     else 
                     {
-                      number_digit = max_number_digit_in_number(number_logical_node_out);
-                      first_index_number = j;
+                      if (
+                          (type_logical_node_out == ID_FB_BUTTON) &&
+                          ((number_logical_node_out - 1) < NUMBER_FIX_BUTTONS)  
+                         )   
+                      {
+                        number_logical_node_tmp = 0;
+                      }
+                      else
+                      {
+                        number_digit = max_number_digit_in_number(number_logical_node_tmp);
+                        first_index_number = j;
+                      }
                       part++;
                     }
                     l += k;

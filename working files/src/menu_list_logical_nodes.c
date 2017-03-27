@@ -252,25 +252,53 @@ void make_ekran_list_logical_nodes(void)
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій конфігурації
     if (index_in_ekran < max_row)
     {
-      unsigned int number = index_in_ekran + 1;
-      unsigned int number_digit = max_number_digit_in_number(number);
-
-      for (size_t j = 0; j < MAX_COL_LCD; j++)
+      if (
+          (
+           (current_level == PARAM_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) ||
+           (current_level == PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)
+          )
+          &&  
+          (index_in_ekran < NUMBER_FIX_BUTTONS)    
+         )
       {
-        if ((j < *p_first_index_number) || (j >= (*p_first_index_number + number_digit)))
+        const uint8_t name_fix_buttons[NUMBER_FIX_BUTTONS][MAX_COL_LCD + 1] = 
         {
-          working_ekran[i][j] = p_name[j];
+         " MUTE           ",
+         " RESET          ",
+         " TEST           "
+        };
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_fix_buttons[index_in_ekran][j];
+      }
+      else
+      {
+          
+        unsigned int number = index_in_ekran + 1;
+        if (
+            (current_level == PARAM_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) ||
+            (current_level == PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)
+           )
+        {
+          number -= NUMBER_FIX_BUTTONS;
         }
-        else
+        unsigned int number_digit = max_number_digit_in_number(number);
+
+        for (size_t j = 0; j < MAX_COL_LCD; j++)
         {
-          /*
-          Заповнюємо значення зправа  на ліво
-          індекс = *p_first_index_number + number_digit - 1 - (j - *p_first_index_number) =
-          = *p_first_index_number + number_digit - 1 - j + *p_first_index_number =
-          = 2x(*p_first_index_number) + number_digit - 1 - j =
-          */
-          working_ekran[i][2*(*p_first_index_number) + number_digit - 1 - j] = (number % 10) + 0x30;
-          number /= 10;
+          if ((j < *p_first_index_number) || (j >= (*p_first_index_number + number_digit)))
+          {
+            working_ekran[i][j] = p_name[j];
+          }
+          else
+          {
+            /*
+            Заповнюємо значення зправа  на ліво
+            індекс = *p_first_index_number + number_digit - 1 - (j - *p_first_index_number) =
+            = *p_first_index_number + number_digit - 1 - j + *p_first_index_number =
+            = 2x(*p_first_index_number) + number_digit - 1 - j =
+            */
+            working_ekran[i][2*(*p_first_index_number) + number_digit - 1 - j] = (number % 10) + 0x30;
+            number /= 10;
+          }
         }
       }
     }

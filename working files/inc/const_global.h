@@ -31,7 +31,16 @@
 
 #define NUMBER_LEDS                    22
 
-#define NUMBER_BUTTONS                 2
+enum _fix_button
+{
+  FIX_BUTTON_MUTE = 0,
+  FIX_BUTTON_RESET,
+  FIX_BUTTON_TEST,
+  
+  NUMBER_FIX_BUTTONS
+};
+#define NUMBER_GENERAL_BUTTONS         2
+#define NUMBER_BUTTONS                 (NUMBER_FIX_BUTTONS + NUMBER_GENERAL_BUTTONS)
 
 /*****************************************/
 //Константи для фіксації звідки були введені останні зміни
@@ -43,7 +52,7 @@ enum __source_fix_changes
   USB_PARAMS_FIX_CHANGES,
   RS485_PARAMS_FIX_CHANGES,
 
-  NO_MATTER_PARAMS_FIX_CHANGES,
+  NO_MATTER_PARAMS_FIX_CHANGES
 };
 /*****************************************/
 
