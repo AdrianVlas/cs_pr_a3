@@ -9,22 +9,18 @@ inline void test_external_SRAM(void)
   //Визнапчаємо кількість двохбайтих слів
   unsigned int size_SRAM_word = (((unsigned int)&__ICFEDIT_region_RAM1_size__) + 1) >> 1;
   
-  //Визначаємо вказівник на початок зовнішньої оперативної пам'яті
-   unsigned short int *point = ((unsigned short int *)&__ICFEDIT_region_RAM1_start__);
-  
-  //Заповнюємо кожну комірку зовнішьої оперативної пам'яті її адресою
-  for (unsigned int i = 0; i < size_SRAM_word; i++) *point++ = (unsigned short int)(i & 0xffff);
-  
-  //Перевіряємо зчитуванням, чи у всіх комірках прописані ті числа, які ми попередньо записали
+  unsigned short int *point = ((unsigned short int *)&__ICFEDIT_region_RAM1_start__);
   unsigned int error = 0, i = 0;
-  point = ((unsigned short int *)&__ICFEDIT_region_RAM1_start__);
+  unsigned short int temp_data;
   while((i < size_SRAM_word) && (error == 0))
   {
+    temp_data = *point;
+    *point = (unsigned short int)(i & 0xffff);
     if ((*point) == ((unsigned short int)(i & 0xffff)))
     {
       //Тест даної комірки пройшов вдало
+      *point++ = temp_data;
       i++;
-      *point++ = 0;
     }
     else
     {
@@ -33,6 +29,7 @@ inline void test_external_SRAM(void)
       error = 0xff;
       //Виставляємо повідомлення про помилку тесту зовнішьої оперативної пам'яті
       _SET_BIT(set_diagnostyka, ERROR_EXTERNAL_SRAM_BIT);
+      *point = temp_data;
     }
   }
 }
@@ -481,7 +478,7 @@ void start_settings_peripherals(void)
   /**********************/
   //Настроювання зовнішню шину
   /**********************/
-  FSMC_SRAM_Init();
+//  FSMC_SRAM_Init();
   _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1) = 0;
   _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_2) = 0;
   _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_LEDS) = 0;
@@ -541,7 +538,10 @@ void start_settings_peripherals(void)
   /*
   Продовжуємо виконувати ініціалізацію периферії  
   */
-    
+
+  /**************/
+  //Піни на вивід
+  /**************/
   /* Конфігурація піну CON-L, як Output push-pull */
   GPIO_InitStructure.GPIO_Pin = CON_L_PIN;
   GPIO_Init(CON_L, &GPIO_InitStructure);
