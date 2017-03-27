@@ -591,7 +591,6 @@ void TIM4_IRQHandler(void)
     GPIO_ResetBits(KEYBOARD, KEYBOARD_SW_3_PIN);
     check_state_key(KEYBOARD_SW_A, KEYBOARD_SW_A_PIN, BIT_KEY_1);
     check_state_key(KEYBOARD_SW_B, KEYBOARD_SW_B_PIN, BIT_KEY_2);
-    check_state_key(KEYBOARD_SW_C, KEYBOARD_SW_C_PIN, BIT_KEY_3);
     GPIO_SetBits(KEYBOARD, KEYBOARD_SW_3_PIN);
 
     //Робимо невелику затримку
@@ -599,17 +598,17 @@ void TIM4_IRQHandler(void)
 
     //Рядок - 4
     GPIO_ResetBits(KEYBOARD, KEYBOARD_SW_4_PIN);
-    check_state_key(KEYBOARD_SW_A, KEYBOARD_SW_A_PIN, BIT_KEY_4);
-    check_state_key(KEYBOARD_SW_B, KEYBOARD_SW_B_PIN, BIT_KEY_5);
-    check_state_key(KEYBOARD_SW_C, KEYBOARD_SW_C_PIN, BIT_KEY_6);
+    check_state_key(KEYBOARD_SW_A, KEYBOARD_SW_A_PIN, BIT_KEY_MUTE);
+    check_state_key(KEYBOARD_SW_B, KEYBOARD_SW_B_PIN, BIT_KEY_RESET);
+    check_state_key(KEYBOARD_SW_C, KEYBOARD_SW_C_PIN, BIT_KEY_TEST);
     GPIO_SetBits(KEYBOARD, KEYBOARD_SW_4_PIN);
     /***************************/
   
     /***************************/
     //Обробка алгоритму функціональних кнопок
     /***************************/
-    pressed_buttons    |= (new_state_keyboard & ((1<<BIT_KEY_1)|(1<<BIT_KEY_2)|(1<<BIT_KEY_3)|(1<<BIT_KEY_4)|(1<<BIT_KEY_5)|(1<<BIT_KEY_6))) >> BIT_KEY_1;
-    new_state_keyboard &= (unsigned int)(~((1<<BIT_KEY_1)|(1<<BIT_KEY_2)|(1<<BIT_KEY_3)|(1<<BIT_KEY_4)|(1<<BIT_KEY_5)|(1<<BIT_KEY_6)));
+    pressed_buttons    |= (new_state_keyboard & ( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) )) >> BIT_KEY_1;
+    new_state_keyboard &= (unsigned int)(~( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) ));
     /***************************/
     /***********************************************************/
   
