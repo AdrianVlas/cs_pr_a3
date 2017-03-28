@@ -4,6 +4,8 @@
 #include "variables_global.h"
 #include "functions_global.h"
 #include "../v_A_shm/I_Shm.h"
+#include "../v_A_shm/IStng.h"
+
 #include <intrinsics.h.>
 
 /*******************************************************************************/
@@ -466,7 +468,7 @@ int main(void)
   
   time_2_watchdog_input = time_2_watchdog_output = TIM4->CNT;
   restart_timing_watchdog = 0xff;
-  long res = InitSchematic();
+  long res = ChangeCfg((void*)&resurs_temp);//InitSchematic();
 
   /* Періодичні задачі */
   while (1)

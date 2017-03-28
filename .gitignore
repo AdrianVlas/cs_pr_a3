@@ -6,9 +6,10 @@
 *.dep
 # Ігнорувати my.bat
 my.bat
-
+*.pdf
 # Ігнорувати файли з папки settings/
 settings/
 
 # Ігнорувати файли з папки Flash-Debug/
 Flash-Debug/
+nppBackup/

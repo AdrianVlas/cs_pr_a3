@@ -22,6 +22,13 @@
 #include <string.h>
 #include <ctime>
 #include "stng.h"
+#include "IStng.h"
+
+//#include "../inc/variables_external.h"
+//#include "../inc/libraries.h"
+
+
+
 __CONFIG_CPP preSetUP = {
     0, //uint32_t device_id;
     10, 10, 10,
@@ -1210,11 +1217,11 @@ void Shematic::Init2(void) {
 //    register void* pv;  
     Init2LcVarArea lsLcVarArea;//lsLc -local struct Local Area
     lsLcVarArea.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
-    DetectCircutLinks();
+    //DetectCircutLinks();
     lsLcVarArea.shCounterInitCLUObj = 1;
-    if( preSetUP.n_input ){
+    if( current_config_prt.n_input ){
         CLUDInput_0_1 locCLUDInput_0_1(10, 0); // = CLUDInput_0_1(0,10);
-        short shLC__n_input = preSetUP.n_input;
+        short shLC__n_input = current_config_prt.n_input;
         short shCounterInitCLUDIn = 0;
         lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
         j = 0;
@@ -1228,9 +1235,9 @@ void Shematic::Init2(void) {
             
         } while (shCounterInitCLUDIn < shLC__n_input && j);
     }
-    if (preSetUP.n_output != 0) {
+    if (current_config_prt.n_output != 0) {
         CLUDout_1_0 locCLUDout_1_0(10, 0);
-        short shLC__n_output = preSetUP.n_output;
+        short shLC__n_output = current_config_prt.n_output;
         short shCounterInitCLUDout = 0;
         lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
         j = 0;
@@ -1243,9 +1250,9 @@ void Shematic::Init2(void) {
             }//Else Error
         } while (shCounterInitCLUDout < shLC__n_output && j);
     }
-    if (preSetUP.n_led != 0) {
+    if (current_config_prt.n_led != 0) {
         CLULed locCLULed(10, 0);
-        short shLC__n_led = preSetUP.n_led;
+        short shLC__n_led = current_config_prt.n_led;
         short shCounterInitCLULed = 0;
         lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
         j = 0;
@@ -1257,9 +1264,9 @@ void Shematic::Init2(void) {
             }//Else Error
         } while (shCounterInitCLULed < shLC__n_led && j);
     }
-    if (preSetUP.n_and != 0) {
+    if (current_config_prt.n_and != 0) {
         CLUAnd_8_1 locCLUAnd_8_1(10, 0);
-        short shLC__n_and = preSetUP.n_and;
+        short shLC__n_and = current_config_prt.n_and;
         short shCounterInitCLUAnd = 0;
         lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
         j = 0;
@@ -1271,9 +1278,9 @@ void Shematic::Init2(void) {
             }//Else Error
         } while (shCounterInitCLUAnd < shLC__n_and && j);
     }
-    if (preSetUP.n_or != 0) {
+    if (current_config_prt.n_or != 0) {
         CLUOr_8_1 locCLUOr_8_1(10, 0);
-        short shLC__n_or = preSetUP.n_or;
+        short shLC__n_or = current_config_prt.n_or;
         short shCounterInitCLUOr = 0;
         lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
         j = 0;
@@ -1285,9 +1292,9 @@ void Shematic::Init2(void) {
             }//Else Error
         } while (shCounterInitCLUOr < shLC__n_or && j);
     }
-    if (preSetUP.n_xor != 0) {
+    if (current_config_prt.n_xor != 0) {
         CLUXor_8_1 locCLUXor_8_1(10, 0);
-        short shLC__n_xor = preSetUP.n_xor;
+        short shLC__n_xor = current_config_prt.n_xor;
         short shCounterInitCLUXor = 0;
         lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
         j = 0;
@@ -1299,9 +1306,9 @@ void Shematic::Init2(void) {
             }//Else Error
         } while (shCounterInitCLUXor < shLC__n_xor && j);
     }
-    if (preSetUP.n_not != 0) {
+    if (current_config_prt.n_not != 0) {
         CLUNot_1_1 locCLUNot_1_1(10, 0);
-        short shLC__n_not = preSetUP.n_not;
+        short shLC__n_not = current_config_prt.n_not;
         short shCounterInitCLUNot = 0;
         lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
         j = 0;
@@ -1313,9 +1320,9 @@ void Shematic::Init2(void) {
             }//Else Error
         } while (shCounterInitCLUNot < shLC__n_not && j);
     }
-    if (preSetUP.n_timers != 0) {
+    if (current_config_prt.n_timer != 0) {
         CMft locCMft(10, 0);
-        short shLC__n_timers = preSetUP.n_timers;
+        short shLC__n_timers = current_config_prt.n_timer;
         short shCounterInitCMft = 0;
         lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
         j = 0;
@@ -1565,19 +1572,19 @@ long  Shematic::EvalIdxibnarrSBitFldCRefInfo(long lLUStng) {
     register long j;
     switch (lLUStng) {
         case STNG_LU_AND:
-            j = preSetUP.n_input
-             + preSetUP.n_output + preSetUP.n_led;
+            j = current_config_prt.n_input
+             + current_config_prt.n_output + current_config_prt.n_led;
             break;
 
         case STNG_LU_OR:
-             j = preSetUP.n_input
-             + preSetUP.n_output + preSetUP.n_led + shCLUAnd_8_1_AmtIn*preSetUP.n_and;
+             j = current_config_prt.n_input
+             + current_config_prt.n_output + current_config_prt.n_led + shCLUAnd_8_1_AmtIn*current_config_prt.n_and;
             break;
 
         case STNG_LU_XOR:
-            j = preSetUP.n_input
-             + preSetUP.n_output + preSetUP.n_led + shCLUAnd_8_1_AmtIn*preSetUP.n_and
-             + shCLUOr_8_1_AmtIn*preSetUP.n_or ;
+            j = current_config_prt.n_input
+             + current_config_prt.n_output + current_config_prt.n_led + shCLUAnd_8_1_AmtIn*current_config_prt.n_and
+             + shCLUOr_8_1_AmtIn*current_config_prt.n_or ;
             break;
 
         case STNG_LU_INPUT:
@@ -1585,28 +1592,28 @@ long  Shematic::EvalIdxibnarrSBitFldCRefInfo(long lLUStng) {
             break;
 
         case STNG_LU_OUTPUT:
-            j = preSetUP.n_input;
+            j = current_config_prt.n_input;
             break;
 
         case STNG_LU_LED:
-            j = preSetUP.n_input
-                +preSetUP.n_output;
+            j = current_config_prt.n_input
+                +current_config_prt.n_output;
             break;
 
         case STNG_LU_NOT:
-            j = preSetUP.n_input
-                    + preSetUP.n_output + preSetUP.n_led 
-                    + shCLUAnd_8_1_AmtIn * preSetUP.n_and
-                    + shCLUOr_8_1_AmtIn  * preSetUP.n_or 
-                    + shCLUXor_2_1_AmtIn * preSetUP.n_xor;
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output + current_config_prt.n_led 
+                    + shCLUAnd_8_1_AmtIn * current_config_prt.n_and
+                    + shCLUOr_8_1_AmtIn  * current_config_prt.n_or 
+                    + shCLUXor_2_1_AmtIn * current_config_prt.n_xor;
             break;
         case STNG_LU_MFT:
-            j = preSetUP.n_input
-                    + preSetUP.n_output + preSetUP.n_led
-                    + shCLUAnd_8_1_AmtIn * preSetUP.n_and
-                    + shCLUOr_8_1_AmtIn  * preSetUP.n_or 
-                    + shCLUXor_2_1_AmtIn * preSetUP.n_xor
-                    + shCLUNot_1_1_AmtIn * preSetUP.n_not;
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output + current_config_prt.n_led
+                    + shCLUAnd_8_1_AmtIn * current_config_prt.n_and
+                    + shCLUOr_8_1_AmtIn  * current_config_prt.n_or 
+                    + shCLUXor_2_1_AmtIn * current_config_prt.n_xor
+                    + shCLUNot_1_1_AmtIn * current_config_prt.n_not;
             break;
 
         default:
@@ -1619,19 +1626,19 @@ long  Shematic::EvalIdxinarrLUAreaListElem(long lLUStng) {
     register long j;
     switch (lLUStng) {
         case STNG_LU_AND:
-            j = preSetUP.n_input
-             + preSetUP.n_output + preSetUP.n_led;
+            j = current_config_prt.n_input
+             + current_config_prt.n_output + current_config_prt.n_led;
             break;
 
         case STNG_LU_OR:
-             j = preSetUP.n_input
-             + preSetUP.n_output + preSetUP.n_led + preSetUP.n_and;
+             j = current_config_prt.n_input
+             + current_config_prt.n_output + current_config_prt.n_led + current_config_prt.n_and;
             break;
 
         case STNG_LU_XOR:
-            j = preSetUP.n_input
-             + preSetUP.n_output + preSetUP.n_led + preSetUP.n_and
-             + preSetUP.n_or ;
+            j = current_config_prt.n_input
+             + current_config_prt.n_output + current_config_prt.n_led + current_config_prt.n_and
+             + current_config_prt.n_or ;
             break;
 
         case STNG_LU_INPUT:
@@ -1639,23 +1646,23 @@ long  Shematic::EvalIdxinarrLUAreaListElem(long lLUStng) {
             break;
 
         case STNG_LU_OUTPUT:
-            j = preSetUP.n_input;
+            j = current_config_prt.n_input;
             break;
 
         case STNG_LU_LED:
-            j = preSetUP.n_input
-                +preSetUP.n_output;
+            j = current_config_prt.n_input
+                +current_config_prt.n_output;
             break;
 
         case STNG_LU_NOT:
-               j = preSetUP.n_input
-             + preSetUP.n_output + preSetUP.n_led + preSetUP.n_and
-             + preSetUP.n_or + preSetUP.n_xor ;
+               j = current_config_prt.n_input
+             + current_config_prt.n_output + current_config_prt.n_led + current_config_prt.n_and
+             + current_config_prt.n_or + current_config_prt.n_xor ;
             break;
         case STNG_LU_MFT:
-               j = preSetUP.n_input
-             + preSetUP.n_output + preSetUP.n_led + preSetUP.n_and
-             + preSetUP.n_or + preSetUP.n_xor + preSetUP.n_not;
+               j = current_config_prt.n_input
+             + current_config_prt.n_output + current_config_prt.n_led + current_config_prt.n_and
+             + current_config_prt.n_or + current_config_prt.n_xor + current_config_prt.n_not;
             break;
 
         default:
@@ -1668,34 +1675,34 @@ long  Shematic::EvalAmtIn_arrLUAreaListElem(long lLUStng) {
     register long j;
     switch (lLUStng) {
         case STNG_LU_AND:
-            j = preSetUP.n_and;
+            j = current_config_prt.n_and;
             break;
 
         case STNG_LU_OR:
-             j = preSetUP.n_or;
+             j = current_config_prt.n_or;
             break;
 
         case STNG_LU_XOR:
-            j = preSetUP.n_xor;
+            j = current_config_prt.n_xor;
             break;
 
         case STNG_LU_INPUT:
-            j = preSetUP.n_input;
+            j = current_config_prt.n_input;
             break;
 
         case STNG_LU_OUTPUT:
-            j = preSetUP.n_output;
+            j = current_config_prt.n_output;
             break;
 
         case STNG_LU_LED:
-            j = preSetUP.n_led;
+            j = current_config_prt.n_led;
             break;
 
         case STNG_LU_NOT:
-               j = preSetUP.n_not;
+               j = current_config_prt.n_not;
             break;
         case STNG_LU_MFT:
-               j = preSetUP.n_timers;
+               j = current_config_prt.n_timer;
             break;
 
         default:
@@ -1753,11 +1760,11 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
     rsLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
 	
 
-    if (preSetUP.n_output != 0) {
+    if (current_config_prt.n_output != 0) {
         sLV.shCounterScanedObj = 0;
-        sLV.shAmtLU = preSetUP.n_output;
+        sLV.shAmtLU = current_config_prt.n_output;
         j = 0; //Idx in OutPut for Test
-        sLV.shIdx += preSetUP.n_input;
+        sLV.shIdx += current_config_prt.n_input;
         i = sLV.shIdx; //Offset Output
         do {
             //Type Obj == STNG_LU_OUTPUT order num == sLV.shCounterScanedObj+sLV.shIdx
@@ -1816,52 +1823,52 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
             }
         } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
     }
-    if (preSetUP.n_led != 0) {
+    if (current_config_prt.n_led != 0) {
         sLV.shCounterScanedObj = 0;
-        sLV.shAmtLU = preSetUP.n_led;
+        sLV.shAmtLU = current_config_prt.n_led;
         j = 0; //Idx in OutPut for Test
-        sLV.shIdx += preSetUP.n_output;
+        sLV.shIdx += current_config_prt.n_output;
         rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
         do{
             SetupCLUInternalRef(static_cast<void*>(&rsLV));
         
         }while (++sLV.shCounterScanedObj < sLV.shAmtLU); 
     }
-    if (preSetUP.n_and != 0) {
+    if (current_config_prt.n_and != 0) {
         sLV.shCounterScanedObj = 0;
-        sLV.shAmtLU = preSetUP.n_and;
+        sLV.shAmtLU = current_config_prt.n_and;
         j = 0; //Idx in OutPut for Test
-        sLV.shIdx += preSetUP.n_led;
+        sLV.shIdx += current_config_prt.n_led;
         rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
         do {
             SetupCLUInternalRef(static_cast<void*>(&rsLV));
         } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
     }
-    if (preSetUP.n_or != 0) {
+    if (current_config_prt.n_or != 0) {
         sLV.shCounterScanedObj = 0;
-        sLV.shAmtLU = preSetUP.n_or;
+        sLV.shAmtLU = current_config_prt.n_or;
         j = 0;
-        sLV.shIdx += preSetUP.n_and;
+        sLV.shIdx += current_config_prt.n_and;
         rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
         do {
             SetupCLUInternalRef(static_cast<void*>(&rsLV));
         } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
     }
-    if (preSetUP.n_xor != 0) {
+    if (current_config_prt.n_xor != 0) {
 	sLV.shCounterScanedObj = 0;
-        sLV.shAmtLU = preSetUP.n_xor;
+        sLV.shAmtLU = current_config_prt.n_xor;
         j = 0; //Idx in OutPut for Test
-        sLV.shIdx += preSetUP.n_or;
+        sLV.shIdx += current_config_prt.n_or;
         rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
         do {
             SetupCLUInternalRef(static_cast<void*>(&rsLV));
         } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
     }
-    if (preSetUP.n_not != 0) {
+    if (current_config_prt.n_not != 0) {
 	sLV.shCounterScanedObj = 0;
-        sLV.shAmtLU = preSetUP.n_not;
+        sLV.shAmtLU = current_config_prt.n_not;
         j = 0; //Idx in OutPut for Test
-        sLV.shIdx += preSetUP.n_xor;
+        sLV.shIdx += current_config_prt.n_xor;
         rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
         do {
             SetupCLUInternalRef(static_cast<void*>(&rsLV));

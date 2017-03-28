@@ -1,6 +1,14 @@
 #include "header.h"
 #include "../inc/libraries.h"
 
+
+
+
+
+
+
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -16,7 +24,7 @@ __interwork int __low_level_init(void)
   /*==================================*/
 FSMC_SRAM_Init();
   /**********************/
-  //Π񲰮򢠭ﴭԢ ౮򥱮𠍊  /**********************/
+  // /**********************/
   GPIO_InitTypeDef GPIO_InitStructure;
 
 GPIO_InitStructure.GPIO_Pin = GPIO_PIN_EXTERNAL_WATCHDOG;
@@ -25,15 +33,15 @@ GPIO_InitStructure.GPIO_Pin = GPIO_PIN_EXTERNAL_WATCHDOG;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_Init(GPIO_EXTERNAL_WATCHDOG, &GPIO_InitStructure);
-  /* ȭԬ໬ԭ 询񞍮䮠Watchdog */
+  /* ȭԬ໬ԭ 询?䮠Watchdog */
   GPIO_ResetBits(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG);
     /**********************/
-  //ӥ񲳺󸏢񞎠SRAM
+  //ӥ???SRAM
   /**********************/
 //  test_external_SRAM();
   /**********************/
   
-  //Ȭԭ򺬮 񲠭 ᴲ󠧮㭳𭼮䮠Watchdog ౮򨫥箨鍊
+  //Ȭԭ? ? ᴲ?㭳?䮠Watchdog ౮?箨鍊
   GPIO_WriteBit(
                 GPIO_EXTERNAL_WATCHDOG,
                 GPIO_PIN_EXTERNAL_WATCHDOG,
