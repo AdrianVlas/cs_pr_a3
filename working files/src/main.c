@@ -468,7 +468,7 @@ int main(void)
   
   time_2_watchdog_input = time_2_watchdog_output = TIM4->CNT;
   restart_timing_watchdog = 0xff;
-  long res = ChangeCfg((void*)&resurs_temp);//InitSchematic();
+//  long res = ChangeCfg((void*)&resurs_temp);//InitSchematic();
 
   /* Періодичні задачі */
   while (1)

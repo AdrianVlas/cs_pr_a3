@@ -39,6 +39,8 @@ CLULed::CLULed(char chM,char chI)//,LUOutDsc* pLUOutDsc)
 CLULed::~CLULed(void)
 {
 }
+
+
 char chGLBIn1_5 = 0;
 char chGLBIn6_12 = 0;
 long lGLBInChek_6_12 = 0;

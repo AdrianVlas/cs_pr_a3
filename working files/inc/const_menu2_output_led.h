@@ -5,20 +5,27 @@
 
 #define NAME_OUTPUT_LED_IN_SIGNALS_RU   \
   "Л.Вх.           ",                   \
-  "Сброс           "                    
+  "Сброс           ",                   \
+  "Бл.Имп.         ",                   \
+  "Ч1/Ч2           "
 
 #define NAME_OUTPUT_LED_IN_SIGNALS_UA   \
   "Л.Вх.           ",                   \
-  "Скид.           "                    
-
+  "Скид.           ",                   \
+  "Бл.Імп.         ",                   \
+  "Ч1/Ч2           "
 
 #define NAME_OUTPUT_LED_IN_SIGNALS_EN   \
-  "L.In.            ",                  \
-  "Reset            "                    
+  "L.In.           ",                   \
+  "Reset           ",                   \
+  "Blc.Imp         ",                   \
+  "F1/F2           "
 
 #define NAME_OUTPUT_LED_IN_SIGNALS_KZ   \
   "Л.Вх.           ",                   \
-  "Сброс           "                    
+  "Сброс           ",                   \
+  "Бл.Имп.         ",                   \
+  "Ч1/Ч2           "
 
     
 #define NAME_OUTPUT_LED_OUT_SIGNALS_RU  \

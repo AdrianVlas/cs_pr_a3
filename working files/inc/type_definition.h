@@ -429,6 +429,7 @@ typedef enum _action_dyn_mem_select
 typedef enum _result_dyn_mem_select
 {
   DYN_MEM_TOTAL_ERROR = 0,
+  PRT_MEM_ERROR,
   DYN_MEM_NO_ENOUGH_MEM,
   DYN_MEM_SELECT_OK
     

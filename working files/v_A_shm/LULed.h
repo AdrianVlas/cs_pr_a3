@@ -27,10 +27,11 @@ public:
 	LedCfgSuit m_LedCfgSuit;
 	friend void PUT_Op_1_0_    (void *pObj);
 	friend void SET_LED_Op(void *pObj);
+	friend void ChangeLedCfgSuit(void *pObj);
 };
 
 
-
+//typedef long(*fnPvrL)(void *pv);
 //enum G{
 //
 //}

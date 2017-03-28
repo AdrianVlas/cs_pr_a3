@@ -1219,7 +1219,7 @@ void Shematic::Init2(void) {
     lsLcVarArea.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
     //DetectCircutLinks();
     lsLcVarArea.shCounterInitCLUObj = 1;
-    if( current_config_prt.n_input ){
+/*    if( current_config_prt.n_input ){
         CLUDInput_0_1 locCLUDInput_0_1(10, 0); // = CLUDInput_0_1(0,10);
         short shLC__n_input = current_config_prt.n_input;
         short shCounterInitCLUDIn = 0;
@@ -1249,7 +1249,7 @@ void Shematic::Init2(void) {
                 shCounterInitCLUDout++;
             }//Else Error
         } while (shCounterInitCLUDout < shLC__n_output && j);
-    }
+    }*/
     if (current_config_prt.n_led != 0) {
         CLULed locCLULed(10, 0);
         short shLC__n_led = current_config_prt.n_led;
@@ -1264,7 +1264,7 @@ void Shematic::Init2(void) {
             }//Else Error
         } while (shCounterInitCLULed < shLC__n_led && j);
     }
-    if (current_config_prt.n_and != 0) {
+/*    if (current_config_prt.n_and != 0) {
         CLUAnd_8_1 locCLUAnd_8_1(10, 0);
         short shLC__n_and = current_config_prt.n_and;
         short shCounterInitCLUAnd = 0;
@@ -1334,8 +1334,8 @@ void Shematic::Init2(void) {
             }//Else Error
         } while (shCounterInitCMft < shLC__n_timers && j);
     }
-    
-SetupCircutLinks(static_cast<void*>(&lsLcVarArea));
+    */
+//---SetupCircutLinks(static_cast<void*>(&lsLcVarArea));
 
 }
 
