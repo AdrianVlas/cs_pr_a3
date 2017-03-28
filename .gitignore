@@ -12,3 +12,4 @@ settings/
 
 # Ігнорувати файли з папки Flash-Debug/
 Flash-Debug/
+nppBackup/
