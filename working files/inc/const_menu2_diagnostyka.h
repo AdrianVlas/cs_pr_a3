@@ -18,6 +18,7 @@ ERROR_CONFIG_EEPROM_EMPTY_BIT,
 ERROR_CONFIG_EEPROM_COMPARISON_BIT,
 ERROR_CONFIG_EEPROM_CONTROL_BIT,
 ERROR_NO_FREE_DYNAMIC_MEMORY_BIT,
+ERROR_PRT_MEMORY_BIT,
 ERROR_SETTINGS_EEPROM_BIT,
 ERROR_SETTINGS_EEPROM_EMPTY_BIT,
 ERROR_SETTINGS_EEPROM_COMPARISON_BIT,
@@ -113,6 +114,7 @@ ERROR_INTERNAL_FLASH_BIT
   "  Ош.зап.конф.  ",   \
   " Ош.конф.настр. ",   \
   " Недост.динам.п.",   \
+  " Ош.памяти защит",   \
   " Ош.настроек    ",   \
   " Настроек нет   ",   \
   " Ош.зап.настр.  ",   \
@@ -151,7 +153,6 @@ ERROR_INTERNAL_FLASH_BIT
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
-  " Ошибка 51      ",   \
   " Ошибка 52      ",   \
   " Ошибка 53      ",   \
   " Ошибка 54      ",   \
@@ -203,6 +204,7 @@ ERROR_INTERNAL_FLASH_BIT
   " Пом.зап.конф.  ",   \
   " Пом.контр.конф.",   \
   " Недост.динам.п.",   \
+  "Пом.пам'яті зах.",   \
   " Пом.налаштувань",   \
   "Налаштувань нема",   \
   " Пом.зап.налашт.",   \
@@ -241,7 +243,6 @@ ERROR_INTERNAL_FLASH_BIT
   " Пом.SPI_DF     ",   \
   " Пом.зовн.SRAM  ",   \
   " Пом.внутр.FLASH",   \
-  " Помилка 51     ",   \
   " Помилка 52     ",   \
   " Помилка 53     ",   \
   " Помилка 54     ",   \
@@ -293,6 +294,7 @@ ERROR_INTERNAL_FLASH_BIT
   " Conf.W.Err.    ",   \
   " Conf.Ctrl.Err. ",   \
   "No enough dyn.m.",   \
+  " Ош.памяти защит",   \
   " Settings Err.  ",   \
   " No settings    ",   \
   " Sett.W.Err.    ",   \
@@ -331,7 +333,6 @@ ERROR_INTERNAL_FLASH_BIT
   " DF SPI Err.    ",   \
   " Ext.SRAM Err.  ",   \
   " Int.FLASH Err. ",   \
-  " Error 51       ",   \
   " Error 52       ",   \
   " Error 53       ",   \
   " Error 54       ",   \
@@ -383,6 +384,7 @@ ERROR_INTERNAL_FLASH_BIT
   " Ош.зап.конф.   ",   \
   " Ош.конф.настр. ",   \
   " Недост.динам.п.",   \
+  " Ош.памяти защит",   \
   " Ош.настроек    ",   \
   " Настроек нет   ",   \
   " Ош.зап.настр.  ",   \
@@ -421,7 +423,6 @@ ERROR_INTERNAL_FLASH_BIT
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
-  " Ошибка 51      ",   \
   " Ошибка 52      ",   \
   " Ошибка 53      ",   \
   " Ошибка 54      ",   \

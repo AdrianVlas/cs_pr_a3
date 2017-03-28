@@ -1282,14 +1282,14 @@ void main_routines_for_i2c(void)
               */
               //Єдине поле, яке не змінюється з функції allocate_dynamic_memory_for_settings
               current_config_prt.device_id = current_config.device_id = current_config_edit.device_id = current_config_tmp.device_id;
-              __disable_interrupt();
+//              __disable_interrupt();
 
               __result_dym_mem_select result = allocate_dynamic_memory_for_settings(MAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, &current_config_tmp, NULL);
               
               /*
               Дозволяємо генерацію переривань
               */
-              __enable_interrupt();
+//              __enable_interrupt();
               
               //Робимо зміни у динамічній пам'яті для налаштувань
               if (result == DYN_MEM_SELECT_OK) result = allocate_dynamic_memory_for_settings(MAKE_DYN_MEM, false, sca_of_p     , spca_of_p_prt, &current_config     , &current_config_tmp, &current_config_prt);
@@ -1604,9 +1604,18 @@ void main_routines_for_i2c(void)
                 */
                 copy_settings(&current_config_edit, &settings_fix, &settings_fix_edit, sca_of_p, sca_of_p_edit);
 
-                __disable_interrupt();
+//                __disable_interrupt();
                 copy_settings(&current_config_edit, &settings_fix_prt, &settings_fix_edit, spca_of_p_prt, sca_of_p_edit);
-                __enable_interrupt();
+//                __enable_interrupt();
+                
+                /***
+                Зміни у Андрієвій системі
+                ***/
+                unsigned int tmp;
+                long res = ChangeCfg((void*)&tmp);
+                if (res != 0) _SET_BIT(set_diagnostyka, ERROR_PRT_MEMORY_BIT);
+                else _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+                /***/
                 /***/
 
               }

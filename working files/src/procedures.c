@@ -2286,7 +2286,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
     {
       __CONFIG current_config_tmp = current_config_prt;
-      __disable_interrupt();
+//      __disable_interrupt();
       result = allocate_dynamic_memory_for_settings(REMAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, &current_config, &current_config_tmp);
     }
 
@@ -2295,14 +2295,22 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       if (config_settings_modified & MASKA_CHANGED_SETTINGS)
       {
         //Відбувалися зміни у налаштуваннях
-        __disable_interrupt(); /*конфігурація може записуватися, а може не записуватися, тому у цьому місці переривання вже можуть бути забороненими, або ще ні*/
+//        __disable_interrupt(); /*конфігурація може записуватися, а може не записуватися, тому у цьому місці переривання вже можуть бути забороненими, або ще ні*/
         copy_settings(&current_config, &settings_fix_prt, &settings_fix, spca_of_p_prt, sca_of_p);
+        
+        /***
+          Зміни у Андрієвій системі
+        ***/
+        unsigned int tmp;
+        long res = ChangeCfg((void*)&tmp);
+        if (res != 0) result = PRT_MEM_ERROR;
+        /***/
       }
-      __enable_interrupt(); /*могла бути ситуація. що конфігурація змінювалася без зміни налаштувнь*/
+//      __enable_interrupt(); /*могла бути ситуація. що конфігурація змінювалася без зміни налаштувнь*/
     }
     else if (result == DYN_MEM_NO_ENOUGH_MEM) 
     {
-      __enable_interrupt();
+//      __enable_interrupt();
       /*
       при такому негативному резульаті зміни конфігурації все ж таки конфігурація повернулася 
       до свого попереднього стану, тому можна відновити інших більш пріоритетних систем, зокрема,
@@ -2355,6 +2363,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       /***/
       
       _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+      _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
       
       if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
       {
@@ -2385,12 +2394,22 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     else if (result == DYN_MEM_NO_ENOUGH_MEM) 
     {
       _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+      _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
       
       error = 1;
     }
     else 
     {
-      _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+      if (result == DYN_MEM_TOTAL_ERROR)
+      {
+        _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+        _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      }
+      else if (result == PRT_MEM_ERROR)
+      {
+        _SET_BIT(set_diagnostyka, ERROR_PRT_MEMORY_BIT);
+        _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+      }
       
       error = 2;
     }
