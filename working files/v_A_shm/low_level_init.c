@@ -2,39 +2,6 @@
 #include "../inc/libraries.h"
 
 
-/**************************************/
-//ӥ?ᮭ?㭳?ߠSRAM
-/**************************************/
-inline void test_external_SRAM(void)
-{
-  //è讠ภ۬ԫ??㯵⡩??
-  unsigned int size_SRAM_word = (((unsigned int)&__ICFEDIT_region_RAM1_size__) + 1) >> 1;
-  
-  //è讠?롧Ԣ ௷ᳮꡧԸߠﰥ?㮮ߠ࡬'?
-   unsigned short int *point = ((unsigned short int *)&__ICFEDIT_region_RAM1_start__);
-  
-  //Ƞ௢?믬԰볠询???㮮ߠ࡬'?߿ ᥰ沮? for (unsigned int i = 0; i < size_SRAM_word; i++) *point++ = (unsigned short int)(i & 0xffff);
-  
-  //Х???㡭, ? 㱳?촰롵 ౮ੱ᭳ ?鲫ଠ??汥宼ᰨ?
-  unsigned int error = 0, i = 0;
-  point = ((unsigned short int *)&__ICFEDIT_region_RAM1_start__);
-  while((i < size_SRAM_word) && (error == 0))
-  {
-    if ((*point) == ((unsigned short int)(i & 0xffff)))
-    {
-      //ӥ?ᮮߠ믬԰먠౮깮⡢填      i++;
-      *point++ = 0;
-    }
-    else
-    {
-      //ӥ?ᮮߠ믬԰먠౮깮⡢填      
-      error = 0xff;
-      //è?쿺?Ԥﭫ殭?ﭨ쫳 ??㭳? ﰥ?㮮ߠ࡬'?
-      _SET_BIT(set_diagnostyka, ERROR_EXTERNAL_SRAM_BIT);
-    }
-  }
-}
-/**************************************/
 
 
 
@@ -57,7 +24,7 @@ __interwork int __low_level_init(void)
   /*==================================*/
 FSMC_SRAM_Init();
   /**********************/
-  //Π??ﴭԢ ౮??  /**********************/
+  // /**********************/
   GPIO_InitTypeDef GPIO_InitStructure;
 
 GPIO_InitStructure.GPIO_Pin = GPIO_PIN_EXTERNAL_WATCHDOG;

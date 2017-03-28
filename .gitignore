@@ -6,7 +6,7 @@
 *.dep
 # Ігнорувати my.bat
 my.bat
-
+*.pdf
 # Ігнорувати файли з папки settings/
 settings/
 
