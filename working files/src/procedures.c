@@ -2202,7 +2202,12 @@ void copy_settings(
           }
       }
       
-      if ((n_prev != 0) && (target_dyn[i - _ID_FB_FIRST_VAR] != NULL))
+      if ((n_prev != 0) && 
+          (
+           (target_dyn[i - _ID_FB_FIRST_VAR] != NULL) || 
+           (copy_settings_LN == NULL)
+          )
+         )   
       {
         //Викликаємо функцію повернення нових налаштувань у попередні значення
         if (copy_settings_LN != NULL) (*copy_settings_LN)((target_dyn == spca_of_p_prt), (source_dyn == spca_of_p_prt), target_dyn[i - _ID_FB_FIRST_VAR], source_dyn[i - _ID_FB_FIRST_VAR], 0, n_prev);
