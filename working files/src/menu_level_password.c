@@ -97,7 +97,7 @@ void make_ekran_choose_passwords(void)
       "Ed.isn't allowed",
       "Ред.не разрешено",
     };
-    make_ekran_about_info(false, information_about_info);
+    make_ekran_about_info(0, information_about_info);
   }
   else
   {

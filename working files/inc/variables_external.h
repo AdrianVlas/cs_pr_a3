@@ -52,9 +52,9 @@ extern unsigned int measurement_low[NUMBER_ANALOG_CANALES];
 extern const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2];
 extern const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2];
 extern volatile unsigned int state_inputs;
-extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
-extern uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
-//extern uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
+extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
+extern uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
+//extern uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 //extern unsigned char crc_trg_func, crc_trg_func_ctrl;
 extern unsigned int pressed_buttons;
 extern volatile unsigned int activation_function_from_interface;
@@ -64,7 +64,7 @@ extern volatile unsigned int diagnostyka[3];
 extern volatile unsigned int set_diagnostyka[3];
 extern volatile unsigned int clear_diagnostyka[3];
 
-extern int global_timers[MAX_NUMBER_GLOBAL_TIMERS];
+//extern int global_timers[MAX_NUMBER_GLOBAL_TIMERS];
 
 extern unsigned int start_restart;
 
@@ -82,6 +82,8 @@ extern int16_t position_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL]; //Масив 
 extern enum _menu2_levels previous_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL];
 extern enum _menu2_levels next_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL];    //Масив у якому збкрігається занчення екранів куди ми хочемо перейти з поточного екрану
 extern void *p_menu_param_1, *p_menu_param_2;
+extern const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS];
+extern const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS];
 
 extern volatile unsigned int periodical_tasks_TEST_CONFIG;
 extern volatile unsigned int periodical_tasks_TEST_SETTINGS;

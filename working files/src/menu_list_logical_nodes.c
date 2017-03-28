@@ -32,6 +32,15 @@ void make_ekran_list_logical_nodes(void)
   };
   const unsigned int first_index_number_led[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
 
+  const uint8_t name_button[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    " ФК             ",
+    " ФК             ",
+    " DB             ",
+    " ФК             "
+  };
+  const unsigned int first_index_number_button[MAX_NAMBER_LANGUAGE] = {3, 3, 3, 3};
+  
   const uint8_t name_alarm[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
   {
     " СЗС            ",
@@ -113,18 +122,39 @@ void make_ekran_list_logical_nodes(void)
   };
   const unsigned int first_index_number_meander[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
 
+  const uint8_t name_tu[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    " ТУ             ",
+    " ТУ             ",
+    " TC             ",
+    " ТУ             "
+  };
+  const unsigned int first_index_number_tu[MAX_NAMBER_LANGUAGE] = {3, 3, 3, 3};
+
   
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
   const uint8_t *p_name;
   const unsigned int *p_first_index_number;
-  if (current_state_menu2.current_level == PARAM_LIST_SELECTED_LOGICAL_NODES_MENU2_LEVEL)
+  enum _menu2_levels current_level = current_state_menu2.current_level;
+  if (
+      (
+       (current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+       (current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+      )
+      ||  
+      (
+       (current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
+       (current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
+      )
+     )   
   {
     const uint8_t (* const array_p_name[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
     {
       &name_input,
       &name_output,
       &name_led,
+      &name_button,
       &name_alarm,
       &name_group_alarm,
       &name_and,
@@ -133,13 +163,15 @@ void make_ekran_list_logical_nodes(void)
       &name_not,
       &name_timer,
       &name_trigger,
-      &name_meander
+      &name_meander,
+      &name_tu
     };
     const unsigned int (* const array_p_first_index_number[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE] = 
     {
       &first_index_number_input,
       &first_index_number_output,
       &first_index_number_led,
+      &first_index_number_button,
       &first_index_number_alarm,
       &first_index_number_group_alarm,
       &first_index_number_and,
@@ -148,16 +180,17 @@ void make_ekran_list_logical_nodes(void)
       &first_index_number_not,
       &first_index_number_timer,
       &first_index_number_trigger,
-      &first_index_number_meander
+      &first_index_number_meander,
+      &first_index_number_tu
     };
     
-    intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]] - NUMBER_FIX_BLOCKS; 
+    intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_level]] - NUMBER_FIX_BLOCKS; 
     p_name = (*array_p_name[index])[index_language];
     p_first_index_number = &(*array_p_first_index_number[index])[index_language];
   }
   else
   {
-    switch (current_state_menu2.current_level)
+    switch (current_level)
     {
     case LIST_INPUTS_MENU2_LEVEL:
       {
@@ -219,25 +252,53 @@ void make_ekran_list_logical_nodes(void)
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій конфігурації
     if (index_in_ekran < max_row)
     {
-      unsigned int number = index_in_ekran + 1;
-      unsigned int number_digit = max_number_digit_in_number(number);
-
-      for (size_t j = 0; j < MAX_COL_LCD; j++)
+      if (
+          (
+           (current_level == PARAM_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) ||
+           (current_level == PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)
+          )
+          &&  
+          (index_in_ekran < NUMBER_FIX_BUTTONS)    
+         )
       {
-        if ((j < *p_first_index_number) || (j >= (*p_first_index_number + number_digit)))
+        const uint8_t name_fix_buttons[NUMBER_FIX_BUTTONS][MAX_COL_LCD + 1] = 
         {
-          working_ekran[i][j] = p_name[j];
+         " MUTE           ",
+         " RESET          ",
+         " TEST           "
+        };
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_fix_buttons[index_in_ekran][j];
+      }
+      else
+      {
+          
+        unsigned int number = index_in_ekran + 1;
+        if (
+            (current_level == PARAM_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) ||
+            (current_level == PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)
+           )
+        {
+          number -= NUMBER_FIX_BUTTONS;
         }
-        else
+        unsigned int number_digit = max_number_digit_in_number(number);
+
+        for (size_t j = 0; j < MAX_COL_LCD; j++)
         {
-          /*
-          Заповнюємо значення зправа  на ліво
-          індекс = *p_first_index_number + number_digit - 1 - (j - *p_first_index_number) =
-          = *p_first_index_number + number_digit - 1 - j + *p_first_index_number =
-          = 2x(*p_first_index_number) + number_digit - 1 - j =
-          */
-          working_ekran[i][2*(*p_first_index_number) + number_digit - 1 - j] = (number % 10) + 0x30;
-          number /= 10;
+          if ((j < *p_first_index_number) || (j >= (*p_first_index_number + number_digit)))
+          {
+            working_ekran[i][j] = p_name[j];
+          }
+          else
+          {
+            /*
+            Заповнюємо значення зправа  на ліво
+            індекс = *p_first_index_number + number_digit - 1 - (j - *p_first_index_number) =
+            = *p_first_index_number + number_digit - 1 - j + *p_first_index_number =
+            = 2x(*p_first_index_number) + number_digit - 1 - j =
+            */
+            working_ekran[i][2*(*p_first_index_number) + number_digit - 1 - j] = (number % 10) + 0x30;
+            number /= 10;
+          }
         }
       }
     }
@@ -256,7 +317,7 @@ void make_ekran_list_logical_nodes(void)
   //Курсор видимий
   current_state_menu2.cursor_on = 1;
   //Курсор не мигає
-  current_state_menu2.cursor_blinking_on = 0;
+  current_state_menu2.cursor_blinking_on = (current_state_menu2.edition < ED_EDITION) ? 0 : 1;
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }

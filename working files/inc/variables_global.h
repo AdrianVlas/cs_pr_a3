@@ -73,9 +73,9 @@ unsigned int measurement_low[NUMBER_ANALOG_CANALES];
 const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2] = {0, 2};
 const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2] = {{0, 8}};
 volatile unsigned int state_inputs = 0; //"є сигнал " - відповідає встановленому біту (1); "немає сигналу" - відповідає скинутому біту (0)
-uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
-uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
-//uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_OUT, 8)];
+uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
+uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
+//uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 //unsigned char crc_trg_func, crc_trg_func_ctrl;
 unsigned int pressed_buttons = 0;
 volatile unsigned int activation_function_from_interface = 0;
@@ -85,7 +85,7 @@ volatile unsigned int diagnostyka[3] = {0, 0, 0};
 volatile unsigned int set_diagnostyka[3] = {0, 0, 0};
 volatile unsigned int clear_diagnostyka[3] = {0, 0, 0};
 
-SRAM1 int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
+//SRAM1 int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
 
 SRAM1 unsigned char working_ekran[MAX_ROW_LCD][MAX_COL_LCD];
 SRAM1 uint16_t rewrite_ekran_once_more/* = 0*/;
@@ -101,6 +101,42 @@ SRAM1 int16_t position_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL]; //Масив у
 SRAM1 enum _menu2_levels previous_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL]; //Масив у якому збкрігається занчення попередніх екранів для даного рівня меню
 SRAM1 enum _menu2_levels next_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL];    //Масив у якому збкрігається занчення екранів куди ми хочемо перейти з поточного екрану
 SRAM1 void *p_menu_param_1, *p_menu_param_2;
+const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS] = 
+{
+  1, 
+  0, 
+  1, 
+  1, 
+  0,
+  1, 
+  0, 
+  AND_SIGNALS_IN, 
+  OR_SIGNALS_IN, 
+  2, 
+  1, 
+  1, 
+  1, 
+  0,
+  0
+};
+const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
+{
+  FIX_BLOCK_SIGNALS_IN,
+  0,
+  OUTPUT_LED_SIGNALS_IN,
+  OUTPUT_LED_SIGNALS_IN,
+  0,
+  ALARM_SIGNALS_IN,
+  0,
+  1,
+  1,
+  1,
+  1,
+  TIMER_SIGNALS_IN,
+  TRIGGER_SIGNALS_IN,
+  0,
+  0
+};
 
 volatile unsigned int periodical_tasks_TEST_CONFIG = false;
 volatile unsigned int periodical_tasks_TEST_SETTINGS = false;

@@ -21,10 +21,9 @@ extern void min_config(__CONFIG *);
 extern void min_settings(__SETTINGS_FIX *);
 extern void min_settings_INPUT(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_INPUT(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
-extern void min_settings_OUTPUT(unsigned int, uintptr_t *, size_t, size_t);
-extern void copy_settings_OUTPUT(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
-extern void min_settings_LED(unsigned int, uintptr_t *, size_t, size_t);
-extern void copy_settings_LED(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
+extern void min_settings_OUTPUT_LED(unsigned int, uintptr_t *, size_t, size_t);
+extern void copy_settings_OUTPUT_LED(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
+extern void min_settings_BUTTON_TU(unsigned int, uintptr_t *, size_t, size_t);
 extern void min_settings_ALARM(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_ALARM(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_GROUP_ALARM(unsigned int, uintptr_t *, size_t, size_t);
@@ -49,6 +48,14 @@ extern unsigned int set_config_and_settings(unsigned int, unsigned int);
 extern void error_reading_with_eeprom(void);
 extern void move_into_param_list_logical_nodes(unsigned int, int);
 extern void make_ekran_param_list_logical_node(void);
+extern enum _result_pressed_enter_during_edition  press_enter_in_param_list_logical_node(void);
+extern void press_esc_in_param_list_logical_node(void);
+extern void make_ekran_param_list_inputs_of_selected_logical_node(void);
+extern void move_into_param_view_chosen_of_selected_logical_node(unsigned int, int);
+extern void make_ekran_param_view_chosen_of_selected_logical_node(void);
+extern void change_set_signal(unsigned int);
+extern void make_ekran_param_edit_list_outputs_of_selected_logical_node(void);
+extern void select_input_signal_ln(void);
 
 extern void Interrupts_Config(void);
 
@@ -101,7 +108,7 @@ extern void main_manu_function_ver2(void);
 extern void new_level_menu(void);
 extern void make_ekran_main(void);
 extern void move_into_main(unsigned int, int);
-extern enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords(void);
+extern enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void);
 extern void make_ekran_time(void);
 extern void move_into_time(unsigned int, int);
 extern void change_time(unsigned int);
@@ -191,8 +198,8 @@ extern unsigned int count_number_set_bit(unsigned int*, unsigned int);
 
 extern void set_bit(unsigned int*, unsigned int);
 extern void clear_bit(unsigned int*, unsigned int);
-extern void input_scan(void);
-extern void clocking_global_timers(void);
+//extern void input_scan(void);
+//extern void clocking_global_timers(void);
 extern void main_protection(void);
 extern void diagnostyca_adc_execution(void);
 

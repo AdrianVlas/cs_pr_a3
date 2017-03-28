@@ -1448,9 +1448,6 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_output_led.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_param_list_logical_nodes.h</name>
-        </file>
-        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_password.h</name>
         </file>
         <file>
@@ -1470,6 +1467,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu_ver2.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_param_logical_nodes.c</name>
         </file>
       </group>
       <group>
@@ -1608,9 +1608,6 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_output_led.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_param_list_logical_nodes.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_registrators.c</name>

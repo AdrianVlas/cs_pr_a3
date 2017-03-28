@@ -4,9 +4,9 @@
   <Desktop>
     <Static>
       <Debug-Log>
-        <ColumnWidth0>27</ColumnWidth0>
-        <ColumnWidth1>1100</ColumnWidth1>
-      </Debug-Log>
+        
+        
+      <ColumnWidth0>27</ColumnWidth0><ColumnWidth1>1100</ColumnWidth1></Debug-Log>
       <Build>
         <ColumnWidth0>27</ColumnWidth0>
         <ColumnWidth1>825</ColumnWidth1>
@@ -15,25 +15,25 @@
       </Build>
       <Workspace>
         <ColumnWidths>
-          <Column0>198</Column0>
-          <Column1>27</Column1>
-          <Column2>27</Column2>
-          <Column3>27</Column3>
-        </ColumnWidths>
+          
+          
+          
+          
+        <Column0>241</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
       </Workspace>
       <Disassembly>
         <col-names>
-          <item>Disassembly</item>
-          <item>_I0</item>
-        </col-names>
+          
+          
+        <item>Disassembly</item><item>_I0</item></col-names>
         <col-widths>
-          <item>500</item>
-          <item>20</item>
-        </col-widths>
+          
+          
+        <item>500</item><item>20</item></col-widths>
         <DisasmHistory/>
-        <ShowCodeCoverage>1</ShowCodeCoverage>
-        <ShowInstrProfiling>1</ShowInstrProfiling>
-      </Disassembly>
+        
+        
+      <ShowCodeCoverage>1</ShowCodeCoverage><ShowInstrProfiling>1</ShowInstrProfiling></Disassembly>
       <Breakpoints>
         <col-names>
           <item>Breakpoint</item>
@@ -44,9 +44,12 @@
           <item>35</item>
         </col-widths>
       </Breakpoints>
-    </Static>
+    <Auto><col-names><item>Expression</item><item>Location</item><item>Type</item><item>Value</item></col-names><col-widths><item>150</item><item>150</item><item>100</item><item>128</item></col-widths></Auto></Static>
     <Windows>
-      <Wnd0>
+      
+      
+      
+    <Wnd3>
         <Tabs>
           <Tab>
             <Identity>TabID-679-24303</Identity>
@@ -66,29 +69,20 @@
             <Factory>Breakpoints</Factory>
           </Tab>
         </Tabs>
-        <SelectedTab>0</SelectedTab>
-      </Wnd0>
-      <Wnd1>
+        
+      <SelectedTab>0</SelectedTab></Wnd3><Wnd4>
         <Tabs>
           <Tab>
             <Identity>TabID-11427-24306</Identity>
             <TabName>Workspace</TabName>
             <Factory>Workspace</Factory>
             <Session>
-              <NodeDict>
-                <ExpandedNode>device_2_v_12_0_0</ExpandedNode>
-                <ExpandedNode>device_2_v_12_0_0/user</ExpandedNode>
-                <ExpandedNode>device_2_v_12_0_0/user/src</ExpandedNode>
-                <ExpandedNode>device_2_v_12_0_0/user/src/protection</ExpandedNode>
-                <ExpandedNode>device_2_v_12_0_0/user/v_A_shm</ExpandedNode>
-                <ExpandedNode>device_2_v_12_0_0/user/v_A_shm/v_A_shm_C</ExpandedNode>
-              </NodeDict>
-            </Session>
+              
+            <NodeDict><ExpandedNode>device_2_v_12_0_0</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/src</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/src/protection</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/v_A_shm</ExpandedNode><ExpandedNode>device_2_v_12_0_0/user/v_A_shm/v_A_shm_C</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
-        <SelectedTab>0</SelectedTab>
-      </Wnd1>
-      <Wnd2>
+        
+      <SelectedTab>0</SelectedTab></Wnd4><Wnd5>
         <Tabs>
           <Tab>
             <Identity>TabID-22176-24309</Identity>
@@ -96,205 +90,22 @@
             <Factory>Disassembly</Factory>
             <Session/>
           </Tab>
-        </Tabs>
-        <SelectedTab>0</SelectedTab>
-      </Wnd2>
-    </Windows>
+        <Tab><Identity>TabID-6697-3011</Identity><TabName>Auto</TabName><Factory>Auto</Factory></Tab></Tabs>
+        
+      <SelectedTab>1</SelectedTab></Wnd5></Windows>
     <Editor>
-      <Pane>
-        <Tab>
-          <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\..\working files\v_A_shm\LUBgsp1.cpp</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>3</YPos2>
-          <SelStart2>445</SelStart2>
-          <SelEnd2>445</SelEnd2>
-        </Tab>
-        <Tab>
-          <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\..\working files\src\main.c</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>456</YPos2>
-          <SelStart2>18599</SelStart2>
-          <SelEnd2>18599</SelEnd2>
-        </Tab>
-        <Tab>
-          <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\..\working files\v_A_shm\low_level_init.c</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>45</YPos2>
-          <SelStart2>1670</SelStart2>
-          <SelEnd2>1670</SelEnd2>
-        </Tab>
-        <Tab>
-          <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\..\working files\v_A_shm\prtTmr.c</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>282</YPos2>
-          <SelStart2>10924</SelStart2>
-          <SelEnd2>10924</SelEnd2>
-        </Tab>
-        <ActiveTab>3</ActiveTab>
-        <Tab>
-          <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\..\working files\src\fsmc_sram.c</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>4</YPos2>
-          <SelStart2>446</SelStart2>
-          <SelEnd2>446</SelEnd2>
-        </Tab>
-        <Tab>
-          <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\..\working files\src\start_settings.c</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>1446</YPos2>
-          <SelStart2>57818</SelStart2>
-          <SelEnd2>57818</SelEnd2>
-        </Tab>
-        <Tab>
-          <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\..\working files\src\protections.c</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>308</YPos2>
-          <SelStart2>11839</SelStart2>
-          <SelEnd2>11839</SelEnd2>
-        </Tab>
-        <Tab>
-          <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\..\working files\inc\platform_config.h</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>18</YPos2>
-          <SelStart2>1333</SelStart2>
-          <SelEnd2>1347</SelEnd2>
-        </Tab>
-      </Pane>
-      <ActivePane>0</ActivePane>
-      <Sizes>
-        <Pane>
-          <X>1000000</X>
-          <Y>1000000</Y>
-        </Pane>
-      </Sizes>
-      <SplitMode>1</SplitMode>
-    </Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\v_A_shm\low_level_init.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>45</YPos2><SelStart2>1670</SelStart2><SelEnd2>1670</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\v_A_shm\prtTmr.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>267</YPos2><SelStart2>10740</SelStart2><SelEnd2>10740</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\src\main.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>455</YPos2><SelStart2>18695</SelStart2><SelEnd2>18695</SelEnd2></Tab><ActiveTab>2</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\src\fsmc_sram.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>4</YPos2><SelStart2>446</SelStart2><SelEnd2>446</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\src\start_settings.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>1446</YPos2><SelStart2>57818</SelStart2><SelEnd2>57818</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\src\protections.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>308</YPos2><SelStart2>11839</SelStart2><SelEnd2>11839</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\v_A_shm\Shematic.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>1955</YPos2><SelStart2>84241</SelStart2><SelEnd2>84241</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\v_A_shm\I_Shm.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>41</YPos2><SelStart2>1694</SelStart2><SelEnd2>1694</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\v_A_shm\IStng.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>7</YPos2><SelStart2>568</SelStart2><SelEnd2>568</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\working files\src\procedures.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>2444</YPos2><SelStart2>95728</SelStart2><SelEnd2>95728</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
-      <Top>
-        <Row0>
-          <Sizes>
-            <Toolbar-02B538F8>
-              <key>iaridepm.enu1</key>
-            </Toolbar-02B538F8>
-            <Toolbar-1EFD9948>
-              <key>debuggergui.enu1</key>
-            </Toolbar-1EFD9948>
-            <Toolbar-1EFD9A10>
-              <key>armjlink2.enu1</key>
-            </Toolbar-1EFD9A10>
-          </Sizes>
-        </Row0>
-      </Top>
-      <Left>
-        <Row0>
-          <Sizes>
-            <Wnd1>
-              <Rect>
-                <Top>-2</Top>
-                <Left>-2</Left>
-                <Bottom>609</Bottom>
-                <Right>295</Right>
-                <x>-2</x>
-                <y>-2</y>
-                <xscreen>251</xscreen>
-                <yscreen>200</yscreen>
-                <sizeHorzCX>170865</sizeHorzCX>
-                <sizeHorzCY>233918</sizeHorzCY>
-                <sizeVertCX>202178</sizeVertCX>
-                <sizeVertCY>714620</sizeVertCY>
-              </Rect>
-            </Wnd1>
-          </Sizes>
-        </Row0>
-      </Left>
-      <Right>
-        <Row0>
-          <Sizes>
-            <Wnd2>
-              <Rect>
-                <Top>-2</Top>
-                <Left>-2</Left>
-                <Bottom>609</Bottom>
-                <Right>249</Right>
-                <x>-2</x>
-                <y>-2</y>
-                <xscreen>251</xscreen>
-                <yscreen>200</yscreen>
-                <sizeHorzCX>170865</sizeHorzCX>
-                <sizeHorzCY>233918</sizeHorzCY>
-                <sizeVertCX>170865</sizeVertCX>
-                <sizeVertCY>714620</sizeVertCY>
-              </Rect>
-            </Wnd2>
-          </Sizes>
-        </Row0>
-      </Right>
-      <Bottom>
-        <Row0>
-          <Sizes>
-            <Wnd0>
-              <Rect>
-                <Top>-2</Top>
-                <Left>-2</Left>
-                <Bottom>198</Bottom>
-                <Right>1471</Right>
-                <x>-2</x>
-                <y>-2</y>
-                <xscreen>1473</xscreen>
-                <yscreen>200</yscreen>
-                <sizeHorzCX>1002723</sizeHorzCX>
-                <sizeHorzCY>233918</sizeHorzCY>
-                <sizeVertCX>170865</sizeVertCX>
-                <sizeVertCY>233918</sizeVertCY>
-              </Rect>
-            </Wnd0>
-          </Sizes>
-        </Row0>
-      </Bottom>
-      <Float>
-        <Sizes/>
-      </Float>
-    </Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-00D938F8><key>iaridepm.enu1</key></Toolbar-00D938F8><Toolbar-164386C8><key>debuggergui.enu1</key></Toolbar-164386C8><Toolbar-16438600><key>armjlink2.enu1</key></Toolbar-16438600></Sizes></Row0></Top><Left><Row0><Sizes><Wnd4><Rect><Top>-2</Top><Left>-2</Left><Bottom>706</Bottom><Right>338</Right><x>-2</x><y>-2</y><xscreen>287</xscreen><yscreen>230</yscreen><sizeHorzCX>170833</sizeHorzCX><sizeHorzCY>234216</sizeHorzCY><sizeVertCX>202381</sizeVertCX><sizeVertCY>720978</sizeVertCY></Rect></Wnd4></Sizes></Row0></Left><Right><Row0><Sizes><Wnd5><Rect><Top>-2</Top><Left>-2</Left><Bottom>706</Bottom><Right>486</Right><x>-2</x><y>-2</y><xscreen>287</xscreen><yscreen>230</yscreen><sizeHorzCX>170833</sizeHorzCX><sizeHorzCY>234216</sizeHorzCY><sizeVertCX>290476</sizeVertCX><sizeVertCY>720978</sizeVertCY></Rect></Wnd5></Sizes></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>228</Bottom><Right>1682</Right><x>-2</x><y>-2</y><xscreen>1684</xscreen><yscreen>230</yscreen><sizeHorzCX>1002381</sizeHorzCX><sizeHorzCY>234216</sizeHorzCY><sizeVertCX>170833</sizeVertCX><sizeVertCY>234216</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Project>
 

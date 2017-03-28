@@ -42,7 +42,7 @@ void make_ekran_configuration(void)
     if (edition == ED_WARNING_EDITION_BUSY) p_information = information_about_info;
     else if (edition == ED_WARNING_ENTER_ESC) p_information = information_about_out_of_range;
     else p_information = information_about_error;
-    make_ekran_about_info( ((edition == ED_WARNING_ENTER_ESC) ? true : false), p_information);
+    make_ekran_about_info( ((edition == ED_WARNING_ENTER_ESC) ? 1 : 0), p_information);
   }
   else 
   {
@@ -57,7 +57,8 @@ void make_ekran_configuration(void)
         "       НЕ       ",
         "   МФ-Таймер    ",
         "   D-Триггер    ",
-        "      ГПС       "
+        "      ГПС       ",
+        "       ТУ       "
       },
       {
         "      СЗС       ",
@@ -68,7 +69,8 @@ void make_ekran_configuration(void)
         "       НЕ       ",
         "   БФ-Таймер    ",
         "    D-Триґер    ",
-        "      ГПС       "
+        "      ГПС       ",
+        "       ТУ       "
       },
       {
         "      СЗС       ",
@@ -79,7 +81,8 @@ void make_ekran_configuration(void)
         "      NOT       ",
         "    MF-Timer    ",
         "   D-Trigger    ",
-        "      PSG       "
+        "      PSG       ",
+        "       TC       "
       },
       {
         "      СЗС       ",
@@ -90,7 +93,8 @@ void make_ekran_configuration(void)
         "       НЕ       ",
         "   МФ-Таймер    ",
         "   D-Триггер    ",
-        "      ГПС       "
+        "      ГПС       ",
+        "       ТУ       "
       }
     };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
@@ -213,6 +217,16 @@ void make_ekran_configuration(void)
 
               break;
             }
+          case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_tu;
+
+              break;
+            }
           default:
             {
               //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
@@ -251,6 +265,7 @@ void make_ekran_configuration(void)
       case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
         {
           current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
           last_position_cursor_x = COL_CONF_3DIGIT_END;
@@ -326,6 +341,7 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
       case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
         {
           current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
           break;
@@ -396,6 +412,11 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
       case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
         {
           if (current_config_edit.n_meander != current_config.n_meander) result = RPEDE_DATA_CHANGED_OK;
+          break;
+        }
+      case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_tu != current_config.n_tu) result = RPEDE_DATA_CHANGED_OK;
           break;
         }
       }
@@ -474,6 +495,11 @@ void press_esc_in_configuration(void)
   case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
     {
       current_config_edit.n_meander = current_config.n_meander;
+      break;
+    }
+  case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_tu = current_config.n_tu;
       break;
     }
   }
@@ -556,6 +582,12 @@ void change_configuration(unsigned int action)
         col_end = COL_CONF_3DIGIT_END;
         break;
       }
+    case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_tu;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
     }
     
     if (p_value != NULL)
@@ -579,6 +611,7 @@ void change_configuration(unsigned int action)
     case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
     case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
     case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
+    case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
       {
         col_begin = COL_CONF_3DIGIT_BEGIN;
         col_end = COL_CONF_3DIGIT_END;

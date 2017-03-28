@@ -9,22 +9,18 @@ inline void test_external_SRAM(void)
   //Визнапчаємо кількість двохбайтих слів
   unsigned int size_SRAM_word = (((unsigned int)&__ICFEDIT_region_RAM1_size__) + 1) >> 1;
   
-  //Визначаємо вказівник на початок зовнішньої оперативної пам'яті
-   unsigned short int *point = ((unsigned short int *)&__ICFEDIT_region_RAM1_start__);
-  
-  //Заповнюємо кожну комірку зовнішьої оперативної пам'яті її адресою
-  for (unsigned int i = 0; i < size_SRAM_word; i++) *point++ = (unsigned short int)(i & 0xffff);
-  
-  //Перевіряємо зчитуванням, чи у всіх комірках прописані ті числа, які ми попередньо записали
+  unsigned short int *point = ((unsigned short int *)&__ICFEDIT_region_RAM1_start__);
   unsigned int error = 0, i = 0;
-  point = ((unsigned short int *)&__ICFEDIT_region_RAM1_start__);
+  unsigned short int temp_data;
   while((i < size_SRAM_word) && (error == 0))
   {
+    temp_data = *point;
+    *point = (unsigned short int)(i & 0xffff);
     if ((*point) == ((unsigned short int)(i & 0xffff)))
     {
       //Тест даної комірки пройшов вдало
+      *point++ = temp_data;
       i++;
-      *point++ = 0;
     }
     else
     {
@@ -33,6 +29,7 @@ inline void test_external_SRAM(void)
       error = 0xff;
       //Виставляємо повідомлення про помилку тесту зовнішьої оперативної пам'яті
       _SET_BIT(set_diagnostyka, ERROR_EXTERNAL_SRAM_BIT);
+      *point = temp_data;
     }
   }
 }
@@ -88,7 +85,7 @@ void global_vareiables_installation(void)
   /**************************/
   //Ініціалізація глобальних таймерів
   /**************************/
-  for(unsigned int i = 0; i < MAX_NUMBER_GLOBAL_TIMERS; i++) global_timers[i] = -1;
+//  for(unsigned int i = 0; i < MAX_NUMBER_GLOBAL_TIMERS; i++) global_timers[i] = -1;
   /**************************/
 
   /**************************/
@@ -116,7 +113,7 @@ void global_vareiables_installation(void)
   current_state_menu2.max_row = MAX_ROW_MAIN_M2;
   current_state_menu2.func_move = move_into_main;
   current_state_menu2.func_show = make_ekran_main;
-  current_state_menu2.func_press_enter = press_enter_in_main_and_list_passwords;
+  current_state_menu2.func_press_enter = press_enter_in_ekran_with_request;
   current_state_menu2.func_press_esc = NULL;
   current_state_menu2.func_change = NULL;
   current_state_menu2.binary_data = false;
@@ -481,7 +478,7 @@ void start_settings_peripherals(void)
   /**********************/
   //Настроювання зовнішню шину
   /**********************/
-  FSMC_SRAM_Init();
+//  FSMC_SRAM_Init();
   _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1) = 0;
   _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_2) = 0;
   _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_LEDS) = 0;
@@ -541,7 +538,10 @@ void start_settings_peripherals(void)
   /*
   Продовжуємо виконувати ініціалізацію периферії  
   */
-    
+
+  /**************/
+  //Піни на вивід
+  /**************/
   /* Конфігурація піну CON-L, як Output push-pull */
   GPIO_InitStructure.GPIO_Pin = CON_L_PIN;
   GPIO_Init(CON_L, &GPIO_InitStructure);
@@ -1081,7 +1081,7 @@ void start_settings_peripherals(void)
     GPIO_SetBits(CON_L, CON_L_PIN);
 
     //Виводимо інформацію по виходах на піни процесора (у зворотньому порядку)
-    unsigned int temp_state_outputs = 0;
+//    unsigned int temp_state_outputs = 0;
 //    for (unsigned int index = 0; index < NUMBER_OUTPUTS; index++)
 //    {
 //      if ((state_outputs & (1 << index)) != 0)
@@ -1092,10 +1092,10 @@ void start_settings_peripherals(void)
 //          temp_state_outputs |= 1 << index;
 //      }
 //    }
-    unsigned int temp_state_outputs_1 =  temp_state_outputs                      & ((1 << NUMBER_OUTPUTS_1) - 1);
-    unsigned int temp_state_outputs_2 = (temp_state_outputs >> NUMBER_OUTPUTS_1) & ((1 << NUMBER_OUTPUTS_2) - 1);
-    _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1) = temp_state_outputs_1;
-    _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_2) = temp_state_outputs_2;
+//    unsigned int temp_state_outputs_1 =  temp_state_outputs                      & ((1 << NUMBER_OUTPUTS_1) - 1);
+//    unsigned int temp_state_outputs_2 = (temp_state_outputs >> NUMBER_OUTPUTS_1) & ((1 << NUMBER_OUTPUTS_2) - 1);
+//    _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1) = temp_state_outputs_1;
+//    _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_2) = temp_state_outputs_2;
     //Виставляємо пін CON-OUTPUTS-1, щоб можна було управляти виходами
     GPIO_SetBits(CON_OUTPUTS, CON_1_OUTPUTS_PIN);
     //Знімаємо пін CON-OUTPUTS-2, щоб можна було управляти виходамии
@@ -1242,6 +1242,7 @@ void min_config(__CONFIG *target_label)
   target_label->n_input = NUMBER_INPUTS;
   target_label->n_output = NUMBER_OUTPUTS;
   target_label->n_led = NUMBER_LEDS;
+  target_label->n_button = NUMBER_BUTTONS;
   
   target_label->n_alarm = 0;
   target_label->n_group_alarm = 0;
@@ -1253,6 +1254,8 @@ void min_config(__CONFIG *target_label)
   target_label->n_trigger = 0;
   
   target_label->n_meander = 0;
+
+  target_label->n_tu = 0;
   
   for(unsigned int i = 0; i < (7+1); i++)
   {

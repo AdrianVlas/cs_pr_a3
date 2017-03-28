@@ -11,4 +11,34 @@
 
 #define MASKA_CTRL_GROUP_ALARM_M2 ((1 << _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS) - 1)
 
+#define NAME_GROUP_ALARM_OUT_SIGNALS_RU \
+  "Увелич.         ",                   \
+  "Уменш.          ",                   \
+  "Выход           ",                   \
+  "Ош.контроля     ",                   \
+  "Прев.тока       "
+
+#define NAME_GROUP_ALARM_OUT_SIGNALS_UA \
+  "Збільш.         ",                   \
+  "Зменш.          ",                   \
+  "Вихід           ",                   \
+  "Пом.контролю    ",                   \
+  "Перев.стр.     "
+
+#define NAME_GROUP_ALARM_OUT_SIGNALS_EN \
+  "Inc.            ",                   \
+  "Dec.            ",                   \
+  "Output          ",                   \
+  "Ch.Err.         ",                   \
+  "OC              "
+
+#define NAME_GROUP_ALARM_OUT_SIGNALS_KZ \
+  "Увелич.         ",                   \
+  "Уменш.          ",                   \
+  "Выход           ",                   \
+  "Ош.контроля     ",                   \
+  "Прев.тока       "
+    
+
+
 #endif 

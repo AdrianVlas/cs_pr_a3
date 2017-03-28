@@ -169,133 +169,133 @@ inline void calc_measurement(void)
 /*****************************************************/
 //Модуль обробки дискретних входів
 /*****************************************************/
-inline void input_scan(void)
-{
-  unsigned int state_inputs_into_pin, temp_state_inputs_into_pin; //Змінні у якій формуємо значення входів отримані із входів процесора (пінів)
-  static unsigned int state_inputs_into_pin_trigger; //У цій змінній зберігається попередній стан піна, у випадку коли ми перевіряємо .чи утримається цей стан до кінця тактування таймера допуску
-
-  /***************************/
-  //У цій частині знімаємо стани входів процесора (пінів), які відповідають за дискретні входи
-  /*
-  -----------------------------
-  значення поміщається у відпорвідні біти змінної state_inputs_into_pin
-    "є     сигнал " - відповідає встановленому біту (1)
-    "немає сигналу" - відповідає скинутому     біту (0)
-  -----------------------------
-  */
-  unsigned int temp_state_inputs_into_pin_1 = _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_INPUTS_1) & ((1 << NUMBER_INPUTS_1) - 1);
-  unsigned int temp_state_inputs_into_pin_2 = _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_INPUTS_2) & ((1 << NUMBER_INPUTS_2) - 1);
-  temp_state_inputs_into_pin = temp_state_inputs_into_pin_1 | (temp_state_inputs_into_pin_2 << NUMBER_INPUTS_1);
-  
-  //Змінюємо порядок, щоб наймений номер відповідав нумерації на приладі
-  state_inputs_into_pin = 0;
-  for (unsigned int index = 0; index < NUMBER_INPUTS; index++)
-  {
-    if ((temp_state_inputs_into_pin & (1 << index)) != 0) 
-    {
-      if (index < NUMBER_INPUTS_1)
-        state_inputs_into_pin |= 1 << (NUMBER_INPUTS_1 - index - 1);
-      else
-        state_inputs_into_pin |= 1 << index;
-    }
-  }
-  /***************************/
-  
-  /***************************/
-  //Обробка таймерів допуску дискретних входів
-  /***************************/
-  for(unsigned int i = 0; i < NUMBER_INPUTS; i++)
-  {
-    unsigned int maska = 1<<i;
-    int max_value_timer = /*current_settings_prt.dopusk_dv[i]*/60;
-
-    if (global_timers[INDEX_TIMER_INPUT_START + i] < 0)
-    {
-      //Провірка на зміну стану дискретного входу здійснюється тільки тоді, коли величина таймере є від'ємною
-      //Що означає що таймер не запущений у попередній момент
-      
-      //Перевіряємо чи таеперішній стан входу відповідає попердньомук стану
-      if ((state_inputs_into_pin & maska) != (state_inputs & maska))
-      {
-        //Якщо стан входу змінився, то виконуємо дії по зміні стану
-
-        //1-дія: Запям'ятовуємо текучий стан входу
-        state_inputs_into_pin_trigger &= ~maska;
-        state_inputs_into_pin_trigger |= (state_inputs_into_pin & maska);
-
-        //2-дія: Запускаємо таймер допуску дискретного входу
-        global_timers[INDEX_TIMER_INPUT_START + i] = 0;
-      }
-    }
-    else
-    {
-      //Якщо таймер запущений виконуємо дії з таймером
-      if (global_timers[INDEX_TIMER_INPUT_START + i] < max_value_timer)
-      {
-        //Якщо таймер ще не дійшов до свого макисмуму, то просто збільшуємо його величину
-        global_timers[INDEX_TIMER_INPUT_START + i] += DELTA_TIME_FOR_TIMERS;
-        
-        //У випадку, якщо тип сигналу на вхід подається змінний
-        //і ми перевіряємо чи не відбувся перехід "є сигнал"->"немає сигналу"
-        //то поява сигналу під час тактування таймера допуску означає, що сигнал на вході є - 
-        //а це означає, що треба зупинити nаймер, бо переходу "є сигнал"->"немає сигналу" на протязі тактування таймеру не зафіксовано 
-        if ((0/*current_settings_prt.type_of_input_signal*/ & maska) != 0)
-        {
-           if ((state_inputs_into_pin_trigger & maska) == 0)
-           {
-             if ((state_inputs_into_pin & maska) != 0)
-               global_timers[INDEX_TIMER_INPUT_START + i] = -1;
-           }
-        }
-      }
-    }
-    
-    //Якщо величина таймера допуска знаходиться у свому максимальному значенні, то перевіряємо, чи фактично змінився стано входу
-    if (global_timers[INDEX_TIMER_INPUT_START + i] >= max_value_timer)
-    {
-      //Перевіряємо, чи стан піна змінився у порівнянні із станом, який був на момент запуску таймера допуску дискретного входу
-      unsigned int state_1, state_2;
-        
-      state_1 = state_inputs_into_pin_trigger & maska;
-      state_2 = state_inputs_into_pin  & maska;
-        
-      if (state_1 == state_2)
-      {
-        //Якщо два стани співпадають, то ми вважаємо, що відбулася зіна стану дискретного входу і формуємо новий стан входу
-        //При цьому враховуємо що для прявого    входу 1 - це активний вхід, а 0 - це пасивний вхід
-        //                        для інверсного входу 0 - це активний вхід, а 1 - це пасивний вхід
-          state_inputs &=  ~maska;
-          state_inputs |=   state_2;
-      }
-        
-      //У будь-якому випадк, чи змінився стан входу, чи ні, а оскілька таймер допуску дотактував до кінця, то скидаємотаймер у висхідне від'ємне занчення
-      global_timers[INDEX_TIMER_INPUT_START + i] = -1;
-    }
-  }
-  /***************************/
-}
+//inline void input_scan(void)
+//{
+//  unsigned int state_inputs_into_pin, temp_state_inputs_into_pin; //Змінні у якій формуємо значення входів отримані із входів процесора (пінів)
+//  static unsigned int state_inputs_into_pin_trigger; //У цій змінній зберігається попередній стан піна, у випадку коли ми перевіряємо .чи утримається цей стан до кінця тактування таймера допуску
+//
+//  /***************************/
+//  //У цій частині знімаємо стани входів процесора (пінів), які відповідають за дискретні входи
+//  /*
+//  -----------------------------
+//  значення поміщається у відпорвідні біти змінної state_inputs_into_pin
+//    "є     сигнал " - відповідає встановленому біту (1)
+//    "немає сигналу" - відповідає скинутому     біту (0)
+//  -----------------------------
+//  */
+//  unsigned int temp_state_inputs_into_pin_1 = _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_INPUTS_1) & ((1 << NUMBER_INPUTS_1) - 1);
+//  unsigned int temp_state_inputs_into_pin_2 = _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_INPUTS_2) & ((1 << NUMBER_INPUTS_2) - 1);
+//  temp_state_inputs_into_pin = temp_state_inputs_into_pin_1 | (temp_state_inputs_into_pin_2 << NUMBER_INPUTS_1);
+//  
+//  //Змінюємо порядок, щоб наймений номер відповідав нумерації на приладі
+//  state_inputs_into_pin = 0;
+//  for (unsigned int index = 0; index < NUMBER_INPUTS; index++)
+//  {
+//    if ((temp_state_inputs_into_pin & (1 << index)) != 0) 
+//    {
+//      if (index < NUMBER_INPUTS_1)
+//        state_inputs_into_pin |= 1 << (NUMBER_INPUTS_1 - index - 1);
+//      else
+//        state_inputs_into_pin |= 1 << index;
+//    }
+//  }
+//  /***************************/
+//  
+//  /***************************/
+//  //Обробка таймерів допуску дискретних входів
+//  /***************************/
+//  for(unsigned int i = 0; i < NUMBER_INPUTS; i++)
+//  {
+//    unsigned int maska = 1<<i;
+//    int max_value_timer = /*current_settings_prt.dopusk_dv[i]*/60;
+//
+//    if (global_timers[INDEX_TIMER_INPUT_START + i] < 0)
+//    {
+//      //Провірка на зміну стану дискретного входу здійснюється тільки тоді, коли величина таймере є від'ємною
+//      //Що означає що таймер не запущений у попередній момент
+//      
+//      //Перевіряємо чи таеперішній стан входу відповідає попердньомук стану
+//      if ((state_inputs_into_pin & maska) != (state_inputs & maska))
+//      {
+//        //Якщо стан входу змінився, то виконуємо дії по зміні стану
+//
+//        //1-дія: Запям'ятовуємо текучий стан входу
+//        state_inputs_into_pin_trigger &= ~maska;
+//        state_inputs_into_pin_trigger |= (state_inputs_into_pin & maska);
+//
+//        //2-дія: Запускаємо таймер допуску дискретного входу
+//        global_timers[INDEX_TIMER_INPUT_START + i] = 0;
+//      }
+//    }
+//    else
+//    {
+//      //Якщо таймер запущений виконуємо дії з таймером
+//      if (global_timers[INDEX_TIMER_INPUT_START + i] < max_value_timer)
+//      {
+//        //Якщо таймер ще не дійшов до свого макисмуму, то просто збільшуємо його величину
+//        global_timers[INDEX_TIMER_INPUT_START + i] += DELTA_TIME_FOR_TIMERS;
+//        
+//        //У випадку, якщо тип сигналу на вхід подається змінний
+//        //і ми перевіряємо чи не відбувся перехід "є сигнал"->"немає сигналу"
+//        //то поява сигналу під час тактування таймера допуску означає, що сигнал на вході є - 
+//        //а це означає, що треба зупинити nаймер, бо переходу "є сигнал"->"немає сигналу" на протязі тактування таймеру не зафіксовано 
+//        if ((0/*current_settings_prt.type_of_input_signal*/ & maska) != 0)
+//        {
+//           if ((state_inputs_into_pin_trigger & maska) == 0)
+//           {
+//             if ((state_inputs_into_pin & maska) != 0)
+//               global_timers[INDEX_TIMER_INPUT_START + i] = -1;
+//           }
+//        }
+//      }
+//    }
+//    
+//    //Якщо величина таймера допуска знаходиться у свому максимальному значенні, то перевіряємо, чи фактично змінився стано входу
+//    if (global_timers[INDEX_TIMER_INPUT_START + i] >= max_value_timer)
+//    {
+//      //Перевіряємо, чи стан піна змінився у порівнянні із станом, який був на момент запуску таймера допуску дискретного входу
+//      unsigned int state_1, state_2;
+//        
+//      state_1 = state_inputs_into_pin_trigger & maska;
+//      state_2 = state_inputs_into_pin  & maska;
+//        
+//      if (state_1 == state_2)
+//      {
+//        //Якщо два стани співпадають, то ми вважаємо, що відбулася зіна стану дискретного входу і формуємо новий стан входу
+//        //При цьому враховуємо що для прявого    входу 1 - це активний вхід, а 0 - це пасивний вхід
+//        //                        для інверсного входу 0 - це активний вхід, а 1 - це пасивний вхід
+//          state_inputs &=  ~maska;
+//          state_inputs |=   state_2;
+//      }
+//        
+//      //У будь-якому випадк, чи змінився стан входу, чи ні, а оскілька таймер допуску дотактував до кінця, то скидаємотаймер у висхідне від'ємне занчення
+//      global_timers[INDEX_TIMER_INPUT_START + i] = -1;
+//    }
+//  }
+//  /***************************/
+//}
 /*****************************************************/
 
 /*****************************************************/
 //Функція обробки таймерів
 /*****************************************************/
-inline void clocking_global_timers(void)
-{
-  //Опрацьовуємо дискретні входи
-  input_scan();
-  
-  //опрацьовуємо всі решта таймери логіки
-  for (unsigned int i = INDEX_TIMER_TEMP; i < MAX_NUMBER_GLOBAL_TIMERS; i++)
-  {
-    if (global_timers[i] >= 0)
-    {
-      //Першою умовою того, що таймер треба тактувати є той факт, що величина таймеру не від'ємна
-
-      //Перевіряємо чи треба збільшувати величину таймеру, якщо він ще не досягнув свого максимуму
-      if (global_timers[i] <= (0x7fffffff - DELTA_TIME_FOR_TIMERS)) global_timers[i] += DELTA_TIME_FOR_TIMERS;
-    }
-  }
-}
+//inline void clocking_global_timers(void)
+//{
+//  //Опрацьовуємо дискретні входи
+//  input_scan();
+//  
+//  //опрацьовуємо всі решта таймери логіки
+//  for (unsigned int i = INDEX_TIMER_TEMP; i < MAX_NUMBER_GLOBAL_TIMERS; i++)
+//  {
+//    if (global_timers[i] >= 0)
+//    {
+//      //Першою умовою того, що таймер треба тактувати є той факт, що величина таймеру не від'ємна
+//
+//      //Перевіряємо чи треба збільшувати величину таймеру, якщо він ще не досягнув свого максимуму
+//      if (global_timers[i] <= (0x7fffffff - DELTA_TIME_FOR_TIMERS)) global_timers[i] += DELTA_TIME_FOR_TIMERS;
+//    }
+//  }
+//}
 /*****************************************************/
 
 /*****************************************************/
@@ -321,13 +321,13 @@ inline void main_protection(void)
   /**************************/
   //Опрацьовуємо натиснуті кнопки
   /**************************/
-  //Активація з кнопуки
-  if (pressed_buttons != 0)
+  __LN_BUTTON_TU *arr_button = (__LN_BUTTON_TU*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+  for (uint32_t i = 0; i < current_config_prt.n_button; i++)
   {
-
-    //Очищаємо натиснуті кнопка, які ми вже опрацювали
-    pressed_buttons =0;
+    arr_button[i].trigger_state[BUTTON_TU_OUT >> 3] |=
+    arr_button[i].active_state [BUTTON_TU_OUT >> 3]  = ((pressed_buttons >> i) & 0x1) << (BUTTON_TU_OUT & ((1 << 3) - 1));
   }
+  pressed_buttons = 0;
   /**************************/
     
   /**************************/
@@ -337,24 +337,8 @@ inline void main_protection(void)
   {
 
     //Очищаємо помітку активації функцій з інетфейсу, які ми вже опрацювали
-    activation_function_from_interface = 0;
   }
-  /**************************/
-
-  /**************************/
-  //Опрацьовуємо дискретні входи
-  /**************************/
-  //Перевіряємо чи є зараз активні входи
-  if (state_inputs !=0)
-  {
-  }
-  /**************************/
-
-  /**************************/
-  //Виконуємо фільтрацію переднього фронту для тих сигналів, які мають активуватися тільки по передньому фронтові
-  /**************************/
-  {
-  }
+  activation_function_from_interface = 0;
   /**************************/
 
   /***********************************************************/
@@ -487,7 +471,7 @@ inline void main_protection(void)
   }
   
   //Виводимо інформацію по виходах на піни процесора (у зворотньому порядку)
-  unsigned int temp_state_outputs = 0;
+//  unsigned int temp_state_outputs = 0;
 //  for (unsigned int index = 0; index < NUMBER_OUTPUTS; index++)
 //  {
 //    if ((state_outputs & (1 << index)) != 0)
@@ -498,10 +482,10 @@ inline void main_protection(void)
 //        temp_state_outputs |= 1 << index;
 //    }
 //  }
-  unsigned int temp_state_outputs_1 =  temp_state_outputs                      & ((1 << NUMBER_OUTPUTS_1) - 1);
-  unsigned int temp_state_outputs_2 = (temp_state_outputs >> NUMBER_OUTPUTS_1) & ((1 << NUMBER_OUTPUTS_2) - 1);
-  _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1) = temp_state_outputs_1;
-  _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_2) = temp_state_outputs_2;
+//  unsigned int temp_state_outputs_1 =  temp_state_outputs                      & ((1 << NUMBER_OUTPUTS_1) - 1);
+//  unsigned int temp_state_outputs_2 = (temp_state_outputs >> NUMBER_OUTPUTS_1) & ((1 << NUMBER_OUTPUTS_2) - 1);
+//  _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_1) = temp_state_outputs_1;
+//  _DEVICE_REGISTER(Bank1_SRAM2_ADDR, OFFSET_OUTPUTS_2) = temp_state_outputs_2;
   /**************************/
 
   /**************************/
@@ -540,7 +524,7 @@ void TIM2_IRQHandler(void)
     /***********************************************************/
     //Опрцювання логічних тайменрів і дискретних входів тільки коли настройки успішно прочитані
     /***********************************************************/
-    clocking_global_timers();
+//    clocking_global_timers();
     /***********************************************************/
     
     /***********************************************************/

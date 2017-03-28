@@ -65,7 +65,7 @@ void make_ekran_time(void)
       "  Out of Limits ",
       "Вых.за диапазон "
     };
-    make_ekran_about_info(true, information_about_error);
+    make_ekran_about_info(1, information_about_error);
   }
   else
   {

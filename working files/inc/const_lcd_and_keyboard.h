@@ -26,10 +26,9 @@
 #define BIT_KEY_UP              5
 #define BIT_KEY_1               6
 #define BIT_KEY_2               7
-#define BIT_KEY_3               8
-#define BIT_KEY_4               9
-#define BIT_KEY_5               10
-#define BIT_KEY_6               11
+#define BIT_KEY_MUTE            8
+#define BIT_KEY_RESET           9
+#define BIT_KEY_TEST            10
 
 #define BIT_REWRITE             30
 

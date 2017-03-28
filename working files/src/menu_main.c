@@ -157,7 +157,7 @@ void make_ekran_main(void)
 Функція обробки натискування кнопки Enter
 */
 /*****************************************************/
-enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords(void)
+enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void)
 {
   enum _result_pressed_enter_during_edition result = RPEDE_NONE;
   
@@ -172,6 +172,11 @@ enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords
         (new_level == SET_NEW_PASSWORD_MENU2_LEVEL) &&
         (current_state_menu2.edition == ED_VIEWING)
        )
+       ||  
+       (
+        (new_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
+        (current_state_menu2.edition == ED_VIEWING)
+       )
       )   
      )   
   {
@@ -180,8 +185,16 @@ enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords
     {
       if (config_settings_modified == 0)
       {
-        //Входимо з правом подальшого редагування
-        current_state_menu2.edition = ED_CAN_BE_EDITED;
+        if  (new_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+        {
+          //Входимо в режим редагування
+          current_state_menu2.edition = ED_EDITION;
+        }
+        else
+        {
+          //Входимо з правом подальшого редагування
+          current_state_menu2.edition = ED_CAN_BE_EDITED;
+        }
 
         //Фіксуємо, що система меню захопила "монополію" на зміну конфігурації і налаштувань
         config_settings_modified = MASKA_MENU_LOCKS;
@@ -190,7 +203,7 @@ enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords
       {
         //Повідомляємо про те, що режим редагування зараз недоступний
         current_state_menu2.edition = ED_WARNING_EDITION_BUSY;
-        if (new_level == SET_NEW_PASSWORD_MENU2_LEVEL)
+        if (new_level != LIST_SETTINGS_MENU2_LEVEL)
         {
           //Не дозволяємо заходити у ті вікна, у які без дозволу редагування заходити неможна
           *((enum _menu2_levels*)p_menu_param_1) = current_state_menu2.current_level;
@@ -202,7 +215,7 @@ enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords
       }
     }
     else if (
-             (new_level == SET_NEW_PASSWORD_MENU2_LEVEL) ||
+             (new_level != LIST_SETTINGS_MENU2_LEVEL) ||
              (settings_fix_prt.password_1 != 0)
             )   
     {
@@ -211,7 +224,14 @@ enum _result_pressed_enter_during_edition press_enter_in_main_and_list_passwords
       *((enum _menu2_levels*)p_menu_param_1) = PASSWORD_MENU2_LEVEL;
     }
   }
-                  
+  else if (
+           (new_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
+           (current_state_menu2.edition == ED_CAN_BE_EDITED)
+          )   
+  {
+    //Входимо в режим редагування
+    current_state_menu2.edition = ED_EDITION;
+  }
   return result;
 }
 /*****************************************************/

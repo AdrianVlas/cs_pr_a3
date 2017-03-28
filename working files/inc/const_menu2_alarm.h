@@ -7,4 +7,50 @@
 
 #define MASKA_CTRL_ALARM_M2  ((1 << (alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM - 1][0] + alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM - 1][1])) - 1)
 
+#define NAME_ALARM_IN_SIGNALS_RU        \
+  "Л.Вх.           ",                   \
+  "Тишина          ",                   \
+  "Блок.           ",                   \
+  "Сброс           "                    
+
+#define NAME_ALARM_IN_SIGNALS_UA        \
+  "Л.Вх.           ",                   \
+  "Тиша            ",                   \
+  "Блок.           ",                   \
+  "Скид.           "                    
+
+
+#define NAME_ALARM_IN_SIGNALS_EN        \
+  "L.In.            ",                  \
+  "Mute             ",                  \
+  "Block            ",                  \
+  "Reset            "                    
+
+#define NAME_ALARM_IN_SIGNALS_KZ        \
+  "Л.Вх.           ",                   \
+  "Тишина          ",                   \
+  "Блок.           ",                   \
+  "Сброс           "                    
+
+    
+#define NAME_ALARM_OUT_SIGNALS_RU       \
+  "Тривога         ",                   \
+  "Тишина          ",                   \
+  "Блок.           "
+
+#define NAME_ALARM_OUT_SIGNALS_UA       \
+  "Тривога         ",                   \
+  "Тиша            ",                   \
+  "Блок.           "
+
+#define NAME_ALARM_OUT_SIGNALS_EN       \
+  "Alarm            ",                  \
+  "Mute             ",                  \
+  "Block            "
+
+#define NAME_ALARM_OUT_SIGNALS_KZ       \
+  "Тривога         ",                   \
+  "Тишина          ",                   \
+  "Блок.           "
+    
 #endif 
