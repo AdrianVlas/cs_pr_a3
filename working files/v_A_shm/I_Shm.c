@@ -1,4 +1,4 @@
-
+#include "I_Shm.h"
 #include "IStng.h"
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //``````````````````````````````````````````````````````````````````````````````````
@@ -48,6 +48,10 @@ fnPvrL arrChangeCfgFnptr[16] = {
 
 long ChangeCfg(void* pv){
     register long i, lRes, lCtrElem;
+	    asm(
+                "bkpt 1"
+                );
+	lRes = InitSchematic();
     lRes = i = 0;
     lCtrElem = chGlbAmountRegisteredElem;
     if (lCtrElem)
