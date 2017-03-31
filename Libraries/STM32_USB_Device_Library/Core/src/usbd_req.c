@@ -106,7 +106,7 @@ __ALIGN_BEGIN uint8_t USBD_StrDesc[USB_MAX_STR_DESC_SIZ] __ALIGN_END ;
 /** @defgroup USBD_REQ_Private_FunctionPrototypes
   * @{
   */ 
-static void USBD_GetDescriptor(USB_OTG_CORE_HANDLE  *pdev, 
+/*static*/ void USBD_GetDescriptor(USB_OTG_CORE_HANDLE  *pdev, 
                                USB_SETUP_REQ *req);
 
 static void USBD_SetAddress(USB_OTG_CORE_HANDLE  *pdev, 
@@ -121,10 +121,10 @@ static void USBD_GetConfig(USB_OTG_CORE_HANDLE  *pdev,
 static void USBD_GetStatus(USB_OTG_CORE_HANDLE  *pdev, 
                            USB_SETUP_REQ *req);
 
-static void USBD_SetFeature(USB_OTG_CORE_HANDLE  *pdev, 
+/*static*/ void USBD_SetFeature(USB_OTG_CORE_HANDLE  *pdev, 
                             USB_SETUP_REQ *req);
 
-static void USBD_ClrFeature(USB_OTG_CORE_HANDLE  *pdev, 
+/*static*/ void USBD_ClrFeature(USB_OTG_CORE_HANDLE  *pdev, 
                             USB_SETUP_REQ *req);
 
 static uint8_t USBD_GetLen(uint8_t *buf);
@@ -363,7 +363,7 @@ USBD_Status  USBD_StdEPReq (USB_OTG_CORE_HANDLE  *pdev, USB_SETUP_REQ  *req)
 * @param  req: usb request
 * @retval status
 */
-static void USBD_GetDescriptor(USB_OTG_CORE_HANDLE  *pdev, 
+/*static*/ void USBD_GetDescriptor(USB_OTG_CORE_HANDLE  *pdev, 
                                USB_SETUP_REQ *req)
 {
   uint16_t len;
@@ -690,7 +690,7 @@ static void USBD_GetStatus(USB_OTG_CORE_HANDLE  *pdev,
 * @param  req: usb request
 * @retval status
 */
-static void USBD_SetFeature(USB_OTG_CORE_HANDLE  *pdev, 
+/*static*/ void USBD_SetFeature(USB_OTG_CORE_HANDLE  *pdev, 
                             USB_SETUP_REQ *req)
 {
 
@@ -747,7 +747,7 @@ static void USBD_SetFeature(USB_OTG_CORE_HANDLE  *pdev,
 * @param  req: usb request
 * @retval status
 */
-static void USBD_ClrFeature(USB_OTG_CORE_HANDLE  *pdev, 
+/*static*/ void USBD_ClrFeature(USB_OTG_CORE_HANDLE  *pdev, 
                             USB_SETUP_REQ *req)
 {
   switch (pdev->dev.device_status)

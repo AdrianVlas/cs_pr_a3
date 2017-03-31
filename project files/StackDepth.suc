@@ -1,0 +1,88 @@
+possible calls Usb_routines : VCP_DataTx;
+possible calls USBD_Init : USBD_USR_Init;
+//possible calls DCD_SessionRequest_ISR : USBD_DevConnected;
+//possible calls USBD_DevConnected : USBD_USR_DeviceConnected;
+//possible calls DCD_OTG_ISR : USBD_DevDisconnected;
+//possible calls USBD_DevDisconnected : USBD_USR_DeviceDisconnected;
+possible calls DCD_HandleResume_ISR : USBD_Resume;
+possible calls USBD_Resume : USBD_USR_DeviceResumed;
+possible calls DCD_HandleUSBSuspend_ISR : USBD_Suspend;
+possible calls USBD_Suspend : USBD_USR_DeviceSuspended;
+possible calls DCD_HandleInEP_ISR : USBD_DataInStage;
+possible calls USBD_DataInStage : usbd_cdc_DataIn;
+possible calls DCD_HandleOutEP_ISR : USBD_DataOutStage, USBD_SetupStage;
+possible calls USBD_DataOutStage : usbd_cdc_EP0_RxReady, usbd_cdc_DataOut;
+possible calls usbd_cdc_EP0_RxReady : VCP_Ctrl;
+possible calls usbd_cdc_DataOut : VCP_DataRx;
+possible calls USBD_GetDescriptor : USBD_USR_DeviceDescriptor, USBD_cdc_GetCfgDesc, USBD_USR_LangIDStrDescriptor, USBD_USR_ManufacturerStrDescriptor, USBD_USR_ProductStrDescriptor, USBD_USR_SerialStrDescriptor, USBD_USR_ConfigStrDescriptor, USBD_USR_InterfaceStrDescriptor;
+possible calls USBD_ClrCfg : usbd_cdc_DeInit;
+possible calls usbd_cdc_DeInit : VCP_DeInit;
+possible calls USBD_SetCfg : usbd_cdc_Init, USBD_USR_DeviceConfigured;
+possible calls usbd_cdc_Init : VCP_Init;
+possible calls USBD_SetFeature : usbd_cdc_Setup;
+possible calls usbd_cdc_Setup : VCP_Ctrl;
+possible calls USBD_ClrFeature : usbd_cdc_Setup;
+possible calls USBD_StdEPReq : usbd_cdc_Setup;
+possible calls USBD_StdItfReq : usbd_cdc_Setup;
+possible calls DCD_HandleSof_ISR : USBD_SOF;
+possible calls USBD_SOF : usbd_cdc_SOF;
+possible calls DCD_HandleUsbReset_ISR : USBD_Reset;
+possible calls USBD_Reset : USBD_USR_DeviceReset;
+possible calls DCD_IsoINIncomplete_ISR : USBD_IsoINIncomplete;
+possible calls USBD_IsoINIncomplete : ;
+possible calls DCD_IsoOUTIncomplete_ISR : USBD_IsoOUTIncomplete;
+possible calls USBD_IsoOUTIncomplete : ;
+
+possible calls allocate_dynamic_memory_for_settings : min_settings_INPUT,  min_settings_OUTPUT_LED,  min_settings_BUTTON_TU, min_settings_ALARM,  min_settings_GROUP_ALARM,  min_settings_AND,  min_settings_OR,  min_settings_XOR,  min_settings_NOT,  min_settings_TIMER,  min_settings_TRIGGER,  min_settings_MEANDER,
+                                                      copy_settings_INPUT, copy_settings_OUTPUT_LED,                         copy_settings_ALARM, copy_settings_GROUP_ALARM, copy_settings_AND, copy_settings_OR, copy_settings_XOR, copy_settings_NOT, copy_settings_TIMER, copy_settings_TRIGGER, copy_settings_MEANDER;
+possible calls copy_settings : copy_settings_INPUT, copy_settings_OUTPUT_LED, copy_settings_ALARM, copy_settings_GROUP_ALARM, copy_settings_AND, copy_settings_OR, copy_settings_XOR, copy_settings_NOT, copy_settings_TIMER, copy_settings_TRIGGER, copy_settings_MEANDER;
+possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_enter_in_ekran_with_request,
+                                         move_into_time, make_ekran_time, press_enter_in_time, change_time,
+                                         move_into_ekran_simple,
+                                         make_ekran_measurement,
+                                         make_ekran_list_inputs_outputs,
+                                         move_into_ekran_input_or_output, make_ekran_state_inputs_or_outputs,
+                                         make_ekran_list_registrators,
+                                         move_into_list_settings, make_ekran_list_settings, press_esc_in_list_settings,
+                                         make_ekran_configuration, press_enter_in_configuration, press_esc_in_configuration, change_configuration,
+                                         make_ekran_list_logical_nodes,
+                                         make_ekran_choose_pickup_delay_control,
+                                         make_ekran_choose_delay_control,
+                                         make_ekran_choose_delay,
+                                         make_ekran_choose_control,
+                                         make_ekran_delay_alarm, press_enter_in_delay_alarm, press_esc_in_delay_alarm, change_delay_alarm, make_ekran_control_alarm, press_enter_in_control_alarm, press_esc_in_control_alarm, change_control_alarm,
+                                         make_ekran_pickup_group_alarm, press_enter_in_pickup_group_alarm, press_esc_in_pickup_group_alarm, change_pickup_group_alarm, make_ekran_delay_group_alarm, press_enter_in_delay_group_alarm, press_esc_in_delay_group_alarm, change_delay_group_alarm, make_ekran_control_group_alarm, press_enter_in_control_group_alarm, press_esc_in_control_group_alarm, change_control_group_alarm,
+                                         make_ekran_delay_timer, press_enter_in_delay_timer, press_esc_in_delay_timer, change_delay_timer,
+                                         make_ekran_delay_meander, press_enter_in_delay_meander, press_esc_in_delay_meander, change_delay_meander,
+                                         move_into_list_settings_bios, make_ekran_list_settings_bios,
+                                         make_ekran_delay_input, press_enter_in_delay_input, press_esc_in_delay_input, change_delay_input, make_ekran_control_input, press_enter_in_control_input, press_esc_in_control_input, change_control_input,
+                                         make_ekran_control_output_led, press_enter_in_control_output_led, press_esc_in_control_output_led, change_control_output_led,
+                                         move_into_param_list_logical_nodes, make_ekran_param_list_logical_node, press_enter_in_param_list_logical_node, press_esc_in_param_list_logical_node,
+                                         make_ekran_param_list_inputs_of_selected_logical_node, 
+                                         make_ekran_param_edit_list_outputs_of_selected_logical_node, change_set_signal,
+                                         move_into_param_view_chosen_of_selected_logical_node, make_ekran_param_view_chosen_of_selected_logical_node, press_enter_in_ekran_with_request,
+                                         make_ekran_setting_language, press_enter_in_setting_language, press_esc_in_setting_language, change_setting_language,
+                                         make_ekran_choose_communication_parameters, 
+                                         make_ekran_name_of_cell,
+                                         make_ekran_address, press_enter_in_address, press_esc_in_address, change_address,
+                                         make_ekran_choose_setting_RS485,
+                                         make_ekran_baud_RS485, press_enter_in_baud_RS485, press_esc_in_baud_RS485, change_baud_RS485,
+                                         make_ekran_pare_RS485, press_enter_in_pare_RS485, press_esc_in_pare_RS485, change_pare_RS485,
+                                         make_ekran_stopbits_RS485, press_enter_in_stopbits_RS485, press_esc_in_stopbits_RS485, change_stopbits_RS485,
+                                         make_ekran_timeout_RS485, press_enter_in_timeout_RS485, press_esc_in_timeout_RS485, change_timeout_RS485,
+                                         make_ekran_choose_passwords, press_enter_in_ekran_with_request,
+                                         move_into_diagnostics, make_ekran_diagnostics,
+                                         make_ekran_list_labels,
+                                         make_ekran_time_config_or_settings,
+                                         make_ekran_info,
+                                         make_ekran_date_time_pz,
+                                         make_ekran_password;
+                                         
+
+//Àíäð³ÿ ôóíêö³¿
+exclude  ChangeCfg, "Shematic::DoCalc()", SetHrdLed, "Null_OP(void*)", "SET_LED_Op(void *)", "LedAuxOp1", "LedAuxOp2", "LedAuxOp3", "LedAuxOp4";
+
+max recursion depth Get_data : 2;
+
+call graph root [Interrupt]: NMI_Handler, HardFault_Handler, MemManage_Handler, BusFault_Handler, UsageFault_Handler, SVC_Handler, DebugMon_Handler, PendSV_Handler, SysTick_Handler, TIM2_IRQHandler, TIM4_IRQHandler, TIM5_IRQHandler, I2C1_EV_IRQHandler, I2C1_ER_IRQHandler, DMA1_Stream7_IRQHandler, DMA1_Stream0_IRQHandler, SPI2_IRQHandler, DMA2_Stream0_IRQHandler, SPI1_IRQHandler, USART2_IRQHandler, DMA1_Stream6_IRQHandler, EXTI0_IRQHandler, OTG_FS_IRQHandler, USBD_USR_DeviceConnected, USBD_USR_DeviceDisconnected;
+call graph root [System]: SystemInit;

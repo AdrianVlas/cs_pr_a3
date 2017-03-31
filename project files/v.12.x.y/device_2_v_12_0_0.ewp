@@ -189,7 +189,6 @@
           <state>STM32F2XX</state>
           <state>USE_USB_OTG_FS</state>
           <state>KEYBOARD_VER_1</state>
-          <state>SYSTEM_VIEWER_ENABLE</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -917,15 +916,15 @@
         </option>
         <option>
           <name>IlinkStackAnalysisEnable</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkStackControlFile</name>
-          <state></state>
+          <state>$PROJ_DIR$\..\StackDepth.suc</state>
         </option>
         <option>
           <name>IlinkStackCallGraphFile</name>
-          <state></state>
+          <state>$LIST_DIR$\$PROJ_FNAME$.call_graph.xml</state>
         </option>
         <option>
           <name>CrcAlgorithm</name>
@@ -990,6 +989,9 @@
   </group>
   <group>
     <name>Linker</name>
+    <file>
+      <name>$PROJ_DIR$\..\StackDepth.suc</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\stm32f2xx_flash.icf</name>
     </file>
