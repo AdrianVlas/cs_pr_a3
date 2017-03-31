@@ -10,7 +10,7 @@
 (1 << BIT_KEY_UP) - рухатися вверх
 */
 /*****************************************************/
-void move_into_list_settings_bios(unsigned int action, int max_row)
+void move_into_list_settings_param(unsigned int action, int max_row)
 {
   __CONFIG *p_current_config;
   p_current_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
@@ -29,18 +29,38 @@ void move_into_list_settings_bios(unsigned int action, int max_row)
         if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
         while (
                (
-                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_BIOS_M2_INPUT) &&
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_INPUT) &&
                 (p_current_config->n_input == 0)
                )
                ||
                (
-                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_BIOS_M2_OUTPUT) &&
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_OUTPUT) &&
                 (p_current_config->n_output == 0)
                )
                ||
                (
-                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_BIOS_M2_LED) &&
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_LED) &&
                 (p_current_config->n_led == 0)
+               )
+               ||
+               (
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_ALARM) &&
+                (p_current_config->n_alarm == 0)
+               )
+               ||
+               (
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_GROUP_ALARM) &&
+                (p_current_config->n_group_alarm == 0)
+               )
+               ||
+               (
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_TIMER) &&
+                (p_current_config->n_timer == 0)
+               )
+               ||
+               (
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_MEANDER) &&
+                (p_current_config->n_meander == 0)
                )
               )   
         {
@@ -57,18 +77,38 @@ void move_into_list_settings_bios(unsigned int action, int max_row)
         if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
         while (
                (
-                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_BIOS_M2_INPUT) &&
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_INPUT) &&
                 (p_current_config->n_input == 0)
                )
                ||
                (
-                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_BIOS_M2_OUTPUT) &&
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_OUTPUT) &&
                 (p_current_config->n_output == 0)
                )
                ||
                (
-                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_BIOS_M2_LED) &&
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_LED) &&
                 (p_current_config->n_led == 0)
+               )
+               ||
+               (
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_ALARM) &&
+                (p_current_config->n_alarm == 0)
+               )
+               ||
+               (
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_GROUP_ALARM) &&
+                (p_current_config->n_group_alarm == 0)
+               )
+               ||
+               (
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_TIMER) &&
+                (p_current_config->n_timer == 0)
+               )
+               ||
+               (
+                (current_state_menu2.index_position == INDEX_LIST_SETTINGS_PARAM_M2_MEANDER) &&
+                (p_current_config->n_meander == 0)
                )
               )    
         {
@@ -84,7 +124,7 @@ void move_into_list_settings_bios(unsigned int action, int max_row)
 /*****************************************************/
 //Формуємо екран відображення заголовків настройок пристроїв вводу-виводу
 /*****************************************************/
-void make_ekran_list_settings_bios(void)
+void make_ekran_list_settings_param(void)
 {
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
     
@@ -99,19 +139,19 @@ void make_ekran_list_settings_bios(void)
     const uint8_t name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
     {
       {
-        " УВВ отсутсвуют ",
+        "  ФБ отсутсвуют ",
         "  в устройстве  "
       },
       {
-        "  ПВВ відсутні  ",
+        "  ФБ відсутні   ",
         "   у пристрої   "
       },
       {
-        " BIOS are absent",
+        " LN are absent  ",
         "   in device    "
       },
       {
-        " УВВ отсутсвуют ",
+        " ФБ отсутсвуют  ",
         "  в устройстве  "
       }
     };
@@ -139,27 +179,43 @@ void make_ekran_list_settings_bios(void)
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_BIOS_M2][MAX_COL_LCD + 1] = 
+    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_PARAM_M2][MAX_COL_LCD + 1] = 
     {
       {
         " Д.Входы        ",
         " В.Реле         ",
-        " Светоиндикаторы"
+        " Светоиндикаторы",
+        " СЗС            ",
+        " ШГС            ",
+        " Таймера        ",
+        " ГПС            "
       },
       {
         " Д.Входи        ",
         " В.Реле         ",
-        " Світоіндикатори"
+        " Світоіндикатори",
+        " СЗС            ",
+        " ШГС            ",
+        " Таймери        ",
+        " ГПС            "
       },
       {
         " D.Inputs       ",
         " O.Relays       ",
-        " LEDs           "
+        " LEDs           ",
+        " Alarms         ",
+        " Group Alarms   ",
+        " Timers         ",
+        " Meanders       "
       },
       {
         " Д.Входы        ",
         " В.Реле         ",
-        " Светоиндикаторы"
+        " Светоиндикаторы",
+        " СЗС            ",
+        " ШГС            ",
+        " Таймери        ",
+        " ГПС            "
       }
     };
 
@@ -167,22 +223,42 @@ void make_ekran_list_settings_bios(void)
     unsigned int position_temp = current_state_menu2.index_position;
 
     uint8_t name_string_tmp[MAX_ROW_LIST_SETTINGS_M2][MAX_COL_LCD + 1];
-    for(size_t index_1 = 0; index_1 < MAX_ROW_LIST_SETTINGS_BIOS_M2; index_1++)
+    for(size_t index_1 = 0; index_1 < MAX_ROW_LIST_SETTINGS_PARAM_M2; index_1++)
     {
       if (
           (
-           (index_1 == INDEX_LIST_SETTINGS_BIOS_M2_INPUT) &&
+           (index_1 == INDEX_LIST_SETTINGS_PARAM_M2_INPUT) &&
            (p_current_config->n_input == 0)
           )
           ||
           (
-           (index_1 == INDEX_LIST_SETTINGS_BIOS_M2_OUTPUT) &&
+           (index_1 == INDEX_LIST_SETTINGS_PARAM_M2_OUTPUT) &&
            (p_current_config->n_output == 0)
           )
           ||
           (
-           (index_1 == INDEX_LIST_SETTINGS_BIOS_M2_LED) &&
+           (index_1 == INDEX_LIST_SETTINGS_PARAM_M2_LED) &&
            (p_current_config->n_led == 0)
+          )
+          ||
+          (
+           (index_1 == INDEX_LIST_SETTINGS_PARAM_M2_ALARM) &&
+           (p_current_config->n_alarm == 0)
+          )
+          ||
+          (
+           (index_1 == INDEX_LIST_SETTINGS_PARAM_M2_GROUP_ALARM) &&
+           (p_current_config->n_group_alarm == 0)
+          )
+          ||
+          (
+           (index_1 == INDEX_LIST_SETTINGS_PARAM_M2_TIMER) &&
+           (p_current_config->n_timer == 0)
+          )
+          ||
+          (
+           (index_1 == INDEX_LIST_SETTINGS_PARAM_M2_MEANDER) &&
+           (p_current_config->n_meander == 0)
           )
          )
       {
@@ -211,7 +287,7 @@ void make_ekran_list_settings_bios(void)
       //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
       for (size_t j = 0; j < MAX_COL_LCD; j++) 
       {
-        working_ekran[i][j] = (index_in_ekran < (MAX_ROW_LIST_SETTINGS_BIOS_M2 - additional_current)) ? name_string_tmp[index_in_ekran][j] : ' ';
+        working_ekran[i][j] = (index_in_ekran < (MAX_ROW_LIST_SETTINGS_PARAM_M2 - additional_current)) ? name_string_tmp[index_in_ekran][j] : ' ';
       }
       index_in_ekran++;
     }

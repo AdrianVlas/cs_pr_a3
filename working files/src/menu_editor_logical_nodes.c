@@ -1,6 +1,6 @@
 #include "header.h"
 
-const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES][MAX_COL_LCD + 1] = 
+const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL_NODES][MAX_COL_LCD + 1] = 
 {
   {
     "                ",
@@ -169,7 +169,7 @@ const uint8_t name_meander_out_signals[MAX_NAMBER_LANGUAGE][MEANDER_SIGNALS_OUT]
 (1 << BIT_KEY_UP) - рухатися вверх
 */
 /*****************************************************/
-void move_into_param_list_logical_nodes(unsigned int action, int max_row)
+void move_into_editor_list_logical_nodes(unsigned int action, int max_row)
 {
   __CONFIG *p_config;
   switch (current_state_menu2.edition)
@@ -191,7 +191,7 @@ void move_into_param_list_logical_nodes(unsigned int action, int max_row)
     }
   }
   unsigned int logical_node_shown[NUMBER_ALL_BLOCKS];
-  if (current_state_menu2.current_level == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+  if (current_state_menu2.current_level == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
   {
     
     logical_node_shown[ 0] = (FIX_BLOCK_SIGNALS_IN > 0) ? true: false;
@@ -261,7 +261,7 @@ void move_into_param_list_logical_nodes(unsigned int action, int max_row)
 /*****************************************************/
 //Формуємо екран
 /*****************************************************/
-void make_ekran_param_list_logical_node(void)
+void make_ekran_editor_list_logical_node(void)
 {
   if (
       (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
@@ -309,7 +309,7 @@ void make_ekran_param_list_logical_node(void)
       }
     }
     unsigned int logical_node_shown[NUMBER_ALL_BLOCKS];
-    if (current_state_menu2.current_level == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    if (current_state_menu2.current_level == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
     {
       logical_node_shown[ 0] = (FIX_BLOCK_SIGNALS_IN > 0) ? true: false;
       logical_node_shown[ 1] = ((p_config->n_input*0                     ) != 0);
@@ -346,7 +346,7 @@ void make_ekran_param_list_logical_node(void)
       logical_node_shown[14] = ((p_config->n_tu*BUTTON_TU_OUT                   ) != 0);
     };
   
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES][MAX_COL_LCD + 1] = 
+    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL_NODES][MAX_COL_LCD + 1] = 
     {
       {
         " Общий блок     ",
@@ -422,8 +422,8 @@ void make_ekran_param_list_logical_node(void)
     unsigned int additional_current = 0;
     unsigned int position_temp = current_state_menu2.index_position;
 
-    uint8_t name_string_tmp[MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES][MAX_COL_LCD + 1];
-    for(size_t index_1 = 0; index_1 < MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES; index_1++)
+    uint8_t name_string_tmp[MAX_ROW_FOR_EDITOR_LIST_LOGICAL_NODES][MAX_COL_LCD + 1];
+    for(size_t index_1 = 0; index_1 < MAX_ROW_FOR_EDITOR_LIST_LOGICAL_NODES; index_1++)
     {
       if (logical_node_shown[index_1] != true)
       {
@@ -432,9 +432,9 @@ void make_ekran_param_list_logical_node(void)
 
         for(size_t index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
         {
-          name_string_tmp[MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES - additional_current][index_2] = ' ';
+          name_string_tmp[MAX_ROW_FOR_EDITOR_LIST_LOGICAL_NODES - additional_current][index_2] = ' ';
         }
-        name_string_tmp[MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES - additional_current][MAX_COL_LCD] = '\0';
+        name_string_tmp[MAX_ROW_FOR_EDITOR_LIST_LOGICAL_NODES - additional_current][MAX_COL_LCD] = '\0';
       }
       else
       {
@@ -452,7 +452,7 @@ void make_ekran_param_list_logical_node(void)
       //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
       for (size_t j = 0; j < MAX_COL_LCD; j++) 
       {
-        working_ekran[i][j] = (index_in_ekran < (MAX_ROW_FOR_PARAM_LIST_LOGICAL_NODES - additional_current)) ? name_string_tmp[index_in_ekran][j] : ' ';
+        working_ekran[i][j] = (index_in_ekran < (MAX_ROW_FOR_EDITOR_LIST_LOGICAL_NODES - additional_current)) ? name_string_tmp[index_in_ekran][j] : ' ';
       }
       index_in_ekran++;
     }
@@ -474,7 +474,7 @@ void make_ekran_param_list_logical_node(void)
 /*****************************************************/
 //Формуємо екран
 /*****************************************************/
-void make_ekran_param_list_inputs_of_selected_logical_node(void)
+void make_ekran_editor_list_inputs_of_selected_logical_node(void)
 {
   if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY)
   {
@@ -562,20 +562,20 @@ void make_ekran_param_list_inputs_of_selected_logical_node(void)
     unsigned int type_logical_node, number_logical_node;
 
     enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-    if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
     {
       number_logical_node = 1;
       type_logical_node = ID_FB_CONTROL_BLOCK;
     }
     else if (
-             (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-             (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+             (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+             (ekran_before <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
             )   
     {
       number_logical_node = current_state_menu2.number_selection + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
     
       ekran_before = previous_level_in_current_level_menu2[ekran_before];
-      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
       {
         type_logical_node = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
       }
@@ -584,7 +584,7 @@ void make_ekran_param_list_inputs_of_selected_logical_node(void)
     unsigned int error = false;
     unsigned int max_row = current_state_menu2.max_row;
     if (
-        (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL) &&
+        (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL) &&
         (max_row != 0) &&
         (array_p_name[type_logical_node - _ID_FB_FIRST_ALL] != NULL)
        )   
@@ -715,7 +715,7 @@ void make_ekran_param_list_inputs_of_selected_logical_node(void)
 Натискування Enter
 */
 /*****************************************************/
-enum _result_pressed_enter_during_edition press_enter_in_param_list_logical_node(void)
+enum _result_pressed_enter_during_edition press_enter_in_editor_list_logical_node(void)
 {
   unsigned int error = false;
   unsigned int type_logical_node_in, number_logical_node_in;
@@ -726,30 +726,30 @@ enum _result_pressed_enter_during_edition press_enter_in_param_list_logical_node
   //Шукаємо тепер вхідну інформацію
   /*
                                                              1-е повернення                                                  2-е повернення                                  3-повернення  
-  PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->PARAM_LIST_XXX_FOR_INPUT_MENU2_LEVEL->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
+  EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_XXX_FOR_INPUT_MENU2_LEVEL->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
                                                                                                                                                                         |
-                                                                                                                                                                        ->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
+                                                                                                                                                                        ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
   */
   enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]];
-  if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+  if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
   {
     index = position_in_current_level_menu2[ekran_before];
     
     ekran_before = previous_level_in_current_level_menu2[ekran_before];
-    if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
     {   
       number_logical_node_in = 1;
       type_logical_node_in = ID_FB_CONTROL_BLOCK;
     }
     else if (
-             (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-             (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+             (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+             (ekran_before <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
             )   
     {
       number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
   
       ekran_before = previous_level_in_current_level_menu2[ekran_before];
-      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
       {
         type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
       }
@@ -849,7 +849,7 @@ enum _result_pressed_enter_during_edition press_enter_in_param_list_logical_node
 Натискування ESC
 */
 /*****************************************************/
-void press_esc_in_param_list_logical_node(void)
+void press_esc_in_editor_list_logical_node(void)
 {
   unsigned int error = false;
   unsigned int type_logical_node_in, number_logical_node_in;
@@ -860,30 +860,30 @@ void press_esc_in_param_list_logical_node(void)
   //Шукаємо тепер вхідну інформацію
   /*
                                                              1-е повернення                                                  2-е повернення                                  3-повернення  
-  PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->PARAM_LIST_XXX_FOR_INPUT_MENU2_LEVEL->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
+  EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_XXX_FOR_INPUT_MENU2_LEVEL->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
                                                                                                                                                                         |
-                                                                                                                                                                        ->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
+                                                                                                                                                                        ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
   */
   enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]];
-  if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+  if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
   {
     index = position_in_current_level_menu2[ekran_before];
     
     ekran_before = previous_level_in_current_level_menu2[ekran_before];
-    if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
     {   
       number_logical_node_in = 1;
       type_logical_node_in = ID_FB_CONTROL_BLOCK;
     }
     else if (
-             (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-             (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+             (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+             (ekran_before <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
             )   
     {
       number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
   
       ekran_before = previous_level_in_current_level_menu2[ekran_before];
-      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
       {
         type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
       }
@@ -1008,7 +1008,7 @@ void press_esc_in_param_list_logical_node(void)
 (1 << BIT_KEY_UP) - рухатися вверх
 */
 /*****************************************************/
-void move_into_param_view_chosen_of_selected_logical_node(unsigned int action, int max_row)
+void move_into_editor_view_chosen_of_selected_logical_node(unsigned int action, int max_row)
 {
   if (max_row == 1) current_state_menu2.index_position = 0;
   else
@@ -1019,25 +1019,25 @@ void move_into_param_view_chosen_of_selected_logical_node(unsigned int action, i
     unsigned int error = false;
 
     enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-    if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
     {
       index = position_in_current_level_menu2[ekran_before];
 
       ekran_before = previous_level_in_current_level_menu2[ekran_before];
-      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
       {
         number_logical_node = 1;
         type_logical_node = ID_FB_CONTROL_BLOCK;
       }
       else if (
-               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+               (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+               (ekran_before <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
               )   
       {
         number_logical_node = current_state_menu2.number_selection + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
     
         ekran_before = previous_level_in_current_level_menu2[ekran_before];
-        if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+        if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
         {
           type_logical_node = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
         }
@@ -1150,7 +1150,7 @@ void move_into_param_view_chosen_of_selected_logical_node(unsigned int action, i
 /*****************************************************/
 //Формуємо екран
 /*****************************************************/
-void make_ekran_param_view_chosen_of_selected_logical_node(void)
+void make_ekran_editor_view_chosen_of_selected_logical_node(void)
 {
   if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY)
   {
@@ -1212,25 +1212,25 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
     unsigned int error = false;
 
     enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-    if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
     {
       index = position_in_current_level_menu2[ekran_before];
 
       ekran_before = previous_level_in_current_level_menu2[ekran_before];
-      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
       {
         number_logical_node = 1;
         type_logical_node = ID_FB_CONTROL_BLOCK;
       }
       else if (
-               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+               (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+               (ekran_before <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
               )   
       {
         number_logical_node = current_state_menu2.number_selection + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
     
         ekran_before = previous_level_in_current_level_menu2[ekran_before];
-        if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+        if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
         {
           type_logical_node = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
         }
@@ -1568,7 +1568,7 @@ void make_ekran_param_view_chosen_of_selected_logical_node(void)
 /*****************************************************/
 //Формуємо екран
 /*****************************************************/
-void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
+void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
 {
   if (current_state_menu2.edition == ED_WARNING_ENTER)
   {
@@ -1609,20 +1609,20 @@ void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
     unsigned int type_logical_node_out, number_logical_node_out;
 
     enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-    if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
     {
       number_logical_node_out = 1;
       type_logical_node_out = ID_FB_CONTROL_BLOCK;
     }
     else if (
-             (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
-             (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
+             (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
+             (ekran_before <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
             )   
     {
       number_logical_node_out = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
     
       ekran_before = previous_level_in_current_level_menu2[ekran_before];
-      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
       {
         type_logical_node_out = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
       }
@@ -1645,30 +1645,30 @@ void make_ekran_param_edit_list_outputs_of_selected_logical_node(void)
       //Шукаємо тепер вхідну інформацію
       /*
                                                                  1-е повернення                                                  2-е повернення                                  3-повернення  
-      PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->PARAM_LIST_XXX_FOR_INPUT_MENU2_LEVEL->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
+      EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_XXX_FOR_INPUT_MENU2_LEVEL->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
                                                                                                                                                                             |
-                                                                                                                                                                            ->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
+                                                                                                                                                                            ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
       */
       ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[ekran_before]];
-      if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
       {
         index_in = position_in_current_level_menu2[ekran_before];
     
         ekran_before = previous_level_in_current_level_menu2[ekran_before];
-        if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+        if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
         {   
           number_logical_node_in = 1;
           type_logical_node_in = ID_FB_CONTROL_BLOCK;
         }
         else if (
-                 (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-                 (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+                 (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+                 (ekran_before <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
                 )   
         {
           number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
     
           ekran_before = previous_level_in_current_level_menu2[ekran_before];
-          if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+          if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
           {
             type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
           }
@@ -1980,20 +1980,20 @@ void change_set_signal(unsigned int action)
   unsigned int type_logical_node_out, number_logical_node_out;
 
   enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-  if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+  if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
   {
     number_logical_node_out = 1;
     type_logical_node_out = ID_FB_CONTROL_BLOCK;
   }
   else if (
-           (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
-           (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
+           (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
+           (ekran_before <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
           )   
   {
     number_logical_node_out = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
     
     ekran_before = previous_level_in_current_level_menu2[ekran_before];
-    if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
     {
       type_logical_node_out = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
     }
@@ -2011,30 +2011,30 @@ void change_set_signal(unsigned int action)
     //Шукаємо тепер вхідну інформацію
     /*
                                                                1-е повернення                                                  2-е повернення                                  3-повернення  
-    PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->PARAM_LIST_XXX_FOR_INPUT_MENU2_LEVEL->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
+    EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_XXX_FOR_INPUT_MENU2_LEVEL->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
                                                                                                                                                                           |
-                                                                                                                                                                          ->PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
+                                                                                                                                                                          ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
     */
     ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[ekran_before]];
-    if (ekran_before == PARAM_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
     {
       index_in = position_in_current_level_menu2[ekran_before];
     
       ekran_before = previous_level_in_current_level_menu2[ekran_before];
-      if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
       {   
         number_logical_node_in = 1;
         type_logical_node_in = ID_FB_CONTROL_BLOCK;
       }
       else if (
-               (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-               (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+               (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+               (ekran_before <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
               )   
       {
         number_logical_node_in = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
   
         ekran_before = previous_level_in_current_level_menu2[ekran_before];
-        if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+        if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
         {
           type_logical_node_in = position_in_current_level_menu2[ekran_before] + _ID_FB_FIRST_ALL;
         }
@@ -2212,34 +2212,34 @@ void change_set_signal(unsigned int action)
 /*****************************************************/
 void select_input_signal_ln(void)
 {
-  int position = position_in_current_level_menu2[PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL];
-  enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[PARAM_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL];
+  int position = position_in_current_level_menu2[EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL];
+  enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL];
   
   int index = position_in_current_level_menu2[ekran_before];
   unsigned int number_logical_node;
   unsigned int type_logical_node;
 
   ekran_before = previous_level_in_current_level_menu2[ekran_before];
-  if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+  if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
   {
     number_logical_node = 1;
     type_logical_node = ID_FB_CONTROL_BLOCK;
   }
   else if (
-           (ekran_before >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-           (ekran_before <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+           (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+           (ekran_before <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
           )   
   {
     number_logical_node = position_in_current_level_menu2[ekran_before] + 1; /*1 додаємо, індексація починається з нуля, а позначення у param  має іти з 1*/
     
     ekran_before = previous_level_in_current_level_menu2[ekran_before];
-    if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
     {
       type_logical_node = _ID_FB_FIRST_ALL + position_in_current_level_menu2[ekran_before];
     }
   }
 
-  if (ekran_before == PARAM_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+  if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
   {
     size_t n_similar_input_signals = array_n_similar_input_signals[type_logical_node - _ID_FB_FIRST_ALL];
     if (n_similar_input_signals != 0)
@@ -2307,38 +2307,38 @@ void select_input_signal_ln(void)
         unsigned int n_input    = (param >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
         unsigned int out_input  = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
  
-        current_state_menu2.current_level = PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
-        position_in_current_level_menu2[PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = out_input - 1;
+        current_state_menu2.current_level = EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
+        position_in_current_level_menu2[EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = out_input - 1;
       
         if (id_input == ID_FB_CONTROL_BLOCK)
         {
-          previous_level_in_current_level_menu2[PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
-          position_in_current_level_menu2[PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = 0;
+          previous_level_in_current_level_menu2[EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
+          position_in_current_level_menu2[EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = 0;
         }
         else
         {
-          const enum _menu2_levels levels_tmp[__NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL - __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL] =
+          const enum _menu2_levels levels_tmp[__NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL - __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL] =
           {
-            PARAM_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL,
-            PARAM_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL
+            EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL,
+            EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL
           };
-          enum _menu2_levels tmp = previous_level_in_current_level_menu2[PARAM_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = levels_tmp[(id_input - 1) - 1];
+          enum _menu2_levels tmp = previous_level_in_current_level_menu2[EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = levels_tmp[(id_input - 1) - 1];
           current_state_menu2.number_selection = position_in_current_level_menu2[tmp] = n_input - 1;
         
-          previous_level_in_current_level_menu2[tmp] = PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
-          position_in_current_level_menu2[PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = id_input - 1;
+          previous_level_in_current_level_menu2[tmp] = EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
+          position_in_current_level_menu2[EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = id_input - 1;
         }
       }
     }

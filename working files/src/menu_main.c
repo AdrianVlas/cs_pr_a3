@@ -174,7 +174,7 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
        )
        ||  
        (
-        (new_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
+        (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
         (current_state_menu2.edition == ED_VIEWING)
        )
       )   
@@ -185,7 +185,7 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
     {
       if (config_settings_modified == 0)
       {
-        if  (new_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+        if  (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
         {
           //Входимо в режим редагування
           current_state_menu2.edition = ED_EDITION;
@@ -225,7 +225,7 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
     }
   }
   else if (
-           (new_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
+           (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
            (current_state_menu2.edition == ED_CAN_BE_EDITED)
           )   
   {

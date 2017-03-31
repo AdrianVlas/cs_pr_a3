@@ -4415,6 +4415,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_diagnostyka.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_editor_logical_nodes.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_group_alarm.h</name>
         </file>
         <file>
@@ -4430,7 +4433,7 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_list_settings.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_list_settings_bios.h</name>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_list_settings_param.h</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_main.h</name>
@@ -4464,9 +4467,6 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu_ver2.h</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_param_logical_nodes.c</name>
         </file>
       </group>
       <group>
@@ -4574,6 +4574,9 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_diagnostyka.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_editor_logical_nodes.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_group_alarm.c</name>
         </file>
         <file>
@@ -4595,7 +4598,7 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_list_settings.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_list_settings_bios.c</name>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_list_settings_param.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_main.c</name>
