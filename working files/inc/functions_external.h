@@ -180,6 +180,7 @@ extern void make_ekran_list_labels(void);
 extern void make_ekran_time_config_or_settings(void);
 extern void move_into_diagnostics(unsigned int, int);
 extern void make_ekran_diagnostics(void);
+extern void move_into_ekran_list_inputs_outputs(unsigned int, int);
 extern void make_ekran_list_inputs_outputs(void);
 extern unsigned int max_number_digit_in_number(int);
 extern void make_ekran_state_inputs_or_outputs(void);

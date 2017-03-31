@@ -19,8 +19,17 @@ void move_into_main(unsigned int action, int max_row)
     {
       if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
       while (
-             (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
-             (current_config_prt.n_group_alarm == 0)
+             (
+              (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
+              (current_config_prt.n_group_alarm == 0)
+             )
+             ||
+             (
+              (current_state_menu2.index_position == INDEX_MAIN_M2_INPUTS_OUTPUTS) &&
+              (current_config_prt.n_input == 0) &&
+              (current_config_prt.n_output == 0) &&
+              (current_config_prt.n_group_alarm == 0)
+             ) 
             )
       {
         if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
@@ -105,8 +114,17 @@ void make_ekran_main(void)
   for(size_t index_1 = 0; index_1 < MAX_ROW_MAIN_M2; index_1++)
   {
     if (
-        (index_1 == INDEX_MAIN_M2_MEASURMENTS) &&
-        (current_config_prt.n_group_alarm == 0)
+        (
+         (index_1 == INDEX_MAIN_M2_MEASURMENTS) &&
+         (current_config_prt.n_group_alarm == 0)
+        )   
+        ||
+        (
+         (index_1 == INDEX_MAIN_M2_INPUTS_OUTPUTS) &&
+         (current_config_prt.n_input == 0) &&
+         (current_config_prt.n_output == 0) &&
+         (current_config_prt.n_group_alarm == 0)
+        ) 
        )
     {
       if ((index_1 - additional_current) < position_temp) position_temp--;

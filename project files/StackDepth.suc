@@ -40,7 +40,7 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          move_into_time, make_ekran_time, press_enter_in_time, change_time,
                                          move_into_ekran_simple,
                                          make_ekran_measurement,
-                                         make_ekran_list_inputs_outputs,
+                                         move_into_ekran_list_inputs_outputs, make_ekran_list_inputs_outputs,
                                          move_into_ekran_input_or_output, make_ekran_state_inputs_or_outputs,
                                          make_ekran_list_registrators,
                                          move_into_list_settings, make_ekran_list_settings, press_esc_in_list_settings,
