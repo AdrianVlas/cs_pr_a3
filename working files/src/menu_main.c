@@ -201,7 +201,13 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
     //Є спроба перейти у вікно списку налаштувань
     if (settings_fix_prt.password_2 == 0)
     {
-      if (config_settings_modified == 0)
+      if (
+          (config_settings_modified == 0) && 
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT    ) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT ) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT    ) == 0)
+         )   
       {
         if  (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
         {

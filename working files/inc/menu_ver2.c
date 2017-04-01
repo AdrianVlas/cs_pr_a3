@@ -1392,7 +1392,13 @@ void main_manu_function_ver2(void)
                 current_state_menu2.index_position = position_in_current_level_menu2[current_state_menu2.current_level];
                 new_level_menu();
               }
-              else if (config_settings_modified == 0)
+              else if (
+                       (config_settings_modified == 0) &&
+                       (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) == 0) &&
+                       (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT    ) == 0) &&
+                       (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT ) == 0) &&
+                       (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT    ) == 0)
+                      )   
               {
                 //Переходимо у режим редагування
                 current_state_menu2.edition = ED_EDITION;
