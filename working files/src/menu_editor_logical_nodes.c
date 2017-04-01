@@ -980,6 +980,7 @@ void press_esc_in_editor_list_logical_node(void)
         {
           difference = true;
           current_state_menu2.edition = ED_WARNING_ENTER_ESC;
+          current_state_menu2.func_press_enter = press_enter_in_editor_list_logical_node;
         }
         i++;
       }

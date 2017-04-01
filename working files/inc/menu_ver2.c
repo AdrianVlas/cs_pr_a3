@@ -2507,7 +2507,7 @@ void new_level_menu(void)
       }
       else
       {
-        current_state_menu2.func_press_enter = press_enter_in_editor_list_logical_node;
+        current_state_menu2.func_press_enter = NULL;
         current_state_menu2.func_press_esc = press_esc_in_editor_list_logical_node;
       }
       current_state_menu2.func_change = NULL;
