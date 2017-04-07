@@ -222,7 +222,7 @@ void make_ekran_list_settings_param(void)
     unsigned int additional_current = 0;
     unsigned int position_temp = current_state_menu2.index_position;
 
-    uint8_t name_string_tmp[MAX_ROW_LIST_SETTINGS_M2][MAX_COL_LCD + 1];
+    uint8_t name_string_tmp[MAX_ROW_LIST_SETTINGS_PARAM_M2][MAX_COL_LCD + 1];
     for(size_t index_1 = 0; index_1 < MAX_ROW_LIST_SETTINGS_PARAM_M2; index_1++)
     {
       if (
@@ -267,9 +267,9 @@ void make_ekran_list_settings_param(void)
 
         for(size_t index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
         {
-          name_string_tmp[MAX_ROW_LIST_SETTINGS_M2 - additional_current][index_2] = ' ';
+          name_string_tmp[MAX_ROW_LIST_SETTINGS_PARAM_M2 - additional_current][index_2] = ' ';
         }
-        name_string_tmp[MAX_ROW_LIST_SETTINGS_M2 - additional_current][MAX_COL_LCD] = '\0';
+        name_string_tmp[MAX_ROW_LIST_SETTINGS_PARAM_M2 - additional_current][MAX_COL_LCD] = '\0';
       }
       else
       {

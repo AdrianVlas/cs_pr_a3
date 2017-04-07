@@ -60,7 +60,7 @@
 
 #define _GET_OUTPUT_STATE(_input, _input_bit) ((_input & ((unsigned int)(1 << _input_bit))) != 0)
 
-#define DIV_TO_HIGHER(_N, _M) ((_N / _M) + ((_N % _M) != 0))
+#define DIV_TO_HIGHER(_N, _M) (((_N) / (_M)) + (((_N) % (_M)) != 0))
 
 
 #define _INVERTOR(                                         \

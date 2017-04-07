@@ -1265,10 +1265,63 @@ void min_config(__CONFIG *target_label)
 /**************************************/
 
 /**************************************/
+//Конфігурація передуставленої конфігурації 2
+/**************************************/
+void scheme2_config(__CONFIG *target_label)
+{
+  target_label->device_id = VERSIA_PZ;
+
+  target_label->n_input = NUMBER_INPUTS;
+  target_label->n_output = NUMBER_OUTPUTS;
+  target_label->n_led = NUMBER_LEDS;
+  target_label->n_button = NUMBER_BUTTONS;
+  
+  uint32_t n_group_alarm;
+#if (NUMBER_ANALOG_CANALES - 1) > 0 /*Один канал напруговий*/
+  n_group_alarm = NUMBER_ANALOG_CANALES - 1; 
+#elif
+  n_group_alarm = 0; /*Один канал напруговий*/
+#endif
+  
+  uint32_t n_binary_chanal;
+#if (NUMBER_INPUTS - 4) > 0 /*Reset, Mute, Block, Test - активовуються з ДВх також*/
+  n_binary_chanal = NUMBER_INPUTS - 4;
+#elif
+  n_binary_chanal = 0;
+#endif
+  
+  target_label->n_group_alarm = n_group_alarm;
+  target_label->n_timer = n_group_alarm + n_binary_chanal;
+  target_label->n_alarm = target_label->n_timer;
+  target_label->n_and = target_label->n_group_alarm;
+  target_label->n_or = 4/*Reset, Mute, Block, Test*/ + 
+                       DIV_TO_HIGHER(2*n_group_alarm, OR_SIGNALS_IN)/*Контрольні сигнали всіх ШГС*/ +
+                       DIV_TO_HIGHER(target_label->n_alarm + (target_label->n_alarm / OR_SIGNALS_IN) + (((target_label->n_alarm % OR_SIGNALS_IN) != 0) && ((target_label->n_alarm / OR_SIGNALS_IN) != ((target_label->n_alarm + (target_label->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання MUTE-виходів всіх СЗС*/ + 
+                       DIV_TO_HIGHER((target_label->n_alarm - (target_label->n_alarm >> 1)) + ((target_label->n_alarm - (target_label->n_alarm >> 1)) / OR_SIGNALS_IN) + ((((target_label->n_alarm - (target_label->n_alarm >> 1)) % OR_SIGNALS_IN) != 0) && (((target_label->n_alarm - (target_label->n_alarm >> 1)) / OR_SIGNALS_IN) != (((target_label->n_alarm - (target_label->n_alarm >> 1)) + ((target_label->n_alarm - (target_label->n_alarm >> 1)) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для аварійної сигналізації*/ +
+                       DIV_TO_HIGHER((target_label->n_alarm >> 1) + ((target_label->n_alarm >> 1) / OR_SIGNALS_IN) + ((((target_label->n_alarm >> 1) % OR_SIGNALS_IN) != 0) && (((target_label->n_alarm >> 1) / OR_SIGNALS_IN) != (((target_label->n_alarm >> 1) + ((target_label->n_alarm >> 1) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для попереджувальної сигналізації*/ +
+                       1/*Об'єднання виходів АБО всіх ALARM-виходів попреджувальних СЗС і всіх ALARM-виходів аварійної СЗС*/ +
+                       1/*Об'єднання Несправності і Несправності аварійної*/;
+  target_label->n_xor = 0;
+  target_label->n_not = 0;
+  target_label->n_trigger = 1;
+  
+  target_label->n_meander = 0;
+
+  target_label->n_tu = 0;
+  
+  for(unsigned int i = 0; i < (7+1); i++)
+  {
+    target_label->time_config[i] = DEFAULT_PARAMS_FIX_CHANGES;
+  }
+}
+/**************************************/
+
+/**************************************/
 //Мінімальні налаштування
 /**************************************/
 void min_settings(__SETTINGS_FIX *target_label)
 {
+  for (size_t i = 0; i < FIX_BLOCK_SIGNALS_IN; i++) target_label->param[i] = 0;
 
   target_label->password_1 = 0;
   target_label->password_2 = 0;
@@ -1304,6 +1357,330 @@ void min_settings(__SETTINGS_FIX *target_label)
 }
 /**************************************/
 
+/**************************************/
+//Мінімальні налаштування
+/**************************************/
+void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settings,  uintptr_t *target_sca_of_p[])
+{
+  if (
+      (target_sca_of_p == sca_of_p) ||
+      (target_sca_of_p == sca_of_p_edit)
+     )   
+  {
+    uint32_t n_binary_chanal;
+#if (NUMBER_INPUTS - 4) > 0 /*Reset, Mute, Block, Test - активовуються з ДВх також*/
+    n_binary_chanal = NUMBER_INPUTS - 4;
+#elif
+    n_binary_chanal = 0;
+#endif
+  
+    size_t n;
+    /***
+    Дискрені входи: мінімальні налаштуванння
+    ***/
+    /***/
+
+    /***
+    Вихідні реде
+    ***/
+    //Вихід аврійної сигналізації
+    n = 4/*Reset, Mute, Block, Test*/ + 
+        DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN)/*Контрольні сигнали всіх ШГС*/ +
+        DIV_TO_HIGHER(target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN) + (((target_config->n_alarm % OR_SIGNALS_IN) != 0) && ((target_config->n_alarm / OR_SIGNALS_IN) != ((target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання MUTE-виходів всіх СЗС*/ + 
+        DIV_TO_HIGHER((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) + ((((target_config->n_alarm - (target_config->n_alarm >> 1)) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) != (((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для аварійної сигналізації*/;
+
+    if ((target_config->n_output >= 1) && (target_config->n_or >= n)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (1 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_output >= 2) && (target_config->n_or >= n)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (2 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    
+    n += DIV_TO_HIGHER((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN) + ((((target_config->n_alarm >> 1) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm >> 1) / OR_SIGNALS_IN) != (((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для попереджувальної сигналізації*/;
+
+    if ((target_config->n_output >= 3) && (target_config->n_or >= n)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (3 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_output >= 4) && (target_config->n_or >= n)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (4 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+
+    for (size_t i = 0; i < 4; i++)
+    {
+      if ((target_config->n_output >= (i + 1)) && (target_config->n_or >= 1)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + i)->param[OUTPUT_LED_RESET] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+    }
+    
+    n += 1/*Об'єднання виходів АБО всіх ALARM-виходів попреджувальних СЗС і всіх ALARM-виходів аварійної СЗС*/ +
+         1/*Об'єднання Несправності і Несправності аварійної*/;
+    
+    if (target_config->n_output >= 7)
+    {
+      if (target_config->n_or >= n) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (7 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      if (target_config->n_or >= 1) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (7 - 1))->param[OUTPUT_LED_RESET] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    }
+    /***/
+    
+    /***
+    Світлоіндикатори
+    ***/
+    for (size_t i = 0; i < target_config->n_group_alarm; i++)
+    {
+      if ((target_config->n_led >= (i + 1)) && (target_config->n_group_alarm >= (i + 1))) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR] + i)->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_CC + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+    }
+    
+    n = target_config->n_group_alarm;
+    for (size_t i = 0; i <= n_binary_chanal; i++)
+    {
+      if ((target_config->n_led >= (i + n + 1)) && (target_config->n_timer >= (i + n + 1))) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR] + (i + n))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_TIMER & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + n + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((TIMER_OUT_RISE_DELAY + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+    }
+
+    n += n_binary_chanal;
+    if ((target_config->n_led >= (n + 1)) && (target_config->n_or >= 5)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR] + n)->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((5 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+
+    n += 1;
+    if (target_config->n_led >= (n + 1)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR] + n)->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_CONTROL_BLOCK & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((FIX_BLOCK_SETTINGS_LOG_WORK + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+
+    n += 1;
+    for (size_t i = 0; i < n; i++)
+    {
+      if ((target_config->n_led >= (i + 1)) && (target_config->n_or >= 1)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR] + i)->param[OUTPUT_LED_RESET] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+    }
+    /***/
+    
+    /***
+    СЗС
+    ***/
+    for (size_t i = 0; i < target_config->n_alarm; i++)
+    {
+      if (target_config->n_timer >= (i + 1)) ((__settings_for_ALARM*)target_sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + i)->param[ALARM_LOGIC_INPUT] = ((ID_FB_TIMER & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((TIMER_OUT_RISE_DELAY + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+
+      if (target_config->n_or >= 1) ((__settings_for_ALARM*)target_sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + i)->param[ALARM_RESET]    = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else continue;
+      if (target_config->n_or >= 2) ((__settings_for_ALARM*)target_sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + i)->param[ALARM_IN_MUTE]  = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((2 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else continue;
+      if (target_config->n_or >= 3) ((__settings_for_ALARM*)target_sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + i)->param[ALARM_IN_BLOCK] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((3 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else continue;
+    } 
+    /***/
+    
+    /***
+    ШГС
+    ***/
+    uint32_t maska = (1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1;
+    uint32_t shift = group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0];
+    for (size_t i = 0; i < target_config->n_group_alarm; i++)
+    {
+      ((__settings_for_GROUP_ALARM*)target_sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + i)->control = (1 << INDEX_CTRL_GROUP_ALARM_STATE);
+      
+      size_t i_tmp = i + 1;
+      if ((i_tmp >= 1) && (i_tmp <= (NUMBER_ANALOG_CANALES - 1))) ((__settings_for_GROUP_ALARM*)target_sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + i)->analog_input_control = (i_tmp & maska) << shift;
+      else break;
+    } 
+    /***/
+    
+    /***
+    "І"
+    ***/
+    for (size_t i = 0; i < target_config->n_and; i++)
+    {
+      if (target_config->n_group_alarm >= (i + 1)) ((__settings_for_AND*)target_sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR] + i)->param[0] = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_CC   + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      if (target_config->n_timer       >= (i + 1)) ((__settings_for_AND*)target_sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR] + i)->param[1] = ((ID_FB_TIMER       & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((TIMER_OUT_RISE_DELAY + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    } 
+    /***/
+    
+    /***
+    "АБО"
+    ***/
+    for (size_t i = 0; i < target_config->n_or; i++)
+    {
+      size_t i_tmp = i;
+      if (i_tmp < 4)
+      {
+        uint32_t button;
+        switch (i_tmp)
+        {
+        case 0:
+          {
+            button = FIX_BUTTON_RESET;
+            break;
+          }
+        case 1:
+          {
+            button = FIX_BUTTON_MUTE;
+            break;
+          }
+        case 2:
+          {
+            button = NUMBER_FIX_BUTTONS;
+            break;
+          }
+        case 3:
+          {
+            button = FIX_BUTTON_TEST;
+            break;
+          }
+        }
+        if (target_config->n_button >= (button + 1)) ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[0] = ((ID_FB_BUTTON & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((button + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((BUTTON_TU_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+        if (target_config->n_input  >= (0      + 1)) ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[1] = ((ID_FB_INPUT  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i_tmp  + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((INPUT_OUT     + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      }
+      else if ((i_tmp -= 4) < DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN))
+      {
+        for (size_t j = 0; j < (OR_SIGNALS_IN >> 1); j++)
+        {
+          if (target_config->n_group_alarm  >= (i_tmp*(OR_SIGNALS_IN >> 1) + j + 1))
+          {
+            ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[(j << 1) + 0] = ((ID_FB_GROUP_ALARM  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((i_tmp*(OR_SIGNALS_IN >> 1) + j) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_CE + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+            ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[(j << 1) + 1] = ((ID_FB_GROUP_ALARM  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((i_tmp*(OR_SIGNALS_IN >> 1) + j) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_OC + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+          }
+          else break;
+        }
+      }
+      else if ((i_tmp -= DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN)) < DIV_TO_HIGHER(target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN) + (((target_config->n_alarm % OR_SIGNALS_IN) != 0) && ((target_config->n_alarm / OR_SIGNALS_IN) != ((target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN))
+      {
+        for (size_t j = 0; j < OR_SIGNALS_IN; j++)
+        {
+          if (target_config->n_alarm  >= (i_tmp*OR_SIGNALS_IN + j + 1))
+          {
+            ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[j] = ((ID_FB_ALARM  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i_tmp*OR_SIGNALS_IN + j + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((ALARM_OUT_MUTE + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+          }
+          else if ((i_tmp*OR_SIGNALS_IN + j - target_config->n_alarm) < ((target_config->n_alarm / OR_SIGNALS_IN) + (((target_config->n_alarm % OR_SIGNALS_IN) != 0) && ((target_config->n_alarm / OR_SIGNALS_IN) != ((target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN)))))
+          {
+            size_t _n = 4/*Reset, Mute, Block, Test*/ + 
+            DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN)/*Контрольні сигнали всіх ШГС*/ + 
+            (i_tmp*OR_SIGNALS_IN + j - target_config->n_alarm);
+            ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[j] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((_n + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+          }
+          else break;
+        }
+      }
+      else if ((i_tmp -= DIV_TO_HIGHER(target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN) + (((target_config->n_alarm % OR_SIGNALS_IN) != 0) && ((target_config->n_alarm / OR_SIGNALS_IN) != ((target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)) < DIV_TO_HIGHER((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) + ((((target_config->n_alarm - (target_config->n_alarm >> 1)) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) != (((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN))
+      {
+        for (size_t j = 0; j < OR_SIGNALS_IN; j++)
+        {
+          if ((target_config->n_alarm - (target_config->n_alarm >> 1)) >= (i_tmp*OR_SIGNALS_IN + j + 1))
+          {
+            ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[j] = ((ID_FB_ALARM  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((2*(i_tmp*OR_SIGNALS_IN + j) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((ALARM_OUT_ALARM + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+          }
+          else if ((i_tmp*OR_SIGNALS_IN + j - (target_config->n_alarm - (target_config->n_alarm >> 1))) < (((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) + ((((target_config->n_alarm - (target_config->n_alarm >> 1)) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) != (((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN)) / OR_SIGNALS_IN)))))
+          {
+            size_t _n = 4/*Reset, Mute, Block, Test*/ + 
+            DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN)/*Контрольні сигнали всіх ШГС*/ + 
+            DIV_TO_HIGHER(target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN) + (((target_config->n_alarm % OR_SIGNALS_IN) != 0) && ((target_config->n_alarm / OR_SIGNALS_IN) != ((target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання MUTE-виходів всіх СЗС*/ + 
+            (i_tmp*OR_SIGNALS_IN + j - (target_config->n_alarm - (target_config->n_alarm >> 1)));
+            ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[j] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((_n + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+          }
+          else break;
+        }
+      }
+      else if ((i_tmp -= DIV_TO_HIGHER((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) + ((((target_config->n_alarm - (target_config->n_alarm >> 1)) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) != (((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)) < DIV_TO_HIGHER((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN) + ((((target_config->n_alarm >> 1) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm >> 1) / OR_SIGNALS_IN) != (((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN))
+      {
+        for (size_t j = 0; j < OR_SIGNALS_IN; j++)
+        {
+          if ((target_config->n_alarm >> 1) >= (i_tmp*OR_SIGNALS_IN + j + 1))
+          {
+            ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[j] = ((ID_FB_ALARM  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((2*(i_tmp*OR_SIGNALS_IN + j) + 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((ALARM_OUT_ALARM + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+          }
+          else if ((i_tmp*OR_SIGNALS_IN + j - (target_config->n_alarm >> 1)) < (((target_config->n_alarm >> 1) / OR_SIGNALS_IN) + ((((target_config->n_alarm >> 1) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm >> 1) / OR_SIGNALS_IN) != (((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN)) / OR_SIGNALS_IN)))))
+          {
+            size_t _n = 4/*Reset, Mute, Block, Test*/ + 
+            DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN)/*Контрольні сигнали всіх ШГС*/ + 
+            DIV_TO_HIGHER(target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN) + (((target_config->n_alarm % OR_SIGNALS_IN) != 0) && ((target_config->n_alarm / OR_SIGNALS_IN) != ((target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання MUTE-виходів всіх СЗС*/ + 
+            DIV_TO_HIGHER((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) + ((((target_config->n_alarm - (target_config->n_alarm >> 1)) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) != (((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для аварійної сигналізації*/ +
+            (i_tmp*OR_SIGNALS_IN + j - (target_config->n_alarm >> 1));
+            ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[j] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((_n + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+          }
+          else break;
+        }
+      }
+      else if ((i_tmp -= DIV_TO_HIGHER((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN) + ((((target_config->n_alarm >> 1) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm >> 1) / OR_SIGNALS_IN) != (((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)) < 1)
+      {
+        size_t _n = 4/*Reset, Mute, Block, Test*/ + 
+        DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN)/*Контрольні сигнали всіх ШГС*/ + 
+        DIV_TO_HIGHER(target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN) + (((target_config->n_alarm % OR_SIGNALS_IN) != 0) && ((target_config->n_alarm / OR_SIGNALS_IN) != ((target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання MUTE-виходів всіх СЗС*/ +
+        DIV_TO_HIGHER((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) + ((((target_config->n_alarm - (target_config->n_alarm >> 1)) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) != (((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для аварійної сигналізації*/;
+        ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[0] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((_n - 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+        
+        _n += DIV_TO_HIGHER((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN) + ((((target_config->n_alarm >> 1) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm >> 1) / OR_SIGNALS_IN) != (((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для попереджувальної сигналізації*/;
+        ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[1] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((_n - 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      }
+      else if ((i_tmp -= 1) < 1)
+      {
+        ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[0] = ((ID_FB_CONTROL_BLOCK  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((FIX_BLOCK_DEFECT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+        ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[1] = ((ID_FB_CONTROL_BLOCK  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((FIX_BLOCK_AVAR_DEFECT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      }
+      else break;
+    } 
+    /***/
+    
+    /***
+    Викл."АБО"
+    ***/
+    /***/
+
+    /***
+    "НЕ"
+    ***/
+    /***/
+    
+    /***
+    БФ-Таймер
+    ***/
+    for (size_t i = 0; i < target_config->n_timer; i++)
+    {
+      if (target_config->n_group_alarm >= (i + 1)) 
+      {
+        ((__settings_for_TIMER*)target_sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR] + i)->param[TIMER_LOGIC_INPUT] = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_NNP + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      }
+      else if (target_config->n_input >= (i + 1 - target_config->n_group_alarm)) 
+      {
+        ((__settings_for_TIMER*)target_sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR] + i)->param[TIMER_LOGIC_INPUT] = ((ID_FB_INPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i - target_config->n_group_alarm + 4 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((INPUT_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      }
+      else break;
+    }
+    /***/
+    
+    /***
+    D-Триґер
+    ***/
+    if (target_config->n_trigger >= (0 + 1))
+    {
+      ((__settings_for_TRIGGER*)target_sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + 0)->param[INPUT_TRIGGER_D] = ((ID_FB_TRIGGER & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((0 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((TRIGGER_OUT_INV + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);    
+      if (target_config->n_or >= (2 + 1)) ((__settings_for_TRIGGER*)target_sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + 0)->param[INPUT_TRIGGER_C] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((2 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);    
+    }
+    /***/
+    
+    /***
+    ГПС
+    ***/
+    /***/
+    
+    /***
+    Фіксований блок
+    ***/
+    {
+      if (target_config->n_or >= (2 + 1)) target_fix_settings->param[FIX_BLOCK_BLOCK] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((2 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);    
+
+      size_t _n = 4/*Reset, Mute, Block, Test*/ + 
+      DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN)/*Контрольні сигнали всіх ШГС*/ + 
+      DIV_TO_HIGHER(target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN) + (((target_config->n_alarm % OR_SIGNALS_IN) != 0) && ((target_config->n_alarm / OR_SIGNALS_IN) != ((target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання MUTE-виходів всіх СЗС*/;
+      if (target_config->n_or >= (_n + 1)) target_fix_settings->param[FIX_BLOCK_MUTE] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((_n - 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+
+      _n += DIV_TO_HIGHER((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) + ((((target_config->n_alarm - (target_config->n_alarm >> 1)) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) != (((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для аварійної сигналізації*/ + 
+            DIV_TO_HIGHER((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN) + ((((target_config->n_alarm >> 1) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm >> 1) / OR_SIGNALS_IN) != (((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для попереджувальної сигналізації*/ + 
+            1;
+      if (target_config->n_or >= (_n + 1)) target_fix_settings->param[FIX_BLOCK_ALARM] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((_n - 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    }
+    /***/
+    
+//    for(unsigned int i = 0; i < (7+1); i++)
+//    {
+//      target_label->time_setpoints[i] = DEFAULT_PARAMS_FIX_CHANGES;
+//    }
+  }
+  else
+  {
+    //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+    total_error_sw_fixed(123);
+  }
+}
+/**************************************/
 
 /**************************************/
 //Виводимо повідомлення про те, що настройки не зчитані успішно
@@ -1349,23 +1726,27 @@ void error_reading_with_eeprom()
       "  Ош.триг.инф.  "
     } 
   };
-  const unsigned char string_action[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD] =
+  const unsigned char string_action[MAX_NAMBER_LANGUAGE][3][MAX_COL_LCD] =
   {
     {
       "Мин.парам.:Enter",
-      " Сбросить: Enter"
+      " Сбросить: Enter",
+      " Схема 2: Enter "
     },
     {
       "Мін.парам.:Enter",
-      " Скинути: Enter "
+      " Скинути: Enter ",
+      " Схема 2: Enter "
     },
     {
       "Min.param :Enter",
-      "  Reset: Enter  "
+      "  Reset: Enter  ",
+      " Scheme 2: Enter"
     },
     {
       "Мин.парам.:Enter",
-      " Сбросить: Enter"
+      " Сбросить: Enter",
+      " Схема 2: Enter "
     }
   };
   
@@ -1398,31 +1779,31 @@ void error_reading_with_eeprom()
     if((state_i2c_task & STATE_CONFIG_EEPROM_EMPTY) != 0)
     {
       index_info = 0;
-      index_action = 0;
+      index_action = 2;
       information_type = 1;
     }
     else if((state_i2c_task & STATE_CONFIG_EEPROM_FAIL) != 0)
     {
       index_info = 1;
-      index_action = 0;
+      index_action = 2;
       information_type = 1;
     }
     else if((state_i2c_task & STATE_CONFIG_EEPROM_NO_FREE_MEMORY) != 0)
     {
       index_info = 2;
-      index_action = 0;
+      index_action = 2;
       information_type = 1;
     }
     else if((state_i2c_task & STATE_SETTINGS_EEPROM_EMPTY) != 0)
     {
       index_info = 3;
-      index_action = 0;
+      index_action = 2;
       information_type = 2;
     }
     else if((state_i2c_task & STATE_SETTINGS_EEPROM_FAIL) != 0)
     {
       index_info = 4;
-      index_action = 0;
+      index_action = 2;
       information_type = 2;
     }
 //    else if((state_i2c_task & STATE_TRG_FUNC_EEPROM_EMPTY) != 0)
@@ -1475,14 +1856,16 @@ void error_reading_with_eeprom()
     if (information_type == 1)
     {
       //Записуємо мінімальну конфігурацію
-      min_config(&current_config);
+      if (index_action == 2) scheme2_config(&current_config);
+      else min_config(&current_config);
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
       
     }
     else if (information_type == 2)
     {
       //Записуємо мінімальну конфігурацію
-      min_settings(&settings_fix);
+      min_settings(&settings_fix); /*Для фіксованого блоку немає додатковихособливих налаштувань у переустановлених кнфігураціях*/
+      if (index_action == 2) scheme2_settings(&current_config, &settings_fix, sca_of_p);
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
       
     }
