@@ -1392,6 +1392,11 @@ void min_settings_OUTPUT_LED(unsigned int mem_to_prt, uintptr_t *base, size_t in
         ((__LN_OUTPUT_LED *)(base) + shift)->active_state[i] = 0;
         ((__LN_OUTPUT_LED *)(base) + shift)->trigger_state[i] = 0;
       }
+      for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8); i++)
+      {
+        ((__LN_OUTPUT_LED *)(base) + shift)->d_trigger_state[i] = 0;
+        ((__LN_OUTPUT_LED *)(base) + shift)->d_trigger_state_tmp[i] = 0;
+      }
     }
   }
 }
@@ -1474,6 +1479,11 @@ void min_settings_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
       {
         ((__LN_ALARM *)(base) + shift)->active_state[i] = 0;
         ((__LN_ALARM *)(base) + shift)->trigger_state[i] = 0;
+      }
+      for (size_t i = 0; i < DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8); i++)
+      {
+        ((__LN_ALARM *)(base) + shift)->d_trigger_state[i] = 0;
+        ((__LN_ALARM *)(base) + shift)->d_trigger_state_tmp[i] = 0;
       }
     }
   }
@@ -1838,6 +1848,11 @@ void min_settings_TIMER(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
       {
         ((__LN_TIMER *)(base) + shift)->active_state[i] = 0;
         ((__LN_TIMER *)(base) + shift)->trigger_state[i] = 0;
+      }
+      for (size_t i = 0; i < DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8); i++)
+      {
+        ((__LN_TRIGGER *)(base) + shift)->d_trigger_state[i] = 0;
+        ((__LN_TRIGGER *)(base) + shift)->d_trigger_state_tmp[i] = 0;
       }
     }
   }
@@ -2383,7 +2398,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
         
         //Зміна конфігурції може змінити розміри налаштувань. а це може вплинути на розміщення триґерної інформації, тому її також записуємо
-//        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
       }
       
       //Записуємо час останньої зміни конфігурації

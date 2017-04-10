@@ -267,7 +267,7 @@ enum _GROUP_ALARM_output_signals
 
 enum _GROUP_ALARM_d_trigger
 {
-  GROUP_ALARM_D_TRIGGER_TOTAL
+  GROUP_ALARM_D_TRIGGER_TOTAL = 0
 };
 
 enum __index_ctrl_group_alarm
@@ -296,7 +296,7 @@ enum _STANDARD_LOGIC_output_signals
 
 enum _STANDARD_LOGIC_d_trigger
 {
-  STANDARD_LOGIC_D_TRIGGER_TOTAL
+  STANDARD_LOGIC_D_TRIGGER_TOTAL = 0
 };
 
 /***/
@@ -335,7 +335,7 @@ enum _TIMER_output_signals
 
 enum _TIMER_d_trigger
 {
-  TIMER_D_TRIGGER_TOTAL
+  TIMER_D_TRIGGER_TOTAL = 0
 };
 
 enum _TIMER_input_signals

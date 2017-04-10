@@ -1016,43 +1016,43 @@ void start_settings_peripherals(void)
     }
     /**********************/
 
-//    /**********************/
-//    //Читаємо збережені дані про тригерну інформацію
-//    /**********************/
-//    comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);/*зчитування, а не порівняння*/
-//    _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
-//    while(
-//          (control_i2c_taskes[0]     != 0) ||
-//          (control_i2c_taskes[1]     != 0) ||
-//          (driver_i2c.state_execution > 0)
-//        )
-//    {
-//      //Робота з watchdogs
-//      if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
-//      {
-//        //Змінюємо стан біту зовнішнього Watchdog на протилежний
-//        GPIO_WriteBit(
-//                      GPIO_EXTERNAL_WATCHDOG,
-//                      GPIO_PIN_EXTERNAL_WATCHDOG,
-//                      (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
-//                     );
-//      }
-//
-//      main_routines_for_i2c();
-//      changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
-//      if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
-//      {
-//        //Повне роозблоковування обміну з мікросхемами для драйверу I2C
-//        _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
-//      }
-//    }
-//    /**********************/
+    /**********************/
+    //Читаємо збережені дані про тригерну інформацію
+    /**********************/
+    comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);/*зчитування, а не порівняння*/
+    _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
+    while(
+          (control_i2c_taskes[0]     != 0) ||
+          (control_i2c_taskes[1]     != 0) ||
+          (driver_i2c.state_execution > 0)
+        )
+    {
+      //Робота з watchdogs
+      if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+      {
+        //Змінюємо стан біту зовнішнього Watchdog на протилежний
+        GPIO_WriteBit(
+                      GPIO_EXTERNAL_WATCHDOG,
+                      GPIO_PIN_EXTERNAL_WATCHDOG,
+                      (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+                     );
+      }
+
+      main_routines_for_i2c();
+      changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+      if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
+      {
+        //Повне роозблоковування обміну з мікросхемами для драйверу I2C
+        _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+      }
+    }
+    /**********************/
   }
   else
   {
     /*
     Оскільки конфігурації достовірної немає, тому немає сенсу зчитувати налаштування,
-    триґерну інформацію, стани сигнальних входів, трияерних індикаторів
+    триґерну інформацію
     
     Тому помічаємо інформацію, що вищеперечисленої інформації немає
     */
@@ -1063,12 +1063,12 @@ void start_settings_peripherals(void)
     _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
     _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_EMPTY_BIT);
 
-//    //Помічаємо, що прочитаний блок є пустим
-//    state_i2c_task &= (unsigned int)(~(STATE_TRG_FUNC_EEPROM_FAIL | STATE_TRG_FUNC_EEPROM_GOOD));
-//    state_i2c_task |= STATE_TRG_FUNC_EEPROM_EMPTY;
-//    //Виствляємо повідомлення у слові діагностики
-//    _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
-//    _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_EMPTY_BIT);
+    //Помічаємо, що прочитаний блок є пустим
+    state_i2c_task &= (unsigned int)(~(STATE_TRG_FUNC_EEPROM_FAIL | STATE_TRG_FUNC_EEPROM_GOOD));
+    state_i2c_task |= STATE_TRG_FUNC_EEPROM_EMPTY;
+    //Виствляємо повідомлення у слові діагностики
+    _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
+    _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_EMPTY_BIT);
   }
 
   /**********************/
@@ -1759,9 +1759,9 @@ void error_reading_with_eeprom()
                          STATE_CONFIG_EEPROM_FAIL           | 
                          STATE_CONFIG_EEPROM_NO_FREE_MEMORY |
                          STATE_SETTINGS_EEPROM_EMPTY        | 
-                         STATE_SETTINGS_EEPROM_FAIL       /*| 
+                         STATE_SETTINGS_EEPROM_FAIL         | 
                          STATE_TRG_FUNC_EEPROM_EMPTY        | 
-                         STATE_TRG_FUNC_EEPROM_FAIL*/
+                         STATE_TRG_FUNC_EEPROM_FAIL
                         )) != 0)
   {
     //Робота з watchdogs
@@ -1806,18 +1806,18 @@ void error_reading_with_eeprom()
       index_action = 2;
       information_type = 2;
     }
-//    else if((state_i2c_task & STATE_TRG_FUNC_EEPROM_EMPTY) != 0)
-//    {
-//      index_info = 5;
-//      index_action = 1;
-//      information_type = 3;
-//    }
-//    else if((state_i2c_task & STATE_TRG_FUNC_EEPROM_FAIL) != 0)
-//    {
-//      index_info = 6;
-//      index_action = 1;
-//      information_type = 3;
-//    }
+    else if((state_i2c_task & STATE_TRG_FUNC_EEPROM_EMPTY) != 0)
+    {
+      index_info = 5;
+      index_action = 1;
+      information_type = 3;
+    }
+    else if((state_i2c_task & STATE_TRG_FUNC_EEPROM_FAIL) != 0)
+    {
+      index_info = 6;
+      index_action = 1;
+      information_type = 3;
+    }
 
     //Копіюємо  рядки у робочий екран
     for (unsigned int i=0; i< MAX_ROW_LCD; i++)
@@ -1869,13 +1869,13 @@ void error_reading_with_eeprom()
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
       
     }
-//    else if (information_type == 3)
-//    {
-//      for (unsigned int i = 0; i < N_BIG; i++) trigger_active_functions[i] = 0x0;
-//
-//      //Записуємо очищену триґерну інформацію
-//      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
-//    }
+    else if (information_type == 3)
+    {
+      for (unsigned int i = 0; i < N_BIG; i++) trigger_active_functions[i] = 0x0;
+
+      //Записуємо очищену триґерну інформацію
+      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+    }
     
     //Чекаємо завершення запису
     while(

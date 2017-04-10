@@ -381,8 +381,8 @@ int main(void)
   
   if(
      ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD  ) != 0) &&
-     ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0)/* &&
-     ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) != 0)*/
+     ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0) &&
+     ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) != 0)
     )   
   {
     //Випадок, якщо настройки успішно зчитані
@@ -407,8 +407,8 @@ int main(void)
     //Якщо настройки не зчитані успішно з EEPROM, то спочатку виводимо на екран повідомлення про це
     while (
            ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD  ) == 0) ||
-           ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) == 0)/* ||
-           ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) == 0)*/
+           ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) == 0) ||
+           ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) == 0)
           )   
     {
       error_reading_with_eeprom();
