@@ -1871,8 +1871,6 @@ void error_reading_with_eeprom()
     }
     else if (information_type == 3)
     {
-      for (unsigned int i = 0; i < N_BIG; i++) trigger_active_functions[i] = 0x0;
-
       //Записуємо очищену триґерну інформацію
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
     }
