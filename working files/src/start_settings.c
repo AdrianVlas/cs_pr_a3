@@ -1915,12 +1915,12 @@ void error_reading_with_eeprom()
       comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);/*зчитування, а не порівняння*/
       _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
     }
-//    else if (information_type == 3)
-//    {
-//      //Повтрокно зчитуємо триґерну інформацію
-//      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);/*зчитування, а не порівняння*/
-//      _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
-//    }
+    else if (information_type == 3)
+    {
+      //Повтрокно зчитуємо триґерну інформацію
+      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);/*зчитування, а не порівняння*/
+      _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
+    }
 
     //Чекаємо завершення читання
     while(

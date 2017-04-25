@@ -1174,45 +1174,41 @@ void main_routines_for_i2c(void)
               size_of_data = 0;
             }
           }
-
-          //Визначаємо вказівник на початок блоку
-          if (size_of_data != 0)
-          {
-            switch (block)
-            {
-            case ID_FB_OUTPUT:
-            case ID_FB_LED:
-              {
-                point_1 = &((((__LN_OUTPUT_LED*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)))->d_trigger_state[shift % DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)]);
-                point_2 = &((((__LN_OUTPUT_LED*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)]);
-                break;
-              }
-            case ID_FB_ALARM:
-              {
-                point_1 = &((((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)))->d_trigger_state[shift % DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)]);
-                point_2 = &((((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)]);
-                break;
-              }
-            case ID_FB_TRIGGER:
-              {
-                point_1 = &((((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)))->d_trigger_state[shift % DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)]);
-                point_2 = &((((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)]);
-                break;
-              }
-            default:
-              {
-                point_1 = NULL;
-                point_2 = NULL;
-                break;
-              }
-            }
-          }
         }
       
         if (size_of_data != 0)
         {
-          temp_value = *(point_1 + shift);
-          *(point_2 + shift) = temp_value;
+          switch (block)
+          {
+          case ID_FB_OUTPUT:
+          case ID_FB_LED:
+            {
+              point_1 = &((((__LN_OUTPUT_LED*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)))->d_trigger_state[shift % DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)]);
+              point_2 = &((((__LN_OUTPUT_LED*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)]);
+              break;
+            }
+          case ID_FB_ALARM:
+            {
+              point_1 = &((((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)))->d_trigger_state[shift % DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)]);
+              point_2 = &((((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)]);
+              break;
+            }
+          case ID_FB_TRIGGER:
+            {
+              point_1 = &((((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)))->d_trigger_state[shift % DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)]);
+              point_2 = &((((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)]);
+              break;
+            }
+          default:
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(127);
+              break;
+            }
+          }
+          
+          temp_value = *point_1;
+          *point_2 = temp_value;
           read_write_i2c_buffer[index++] = temp_value;
           crc_eeprom_trg_func += temp_value;
           
@@ -1246,7 +1242,7 @@ void main_routines_for_i2c(void)
       
       if (index == 0)
       {
-        //Весь масив настройок вже записаний
+        //Весь масив триґерної інформації вже записаний вже записаний
         
         //Скидаємо всі статичні змінні, які використовуютья при записі налаштувань
         block = _ID_FB_FIRST_ALL;

@@ -1849,11 +1849,6 @@ void min_settings_TIMER(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
         ((__LN_TIMER *)(base) + shift)->active_state[i] = 0;
         ((__LN_TIMER *)(base) + shift)->trigger_state[i] = 0;
       }
-      for (size_t i = 0; i < DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8); i++)
-      {
-        ((__LN_TRIGGER *)(base) + shift)->d_trigger_state[i] = 0;
-        ((__LN_TRIGGER *)(base) + shift)->d_trigger_state_tmp[i] = 0;
-      }
     }
   }
 }
@@ -1909,6 +1904,11 @@ void min_settings_TRIGGER(unsigned int mem_to_prt, uintptr_t *base, size_t index
       {
         ((__LN_TRIGGER *)(base) + shift)->active_state[i] = 0;
         ((__LN_TRIGGER *)(base) + shift)->trigger_state[i] = 0;
+      }
+      for (size_t i = 0; i < DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8); i++)
+      {
+        ((__LN_TRIGGER *)(base) + shift)->d_trigger_state[i] = 0;
+        ((__LN_TRIGGER *)(base) + shift)->d_trigger_state_tmp[i] = 0;
       }
     }
   }
