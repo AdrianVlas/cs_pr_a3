@@ -262,15 +262,15 @@ inline void periodical_operations(void)
       periodical_tasks_TEST_USTUVANNJA = false;
     }
   }
-//  else if (periodical_tasks_TEST_TRG_FUNC_LOCK != 0)
-//  {
-//    //Стоїть у черзі активна задача самоконтролю по резервній копії для триґерної інформації
-//    //Виконуємо її
-//    control_trg_func();
-//      
-//    //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації
-//    periodical_tasks_TEST_TRG_FUNC_LOCK = false;
-//  }
+  else if (periodical_tasks_TEST_TRG_FUNC_LOCK != 0)
+  {
+    //Стоїть у черзі активна задача самоконтролю по резервній копії для триґерної інформації
+    //Виконуємо її
+    control_trg_func();
+      
+    //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації
+    periodical_tasks_TEST_TRG_FUNC_LOCK = false;
+  }
   else if (periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK != 0)
   {
     //Стоїть у черзі активна задача самоконтролю по резервній копії для реєстратора програмних подій

@@ -219,8 +219,8 @@ extern unsigned int Set_data(unsigned short int, unsigned int, unsigned int, /*u
 extern void set_previous_ranguvannja(void);
 
 extern ErrorStatus check_errors_i2c(void);
-extern unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t volatile*, uint32_t);
-extern unsigned int start_read_buffer_via_I2C(uint32_t, uint16_t, uint8_t volatile*, uint32_t);
+extern unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);
+extern unsigned int start_read_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);
 extern void main_routines_for_i2c(void);
 extern void error_start_i2c(void);
 
@@ -250,7 +250,7 @@ extern void analize_received_data_dataflash(int);
 extern void control_config(unsigned int);
 extern void control_settings(unsigned int);
 extern void control_ustuvannja(void);
-//extern void control_trg_func(void);
+extern void control_trg_func(void);
 extern unsigned int control_info_rejestrator(__INFO_REJESTRATOR*, unsigned char);
 
 extern void test_external_SRAM(void);
@@ -281,8 +281,6 @@ extern void SPI_DF_IRQHandler(void);
 extern void USARTRS485_IRQHandler(void);
 extern void DMA_StreamRS485_Tx_IRQHandler(void);
 extern void EXITI_POWER_IRQHandler(void);
-
-extern void setpoints_selecting(volatile unsigned int*, unsigned int);
 
 extern int str_to_int_DATE_Mmm(void);
 

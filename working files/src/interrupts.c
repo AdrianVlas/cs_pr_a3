@@ -674,7 +674,7 @@ void TIM4_IRQHandler(void)
       periodical_tasks_TEST_CONFIG                  = 
       periodical_tasks_TEST_SETTINGS                = 
       periodical_tasks_TEST_USTUVANNJA              = 
-      /*periodical_tasks_TEST_TRG_FUNC                = */
+      periodical_tasks_TEST_TRG_FUNC                = 
       periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR = 
       periodical_tasks_TEST_FLASH_MEMORY            = true;
       

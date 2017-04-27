@@ -222,8 +222,8 @@ unsigned int Set_data(unsigned short int, unsigned int, unsigned int, /*unsigned
 void set_previous_ranguvannja(void);
 
 ErrorStatus check_errors_i2c(void);
-unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t volatile*, uint32_t);
-unsigned int start_read_buffer_via_I2C(uint32_t, uint16_t, uint8_t volatile*, uint32_t);
+unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);
+unsigned int start_read_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);
 void main_routines_for_i2c(void);
 void error_start_i2c(void);
 
@@ -253,7 +253,7 @@ void analize_received_data_dataflash(int);
 void control_config(unsigned int);
 void control_settings(unsigned int);
 void control_ustuvannja(void);
-//void control_trg_func(void);
+void control_trg_func(void);
 unsigned int control_info_rejestrator(__INFO_REJESTRATOR*, unsigned char);
 
 void test_external_SRAM(void);

@@ -10,7 +10,7 @@
   2 - не запущений обмін через помилки на i2C
 */
 /*****************************************************/
-unsigned int start_write_buffer_via_I2C(uint32_t device_id, uint16_t WriteAddr,  uint8_t volatile* pBuffer, uint32_t number)
+unsigned int start_write_buffer_via_I2C(uint32_t device_id, uint16_t WriteAddr,  uint8_t *pBuffer, uint32_t number)
 {
   unsigned int error = 0; //0 - успішно виконано; 1 - лінія зайнята; 2 - інші помилки
   //Перевіряємо чи у процесі аналізу попередньої транзакції скинуті попередні помилки
@@ -93,7 +93,7 @@ unsigned int start_write_buffer_via_I2C(uint32_t device_id, uint16_t WriteAddr, 
   2 - не запущений обмін через помилки на i2C
 */
 /*****************************************************/
-unsigned int start_read_buffer_via_I2C(uint32_t device_id, uint16_t ReadAddr, uint8_t volatile* pBuffer, uint32_t number)
+unsigned int start_read_buffer_via_I2C(uint32_t device_id, uint16_t ReadAddr, uint8_t *pBuffer, uint32_t number)
 {
   unsigned int error = 0; //0 - успішно виконано; 1 - лінія зайнята; 2 - інші помилки
   //Перевіряємо чи у процесі аналізу попередньої транзакції скинуті попередні помилки

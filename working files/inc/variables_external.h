@@ -1,7 +1,7 @@
-extern volatile unsigned int semaphore_adc_irq;
-extern volatile unsigned int adc_DATA_VAL_read;
-extern volatile unsigned int adc_TEST_VAL_read;
-extern volatile unsigned int status_adc_read_work;
+extern unsigned int semaphore_adc_irq;
+extern unsigned int adc_DATA_VAL_read;
+extern unsigned int adc_TEST_VAL_read;
+extern unsigned int status_adc_read_work;
 extern const unsigned int input_adc[NUMBER_INPUTs_ADCs][2];
 extern EXTENDED_OUTPUT_DATA output_adc[NUMBER_INPUTs_ADCs];
 
@@ -31,7 +31,7 @@ extern int ADCs_data[NUMBER_ANALOG_CANALES];
 extern int current_data[NUMBER_ANALOG_CANALES*NUMBER_POINT*NUMBER_PERIOD_TRANSMIT];
 extern unsigned int index_array_of_current_data_value;
 
-extern volatile unsigned int changed_ustuvannja; 
+extern unsigned int changed_ustuvannja; 
 extern unsigned char crc_ustuvannja;
 extern unsigned int ustuvannja_meas[NUMBER_ANALOG_CANALES], ustuvannja[NUMBER_ANALOG_CANALES], edit_ustuvannja[NUMBER_ANALOG_CANALES];
 
@@ -41,28 +41,26 @@ extern uint32_t bank_sum_sqr_data;
 extern uint64_t sum_sqr_data_irq[NUMBER_ANALOG_CANALES];
 extern uint64_t sum_sqr_data[2][NUMBER_ANALOG_CANALES];
 
-extern volatile unsigned int semaphore_measure_values_low1;
+extern unsigned int semaphore_measure_values_low1;
 
 extern unsigned int number_inputs_for_fix_one_second;
-extern volatile unsigned int measurement[NUMBER_ANALOG_CANALES];
+extern unsigned int measurement[NUMBER_ANALOG_CANALES];
 extern unsigned int measurement_high[2][NUMBER_ANALOG_CANALES], bank_measurement_high;
 extern unsigned int measurement_middle[NUMBER_ANALOG_CANALES]; 
 extern unsigned int measurement_low[NUMBER_ANALOG_CANALES]; 
 
 extern const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2];
 extern const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2];
-extern volatile unsigned int state_inputs;
 extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 extern uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
-//extern uint8_t trigger_active_functions[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)], trigger_active_functions_ctrl[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 extern unsigned char crc_trg_func, crc_trg_func_ctrl;
 extern unsigned int pressed_buttons;
-extern volatile unsigned int activation_function_from_interface;
-extern volatile unsigned int reset_trigger_function_from_interface;
+extern unsigned int activation_function_from_interface;
+extern unsigned int reset_trigger_function_from_interface;
 extern unsigned int diagnostyka_before[3];
-extern volatile unsigned int diagnostyka[3];
-extern volatile unsigned int set_diagnostyka[3];
-extern volatile unsigned int clear_diagnostyka[3];
+extern unsigned int diagnostyka[3];
+extern unsigned int set_diagnostyka[3];
+extern unsigned int clear_diagnostyka[3];
 
 //extern int global_timers[MAX_NUMBER_GLOBAL_TIMERS];
 
@@ -71,7 +69,7 @@ extern unsigned int start_restart;
 extern unsigned char working_ekran[MAX_ROW_LCD][MAX_COL_LCD];
 extern uint16_t rewrite_ekran_once_more;
 
-extern volatile unsigned int new_state_keyboard;
+extern unsigned int new_state_keyboard;
 extern unsigned char time_set_keyboard[NUMBER_KEY_KEYBOARD];
 
 extern uint16_t time_rewrite;
@@ -85,14 +83,14 @@ extern void *p_menu_param_1, *p_menu_param_2;
 extern const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS];
 extern const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS];
 
-extern volatile unsigned int periodical_tasks_TEST_CONFIG;
-extern volatile unsigned int periodical_tasks_TEST_SETTINGS;
-extern volatile unsigned int periodical_tasks_TEST_USTUVANNJA;
-//extern volatile unsigned int periodical_tasks_TEST_TRG_FUNC;
-//extern volatile unsigned int periodical_tasks_TEST_TRG_FUNC_LOCK;
-extern volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR;
-extern volatile unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK;
-extern volatile unsigned int periodical_tasks_TEST_FLASH_MEMORY;
+extern unsigned int periodical_tasks_TEST_CONFIG;
+extern unsigned int periodical_tasks_TEST_SETTINGS;
+extern unsigned int periodical_tasks_TEST_USTUVANNJA;
+extern unsigned int periodical_tasks_TEST_TRG_FUNC;
+extern unsigned int periodical_tasks_TEST_TRG_FUNC_LOCK;
+extern unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR;
+extern unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK;
+extern unsigned int periodical_tasks_TEST_FLASH_MEMORY;
 
 extern const unsigned char odynyci_vymirjuvannja[MAX_NAMBER_LANGUAGE][NUMBER_ODYNYCI_VYMIRJUVANNJA];
 
@@ -119,7 +117,7 @@ extern uint8_t crc_settings;
 extern unsigned int config_settings_modified;
 
 //Змінні для визначеня ресурсу процесора-програми
-extern volatile unsigned int restart_resurs_count;
+extern unsigned int restart_resurs_count;
 extern unsigned int resurs_temp;
 extern unsigned int resurs_global;
 extern unsigned int resurs_global_min;
@@ -159,9 +157,9 @@ extern unsigned char TxBuffer_SPI_DF_copy[SIZE_PAGE_DATAFLASH_MAX + 10];
 extern unsigned int code_operation_copy;
 extern int number_chip_dataflsh_exchange;
 extern __DRIVER_SPI_DF driver_spi_df[NUMBER_DATAFLASH_CHIP];
-extern volatile unsigned int error_into_spi_df;
+extern unsigned int error_into_spi_df;
 extern unsigned int dataflash_not_busy;
-extern volatile unsigned int control_tasks_dataflash;
+extern unsigned int control_tasks_dataflash;
 extern unsigned char buffer_for_manu_read_record[SIZE_ONE_RECORD_PR_ERR];
 extern unsigned char buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 extern unsigned char buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
@@ -171,13 +169,13 @@ extern unsigned int what_we_are_reading_from_dataflash_2;
 
 //Реєстратор програмних помилок
 extern unsigned char crc_info_rejestrator_pr_err;
-extern volatile __INFO_REJESTRATOR info_rejestrator_pr_err;
+extern __INFO_REJESTRATOR info_rejestrator_pr_err;
 extern unsigned char crc_info_rejestrator_pr_err_ctrl;
 extern __INFO_REJESTRATOR info_rejestrator_pr_err_ctrl;
 extern unsigned char buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
 extern volatile unsigned int head_fifo_buffer_pr_err_records;
 extern volatile unsigned int tail_fifo_buffer_pr_err_records;
-extern volatile unsigned int temporary_block_writing_records_pr_err_into_DataFlash;
+extern unsigned int temporary_block_writing_records_pr_err_into_DataFlash;
 extern unsigned int etap_writing_pr_err_into_dataflash;
 extern unsigned int number_recods_writing_into_dataflash_now;
 extern unsigned int number_record_of_pr_err_into_menu;
@@ -185,7 +183,7 @@ extern unsigned int number_record_of_pr_err_into_USB;
 extern unsigned int number_record_of_pr_err_into_RS485;
 
 //Очистка інформації по реєстраторах
-extern volatile unsigned int clean_rejestrators;
+extern unsigned int clean_rejestrators;
 
 extern const uint8_t letters[MAX_NYMBER_EXTENDED_ASCII_SYMBOLS][2];
 extern const uint8_t extra_letters[MAX_NYMBER_EXTRA_EXTENDED_ASCII_SYMBOLS][1 + MAX_NAMBER_LANGUAGE];
@@ -196,12 +194,12 @@ extern int current_language;
 extern unsigned char TxBuffer_RS485[BUFFER_RS485];
 extern unsigned char RxBuffer_RS485[BUFFER_RS485];
 extern int TxBuffer_RS485_count;
-extern int volatile RxBuffer_RS485_count;
+extern int RxBuffer_RS485_count;
 extern int RxBuffer_RS485_count_previous;
 extern uint32_t time_last_receive_byte;
 extern uint32_t max_reaction_time_rs_485;
 extern uint16_t make_reconfiguration_RS_485;
-extern volatile uint16_t number_bits_rs_485_waiting;
+extern uint16_t number_bits_rs_485_waiting;
 extern uint16_t mark_current_tick_RS_485;
 extern unsigned int timeout_idle_RS485;
 
@@ -251,7 +249,7 @@ extern uint16_t type_of_settings_changed_from_interface;
 extern unsigned int serial_number_dev;
 extern unsigned int edit_serial_number_dev;
 
-extern volatile unsigned int control_word_of_watchdog;
+extern unsigned int control_word_of_watchdog;
 extern unsigned int test_watchdogs;
 
 //Змінна глобальної помилки

@@ -274,6 +274,9 @@ void SPI_ADC_IRQHandler(void)
       {
         ustuvannja_meas[k] = ustuvannja[k];
       }
+      
+      //Помічаємо, що зміни прийняті системою захистів
+      changed_ustuvannja = CHANGED_ETAP_NONE;
     }
     /*****************************************************/
 

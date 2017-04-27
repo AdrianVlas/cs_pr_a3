@@ -732,37 +732,63 @@ void control_ustuvannja(void)
 /*****************************************************/
 //Контроль достовірності триґерної інформації
 /*****************************************************/
-//void control_trg_func(void)
-//{
-//  unsigned char crc_trg_func_tmp = 0, temp_value_1;
-//  unsigned char  *point; 
-//  unsigned int i;
-//  
-//  point = (unsigned char*)(trigger_active_functions_ctrl);
-//  i = 0;  
-//  while (i < sizeof(trigger_active_functions_ctrl))
-//  {
-//    temp_value_1 = *(point);
-//    crc_trg_func_tmp += temp_value_1;
-//    point++;
-//    i++;
-//  }
-//  
-//  if (crc_trg_func == crc_trg_func_tmp)
-//  {
-//    //Контроль достовірності юстування пройшов успішно
-//    
-//    //Скидаємо повідомлення у слові діагностики
-//    _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
-//  }
-//  else
-//  {
-//    //Контроль достовірності юстування не пройшов
-//
-//    //Виствляємо повідомлення у слові діагностики
-//    _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
-//  }
-//}
+void control_trg_func(void)
+{
+  unsigned char crc_trg_func_tmp = 0;
+
+  for (__id_fb block_tmp = _ID_FB_FIRST_ALL; block_tmp < _ID_FB_LAST_ALL; block_tmp++)
+  {
+    switch (block_tmp)
+    {
+    case ID_FB_OUTPUT:
+    case ID_FB_LED:
+      {
+        size_t n_max_block = ((block_tmp == ID_FB_OUTPUT) ? current_config_prt.n_output : current_config_prt.n_led);
+        size_t n_max = DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+        for (size_t n_block = 0; n_block < n_max_block; n_block++)
+        {
+          for (size_t n = 0; n < n_max; n++) crc_trg_func_tmp += (((__LN_OUTPUT_LED*)spca_of_p_prt[block_tmp - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp[n];
+        }
+        break;
+      }
+    case ID_FB_ALARM:
+      {
+        size_t n_max_block = current_config_prt.n_alarm;
+        size_t n_max = DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8);
+        for (size_t n_block = 0; n_block < n_max_block; n_block++)
+        {
+          for (size_t n = 0; n < n_max; n++) crc_trg_func_tmp += (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp[n];
+        }
+        break;
+      }
+    case ID_FB_TRIGGER:
+      {
+        size_t n_max_block = current_config_prt.n_trigger;
+        size_t n_max = DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+        for (size_t n_block = 0; n_block < n_max_block; n_block++)
+        {
+          for (size_t n = 0; n < n_max; n++) crc_trg_func_tmp += (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp[n];
+        }
+        break;
+      }
+    }
+  }
+  
+  if (crc_trg_func == crc_trg_func_tmp)
+  {
+    //Контроль достовірності юстування пройшов успішно
+    
+    //Скидаємо повідомлення у слові діагностики
+    _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
+  }
+  else
+  {
+    //Контроль достовірності юстування не пройшов
+
+    //Виствляємо повідомлення у слові діагностики
+    _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
+  }
+}
 /*****************************************************/
 
 /*****************************************************/
@@ -2399,6 +2425,8 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         
         //Зміна конфігурції може змінити розміри налаштувань. а це може вплинути на розміщення триґерної інформації, тому її також записуємо
         _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+        //Скидаємо можливу активну задачу самоконтролю по резервній копії для триґерної інформації
+        periodical_tasks_TEST_TRG_FUNC_LOCK = false;
       }
       
       //Записуємо час останньої зміни конфігурації
