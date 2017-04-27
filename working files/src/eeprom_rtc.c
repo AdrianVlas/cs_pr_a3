@@ -1243,7 +1243,7 @@ void main_routines_for_i2c(void)
       if (index == 0)
       {
         //Весь масив триґерної інформації вже записаний вже записаний
-        
+
         //Скидаємо всі статичні змінні, які використовуютья при записі налаштувань
         block = _ID_FB_FIRST_ALL;
         shift = 0;
@@ -1251,7 +1251,7 @@ void main_routines_for_i2c(void)
         
         shift_from_start_address_trg_func_in_eeprom = 0;
         size_trg_func = 0;
-
+        
         //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
         comparison_writing |= COMPARISON_WRITING_TRG_FUNC;
         _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
@@ -1259,6 +1259,93 @@ void main_routines_for_i2c(void)
 
         //Скидаємо біт команди запису триґерної інформації
         _CLEAR_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+
+        /*Перевірка на те, чи коли ішов запис триґерної інформації, не відбулася зміна триґерної інформації*/
+        unsigned int difference = false;
+
+        for (__id_fb block_tmp = _ID_FB_FIRST_ALL; block_tmp < _ID_FB_LAST_ALL; block_tmp++)
+        {
+          if (difference != false) break;
+                
+          switch (block_tmp)
+          {
+          case ID_FB_OUTPUT:
+          case ID_FB_LED:
+            {
+              size_t n_max_block = ((block_tmp == ID_FB_OUTPUT) ? current_config_prt.n_output : current_config_prt.n_led);
+              size_t n_max = DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+              for (size_t n_block = 0; n_block < n_max_block; n_block++)
+              {
+                if (difference != false) break;
+                
+                uint8_t *array_source = (((__LN_OUTPUT_LED*)spca_of_p_prt[block_tmp - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp;
+                uint8_t *array_target = (((__LN_OUTPUT_LED*)spca_of_p_prt[block_tmp - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state;
+                for (size_t n = 0; n < n_max; n++)
+                {
+                  if (array_target[n] != array_source[n]) 
+                  {
+                    difference = true;
+                    break;
+                  }
+                }
+              }
+              break;
+            }
+          case ID_FB_ALARM:
+            {
+              size_t n_max_block = current_config_prt.n_alarm;
+              size_t n_max = DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8);
+              for (size_t n_block = 0; n_block < n_max_block; n_block++)
+              {
+                if (difference != false) break;
+                
+                uint8_t *array_source = (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp;
+                uint8_t *array_target = (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state;
+                for (size_t n = 0; n < n_max; n++)
+                {
+                  if (array_target[n] != array_source[n]) 
+                  {
+                    difference = true;
+                    break;
+                  }
+                }
+              }
+              break;
+            }
+          case ID_FB_TRIGGER:
+            {
+              size_t n_max_block = current_config_prt.n_trigger;
+              size_t n_max = DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+              for (size_t n_block = 0; n_block < n_max_block; n_block++)
+              {
+                if (difference != false) break;
+                
+                uint8_t *array_source = (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp;
+                uint8_t *array_target = (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state;
+                for (size_t n = 0; n < n_max; n++)
+                {
+                  if (array_target[n] != array_source[n]) 
+                  {
+                    difference = true;
+                    break;
+                  }
+                }
+              }
+              break;
+            }
+          }
+        }
+        
+        if (difference != false)
+        {
+          /*Є зміни! Повтрно запускаємо процес запису триґерної інформації*/
+          _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+
+          /*Ця операція зараз недоцільна*/
+          comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);
+          _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
+        }
+        /***/
       }
       else
       {
