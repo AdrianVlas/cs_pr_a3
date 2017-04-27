@@ -4,7 +4,14 @@ typedef long(*fnPLpvrL)(long l,void *pv);
 //-  pointer to a exec function two param long void* return long
 typedef void(*fnPpvrV)(void *pv);
 typedef void(*fnPVrV) (void *pv);
-
+enum FIX_LED_NAMES_BITS{
+    LED_IDX_BLOCK_BIT   = 24,
+    LED_IDX_ALARM_BIT   = 25,
+    LED_IDX_MUTE_BIT    = 1,
+    LED_IDX_EROR_C_BIT  = 23,
+    LED_IDX_EROR_NC_BIT = 1,
+    LED_IDX_RUN_BIT     = 22
+};
 
 typedef struct TmrNode_t{
     long lTmrVal;
@@ -17,7 +24,7 @@ typedef union {
     unsigned long int  ul_val;         //
 } UI32Bit;
 extern const char CH_AMOUNT_DI ;
-typedef struct LedSuit_tag{
+typedef struct DiHrdStateData_tag{
 char arChDurationDI[19];//Time-out for apopriate DI
 UI32Bit DiTypeSignal;//OFF_BYTE_TypeSignal
 
@@ -57,7 +64,7 @@ extern long PopTmrNode(TmrNode *pNode);
 extern long CuttingList(TmrNode *pNode);
 //Removing a specific item
 extern long DecreaseTmrList(TmrNode *pNode,long lPos);
-
+extern void ClrTmrVars(void);
 //counter for 2ms Timers
 //Pointer on Firsst
 
@@ -80,6 +87,7 @@ extern void RdHrdIn  (void *pv);
 extern void SetHrdOut(void *pv);
 extern void SetHrdLed(void *pv);
 extern void UpdateStateDI (void);
+extern void UpdateDICfgSuit(long lIdxDi, long lTypeSignal, long lDurationDI );
 
 long LedAuxOp1(long l,void *pv);
 long LedAuxOp2(long l,void *pv);

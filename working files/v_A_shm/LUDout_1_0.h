@@ -19,9 +19,8 @@ public:
     CLUDout_1_0(CLUDout_1_0&);
     CLUDout_1_0(char chM, char chI);
 	void CalcReleySchematic(void);
-    char* arrPchIn[shCLUDout_1_0_AmtIn]; //
-    char* arrPchSchIn[TOTAL_RELE_VISIO_IN];//
-	char* arrPchAlternator[2];//
+    char* arrPchIn[TOTAL_RELE_VISIO_IN]; //
+    char* arrPchSchIn[shCLUDout_1_0_AmtIn];//
 	char  arrOut  [TOTAL_RELE_VISIO_OUTPUT];//Trash field
 	ReleyCfgSuit m_ReleyCfgSuit;
     friend void PUT_Op_1_0(void *pObj);

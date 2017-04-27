@@ -1,4 +1,4 @@
-
+#include <string.h>
 #include "prtTmr.h"
 const unsigned char uCh_MAX_Amt_1_MS_TMR  = 200;
 
@@ -23,7 +23,12 @@ short  sh1MsRegisteredTimers;
 TmrNode *pHeadTmrNode = (TmrNode*)0; //Pointer on Firsst
 TmrNode *pTailTmrNode = (TmrNode*)0;
 TmrNode *PCurrNode    = (TmrNode*)0;
-
+void ClrTmrVars(void){
+pHeadTmrNode = (TmrNode*)0;
+pTailTmrNode = (TmrNode*)0;
+PCurrNode    = (TmrNode*)0;
+sh1MsRegisteredTimers = 0;
+}
 void  TmrCalls(void){
    
     register TmrNode *pNode;
@@ -197,19 +202,21 @@ void RdHrdIn(void *pv){
     ((UI32Bit*) pv)->ar_uch[0] = (char)i;
     pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO__REL_1_6<<1));
     i = *((short*)pvRlc);//9-15 bits
-    j = i & 600;
-    j >>= 3; 
-    ((UI32Bit*) pv)->ar_uch[0] |= (char)j;//6,7 - 9-10
-    ((UI32Bit*) pv)->ar_uch[1] = (i >> 3);//8-12
+	i &= 0xfe00;
+    j = i & 0xe00;
+    j >>= 4; 
+    ((UI32Bit*) pv)->ar_uch[0] |= (char)j;//6,78 - 9-10 <-Add 3 bita
+    ((UI32Bit*) pv)->ar_uch[1] = (i >> 12);//8-12        <-Set 4 bita 9-12
     pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_READ_DIN06__12<<1));
     i = *((char*)pvRlc);//13-17 5bit
-    j = i & 0x7;
-    ((UI32Bit*) pv)->ar_uch[1] |= (j<<5);
-    ((UI32Bit*) pv)->ar_uch[2] = i>>3;
+    j = i & 0x1f;
+    ((UI32Bit*) pv)->ar_uch[1] |= (j<<4);
+    ((UI32Bit*) pv)->ar_uch[2] = j>>4;//Only 1 bit
     pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO_REL7_REL14<<1));
     i = *((short*)pvRlc);
+	//i &=
     j = i>>14;
-    ((UI32Bit*) pv)->ar_uch[2] |= (j<<2);
+    ((UI32Bit*) pv)->ar_uch[2] |= (j<<1);//Add 2 bit
 /*
 sLV.pLAdr4 = reinterpret_cast<char*>( NOR_PSRAM_BANK2);
 sLV.pLAdr4 += ADR_READ_DIN06__12<<1;
@@ -286,24 +293,27 @@ extern void SetHrdLed(void*pv);
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //////////////////////////////////////////////////////////////////////////////////////////
 void SetHrdLed(void*pv){
-register long i,j;
+register long i;
  //   register void *pvRlc;
     fnPLpvrL CurrAuxfunc; // 
     volatile long lAuxVar = 0;
     //volatile LedRegCode lcsLedRegCode;
+
     i = chCounterLedService + 1;
     if (i >= chNumIndependentParts){
         i = chCounterLedService = 0;
         lGlbOperationReflector = 0;
-        LedRawStateUI32Bit.ul_val = LedStateUI32Bit.ul_val;
+		
+        //LedRawStateUI32Bit.ul_val = //LedStateUI32Bit.ul_val;
+        LedRawStateUI32Bit.ul_val = ((UI32Bit *) pv)->ul_val;
     } else{
         chCounterLedService = i;
     }
 
     i = chCounterLedService;
     CurrAuxfunc = arrFnPtr[i];
-    j = CurrAuxfunc(i, (void*) &LedRawStateUI32Bit.ul_val);
-
+    CurrAuxfunc(i, (void*) &LedRawStateUI32Bit.ul_val);
+//Check Result if Need!?
 }
 
 
@@ -319,9 +329,16 @@ char arTimerDi[19] = {
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
 DICfgSuit sDiCfg;
+void UpdateDICfgSuit(long lIdxDi, long lTypeSignal, long lDurationDI ){
+register long i;
+sDiCfg.arChDurationDI[lIdxDi] = lDurationDI;
+i = sDiCfg.DiTypeSignal.ul_val;
+i&= ~(1<< lIdxDi);
+i|=  lTypeSignal<<lIdxDi;
+sDiCfg.DiTypeSignal.ul_val   = i;
+}
 
-
-
+static char chCmpVal = 123;
 static long lCtr = 0; //char chTestStateIn = 1;char chOut;
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //---
@@ -350,6 +367,11 @@ void UpdateStateDI (void){
     sDiCfg.pDITmr = arTimerDi;
     pDICfgSuit->DiHrdStateUI32Bit.ul_val = DiHrdStateUI32Bit.ul_val;
     for (i = 0; i < CH_AMOUNT_DI; i++){
+	if(i == chCmpVal){
+            asm(
+            "bkpt 1"
+            );
+        }
         //Check Type Signal
         if (pDICfgSuit->DiTypeSignal.ul_val & (1 << i)){
             //Alternate Current
@@ -577,7 +599,7 @@ return i;
 }
 long LedAuxOp5(long l,void *pv){
     register long i;
-	register void *pvRlc;
+	//register void *pvRlc;
         i = lGlbOperationReflector;
     i |= 1<<l;
     lGlbOperationReflector = i;

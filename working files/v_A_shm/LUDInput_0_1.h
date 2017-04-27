@@ -6,6 +6,8 @@ class CLUDInput_0_1 :
 	public CLUBase
 {
 public:
+bool bbTypeSig;//Alternate or Direct false-Direct true- alternate
+short shTDelay; //DopuskDV
 	CLUDInput_0_1(void);
 	~CLUDInput_0_1(void);
 	CLUDInput_0_1(CLUDInput_0_1&);

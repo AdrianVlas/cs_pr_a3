@@ -314,9 +314,10 @@ inline void main_protection(void)
   }
   /**************************/
   RdHrdIn((void*)&DiHrdStateUI32Bit);
+  
   SetHrdOut((void*)&DoStateUI32Bit);
   SetHrdLed((void*)&LedStateUI32Bit);
-  TmrCalls();
+  //TmrCalls();
   DoCalcWrp();
   /**************************/
   //Опрацьовуємо натиснуті кнопки

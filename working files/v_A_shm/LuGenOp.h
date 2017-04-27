@@ -10,6 +10,8 @@ LU_GEN_OP_NOT,
 LU_GEN_OP_RS_TRIGGER,
 LU_GEN_OP_D_TRIGGER_TYPE3,
 LU_GEN_OP_D_TRIGGER,
+LU_GEN_OP_DELAY1,
+LU_GEN_OP_PULSE,
 LU_GEN_OP_EV_FIX_IBUS
 };
 
@@ -22,6 +24,7 @@ typedef struct LU_SCHEMAS_DSC_Info_tag{
 char chAmtIn;
 char chAmtOut;
 char chTypeOperation;
+char chOrderNumLU;
 LUShcemasInDataDsc const *pInputDscData; 
 }LedShcemasDscRecord;
 typedef struct LU_SCHEMAS_DSC_Info_tagg{

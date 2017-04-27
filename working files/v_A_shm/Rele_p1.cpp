@@ -8,9 +8,9 @@ OFFSET_OUT_RELE_And02__2_1,
 OFFSET_OUT_RELE_And03__2_1, 
 OFFSET_OUT_RELE_And04__2_1, 
 OFFSET_OUT_RELE_Or_05__2_1, 
-OFFSET_OUT_RELE_RS_06__2_2, 
-OFFSET_OUT_RELE_And07__2_1, 
-OFFSET_OUT_RELE_Or_08__2_1, 
+OFFSET_OUT_RELE_D_TRG_06__2_2,
+OFFSET_OUT_RELE_Or_07__2_1, 
+OFFSET_OUT_RELE_And08__2_1,  
 OFFSET_OUT_RELE_And09__2_1, 
 OFFSET_OUT_RELE_And10__2_1, 
 OFFSET_OUT_RELE_And11__2_1,
@@ -40,110 +40,111 @@ const LUShcemasInDataDsc arNot01__1_1InDataDsc[1] = {
 IN_RELE__RIN, 0
 };
 const LedShcemasDscRecord Not01__1_1DscRec = {
-1,1,LU_GEN_OP_NOT,
+1,1,LU_GEN_OP_NOT,RELE_Not01__1_1,
 &arNot01__1_1InDataDsc[0]
 };
 //RELE_And02__2_1, 
 const LUShcemasInDataDsc arAnd02__2_1InDataDsc[2] = {
-{IN_RELE__RIN, 0},{IN_RELE_NORMAL_SELECTOR,0}
+{RELE_Not01__1_1, 0},{IN_RELE__RESET,0}
 };
 
 const LedShcemasDscRecord And02__2_1DscRec = {
-2,1,LU_GEN_OP_AND,
+2,1,LU_GEN_OP_AND,RELE_And02__2_1,
 &arAnd02__2_1InDataDsc[0]
 };
 
 //RELE_And03__2_1, 
 const LUShcemasInDataDsc arAnd03__2_1InDataDsc[2] = {
-{IN_RELE__RIN, 0},{IN_RELE_TRIGGER_SELECTOR,0}
+{IN_RELE__RIN, 0},{IN_RELE_NORMAL_SELECTOR,0}
 };
 
 const LedShcemasDscRecord And03__2_1DscRec = {
-2,1,LU_GEN_OP_AND,
+2,1,LU_GEN_OP_AND,RELE_And03__2_1, 
 &arAnd03__2_1InDataDsc[0]
 };
 
 //RELE_And04__2_1, 
 const LUShcemasInDataDsc arAnd04__2_1InDataDsc[2] = {
-{IN_RELE__RESET, 0},{RELE_Not01__1_1,0}
+{IN_RELE__RIN, 0},{IN_RELE_TRIGGER_SELECTOR,0}
 };
 
 const LedShcemasDscRecord And04__2_1DscRec = {
-2,1,LU_GEN_OP_AND,
+2,1,LU_GEN_OP_AND,RELE_And04__2_1,
 &arAnd04__2_1InDataDsc[0]
 };
 
 //RELE_Or_05__2_1, 
 const LUShcemasInDataDsc arOr_05__2_1InDataDsc[2] = {
-{IN_RELE_PULSE_SIMPLE_SELECTOR, 0},{IN_RELE_PULSE_EXTANDED_SELECTOR,0}//not Led In
+{IN_RELE_NORMAL_SELECTOR, 0},{RELE_And02__2_1,0}//not Led In
 };
 const LedShcemasDscRecord Or_05__2_1DscRec = {
-2,1,LU_GEN_OP_OR,
+2,1,LU_GEN_OP_OR,RELE_Or_05__2_1,
 &arOr_05__2_1InDataDsc[0]
 }; 
-//RELE_RS_06__2_2, 
-const LUShcemasInDataDsc arRS_06__2_2InDataDsc[2] = {
-{RELE_And03__2_1, 0},{RELE_And04__2_1,0}//not Led In
+//RELE_D_TRG_06__3_2, 
+const LUShcemasInDataDsc arD_TRG_06__3_2InDataDsc[3] = {
+{IN_VCC,0},{RELE_And04__2_1,0},{RELE_Or_05__2_1, 0}
 };
-const LedShcemasDscRecord RS_06__2_2DscRec = {
-2,2,LU_GEN_OP_RS_TRIGGER,
-&arRS_06__2_2InDataDsc[0]
-}; 
-//RELE_And07__2_1, 
-const LUShcemasInDataDsc arAnd07__2_1InDataDsc[2] = {
+const LedShcemasDscRecord D_TRG_06__3_2DscRec = {
+3,2,LU_GEN_OP_RS_TRIGGER,RELE_D_TRG_06__2_2,
+&arD_TRG_06__3_2InDataDsc[0]
+};
+//RELE_Or_07__2_1, 
+const LUShcemasInDataDsc arOr_07__2_1InDataDsc[2] = {
+{RELE_And03__2_1, 0},{RELE_D_TRG_06__2_2,0}//not Led In
+};
+const LedShcemasDscRecord Or_07__2_1DscRec = {
+2,1,LU_GEN_OP_OR,RELE_Or_07__2_1,
+&arOr_07__2_1InDataDsc[0]
+};
+//RELE_And08__2_1, 
+const LUShcemasInDataDsc arAnd08__2_1InDataDsc[2] = {
 {IN_RELE__BL_IMP, 0},{IN_RELE_PULSE_SELECTOR,0}
 };
 
-const LedShcemasDscRecord And07__2_1DscRec = {
-2,1,LU_GEN_OP_AND,
-&arAnd07__2_1InDataDsc[0]
+const LedShcemasDscRecord And08__2_1DscRec = {
+2,1,LU_GEN_OP_AND,RELE_And08__2_1,
+&arAnd08__2_1InDataDsc[0]
 };
-//RELE_Or_08__2_1, 
-const LUShcemasInDataDsc arOr_08__2_1InDataDsc[2] = {
-{RELE_And02__2_1, 0},{RELE_RS_06__2_2,0}//not Led In
-};
-const LedShcemasDscRecord Or_08__2_1DscRec = {
-2,1,LU_GEN_OP_OR,
-&arOr_08__2_1InDataDsc[0]
-}; 
+ 
 //RELE_And09__2_1, 
 const LUShcemasInDataDsc arAnd09__2_1InDataDsc[2] = {
 {IN_RELE__C1_C2, 0},{IN_RELE_PULSE_EXTANDED_SELECTOR,0}//not Led In
 };
 const LedShcemasDscRecord And09__2_1DscRec = {
-2,1,LU_GEN_OP_AND,
+2,1,LU_GEN_OP_AND,RELE_And09__2_1,
 &arAnd09__2_1InDataDsc[0]
 };
 //RELE_And10__2_1, 
 const LUShcemasInDataDsc arAnd10__2_1InDataDsc[2] = {
-{IN_RELE_STABLE_SELECTOR, 0},{RELE_Or_08__2_1,0}//not Led In
+{IN_RELE_STABLE_SELECTOR, 0},{RELE_Or_07__2_1,0}//not Led In
 };
 const LedShcemasDscRecord And10__2_1DscRec = {
-2,1,LU_GEN_OP_AND,
+2,1,LU_GEN_OP_AND,RELE_And10__2_1,
 &arAnd10__2_1InDataDsc[0]
 };
 //RELE_And11__2_1,
 const LUShcemasInDataDsc arAnd11__2_1InDataDsc[2] = {
-{IN_RELE_PULSE_SELECTOR, 0},{RELE_Or_08__2_1,0}//not Led In
+{IN_RELE_PULSE_SELECTOR, 0},{RELE_Or_07__2_1,0}//not Led In
 };
 const LedShcemasDscRecord And11__2_1DscRec = {
-2,1,LU_GEN_OP_AND,
+2,1,LU_GEN_OP_AND,RELE_And11__2_1,
 &arAnd11__2_1InDataDsc[0]
 };
 //RELE_Or_12__2_1,
 const LUShcemasInDataDsc arOr_12__2_1InDataDsc[2] = {
-{IN_RELE_C1, 0},{RELE_And07__2_1,0}//not Led In
+{IN_RELE_C1, 0},{RELE_And08__2_1,0}//not Led In
 };
 const LedShcemasDscRecord Or_12__2_1DscRec = {
-2,1,LU_GEN_OP_OR,
+2,1,LU_GEN_OP_OR,RELE_Or_12__2_1,
 &arOr_12__2_1InDataDsc[0]
 };
 //RELE_Or_13__2_1,
 const LUShcemasInDataDsc arOr_13__2_1InDataDsc[2] = {
-{IN_RELE_C2, 0},{RELE_And07__2_1,0}//not Led In
+{IN_RELE_C2, 0},{RELE_And08__2_1,0}//not Led In
 };
 const LedShcemasDscRecord Or_13__2_1DscRec = {
-2,1,LU_GEN_OP_OR,
+2,1,LU_GEN_OP_OR,RELE_Or_13__2_1,
 &arOr_13__2_1InDataDsc[0]
 };
 //RELE_Not14__1_1,
@@ -151,7 +152,7 @@ const LUShcemasInDataDsc arNot14__1_1InDataDsc[1] = {
 RELE_And09__2_1, 0
 };
 const LedShcemasDscRecord Not14__1_1DscRec = {
-1,1,LU_GEN_OP_NOT,
+1,1,LU_GEN_OP_NOT,RELE_Not14__1_1,
 &arNot14__1_1InDataDsc[0]
 };
 //RELE_And15__3_1,
@@ -159,7 +160,7 @@ const LUShcemasInDataDsc arAnd15__3_1InDataDsc[3] = {
 {RELE_And11__2_1, 0},{RELE_Or_12__2_1,0},{RELE_Not14__1_1,0}//not Led In
 };
 const LedShcemasDscRecord And15__3_1DscRec = {
-3,1,LU_GEN_OP_AND,
+3,1,LU_GEN_OP_AND,RELE_And15__3_1,
 &arAnd15__3_1InDataDsc[0]
 };
 //RELE_And16__3_1,
@@ -167,7 +168,7 @@ const LUShcemasInDataDsc arAnd16__3_1InDataDsc[3] = {
 {RELE_And11__2_1, 0},{RELE_Or_13__2_1,0},{RELE_And09__2_1,0}//not Led In
 };
 const LedShcemasDscRecord And16__3_1DscRec = {
-3,1,LU_GEN_OP_AND,
+3,1,LU_GEN_OP_AND,RELE_And16__3_1,
 &arAnd16__3_1InDataDsc[0]
 };
 //RELE_Or_17__3_1,
@@ -175,7 +176,7 @@ const LUShcemasInDataDsc arOr17__3_1InDataDsc[3] = {
 {RELE_And10__2_1, 0},{RELE_And15__3_1,0},{RELE_And16__3_1,0}//not Led In
 };
 const LedShcemasDscRecord Or17__3_1DscRec = {
-3,1,LU_GEN_OP_OR,
+3,1,LU_GEN_OP_OR,RELE_Or_17__3_1,
 &arOr17__3_1InDataDsc[0]
 };
 //IN_RELE_NORMAL_SELECTOR,
@@ -203,9 +204,9 @@ const LedShcemasDscRecord* const arPReleShcemasDscRecords[] = {
 &And03__2_1DscRec,
 &And04__2_1DscRec,
 &Or_05__2_1DscRec,
-&RS_06__2_2DscRec,
-&And07__2_1DscRec,
-&Or_08__2_1DscRec,
+&D_TRG_06__3_2DscRec,
+&Or_07__2_1DscRec,
+&And08__2_1DscRec,
 &And09__2_1DscRec,
 &And10__2_1DscRec,
 &And11__2_1DscRec,
