@@ -211,6 +211,9 @@ typedef struct
   uint8_t active_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8)];
   uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8)];
 
+  uint8_t d_trigger_state[DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)];
+  uint8_t d_trigger_state_tmp[DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)];
+
 } __LN_OUTPUT_LED;
 /**********/
 
@@ -243,6 +246,9 @@ typedef struct
   int32_t work_delay[ALARM_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8)];
   uint8_t trigger_state[DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8)];
+
+  uint8_t d_trigger_state[DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)];
+  uint8_t d_trigger_state_tmp[DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)];
 
 } __LN_ALARM;
 /**********/
@@ -393,6 +399,9 @@ typedef struct
   
   uint8_t active_state[DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8)];
   uint8_t trigger_state[DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8)];
+
+  uint8_t d_trigger_state[DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)];
+  uint8_t d_trigger_state_tmp[DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)];
   
 } __LN_TRIGGER;
 /**********/

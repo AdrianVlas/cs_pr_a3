@@ -16,6 +16,7 @@ CMuteAlarmLed::~CMuteAlarmLed(void) {
 void CMuteAlarmLed::UpdateMuteAlarmLed(void) {
 }
 char chGBL_BP_StopMuteAlarmLed = 0;
+//char ch
 void CMuteAlarmLed::EvalMuteAlarmLed(void) {
 long lStateLed;
 MuteAlarmInOutParam locMuteAlarmInOutParam;
@@ -45,13 +46,16 @@ char arrChCmd[TOTAL_MUTE_ALARM_LED_IN];
    
 //State Led
     lStateLed = MUTE_ALARM_HIDE;
-    if(locMuteAlarmInOutParam.pChBlock[0]>0)
+    //if(locMuteAlarmInOutParam.pChBlock[0]>0)
+    if(sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__BLOCK - 1]>0)
      lStateLed = MUTE_ALARM_GREEN;
     else{
-     if(locMuteAlarmInOutParam.pChAlarm[0]>0)
+     //if(locMuteAlarmInOutParam.pChAlarm[0]>0)
+     if( sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__ALARM - 1])
      lStateLed = MUTE_ALARM_RED;
      else 
-     if(locMuteAlarmInOutParam.pChMute[0]>0)
+    // if(locMuteAlarmInOutParam.pChMute[0]>0)
+     if( sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__MUTE  - 1])
      lStateLed = MUTE_ALARM_YELLOW;
     } 
     LedStateUI32Bit.ul_val &= static_cast<unsigned long>(

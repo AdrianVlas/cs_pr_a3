@@ -10,7 +10,7 @@
   2 - не запущений обмін через помилки на i2C
 */
 /*****************************************************/
-unsigned int start_write_buffer_via_I2C(uint32_t device_id, uint16_t WriteAddr,  uint8_t volatile* pBuffer, uint32_t number)
+unsigned int start_write_buffer_via_I2C(uint32_t device_id, uint16_t WriteAddr,  uint8_t *pBuffer, uint32_t number)
 {
   unsigned int error = 0; //0 - успішно виконано; 1 - лінія зайнята; 2 - інші помилки
   //Перевіряємо чи у процесі аналізу попередньої транзакції скинуті попередні помилки
@@ -93,7 +93,7 @@ unsigned int start_write_buffer_via_I2C(uint32_t device_id, uint16_t WriteAddr, 
   2 - не запущений обмін через помилки на i2C
 */
 /*****************************************************/
-unsigned int start_read_buffer_via_I2C(uint32_t device_id, uint16_t ReadAddr, uint8_t volatile* pBuffer, uint32_t number)
+unsigned int start_read_buffer_via_I2C(uint32_t device_id, uint16_t ReadAddr, uint8_t *pBuffer, uint32_t number)
 {
   unsigned int error = 0; //0 - успішно виконано; 1 - лінія зайнята; 2 - інші помилки
   //Перевіряємо чи у процесі аналізу попередньої транзакції скинуті попередні помилки
@@ -183,7 +183,11 @@ void main_routines_for_i2c(void)
   //Статична змінна, яка вказує який блок юстування треба записувати у EEPROM
   static unsigned int number_block_ustuvannja_write_to_eeprom;
   //Статична змінна, яка вказує який блок триґерної інформації треба записувати у EEPROM
-//  static unsigned int number_block_trg_func_write_to_eeprom;
+  static unsigned int number_block_trg_func_write_to_eeprom;
+  //Статична змінна, яка вказує з якої адреси треба почати записувати триґерну інформацію у EEPROM
+  static size_t shift_from_start_address_trg_func_in_eeprom;
+  //Статична змінна, яка вказує скільки байт триґерних функцій підготовлено для запису у EEPROM
+  static size_t size_trg_func;
   //Статична змінна, яка вказує який блок інформації по реєстраторі програмних подій треба записувати у EEPROM
   static unsigned int number_block_info_rejestrator_pr_err_write_to_eeprom;
   
@@ -396,50 +400,42 @@ void main_routines_for_i2c(void)
         _CLEAR_BIT(control_i2c_taskes, TASK_WRITING_USTUVANNJA_EEPROM_BIT);
       }
     }
-//    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT) !=0)
-//    {
-//      //Стоїть умова запису блоку триґерної інформації
-//
-//      int size_to_end;
-//      unsigned int rez, offset_from_start;
-//      
-//      //Визначаємо з якого місця треба почати записувати
-//      offset_from_start = number_block_trg_func_write_to_eeprom*SIZE_PAGE_EEPROM;
-//
-//      //Кількість байт до кінця буферу 
-//      size_to_end = (sizeof(trigger_active_functions) + 1) - offset_from_start; 
-//      
-//      if (size_to_end > 0)
-//      {
-//        if (size_to_end < SIZE_PAGE_EEPROM)
-//          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_TRG_FUNC + offset_from_start), (read_write_i2c_buffer + offset_from_start), size_to_end);
-//        else
-//          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_TRG_FUNC + offset_from_start), (read_write_i2c_buffer + offset_from_start), SIZE_PAGE_EEPROM);
-//        
-//        //Аналізуємо успішність запуску нового запису
-//        if (rez > 1)
-//        {
-//          error_start_i2c();          
-//          
-//          //Покищо просто очищаємо змінну, яка конкретизуєм помилку, у майбутньому її можна буде конкретизувати
-//          type_error_of_exchanging_via_i2c = 0;
-//        }
-//        else if (rez == 0) _SET_BIT(clear_diagnostyka, ERROR_START_VIA_I2C_BIT);
-//      }
-//      else
-//      {
-//        //Весь масив вже записаний
-//       
-//        //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
-//        comparison_writing |= COMPARISON_WRITING_TRG_FUNC;
-//        _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
-//        _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
-//
-//        //Cкидаємо умову запису інформації аналогового реєстратора у EEPROM
-//        _CLEAR_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT);
-//      }
-//      
-//    }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT) !=0)
+    {
+      //Стоїть умова запису блоку у EEPROM триґерної інформації
+
+      int size_to_end;
+      unsigned int rez, offset_from_start;
+      
+      //Визначаємо з якого місця треба почати записувати
+      offset_from_start = number_block_trg_func_write_to_eeprom*SIZE_PAGE_EEPROM;
+
+      //Кількість байт до кінця буферу 
+      size_to_end = size_trg_func - offset_from_start; 
+      
+      if (size_to_end > 0)
+      {
+        if (size_to_end < SIZE_PAGE_EEPROM)
+          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_TRG_FUNC + shift_from_start_address_trg_func_in_eeprom + offset_from_start), (read_write_i2c_buffer + offset_from_start), size_to_end);
+        else
+          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_TRG_FUNC + shift_from_start_address_trg_func_in_eeprom + offset_from_start), (read_write_i2c_buffer + offset_from_start), SIZE_PAGE_EEPROM);
+        
+        //Аналізуємо успішність запуску нового запису
+        if (rez > 1)
+        {
+          error_start_i2c();          
+          
+          //Покищо просто очищаємо змінну, яка конкретизуєм помилку, у майбутньому її можна буде конкретизувати
+          type_error_of_exchanging_via_i2c = 0;
+        }
+        else if (rez == 0) _SET_BIT(clear_diagnostyka, ERROR_START_VIA_I2C_BIT);
+      }
+      else
+      {
+        //Порція масиву триґерної інформації вже записана
+        _CLEAR_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT);
+      }
+    }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) !=0)
     {
       //Стоїть умова запису блоку інформації реєстратора програмних подій у EEPROM
@@ -699,31 +695,119 @@ void main_routines_for_i2c(void)
         _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_USTUVANNJA_EEPROM_BIT);
       }
     }
-//    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT) !=0)
-//    {
-//      unsigned int rez;
-//
-//      //Запускаємо процес читання
-//      rez = start_read_buffer_via_I2C(EEPROM_ADDRESS, START_ADDRESS_TRG_FUNC, read_write_i2c_buffer, (sizeof(trigger_active_functions) + 1));
-//      
-//      //Аналізуємо успішність запуску
-//      if (rez > 1)
-//      {
-//        error_start_i2c();
-//        
-//        //Покищо просто очищаємо змінну, яка конкретизуєм помилку, у майбутньому її можна буде конкретизувати
-//        type_error_of_exchanging_via_i2c = 0;
-//      }
-//      else if (rez == 0)
-//      {
-//        _SET_BIT(clear_diagnostyka, ERROR_START_VIA_I2C_BIT);
-//
-//        //При успішнопу запуску читання скидаємо біт запуску читання і виставляємо біт процесу читання
-//        _SET_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
-//        _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
-//        _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
-//      }
-//    }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT) !=0)
+    {
+      //Запускаємо процес читання триґерної інформації
+      static __id_fb block;
+      static unsigned int shift;
+
+      if (
+          (shift_from_start_address_trg_func_in_eeprom == 0) &&
+          (size_trg_func == 0)  
+         )   
+      {
+        block = _ID_FB_FIRST_ALL;
+        shift = 0;
+      }
+      
+      if (size_trg_func == 0)
+      {
+        //Якщо ця статична змінна size_trg_func рівна нулю, то це ознаає що прочитані дані вже оброблені і можна читати наступний блок
+        size_t size_of_data = 0;
+        size_t size = 0;
+        while(
+              (size < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
+              (block < _ID_FB_LAST_ALL)
+             )
+        {
+          //Визначаємо розмір нового блоку
+          switch (block)
+          {
+          case ID_FB_OUTPUT:
+          case ID_FB_LED:
+            {
+              size_of_data = ((block == ID_FB_OUTPUT) ? current_config_prt.n_output : current_config_prt.n_led)*DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8);
+              break;
+            }
+          case ID_FB_ALARM:
+            {
+              size_of_data = current_config_prt.n_alarm*DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8);
+              break;
+            }
+          case ID_FB_TRIGGER:
+            {
+              size_of_data = current_config_prt.n_trigger*DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+              break;
+            }
+          default:
+            {
+              size_of_data = 0;
+            }
+          }
+      
+          size_t size_tmp = size + (size_of_data - shift);
+          if (size_tmp <= SIZE_BUFFER_FOR_EEPROM_EXCHNGE) 
+          {
+            shift = 0;
+            block++;
+            size = size_tmp;
+          }
+          else
+          {
+            shift += SIZE_BUFFER_FOR_EEPROM_EXCHNGE - size;
+            size = SIZE_BUFFER_FOR_EEPROM_EXCHNGE;
+          }
+        }
+        size_trg_func = size;
+      }
+      
+      if (
+          (size_trg_func < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
+          (block == _ID_FB_LAST_ALL)
+         )   
+      {
+        //Додаємо ще контрольу суму для читання
+        size_trg_func++;
+        block++; /*це робимо для того, щоб коли наступний раз попадемо у цю частину програми, то не додавти ще один байтт для читання, а скинути всі статичні змінні і завршити процедуру читання*/
+
+      }
+      
+      if (size_trg_func != 0) 
+      {
+        /*Тепер вже нерівність нулю цієї статичної змінної означає, що є що читати*/
+        unsigned int rez = start_read_buffer_via_I2C(EEPROM_ADDRESS, START_ADDRESS_TRG_FUNC + shift_from_start_address_trg_func_in_eeprom, read_write_i2c_buffer, size_trg_func);
+        //Аналізуємо успішність запуску нового запису
+        if (rez > 1)
+        {
+          error_start_i2c();
+        
+          //Покищо просто очищаємо змінну, яка конкретизуєм помилку, у майбутньому її можна буде конкретизувати
+          type_error_of_exchanging_via_i2c = 0;
+        }
+        else if (rez == 0)
+        {
+          _SET_BIT(clear_diagnostyka, ERROR_START_VIA_I2C_BIT);
+
+          //При успішнопу запуску читання виставляємо біт процесу читання триґерних функцій
+          _SET_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
+          _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
+        }
+      }
+      else
+      {
+        //Скидаємо всі статичні змінні, які використовуютья при записі триґерних функцій
+        block = _ID_FB_FIRST_ALL;
+        shift = 0;
+
+        shift_from_start_address_trg_func_in_eeprom = 0;
+        size_trg_func = 0;
+
+        //Знімаємо можливу сигналізацію, що виконувалося порівнняння
+        comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);
+        //Скидаємо біт команди читання триґерних функцій
+        _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
+      }
+    }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) !=0)
     {
       unsigned int rez;
@@ -1034,43 +1118,248 @@ void main_routines_for_i2c(void)
       //Виставляємо перший блок юстування запису у EEPROM
       number_block_ustuvannja_write_to_eeprom = 0;
     }
-//    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT) !=0)
-//    {
-//      //Стоїть умова початку нового запису у EEPROM по триґерній інформації
-//      
-//      //Скидаємо біт запуску нового запису і виставляємо біт запису блоків у EEPROM з блокуванням, щоб запуск почався з синхронізацією
-//      _SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT);
-//      _SET_BIT(control_i2c_taskes, TASK_BLK_WRITING_EEPROM_BIT);
-//      _CLEAR_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
-//      
-//      //Робимо копію записуваної інформації для контролю
-//
-//      //Готуємо буфер для запису настройок у EEPROM разом з контрольноюсумою
-//      unsigned char crc_eeprom_trg_func = 0, temp_value;
-//      unsigned char  *point_1; 
-//      unsigned char  *point_2;
-//      unsigned int offset = 0;
-//
-//      //Додаємо триґерні функції
-//      point_1 = (unsigned char*)(&trigger_active_functions); 
-//      point_2 = (unsigned char*)(&trigger_active_functions_comp);
-//      for (unsigned int i =0; i < sizeof(trigger_active_functions); i++)
-//      {
-//        temp_value = *(point_1);
-//        *(point_2) = temp_value;
-//        point_1++;
-//        point_2++;
-//        read_write_i2c_buffer[offset + i] = temp_value;
-//        crc_eeprom_trg_func += temp_value;
-//      }
-//      offset += sizeof(trigger_active_functions);
-//
-//      //Добавляємо інвертовану контрольну суму у кінець масиву
-//      read_write_i2c_buffer[offset] = (unsigned char)((~(unsigned int)crc_eeprom_trg_func) & 0xff);
-//      
-//      //Виставляємо перший блок запису у EEPROM
-//      number_block_trg_func_write_to_eeprom = 0;
-//    }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT) !=0)
+    {
+      //Стоїть умова початку запису нової порції інформації по триґерній інформації у EEPROM
+      static __id_fb block;
+      static unsigned int shift;
+      static uint8_t crc_eeprom_trg_func;
+
+      if (
+          (shift_from_start_address_trg_func_in_eeprom == 0) &&
+          (size_trg_func == 0)  
+         )   
+      {
+        block = _ID_FB_FIRST_ALL;
+        shift = 0;
+        crc_eeprom_trg_func = 0;
+      }
+      
+      //Робимо копію записуваної інформації для контролю
+
+      //Готуємо буфер для запису триґерної інформації (зкопійоманих) у EEPROM разом з контрольною сумою
+      uint8_t temp_value;
+      uint8_t *point_1, *point_2; 
+      size_t size_of_data = 0;
+      
+      size_t index = 0;
+      while(
+            (index < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
+            (block < _ID_FB_LAST_ALL)
+           )
+      {
+        if (size_of_data == 0)
+        {
+          //Визначаємо розмір нового блоку
+          switch (block)
+          {
+          case ID_FB_OUTPUT:
+          case ID_FB_LED:
+            {
+              size_of_data = ((block == ID_FB_OUTPUT) ? current_config_prt.n_output : current_config_prt.n_led)*DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8);
+              break;
+            }
+          case ID_FB_ALARM:
+            {
+              size_of_data = current_config_prt.n_alarm*DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8);
+              break;
+            }
+          case ID_FB_TRIGGER:
+            {
+              size_of_data = current_config_prt.n_trigger*DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+              break;
+            }
+          default:
+            {
+              size_of_data = 0;
+            }
+          }
+        }
+      
+        if (size_of_data != 0)
+        {
+          switch (block)
+          {
+          case ID_FB_OUTPUT:
+          case ID_FB_LED:
+            {
+              point_1 = &((((__LN_OUTPUT_LED*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)))->d_trigger_state[shift % DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)]);
+              point_2 = &((((__LN_OUTPUT_LED*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)]);
+              break;
+            }
+          case ID_FB_ALARM:
+            {
+              point_1 = &((((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)))->d_trigger_state[shift % DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)]);
+              point_2 = &((((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)]);
+              break;
+            }
+          case ID_FB_TRIGGER:
+            {
+              point_1 = &((((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)))->d_trigger_state[shift % DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)]);
+              point_2 = &((((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)]);
+              break;
+            }
+          default:
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(127);
+              break;
+            }
+          }
+          
+          temp_value = *point_1;
+          *point_2 = temp_value;
+          read_write_i2c_buffer[index++] = temp_value;
+          crc_eeprom_trg_func += temp_value;
+          
+          if ((++shift) >= size_of_data)
+          {
+            shift = 0;
+            block++;
+            size_of_data = 0;
+          }
+        }
+        else 
+        {
+          shift = 0;
+          block++;
+        }
+      }
+      
+      if (
+          (index < SIZE_BUFFER_FOR_EEPROM_EXCHNGE) &&
+          (block == _ID_FB_LAST_ALL)
+         )   
+      {
+        //Додаємо ще контрольу суму
+        read_write_i2c_buffer[index++] = (uint8_t)((~(unsigned int)crc_eeprom_trg_func) & 0xff);
+        block++; /*це робимо для того, щоб коли наступний раз попадемо у цю частину програми, то не додавти контрольну суму, а скинути всі статичні змінні і завршити процедузу запису*/
+
+      }
+
+      //Виставляємо перший блок триґерної інформації запису у EEPROM
+      number_block_trg_func_write_to_eeprom = 0;
+      
+      if (index == 0)
+      {
+        //Весь масив триґерної інформації вже записаний вже записаний
+
+        //Скидаємо всі статичні змінні, які використовуютья при записі налаштувань
+        block = _ID_FB_FIRST_ALL;
+        shift = 0;
+        crc_eeprom_trg_func = 0;
+        
+        shift_from_start_address_trg_func_in_eeprom = 0;
+        size_trg_func = 0;
+        
+        //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
+        comparison_writing |= COMPARISON_WRITING_TRG_FUNC;
+        _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
+        _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
+
+        //Скидаємо біт команди запису триґерної інформації
+        _CLEAR_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+
+        /*Перевірка на те, чи коли ішов запис триґерної інформації, не відбулася зміна триґерної інформації*/
+        unsigned int difference = false;
+
+        for (__id_fb block_tmp = _ID_FB_FIRST_ALL; block_tmp < _ID_FB_LAST_ALL; block_tmp++)
+        {
+          if (difference != false) break;
+                
+          switch (block_tmp)
+          {
+          case ID_FB_OUTPUT:
+          case ID_FB_LED:
+            {
+              size_t n_max_block = ((block_tmp == ID_FB_OUTPUT) ? current_config_prt.n_output : current_config_prt.n_led);
+              size_t n_max = DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+              for (size_t n_block = 0; n_block < n_max_block; n_block++)
+              {
+                if (difference != false) break;
+                
+                uint8_t *array_source = (((__LN_OUTPUT_LED*)spca_of_p_prt[block_tmp - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp;
+                uint8_t *array_target = (((__LN_OUTPUT_LED*)spca_of_p_prt[block_tmp - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state;
+                for (size_t n = 0; n < n_max; n++)
+                {
+                  if (array_target[n] != array_source[n]) 
+                  {
+                    difference = true;
+                    break;
+                  }
+                }
+              }
+              break;
+            }
+          case ID_FB_ALARM:
+            {
+              size_t n_max_block = current_config_prt.n_alarm;
+              size_t n_max = DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8);
+              for (size_t n_block = 0; n_block < n_max_block; n_block++)
+              {
+                if (difference != false) break;
+                
+                uint8_t *array_source = (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp;
+                uint8_t *array_target = (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state;
+                for (size_t n = 0; n < n_max; n++)
+                {
+                  if (array_target[n] != array_source[n]) 
+                  {
+                    difference = true;
+                    break;
+                  }
+                }
+              }
+              break;
+            }
+          case ID_FB_TRIGGER:
+            {
+              size_t n_max_block = current_config_prt.n_trigger;
+              size_t n_max = DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+              for (size_t n_block = 0; n_block < n_max_block; n_block++)
+              {
+                if (difference != false) break;
+                
+                uint8_t *array_source = (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp;
+                uint8_t *array_target = (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state;
+                for (size_t n = 0; n < n_max; n++)
+                {
+                  if (array_target[n] != array_source[n]) 
+                  {
+                    difference = true;
+                    break;
+                  }
+                }
+              }
+              break;
+            }
+          }
+        }
+        
+        if (difference != false)
+        {
+          /*Є зміни! Повтрно запускаємо процес запису триґерної інформації*/
+          _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+
+          /*Ця операція зараз недоцільна*/
+          comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);
+          _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
+        }
+        /***/
+      }
+      else
+      {
+        //Виставляємо біт запису блоків у EEPROM з блокуванням (щоб запуск почався з синхронізацією) тільки у тому випадку, якщо є підготовлені дані до запису
+        _SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT);
+        _SET_BIT(control_i2c_taskes, TASK_BLK_WRITING_EEPROM_BIT);
+      
+        //Фіксуємо з якого зміщення треба продовжити писати
+        shift_from_start_address_trg_func_in_eeprom += size_trg_func;
+        
+        //Виставляємо скільки байт підготовлено до запису
+        size_trg_func = index;
+      }
+    }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) !=0)
     {
       //Стоїть умова початку нового запису у EEPROM по інформації реєстратора програмних подій
@@ -1183,7 +1472,7 @@ void main_routines_for_i2c(void)
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT                 ) != 0) || 
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT               ) != 0) || 
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_USTUVANNJA_EEPROM_BIT             ) != 0) ||
-//        (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT               ) != 0) ||
+        (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT               ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) != 0)
        )
     {
@@ -1204,11 +1493,11 @@ void main_routines_for_i2c(void)
         //Виставляємо наступний блок юстування запису у EEPROM
         number_block_ustuvannja_write_to_eeprom++;
       }
-//      else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT) != 0)
-//      {
-//        //Виставляємо наступний блок триґерної інформаціїзапису у EEPROM
-//        number_block_trg_func_write_to_eeprom++;
-//      }
+      else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT) != 0)
+      {
+        //Виставляємо наступний блок триґерної інформаціїзапису у EEPROM
+        number_block_trg_func_write_to_eeprom++;
+      }
       else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) != 0)
       {
         //Виставляємо наступний блок інформації по реєстраторах запису у EEPROM
@@ -1680,7 +1969,7 @@ void main_routines_for_i2c(void)
         else
         {
           //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-          total_error_sw_fixed(55);
+          total_error_sw_fixed(125);
         }
       }
       shift_from_start_address_settings_in_eeprom = new_shift; /*У статичній змінній визначаємо з якого зміщення треба буде продовжувати читати*/
@@ -1863,122 +2152,295 @@ void main_routines_for_i2c(void)
       //Скидаємо повідомлення про читання даних
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_USTUVANNJA_EEPROM_BIT);
     }
-//    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT) !=0)
-//    {
-//      //Аналізуємо прочитані дані
-//      //Спочатку аналізуємо, чи прояитаний блок є пустим, чи вже попередньо записаним
-//      unsigned int empty_block = 1, i = 0; 
-//      unsigned int trigger_active_functions_tmp[N_BIG];
-//
-//      while ((empty_block != 0) && ( i < (1 + sizeof(trigger_active_functions_tmp) + 1)))
-//      {
-//        if (read_write_i2c_buffer[i] != 0xff) empty_block = 0;
-//        i++;
-//      }
-//      
-//      if(empty_block == 0)
-//      {
-//        //Помічаємо, що блок не є пустим
-//        state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_EMPTY);
-//        //Скидаємо повідомлення у слові діагностики
-//        _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_EMPTY_BIT);
-//        
-//        //Перевіряємо контрольну суму і переписуємо прочитані дані у тимчасові змінні
-//        unsigned char crc_eeprom_trg_func = 0, temp_value;
-//        unsigned char  *point;
-//        unsigned int offset = 0;
-//
-//        point = (unsigned char*)(&trigger_active_functions_tmp); 
-//        for (i =0; i < sizeof(trigger_active_functions_tmp); i++)
-//        {
-//          temp_value = read_write_i2c_buffer[offset + i];
-//          *(point) = temp_value;
-//          crc_eeprom_trg_func += temp_value;
-//          point++;
-//        }
-//        offset +=  sizeof(trigger_active_functions_tmp);
-//        
-//        if (read_write_i2c_buffer[offset]  == ((unsigned char)((~(unsigned int)crc_eeprom_trg_func) & 0xff)))
-//        {
-//          //Контролдьна сума сходиться
-//
-//          //Скидаємо повідомлення у слові діагностики
-//          _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
-//          
-//          //Зберігаємо контрольну суму (не інвертовану)
-//          crc_trg_func = crc_eeprom_trg_func;
-//          
-//          if ((comparison_writing & COMPARISON_WRITING_TRG_FUNC) == 0)
-//          {
-//            //Виконувалося зчитування триґерної інформації
-//            
-//            //Перекидаємо триґерну інформацію у робочі змінні
-//            for(unsigned int k = 0; k < N_BIG; k++) trigger_active_functions[k] = trigger_active_functions_tmp[k];
-////            restore_trigger_functions(trigger_active_functions);
-//          }
-//          else
-//          {
-//            //Виконувалося контроль достовірності записаної інформації у EEPROM з записуваною
-//            
-//            unsigned int difference = 0;
-//  
-//            i = 0;
-//            while ((difference == 0) && (i < N_BIG))
-//            {
-//              //Перевірка запису функцій значення яких зберігається у енергонезалежній пам'яті
-//              if (trigger_active_functions_comp[i] != trigger_active_functions_tmp[i]) difference = 0xff;
-//              else
-//              {
-//                i++;
-//              }
-//            }
-//            
-//            if (difference == 0)
-//            {
-//              //Контроль порівнняння пройшов успішно
-//  
-//              //Скидаємо повідомлення у слові діагностики
-//              _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_COMPARISON_BIT);
-//            }
-//            else
-//            {
-//              //Контроль порівнняння зафіксував розбіжності між записаною і записуваною інформацією
-//
-//              //Виствляємо повідомлення у слові діагностики
-//              _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_COMPARISON_BIT);
-//            }
-//          }
-//
-//          state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_FAIL);
-//          state_i2c_task |= STATE_TRG_FUNC_EEPROM_GOOD;
-//        }
-//        else
-//        {
-//          //Контрольна сума не сходиться
-//          state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_GOOD);
-//          state_i2c_task |= STATE_TRG_FUNC_EEPROM_FAIL;
-//          
-//          //Виствляємо повідомлення у слові діагностики
-//          _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
-//        }
-//      }
-//      else
-//      {
-//        //Помічаємо, що прочитаний блок є пустим
-//        state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_FAIL);
-//        state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_GOOD);
-//        state_i2c_task |= STATE_TRG_FUNC_EEPROM_EMPTY;
-//        
-//        //Виствляємо повідомлення у слові діагностики
-//        _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
-//        _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_EMPTY_BIT);
-//      }
-//            
-//      //Знімаємо можливу сигналізацію, що виконувалося порівнняння
-//      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);
-//      //Скидаємо повідомлення про читання даних
-//      _CLEAR_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
-//    }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT) !=0)
+    {
+      //Аналізуємо прочитані дані
+
+      //Статична змінна, яка визначає блок для налаштувань є пустим
+      static unsigned int empty_block, difference;
+      static uint8_t crc_eeprom_trg_func;
+      if (shift_from_start_address_trg_func_in_eeprom == 0) 
+      {
+        empty_block = true;
+        difference = false;
+        crc_eeprom_trg_func = 0;
+      }
+      
+      size_t new_shift = shift_from_start_address_trg_func_in_eeprom + size_trg_func;
+      size_trg_func = 0; /*Цим повідомляємо інші блоки, що читання успішно даного блоку відбувся*/
+
+      //Спочатку аналізуємо скільки і який блок налаштування прочитано
+      __id_fb block = _ID_FB_FIRST_ALL;
+      unsigned int shift = 0;
+      
+      size_t size_of_data = 0;
+      size_t index = 0;
+      uint8_t *p;
+      while(
+            (index < new_shift) &&
+            (block < _ID_FB_LAST_ALL)
+           )
+      {
+        //Визначаємо розмір нового блоку
+        if (size_of_data == 0)
+        {
+          switch (block)
+          {
+          case ID_FB_OUTPUT:
+          case ID_FB_LED:
+            {
+              size_of_data = ((block == ID_FB_OUTPUT) ? current_config_prt.n_output : current_config_prt.n_led)*DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8);
+              break;
+            }
+          case ID_FB_ALARM:
+            {
+              size_of_data = current_config_prt.n_alarm*DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8);
+              break;
+            }
+          case ID_FB_TRIGGER:
+            {
+              size_of_data = current_config.n_trigger*DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+              break;
+            }
+          default:
+            {
+              size_of_data = 0;
+              break;
+            }
+          }
+        }
+
+        if (index < shift_from_start_address_trg_func_in_eeprom)
+        {
+          size_t index_tmp = index + size_of_data;
+          if (index_tmp <= shift_from_start_address_trg_func_in_eeprom) 
+          {
+            block++;
+            index = index_tmp;
+            
+            size_of_data = 0;
+          }
+          else
+          {
+            shift = shift_from_start_address_trg_func_in_eeprom - index;
+            index = shift_from_start_address_trg_func_in_eeprom;
+          }
+        }
+        else
+        {
+          if (size_of_data != 0)
+          {
+            intptr_t i = (index++) - shift_from_start_address_trg_func_in_eeprom;
+            uint8_t temp_value = read_write_i2c_buffer[i];
+            if (temp_value != 0xff) empty_block = 0;
+            crc_eeprom_trg_func += temp_value;
+
+            switch (block)
+            {
+            case ID_FB_OUTPUT:
+            case ID_FB_LED:
+              {
+                p = &((((__LN_OUTPUT_LED*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)]);
+                break;
+              }
+            case ID_FB_ALARM:
+              {
+                p = &((((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)]);
+                break;
+              }
+            case ID_FB_TRIGGER:
+              {
+                p = &((((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + (shift / DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)))->d_trigger_state_tmp[shift % DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)]);
+                break;
+              }
+            default:
+              {
+                p = NULL;
+                break;
+              }
+            }
+            
+            if (p != NULL) 
+            {
+              if ((comparison_writing & COMPARISON_WRITING_TRG_FUNC) == 0) 
+              {
+                //Виконувалося зчитування триґерних функцій
+                *p = temp_value;
+              }
+              else
+              {
+                //Відбувалося контрольне читання після запису
+                if ((*p) != temp_value) difference = true;
+              }
+            }
+            else
+            {
+              //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+              total_error_sw_fixed(124);
+            }
+          
+            if ((++shift) >= size_of_data)
+            {
+              shift = 0;
+              block++;
+              size_of_data = 0;
+            }
+          }
+          else 
+          {
+            shift = 0;
+            block++;
+          }
+        }
+      }
+      
+      if (
+          (index < new_shift) &&
+          (block == _ID_FB_LAST_ALL)
+         )   
+      {
+        uint8_t crc_eeprom_trg_func_remote = read_write_i2c_buffer[(index++) - shift_from_start_address_trg_func_in_eeprom];
+        if (index == new_shift)
+        {
+          //Це нормальна ситуація коли вичитано останньоб контрольна сума і можна приступити до аналізу всіх прочитаних даних
+
+          if(empty_block == 0)
+          {
+            //Помічаємо, що блок не є пустим
+            state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_EMPTY);
+            //Скидаємо повідомлення у слові діагностики
+            _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_EMPTY_BIT);
+        
+            //Перевіряємо контрольну суму і переписуємо прочитані дані у структуру управління
+            if (crc_eeprom_trg_func_remote  == ((uint8_t)((~(unsigned int)crc_eeprom_trg_func) & 0xff)))
+            {
+              //Контролдьна сума сходиться
+
+              //Скидаємо повідомлення у слові діагностики
+              _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
+
+              //Зберігаємо контрольну суму (не інвертовану)
+              crc_trg_func = crc_eeprom_trg_func;
+
+              if ((comparison_writing & COMPARISON_WRITING_TRG_FUNC) == 0)
+              {
+                //Виконувалося зчитування триґерних функцій
+            
+                /*
+                Копіюємо у робочі поля
+                */
+                for (block = _ID_FB_FIRST_ALL; block < _ID_FB_LAST_ALL; block++)
+                {
+                  switch (block)
+                  {
+                  case ID_FB_OUTPUT:
+                  case ID_FB_LED:
+                    {
+                      size_t n_max_block = ((block == ID_FB_OUTPUT) ? current_config_prt.n_output : current_config_prt.n_led);
+                      size_t n_max = DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+                      for (size_t n_block = 0; n_block < n_max_block; n_block++)
+                      {
+                        uint8_t *array_source = (((__LN_OUTPUT_LED*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp;
+                        uint8_t *array_target = (((__LN_OUTPUT_LED*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state;
+                        for (size_t n = 0; n < n_max; n++)
+                        {
+                          array_target[n] = array_source[n];
+                        }
+                      }
+                      break;
+                    }
+                  case ID_FB_ALARM:
+                    {
+                      size_t n_max_block = current_config_prt.n_alarm;
+                      size_t n_max = DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8);
+                      for (size_t n_block = 0; n_block < n_max_block; n_block++)
+                      {
+                        uint8_t *array_source = (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp;
+                        uint8_t *array_target = (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state;
+                        for (size_t n = 0; n < n_max; n++)
+                        {
+                          array_target[n] = array_source[n];
+                        }
+                      }
+                      break;
+                    }
+                  case ID_FB_TRIGGER:
+                    {
+                      size_t n_max_block = current_config_prt.n_trigger;
+                      size_t n_max = DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+                      for (size_t n_block = 0; n_block < n_max_block; n_block++)
+                      {
+                        uint8_t *array_source = (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state_tmp;
+                        uint8_t *array_target = (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]) + n_block)->d_trigger_state;
+                        for (size_t n = 0; n < n_max; n++)
+                        {
+                          array_target[n] = array_source[n];
+                        }
+                      }
+                      break;
+                    }
+                  }
+                }
+              }
+              else
+              {
+                //Виконувалося контроль достовірності записаної інформації у EEPROM з записуваною
+            
+                if (difference == false)
+                {
+                  //Контроль порівнняння пройшов успішно
+    
+                  //Скидаємо повідомлення у слові діагностики
+                  _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_COMPARISON_BIT);
+                }
+                else
+                {
+                  //Контроль порівнняння зафіксував розбіжності між записаною і записуваною інформацією
+
+                  //Виствляємо повідомлення у слові діагностики
+                  _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_COMPARISON_BIT);
+                }
+              }
+
+              state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_FAIL);
+              state_i2c_task |= STATE_TRG_FUNC_EEPROM_GOOD;
+            }
+            else
+            {
+              //Контрольна сума не сходиться
+
+              state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_GOOD);
+              state_i2c_task |= STATE_TRG_FUNC_EEPROM_FAIL;
+          
+              //Виствляємо повідомлення у слові діагностики
+              _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
+            }
+          }
+          else
+          {
+            //Зчитаний блок виявився пустим
+            
+            //Помічаємо, що прочитаний блок є пустим
+            state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_FAIL);
+            state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_GOOD);
+            state_i2c_task |= STATE_TRG_FUNC_EEPROM_EMPTY;
+        
+            //Виствляємо повідомлення у слові діагностики
+            _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
+            _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_EMPTY_BIT);
+          }
+        }
+        else
+        {
+          //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+          total_error_sw_fixed(126);
+        }
+      }
+      shift_from_start_address_trg_func_in_eeprom = new_shift; /*У статичній змінній визначаємо з якого зміщення треба буде продовжувати читати*/
+      
+      //Скидаємо повідомлення про читання даних
+      _CLEAR_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
+    }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) !=0)
     {
       //Аналізуємо прочитані дані
@@ -2499,7 +2961,7 @@ void main_routines_for_i2c(void)
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT                 ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT               ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_USTUVANNJA_EEPROM_BIT             ) != 0) ||
-//        (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT               ) != 0) ||
+        (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT               ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) != 0)
        )
     {
@@ -2535,15 +2997,15 @@ void main_routines_for_i2c(void)
       _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_USTUVANNJA_EEPROM_BIT);
     }
-//    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT) !=0)
-//    {
-//      //Стоїть умова читання блоку у EEPROM стану тригерної інформації
-//      
-//      //Повторно запускаємо процес читання
-//      _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
-//      _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
-//      _CLEAR_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
-//    }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT) !=0)
+    {
+      //Стоїть умова читання блоку у EEPROM стану тригерної інформації
+      
+      //Повторно запускаємо процес читання
+      _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
+      _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
+      _CLEAR_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
+    }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) !=0)
     {
       //Стоїть умова читання блоку у EEPROM по реєстраторі програмнихподій

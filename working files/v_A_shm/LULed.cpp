@@ -283,10 +283,10 @@ pLUShcemasDscRec = arPLedShcemasDscRecords[shCounterProcessedRec - Not06__1_1];
     bbState = arChIntermediaResult[OFFSET_OUT_And24__2_1] || arChIntermediaResult[OFFSET_OUT_And23__2_1];
     i = this->shShemasOrdNumStng;
     i--;
-    if (bbState) {
+ /*   if (bbState) {
         LedStateUI32Bit.ul_val |= (1) << i;
     } else {
         LedStateUI32Bit.ul_val &= ~((1) << i); //Phis write to Led
-    }
+    }*/
 }
 

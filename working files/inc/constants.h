@@ -19,7 +19,7 @@
 #include "const_menu2_choose_settings_logical_nodes.h"
 #include "const_menu2_timer.h"
 #include "const_menu2_meander.h"
-#include "const_menu2_list_settings_bios.h"
+#include "const_menu2_list_settings_param.h"
 #include "const_menu2_input.h"
 #include "const_menu2_output_led.h"
 #include "const_menu2_button_tu.h"
@@ -30,7 +30,7 @@
 #include "const_menu2_alarm.h"
 #include "const_menu2_trigger.h"
 #include "const_menu2_group_alarm.h"
-#include "const_menu2_param_logical_nodes.h"
+#include "const_menu2_editor_logical_nodes.h"
 
 #include "const_lcd_and_keyboard.h"
 #include "const_watchdog.h"

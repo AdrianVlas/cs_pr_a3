@@ -139,13 +139,13 @@ void make_ekran_list_logical_nodes(void)
   enum _menu2_levels current_level = current_state_menu2.current_level;
   if (
       (
-       (current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
-       (current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
+       (current_level >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
+       (current_level <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
       )
       ||  
       (
-       (current_level >= __BEGIN_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
-       (current_level <  __NEXT_AFTER_PARAM_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
+       (current_level >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
+       (current_level <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
       )
      )   
   {
@@ -254,8 +254,8 @@ void make_ekran_list_logical_nodes(void)
     {
       if (
           (
-           (current_level == PARAM_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) ||
-           (current_level == PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)
+           (current_level == EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) ||
+           (current_level == EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)
           )
           &&  
           (index_in_ekran < NUMBER_FIX_BUTTONS)    
@@ -274,8 +274,8 @@ void make_ekran_list_logical_nodes(void)
           
         unsigned int number = index_in_ekran + 1;
         if (
-            (current_level == PARAM_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) ||
-            (current_level == PARAM_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)
+            (current_level == EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) ||
+            (current_level == EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)
            )
         {
           number -= NUMBER_FIX_BUTTONS;

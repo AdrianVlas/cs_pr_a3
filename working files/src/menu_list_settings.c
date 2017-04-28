@@ -22,32 +22,14 @@ void move_into_list_settings(unsigned int action, int max_row)
     {
       if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
       while (
-             (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_BIOS) &&
-              (p_current_config->n_input == 0) &&
-              (p_current_config->n_output == 0) &&
-              (p_current_config->n_led == 0)
-             )
-             ||
-             (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_ALARMS) &&
-              (p_current_config->n_alarm == 0)
-             )
-             ||
-             (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_GROUP_ALARMS) &&
-              (p_current_config->n_group_alarm == 0)
-             )
-             ||
-             (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_TIMERS) &&
-              (p_current_config->n_timer == 0)
-             )
-             ||
-             (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_MEANDER) &&
-              (p_current_config->n_meander == 0)
-             )
+             (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_PARAMETRIZATION) &&
+             (p_current_config->n_input == 0) &&
+             (p_current_config->n_output == 0) &&
+             (p_current_config->n_led == 0) &&
+             (p_current_config->n_alarm == 0) &&
+             (p_current_config->n_group_alarm == 0) &&
+             (p_current_config->n_timer == 0) &&
+             (p_current_config->n_meander == 0)
             )
       {
         if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
@@ -62,32 +44,14 @@ void move_into_list_settings(unsigned int action, int max_row)
     {
       if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
       while (
-             (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_BIOS) &&
-              (p_current_config->n_input == 0) &&
-              (p_current_config->n_output == 0) &&
-              (p_current_config->n_led == 0)
-             )
-             ||
-             (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_ALARMS) &&
-              (p_current_config->n_alarm == 0)
-             )
-             ||
-             (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_GROUP_ALARMS) &&
-              (p_current_config->n_group_alarm == 0)
-             )
-             ||
-             (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_TIMERS) &&
-              (p_current_config->n_timer == 0)
-             )
-             ||
-             (
-              (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_MEANDER) &&
-              (p_current_config->n_meander == 0)
-             )
+             (current_state_menu2.index_position == INDEX_LIST_SETTINGS_M2_PARAMETRIZATION) &&
+             (p_current_config->n_input == 0) &&
+             (p_current_config->n_output == 0) &&
+             (p_current_config->n_led == 0) &&
+             (p_current_config->n_alarm == 0) &&
+             (p_current_config->n_group_alarm == 0) &&
+             (p_current_config->n_timer == 0) &&
+             (p_current_config->n_meander == 0)
             )
       {
         if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
@@ -139,48 +103,32 @@ void make_ekran_list_settings(void)
     {
       {
         " Конфигурация   ",
-        " УВВ            ",
-        " CЗС            ",
-        " ШГС            ",
-        " МФ-Таймера     ",
-        " ГПС            ",
         " Параметриров.  ",
+        " Редактор       ",
         " Язык           ",
         " Коммуникация   ",
         " Пароли         "
       },
       {
         " Конфігурація   ",
-        " УВВ            ",
-        " СЗС            ",
-        " ШГС            ",
-        " БФ-Таймери     ",
-        " ГПС            ",
         " Параметрування ",
+        " Редактор       ",
         " Мова           ",
         " Комунікація    ",
         " Паролі         "
       },
       {
         " Configuration  ",
-        " BIOS           ",
-        " Alarms         ",
-        " Gr.Alarms      ",
-        " MF-Timer       ",
-        " PSG            ",
         " Parametrization",
+        " Editor         ",
         " Language       ",
         " Communication  ",
         " Passwords      "
       },
       {
         " Конфигурация   ",
-        " УВВ            ",
-        " CЗС            ",
-        " ШГС            ",
-        " МФ-Таймера     ",
-        " ГПС            ",
         " Параметриров.  ",
+        " Редактор       ",
         " Язык           ",
         " Коммуникация   ",
         " Пароли         "
@@ -198,32 +146,14 @@ void make_ekran_list_settings(void)
     for(size_t index_1 = 0; index_1 < MAX_ROW_LIST_SETTINGS_M2; index_1++)
     {
       if (
-          (
-           (index_1 == INDEX_LIST_SETTINGS_M2_BIOS) &&
-           (p_current_config->n_input == 0) &&
-           (p_current_config->n_output == 0) &&
-           (p_current_config->n_led == 0)
-          )
-          ||
-          (
-           (index_1 == INDEX_LIST_SETTINGS_M2_ALARMS) &&
-           (p_current_config->n_alarm == 0)
-          )
-          ||
-          (
-           (index_1 == INDEX_LIST_SETTINGS_M2_GROUP_ALARMS) &&
-           (p_current_config->n_group_alarm == 0)
-          )
-          ||
-          (
-           (index_1 == INDEX_LIST_SETTINGS_M2_TIMERS) &&
-           (p_current_config->n_timer == 0)
-          )
-          ||
-          (
-           (index_1 == INDEX_LIST_SETTINGS_M2_MEANDER) &&
-           (p_current_config->n_meander == 0)
-          )
+          (index_1 == INDEX_LIST_SETTINGS_M2_PARAMETRIZATION) &&
+          (p_current_config->n_input == 0) &&
+          (p_current_config->n_output == 0) &&
+          (p_current_config->n_led == 0) &&
+          (p_current_config->n_alarm == 0) &&
+          (p_current_config->n_group_alarm == 0) &&
+          (p_current_config->n_timer == 0) &&
+          (p_current_config->n_meander == 0)
          )
       {
         if ((index_1 - additional_current) < position_temp) position_temp--;

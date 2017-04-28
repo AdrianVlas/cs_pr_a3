@@ -25,24 +25,28 @@
 #define NAME_FIX_BLOCK_OUT_SIGNALS_RU   \
   "Общ.Неиспр.     ",                   \
   "Авар.Неиспр.    ",                   \
+  "Тест            ",                   \
   "Журнал событий  ",                   \
   "Изм.настроек    "
 
 #define NAME_FIX_BLOCK_OUT_SIGNALS_UA   \
   "Заг.Неспр.      ",                   \
   "Авар.Неспр.     ",                   \
+  "Тест            ",                   \
   "Журнал подій    ",                   \
   "Зм.налашт.      "
 
 #define NAME_FIX_BLOCK_OUT_SIGNALS_EN   \
   "Total Fault     ",                   \
   "Emergence Fault ",                   \
+  "Test            ",                   \
   "Event log       ",                   \
   "Changed settings"
 
 #define NAME_FIX_BLOCK_OUT_SIGNALS_KZ   \
   "Неиспр.         ",                   \
   "Авар.Неиспр.    ",                   \
+  "Тест            ",                   \
   "Журнал событий  ",                   \
   "Изм.настроек    "
 
