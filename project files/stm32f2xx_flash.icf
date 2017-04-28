@@ -42,8 +42,9 @@ place at address mem:__ICFEDIT_intvec_start__ { readonly section .intvec };
 place in ROM_region   { readonly};
 place at end of ROM_region {readonly section .checksum}; 
 place in RAM_region   { readwrite };
-place at end of RAM_region   { block CSTACK, block HEAP };
+place at end of RAM_region   { block CSTACK/*, block HEAP */};
 place in RAM1_region {section variables_RAM1,section ZeroInivars_RAM1,section NonZeroIniVars_RAM1};
+place at end of RAM1_region   {block HEAP};
 
 check that maxstack("Program entry") + totalstack("Interrupt") + 100 <= size(block CSTACK);
 
