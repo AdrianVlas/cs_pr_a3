@@ -808,10 +808,10 @@ void TIM4_IRQHandler(void)
         &&  
         (
          (control_tasks_dataflash & (
-                                     TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH    |
-                                     TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB   |
-                                     TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485 |
-                                     TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU
+                                     (1 << TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT   ) |
+                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  ) |
+                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT) |
+                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )
                                     )
          ) == 0
         )
@@ -842,117 +842,35 @@ void TIM4_IRQHandler(void)
     /***********************************************************/
     if (((DMA_StreamSPI_DF_Tx->CR & (uint32_t)DMA_SxCR_EN) == 0) && ((DMA_StreamSPI_DF_Rx->CR & (uint32_t)DMA_SxCR_EN) == 0))
     {
-      if ((number_chip_dataflsh_exchange >= INDEX_DATAFLASH_1) && (number_chip_dataflsh_exchange <= INDEX_DATAFLASH_2))
+      if (number_chip_dataflsh_exchange < NUMBER_DATAFLASH_CHIP)
       {
-        if (error_into_spi_df == 0)
+        //Немає обміну по вибраній мікросехмі
+        
+        //Перевіряємо, чи є потреба і можливість записувати реєстратор програмних подій
+        if (
+            /***
+            Перший раз вже зчитаний час з моменту перезапуску
+            ***/
+            (_CHECK_SET_BIT(    diagnostyka, EVENT_START_SYSTEM_BIT  ) == 0) &&
+            (_CHECK_SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT  ) == 0) &&
+            (_CHECK_SET_BIT(    diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0) &&
+            (_CHECK_SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0) &&
+            /***/
+            ((POWER_CTRL->IDR & POWER_CTRL_PIN) != (uint32_t)Bit_RESET) && /*На даний момент на вході блоку живлення подається живлення*/ 
+            /***/
+            (temporary_block_writing_records_pr_err_into_DataFlash     == 0) && /*Блокування запису підготовлених записів реєстратора програмних подій у мікросхему DataFlash1*/
+            ((control_tasks_dataflash  & 0xffff)                       == 0)    /*Починаємо запис у реєстратор програмних подій тільки тоді, коли інших задач у черзі немає для запису у DataFlash1*/
+           )
         {
-          //Не було зафіксовано, що при поперпдній операції виникла помилка
-        
-          //Перевіряємо, чи є потреба і можливість записувати реєстратор програмних подій
-          if (
-
-              /***
-              Перший раз вже зчитаний час з моменту перезапуску
-              ***/
-              (_CHECK_SET_BIT(    diagnostyka, EVENT_START_SYSTEM_BIT  ) == 0) &&
-              (_CHECK_SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT  ) == 0) &&
-              (_CHECK_SET_BIT(    diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0) &&
-              (_CHECK_SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0) &&
-              /***/
-              ((POWER_CTRL->IDR & POWER_CTRL_PIN) != (uint32_t)Bit_RESET) && /*На даний момент на вході блоку живлення подається живлення*/ 
-              /***/
-              (temporary_block_writing_records_pr_err_into_DataFlash     == 0) && /*Блокування запису підготовлених записів реєстратора програмних подій у мікросхему DataFlash1*/
-              ((control_tasks_dataflash  & 0xffff)                       == 0)    /*Починаємо запис у реєстратор програмних подій тільки тоді, коли інших задач у черзі немає для запису у DataFlash1*/
-             )
-          {
-            unsigned int head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
-            if (head != tail) control_tasks_dataflash |= TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH;  //Є нові записи у буфері подій  
-          }
-        
-          //Аналізуємо прийняті дані, якщо такі є і чекають на аналіз
-          main_function_for_dataflash_resp(number_chip_dataflsh_exchange);
-
-          //Змінюємо номер DataFlash з яким буде іти зараз робота
-          if (driver_spi_df[number_chip_dataflsh_exchange].state_execution == TRANSACTION_EXECUTING_NONE)
-          {
-            //Змінюємо номер мікросхеми, до якої ми будемо звертатися при натупних трансакціях, якщо зараз не запущена ніяка трансакція
-            number_chip_dataflsh_exchange = (number_chip_dataflsh_exchange + 1) & (NUMBER_DATAFLASH_CHIP - 1);
-          }
-
-          //Робимо запит на нову мікросхему DataFlash, якщо э такий
-          main_function_for_dataflash_req(number_chip_dataflsh_exchange);
+          unsigned int head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
+          if (head != tail) control_tasks_dataflash |= (1 << TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT);  //Є нові записи у буфері подій  
         }
-        else
+
+        //Змінюємо номер DataFlash з яким буде іти зараз робота
+        if (state_execution_spi_df[number_chip_dataflsh_exchange] == TRANSACTION_EXECUTING_NONE)
         {
-          //Було зафіксовано, що при поперпдній операції виникла помилка
-          if (driver_spi_df[number_chip_dataflsh_exchange].state_execution == TRANSACTION_EXECUTED_WAIT_ANALIZE)
-          {
-            //Очікується аналіз прийнятих даних з мікросхеми DataFlash у режимі виходу з "збою" обміну
-            if (driver_spi_df[number_chip_dataflsh_exchange].code_operation == CODE_OPERATION_STATUS_READ)
-            {
-              /*
-              У режимі відновлення обміну з мікросхемою DataFlash після "збою" в обміні
-              можлива ситуація, що ми аналізуємо відповідь на читання пегістру статусу - 
-              у всіх інших випадках - це є недопустимий випадок, який свідчить, що порграма
-              виконується незаплпнованим шляхом - тому перезапуск
-              */
-               
-              if ((RxBuffer_SPI_DF[1] & (1<< 7)) != 0) dataflash_not_busy |= (1 << number_chip_dataflsh_exchange);
-              else dataflash_not_busy &= (unsigned int)(~(1 << number_chip_dataflsh_exchange));
-        
-              driver_spi_df[number_chip_dataflsh_exchange].state_execution = TRANSACTION_EXECUTING_NONE;
-              driver_spi_df[number_chip_dataflsh_exchange].code_operation = CODE_OPERATION_NONE;
-            }
-            else
-            {
-              total_error_sw_fixed(39);
-            }
-          }
-
-          /*
-          Оскільки номер мікросхеми, з якою здійснюємо обмін, під час виходу з ситуації,
-          коли виник збій, не змінюємо, то можна спробувати запустити зразу після
-          аналізу принятого пакету новий запит
-          */
-          if (driver_spi_df[number_chip_dataflsh_exchange].state_execution == TRANSACTION_EXECUTING_NONE)
-          {
-            //Очікується початок нового обміну з мікросхемою DataFlash
-            if((dataflash_not_busy & (1 << number_chip_dataflsh_exchange)) == 0)
-            {
-              //Читаємо регітр статусу мікросхеми
-              dataflash_status_read(number_chip_dataflsh_exchange);
-            }
-            else
-            {
-              //Мікросхема готова до повторного виконання операції, під час якої виникла помилкова ситуація на SPI_DF
-
-              //Відновлюємо буфер передавання, який був під час помилки
-              if ((number_bytes_transfer_spi_df_copy != 0) && (number_bytes_transfer_spi_df_copy < sizeof(TxBuffer_SPI_DF)))
-              {
-                number_bytes_transfer_spi_df = number_bytes_transfer_spi_df_copy;
-                for(unsigned int i = 0; i < number_bytes_transfer_spi_df; i++)
-                  TxBuffer_SPI_DF[i] = TxBuffer_SPI_DF_copy[i];
-
-                /*
-                Знімаємо помітку, що зафіксовано помилку при обміні, бо ми будемо 
-                виконувати ту операція, яка виконувалася до моменту фіксації помилки
-                */
-                error_into_spi_df = 0;
-
-                //Відновлюємо операцію, яка виконувался
-                driver_spi_df[number_chip_dataflsh_exchange].code_operation = code_operation_copy;
-
-                //Запускаємо повторно дану операцію
-                start_exchange_via_spi(number_chip_dataflsh_exchange, number_bytes_transfer_spi_df);
-              }
-              else
-              {
-                //Відбулася невизначена помилка, тому треба піти на перезавантаження
-                total_error_sw_fixed(40);
-              }
-            }
-                
-          }
+          //Змінюємо номер мікросхеми, до якої ми будемо звертатися при натупних трансакціях, якщо зараз не запущена ніяка трансакція
+          number_chip_dataflsh_exchange = (number_chip_dataflsh_exchange < (NUMBER_DATAFLASH_CHIP - 1)) ? (number_chip_dataflsh_exchange++) : INDEX_DATAFLASH_1;
         }
       }
       else
@@ -1212,59 +1130,12 @@ void SPI_DF_IRQHandler(void)
     total_error_sw_fixed(34);
   }
 
-  if ((number_chip_dataflsh_exchange >= INDEX_DATAFLASH_1) && (number_chip_dataflsh_exchange <= INDEX_DATAFLASH_2))
+   if (number_chip_dataflsh_exchange < NUMBER_DATAFLASH_CHIP)
   {
-    if(driver_spi_df[number_chip_dataflsh_exchange].state_execution != TRANSACTION_EXECUTING_NONE)
+    if(state_execution_spi_df[number_chip_dataflsh_exchange] != TRANSACTION_EXECUTING_NONE)
     {
-      //Помилка виникла в процесі прийом/передачі
-      
-      //Фіксуємо операцію, яка виконувалася для подальшої обробки
-      unsigned int code_operation_copy_tmp = driver_spi_df[number_chip_dataflsh_exchange].code_operation;
-      
-      /*
-      Оскільки помилка зафіксована при прийомі, то, впринципі, передавання даних могло закінчитися успішно,
-      тому треба помітити, що треба зчитати статус готовності
-      */
-      dataflash_not_busy &= (unsigned int)(~(1 << number_chip_dataflsh_exchange));
-
-      //Знімаємо сигналізацію, що виконується операція для даної мікросхеми
-      driver_spi_df[number_chip_dataflsh_exchange].state_execution = TRANSACTION_EXECUTING_NONE;
-      driver_spi_df[number_chip_dataflsh_exchange].code_operation = CODE_OPERATION_NONE;
-      
-      if (code_operation_copy_tmp != CODE_OPERATION_STATUS_READ) 
-      {
-        /*
-        Виключаємо подпальші дії, якщо попередня операція було читання регістру статусу,
-        бо, оскільки ми зняли прапорець готовності даної мікросхеми, то ця операція всеодно
-        викличеться першою, а далі підуть всі наступні операції
-        */
-        if (code_operation_copy_tmp == CODE_OPERATION_STATUS_READ)
-        {
-          /*Відбулася невизначена помилка (бо не може бути, щоб ішда якась операція, 
-          але вона була поміена. що ніякої операції немає), тому треба піти на перезавантаження
-          */
-          total_error_sw_fixed(37);
-        }
-          
-        //Робимо резервну копію кількості байт для передавання і буфер передавання
-        if ((number_bytes_transfer_spi_df != 0) && (number_bytes_transfer_spi_df < sizeof(TxBuffer_SPI_DF)))
-        {
-          number_bytes_transfer_spi_df_copy = number_bytes_transfer_spi_df;
-          for(unsigned int i = 0; i < number_bytes_transfer_spi_df_copy; i++)
-            TxBuffer_SPI_DF_copy[i] = TxBuffer_SPI_DF[i];
-        }
-        else
-        {
-          //Відбулася невизначена помилка, тому треба піти на перезавантаження
-          total_error_sw_fixed(36);
-        }
-        
-        //Запам'ятовуємо, яка виконувалася операція
-        code_operation_copy = code_operation_copy_tmp;
-
-        //Помічаємо, що зафіксовано помилку при обміні
-        error_into_spi_df = 0xff;
-      }
+      //Помічаємо, що відбулася помилка у процесі виконання попередньої операції прийом-передачі
+      state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTED_ERROR;
     }
   }
   else
@@ -1318,7 +1189,7 @@ void DMA_StreamSPI_DF_Rx_IRQHandler(void)
   
   //Виставляємо повідомлення, що дані передані і готові до наступного аналізу
   if ((number_chip_dataflsh_exchange == INDEX_DATAFLASH_1) || (number_chip_dataflsh_exchange == INDEX_DATAFLASH_2))
-    driver_spi_df[number_chip_dataflsh_exchange].state_execution = TRANSACTION_EXECUTED_WAIT_ANALIZE;
+    state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTED_WAIT_ANALIZE;
   else
   {
     //Відбулася невизначена помилка, тому треба піти на перезавантаження

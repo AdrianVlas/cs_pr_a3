@@ -751,7 +751,7 @@ void start_settings_peripherals(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = SPI_DF_DR_Address;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)TxBuffer_SPI_DF;
   DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
-  DMA_InitStructure.DMA_BufferSize = SIZE_PAGE_DATAFLASH_MAX + 10;
+  DMA_InitStructure.DMA_BufferSize = SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE + 10;
   DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh; /*Так як № потоку DMA_StreamSPI_DF_Tx > за № потоку DMA_StreamSPI_DF_Rx, то DMA_StreamSPI_DF_Rx має пріориет над DMA_StreamSPI_DF_Tx при однаковому програмному пріоритеті*/
   DMA_Init(DMA_StreamSPI_DF_Tx, &DMA_InitStructure);
   DMA_ClearFlag(DMA_StreamSPI_DF_Tx, DMA_FLAG_TCSPI_DF_Tx | DMA_FLAG_HTSPI_DF_Tx | DMA_FLAG_TEISPI_DF_Tx | DMA_FLAG_DMEISPI_DF_Tx | DMA_FLAG_FEISPI_DF_Tx);
@@ -1956,214 +1956,210 @@ void error_reading_with_eeprom()
 /**************************************/
 //стартова перевірка (і при необхідності перенастройка на потрібні параметри) DataFlash
 /**************************************/
-void start_checking_dataflash(void)
-{
-  //Читаємо статуми мікросхеми 1
-  unsigned char page_size_256, page_size_256_total = 1;
-  unsigned int ready_busy;
-  number_chip_dataflsh_exchange = INDEX_DATAFLASH_1;
-  
-  for (unsigned int i = 0; i < NUMBER_DATAFLASH_CHIP; i++)
-  {
-    page_size_256 = 1;
-    dataflash_status_read(number_chip_dataflsh_exchange);
-    while (driver_spi_df[number_chip_dataflsh_exchange].state_execution != TRANSACTION_EXECUTED_WAIT_ANALIZE)
-    {
-      if (driver_spi_df[number_chip_dataflsh_exchange].state_execution == TRANSACTION_EXECUTING_NONE)
-      {
-        /*
-        ця ситуація могла виникнути тільки в одному випадку - якщо в процесі прийом/передачі
-        зафісована була помилка у SPI_DF, тому повторно виконуємо запуск читання регістру статусу
-        */
-        dataflash_status_read(number_chip_dataflsh_exchange);
-      }
-      
-      //Робота з watchdogs
-      if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
-      {
-        //Змінюємо стан біту зовнішнього Watchdog на протилежний
-        GPIO_WriteBit(
-                      GPIO_EXTERNAL_WATCHDOG,
-                      GPIO_PIN_EXTERNAL_WATCHDOG,
-                      (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
-                     );
-      }
-    }
-    page_size_256 &= RxBuffer_SPI_DF[1] & (1<< 0); 
-    ready_busy = RxBuffer_SPI_DF[1] & (1<< 7);
-    driver_spi_df[number_chip_dataflsh_exchange].state_execution = TRANSACTION_EXECUTING_NONE;
-    driver_spi_df[number_chip_dataflsh_exchange].code_operation = CODE_OPERATION_NONE;
-    if (page_size_256 == 0)
-    {
-      //Треба подати команду на перевід мікросхеми з розміром сторінки 256 байт
-      
-      //Перевіряємо, чи мікросхема зараз є вільною по біту Ready/Busy
-      while (ready_busy == 0)/*перший раз біт ready/busy беремо з попередньої операції читання регістру статусу*/
-      {
-        dataflash_status_read(number_chip_dataflsh_exchange);
-        while (driver_spi_df[number_chip_dataflsh_exchange].state_execution != TRANSACTION_EXECUTED_WAIT_ANALIZE)
-        {
-          if (driver_spi_df[number_chip_dataflsh_exchange].state_execution == TRANSACTION_EXECUTING_NONE)
-          {
-            /*
-            ця ситуація могла виникнути тільки в одному випадку - якщо в процесі прийом/передачі
-            зафісована була помилка у SPI_DF, тому повторно виконуємо запуск читання регістру статусу
-            */
-            dataflash_status_read(number_chip_dataflsh_exchange);
-          }
-          
-          //Робота з watchdogs
-          if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
-          {
-            //Змінюємо стан біту зовнішнього Watchdog на протилежний
-            GPIO_WriteBit(
-                          GPIO_EXTERNAL_WATCHDOG,
-                          GPIO_PIN_EXTERNAL_WATCHDOG,
-                          (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
-                         );
-          }
-        }
-        ready_busy = RxBuffer_SPI_DF[1] & (1<< 7);
-        driver_spi_df[number_chip_dataflsh_exchange].state_execution = TRANSACTION_EXECUTING_NONE;
-        driver_spi_df[number_chip_dataflsh_exchange].code_operation = CODE_OPERATION_NONE;
-      }
-      
-      //Подаємо команду на переналаштування DataFlash
-      dataflash_set_pagesize_256(number_chip_dataflsh_exchange);
-      while (driver_spi_df[number_chip_dataflsh_exchange].state_execution != TRANSACTION_EXECUTED_WAIT_ANALIZE)
-      {
-        /*
-        Тут я вирішив не аналізувати випадок збою, бо після виконання цієї операції
-        треба буде виклю чити і включити прилад (причому скоріше всього це буде на заводі), 
-        тому у гіршому випадку мікросхема скаже, що вона ще не переведена на потрібну ширину сторінки
-        */
-        
-        //Робота з watchdogs
-        if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
-        {
-          //Змінюємо стан біту зовнішнього Watchdog на протилежний
-          GPIO_WriteBit(
-                        GPIO_EXTERNAL_WATCHDOG,
-                        GPIO_PIN_EXTERNAL_WATCHDOG,
-                        (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
-                       );
-        }
-      }
-      driver_spi_df[number_chip_dataflsh_exchange].state_execution = TRANSACTION_EXECUTING_NONE;
-      driver_spi_df[number_chip_dataflsh_exchange].code_operation = CODE_OPERATION_NONE;
-      
-      //Очікуємо, поки попредня команда переналаштування мікросхеми виконається
-      do
-      {
-        dataflash_status_read(number_chip_dataflsh_exchange);
-        while (driver_spi_df[number_chip_dataflsh_exchange].state_execution != TRANSACTION_EXECUTED_WAIT_ANALIZE)
-        {
-          if (driver_spi_df[number_chip_dataflsh_exchange].state_execution == TRANSACTION_EXECUTING_NONE)
-          {
-            /*
-            ця ситуація могла виникнути тільки в одному випадку - якщо в процесі прийом/передачі
-            зафісована була помилка у SPI_DF, тому повторно виконуємо запуск читання регістру статусу
-            */
-            dataflash_status_read(number_chip_dataflsh_exchange);
-          }
-      
-          //Робота з watchdogs
-          if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
-          {
-            //Змінюємо стан біту зовнішнього Watchdog на протилежний
-            GPIO_WriteBit(
-                          GPIO_EXTERNAL_WATCHDOG,
-                          GPIO_PIN_EXTERNAL_WATCHDOG,
-                          (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
-                         );
-          }
-        }
-        ready_busy = RxBuffer_SPI_DF[1] & (1<< 7);
-        driver_spi_df[number_chip_dataflsh_exchange].state_execution = TRANSACTION_EXECUTING_NONE;
-        driver_spi_df[number_chip_dataflsh_exchange].code_operation = CODE_OPERATION_NONE;
-      }
-      while (ready_busy == 0);/*біт ready/busy беремо з попереднії операцій читання регістру статусу, а з нової операції читання регістру статсусу*/
-      
-    }
-
-    page_size_256_total &=  page_size_256;
-    number_chip_dataflsh_exchange = (number_chip_dataflsh_exchange + 1) & (NUMBER_DATAFLASH_CHIP - 1);
-  }
-  
-  if (error_into_spi_df != 0)
-  {
-    /*
-    Якщо була зафіксована помилка під час переходу на ширину сторінки 256 байт
-    (під час читання регістру статусу змінна error_into_spi_df не встановлюється
-    у ненульове значення), то робимо примусовий перезапуск з допомогою внутрішнього
-    (і зовнішнього, якщо джампер є) watchdog-а
-    */
-    while(1);
-  }
-  
-  if (page_size_256_total == 0)
-  {
-    const unsigned char name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD] = 
-    {
-      {
-        " Перезапустите  ",
-        "   устройство   "
-      },
-      {
-        " Перезапустіть  ",
-        "    пристрій    "
-      },
-      {
-        "     Reset      ",
-        "   the device   "
-      },
-      {
-        " Перезапустите  ",
-        "   устройство   "
-      }
-    };
-
-    int index_language = index_language_in_array(settings_fix_prt.language);
-    
-    //Робота з watchdogs
-    if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
-    {
-      //Змінюємо стан біту зовнішнього Watchdog на протилежний
-      GPIO_WriteBit(
-                    GPIO_EXTERNAL_WATCHDOG,
-                    GPIO_PIN_EXTERNAL_WATCHDOG,
-                    (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
-                   );
-    }
-
-    //Копіюємо  рядки у робочий екран
-    for (unsigned int i=0; i< MAX_ROW_LCD; i++)
-    {
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][i][j];
-    }
-  
-    //Обновити повністю весь екран
-    current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
-
-    //Обновляємо інформацію на екрані
-    view_whole_ekran();
-    
-    //Чекаємо, поки пристрій буде перезапущений
-    while(1)
-    {
-      //Робота з watchdogs
-      if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
-      {
-        //Змінюємо стан біту зовнішнього Watchdog на протилежний
-        GPIO_WriteBit(
-                      GPIO_EXTERNAL_WATCHDOG,
-                      GPIO_PIN_EXTERNAL_WATCHDOG,
-                      (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
-                     );
-      }
-    }
-  }
-}
+//void start_checking_dataflash(void)
+//{
+//  //Читаємо статуми мікросхеми 1
+//  unsigned char page_size_256, page_size_256_total = 1;
+//  unsigned int ready_busy;
+//  number_chip_dataflsh_exchange = INDEX_DATAFLASH_1;
+//  
+//  for (unsigned int i = 0; i < NUMBER_DATAFLASH_CHIP; i++)
+//  {
+//    page_size_256 = 1;
+//    dataflash_status_read(number_chip_dataflsh_exchange);
+//    while (state_execution_spi_df[number_chip_dataflsh_exchange] != TRANSACTION_EXECUTED_WAIT_ANALIZE)
+//    {
+//      if (state_execution_spi_df[number_chip_dataflsh_exchange] == TRANSACTION_EXECUTING_NONE)
+//      {
+//        /*
+//        ця ситуація могла виникнути тільки в одному випадку - якщо в процесі прийом/передачі
+//        зафісована була помилка у SPI_DF, тому повторно виконуємо запуск читання регістру статусу
+//        */
+//        dataflash_status_read(number_chip_dataflsh_exchange);
+//      }
+//      
+//      //Робота з watchdogs
+//      if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+//      {
+//        //Змінюємо стан біту зовнішнього Watchdog на протилежний
+//        GPIO_WriteBit(
+//                      GPIO_EXTERNAL_WATCHDOG,
+//                      GPIO_PIN_EXTERNAL_WATCHDOG,
+//                      (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+//                     );
+//      }
+//    }
+//    page_size_256 &= RxBuffer_SPI_DF[1] & (1<< 0); 
+//    ready_busy = RxBuffer_SPI_DF[1] & (1<< 7);
+//    state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTING_NONE;
+//    if (page_size_256 == 0)
+//    {
+//      //Треба подати команду на перевід мікросхеми з розміром сторінки 256 байт
+//      
+//      //Перевіряємо, чи мікросхема зараз є вільною по біту Ready/Busy
+//      while (ready_busy == 0)/*перший раз біт ready/busy беремо з попередньої операції читання регістру статусу*/
+//      {
+//        dataflash_status_read(number_chip_dataflsh_exchange);
+//        while (state_execution_spi_df[number_chip_dataflsh_exchange] != TRANSACTION_EXECUTED_WAIT_ANALIZE)
+//        {
+//          if (state_execution_spi_df[number_chip_dataflsh_exchange] == TRANSACTION_EXECUTING_NONE)
+//          {
+//            /*
+//            ця ситуація могла виникнути тільки в одному випадку - якщо в процесі прийом/передачі
+//            зафісована була помилка у SPI_DF, тому повторно виконуємо запуск читання регістру статусу
+//            */
+//            dataflash_status_read(number_chip_dataflsh_exchange);
+//          }
+//          
+//          //Робота з watchdogs
+//          if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+//          {
+//            //Змінюємо стан біту зовнішнього Watchdog на протилежний
+//            GPIO_WriteBit(
+//                          GPIO_EXTERNAL_WATCHDOG,
+//                          GPIO_PIN_EXTERNAL_WATCHDOG,
+//                          (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+//                         );
+//          }
+//        }
+//        ready_busy = RxBuffer_SPI_DF[1] & (1<< 7);
+//        state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTING_NONE;
+//      }
+//      
+//      //Подаємо команду на переналаштування DataFlash
+//      dataflash_set_pagesize_256(number_chip_dataflsh_exchange);
+//      while (state_execution_spi_df[number_chip_dataflsh_exchange] != TRANSACTION_EXECUTED_WAIT_ANALIZE)
+//      {
+//        /*
+//        Тут я вирішив не аналізувати випадок збою, бо після виконання цієї операції
+//        треба буде виклю чити і включити прилад (причому скоріше всього це буде на заводі), 
+//        тому у гіршому випадку мікросхема скаже, що вона ще не переведена на потрібну ширину сторінки
+//        */
+//        
+//        //Робота з watchdogs
+//        if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+//        {
+//          //Змінюємо стан біту зовнішнього Watchdog на протилежний
+//          GPIO_WriteBit(
+//                        GPIO_EXTERNAL_WATCHDOG,
+//                        GPIO_PIN_EXTERNAL_WATCHDOG,
+//                        (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+//                       );
+//        }
+//      }
+//      state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTING_NONE;
+//      
+//      //Очікуємо, поки попредня команда переналаштування мікросхеми виконається
+//      do
+//      {
+//        dataflash_status_read(number_chip_dataflsh_exchange);
+//        while (state_execution_spi_df[number_chip_dataflsh_exchange] != TRANSACTION_EXECUTED_WAIT_ANALIZE)
+//        {
+//          if (state_execution_spi_df[number_chip_dataflsh_exchange] == TRANSACTION_EXECUTING_NONE)
+//          {
+//            /*
+//            ця ситуація могла виникнути тільки в одному випадку - якщо в процесі прийом/передачі
+//            зафісована була помилка у SPI_DF, тому повторно виконуємо запуск читання регістру статусу
+//            */
+//            dataflash_status_read(number_chip_dataflsh_exchange);
+//          }
+//      
+//          //Робота з watchdogs
+//          if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+//          {
+//            //Змінюємо стан біту зовнішнього Watchdog на протилежний
+//            GPIO_WriteBit(
+//                          GPIO_EXTERNAL_WATCHDOG,
+//                          GPIO_PIN_EXTERNAL_WATCHDOG,
+//                          (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+//                         );
+//          }
+//        }
+//        ready_busy = RxBuffer_SPI_DF[1] & (1<< 7);
+//        state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTING_NONE;
+//      }
+//      while (ready_busy == 0);/*біт ready/busy беремо з попереднії операцій читання регістру статусу, а з нової операції читання регістру статсусу*/
+//      
+//    }
+//
+//    page_size_256_total &=  page_size_256;
+//    number_chip_dataflsh_exchange = (number_chip_dataflsh_exchange + 1) & (NUMBER_DATAFLASH_CHIP - 1);
+//  }
+//  
+//  if (error_into_spi_df != 0)
+//  {
+//    /*
+//    Якщо була зафіксована помилка під час переходу на ширину сторінки 256 байт
+//    (під час читання регістру статусу змінна error_into_spi_df не встановлюється
+//    у ненульове значення), то робимо примусовий перезапуск з допомогою внутрішнього
+//    (і зовнішнього, якщо джампер є) watchdog-а
+//    */
+//    while(1);
+//  }
+//  
+//  if (page_size_256_total == 0)
+//  {
+//    const unsigned char name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD] = 
+//    {
+//      {
+//        " Перезапустите  ",
+//        "   устройство   "
+//      },
+//      {
+//        " Перезапустіть  ",
+//        "    пристрій    "
+//      },
+//      {
+//        "     Reset      ",
+//        "   the device   "
+//      },
+//      {
+//        " Перезапустите  ",
+//        "   устройство   "
+//      }
+//    };
+//
+//    int index_language = index_language_in_array(settings_fix_prt.language);
+//    
+//    //Робота з watchdogs
+//    if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+//    {
+//      //Змінюємо стан біту зовнішнього Watchdog на протилежний
+//      GPIO_WriteBit(
+//                    GPIO_EXTERNAL_WATCHDOG,
+//                    GPIO_PIN_EXTERNAL_WATCHDOG,
+//                    (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+//                   );
+//    }
+//
+//    //Копіюємо  рядки у робочий екран
+//    for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+//    {
+//      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][i][j];
+//    }
+//  
+//    //Обновити повністю весь екран
+//    current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+//
+//    //Обновляємо інформацію на екрані
+//    view_whole_ekran();
+//    
+//    //Чекаємо, поки пристрій буде перезапущений
+//    while(1)
+//    {
+//      //Робота з watchdogs
+//      if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+//      {
+//        //Змінюємо стан біту зовнішнього Watchdog на протилежний
+//        GPIO_WriteBit(
+//                      GPIO_EXTERNAL_WATCHDOG,
+//                      GPIO_PIN_EXTERNAL_WATCHDOG,
+//                      (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+//                     );
+//      }
+//    }
+//  }
+//}
 /**************************************/
 
 /**************************************/

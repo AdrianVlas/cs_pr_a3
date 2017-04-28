@@ -236,19 +236,8 @@ unsigned int sqrt_32(unsigned int);
 unsigned int sqrt_64(unsigned long long);
 unsigned int get_order(int);
 
-void main_function_for_dataflash_resp(int);
-void main_function_for_dataflash_req(int);
-void start_checking_dataflash(void);
-void start_exchange_via_spi(int, unsigned int);
-void dataflash_status_read(int);
-void dataflash_set_pagesize_256(int);
-void dataflash_erase(int);
-void dataflash_mamory_page_program_through_buffer(int);
-void dataflash_mamory_read(int);
-void dataflash_mamory_page_into_buffer(int);
-void dataflash_mamory_write_buffer(int);
-void dataflash_mamory_buffer_into_memory(int);
-void analize_received_data_dataflash(int);
+//void start_checking_dataflash(void);
+//void start_exchange_via_spi(int, unsigned int);
 
 void control_config(unsigned int);
 void control_settings(unsigned int);

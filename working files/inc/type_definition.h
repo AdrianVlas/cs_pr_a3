@@ -484,7 +484,7 @@ typedef struct
 
 typedef struct
 {
-  unsigned int state_execution;     //стан виконуваної заразоперації
+  int state_execution;     //стан виконуваної заразоперації
   
   unsigned int code_operation;      //Код виконуваної операції
 
