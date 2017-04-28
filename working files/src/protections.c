@@ -326,11 +326,6 @@ inline void main_protection(void)
   pressed_buttons = 0;
   /**************************/
     
-  RdHrdIn((void*)&DiHrdStateUI32Bit);
-  SetHrdOut((void*)&DoStateUI32Bit);
-  SetHrdLed((void*)&LedStateUI32Bit);
-  TmrCalls();
-  DoCalcWrp();
   /**************************/
   //Опрацьовуємо сигнали з ТУ/Goose
   /**************************/
