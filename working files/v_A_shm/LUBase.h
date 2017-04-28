@@ -1,5 +1,18 @@
 #pragma once
 
+
+#ifndef LU_CFG_INFO
+#define LU_CFG_INFO
+typedef struct LUCfgInfo_tag{
+void* pvLUClass;
+void* pvCfgSuit;
+void* pvChangeSuitFn;
+}LUCfgInfo;
+
+
+#endif
+
+
 enum TYPE_LU_OP {
 LU_OP_NULL = 1,
 LU_OP_AND,
@@ -10,7 +23,12 @@ LU_OP_MEANDR,
 LU_OP_READ_DI,
 LU_OP_SET_OUT,
 LU_OP_SET_LED,
-LU_OP_MFT
+LU_OP_MFT,
+LU_OP_LSS,
+LU_OP_BGS,
+LU_OP_D_TRG__4_2,
+LU_OP_F_KEY,
+LU_OP_TU
 };
  void AND_Op    (void *pObj);
  void OR__Op    (void *pObj);
@@ -30,7 +48,7 @@ LU_OP_MFT
 
 
 
-/*
+/* 
 #ifndef LU_OUT_DSC
 #define LU_OUT_DSC
 typedef struct tag_LUInputDsc{

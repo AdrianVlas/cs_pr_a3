@@ -346,7 +346,12 @@ inline void main_protection(void)
   //Розрахунок вимірювань
   /***********************************************************/
   calc_measurement();
-
+  RdHrdIn((void*)&DiHrdStateUI32Bit);
+  
+  SetHrdOut((void*)&DoStateUI32Bit);
+  SetHrdLed((void*)&LedStateUI32Bit);
+  //TmrCalls();
+  DoCalcWrp();
   //Копіюємо вимірювання для низькопріоритетних і високопріоритетних завдань
   unsigned int bank_measurement_high_tmp = (bank_measurement_high ^ 0x1) & 0x1;
   if(semaphore_measure_values_low1 == 0)
