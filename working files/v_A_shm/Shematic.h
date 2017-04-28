@@ -24,7 +24,12 @@ LU_INPUT ,
 LU_OUTPUT ,
 LU_LED,
 LU_NOT,
-LU_MFT 
+LU_MFT,
+LU_FKEY,
+LU_LSS,
+LU_BGS,
+LU_TU
+
 };
 
 typedef struct config_tag{ 
@@ -86,6 +91,7 @@ public:
     void ChangeRelativeOnEvalLinks(void);
     void ChangeStngOrdnumRelOnBase(long lIdxScanedObj);
     void SetupCircutLinks(void *pv);
+    void SetupCircutLinks2(void *pv);
     void CreateTestSchema(void);
     static long GetTrueOrderNum(void);
     void DetectCircutLinks(void);
@@ -100,17 +106,25 @@ public:
     void SetupCLUXor_8_1StngParam(void *pv);
     void SetupCLUNot_1_1StngParam(void *pv);
     void SetupCLUMft_2_1StngParam(void *pv);
-    
+    void SetupCLUFKeyStngParam(void *pv);
+    void SetupCLULssStngParam(void *pv);
+    void SetupCBGSigStngParam(void *pv);
+    void SetupCLUTrigStngParam(void *pv);
+    void SetupCPulseAlternatorStngParam(void *pv);
+    void SetupCLUTuStngParam(void *pv);
     //void SetupCLUvStngParam(void *pv);
     long FillSBitFld_LUInInfo(void *pvIn,void *pvOut);
+    long FillSBitFld_LUInInfo2(void *pvIn,void *pvOut);
     long EvalIdxibnarrSBitFldCRefInfo(long lLUStng);
     long EvalIdxinarrLUAreaListElem(long lLUStng);
     long EvalAmtIn_arrLUAreaListElem(long lLUStng);
     void SetupCLUInternalRef(void *pv);
+    void SetupCLUInternalRef2(void *pv);
 	
 	friend long InitSchematic(void);
 	friend long ReInitSchematic(void);
 	friend void DoCalcWrp(void);
+	friend void GetLssMuteAlarmBlockAddr(void* pv);
 };
 
 typedef struct tag_LUAreaParamDsc{
@@ -224,7 +238,7 @@ typedef union {
 	}
 }UNN_LU_AreaMap;
 */
-#define SIZE_MEM_BLK (1024*16)
+#define SIZE_MEM_BLK (1024*32)
 typedef union 
 {
 
@@ -242,7 +256,7 @@ typedef union
 
 
 void ResetarNum(void);
-
+extern  short shLssLUAreaListElemIndex; 
 
 
 

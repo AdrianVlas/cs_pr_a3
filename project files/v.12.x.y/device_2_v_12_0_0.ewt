@@ -1418,6 +1418,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_diagnostyka.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_editor_logical_nodes.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_group_alarm.h</name>
         </file>
         <file>
@@ -1433,7 +1436,7 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_list_settings.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_list_settings_bios.h</name>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_list_settings_param.h</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_main.h</name>
@@ -1467,9 +1470,6 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu_ver2.h</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_param_logical_nodes.c</name>
         </file>
       </group>
       <group>
@@ -1577,6 +1577,9 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_diagnostyka.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_editor_logical_nodes.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_group_alarm.c</name>
         </file>
         <file>
@@ -1598,7 +1601,7 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_list_settings.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\src\menu_list_settings_bios.c</name>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_list_settings_param.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_main.c</name>
@@ -1758,7 +1761,13 @@
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUDout_1_0.h</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUFKey.cpp</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LULss.cpp</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUNot_1_1.cpp</name>
@@ -1767,13 +1776,25 @@
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUOr_8_1.cpp</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUTrig.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUTu.cpp</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUXor_8_1.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\MALed.cpp</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\Mft.cpp</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.hpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\RunErLed.cpp</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp</name>

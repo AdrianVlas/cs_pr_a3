@@ -195,7 +195,6 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
   }
   else if (address_data == MA_INPUTS)
   {
-    temp_value = state_inputs & ((1 << NUMBER_INPUTS) - 1);
   }
   else if (address_data == MA_LEDS)
   {
@@ -2603,7 +2602,7 @@ inline void start_transmint_data_via_RS_485(unsigned int count)
 void modbus_rountines(unsigned int type_interface)
 {
  unsigned char *received_buffer, *transmited_buffer;
- int volatile *received_count;
+ int *received_count;
  int *transmited_count;
  unsigned int error = 0;
   

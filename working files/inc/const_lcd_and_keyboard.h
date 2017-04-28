@@ -18,19 +18,25 @@
 #define NUMBER_KEY_KEYBOARD (4*3)
 #define DEREVIACIA          8
 
-#define BIT_KEY_ENTER           0
-#define BIT_KEY_DOWN            1
-#define BIT_KEY_RIGHT           2
-#define BIT_KEY_ESC             3
-#define BIT_KEY_LEFT            4
-#define BIT_KEY_UP              5
-#define BIT_KEY_1               6
-#define BIT_KEY_2               7
-#define BIT_KEY_MUTE            8
-#define BIT_KEY_RESET           9
-#define BIT_KEY_TEST            10
+enum _bit_key
+{
+  BIT_KEY_ENTER = 0,
+  BIT_KEY_DOWN,
+  BIT_KEY_RIGHT,
+  BIT_KEY_ESC,
+  BIT_KEY_LEFT,
+  BIT_KEY_UP,
+  
+  _NUMBER_MOVING_KEY,
+  
+  BIT_KEY_MUTE = FIX_BUTTON_MUTE + _NUMBER_MOVING_KEY,
+  BIT_KEY_RESET = FIX_BUTTON_RESET + _NUMBER_MOVING_KEY,
+  BIT_KEY_TEST = FIX_BUTTON_TEST + _NUMBER_MOVING_KEY,
+  BIT_KEY_1 = NUMBER_FIX_BUTTONS + _NUMBER_MOVING_KEY,
+  BIT_KEY_2,
 
-#define BIT_REWRITE             30
+  BIT_REWRITE = 30
+};
 
 #define ACTION_WITH_CARRENT_EKRANE_NONE                      0
 #define ACTION_WITH_CARRENT_EKRANE_ONLY_CHANGE_CURSOR        1

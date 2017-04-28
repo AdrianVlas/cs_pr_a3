@@ -48,9 +48,7 @@ fnPvrL arrChangeCfgFnptr[16] = {
 
 long ChangeCfg(void* pv){
     register long i, lRes, lCtrElem;
-	    asm(
-                "bkpt 1"
-                );
+
 	lRes = InitSchematic();
     lRes = i = 0;
     lCtrElem = chGlbAmountRegisteredElem;
@@ -67,6 +65,46 @@ long ChangeCfg(void* pv){
     return i;
 }
 
+// long RegisterHundlerLUCfg(void* pv){
+
+
+// return 0;
+
+// }
+/*
+long ChangeCfgLULed(void* pv){
+register void* pvO;
+register long i;
+volatile 
+struct{
+void *pVOrigin;
+char *pCh;
+short shRelativeIndexLU;
+}sLv;
+sLv.pVOrigin = pv;
+pvO = (void*)((LUCfgInfo*)pv)->pvCfgSuit;
+//Get Index Current LU
+//sLv.shRelativeIndexLU = ((LUCfgInfo*)pv)->shRelativeIndexLU;
+//((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index]
+//p_param = &(((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index]);
+//
+//            unsigned int id_input   = (param >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+//            unsigned int n_input    = (param >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер
+//            unsigned int out_input  = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу//
+sLv.pCh = (char*)( spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
+sLv.pCh += sLv.shRelativeIndexLU * sizeof(__LN_OUTPUT_LED);
+
+
+
+
+
+
+
+
+
+return 0;
+}
+*/
 //#include "../inc/variables_external.h" зараз поки що не йде
 
 

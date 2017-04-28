@@ -45,6 +45,7 @@ place in RAM_region   { readwrite };
 place at end of RAM_region   { block CSTACK, block HEAP };
 place in RAM1_region {section variables_RAM1,section ZeroInivars_RAM1,section NonZeroIniVars_RAM1};
 
+check that maxstack("Program entry") + totalstack("Interrupt") + 100 <= size(block CSTACK);
 
 
 

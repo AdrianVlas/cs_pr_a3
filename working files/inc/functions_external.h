@@ -18,7 +18,9 @@ extern void start_settings_peripherals(void);
 extern void start_tim4_canal2_for_interrupt_1mc(void);
 extern void start_tim4_canal3_for_interrupt_10mkc(void);
 extern void min_config(__CONFIG *);
+extern void scheme2_config(__CONFIG *);
 extern void min_settings(__SETTINGS_FIX *);
+void scheme2_settings(__CONFIG *, __SETTINGS_FIX *, uintptr_t *[]);
 extern void min_settings_INPUT(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_INPUT(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_OUTPUT_LED(unsigned int, uintptr_t *, size_t, size_t);
@@ -46,15 +48,15 @@ extern size_t size_all_settings(void);
 extern void copy_settings(__CONFIG *, __SETTINGS_FIX *, __SETTINGS_FIX *, uintptr_t *[], uintptr_t *[]);
 extern unsigned int set_config_and_settings(unsigned int, unsigned int);
 extern void error_reading_with_eeprom(void);
-extern void move_into_param_list_logical_nodes(unsigned int, int);
-extern void make_ekran_param_list_logical_node(void);
-extern enum _result_pressed_enter_during_edition  press_enter_in_param_list_logical_node(void);
-extern void press_esc_in_param_list_logical_node(void);
-extern void make_ekran_param_list_inputs_of_selected_logical_node(void);
-extern void move_into_param_view_chosen_of_selected_logical_node(unsigned int, int);
-extern void make_ekran_param_view_chosen_of_selected_logical_node(void);
+extern void move_into_editor_list_logical_nodes(unsigned int, int);
+extern void make_ekran_editor_list_logical_node(void);
+extern enum _result_pressed_enter_during_edition  press_enter_in_editor_list_logical_node(void);
+extern void press_esc_in_editor_list_logical_node(void);
+extern void make_ekran_editor_list_inputs_of_selected_logical_node(void);
+extern void move_into_editor_view_chosen_of_selected_logical_node(unsigned int, int);
+extern void make_ekran_editor_view_chosen_of_selected_logical_node(void);
 extern void change_set_signal(unsigned int);
-extern void make_ekran_param_edit_list_outputs_of_selected_logical_node(void);
+extern void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void);
 extern void select_input_signal_ln(void);
 
 extern void Interrupts_Config(void);
@@ -129,8 +131,8 @@ extern void make_ekran_choose_control(void);
 extern void move_into_list_settings(unsigned int, int);
 extern void make_ekran_list_settings(void);
 extern void press_esc_in_list_settings(void);
-extern void move_into_list_settings_bios(unsigned int, int);
-extern void make_ekran_list_settings_bios(void);
+extern void move_into_list_settings_param(unsigned int, int);
+extern void make_ekran_list_settings_param(void);
 extern void press_esc_in_configuration(void);
 extern void make_ekran_list_logical_nodes(void);
 extern void make_ekran_delay_timer(void);
@@ -180,6 +182,7 @@ extern void make_ekran_list_labels(void);
 extern void make_ekran_time_config_or_settings(void);
 extern void move_into_diagnostics(unsigned int, int);
 extern void make_ekran_diagnostics(void);
+extern void move_into_ekran_list_inputs_outputs(unsigned int, int);
 extern void make_ekran_list_inputs_outputs(void);
 extern unsigned int max_number_digit_in_number(int);
 extern void make_ekran_state_inputs_or_outputs(void);
@@ -216,8 +219,8 @@ extern unsigned int Set_data(unsigned short int, unsigned int, unsigned int, /*u
 extern void set_previous_ranguvannja(void);
 
 extern ErrorStatus check_errors_i2c(void);
-extern unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t volatile*, uint32_t);
-extern unsigned int start_read_buffer_via_I2C(uint32_t, uint16_t, uint8_t volatile*, uint32_t);
+extern unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);
+extern unsigned int start_read_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);
 extern void main_routines_for_i2c(void);
 extern void error_start_i2c(void);
 
@@ -247,7 +250,7 @@ extern void analize_received_data_dataflash(int);
 extern void control_config(unsigned int);
 extern void control_settings(unsigned int);
 extern void control_ustuvannja(void);
-//extern void control_trg_func(void);
+extern void control_trg_func(void);
 extern unsigned int control_info_rejestrator(__INFO_REJESTRATOR*, unsigned char);
 
 extern void test_external_SRAM(void);
@@ -278,8 +281,6 @@ extern void SPI_DF_IRQHandler(void);
 extern void USARTRS485_IRQHandler(void);
 extern void DMA_StreamRS485_Tx_IRQHandler(void);
 extern void EXITI_POWER_IRQHandler(void);
-
-extern void setpoints_selecting(volatile unsigned int*, unsigned int);
 
 extern int str_to_int_DATE_Mmm(void);
 

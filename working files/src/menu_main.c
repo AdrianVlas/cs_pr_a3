@@ -19,8 +19,17 @@ void move_into_main(unsigned int action, int max_row)
     {
       if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
       while (
-             (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
-             (current_config_prt.n_group_alarm == 0)
+             (
+              (current_state_menu2.index_position == INDEX_MAIN_M2_MEASURMENTS) &&
+              (current_config_prt.n_group_alarm == 0)
+             )
+             ||
+             (
+              (current_state_menu2.index_position == INDEX_MAIN_M2_INPUTS_OUTPUTS) &&
+              (current_config_prt.n_input == 0) &&
+              (current_config_prt.n_output == 0) &&
+              (current_config_prt.n_group_alarm == 0)
+             ) 
             )
       {
         if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
@@ -105,8 +114,17 @@ void make_ekran_main(void)
   for(size_t index_1 = 0; index_1 < MAX_ROW_MAIN_M2; index_1++)
   {
     if (
-        (index_1 == INDEX_MAIN_M2_MEASURMENTS) &&
-        (current_config_prt.n_group_alarm == 0)
+        (
+         (index_1 == INDEX_MAIN_M2_MEASURMENTS) &&
+         (current_config_prt.n_group_alarm == 0)
+        )   
+        ||
+        (
+         (index_1 == INDEX_MAIN_M2_INPUTS_OUTPUTS) &&
+         (current_config_prt.n_input == 0) &&
+         (current_config_prt.n_output == 0) &&
+         (current_config_prt.n_group_alarm == 0)
+        ) 
        )
     {
       if ((index_1 - additional_current) < position_temp) position_temp--;
@@ -174,7 +192,7 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
        )
        ||  
        (
-        (new_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
+        (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
         (current_state_menu2.edition == ED_VIEWING)
        )
       )   
@@ -183,9 +201,19 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
     //™ спроба перейти у в≥кно списку налаштувань
     if (settings_fix_prt.password_2 == 0)
     {
-      if (config_settings_modified == 0)
+      if (
+          (config_settings_modified == 0) && 
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT  ) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT      ) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT   ) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_CONFIG_EEPROM_BIT      ) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT    ) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT ) == 0) &&
+          (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT    ) == 0)
+         )   
       {
-        if  (new_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+        if  (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
         {
           //¬ходимо в режим редагуванн€
           current_state_menu2.edition = ED_EDITION;
@@ -225,7 +253,7 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
     }
   }
   else if (
-           (new_level == PARAM_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
+           (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
            (current_state_menu2.edition == ED_CAN_BE_EDITED)
           )   
   {

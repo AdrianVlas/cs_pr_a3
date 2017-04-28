@@ -18,6 +18,172 @@ unsigned int max_number_digit_in_number(int max_item)
 }
 /*****************************************************/
 
+/*****************************************************/
+/*
+Функція переміщення по меню
+
+Вхідні параметри
+(1 << BIT_REWRITE) - перемалювати меню
+(1 << BIT_KEY_DOWN) - рухатися вниз
+(1 << BIT_KEY_UP) - рухатися вверх
+*/
+/*****************************************************/
+void move_into_ekran_list_inputs_outputs(unsigned int action, int max_row)
+{
+  if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
+  {
+    if (action & (1 << BIT_KEY_DOWN)) current_state_menu2.index_position++;
+    do
+    {
+      if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
+      while (
+             (
+              (current_state_menu2.index_position == INDEX_INOUT_OUTPUT_M2_ANALOG_INPUT) &&
+              (current_config_prt.n_group_alarm == 0)
+             )
+             ||  
+             (
+              (current_state_menu2.index_position == INDEX_INOUT_OUTPUT_M2_INPUT) &&
+              (current_config_prt.n_input == 0)
+             )
+             ||  
+             (
+              (current_state_menu2.index_position == INDEX_INOUT_OUTPUT_M2_OUTPUT) &&
+              (current_config_prt.n_output == 0)
+             )
+            )
+      {
+        if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
+      }
+    }
+    while ((action & (1 << BIT_KEY_DOWN)) && (current_state_menu2.index_position >= max_row));
+  }
+  else if (action & (1 << BIT_KEY_UP))
+  {
+    current_state_menu2.index_position--;
+    do
+    {
+      if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
+      while (
+             (
+              (current_state_menu2.index_position == INDEX_INOUT_OUTPUT_M2_ANALOG_INPUT) &&
+              (current_config_prt.n_group_alarm == 0)
+             )
+             ||  
+             (
+              (current_state_menu2.index_position == INDEX_INOUT_OUTPUT_M2_INPUT) &&
+              (current_config_prt.n_input == 0)
+             )
+             ||  
+             (
+              (current_state_menu2.index_position == INDEX_INOUT_OUTPUT_M2_OUTPUT) &&
+              (current_config_prt.n_output == 0)
+             )
+            )
+      {
+        if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
+      }
+    }
+    while (current_state_menu2.index_position < 0);
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Формуємо екран відображення заголовків станів входів-виходів
+/*****************************************************/
+void make_ekran_list_inputs_outputs(void)
+{
+  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_INPUT_OUTPUT_M2][MAX_COL_LCD + 1] = 
+  {
+    {
+      " Сост.ШГС       ",
+      " Сост.входов    ",
+      " Сост.выходов   "
+    },
+    {
+      " Стан ШГС       ",
+      " Стан входів    ",
+      " Стан виходів   "
+    },
+    {
+      " Inputs G.Alarms",
+      " Inputs state   ",
+      " Outputs state  "
+    },
+    {
+      " Сост.ШГС       ",
+      " Кіріс жаfдайы  ",
+      " Шыfыс жаfдайы  "
+    }
+  };
+  int index_language = index_language_in_array(settings_fix_prt.language);
+
+  unsigned int additional_current = 0;
+  unsigned int position_temp = current_state_menu2.index_position;
+
+  uint8_t name_string_tmp[MAX_ROW_INPUT_OUTPUT_M2][MAX_COL_LCD + 1];
+  for(size_t index_1 = 0; index_1 < MAX_ROW_INPUT_OUTPUT_M2; index_1++)
+  {
+    if (
+        (
+         (index_1 == INDEX_INOUT_OUTPUT_M2_ANALOG_INPUT) &&
+         (current_config_prt.n_group_alarm == 0)
+        )
+        ||  
+        (
+         (index_1 == INDEX_INOUT_OUTPUT_M2_INPUT) &&
+         (current_config_prt.n_input == 0)
+        )
+        ||  
+        (
+         (index_1 == INDEX_INOUT_OUTPUT_M2_OUTPUT) &&
+         (current_config_prt.n_output == 0)
+        )
+       )
+    {
+      if ((index_1 - additional_current) < position_temp) position_temp--;
+      additional_current++;
+
+      for(size_t index_2 = 0; index_2 < MAX_COL_LCD; index_2++)
+      {
+        name_string_tmp[MAX_ROW_INPUT_OUTPUT_M2 - additional_current][index_2] = ' ';
+      }
+      name_string_tmp[MAX_ROW_INPUT_OUTPUT_M2 - additional_current][MAX_COL_LCD] = '\0';
+    }
+    else
+    {
+      for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
+      {
+        name_string_tmp[index_1 - additional_current][index_2] = name_string[index_language][index_1][index_2];
+      }
+    }
+  }
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  
+  //Копіюємо  рядки у робочий екран
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
+  {
+    //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
+    for (size_t j = 0; j < MAX_COL_LCD; j++) 
+    {
+      working_ekran[i][j] =  (index_in_ekran < (MAX_ROW_INPUT_OUTPUT_M2 - additional_current)) ? name_string_tmp[index_in_ekran][j] : ' ';
+    }
+    index_in_ekran++;
+  }
+
+  //Курсор по горизонталі відображається на першій позиції
+  current_state_menu2.position_cursor_x = 0;
+  //Відображення курору по вертикалі
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  //Курсор видимий
+  current_state_menu2.cursor_on = 1;
+  //Курсор не мигає
+  current_state_menu2.cursor_blinking_on = 0;
+  //Обновити повністю весь екран
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+}
+/*****************************************************/
 
 /*****************************************************/
 /*
@@ -41,59 +207,6 @@ void move_into_ekran_input_or_output(unsigned int action, int max_row_tmp)
   {
     if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
   }
-}
-/*****************************************************/
-
-/*****************************************************/
-//Формуємо екран відображення заголовків станів входів-виходів
-/*****************************************************/
-void make_ekran_list_inputs_outputs(void)
-{
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_INPUT_OUTPUT_M2][MAX_COL_LCD + 1] = 
-  {
-    {
-      " Сост.входов    ",
-      " Сост.выходов   "
-    },
-    {
-      " Стан входів    ",
-      " Стан виходів   "
-    },
-    {
-      " Inputs  state  ",
-      " Outputs state  "
-    },
-    {
-      " Кіріс жаfдайы  ",
-      " Шыfыс жаfдайы  "
-    }
-  };
-  int index_language = index_language_in_array(settings_fix_prt.language);
-  
-  unsigned int position_temp = current_state_menu2.index_position;
-  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
-  
-  //Копіюємо  рядки у робочий екран
-  for (size_t i = 0; i < MAX_ROW_LCD; i++)
-  {
-    //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    for (size_t j = 0; j < MAX_COL_LCD; j++) 
-    {
-      working_ekran[i][j] =  (index_in_ekran < MAX_ROW_INPUT_OUTPUT_M2) ? name_string[index_language][index_in_ekran][j] : ' ';
-    }
-    index_in_ekran++;
-  }
-
-  //Курсор по горизонталі відображається на першій позиції
-  current_state_menu2.position_cursor_x = 0;
-  //Відображення курору по вертикалі
-  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
-  //Курсор видимий
-  current_state_menu2.cursor_on = 1;
-  //Курсор не мигає
-  current_state_menu2.cursor_blinking_on = 0;
-  //Обновити повністю весь екран
-  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 
@@ -128,7 +241,12 @@ void make_ekran_state_inputs_or_outputs(void)
       }
     
       int _n = in_out + i - 1;
-      if (current_state_menu2.current_level == INPUTS_MENU2_LEVEL)
+      if (current_state_menu2.current_level == ANALOG_INPUTS_MENU2_LEVEL)
+      {
+        __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
+        value = arr[_n].active_state[GROUP_ALARM_OUT_CC >> 3] & (1 << (GROUP_ALARM_OUT_CC & ((1 << 3) - 1)));
+      }
+      else if (current_state_menu2.current_level == INPUTS_MENU2_LEVEL)
       {
         __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
         value = arr[_n].active_state[INPUT_OUT >> 3] & (1 << (INPUT_OUT & ((1 << 3) - 1)));

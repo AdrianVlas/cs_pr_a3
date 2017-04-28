@@ -38,10 +38,16 @@ enum _FIX_BLOCK_output_signals
 {
   FIX_BLOCK_DEFECT = 0,
   FIX_BLOCK_AVAR_DEFECT,
+  FIX_BLOCK_TEST,
   FIX_BLOCK_SETTINGS_LOG_WORK,
   FIX_BLOCK_SETTINGS_CHANGED,
   
   FIX_BLOCK_SIGNALS_OUT
+};
+
+enum _FIX_BLOCK_d_trigger
+{
+  FIX_BLOCK_D_TRIGGER_TOTAL = 0
 };
 
 enum _FIX_BLOCK_input_signals
@@ -85,6 +91,12 @@ enum _INPUT_output_signals
   INPUT_SIGNALS_OUT
     
 };
+
+enum _INPUT_d_trigger
+{
+  INPUT_D_TRIGGER_TOTAL = 0
+};
+
 /***/
 
 /*
@@ -99,6 +111,13 @@ enum _OUTPUT_LED_output_signals
   OUTPUT_LED_BOARD = OUTPUT_LED_SIGNALS_OUT,
     
   OUTPUT_LED_SIGNALS_OUT_TOTAL
+};
+
+enum _OUTPUT_LED_d_trigger
+{
+  OUTPUT_LED_D_TRIGGER_1 = 0,
+  
+  OUTPUT_LED_D_TRIGGER_TOTAL
 };
 
 enum _OUTPUT_LED_input_signals
@@ -140,6 +159,11 @@ enum _BUTTON_TU_output_signals
   
   BUTTON_TU_SIGNALS_OUT
 };
+
+enum _BUTTON_TU_d_trigger
+{
+  BUTTON_TU_D_TRIGGER_TOTAL = 0
+};
 /***/
 
 /*
@@ -163,11 +187,19 @@ enum _ALARM_output_signals
 {
   ALARM_OUT_ALARM = 0,
   ALARM_OUT_MUTE,
-  ALARM_OUT_BLOCK,
   
   ALARM_SIGNALS_OUT
     
 };
+
+enum _ALARM_d_trigger
+{
+  ALARM_D_TRIGGER_1 = 0,
+  ALARM_D_TRIGGER_2,
+  
+  ALARM_D_TRIGGER_TOTAL
+};
+
 enum _ALARM_input_signals
 {
   ALARM_LOGIC_INPUT = 0,
@@ -233,6 +265,11 @@ enum _GROUP_ALARM_output_signals
     
 };
 
+enum _GROUP_ALARM_d_trigger
+{
+  GROUP_ALARM_D_TRIGGER_TOTAL = 0
+};
+
 enum __index_ctrl_group_alarm
 {
   INDEX_CTRL_GROUP_ALARM_STATE = 0,
@@ -256,6 +293,12 @@ enum _STANDARD_LOGIC_output_signals
   STANDARD_LOGIC_SIGNALS_OUT
     
 };
+
+enum _STANDARD_LOGIC_d_trigger
+{
+  STANDARD_LOGIC_D_TRIGGER_TOTAL = 0
+};
+
 /***/
 
 /*
@@ -289,6 +332,12 @@ enum _TIMER_output_signals
   TIMER_SIGNALS_OUT
     
 };
+
+enum _TIMER_d_trigger
+{
+  TIMER_D_TRIGGER_TOTAL = 0
+};
+
 enum _TIMER_input_signals
 {
   TIMER_LOGIC_INPUT = 0,
@@ -308,6 +357,13 @@ enum _TRIGGER_output_signals
   
   TRIGGER_SIGNALS_OUT
     
+};
+
+enum _TRIGGER_d_trigger
+{
+  TRIGGER_D_TRIGGER_1 = 0,
+  
+  TRIGGER_D_TRIGGER_TOTAL
 };
 
 enum _TRIGGER_input_signals
@@ -330,6 +386,11 @@ enum _settings_delay_of_MEANDER
   MEANDER_SET_DELAY_PERIOD = 0,
   
   MEANDER_SET_DELAYS
+};
+
+enum _MEANDER_d_trigger
+{
+  MEANDER_D_TRIGGER_TOTAL
 };
 
 enum _work_delay_of_MEANDER

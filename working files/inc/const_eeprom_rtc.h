@@ -64,11 +64,11 @@ enum
   TASK_START_READ_SETTINGS_EEPROM_BIT,
   TASK_READING_SETTINGS_EEPROM_BIT,
 
-//  TASK_START_WRITE_TRG_FUNC_EEPROM_BIT,
-//  TASK_WRITING_TRG_FUNC_EEPROM_BIT,
+  TASK_START_WRITE_TRG_FUNC_EEPROM_BIT,
+  TASK_WRITING_TRG_FUNC_EEPROM_BIT,
 
-//  TASK_START_READ_TRG_FUNC_EEPROM_BIT,
-//  TASK_READING_TRG_FUNC_EEPROM_BIT,
+  TASK_START_READ_TRG_FUNC_EEPROM_BIT,
+  TASK_READING_TRG_FUNC_EEPROM_BIT,
 
   TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT,
   TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT,
@@ -111,12 +111,12 @@ enum
 #define STATE_USTUVANNJA_EEPROM_GOOD_BIT                                9      
 #define STATE_USTUVANNJA_EEPROM_GOOD                                    (1<<STATE_USTUVANNJA_EEPROM_GOOD_BIT)      
 
-//#define STATE_TRG_FUNC_EEPROM_EMPTY_BIT                                 10      
-//#define STATE_TRG_FUNC_EEPROM_EMPTY                                     (1<<STATE_TRG_FUNC_EEPROM_EMPTY_BIT)      
-//#define STATE_TRG_FUNC_EEPROM_FAIL_BIT                                  11      
-//#define STATE_TRG_FUNC_EEPROM_FAIL                                      (1<<STATE_TRG_FUNC_EEPROM_FAIL_BIT)      
-//#define STATE_TRG_FUNC_EEPROM_GOOD_BIT                                  12      
-//#define STATE_TRG_FUNC_EEPROM_GOOD                                      (1<<STATE_TRG_FUNC_EEPROM_GOOD_BIT)      
+#define STATE_TRG_FUNC_EEPROM_EMPTY_BIT                                 10      
+#define STATE_TRG_FUNC_EEPROM_EMPTY                                     (1<<STATE_TRG_FUNC_EEPROM_EMPTY_BIT)      
+#define STATE_TRG_FUNC_EEPROM_FAIL_BIT                                  11      
+#define STATE_TRG_FUNC_EEPROM_FAIL                                      (1<<STATE_TRG_FUNC_EEPROM_FAIL_BIT)      
+#define STATE_TRG_FUNC_EEPROM_GOOD_BIT                                  12      
+#define STATE_TRG_FUNC_EEPROM_GOOD                                      (1<<STATE_TRG_FUNC_EEPROM_GOOD_BIT)      
 
 #define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT                  13      
 #define STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY                      (1<<STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT)      
