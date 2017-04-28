@@ -607,7 +607,7 @@ void TIM4_IRQHandler(void)
     /***************************/
     //Обробка алгоритму функціональних кнопок
     /***************************/
-    pressed_buttons    |= (new_state_keyboard & ( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) )) >> BIT_KEY_1;
+    pressed_buttons    |= (new_state_keyboard & ( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) )) >> _NUMBER_MOVING_KEY;
     new_state_keyboard &= (unsigned int)(~( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) ));
     /***************************/
     /***********************************************************/
