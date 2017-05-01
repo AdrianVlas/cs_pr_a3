@@ -209,10 +209,17 @@ uint32_t state_i2c_task = STATE_FIRST_READING_RTC;
 SRAM1 unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
 
 //DataFlash
-uint8_t RxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE + 10];
-uint8_t TxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE + 10];
+uint8_t RxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
+uint8_t TxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
 unsigned int number_chip_dataflsh_exchange = INDEX_DATAFLASH_1;
-int32_t state_execution_spi_df[NUMBER_DATAFLASH_CHIP] = {TRANSACTION_EXECUTING_NONE, TRANSACTION_EXECUTING_NONE};
+uint32_t state_execution_spi_df[NUMBER_DATAFLASH_CHIP] = {TRANSACTION_EXECUTING_NONE, TRANSACTION_EXECUTING_NONE};
+uint32_t status_register_df[NUMBER_DATAFLASH_CHIP];
+uint32_t address_read_write[NUMBER_DATAFLASH_CHIP];
+uint32_t number_bytes_read_write[NUMBER_DATAFLASH_CHIP];
+uint8_t buffer_serial_DataFlash_read_write[NUMBER_DATAFLASH_CHIP][SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE];
+const uint32_t size_page_serial_dataflash[NUMBER_DATAFLASH_CHIP] = {SIZE_PAGE_DATAFLASH_1, SIZE_PAGE_DATAFLASH_2};
+const uint32_t number_page_serial_dataflash[NUMBER_DATAFLASH_CHIP] = {NUMBER_PAGES_INTO_DATAFLASH_1, NUMBER_PAGES_INTO_DATAFLASH_2};
+uint32_t control_spi_df_tasks[NUMBER_DATAFLASH_CHIP] = {0, 0};
 uint32_t control_tasks_dataflash = 0;
 SRAM1 uint8_t buffer_for_manu_read_record[SIZE_ONE_RECORD_PR_ERR];
 SRAM1 uint8_t buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];

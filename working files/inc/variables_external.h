@@ -149,10 +149,17 @@ extern uint32_t state_i2c_task;
 extern unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
 
 //DataFlash
-extern uint8_t RxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE + 10];
-extern uint8_t TxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE + 10];
+extern uint8_t RxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
+extern uint8_t TxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
 extern unsigned int number_chip_dataflsh_exchange;
-extern int32_t state_execution_spi_df[NUMBER_DATAFLASH_CHIP];
+extern uint32_t state_execution_spi_df[NUMBER_DATAFLASH_CHIP];
+extern uint32_t status_register_df[NUMBER_DATAFLASH_CHIP];
+extern uint32_t address_read_write[NUMBER_DATAFLASH_CHIP];
+extern uint32_t number_bytes_read_write[NUMBER_DATAFLASH_CHIP];
+extern uint8_t buffer_serial_DataFlash_read_write[NUMBER_DATAFLASH_CHIP][SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE];
+extern const uint32_t size_page_serial_dataflash[NUMBER_DATAFLASH_CHIP];
+extern const uint32_t number_page_serial_dataflash[NUMBER_DATAFLASH_CHIP];
+extern uint32_t control_spi_df_tasks[NUMBER_DATAFLASH_CHIP];
 extern uint32_t control_tasks_dataflash;
 extern uint8_t buffer_for_manu_read_record[SIZE_ONE_RECORD_PR_ERR];
 extern uint8_t buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];

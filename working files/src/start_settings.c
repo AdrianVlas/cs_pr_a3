@@ -751,7 +751,7 @@ void start_settings_peripherals(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = SPI_DF_DR_Address;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)TxBuffer_SPI_DF;
   DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
-  DMA_InitStructure.DMA_BufferSize = SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE + 10;
+  DMA_InitStructure.DMA_BufferSize = SIZE_BUFFER_SERIAL_DATAFLASH_DMA;
   DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh; /*Так як № потоку DMA_StreamSPI_DF_Tx > за № потоку DMA_StreamSPI_DF_Rx, то DMA_StreamSPI_DF_Rx має пріориет над DMA_StreamSPI_DF_Tx при однаковому програмному пріоритеті*/
   DMA_Init(DMA_StreamSPI_DF_Tx, &DMA_InitStructure);
   DMA_ClearFlag(DMA_StreamSPI_DF_Tx, DMA_FLAG_TCSPI_DF_Tx | DMA_FLAG_HTSPI_DF_Tx | DMA_FLAG_TEISPI_DF_Tx | DMA_FLAG_DMEISPI_DF_Tx | DMA_FLAG_FEISPI_DF_Tx);
