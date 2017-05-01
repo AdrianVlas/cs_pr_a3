@@ -151,7 +151,7 @@ extern unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
 //DataFlash
 extern uint8_t RxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
 extern uint8_t TxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
-extern unsigned int number_chip_dataflsh_exchange;
+extern uint32_t number_chip_dataflsh_exchange;
 extern uint32_t state_execution_spi_df[NUMBER_DATAFLASH_CHIP];
 extern uint32_t status_register_df[NUMBER_DATAFLASH_CHIP];
 extern uint32_t address_read_write[NUMBER_DATAFLASH_CHIP];

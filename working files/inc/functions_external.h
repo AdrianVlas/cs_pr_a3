@@ -233,7 +233,7 @@ extern unsigned int sqrt_32(unsigned int);
 extern unsigned int sqrt_64(unsigned long long);
 extern unsigned int get_order(int);
 
-//extern void start_checking_dataflash(void);
+extern void start_checking_dataflash(void);
 extern void start_exchange_via_spi_df(uint32_t, uint32_t);
 extern void main_routines_for_spi_df(uint32_t);
 

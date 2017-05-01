@@ -866,11 +866,19 @@ void TIM4_IRQHandler(void)
           if (head != tail) control_tasks_dataflash |= (1 << TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT);  //Є нові записи у буфері подій  
         }
 
+        //Опрацьовуємо прийняту відповідь від мікросхеми
+        if (state_execution_spi_df[number_chip_dataflsh_exchange] == TRANSACTION_EXECUTED_WAIT_ANALIZE)
+        {
+        }
+        
         //Змінюємо номер DataFlash з яким буде іти зараз робота
         if (state_execution_spi_df[number_chip_dataflsh_exchange] == TRANSACTION_EXECUTING_NONE)
         {
           //Змінюємо номер мікросхеми, до якої ми будемо звертатися при натупних трансакціях, якщо зараз не запущена ніяка трансакція
           number_chip_dataflsh_exchange = (number_chip_dataflsh_exchange < (NUMBER_DATAFLASH_CHIP - 1)) ? (number_chip_dataflsh_exchange++) : INDEX_DATAFLASH_1;
+          
+          //Якщодля вибраної мікросхеми є що виконувати, то виконуємо ці дії
+          if (control_spi_df_tasks[number_chip_dataflsh_exchange] != 0) main_routines_for_spi_df(number_chip_dataflsh_exchange);
         }
       }
       else
@@ -1188,7 +1196,7 @@ void DMA_StreamSPI_DF_Rx_IRQHandler(void)
   DMA_ClearFlag(DMA_StreamSPI_DF_Rx, DMA_FLAG_TCSPI_DF_Rx | DMA_FLAG_HTSPI_DF_Rx | DMA_FLAG_TEISPI_DF_Rx | DMA_FLAG_DMEISPI_DF_Rx | DMA_FLAG_FEISPI_DF_Rx);
   
   //Виставляємо повідомлення, що дані передані і готові до наступного аналізу
-  if ((number_chip_dataflsh_exchange == INDEX_DATAFLASH_1) || (number_chip_dataflsh_exchange == INDEX_DATAFLASH_2))
+  if (number_chip_dataflsh_exchange < NUMBER_DATAFLASH_CHIP)
     state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTED_WAIT_ANALIZE;
   else
   {

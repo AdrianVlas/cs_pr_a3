@@ -431,7 +431,7 @@ int main(void)
   timeout_idle_USB = settings_fix.timeout_deactivation_password_interface_USB;
   
   //Перевірка параметрування мікросхем DataFlash
-//  start_checking_dataflash();
+  start_checking_dataflash();
   
   //Запускаємо генерацію переривань кожну кожну 1 мс від каналу 2 таймеру 4 для виконання періодичних низькопріоритетних задач
   start_tim4_canal2_for_interrupt_1mc();

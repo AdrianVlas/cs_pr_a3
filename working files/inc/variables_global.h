@@ -211,7 +211,7 @@ SRAM1 unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
 //DataFlash
 uint8_t RxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
 uint8_t TxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
-unsigned int number_chip_dataflsh_exchange = INDEX_DATAFLASH_1;
+uint32_t number_chip_dataflsh_exchange = INDEX_DATAFLASH_1;
 uint32_t state_execution_spi_df[NUMBER_DATAFLASH_CHIP] = {TRANSACTION_EXECUTING_NONE, TRANSACTION_EXECUTING_NONE};
 uint32_t status_register_df[NUMBER_DATAFLASH_CHIP];
 uint32_t address_read_write[NUMBER_DATAFLASH_CHIP];

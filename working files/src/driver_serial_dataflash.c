@@ -343,7 +343,7 @@ void main_routines_for_spi_df(uint32_t index_chip)
     }
     else if _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_MAKING_PAGE_SIZE_256_BIT)
     {
-      //Завершився процес переводу мікросхеми DataFlash не розмір сторінки у 256 байт
+      //Завершився процес переводу мікросхеми DataFlash на розмір сторінки у 256 байт
 
       //Виставляємо біт повторного читання регістру статусу мікросхеми DataFlash
       _SET_STATE(control_spi_df_tasks[index_chip], TASK_READ_SR_DF_BIT);
@@ -354,13 +354,6 @@ void main_routines_for_spi_df(uint32_t index_chip)
     else if _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_ERASING_DATAFLASH_BIT)
     {
       //Завершився процес стирання мікросхеми DataFlash
-
-      /*
-      Не виставляємо біт повторного читання регістру - хай стирається у процесі 
-      інших операцій (не з мікросхемою DataFlash). а перед новою операцією роботи з 
-      мікросхемою DataFlash завжди буду виставляти читання регістру статусу
-      */
-//      _SET_STATE(control_spi_df_tasks[index_chip], TASK_READ_SR_DF_BIT);
 
       //Скидаємо біт стирання мікросхеми DataFlash
       _CLEAR_STATE(control_spi_df_tasks[index_chip], TASK_ERASING_DATAFLASH_BIT);
@@ -445,33 +438,20 @@ void main_routines_for_spi_df(uint32_t index_chip)
       
       //Повторно читаємо регістр статусу мікросхеми DataFlash  
     }
-    else if _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_MAKING_PAGE_SIZE_256_BIT)
+    else if (
+             _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_MAKING_PAGE_SIZE_256_BIT) ||
+             _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_ERASING_DATAFLASH_BIT) ||
+             _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_WRITING_SERIAL_DATAFLASH_BIT) ||
+             _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_READING_SERIAL_DATAFLASH_BIT)
+            )   
     {
-      //Виконується процес переводу мікросхеми DataFlash не розмір сторінки у 256 байт
-
-      //Виставляємо біт повторного читання регістру статусу мікросхеми DataFlash
-      _SET_STATE(control_spi_df_tasks[index_chip], TASK_READ_SR_DF_BIT);
-    }
-    else if _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_ERASING_DATAFLASH_BIT)
-    {
-      //Виконується процес стирання мікросхеми DataFlash
-
-      //Виставляємо біт повторного читання регістру статусу мікросхеми DataFlash
-      _SET_STATE(control_spi_df_tasks[index_chip], TASK_READ_SR_DF_BIT);
-    }
-    else if _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_WRITING_SERIAL_DATAFLASH_BIT)
-    {
-      //Виконується процес запис інформації в мікросхему DataFlash
+      if _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_WRITING_SERIAL_DATAFLASH_BIT)
+      {
+        //Виконується процес запис інформації в мікросхему DataFlash
       
-      //Переводимо етап запису порції інформації (визнаеної змінною  number_bytes_read_write_tmp[index_chip]) у початковий стан
-      etap_writing_df[index_chip] = ETAP_WRITING_DF_NONE;
-      
-      //Виставляємо біт повторного читання регістру статусу мікросхеми DataFlash
-      _SET_STATE(control_spi_df_tasks[index_chip], TASK_READ_SR_DF_BIT);
-    }
-    else if _GET_OUTPUT_STATE(control_spi_df_tasks[index_chip], TASK_READING_SERIAL_DATAFLASH_BIT)
-    {
-      //Виконується процес читання інформації з мікросхеми DataFlash
+        //Переводимо етап запису порції інформації (визнаеної змінною  number_bytes_read_write_tmp[index_chip]) у початковий стан
+        etap_writing_df[index_chip] = ETAP_WRITING_DF_NONE;
+      }
       
       //Виставляємо біт повторного читання регістру статусу мікросхеми DataFlash
       _SET_STATE(control_spi_df_tasks[index_chip], TASK_READ_SR_DF_BIT);
