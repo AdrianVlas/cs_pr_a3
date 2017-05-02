@@ -78,10 +78,10 @@ unsigned char crc_trg_func, crc_trg_func_ctrl;
 unsigned int pressed_buttons = 0;
 unsigned int activation_function_from_interface = 0;
 unsigned int reset_trigger_function_from_interface = 0;
-unsigned int diagnostyka_before[3] = {0, 0, 0};
-unsigned int diagnostyka[3] = {0, 0, 0};
-unsigned int set_diagnostyka[3] = {0, 0, 0};
-unsigned int clear_diagnostyka[3] = {0, 0, 0};
+unsigned int diagnostyka_before[2] = {0, 0};
+unsigned int diagnostyka[2] = {0, 0};
+unsigned int set_diagnostyka[2] = {0, 0};
+unsigned int clear_diagnostyka[2] = {0, 0};
 
 //SRAM1 int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
 
@@ -231,8 +231,8 @@ __INFO_REJESTRATOR info_rejestrator_pr_err;
 unsigned char crc_info_rejestrator_pr_err_ctrl;
 __INFO_REJESTRATOR info_rejestrator_pr_err_ctrl;
 uint8_t buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
-volatile unsigned int head_fifo_buffer_pr_err_records = 0;
-volatile unsigned int tail_fifo_buffer_pr_err_records = 0;
+volatile uint32_t head_fifo_buffer_pr_err_records = 0;
+volatile uint32_t tail_fifo_buffer_pr_err_records = 0;
 unsigned int temporary_block_writing_records_pr_err_into_DataFlash = 0;
 unsigned int number_record_of_pr_err_into_menu = 0xffff;
 unsigned int number_record_of_pr_err_into_USB = 0xffff;

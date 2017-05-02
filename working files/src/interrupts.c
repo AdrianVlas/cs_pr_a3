@@ -838,58 +838,6 @@ void TIM4_IRQHandler(void)
     /***********************************************************/
     
     /***********************************************************/
-    //Періодично запускаємо звертання то мікросхем DataFlash
-    /***********************************************************/
-    if (((DMA_StreamSPI_DF_Tx->CR & (uint32_t)DMA_SxCR_EN) == 0) && ((DMA_StreamSPI_DF_Rx->CR & (uint32_t)DMA_SxCR_EN) == 0))
-    {
-      if (number_chip_dataflsh_exchange < NUMBER_DATAFLASH_CHIP)
-      {
-        //Немає обміну по вибраній мікросехмі
-        
-        //Перевіряємо, чи є потреба і можливість записувати реєстратор програмних подій
-        if (
-            /***
-            Перший раз вже зчитаний час з моменту перезапуску
-            ***/
-            (_CHECK_SET_BIT(    diagnostyka, EVENT_START_SYSTEM_BIT  ) == 0) &&
-            (_CHECK_SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT  ) == 0) &&
-            (_CHECK_SET_BIT(    diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0) &&
-            (_CHECK_SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0) &&
-            /***/
-            ((POWER_CTRL->IDR & POWER_CTRL_PIN) != (uint32_t)Bit_RESET) && /*На даний момент на вході блоку живлення подається живлення*/ 
-            /***/
-            (temporary_block_writing_records_pr_err_into_DataFlash     == 0) && /*Блокування запису підготовлених записів реєстратора програмних подій у мікросхему DataFlash1*/
-            ((control_tasks_dataflash  & 0xffff)                       == 0)    /*Починаємо запис у реєстратор програмних подій тільки тоді, коли інших задач у черзі немає для запису у DataFlash1*/
-           )
-        {
-          unsigned int head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
-          if (head != tail) control_tasks_dataflash |= (1 << TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT);  //Є нові записи у буфері подій  
-        }
-
-        //Опрацьовуємо прийняту відповідь від мікросхеми
-        if (state_execution_spi_df[number_chip_dataflsh_exchange] == TRANSACTION_EXECUTED_WAIT_ANALIZE)
-        {
-        }
-        
-        //Змінюємо номер DataFlash з яким буде іти зараз робота
-        if (state_execution_spi_df[number_chip_dataflsh_exchange] == TRANSACTION_EXECUTING_NONE)
-        {
-          //Змінюємо номер мікросхеми, до якої ми будемо звертатися при натупних трансакціях, якщо зараз не запущена ніяка трансакція
-          number_chip_dataflsh_exchange = (number_chip_dataflsh_exchange < (NUMBER_DATAFLASH_CHIP - 1)) ? (number_chip_dataflsh_exchange++) : INDEX_DATAFLASH_1;
-          
-          //Якщодля вибраної мікросхеми є що виконувати, то виконуємо ці дії
-          if (control_spi_df_tasks[number_chip_dataflsh_exchange] != 0) main_routines_for_spi_df(number_chip_dataflsh_exchange);
-        }
-      }
-      else
-      {
-        //Відбулася невизначена помилка, тому треба піти на перезавантаження
-        total_error_sw_fixed(38);
-      }
-    }
-    /***********************************************************/
-    
-    /***********************************************************/
     //Підготовлюємо новий запис для реєстратора програмних подій
     /***********************************************************/
     changing_diagnostyka_state();
@@ -930,6 +878,58 @@ void TIM4_IRQHandler(void)
     }
     /***********************************************************/
 
+    /***********************************************************/
+    //Періодично запускаємо звертання то мікросхем DataFlash
+    /***********************************************************/
+    if (((DMA_StreamSPI_DF_Tx->CR & (uint32_t)DMA_SxCR_EN) == 0) && ((DMA_StreamSPI_DF_Rx->CR & (uint32_t)DMA_SxCR_EN) == 0))
+    {
+      if (number_chip_dataflsh_exchange < NUMBER_DATAFLASH_CHIP)
+      {
+        //Немає обміну по вибраній мікросехмі
+        
+        //Перевіряємо, чи є потреба і можливість записувати реєстратор програмних подій
+        if (
+            /***
+            Перший раз вже зчитаний час з моменту перезапуску
+            ***/
+            (_CHECK_SET_BIT(    diagnostyka, EVENT_START_SYSTEM_BIT  ) == 0) &&
+            (_CHECK_SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT  ) == 0) &&
+            (_CHECK_SET_BIT(    diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0) &&
+            (_CHECK_SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0) &&
+            /***/
+            ((POWER_CTRL->IDR & POWER_CTRL_PIN) != (uint32_t)Bit_RESET) && /*На даний момент на вході блоку живлення подається живлення*/ 
+            /***/
+            (temporary_block_writing_records_pr_err_into_DataFlash     == 0) && /*Блокування запису підготовлених записів реєстратора програмних подій у мікросхему DataFlash1*/
+            ((control_tasks_dataflash  & 0xffff)                       == 0)    /*Починаємо запис у реєстратор програмних подій тільки тоді, коли інших задач у черзі немає для запису у DataFlash1*/
+           )
+        {
+          uint32_t head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
+          if (head != tail) control_tasks_dataflash |= (1 << TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT);  //Є нові записи у буфері подій  
+        }
+
+        //Опрацьовуємо прийняту відповідь від мікросхеми
+        if (state_execution_spi_df[number_chip_dataflsh_exchange] == TRANSACTION_EXECUTED_WAIT_ANALIZE)
+        {
+        }
+        
+        //Змінюємо номер DataFlash з яким буде іти зараз робота
+        if (state_execution_spi_df[number_chip_dataflsh_exchange] == TRANSACTION_EXECUTING_NONE)
+        {
+          //Змінюємо номер мікросхеми, до якої ми будемо звертатися при натупних трансакціях, якщо зараз не запущена ніяка трансакція
+          number_chip_dataflsh_exchange = (number_chip_dataflsh_exchange < (NUMBER_DATAFLASH_CHIP - 1)) ? (number_chip_dataflsh_exchange++) : INDEX_DATAFLASH_1;
+          
+          //Якщодля вибраної мікросхеми є що виконувати, то виконуємо ці дії
+          if (control_spi_df_tasks[number_chip_dataflsh_exchange] != 0) main_routines_for_spi_df(number_chip_dataflsh_exchange);
+        }
+      }
+      else
+      {
+        //Відбулася невизначена помилка, тому треба піти на перезавантаження
+        total_error_sw_fixed(38);
+      }
+    }
+    /***********************************************************/
+    
     /***********************************************************/
     //Встановлюємо "значення лічильника для наступного переривання"
     /***********************************************************/

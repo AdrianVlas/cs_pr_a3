@@ -57,10 +57,10 @@ extern unsigned char crc_trg_func, crc_trg_func_ctrl;
 extern unsigned int pressed_buttons;
 extern unsigned int activation_function_from_interface;
 extern unsigned int reset_trigger_function_from_interface;
-extern unsigned int diagnostyka_before[3];
-extern unsigned int diagnostyka[3];
-extern unsigned int set_diagnostyka[3];
-extern unsigned int clear_diagnostyka[3];
+extern unsigned int diagnostyka_before[2];
+extern unsigned int diagnostyka[2];
+extern unsigned int set_diagnostyka[2];
+extern unsigned int clear_diagnostyka[2];
 
 //extern int global_timers[MAX_NUMBER_GLOBAL_TIMERS];
 
@@ -173,8 +173,8 @@ extern __INFO_REJESTRATOR info_rejestrator_pr_err;
 extern unsigned char crc_info_rejestrator_pr_err_ctrl;
 extern __INFO_REJESTRATOR info_rejestrator_pr_err_ctrl;
 extern uint8_t buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
-extern volatile unsigned int head_fifo_buffer_pr_err_records;
-extern volatile unsigned int tail_fifo_buffer_pr_err_records;
+extern volatile uint32_t head_fifo_buffer_pr_err_records;
+extern volatile uint32_t tail_fifo_buffer_pr_err_records;
 extern unsigned int temporary_block_writing_records_pr_err_into_DataFlash;
 extern unsigned int number_record_of_pr_err_into_menu;
 extern unsigned int number_record_of_pr_err_into_USB;
