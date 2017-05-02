@@ -827,9 +827,9 @@ void TIM4_IRQHandler(void)
       info_rejestrator_pr_err.number_records = 0;
 
       //Помічаємо, що номер запису не вибраний
-      number_record_of_pr_err_into_menu  = 0xffff;
-      number_record_of_pr_err_into_USB   = 0xffff;
-      number_record_of_pr_err_into_RS485 = 0xffff;
+      number_record_of_pr_err_into_menu  = 0xffffffff;
+      number_record_of_pr_err_into_USB   = 0xffffffff;
+      number_record_of_pr_err_into_RS485 = 0xffffffff;
 
       //Знімаємо команду очистки реєстратора програмних подій
       clean_rejestrators &= (unsigned int)(~CLEAN_PR_ERR);
@@ -901,36 +901,60 @@ void TIM4_IRQHandler(void)
           {
           case INDEX_DATAFLASH_1:
             {
-              if (0)
+              if ((control_tasks_dataflash & (MASKA_FOR_BIT(_SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2) - 1)) != 0)
               {
-                //Дії над журналом подій
-              }
-              else
-              {
-                //Дії над Реєстратором програмних подій
-                if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT)) != 0)
+                if (0)
                 {
-                  /***
-                  Виставляємо команду запису структури реєстратора програмних подій у EEPROM
-                  ***/
-                  _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
-                  info_rejestrator_pr_err.previous_address = info_rejestrator_pr_err.next_address;
-                  /***/
-
-                  /***
-                  Скидаємо команду запису даних у DataFlash
-                  ***/
-                  _CLEAR_STATE(control_tasks_dataflash, TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT);
-                  /***/
+                  //Дії над журналом подій
                 }
                 else
                 {
-                } 
+                  //Дії над Реєстратором програмних подій
+                  if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT)) != 0)
+                  {
+                    /***
+                    Виставляємо команду запису структури реєстратора програмних подій у EEPROM
+                    ***/
+                    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
+                    info_rejestrator_pr_err.previous_address = info_rejestrator_pr_err.next_address;
+                    /***/
+
+                    /***
+                    Скидаємо команду запису даних у DataFlash
+                    ***/
+                    _CLEAR_STATE(control_tasks_dataflash, TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT);
+                    /***/
+                  }
+                  else
+                  {
+                    uint8_t *point_buffer = NULL;
+                    
+                    if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )) != 0) point_buffer = buffer_for_manu_read_record;
+                    else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) point_buffer = buffer_for_USB_read_record_pr_err;
+                    else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )) != 0) point_buffer = buffer_for_RS485_read_record_pr_err;
+                    
+                    if (point_buffer != NULL)
+                    {
+                      for (size_t i = 0; i < SIZE_ONE_RECORD_PR_ERR; i++) point_buffer[i] = buffer_serial_DataFlash_read_write[INDEX_DATAFLASH_1][i];
+
+                      /***
+                      Скидаємо команду читання даних з DataFlash
+                      
+                      Так як і робюота з верхнім рівнем і з меню ведеться на найнижчому пріоритеті. то за умови очікування зчитування даних не може бути одночасно виставлено команду читати для різних джерел
+                      ***/
+                      control_tasks_dataflash &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )));
+                      /***/
+                    }
+                  } 
+                }
               }
               break;
             }
           case INDEX_DATAFLASH_2:
             {
+              if ((control_tasks_dataflash & (uint32_t)(~(MASKA_FOR_BIT(_SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2) - 1))) != 0)
+              {
+              }
               break;
             }
           }
@@ -1056,6 +1080,57 @@ void TIM4_IRQHandler(void)
                 else
                 {
                   //Початок читання записів з Реєстратора програмних подій
+                  uint32_t number_record = 0xffffffff;
+                  if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )) != 0) number_record = number_record_of_pr_err_into_menu;
+                  else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) number_record = number_record_of_pr_err_into_USB;
+                  else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )) != 0) number_record = number_record_of_pr_err_into_RS485;
+                  
+                  if (number_record < info_rejestrator_pr_err.number_records)
+                  {
+                    uint32_t address_1 = info_rejestrator_pr_err.next_address;
+                    int32_t address_2 = address_1 - number_record*SIZE_ONE_RECORD_PR_ERR;
+                    while  (address_2 < MIN_ADDRESS_PR_ERR_AREA) address_2 += MAX_ADDRESS_PR_ERR_AREA_WORK;
+
+                    /***
+                    Визначаємо адресу з якої треба зчитувати
+                    ***/
+                    address_read_write[INDEX_DATAFLASH_1] = (uint32_t)address_2;
+                    /***/
+
+                    /***
+                    Визначаємо кількість байт для зчитування
+                    ***/
+                    number_bytes_read_write[INDEX_DATAFLASH_1] = SIZE_ONE_RECORD_PR_ERR;
+                    /***/
+
+                    /***
+                    Виставляємо команду читання даних з DataFlash
+                    ***/
+                    _SET_STATE(control_spi_df_tasks[INDEX_DATAFLASH_1], TASK_START_READ_SERIAL_DATAFLASH_BIT);
+                    /***/
+                  }
+                  else
+                  {
+                    //Думаю, що це є нереальна ситуація
+                    uint8_t *point_buffer = NULL;
+                    
+                    if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )) != 0) point_buffer = buffer_for_manu_read_record;
+                    else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) point_buffer = buffer_for_USB_read_record_pr_err;
+                    else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )) != 0) point_buffer = buffer_for_RS485_read_record_pr_err;
+                    
+                    if (point_buffer != NULL)
+                    {
+                      for (size_t i = 0; i < SIZE_ONE_RECORD_PR_ERR; i++) point_buffer[i] = 0;
+                    }
+
+                    /***
+                    Скидаємо команду читання даних з DataFlash
+                      
+                    Так як і робюота з верхнім рівнем і з меню ведеться на найнижчому пріоритеті. то за умови очікування зчитування даних не може бути одночасно виставлено команду читати для різних джерел
+                    ***/
+                    control_tasks_dataflash &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )));
+                    /***/
+                  }
                 }
                 
                 //Вихід після запуску дій по роботі з Реєстратором програмних подій

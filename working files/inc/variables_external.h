@@ -161,6 +161,7 @@ extern const uint32_t size_page_serial_dataflash[NUMBER_DATAFLASH_CHIP];
 extern const uint32_t number_page_serial_dataflash[NUMBER_DATAFLASH_CHIP];
 extern uint32_t control_spi_df_tasks[NUMBER_DATAFLASH_CHIP];
 extern uint32_t control_tasks_dataflash;
+
 extern uint8_t buffer_for_manu_read_record[SIZE_ONE_RECORD_PR_ERR];
 extern uint8_t buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 extern uint8_t buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
@@ -176,9 +177,9 @@ extern uint8_t buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
 extern volatile uint32_t head_fifo_buffer_pr_err_records;
 extern volatile uint32_t tail_fifo_buffer_pr_err_records;
 extern unsigned int temporary_block_writing_records_pr_err_into_DataFlash;
-extern unsigned int number_record_of_pr_err_into_menu;
-extern unsigned int number_record_of_pr_err_into_USB;
-extern unsigned int number_record_of_pr_err_into_RS485;
+extern uint32_t number_record_of_pr_err_into_menu;
+extern uint32_t number_record_of_pr_err_into_USB;
+extern uint32_t number_record_of_pr_err_into_RS485;
 
 //Очистка інформації по реєстраторах
 extern unsigned int clean_rejestrators;
