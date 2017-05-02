@@ -62,6 +62,8 @@
 
 #define DIV_TO_HIGHER(_N, _M) (((_N) / (_M)) + (((_N) % (_M)) != 0))
 
+#define MASKA_FOR_BIT(_n)      (1 << _n)
+
 
 #define _INVERTOR(                                         \
                   _input , _input_bit,                     \

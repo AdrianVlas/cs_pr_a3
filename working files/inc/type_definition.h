@@ -477,9 +477,9 @@ typedef struct
 
 typedef struct
 {
-  unsigned int next_address;
-  unsigned int saving_execution;
-  unsigned int number_records;
+  uint32_t next_address;
+  uint32_t previous_address;
+  uint32_t number_records;
 } __INFO_REJESTRATOR;
 
 typedef struct

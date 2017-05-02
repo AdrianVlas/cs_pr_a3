@@ -186,7 +186,7 @@ void changing_diagnostyka_state(void)
   if (_CHECK_SET_BIT(value_changes, EVENT_STOP_SYSTEM_BIT) != 0)
   {
     //Зафіксовано що подія "Зуп.пристр." змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_RESTART_SYSTEM_BIT) != 0)
+    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_STOP_SYSTEM_BIT) != 0)
     {
       /*
       Cтан події "Зуп.пристр." встановився
@@ -222,23 +222,10 @@ void changing_diagnostyka_state(void)
     Час фіксації зміни у діагностиці
     ***/
     uint8_t time_event[7];
-    if(
-       (_CHECK_SET_BIT(diagnostyka_now, EVENT_START_SYSTEM_BIT   ) == 0) &&
-       (_CHECK_SET_BIT(diagnostyka_now, EVENT_RESTART_SYSTEM_BIT ) == 0) &&
-       (_CHECK_SET_BIT(diagnostyka_now, EVENT_STOP_SYSTEM_BIT    ) == 0)
-      )
-    {
-      //Вже відбулося перше зчитуванння часу - тобто системний час у нас є
-      uint8_t *label_to_time_array;
-      if (copying_time == 0) label_to_time_array = time;
-      else label_to_time_array = time_copy;
-      for(size_t i = 0; i < 7; i++) time_event[i] = *(label_to_time_array + i);
-    }
-    else
-    {
-      //Ще не відбулося перше зчитуванння часу - тому покищо ці поля записуємо числом 0xff, а потім, коли системний час зчитається, то ми це поле обновимо
-      for(size_t i = 0; i < 7; i++)  time_event[i] = 0xff;
-    }
+    uint8_t *label_to_time_array;
+    if (copying_time == 0) label_to_time_array = time;
+    else label_to_time_array = time_copy;
+    for(size_t i = 0; i < 7; i++) time_event[i] = *(label_to_time_array + i);
     /***/
         
     /***
@@ -261,6 +248,7 @@ void changing_diagnostyka_state(void)
     {
       size_t event_number;
       uint32_t event_state;
+      uint32_t fix_event = false;
       
       if (number_empty_cells <= 0) break;
       else if (
@@ -270,6 +258,7 @@ void changing_diagnostyka_state(void)
       {
         event_number = ERROR_PR_ERR_OVERLOAD_BIT;
         event_state = true;
+        fix_event = true;
 
         _SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
         _SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT);
@@ -281,6 +270,7 @@ void changing_diagnostyka_state(void)
         {
           event_number = i;
           event_state = (i != EVENT_STOP_SYSTEM_BIT) ? (_CHECK_SET_BIT(diagnostyka_now, i) != 0) : true;
+          fix_event = true;
         }
           
         i++;
@@ -289,16 +279,17 @@ void changing_diagnostyka_state(void)
       {     
         event_number = ERROR_PR_ERR_OVERLOAD_BIT;
         event_state = false;
+        fix_event = true;
 
         _CLEAR_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
         _CLEAR_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT);
         _SET_BIT(value_changes, ERROR_PR_ERR_OVERLOAD_BIT);
       }  
       
-      if (_CHECK_SET_BIT(value_changes, event_number) != 0)
+      if (fix_event == true)
       {
         /***
-        Визначаємо індекс у масиві буферу програмних помилок з якого трбе почати заповнювати дані
+        Визначаємо індекс у масиві буферу програмних помилок з якого треба почати заповнювати дані
         ***/
         uint32_t index_into_buffer_pr_err = head*SIZE_ONE_RECORD_PR_ERR;
         /***/

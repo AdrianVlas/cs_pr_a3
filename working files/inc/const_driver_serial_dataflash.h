@@ -64,6 +64,7 @@ enum _index_dataflash
 #define MIN_ADDRESS_LOG_AREA                  0x0
 #define SIZE_LOG_AREA                         (NUMBER_PAGES_INTO_LOG << VAGA_SIZE_PAGE_DATAFLASH_1)
 #define MAX_ADDRESS_LOG_AREA                  (MIN_ADDRESS_LOG_AREA + SIZE_LOG_AREA - 1)
+#define MAX_ADDRESS_LOG_AREA_WORK             (MAX_ADDRESS_LOG_AREA)
 
 #define SIZE_ONE_RECORD_PR_ERR                11
 #define MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER 32 //максимальнакількість записів в буфері типу FIFO, які чекають на запису DataFlash
@@ -71,6 +72,7 @@ enum _index_dataflash
 #define MIN_ADDRESS_PR_ERR_AREA               (MAX_ADDRESS_LOG_AREA + 1)
 #define SIZE_PR_ERR_AREA                      (NUMBER_PAGES_INTO_PR_ERR << VAGA_SIZE_PAGE_DATAFLASH_1)
 #define MAX_ADDRESS_PR_ERR_AREA               (MIN_ADDRESS_PR_ERR_AREA + SIZE_PR_ERR_AREA - 1)
+#define MAX_ADDRESS_PR_ERR_AREA_WORK          (MAX_ADDRESS_PR_ERR_AREA - (SIZE_PR_ERR_AREA % SIZE_ONE_RECORD_PR_ERR))
 #define MAX_NUMBER_RECORDS_INTO_PR_ERR        (SIZE_PR_ERR_AREA / SIZE_ONE_RECORD_PR_ERR)
 
 #define TRANSACTION_EXECUTING_NONE              0
