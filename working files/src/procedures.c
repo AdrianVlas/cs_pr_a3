@@ -256,7 +256,7 @@ void changing_diagnostyka_state(void)
                (_CHECK_SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
               )
       {
-        event_number = ERROR_PR_ERR_OVERLOAD_BIT;
+        event_number = ERROR_PR_ERR_OVERLOAD_BIT + 1;
         event_state = true;
         fix_event = true;
 
@@ -268,7 +268,7 @@ void changing_diagnostyka_state(void)
       {
         if (_CHECK_SET_BIT(value_changes, i) != 0)
         {
-          event_number = i;
+          event_number = i + 1;
           event_state = (i != EVENT_STOP_SYSTEM_BIT) ? (_CHECK_SET_BIT(diagnostyka_now, i) != 0) : true;
           fix_event = true;
         }
@@ -277,7 +277,7 @@ void changing_diagnostyka_state(void)
       }
       else
       {     
-        event_number = ERROR_PR_ERR_OVERLOAD_BIT;
+        event_number = ERROR_PR_ERR_OVERLOAD_BIT + 1;
         event_state = false;
         fix_event = true;
 
@@ -297,19 +297,13 @@ void changing_diagnostyka_state(void)
         /***
         Формуємо сам запис
         ***/
-        //Контрольна сума
-        uint8_t crc = 0;
-
         //Помічаємо мітку початку запису
-        crc += buffer_pr_err_records[index_into_buffer_pr_err++] = LABEL_START_RECORD_PR_ERR;
+        buffer_pr_err_records[index_into_buffer_pr_err++] = LABEL_START_RECORD_PR_ERR;
         //Дата і час події
-        for(size_t j = 0; j < 7; j++) crc += buffer_pr_err_records[index_into_buffer_pr_err++] = time_event[j];
+        for(size_t j = 0; j < 7; j++) buffer_pr_err_records[index_into_buffer_pr_err++] = time_event[j];
         //Подія (двобайтна) і її значення
-        crc += buffer_pr_err_records[index_into_buffer_pr_err++] =   event_number       & 0xff; /*Номер починається з "1" */
-        crc += buffer_pr_err_records[index_into_buffer_pr_err++] = ((event_number >> 8) & 0x7f) | (event_state << 7);
-          
-        //Контрольна сума
-        buffer_pr_err_records[index_into_buffer_pr_err] = crc;
+        buffer_pr_err_records[index_into_buffer_pr_err++] =   event_number       & 0xff; /*Номер починається з "1" */
+        buffer_pr_err_records[index_into_buffer_pr_err++] = ((event_number >> 8) & 0x7f) | (event_state << 7);
         /***/
           
         /***

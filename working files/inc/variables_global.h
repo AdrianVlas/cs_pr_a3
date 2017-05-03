@@ -220,9 +220,9 @@ uint8_t buffer_serial_DataFlash_read_write[NUMBER_DATAFLASH_CHIP][SIZE_BUFFER_SE
 const uint32_t size_page_serial_dataflash[NUMBER_DATAFLASH_CHIP] = {SIZE_PAGE_DATAFLASH_1, SIZE_PAGE_DATAFLASH_2};
 const uint32_t number_page_serial_dataflash[NUMBER_DATAFLASH_CHIP] = {NUMBER_PAGES_INTO_DATAFLASH_1, NUMBER_PAGES_INTO_DATAFLASH_2};
 uint32_t control_spi_df_tasks[NUMBER_DATAFLASH_CHIP] = {0, 0};
-uint32_t control_tasks_dataflash = 0;
+volatile uint32_t control_tasks_dataflash = 0;
 
-SRAM1 uint8_t buffer_for_manu_read_record[SIZE_ONE_RECORD_PR_ERR];
+SRAM1 uint8_t buffer_for_menu_read_record[SIZE_ONE_RECORD_PR_ERR];
 SRAM1 uint8_t buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 SRAM1 uint8_t buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 

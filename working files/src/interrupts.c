@@ -894,6 +894,7 @@ void TIM4_IRQHandler(void)
         
         if (control_spi_df_tasks[number_chip_dataflsh_exchange_local] == 0)
         {
+          static uint32_t control_tasks_dataflash_active;
           /***
           Оброка трансакцій, які вже були запущені
           ***/
@@ -901,7 +902,7 @@ void TIM4_IRQHandler(void)
           {
           case INDEX_DATAFLASH_1:
             {
-              if ((control_tasks_dataflash & (MASKA_FOR_BIT(_SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2) - 1)) != 0)
+              if ((control_tasks_dataflash_active & (MASKA_FOR_BIT(_SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2) - 1)) != 0)
               {
                 if (0)
                 {
@@ -910,7 +911,7 @@ void TIM4_IRQHandler(void)
                 else
                 {
                   //Дії над Реєстратором програмних подій
-                  if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT)) != 0)
+                  if ((control_tasks_dataflash_active & MASKA_FOR_BIT(TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT)) != 0)
                   {
                     /***
                     Виставляємо команду запису структури реєстратора програмних подій у EEPROM
@@ -922,16 +923,17 @@ void TIM4_IRQHandler(void)
                     /***
                     Скидаємо команду запису даних у DataFlash
                     ***/
-                    _CLEAR_STATE(control_tasks_dataflash, TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT);
+                    _CLEAR_STATE(control_tasks_dataflash_active, TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT);
+                    _CLEAR_STATE(control_tasks_dataflash       , TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT);
                     /***/
                   }
                   else
                   {
                     uint8_t *point_buffer = NULL;
                     
-                    if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )) != 0) point_buffer = buffer_for_manu_read_record;
-                    else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) point_buffer = buffer_for_USB_read_record_pr_err;
-                    else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )) != 0) point_buffer = buffer_for_RS485_read_record_pr_err;
+                    if ((control_tasks_dataflash_active & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )) != 0) point_buffer = buffer_for_menu_read_record;
+                    else if ((control_tasks_dataflash_active & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) point_buffer = buffer_for_USB_read_record_pr_err;
+                    else if ((control_tasks_dataflash_active & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )) != 0) point_buffer = buffer_for_RS485_read_record_pr_err;
                     
                     if (point_buffer != NULL)
                     {
@@ -942,7 +944,8 @@ void TIM4_IRQHandler(void)
                       
                       Так як і робюота з верхнім рівнем і з меню ведеться на найнижчому пріоритеті. то за умови очікування зчитування даних не може бути одночасно виставлено команду читати для різних джерел
                       ***/
-                      control_tasks_dataflash &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )));
+                      control_tasks_dataflash_active &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )));
+                      control_tasks_dataflash        &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )));
                       /***/
                     }
                   } 
@@ -952,7 +955,7 @@ void TIM4_IRQHandler(void)
             }
           case INDEX_DATAFLASH_2:
             {
-              if ((control_tasks_dataflash & (uint32_t)(~(MASKA_FOR_BIT(_SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2) - 1))) != 0)
+              if ((control_tasks_dataflash_active & (uint32_t)(~(MASKA_FOR_BIT(_SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2) - 1))) != 0)
               {
               }
               break;
@@ -1011,6 +1014,12 @@ void TIM4_IRQHandler(void)
                 if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT)) != 0)
                 {
                   //Початок запису нових записів у Реєстратор програмних подій
+                  
+                  /***
+                  Виставляємо активну задачу запису записів Реєстратора програмних подій
+                  ***/
+                  _SET_STATE(control_tasks_dataflash_active, TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT);                  
+                  /***/
                   
                   /***
                   Виставляємо команди: запису даних у DataFlash і запису структури реєстратора програмних подій у EEPROM
@@ -1081,15 +1090,39 @@ void TIM4_IRQHandler(void)
                 {
                   //Початок читання записів з Реєстратора програмних подій
                   uint32_t number_record = 0xffffffff;
-                  if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )) != 0) number_record = number_record_of_pr_err_into_menu;
-                  else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) number_record = number_record_of_pr_err_into_USB;
-                  else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )) != 0) number_record = number_record_of_pr_err_into_RS485;
+                  if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )) != 0) 
+                  {
+                    /***
+                    Виставляємо активну задачу читання запису Реєстратора програмних подій для меню
+                    ***/
+                    _SET_STATE(control_tasks_dataflash_active, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT);                  
+                    /***/
+                    number_record = number_record_of_pr_err_into_menu;
+                  }
+                  else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) 
+                  {
+                    /***
+                    Виставляємо активну задачу читання запису Реєстратора програмних подій для меню
+                    ***/
+                    _SET_STATE(control_tasks_dataflash_active, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT);                  
+                    /***/
+                    number_record = number_record_of_pr_err_into_USB;
+                  }
+                  else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )) != 0) 
+                  {
+                    /***
+                    Виставляємо активну задачу читання запису Реєстратора програмних подій для меню
+                    ***/
+                    _SET_STATE(control_tasks_dataflash_active, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT);                  
+                    /***/
+                    number_record = number_record_of_pr_err_into_RS485;
+                  }
                   
                   if (number_record < info_rejestrator_pr_err.number_records)
                   {
                     uint32_t address_1 = info_rejestrator_pr_err.next_address;
-                    int32_t address_2 = address_1 - number_record*SIZE_ONE_RECORD_PR_ERR;
-                    while  (address_2 < MIN_ADDRESS_PR_ERR_AREA) address_2 += MAX_ADDRESS_PR_ERR_AREA_WORK;
+                    int32_t address_2 = address_1 - (number_record + 1)*SIZE_ONE_RECORD_PR_ERR;
+                    while  (address_2 < MIN_ADDRESS_PR_ERR_AREA) address_2 += SIZE_PR_ERR_AREA - (SIZE_PR_ERR_AREA % SIZE_ONE_RECORD_PR_ERR);
 
                     /***
                     Визначаємо адресу з якої треба зчитувати
@@ -1114,7 +1147,7 @@ void TIM4_IRQHandler(void)
                     //Думаю, що це є нереальна ситуація
                     uint8_t *point_buffer = NULL;
                     
-                    if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )) != 0) point_buffer = buffer_for_manu_read_record;
+                    if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )) != 0) point_buffer = buffer_for_menu_read_record;
                     else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) point_buffer = buffer_for_USB_read_record_pr_err;
                     else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )) != 0) point_buffer = buffer_for_RS485_read_record_pr_err;
                     
@@ -1128,7 +1161,8 @@ void TIM4_IRQHandler(void)
                       
                     Так як і робюота з верхнім рівнем і з меню ведеться на найнижчому пріоритеті. то за умови очікування зчитування даних не може бути одночасно виставлено команду читати для різних джерел
                     ***/
-                    control_tasks_dataflash &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )));
+                    control_tasks_dataflash_active &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )));
+                    control_tasks_dataflash        &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT )));
                     /***/
                   }
                 }

@@ -160,9 +160,9 @@ extern uint8_t buffer_serial_DataFlash_read_write[NUMBER_DATAFLASH_CHIP][SIZE_BU
 extern const uint32_t size_page_serial_dataflash[NUMBER_DATAFLASH_CHIP];
 extern const uint32_t number_page_serial_dataflash[NUMBER_DATAFLASH_CHIP];
 extern uint32_t control_spi_df_tasks[NUMBER_DATAFLASH_CHIP];
-extern uint32_t control_tasks_dataflash;
+extern volatile uint32_t control_tasks_dataflash;
 
-extern uint8_t buffer_for_manu_read_record[SIZE_ONE_RECORD_PR_ERR];
+extern uint8_t buffer_for_menu_read_record[SIZE_ONE_RECORD_PR_ERR];
 extern uint8_t buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 extern uint8_t buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 
