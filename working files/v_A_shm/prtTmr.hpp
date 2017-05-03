@@ -41,6 +41,10 @@ extern long CuttingList(TmrNode *pNode);
 //Removing a specific item
 extern long DecreaseTmrList(TmrNode *pNode,long lPos);
 
+extern void UpdateStateDI (void);
+extern void UpdateDICfgSuit(long lIdxDi, long lTypeSignal, long lDurationDI );
+extern void  TmrCalls(void);
+extern void ClrTmrVars(void);
 #ifdef __cplusplus
 }
 #endif

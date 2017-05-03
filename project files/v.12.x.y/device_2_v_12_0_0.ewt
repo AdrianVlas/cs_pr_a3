@@ -1764,7 +1764,13 @@
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUDout_1_0.h</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUFKey.cpp</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LULss.cpp</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUNot_1_1.cpp</name>
@@ -1773,13 +1779,25 @@
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUOr_8_1.cpp</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUTrig.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUTu.cpp</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUXor_8_1.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\MALed.cpp</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\Mft.cpp</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.hpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\RunErLed.cpp</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp</name>

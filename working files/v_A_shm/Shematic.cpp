@@ -17,13 +17,21 @@
 #include "LUOr_8_1.h"
 #include "LUXor_8_1.h"
 #include "Mft.h"
-
+#include "LULss.h"
+#include "LUFKey.h"
+#include "LUBGS.hpp"
+#include "LUTrig.hpp"
+#include "LUAlt.hpp"
+#include "LUTu.h"
 //#include <conio.h>
 #include <string.h>
 #include <ctime>
 #include "stng.h"
 #include "IStng.h"
-
+#include "I_Shm.h"
+#include "I_Shm.h"
+#include "MALed.hpp"
+#include "RunErLed.hpp"
 //#include "../inc/variables_external.h"
 //#include "../inc/libraries.h"
 
@@ -84,6 +92,8 @@ short shIdxLUnit = 0;
 Shematic sh;
 char chGblGround = 0;
 char chGblVcc    = 1;
+CMuteAlarmLed eMuteAlarmLed;
+CLURunErrorLed eRunErrorLed;
 
 Shematic::Shematic(void) {
     //Debug Code
@@ -93,13 +103,24 @@ Shematic::Shematic(void) {
             = ar_n__Output_Dsc[0].bfInfo_OrdNumStng;
     ar_n_Output_Dsc[0].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_IdLUStng
             = ar_n__Output_Dsc[0].bfInfo_IdLUStng;
-    //Debug Code 
+    //Debug Code
 	LL_CryaCrya++;
     chInitTerminated = 0;
-    
+
 }
 
 void Shematic::Init(void) {
+
+//-void *memset(void *s, int c, size_t n);
+chInitTerminated = 0;
+memset(static_cast<void*>(&gLUAreaMem),0,sizeof(SIZE_LU_AREA_LIST_ITEM));
+memset(static_cast<void*>(&gblLUAreaAuxVar),0,sizeof(gblLUAreaAuxVar));
+gblLUAreaAuxVar.lAmountFreeMem = (SIZE_MEM_BLK - sizeof (LUAreaListElem));
+gblLUAreaAuxVar.lAmountUsedMem = sizeof (LUAreaListElem);
+gblLUAreaAuxVar.pvHead =
+static_cast<void*>(&(gLUAreaMem.chArRamPrgEvt[((SIZE_MEM_BLK) - 1)]));
+ClrTmrVars();
+if(chInitTerminated != 1)
 Init2();
 chInitTerminated = 1;
 }
@@ -121,6 +142,8 @@ void Shematic::DoCalc(void) {
     i = 0;
     if(chInitTerminated == 0)
         return;
+    TmrCalls();    
+    UpdateStateDI();
     //j = ar_n_Output_Dsc[0].UN_BitFld_LUInInfo.lArUrgData[0];
     //j+= ar_n__Output_Dsc[0].bfInfo_OrdNumOut;
     //j+= ghj.UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_IdLUStng;
@@ -133,10 +156,11 @@ void Shematic::DoCalc(void) {
             j = (reinterpret_cast<CLUBase*>( pv))->shShemasIdLUStng;
             switch (j) {
                 case STNG_EXTENDED:
-                    break;
+                //    break;
                 default:
                 {
-                    if (j > STNG_EXTENDED && j < STNG_LU_UPPER_BOUND) {
+                    //if (j > STNG_EXTENDED && j < STNG_LU_UPPER_BOUND) {
+                    if (j >= TARAS_ALAS_STNG_LU_INPUT && j < TARAS_ALAS_STNG_LU_UPPER_BOUND) {
                         if ((reinterpret_cast<CLUBase*>( pv))->LogicFunc != Null_OP) {
                             (reinterpret_cast<CLUBase*>( pv))->LogicFunc( reinterpret_cast<void*>(sLV.pCLUBase));
                         }
@@ -148,6 +172,9 @@ void Shematic::DoCalc(void) {
         }
         i++;
     }
+	eMuteAlarmLed.EvalMuteAlarmLed();
+        eRunErrorLed.EvalRunErrorLed();
+	//run Error
 }
 
 Shematic::~Shematic(void) {
@@ -252,20 +279,20 @@ void Shematic::CreateTestSchema(void) {
             short shAmtLUDsc,shIdx;
                     short shIdxLUOutDsc, shIdxLU;
                     //SBitFld_LUInInfo locSBitFld;
-		 
+
         } sLV;
 
-		
-            //sLV.locSBitFldCRefInfo = 
+
+            //sLV.locSBitFldCRefInfo =
             //SetUP DOUT
             //Form Additional Info
             sLV.shAmtLUDsc = preSetUP.n_and;
-            sLV.shIdxLUOutDsc = sLV.shIdxLU = sLV.shIdx = 0;// 
+            sLV.shIdxLUOutDsc = sLV.shIdxLU = sLV.shIdx = 0;//
             sLV.shIdxLUOutDsc = MAX_AMOUNT_LU_OUTPUT+MAX_AMOUNT_LU_LED;
             //SetUP Led
             //SetUP And
             while(sLV.shIdx < sLV.shAmtLUDsc){
-		
+
                     sLV.lOrderNumber = GetTrueOrderNum();//Take OrdNum F-Block From Taras Area
                     locSBitFldCRefInfo.bfInfo_OrdNumOut  = 1;//Now use All ones
                     locSBitFldCRefInfo.bfInfo_IdLUStng   = STNG_LU_INPUT;
@@ -274,18 +301,18 @@ void Shematic::CreateTestSchema(void) {
                             locSBitFldCRefInfo.bfInfo_OrdNumStng = ORD_INPUT_01+j;
                             arrSBitFldCRefInfo[sLV.shIdxLUOutDsc+j] = locSBitFldCRefInfo;
                     }
-                    //locSBitFld.bfInfo_OrdNumOut 
+                    //locSBitFld.bfInfo_OrdNumOut
                     //locSBitFld.bfInfo_OrdNumStng
-                    //locSBitFld.bfInfo_IdLUStng  
+                    //locSBitFld.bfInfo_IdLUStng
             }
 
-	
+
             //SetUP OR
             sLV.shIdxLUOutDsc = MAX_AMOUNT_LU_OUTPUT+MAX_AMOUNT_LU_LED
             +(MAX_AMOUNT_LU_AND*8);
             sLV.shAmtLUDsc = preSetUP.n_or;sLV.shIdx = 0;
             while(sLV.shIdx < sLV.shAmtLUDsc){
-		
+
                     sLV.lOrderNumber = GetTrueOrderNum();//Take OrdNum F-Block From Taras Area
                     locSBitFldCRefInfo.bfInfo_OrdNumOut  = 1;//Now use All ones
                     locSBitFldCRefInfo.bfInfo_IdLUStng   = STNG_LU_INPUT;
@@ -294,16 +321,16 @@ void Shematic::CreateTestSchema(void) {
                             locSBitFldCRefInfo.bfInfo_OrdNumStng = ORD_INPUT_01+j;
                             arrSBitFldCRefInfo[sLV.shIdxLUOutDsc+j] = locSBitFldCRefInfo;
                     }
-                    //locSBitFld.bfInfo_OrdNumOut 
+                    //locSBitFld.bfInfo_OrdNumOut
                     //locSBitFld.bfInfo_OrdNumStng
-                    //locSBitFld.bfInfo_IdLUStng  
+                    //locSBitFld.bfInfo_IdLUStng
             }
             //SetUP XOR
             sLV.shIdxLUOutDsc = MAX_AMOUNT_LU_OUTPUT+MAX_AMOUNT_LU_LED
             +(MAX_AMOUNT_LU_AND*8)+(MAX_AMOUNT_LU_OR*8 );
             sLV.shAmtLUDsc = preSetUP.n_xor;sLV.shIdx = 0;
             while(sLV.shIdx < sLV.shAmtLUDsc){
-		
+
                     sLV.lOrderNumber = GetTrueOrderNum();//Take OrdNum F-Block From Taras Area
                     locSBitFldCRefInfo.bfInfo_OrdNumOut  = 1;//Now use All ones
                     locSBitFldCRefInfo.bfInfo_IdLUStng   = STNG_LU_INPUT;
@@ -312,16 +339,16 @@ void Shematic::CreateTestSchema(void) {
                             locSBitFldCRefInfo.bfInfo_OrdNumStng = ORD_INPUT_01+j;
                             arrSBitFldCRefInfo[sLV.shIdxLUOutDsc+j] = locSBitFldCRefInfo;
                     }
-                    //locSBitFld.bfInfo_OrdNumOut 
+                    //locSBitFld.bfInfo_OrdNumOut
                     //locSBitFld.bfInfo_OrdNumStng
-                    //locSBitFld.bfInfo_IdLUStng  
+                    //locSBitFld.bfInfo_IdLUStng
             }
             //SetUP NOT
             sLV.shIdxLUOutDsc = MAX_AMOUNT_LU_OUTPUT+MAX_AMOUNT_LU_LED
             +(MAX_AMOUNT_LU_AND*8)+(MAX_AMOUNT_LU_OR*8 )+(MAX_AMOUNT_LU_XOR*2);
             sLV.shAmtLUDsc = preSetUP.n_not;sLV.shIdx = 0;
             while(sLV.shIdx < sLV.shAmtLUDsc){
-		
+
                     sLV.lOrderNumber = GetTrueOrderNum();//Take OrdNum F-Block From Taras Area
                     locSBitFldCRefInfo.bfInfo_OrdNumOut  = 1;//Now use All ones
                     locSBitFldCRefInfo.bfInfo_IdLUStng   = STNG_LU_INPUT;
@@ -330,9 +357,9 @@ void Shematic::CreateTestSchema(void) {
                             locSBitFldCRefInfo.bfInfo_OrdNumStng = ORD_INPUT_01+j;
                             arrSBitFldCRefInfo[sLV.shIdxLUOutDsc+j] = locSBitFldCRefInfo;
                     }
-                    //locSBitFld.bfInfo_OrdNumOut 
+                    //locSBitFld.bfInfo_OrdNumOut
                     //locSBitFld.bfInfo_OrdNumStng
-                    //locSBitFld.bfInfo_IdLUStng  
+                    //locSBitFld.bfInfo_IdLUStng
             }
      */
 }
@@ -347,6 +374,12 @@ struct GlobalObjectMap_tag {
     CLUAnd_8_1    *arPCLUAnd_8_1   [MAX_AMOUNT_LU_AND];
     CLUXor_8_1    *arPCLUXor_8_1   [MAX_AMOUNT_LU_XOR];
 	CMft          *arCMft          [MAX_AMOUNT_LU_TIMERS];
+    CLUFKey          *arPCLUFKey       [MAX_AMOUNT_LU_FKey];
+    CLULss        *arPCLULss       [MAX_AMOUNT_LU_LSS];
+    CBGSig        *arPCBGSig       [MAX_AMOUNT_LU_BGS];
+    CLUTrig       *arPCLUTrig      [MAX_AMOUNT_LU_TRIG];
+    CPulseAlternator *arPCPulseAlternator[MAX_AMOUNT_LU_ALT];
+    CLUTu       *arPCLUTu      [MAX_AMOUNT_LU_TU];
 } GlobalObjectMap @ "variables_RAM1";
 //Place 3 Unit
 
@@ -415,7 +448,7 @@ void Shematic::Init1(void) {
                 //Additional Obj SetUP
                 i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
                 pv = static_cast<void*>(&sLV.arrLUAreaListElem[i - 1]);
-                sLV.pCLUBase = static_cast<CLUBase*>( 
+                sLV.pCLUBase = static_cast<CLUBase*>(
                         (static_cast<LUAreaListElem*>(pv))->pvLU);
                 sLV.pCLUBase->shShemasIdLUStng = STNG_LU_OUTPUT;
                 sLV.pCLUBase->shShemasOrdNumStng = arrSBitFldCRefInfo[sLV.shIdxLUOutDsc-1].bfInfo_BaseID;
@@ -680,6 +713,26 @@ long Shematic::EvalSizeObj(long lId) {
         case EXTENDED:
             lsizeObj = sizeof (ExtPoint);
             break;
+
+        case LU_INPUT:
+            lsizeObj = sizeof (CLUDInput_0_1);
+            break;
+        case LU_OUTPUT:
+            lsizeObj = sizeof (CLUDout_1_0);
+            break;
+        case LU_LED:
+            lsizeObj = sizeof (CLULed);
+            break;
+        case LU_FKEY:
+            lsizeObj = sizeof (CLUFKey);
+            break;
+        case LU_ALARMS:
+        case LU_LSS:
+            lsizeObj = sizeof (CLULss);
+            break;
+        case LU_BGS:
+            lsizeObj = sizeof (CBGSig);
+            break;
         case LU_AND:
             lsizeObj = sizeof (CLUAnd_8_1);
             break;
@@ -693,21 +746,17 @@ long Shematic::EvalSizeObj(long lId) {
             lsizeObj = sizeof (CLUNot_1_1);
             break;
         case LU_MFT:
+        case LU_TIMERS:
             lsizeObj = sizeof (CMft);
             break;
-        //case LU_TIMERS:
-            //case LU_TRIGGERS:
-            //case LU_ALARMS:
-            //case LU_MEANDERS:
-
-        case LU_INPUT:
-            lsizeObj = sizeof (CLUDInput_0_1);
+        case LU_TRIGGERS:
+            lsizeObj = sizeof (CLUTrig);
             break;
-        case LU_OUTPUT:
-            lsizeObj = sizeof (CLUDout_1_0);
+        case LU_MEANDERS:
+            lsizeObj = sizeof (CPulseAlternator);
             break;
-        case LU_LED:
-            lsizeObj = sizeof (CLULed);
+        case LU_TU:
+            lsizeObj = sizeof (CLUTu);
             break;
 
         default:
@@ -787,7 +836,7 @@ long Shematic::InsertLU(long lId, void*pvObjImage) {
                 //?!!!((LUAreaAuxVar*) pv)->lAmountUsedMem += ((short) sLV.lsizeobj + SIZE_LU_AREA_LIST_ITEM);
                 (static_cast<LUAreaAuxVar*> (pv))->lAmountFreeMem -= (sLV.lsizeobj + SIZE_LU_AREA_LIST_ITEM);
                 (static_cast<LUAreaAuxVar*>(pv))->lAmountUsedMem += ( sLV.lsizeobj + SIZE_LU_AREA_LIST_ITEM);
-				
+
             } else sLV.lsizeobj = 0;
         }
         return static_cast<long>(sLV.lsizeobj);
@@ -823,7 +872,7 @@ void Shematic::DetectCircutLinks(void) {
             GetHIDLU(&sLV.lBaseOrdNumStng, sLV.shCounterScanedObj); //HashIdLU
             //In test read data from External Storage
             if (sLV.lBaseOrdNumStng) {//Element present
-                // i = sLV.shCounterScanedObj; 
+                // i = sLV.shCounterScanedObj;
                 arrSBitFldCRefInfo[i+ j].bfInfo_BaseID = sLV.lBaseOrdNumStng;
                 arrSBitFldCRefInfo[i+ j].bfInfo_OrdNumIn = 1;
                 arrSBitFldCRefInfo[i+ j].sBitLUInputInfo = ar_n__Output_Dsc[j];
@@ -887,21 +936,21 @@ void Shematic::DetectCircutLinks(void) {
             //In test read data from External Storage
             if (sLV.lBaseOrdNumStng) {//Element present
                  i = sLV.shCounterScanedObj*shCLUAnd_8_1_AmtIn+sLV.shIdx;
-                SBitFld_LUInInfo locSBitFld_LUInInfo;//LUInInfoDsc locLUInInfoDsc; 
+                SBitFld_LUInInfo locSBitFld_LUInInfo;//LUInInfoDsc locLUInInfoDsc;
                 for (long ik = 0; ik < shCLUAnd_8_1_AmtIn; ik++) {
                     arrSBitFldCRefInfo[i+ik].bfInfo_BaseID = sLV.lBaseOrdNumStng;
                     arrSBitFldCRefInfo[i+ik].bfInfo_OrdNumIn = 1+ik;
-                    
+
                     locSBitFld_LUInInfo.bfInfo_OrdNumOut  = ar_n_And_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_OrdNumOut;
                     locSBitFld_LUInInfo.bfInfo_IdLUStng   = ar_n_And_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_IdLUStng;
                     locSBitFld_LUInInfo.bfInfo_OrdNumStng = ar_n_And_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_OrdNumStng;
                     arrSBitFldCRefInfo[i+ik].sBitLUInputInfo = locSBitFld_LUInInfo;
                             //ar_n_And_Dsc[j+i+ik].UN_BitFld_LUInInfo.sBitFld_LUInInfo;
                     j++;//Can take change in any aviable way
-                    
+
                 }
 
-                
+
             }
 
         } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
@@ -920,16 +969,16 @@ void Shematic::DetectCircutLinks(void) {
             //In test read data from External Storage
             if (sLV.lBaseOrdNumStng) {//Element present
                  i = sLV.shCounterScanedObj*shCLUOr_8_1_AmtIn+sLV.shIdx;
-                SBitFld_LUInInfo locSBitFld_LUInInfo;//LUInInfoDsc locLUInInfoDsc; 
+                SBitFld_LUInInfo locSBitFld_LUInInfo;//LUInInfoDsc locLUInInfoDsc;
                 for (long ik = 0; ik < shCLUOr_8_1_AmtIn; ik++) {
                     arrSBitFldCRefInfo[i+ik].bfInfo_BaseID = sLV.lBaseOrdNumStng;
                     arrSBitFldCRefInfo[i+ik].bfInfo_OrdNumIn = 1+ik;
-                    
+
                     locSBitFld_LUInInfo.bfInfo_OrdNumOut  = ar_n_Or_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_OrdNumOut;
                     locSBitFld_LUInInfo.bfInfo_IdLUStng   = ar_n_Or_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_IdLUStng;
                     locSBitFld_LUInInfo.bfInfo_OrdNumStng = ar_n_Or_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_OrdNumStng;
                     arrSBitFldCRefInfo[i+ik].sBitLUInputInfo = locSBitFld_LUInInfo;
-                         
+
                     j++;//Can take change in any aviable way
                 }
             }
@@ -949,16 +998,16 @@ void Shematic::DetectCircutLinks(void) {
             //In test read data from External Storage
             if (sLV.lBaseOrdNumStng) {//Element present
                  i = sLV.shCounterScanedObj*shCLUXor_2_1_AmtIn+sLV.shIdx;
-                SBitFld_LUInInfo locSBitFld_LUInInfo;//LUInInfoDsc locLUInInfoDsc; 
+                SBitFld_LUInInfo locSBitFld_LUInInfo;//LUInInfoDsc locLUInInfoDsc;
                 for (long ik = 0; ik < shCLUXor_2_1_AmtIn; ik++) {
                     arrSBitFldCRefInfo[i+ik].bfInfo_BaseID = sLV.lBaseOrdNumStng;
                     arrSBitFldCRefInfo[i+ik].bfInfo_OrdNumIn = 1+ik;
-                    
+
                     locSBitFld_LUInInfo.bfInfo_OrdNumOut  = ar_n_Xor_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_OrdNumOut;
                     locSBitFld_LUInInfo.bfInfo_IdLUStng   = ar_n_Xor_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_IdLUStng;
                     locSBitFld_LUInInfo.bfInfo_OrdNumStng = ar_n_Xor_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_OrdNumStng;
                     arrSBitFldCRefInfo[i+ik].sBitLUInputInfo = locSBitFld_LUInInfo;
-                         
+
                     j++;//Can take change in any aviable way
                 }
             }
@@ -979,16 +1028,16 @@ void Shematic::DetectCircutLinks(void) {
             //In test read data from External Storage
             if (sLV.lBaseOrdNumStng) {//Element present
                  i = sLV.shCounterScanedObj*shCLUNot_1_1_AmtIn+sLV.shIdx;
-                SBitFld_LUInInfo locSBitFld_LUInInfo;//LUInInfoDsc locLUInInfoDsc; 
+                SBitFld_LUInInfo locSBitFld_LUInInfo;//LUInInfoDsc locLUInInfoDsc;
                 for (long ik = 0; ik < shCLUNot_1_1_AmtIn; ik++) {
                     arrSBitFldCRefInfo[i+ik].bfInfo_BaseID = sLV.lBaseOrdNumStng;
                     arrSBitFldCRefInfo[i+ik].bfInfo_OrdNumIn = 1+ik;
-                    
+
                     locSBitFld_LUInInfo.bfInfo_OrdNumOut  = ar_n_Not_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_OrdNumOut;
                     locSBitFld_LUInInfo.bfInfo_IdLUStng   = ar_n_Not_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_IdLUStng;
                     locSBitFld_LUInInfo.bfInfo_OrdNumStng = ar_n_Not_Dsc[j].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_OrdNumStng;
                     arrSBitFldCRefInfo[i+ik].sBitLUInputInfo = locSBitFld_LUInInfo;
-                         
+
                     j++;//Can take change in any aviable way
                 }
             }
@@ -1007,7 +1056,7 @@ void Shematic::DetectCircutLinks(void) {
         short shIdLUStng       = 0;
         short shIdx_arrSBitFldCRefInfo = 0;
         do {
-            //Change offset on real Number 
+            //Change offset on real Number
             i = sLV.shCounterScanedObj; //
             locSBitFld_LUInInfo = arrSBitFldCRefInfo[i].sBitLUInputInfo;
             shIdLUStng          = locSBitFld_LUInInfo.bfInfo_IdLUStng;
@@ -1017,42 +1066,42 @@ void Shematic::DetectCircutLinks(void) {
                     shIdx_arrSBitFldCRefInfo = preSetUP.n_input
                      + preSetUP.n_output + preSetUP.n_led;
                     break;
-                    
+
                 case STNG_LU_OR:
                      shIdx_arrSBitFldCRefInfo = preSetUP.n_input
                      + preSetUP.n_output + preSetUP.n_led + shCLUAnd_8_1_AmtIn*preSetUP.n_and;
                     break;
-                    
+
                 case STNG_LU_XOR:
                     shIdx_arrSBitFldCRefInfo = preSetUP.n_input
                      + preSetUP.n_output + preSetUP.n_led + shCLUAnd_8_1_AmtIn*preSetUP.n_and
                      + shCLUOr_8_1_AmtIn*preSetUP.n_or ;
                     break;
-                    
+
                 case STNG_LU_INPUT:
                     shIdx_arrSBitFldCRefInfo = 0;
                     break;
-                    
+
                 case STNG_LU_OUTPUT:
                     shIdx_arrSBitFldCRefInfo = preSetUP.n_input;
                     break;
-                    
+
                 case STNG_LU_LED:
                     shIdx_arrSBitFldCRefInfo = preSetUP.n_input
                         +preSetUP.n_output;
                     break;
-                    
+
                 case STNG_LU_NOT:
                        shIdx_arrSBitFldCRefInfo = preSetUP.n_input
                      + preSetUP.n_output + preSetUP.n_led + shCLUAnd_8_1_AmtIn*preSetUP.n_and
                      + shCLUOr_8_1_AmtIn*preSetUP.n_or + shCLUXor_2_1_AmtIn*preSetUP.n_xor ;
                     break;
-                    
-                    
+
+
                 default:
                     shIdx_arrSBitFldCRefInfo = -1;
             }
-             
+
             shRelativeNumber = locSBitFld_LUInInfo.bfInfo_OrdNumStng;
             if(shIdx_arrSBitFldCRefInfo!= (-1)){
             //Find Element
@@ -1061,11 +1110,11 @@ void Shematic::DetectCircutLinks(void) {
                     arrSBitFldCRefInfo[i].sBitLUInputInfo.bfInfo_OrdNumStng
                             = locSBitFld_LUInInfo.bfInfo_OrdNumStng;
             }
-            
+
         } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
         sLV.shIdx += preSetUP.n_input;
     }
-    
+
     if (preSetUP.n_output != 0) {
         sLV.shCounterScanedObj = 0;
         sLV.shAmtLU = preSetUP.n_output;
@@ -1134,13 +1183,13 @@ void Shematic::DetectCircutLinks(void) {
         } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
         sLV.shIdx += shCLUNot_1_1_AmtIn*sLV.shCounterScanedObj;
     }
-    
+
 }
 void Shematic::ChangeRelativeOnEvalLinks(void){
 
 //Scan OutPut
 
-   
+
 
 
 }
@@ -1153,7 +1202,7 @@ void Shematic::ChangeStngOrdnumRelOnBase(long lIdxScanedObj) {
     short shIdx_arrSBitFldCRefInfo = 0;
     i = j = 0;
  //   do {
-            //Change offset on real Number 
+            //Change offset on real Number
             i = lIdxScanedObj; //i = sLV.shCounterScanedObj; //
     locSBitFld_LUInInfo = arrSBitFldCRefInfo[i].sBitLUInputInfo;
     shIdLUStng = locSBitFld_LUInInfo.bfInfo_IdLUStng;
@@ -1207,19 +1256,20 @@ void Shematic::ChangeStngOrdnumRelOnBase(long lIdxScanedObj) {
         arrSBitFldCRefInfo[i].sBitLUInputInfo.bfInfo_OrdNumStng
                 = locSBitFld_LUInInfo.bfInfo_OrdNumStng;
     }
-    
+
 //        } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
-    
+
 }
 
 void Shematic::Init2(void) {
     register long  j;
-//    register void* pv;  
+//    register void* pv;
     Init2LcVarArea lsLcVarArea;//lsLc -local struct Local Area
     lsLcVarArea.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
+	shLssLUAreaListElemIndex = 0;
     //DetectCircutLinks();
     lsLcVarArea.shCounterInitCLUObj = 1;
-/*    if( current_config_prt.n_input ){
+    if( current_config_prt.n_input ){
         CLUDInput_0_1 locCLUDInput_0_1(10, 0); // = CLUDInput_0_1(0,10);
         short shLC__n_input = current_config_prt.n_input;
         short shCounterInitCLUDIn = 0;
@@ -1227,12 +1277,12 @@ void Shematic::Init2(void) {
         j = 0;
         do {
             j = InsertLU(LU_INPUT, static_cast<void*>(&locCLUDInput_0_1));
-            
+
             if (j) {//Success Bield
                 SetupCLUDInput_0_1StngParam(static_cast<void*>(&lsLcVarArea));
                 shCounterInitCLUDIn++;
             }//Else Error
-            
+
         } while (shCounterInitCLUDIn < shLC__n_input && j);
     }
     if (current_config_prt.n_output != 0) {
@@ -1243,17 +1293,18 @@ void Shematic::Init2(void) {
         j = 0;
         do {
             j = InsertLU(LU_OUTPUT, static_cast<void*>(&locCLUDout_1_0));
-            
+
             if (j) {//Success Bield
                 SetupCLUDout_1_0StngParam(static_cast<void*>(&lsLcVarArea));
                 shCounterInitCLUDout++;
             }//Else Error
         } while (shCounterInitCLUDout < shLC__n_output && j);
-    }*/
+    }
     if (current_config_prt.n_led != 0) {
         CLULed locCLULed(10, 0);
         short shLC__n_led = current_config_prt.n_led;
         short shCounterInitCLULed = 0;
+
         lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
         j = 0;
         do {
@@ -1264,7 +1315,59 @@ void Shematic::Init2(void) {
             }//Else Error
         } while (shCounterInitCLULed < shLC__n_led && j);
     }
-/*    if (current_config_prt.n_and != 0) {
+    if (current_config_prt.n_button != 0) {
+
+        CLUFKey locCLUFKey(10, 0);
+        short shLC__n_button = current_config_prt.n_button;
+        short shCounterInitCLUFKey = 0;
+
+        lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
+        j = 0;
+        do {
+            j = InsertLU(LU_FKEY, static_cast<void*>(&locCLUFKey));
+        if (j) {//Success Bield
+                SetupCLUFKeyStngParam(static_cast<void*>(&lsLcVarArea));
+                shCounterInitCLUFKey++;
+            }//Else Error
+        } while (shCounterInitCLUFKey < shLC__n_button && j);
+
+    }
+    if (current_config_prt.n_alarm != 0) {
+
+        CLULss locCLULss(10, 0);
+        short shLC__n_alarm = current_config_prt.n_alarm;
+        short shCounterInitCLULss = 0;
+
+        lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
+        j = 0;
+        do {
+            j = InsertLU(LU_LSS, static_cast<void*>(&locCLULss));
+        if (j) {//Success Bield
+                SetupCLULssStngParam(static_cast<void*>(&lsLcVarArea));
+                shCounterInitCLULss++;
+            }//Else Error
+        } while (shCounterInitCLULss < shLC__n_alarm && j);
+
+    }
+    if (current_config_prt.n_group_alarm != 0) {
+
+        CBGSig locCBGSig(10, 0);
+        short shLC__n_group_alarm = current_config_prt.n_group_alarm;
+        short shCounterInitCBGSig = 0;
+
+        lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
+        j = 0;
+        do {
+            j = InsertLU(LU_BGS, static_cast<void*>(&locCBGSig));
+        if (j) {//Success Bield
+                SetupCBGSigStngParam(static_cast<void*>(&lsLcVarArea));
+                shCounterInitCBGSig++;
+            }//Else Error
+        } while (shCounterInitCBGSig < shLC__n_group_alarm && j);
+
+    }
+
+    if (current_config_prt.n_and != 0) {
         CLUAnd_8_1 locCLUAnd_8_1(10, 0);
         short shLC__n_and = current_config_prt.n_and;
         short shCounterInitCLUAnd = 0;
@@ -1334,8 +1437,59 @@ void Shematic::Init2(void) {
             }//Else Error
         } while (shCounterInitCMft < shLC__n_timers && j);
     }
-    */
-//---SetupCircutLinks(static_cast<void*>(&lsLcVarArea));
+    if (current_config_prt.n_trigger != 0) {
+
+        CLUTrig locCLUTrig(10, 0);
+        short shLC__n_trigger = current_config_prt.n_trigger;
+        short shCounterInitCLUTrig = 0;
+
+        lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
+        j = 0;
+        do {
+            j = InsertLU(LU_TRIGGERS, static_cast<void*>(&locCLUTrig));
+        if (j) {//Success Bield
+                SetupCLUTrigStngParam(static_cast<void*>(&lsLcVarArea));
+                shCounterInitCLUTrig++;
+            }//Else Error
+        } while (shCounterInitCLUTrig < shLC__n_trigger && j);
+
+    }
+    if (current_config_prt.n_meander != 0) {
+
+        CPulseAlternator locCPulseAlternator(10, 0);
+        short shLC__n_meander = current_config_prt.n_meander;
+        short shCounterInitCPulseAlternator = 0;
+
+        lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
+        j = 0;
+        do {
+            j = InsertLU(LU_MEANDERS, static_cast<void*>(&locCPulseAlternator));
+        if (j) {//Success Bield
+                SetupCPulseAlternatorStngParam(static_cast<void*>(&lsLcVarArea));
+                shCounterInitCPulseAlternator++;
+            }//Else Error
+        } while (shCounterInitCPulseAlternator < shLC__n_meander && j);
+
+    }
+    if (current_config_prt.n_tu != 0) {
+
+        CLUTu locCLUTu(10, 0);
+        short shLC__n_tu = current_config_prt.n_tu;
+        short shCounterInitCLUTu = 0;
+
+        lsLcVarArea.shIdxGlobalObjectMapPointers = 0;
+        j = 0;
+        do {
+            j = InsertLU(LU_TU, static_cast<void*>(&locCLUTu));
+        if (j) {//Success Bield
+                SetupCLUTuStngParam(static_cast<void*>(&lsLcVarArea));
+                shCounterInitCLUTu++;
+            }//Else Error
+        } while (shCounterInitCLUTu < shLC__n_tu && j);
+
+    }
+
+SetupCircutLinks2(static_cast<void*>(&lsLcVarArea));
 
 }
 
@@ -1345,25 +1499,52 @@ void Shematic::SetupCLUDInput_0_1StngParam(void *pv){
     i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
     pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
     //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
-    pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>( 
+    pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
                         (static_cast<LUAreaListElem*>(pv))->pvLU);
-	
-    pInit2LcVarArea->pCLUBase->shShemasIdLUStng = STNG_LU_INPUT;
+
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng = TARAS_ALAS_STNG_LU_INPUT;
     i = pInit2LcVarArea->shCounterInitCLUObj-1; //sLV.shIdxLUOutDsc-1
-    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
-    arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    //---
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    //---
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;//
+
     pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
     CLUDInput_0_1* locPCLUDInput_0_1 = static_cast<CLUDInput_0_1*>(pInit2LcVarArea->pCLUBase);
     locPCLUDInput_0_1->pOut = static_cast<void*>(locPCLUDInput_0_1->arrOut);
+    locPCLUDInput_0_1->arrOut[0] = 0;
     CLUDInput_0_1& locRef_CLUDInput_0_1 =
             *(static_cast<CLUDInput_0_1*>(pInit2LcVarArea->pCLUBase));
     locRef_CLUDInput_0_1.chTypeLogicFunction = LU_OP_READ_DI;
     locRef_CLUDInput_0_1.LogicFunc = READ_DI_Op; //???
+    //locRef_CLUDInput_0_1.LogicFunc(pInit2LcVarArea->pCLUBase);
+    bool bbVar = false;
+    do{
+        //register char* pCh;
+        __LN_INPUT *pLN_INPUT;
+        short shRelativeIndexLU = 0;
+        //__LN_OUTPUT_LED slc_LN_OUTPUT_LED;
+        pLN_INPUT = reinterpret_cast<__LN_INPUT*>( spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+        i = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_INPUT);//locRef_CLULed.
+        shRelativeIndexLU = locRef_CLUDInput_0_1.shLUBieldOrdNum - i-1;
+
+        //int32_t set_delay[INPUT_SET_DELAYS];//Допуск ДВ
+        //uint32_t control;//Постійний Змінний
+        //INDEX_CTRL_INPUT_TYPE_SIGNAL 0-Постійний; 1- Змінний
+        i = pLN_INPUT[shRelativeIndexLU].settings.control;
+        locRef_CLUDInput_0_1.bbTypeSig = i&(1<<INDEX_CTRL_INPUT_TYPE_SIGNAL);
+        locRef_CLUDInput_0_1.shTDelay  = pLN_INPUT[shRelativeIndexLU].settings.set_delay[0];
+
+    }while(bbVar);
+
+
     i = pInit2LcVarArea->shIdxGlobalObjectMapPointers;//
-            
+UpdateDICfgSuit(i,locRef_CLUDInput_0_1.bbTypeSig,locRef_CLUDInput_0_1.shTDelay);
     GlobalObjectMap.arPCLUDInput_0_1[i] = static_cast<CLUDInput_0_1*>(
             pInit2LcVarArea->pCLUBase); //sLV.pCLUBase;
-    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++           
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
 }
 void Shematic::SetupCLUDout_1_0StngParam(void *pv){
     register long i,j;
@@ -1371,47 +1552,110 @@ void Shematic::SetupCLUDout_1_0StngParam(void *pv){
     i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
     pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
     //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
-    pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>( 
+    pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
 	(static_cast<LUAreaListElem*>(pv))->pvLU);
-    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  STNG_LU_OUTPUT;
+
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_OUTPUT;
     i = pInit2LcVarArea->shCounterInitCLUObj - 1;
-    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
-    arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    //---
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //---
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+            pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;//?
+
     pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
     CLUDout_1_0* locPCLUDout_1_0 = static_cast<CLUDout_1_0*>(pInit2LcVarArea->pCLUBase);
     locPCLUDout_1_0->pIn = static_cast<void*>(locPCLUDout_1_0->arrPchIn);
-    locPCLUDout_1_0->arrPchIn[0] = &chGblGround;
+    locPCLUDout_1_0->arrPchSchIn[0] = &chGblGround;
+    for(i = 0; i < TOTAL_RELE_VISIO_IN;i++)
+    locPCLUDout_1_0->arrPchIn[i] = &chGblGround;
     locPCLUDout_1_0->chTypeLogicFunction = LU_OP_SET_OUT;
     locPCLUDout_1_0->LogicFunc = SET_OUT_Op; //???
+    bool bbVar = false;
+    do{
+        //register char* pCh;
+        __LN_OUTPUT_LED *pLN_OUTPUT;
+        short shRelativeIndexLU = 0;
+        bool bbSel;
+        pLN_OUTPUT = reinterpret_cast<__LN_OUTPUT_LED*>( spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
+        i = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_OUTPUT);//locRef_CLULed.
+        shRelativeIndexLU = locPCLUDout_1_0->shLUBieldOrdNum - i-1;
+
+        //int32_t set_delay[INPUT_SET_DELAYS];//Допуск ДВ
+        //uint32_t control;//Постійний Змінний
+        //INDEX_CTRL_INPUT_TYPE_SIGNAL 0-Постійний; 1- Змінний
+        j = pLN_OUTPUT[shRelativeIndexLU].settings.control;
+        bbSel = j&(1<< INDEX_CTRL_OUTPUT_LED_N_T);
+        locPCLUDout_1_0->m_ReleyCfgSuit.chSel1 = bbSel;
+        bbSel = j&(1<< INDEX_CTRL_OUTPUT_LED_C_I);
+        locPCLUDout_1_0->m_ReleyCfgSuit.chSel2 = bbSel;
+        bbSel = j&(1<< INDEX_CTRL_OUTPUT_LED_SI_EI);
+        locPCLUDout_1_0->m_ReleyCfgSuit.chSel3 = bbSel;
+    }while(bbVar);
+
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     GlobalObjectMap.arPCLUDout_1_0[j] = static_cast<CLUDout_1_0*>(
        pInit2LcVarArea->pCLUBase);
-    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++           
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
 }
 void Shematic::SetupCLULedStngParam(void *pv){
     register long i,j;
     register Init2LcVarArea *pInit2LcVarArea = static_cast<Init2LcVarArea*>(pv);
+
     i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
     pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
     //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
-    pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>( 
+    pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
                         (static_cast<LUAreaListElem*>(pv))->pvLU);
-    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  STNG_LU_LED;
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_LED;
     i = pInit2LcVarArea->shCounterInitCLUObj - 1;
-    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
-    arrSBitFldCRefInfo[i].bfInfo_BaseID);
+
+    //~arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    //~pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;//Now Hash code?
+
     pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
     CLULed* locPCLULed = static_cast<CLULed*>(pInit2LcVarArea->pCLUBase);
     locPCLULed->pIn = static_cast<void*>(locPCLULed->arrPchIn);
     CLULed& locRef_CLULed = *(static_cast<CLULed*>(pInit2LcVarArea->pCLUBase));
-    locRef_CLULed.arrPchIn[0] = &chGblGround;
+    locRef_CLULed.arrPchSchIn[0] = &chGblGround;
+    for(i = 0; i < TOTAL_LED_VISIO_IN;i++)
+    locRef_CLULed.arrPchIn[i] = &chGblGround;
     locRef_CLULed.chTypeLogicFunction = LU_OP_SET_LED;
     locRef_CLULed.LogicFunc = SET_LED_Op; //???
+    bool bbVar = false;
+    do{
+        //register char* pCh;
+        __LN_OUTPUT_LED *pLN_OUTPUT_LED;
+        short shRelativeIndexLU = 0;
+        bool bbSel1,bbSel2,bbSel3;
+        //__LN_OUTPUT_LED slc_LN_OUTPUT_LED;
+        pLN_OUTPUT_LED = reinterpret_cast<__LN_OUTPUT_LED*>( spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
+        j = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_LED);//locRef_CLULed.
+        shRelativeIndexLU = locRef_CLULed.shLUBieldOrdNum - j;
+shRelativeIndexLU -= 1; 
+
+        j = pLN_OUTPUT_LED[shRelativeIndexLU].settings.control;
+        bbSel1 = j&(1<< INDEX_CTRL_OUTPUT_LED_N_T);
+        bbSel2 = j&(1<< INDEX_CTRL_OUTPUT_LED_C_I);
+        bbSel3 = j&(1<< INDEX_CTRL_OUTPUT_LED_SI_EI);
+        locRef_CLULed.m_LedCfgSuit.chSel1 = bbSel1;
+        locRef_CLULed.m_LedCfgSuit.chSel2 = bbSel2;
+        locRef_CLULed.m_LedCfgSuit.chSel3 = bbSel3;
+    }while(bbVar);
+    //-LUCfgInfo sLcLUCfgInfo;
+    //-sLcLUCfgInfo.pvLUClass = static_cast<void*>(locPCLULed);
+    //-sLcLUCfgInfo.pvCfgSuit = static_cast<void*>(&(locPCLULed->m_LedCfgSuit));
+    //-sLcLUCfgInfo.pvChangeSuitFn = reinterpret_cast<void*>(0);
+    //-i = ChangeCfgLULed(static_cast<void*>(&sLcLUCfgInfo));
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
-    
+
+
     GlobalObjectMap.arPCLULed[j] = static_cast<CLULed*>(
       pInit2LcVarArea->pCLUBase);
-    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++          
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
 }
 void Shematic::SetupCLUAnd_8_1StngParam(void *pv){
     register long i,j;
@@ -1419,12 +1663,16 @@ void Shematic::SetupCLUAnd_8_1StngParam(void *pv){
     i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
     pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
     //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
-	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>( 
+	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
                         (static_cast<LUAreaListElem*>(pv))->pvLU);
-    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  STNG_LU_AND;
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_AND;
     i = pInit2LcVarArea->shCounterInitCLUObj - 1;
-    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
-    arrSBitFldCRefInfo[i].bfInfo_BaseID);
+
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;
+
     pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
     CLUAnd_8_1* locPCLUAnd_8_1 = static_cast<CLUAnd_8_1*>(pInit2LcVarArea->pCLUBase);
     locPCLUAnd_8_1->pOut = static_cast<void*>(locPCLUAnd_8_1->arrOut);
@@ -1434,11 +1682,14 @@ void Shematic::SetupCLUAnd_8_1StngParam(void *pv){
      for(i = 0; i < locRef_CLUAnd_8_1.chNumInput;i++)
     locRef_CLUAnd_8_1.arrPchIn[i] = &chGblVcc;
     locRef_CLUAnd_8_1.LogicFunc = AND_Op_8_1; //???
-
+    //bool bbVar = false;
+    //do{
+    //
+    //}while(bbVar);
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
-    
+
     GlobalObjectMap.arPCLUAnd_8_1[j] = static_cast<CLUAnd_8_1*>(pInit2LcVarArea->pCLUBase);
-    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++          
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
 }
 void Shematic::SetupCLUOr_8_1StngParam(void *pv){
     register long i,j;
@@ -1446,25 +1697,31 @@ void Shematic::SetupCLUOr_8_1StngParam(void *pv){
     i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
     pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
     //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
-	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>( 
+	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
                         (static_cast<LUAreaListElem*>(pv))->pvLU);
-    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  STNG_LU_OR;
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_OR;
     i = pInit2LcVarArea->shCounterInitCLUObj - 1;
-    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
-    arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
     pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
+     pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;
     CLUOr_8_1* locPCLUOr_8_1 = static_cast<CLUOr_8_1*>(pInit2LcVarArea->pCLUBase);
     locPCLUOr_8_1->pOut = static_cast<void*>(locPCLUOr_8_1->arrOut);
     locPCLUOr_8_1->pIn  = static_cast<void*>(locPCLUOr_8_1->arrPchIn);
     CLUOr_8_1& locRef_CLUOr_8_1 = *(static_cast<CLUOr_8_1*>(pInit2LcVarArea->pCLUBase));
     for(i = 0; i < locRef_CLUOr_8_1.chNumInput;i++)
     locRef_CLUOr_8_1.arrPchIn[i] = &chGblGround;
+    //bool bbVar = false;
+    //do{
+    //
+    //}while(bbVar);
     locRef_CLUOr_8_1.LogicFunc(pInit2LcVarArea->pCLUBase);
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
-    
-    GlobalObjectMap.arPCLUOr_8_1[j] = 
+
+    GlobalObjectMap.arPCLUOr_8_1[j] =
       static_cast<CLUOr_8_1*>(pInit2LcVarArea->pCLUBase);
-    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++          
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
 }
 void Shematic::SetupCLUXor_8_1StngParam(void *pv){
     register long i,j;
@@ -1472,12 +1729,15 @@ void Shematic::SetupCLUXor_8_1StngParam(void *pv){
     i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
     pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
     //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
-	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>( 
+	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
                         (static_cast<LUAreaListElem*>(pv))->pvLU);
-    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  STNG_LU_XOR;
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_XOR;
     i = pInit2LcVarArea->shCounterInitCLUObj - 1;
-    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
-    arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;
+
     pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
     CLUXor_8_1* locPCLUXor_8_1 = static_cast<CLUXor_8_1*>(pInit2LcVarArea->pCLUBase);
     locPCLUXor_8_1->pOut = static_cast<void*>(locPCLUXor_8_1->arrOut);
@@ -1485,12 +1745,16 @@ void Shematic::SetupCLUXor_8_1StngParam(void *pv){
     CLUXor_8_1& locRef_CLUXor_8_1 = *(static_cast<CLUXor_8_1*>(pInit2LcVarArea->pCLUBase));
     for(i = 0; i < locRef_CLUXor_8_1.chNumInput;i++)
     locRef_CLUXor_8_1.arrPchIn[i] = &chGblGround;
-    locRef_CLUXor_8_1.LogicFunc(pInit2LcVarArea->pCLUBase);
+    //bool bbVar = false;
+    //do{
+    //
+    //}while(bbVar);
+    //locRef_CLUXor_8_1.LogicFunc(pInit2LcVarArea->pCLUBase);
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
-    
-    GlobalObjectMap.arPCLUXor_8_1[j] = 
+
+    GlobalObjectMap.arPCLUXor_8_1[j] =
       static_cast<CLUXor_8_1*>(pInit2LcVarArea->pCLUBase);
-    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++          
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
 }
 void Shematic::SetupCLUNot_1_1StngParam(void *pv){
     register long i,j;
@@ -1498,26 +1762,175 @@ void Shematic::SetupCLUNot_1_1StngParam(void *pv){
     i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
     pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
     //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
-	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>( 
+	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
                         (static_cast<LUAreaListElem*>(pv))->pvLU);
-    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  STNG_LU_NOT;
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_NOT;
     i = pInit2LcVarArea->shCounterInitCLUObj - 1;
-    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
-    arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+     pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;
+
     pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
     CLUNot_1_1* locPCLUNot_1_1 = static_cast<CLUNot_1_1*>(pInit2LcVarArea->pCLUBase);
     locPCLUNot_1_1->pOut = static_cast<void*>(locPCLUNot_1_1->arrOut);
     locPCLUNot_1_1->pIn  = static_cast<void*>(locPCLUNot_1_1->arrPchIn);
     CLUNot_1_1& locRef_CLUNot_1_1 = *(static_cast<CLUNot_1_1*>(pInit2LcVarArea->pCLUBase));
-    locRef_CLUNot_1_1.LogicFunc(pInit2LcVarArea->pCLUBase);
     for(i = 0; i < locRef_CLUNot_1_1.chNumInput;i++)
     locRef_CLUNot_1_1.arrPchIn[i] = &chGblGround;
-    j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
+    //locRef_CLUNot_1_1.LogicFunc = NOT_Op_1_1;
+    //locRef_CLUNot_1_1.LogicFunc(pInit2LcVarArea->pCLUBase);
     
-    GlobalObjectMap.arPCLUNot_1_1[j] = 
+    //bool bbVar = false;
+    //do{
+    //
+    //}while(bbVar);
+    j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
+
+    GlobalObjectMap.arPCLUNot_1_1[j] =
       static_cast<CLUNot_1_1*>(pInit2LcVarArea->pCLUBase);
-    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++          
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
 }
+void Shematic::SetupCLUFKeyStngParam(void *pv){
+    register long i,j;
+    register Init2LcVarArea *pInit2LcVarArea = static_cast<Init2LcVarArea*>(pv);
+    i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
+    pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
+    //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
+                        (static_cast<LUAreaListElem*>(pv))->pvLU);
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_KEY;
+    i = pInit2LcVarArea->shCounterInitCLUObj - 1;
+
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;//
+    pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
+
+    CLUFKey* locPCLUFKey = static_cast<CLUFKey*>(pInit2LcVarArea->pCLUBase);
+    locPCLUFKey->pOut = static_cast<void*>(locPCLUFKey->arrOut);
+    //locPCLUNot_1_1->pIn  = static_cast<void*>(locPCLUNot_1_1->arrPchIn);
+    CLUFKey& locRef_CLUFKey = *(static_cast<CLUFKey*>(pInit2LcVarArea->pCLUBase));
+    
+    /*for(i = 0; i < locRef_CLUNot_1_1.chNumInput;i++)
+    locRef_CLUNot_1_1.arrPchIn[i] = &chGblGround;*/
+    locRef_CLUFKey.chTypeLogicFunction = LU_OP_F_KEY;
+    locRef_CLUFKey.LogicFunc = FKey_Op;
+    locRef_CLUFKey.LogicFunc(pInit2LcVarArea->pCLUBase);
+     //bool bbVar = false;
+    //do{
+    //
+    //}while(bbVar);
+    j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
+
+    GlobalObjectMap.arPCLUFKey[j] = locPCLUFKey;
+    //  static_cast<CLUFKey*>(pInit2LcVarArea->pCLUBase);
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
+
+}
+void Shematic::SetupCLULssStngParam(void *pv){
+    register long i,j;
+    register Init2LcVarArea *pInit2LcVarArea = static_cast<Init2LcVarArea*>(pv);
+    i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
+    pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
+    //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
+                        (static_cast<LUAreaListElem*>(pv))->pvLU);
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_ALARMS;
+    i = pInit2LcVarArea->shCounterInitCLUObj - 1;
+
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;//
+    pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
+
+    CLULss* locPCLULss = static_cast<CLULss*>(pInit2LcVarArea->pCLUBase);
+    //locPCLUFKey->pOut = static_cast<void*>(locPCLUFKey->arrOut);
+    //locPCLUNot_1_1->pIn  = static_cast<void*>(locPCLUNot_1_1->arrPchIn);
+    CLULss& locRef_CLULss = *(static_cast<CLULss*> (pInit2LcVarArea->pCLUBase));
+    locRef_CLULss.UpdateCLss();
+    
+    for(i = 0; i < locRef_CLULss.chNumInput;i++)
+        locRef_CLULss.arrPchIn[i] = &chGblGround;
+    locRef_CLULss.LinkLssTimers();
+    locRef_CLULss.chTypeLogicFunction = LU_OP_LSS;
+    locRef_CLULss.LogicFunc = LssOp;
+    locRef_CLULss.LogicFunc(pInit2LcVarArea->pCLUBase);
+    bool bbVar = false;
+    do{
+        __LN_ALARM *p__LN_ALARM;
+        short shRelativeIndexLU = 0;
+        //bool bbSel;
+        p__LN_ALARM = reinterpret_cast<__LN_ALARM*>( spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
+        j = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_ALARMS);
+        shRelativeIndexLU = locRef_CLULss.shLUBieldOrdNum - j - 1;
+        j = p__LN_ALARM[shRelativeIndexLU].settings.control;
+        locRef_CLULss.m_LssCfgSuit.chSel = j;
+        locRef_CLULss.m_LssCfgSuit.lTCs =
+                p__LN_ALARM[shRelativeIndexLU].settings.set_delay[0];
+    }while(bbVar);
+    j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
+
+    GlobalObjectMap.arPCLULss[j] = locPCLULss;      //static_cast<CLULss*>(pInit2LcVarArea->pCLUBase);
+    
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
+
+}
+void Shematic::SetupCBGSigStngParam(void *pv){
+    register long i,j;
+    register Init2LcVarArea *pInit2LcVarArea = static_cast<Init2LcVarArea*>(pv);
+    i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
+    pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
+    //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
+                        (static_cast<LUAreaListElem*>(pv))->pvLU);
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_BGS;
+    i = pInit2LcVarArea->shCounterInitCLUObj - 1;
+
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;//
+    pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
+
+    CBGSig* locPCBGSig = static_cast<CBGSig*>(pInit2LcVarArea->pCLUBase);
+	locPCBGSig->UpdateCBGSig();
+    locPCBGSig->pOut = static_cast<void*>(locPCBGSig->arrOut);
+    locPCBGSig->pIn  = static_cast<void*>(locPCBGSig->arrPchIn);
+    CBGSig& locRef_CBGSig = *(static_cast<CBGSig*>(pInit2LcVarArea->pCLUBase));
+    
+    for(i = 0; i < locRef_CBGSig.chNumInput;i++)
+    locRef_CBGSig.arrPchIn[i] = &chGblGround;
+	locRef_CBGSig.LinkBGSigTimers();
+    locRef_CBGSig.chTypeLogicFunction = LU_OP_BGS;
+    locRef_CBGSig.LogicFunc = BGSig_Op;
+    locRef_CBGSig.LogicFunc(pInit2LcVarArea->pCLUBase);
+   
+    do {
+        __LN_GROUP_ALARM *pLN_GROUP_ALARM;
+        short shRelativeIndexLU = 0;
+    pLN_GROUP_ALARM = 
+    reinterpret_cast<__LN_GROUP_ALARM*>( spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);  
+    j = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_BGS);
+    shRelativeIndexLU = locRef_CBGSig.shLUBieldOrdNum - j;
+    shRelativeIndexLU -= 1;
+    j = pLN_GROUP_ALARM[shRelativeIndexLU].settings.control;
+    locRef_CBGSig.m_BGSigSuit.chCheckBgs =  j&(1<< INDEX_CTRL_GROUP_ALARM_CTRL_STATE);      
+    locRef_CBGSig.m_BGSigSuit.chStateGS  =  j&(1<< INDEX_CTRL_GROUP_ALARM_STATE);     
+    locRef_CBGSig.m_BGSigSuit.lIust  = pLN_GROUP_ALARM[shRelativeIndexLU].settings.pickup[0];     
+    locRef_CBGSig.m_BGSigSuit.lTWait = pLN_GROUP_ALARM[shRelativeIndexLU].settings.set_delay[0];
+    locRef_CBGSig.m_chNumberAnalogChanell = pLN_GROUP_ALARM[shRelativeIndexLU].settings.analog_input_control;
+    
+    }while(false);
+    j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
+    GlobalObjectMap.arPCBGSig[j] =
+      static_cast<CBGSig*>(pInit2LcVarArea->pCLUBase);
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
+
+}
+
 void Shematic::SetupCLUMft_2_1StngParam(void *pv){
     register long i,j;
     register Init2LcVarArea *pInit2LcVarArea = static_cast<Init2LcVarArea*>(pv);
@@ -1526,10 +1939,13 @@ void Shematic::SetupCLUMft_2_1StngParam(void *pv){
     //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
     pInit2LcVarArea->pCLUBase = static_cast<CLUBase*> (
             (static_cast<LUAreaListElem*> (pv))->pvLU);
-    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  STNG_LU_MFT;
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_MFT;
     i = pInit2LcVarArea->shCounterInitCLUObj - 1;
-    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
-    arrSBitFldCRefInfo[i].bfInfo_BaseID);
+//    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+//    arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;
+    
     pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
     //CLUNot_1_1* locPCLUNot_1_1 = static_cast<CLUNot_1_1*>(pInit2LcVarArea->pCLUBase);
     //locPCLUNot_1_1->pOut = static_cast<void*>(locPCLUNot_1_1->arrOut);
@@ -1537,23 +1953,143 @@ void Shematic::SetupCLUMft_2_1StngParam(void *pv){
     CMft& rCMft = *(static_cast<CMft*>(pInit2LcVarArea->pCLUBase));
     for(i = 0; i < rCMft.chNumInput;i++)
     rCMft.arrPchIn[i] = &chGblGround;
-    
+
     rCMft.UpdateCMft();
     i = rCMft.LinkMftTimers();
     if(i==3 ){
        rCMft.chTypeLogicFunction = LU_OP_MFT; //
-       rCMft.LogicFunc = Mft_Op;  
+       rCMft.LogicFunc = Mft_Op;
     }
-    rCMft.LogicFunc(pInit2LcVarArea->pCLUBase);
+    //rCMft.LogicFunc(pInit2LcVarArea->pCLUBase);
     //???
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
-    
-    GlobalObjectMap.arCMft[j] = 
+
+    GlobalObjectMap.arCMft[j] =
       static_cast<CMft*>(pInit2LcVarArea->pCLUBase);
-    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++          
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
+}
+void Shematic::SetupCLUTrigStngParam(void *pv){
+    register long i,j;
+    register Init2LcVarArea *pInit2LcVarArea = static_cast<Init2LcVarArea*>(pv);
+    i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
+    pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
+    //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+    pInit2LcVarArea->pCLUBase = static_cast<CLUBase*> (
+            (static_cast<LUAreaListElem*> (pv))->pvLU);
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng = TARAS_ALAS_STNG_LU_TRIGGER;
+    i = pInit2LcVarArea->shCounterInitCLUObj - 1;
+
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;//
+    pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
+
+    CLUTrig* locPCLUTrig = static_cast<CLUTrig*>(pInit2LcVarArea->pCLUBase);
+    //locPCLUFKey->pOut = static_cast<void*>(locPCLUFKey->arrOut);
+    //locPCLUNot_1_1->pIn  = static_cast<void*>(locPCLUNot_1_1->arrPchIn);
+    CLUTrig& locRef_CLUTrig = *(static_cast<CLUTrig*>(pInit2LcVarArea->pCLUBase));
+    locRef_CLUTrig.UpdateCLUTrig();
+    
+    for(i = 0; i < locRef_CLUTrig.chNumInput;i++)
+    locRef_CLUTrig.arrPchIn[i] = &chGblGround;
+    locRef_CLUTrig.chTypeLogicFunction = LU_OP_D_TRG__4_2;
+    locRef_CLUTrig.LogicFunc = DTRG_Op_4_2;
+    locRef_CLUTrig.LogicFunc(pInit2LcVarArea->pCLUBase);
+    bool bbVar = false;
+    do{
+        __LN_TRIGGER *pLN_TRIGGER;
+        short shRelativeIndexLU = 0;
+        //bool bbSel;
+        pLN_TRIGGER = reinterpret_cast<__LN_TRIGGER*>( spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
+        j = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_TRIGGER);
+        shRelativeIndexLU = locRef_CLUTrig.shLUBieldOrdNum - j - 1;
+        j = static_cast<long>(
+                pLN_TRIGGER[shRelativeIndexLU].settings.param[0]);//control
+        
+    }while(bbVar );
+    j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
+
+    GlobalObjectMap.arPCLUTrig[j] = locPCLUTrig;
+    //  static_cast<CLUTrig*>(pInit2LcVarArea->pCLUBase);
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
+
 }
 
+void Shematic::SetupCPulseAlternatorStngParam(void *pv){
+    register long i,j;
+    register Init2LcVarArea *pInit2LcVarArea = static_cast<Init2LcVarArea*>(pv);
+    i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
+    pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
+    //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
+                        (static_cast<LUAreaListElem*>(pv))->pvLU);
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_MEANDERS;
+    i = pInit2LcVarArea->shCounterInitCLUObj - 1;
 
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;//
+    pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
+
+    CPulseAlternator* locPCPulseAlternator = static_cast<CPulseAlternator*>(pInit2LcVarArea->pCLUBase);
+    locPCPulseAlternator->pOut = static_cast<void*>(locPCPulseAlternator->arrOut);
+    //locPCLUNot_1_1->pIn  = static_cast<void*>(locPCLUNot_1_1->arrPchIn);
+    CPulseAlternator& locRef_CPulseAlternator = *(static_cast<CPulseAlternator*>(pInit2LcVarArea->pCLUBase));
+    //locRef_CPulseAlternator.LogicFunc(pInit2LcVarArea->pCLUBase);
+//    /-*for(i = 0; i < locRef_CLUNot_1_1.chNumInput;i++)
+//    locRef_CLUNot_1_1.arrPchIn[i] = &chGblGround;*=/
+    locRef_CPulseAlternator.chTypeLogicFunction = LU_OP_MEANDR;
+    locRef_CPulseAlternator.LogicFunc = PulseAlt_Op;
+    __LN_MEANDER *pLN_MEANDER;
+    short shRelativeIndexLU = 0;
+    pLN_MEANDER = reinterpret_cast<__LN_MEANDER*> (spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
+    i = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_MEANDERS); //locRef_CLULed.
+    shRelativeIndexLU = locRef_CPulseAlternator.shLUBieldOrdNum - i - 1;
+    j = pLN_MEANDER[shRelativeIndexLU].settings.set_delay[MEANDER_SET_DELAY_PERIOD];
+    locRef_CPulseAlternator.m_PulseAltCfgSuit.shTAlternator = j>>2;
+    locRef_CPulseAlternator.m_NodeTicAlt.lTmrVal = locRef_CPulseAlternator.m_PulseAltCfgSuit.shTAlternator;
+    locRef_CPulseAlternator.LinkPulseAltTimer();
+    j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
+    GlobalObjectMap.arPCPulseAlternator[j] =
+      static_cast<CPulseAlternator*>(pInit2LcVarArea->pCLUBase);
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
+
+}
+void Shematic::SetupCLUTuStngParam(void *pv){
+    register long i,j;
+    register Init2LcVarArea *pInit2LcVarArea = static_cast<Init2LcVarArea*>(pv);
+    i = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
+    pv = static_cast<void*>(&(pInit2LcVarArea->arrLUAreaListElem[i-1]));
+    //pInit2LcVarArea->pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+	pInit2LcVarArea->pCLUBase = static_cast<CLUBase*>(
+                        (static_cast<LUAreaListElem*>(pv))->pvLU);
+    pInit2LcVarArea->pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_TU;
+    i = pInit2LcVarArea->shCounterInitCLUObj - 1;
+
+    //pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = static_cast<unsigned char>(
+    //arrSBitFldCRefInfo[i].bfInfo_BaseID);
+    pInit2LcVarArea->pCLUBase->shShemasOrdNumStng = 
+        pInit2LcVarArea->shIdxGlobalObjectMapPointers + 1;//
+    pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
+
+    CLUTu* locPCLUTu = static_cast<CLUTu*>(pInit2LcVarArea->pCLUBase);
+    locPCLUTu->pOut = static_cast<void*>(locPCLUTu->arrOut);
+    //locPCLUNot_1_1->pIn  = static_cast<void*>(locPCLUNot_1_1->arrPchIn);
+    CLUTu& locRef_CLUTu = *(static_cast<CLUTu*>(pInit2LcVarArea->pCLUBase));
+    /*for(i = 0; i < locRef_CLUNot_1_1.chNumInput;i++)
+    locRef_CLUNot_1_1.arrPchIn[i] = &chGblGround;*/
+    locRef_CLUTu.chTypeLogicFunction = LU_OP_TU;
+    locRef_CLUTu.LogicFunc = TU_Op;
+    locRef_CLUTu.LogicFunc(pInit2LcVarArea->pCLUBase);
+    j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
+
+    GlobalObjectMap.arPCLUTu[j] =
+      static_cast<CLUTu*>(pInit2LcVarArea->pCLUBase);
+    pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
+
+}
 void GetHIDLU(void*pv, long lIdxLUinStng) {
     register long i;
     i = Shematic::GetTrueOrderNum();
@@ -1565,7 +2101,7 @@ void GetHIDLU(void*pv, long lIdxLUinStng) {
 void ResetarNum(void) {
     for (long j = 0; j < 300; j++)
         arNum[j] = 0;
-	shCounterCalls_GLB = 0;	
+	shCounterCalls_GLB = 0;
 }
 
 long  Shematic::EvalIdxibnarrSBitFldCRefInfo(long lLUStng) {
@@ -1602,16 +2138,16 @@ long  Shematic::EvalIdxibnarrSBitFldCRefInfo(long lLUStng) {
 
         case STNG_LU_NOT:
             j = current_config_prt.n_input
-                    + current_config_prt.n_output + current_config_prt.n_led 
+                    + current_config_prt.n_output + current_config_prt.n_led
                     + shCLUAnd_8_1_AmtIn * current_config_prt.n_and
-                    + shCLUOr_8_1_AmtIn  * current_config_prt.n_or 
+                    + shCLUOr_8_1_AmtIn  * current_config_prt.n_or
                     + shCLUXor_2_1_AmtIn * current_config_prt.n_xor;
             break;
         case STNG_LU_MFT:
             j = current_config_prt.n_input
                     + current_config_prt.n_output + current_config_prt.n_led
                     + shCLUAnd_8_1_AmtIn * current_config_prt.n_and
-                    + shCLUOr_8_1_AmtIn  * current_config_prt.n_or 
+                    + shCLUOr_8_1_AmtIn  * current_config_prt.n_or
                     + shCLUXor_2_1_AmtIn * current_config_prt.n_xor
                     + shCLUNot_1_1_AmtIn * current_config_prt.n_not;
             break;
@@ -1619,9 +2155,9 @@ long  Shematic::EvalIdxibnarrSBitFldCRefInfo(long lLUStng) {
         default:
             j = -1;
     }
-      return j;       
-            
-}
+      return j;
+
+}/*
 long  Shematic::EvalIdxinarrLUAreaListElem(long lLUStng) {
     register long j;
     switch (lLUStng) {
@@ -1668,12 +2204,186 @@ long  Shematic::EvalIdxinarrLUAreaListElem(long lLUStng) {
         default:
             j = -1;
     }
-      return j;       
-            
+      return j;
+
+}*/
+long  Shematic::EvalIdxinarrLUAreaListElem(long lLUStng) {
+    register long j;
+    switch (lLUStng) {
+
+        case TARAS_ALAS_STNG_LU_INPUT:
+            j = 0;
+            break;
+        case TARAS_ALAS_STNG_LU_OUTPUT:
+            j = current_config_prt.n_input;
+            break;
+        case TARAS_ALAS_STNG_LU_LED:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output;
+            break;
+        case TARAS_ALAS_STNG_LU_KEY:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led;
+            break;
+        case TARAS_ALAS_STNG_LU_ALARMS:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led
+                    + current_config_prt.n_button;
+            break;
+        case TARAS_ALAS_STNG_LU_BGS:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led
+                    + current_config_prt.n_button
+                    + current_config_prt.n_alarm;
+            break;
+        case TARAS_ALAS_STNG_LU_AND:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led
+                    + current_config_prt.n_button
+                    + current_config_prt.n_alarm
+                    + current_config_prt.n_group_alarm;
+            break;
+        case TARAS_ALAS_STNG_LU_OR:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led
+                    + current_config_prt.n_button
+                    + current_config_prt.n_alarm
+                    + current_config_prt.n_group_alarm
+                    + current_config_prt.n_and;
+            break;
+        case TARAS_ALAS_STNG_LU_XOR:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led
+                    + current_config_prt.n_button
+                    + current_config_prt.n_alarm
+                    + current_config_prt.n_group_alarm
+                    + current_config_prt.n_and
+                    + current_config_prt.n_or;
+            break;
+        case TARAS_ALAS_STNG_LU_NOT:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led
+                    + current_config_prt.n_button
+                    + current_config_prt.n_alarm
+                    + current_config_prt.n_group_alarm
+                    + current_config_prt.n_and
+                    + current_config_prt.n_or
+                    + current_config_prt.n_xor;
+            break;
+        case TARAS_ALAS_STNG_LU_TIMER:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led
+                    + current_config_prt.n_button
+                    + current_config_prt.n_alarm
+                    + current_config_prt.n_group_alarm
+                    + current_config_prt.n_and
+                    + current_config_prt.n_or
+                    + current_config_prt.n_xor
+                    + current_config_prt.n_not;
+            break;
+        case TARAS_ALAS_STNG_LU_TRIGGER:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led
+                    + current_config_prt.n_button
+                    + current_config_prt.n_alarm
+                    + current_config_prt.n_group_alarm
+                    + current_config_prt.n_and
+                    + current_config_prt.n_or
+                    + current_config_prt.n_xor
+                    + current_config_prt.n_not
+                    + current_config_prt.n_timer;
+            break;
+        case TARAS_ALAS_STNG_LU_MEANDERS:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led
+                    + current_config_prt.n_button
+                    + current_config_prt.n_alarm
+                    + current_config_prt.n_group_alarm
+                    + current_config_prt.n_and
+                    + current_config_prt.n_or
+                    + current_config_prt.n_xor
+                    + current_config_prt.n_not
+                    + current_config_prt.n_timer
+                    + current_config_prt.n_trigger;
+            break;
+        case TARAS_ALAS_STNG_LU_TU:
+            j = current_config_prt.n_input
+                    + current_config_prt.n_output
+                    + current_config_prt.n_led
+                    + current_config_prt.n_button
+                    + current_config_prt.n_alarm
+                    + current_config_prt.n_group_alarm
+                    + current_config_prt.n_and
+                    + current_config_prt.n_or
+                    + current_config_prt.n_xor
+                    + current_config_prt.n_not
+                    + current_config_prt.n_timer
+                    + current_config_prt.n_trigger
+            +current_config_prt.n_meander;
+            break;
+
+        default:
+            j = -1;
+    }
+      return j;
+
 }
 long  Shematic::EvalAmtIn_arrLUAreaListElem(long lLUStng) {
     register long j;
     switch (lLUStng) {
+        case TARAS_ALAS_STNG_LU_INPUT:
+            j = current_config_prt.n_input;
+            break;
+        case TARAS_ALAS_STNG_LU_OUTPUT:
+            j = current_config_prt.n_output;
+            break;
+        case TARAS_ALAS_STNG_LU_LED:
+            j = current_config_prt.n_led;
+            break;
+        case TARAS_ALAS_STNG_LU_KEY:
+            j = current_config_prt.n_button;
+            break;
+        case TARAS_ALAS_STNG_LU_ALARMS:
+            j = current_config_prt.n_alarm;
+            break;
+        case TARAS_ALAS_STNG_LU_BGS:
+            j = current_config_prt.n_group_alarm;
+            break;
+        case TARAS_ALAS_STNG_LU_AND:
+            j = current_config_prt.n_and;
+            break;
+        case TARAS_ALAS_STNG_LU_OR:
+            j = current_config_prt.n_or;
+            break;
+        case TARAS_ALAS_STNG_LU_XOR:
+            j = current_config_prt.n_xor;
+            break;
+        case TARAS_ALAS_STNG_LU_NOT:
+            j = current_config_prt.n_not;
+            break;
+        case TARAS_ALAS_STNG_LU_TIMER:
+            j = current_config_prt.n_timer;
+            break;
+        case TARAS_ALAS_STNG_LU_TRIGGER:
+            j = current_config_prt.n_trigger;
+            break;
+        case TARAS_ALAS_STNG_LU_MEANDERS:
+            j = current_config_prt.n_meander;
+            break;
+        case TARAS_ALAS_STNG_LU_TU:
+            j = current_config_prt.n_tu;
+            break;
+        /*
         case STNG_LU_AND:
             j = current_config_prt.n_and;
             break;
@@ -1704,12 +2414,12 @@ long  Shematic::EvalAmtIn_arrLUAreaListElem(long lLUStng) {
         case STNG_LU_MFT:
                j = current_config_prt.n_timer;
             break;
-
+*/
         default:
             j = -1;
     }
-      return j;       
-            
+      return j;
+
 }
 
 
@@ -1717,29 +2427,136 @@ long  Shematic::FillSBitFld_LUInInfo(void *pvIn,void *pvOut){
     //Now use Index in ordered CrCRefInfo
 register long i,j;
 volatile CLUBase* plcCLUBase;
-//i =  
+//i =
 
 plcCLUBase = (static_cast<LUCRefExchParam*>( pvIn))->pCLUBase;
-        
+
 j = plcCLUBase->shShemasIdLUStng;
 i = EvalIdxibnarrSBitFldCRefInfo(j);
 j = (static_cast<LUCRefExchParam*>( pvIn))->shLU_ObjScanIndex;
 j *= plcCLUBase->chNumInput;
 i += j;
 i += (static_cast<LUCRefExchParam*>( pvIn))->chLU_OrdNumIn;
-*(static_cast<SBitFld_LUInInfo*>(pvOut) ) = arrSBitFldCRefInfo[i].sBitLUInputInfo;  
+*(static_cast<SBitFld_LUInInfo*>(pvOut) ) = arrSBitFldCRefInfo[i].sBitLUInputInfo;
     return 0;
 //Alternative Variant?
     //Use ((CLUBase*)plcCLUBase)->shShemasIdLUStng && shShemasIdLUStng
     //to Find Record
     //then Use ((LUCRefExchParam*) pvIn)->chLU_OrdNumIn to fix Input
 }
+
+long  Shematic::FillSBitFld_LUInInfo2(void *pvIn,void *pvOut){
+    //Now use Index in ordered CrCRefInfo
+register long i,j;
+volatile CLUBase* plcCLUBase;
+union {
+//__LN_INPUT        *pLN_INPUT      ;
+__LN_OUTPUT_LED   *pLN_OUTPUT_LED ;
+//__LN_BUTTON_TU    *pLN_BUTTON_TU  ;
+__LN_ALARM        *pLN_ALARM      ;
+__LN_GROUP_ALARM  *pLN_GROUP_ALARM;
+__LN_AND          *pLN_AND        ;
+__LN_OR           *pLN_OR         ;
+__LN_XOR          *pLN_XOR        ;
+__LN_NOT          *pLN_NOT        ;
+__LN_TIMER        *pLN_TIMER      ;
+__LN_TRIGGER      *pLN_TRIGGER    ;
+//__LN_MEANDER      *pLN_MEANDER    ;
+}UN_LN;
+short shRelativeIndexLU = 0;
+SBitFld_LUInInfo locSBitFld;
+char locChOrdNumIn = (static_cast<LUCRefExchParam*>( pvIn))->chLU_OrdNumIn;
+plcCLUBase = (static_cast<LUCRefExchParam*>( pvIn))->pCLUBase;
+j = plcCLUBase->shShemasIdLUStng;
+i = EvalIdxinarrLUAreaListElem(j);//
+shRelativeIndexLU = plcCLUBase->shLUBieldOrdNum - i-1;
+    switch (j) {
+//        case TARAS_ALAS_STNG_LU_INPUT:
+//            UN_LN.pLN_INPUT = reinterpret_cast<__LN_INPUT*>( spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+//            break;
+        case TARAS_ALAS_STNG_LU_OUTPUT:
+            UN_LN.pLN_OUTPUT_LED = reinterpret_cast<__LN_OUTPUT_LED*>( spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
+            i = UN_LN.pLN_OUTPUT_LED[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            
+            break;
+        case TARAS_ALAS_STNG_LU_LED:
+            UN_LN.pLN_OUTPUT_LED = reinterpret_cast<__LN_OUTPUT_LED*>( spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
+             i = UN_LN.pLN_OUTPUT_LED[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            
+            break;
+//        case TARAS_ALAS_STNG_LU_KEY:
+//            UN_LN.pLN_INPUT = reinterpret_cast<__LN_BUTTON_TU*>( spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+//            break;
+        case TARAS_ALAS_STNG_LU_ALARMS:
+            UN_LN.pLN_ALARM = reinterpret_cast<__LN_ALARM*>( spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
+            i = UN_LN.pLN_ALARM[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            break;
+        case TARAS_ALAS_STNG_LU_BGS:
+            UN_LN.pLN_GROUP_ALARM = reinterpret_cast<__LN_GROUP_ALARM*>( spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
+            break;
+        case TARAS_ALAS_STNG_LU_AND:
+            UN_LN.pLN_AND = reinterpret_cast<__LN_AND*>( spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]);
+            i = UN_LN.pLN_AND[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            break;
+        case TARAS_ALAS_STNG_LU_OR:
+            UN_LN.pLN_OR = reinterpret_cast<__LN_OR*>( spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]);
+            i = UN_LN.pLN_OR[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            break;
+        case TARAS_ALAS_STNG_LU_XOR:
+            UN_LN.pLN_XOR = reinterpret_cast<__LN_XOR*>( spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR]);
+            i = UN_LN.pLN_XOR[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            break;
+        case TARAS_ALAS_STNG_LU_NOT:
+            UN_LN.pLN_NOT = reinterpret_cast<__LN_NOT*>( spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]);
+            i = UN_LN.pLN_NOT[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            break;            
+        case TARAS_ALAS_STNG_LU_TIMER:
+            UN_LN.pLN_TIMER = reinterpret_cast<__LN_TIMER*>( spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
+            i = UN_LN.pLN_TIMER[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            break;
+        case TARAS_ALAS_STNG_LU_TRIGGER:
+            UN_LN.pLN_TRIGGER = reinterpret_cast<__LN_TRIGGER*>( spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
+            i = UN_LN.pLN_TRIGGER[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            break;
+//        case TARAS_ALAS_STNG_LU_MEANDERS:
+//            UN_LN.pLN_INPUT = reinterpret_cast<__LN_MEANDER*>( spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
+//            break;
+//        case TARAS_ALAS_STNG_LU_TU:
+//            UN_LN.pLN_INPUT = reinterpret_cast<__LN_INPUT*>( spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+//            break;
+            
+        default:
+            ;
+    }
+    
+//Detect type Elem
+//i = EvalIdxibnarrSBitFldCRefInfo(j);
+//j = (static_cast<LUCRefExchParam*>( pvIn))->shLU_ObjScanIndex;
+//j *= plcCLUBase->chNumInput;
+//i += j;
+//i += (static_cast<LUCRefExchParam*>( pvIn))->chLU_OrdNumIn;
+// *(static_cast<SBitFld_LUInInfo*>(pvOut) ) = arrSBitFldCRefInfo[i].sBitLUInputInfo;
+/*    long param = i;
+          unsigned int id_input   = (param >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+            unsigned int n_input    = (param >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер
+            unsigned int out_input  = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу
+            */
+locSBitFld.bfInfo_IdLUStng = 
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+locSBitFld.bfInfo_OrdNumStng = 
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+locSBitFld.bfInfo_OrdNumOut = 
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+         *(static_cast<SBitFld_LUInInfo*>(pvOut) ) = locSBitFld;   
+    return 0;
+
+}
 void Shematic::SetupCircutLinks(void *pv) {
     register long i,j;
-    
+
 //	short shAmtPlacedLU;
 //	short shAmtLUDscElem;//SBitFldCRefInfo Elem
-	
+
 struct {
 	short shAmtLU, shIdx;
         short shCounterScanedObj,shCounterFindObj;
@@ -1758,7 +2575,7 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
 //    rsLV = *((Init2LcVarArea*) pv);
     sLV.pSBitFldCRefInfo = &arrSBitFldCRefInfo[0]; //Table Links
     rsLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
-	
+
 
     if (current_config_prt.n_output != 0) {
         sLV.shCounterScanedObj = 0;
@@ -1773,7 +2590,7 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
             //rsLV.pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
             rsLV.pCLUBase = static_cast<CLUBase*> (
                     (static_cast<LUAreaListElem*> (pv))->pvLU);
-            
+
             //Take info 2 Possible Variants
             //1-st STNG_LU_OUTPUT And shShemasOrdNumStng
             //2-nd use Index in ordered CrCRefInfo
@@ -1781,9 +2598,9 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
                 lcLUCRefExchParam.shLU_ObjScanIndex = sLV.shCounterScanedObj;
                 lcLUCRefExchParam.chLU_OrdNumIn = ik;// + 1; in function use as Idx
                 lcLUCRefExchParam.pCLUBase = rsLV.pCLUBase;
-                FillSBitFld_LUInInfo( static_cast<void*>(&lcLUCRefExchParam), 
+                FillSBitFld_LUInInfo( static_cast<void*>(&lcLUCRefExchParam),
 				static_cast<void*>(&locSBitFld) );
-                //Have OutPut Param               
+                //Have OutPut Param
                 sLV.lcLUCrossRefData.shRefIdLUStng   = locSBitFld.bfInfo_IdLUStng;
                 sLV.lcLUCrossRefData.shRefOrdNumStng = locSBitFld.bfInfo_OrdNumStng;
                 sLV.lcLUCrossRefData.chRefOrdNumOut  = locSBitFld.bfInfo_OrdNumOut;
@@ -1815,7 +2632,7 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
                     if (rsLV.pCh) {
                         rsLV.arrPchIn = static_cast<char**>(rsLV.pCLUBase->pIn);
                         rsLV.arrPchIn[ik] = rsLV.pCh;
-                       
+
                     }
                     if(rsLV.chVal != 1)
                         rsLV.chErrCount++;//Is need?
@@ -1831,8 +2648,8 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
         rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
         do{
             SetupCLUInternalRef(static_cast<void*>(&rsLV));
-        
-        }while (++sLV.shCounterScanedObj < sLV.shAmtLU); 
+
+        }while (++sLV.shCounterScanedObj < sLV.shAmtLU);
     }
     if (current_config_prt.n_and != 0) {
         sLV.shCounterScanedObj = 0;
@@ -1874,10 +2691,10 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
             SetupCLUInternalRef(static_cast<void*>(&rsLV));
         } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
     }
-	
+
 }
-	
-//	while (shAmtLUDscElem 
+
+//	while (shAmtLUDscElem
 //	&& sLV.chBreakScanLUDscLoop == 0) {
 //		//Get Reference on Link Data
 //		//sLV.shIdxFldCRefInfo =0;?
@@ -1887,17 +2704,17 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
 //			i = sLV.shIdxLU;
 //			pv = (void*) &rsLV.arrLUAreaListElem[i];
 //			rsLV.pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
-//			
+//
 //			j = sLV.shIdxFldCRefInfo;
 //			if (rsLV.pCLUBase->shShemasIdLUStng == ar_n_output_CRDsc[j].shBaseIdLUStng &&
 //                    rsLV.pCLUBase->shShemasOrdNumStng == ar_n_output_CRDsc[j].shBaseOrdNumStng) {
-//						
-//						
+//
+//
 //			}
 //		}
-//	
+//
 //	}
-	
+
 void Shematic::SetupLULinks(void *pv) {
 //	register long i,j;
 	//First Param Index in CrrefArray
@@ -1914,18 +2731,18 @@ void Shematic::SetupCLUInternalRef(void *pv){
     LUCRefExchParam lcLUCRefExchParam;
     register Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
     volatile short& shCounterScanedObj = *(static_cast<short*>(rsLV.pV));
-    
+
 
     i = shCounterScanedObj + rsLV.shIdx;
     pv = static_cast<void*>(&rsLV.arrLUAreaListElem[i]);
-    //rsLV.pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;static_cast<CLUBase*>( 
+    //rsLV.pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;static_cast<CLUBase*>(
     rsLV.pCLUBase = static_cast<CLUBase*>((static_cast<LUAreaListElem*>(pv))->pvLU);
     for (long ik = 0; ik < rsLV.pCLUBase->chNumInput; ik++) {
         lcLUCRefExchParam.shLU_ObjScanIndex = shCounterScanedObj;
         lcLUCRefExchParam.chLU_OrdNumIn = ik;// + 1; in function use as Idx
         lcLUCRefExchParam.pCLUBase = rsLV.pCLUBase;
         FillSBitFld_LUInInfo(static_cast<void*>(&lcLUCRefExchParam), static_cast<void*>(&locSBitFld));
-        //Have OutPut Param               
+        //Have OutPut Param
         //-lcLUCRefExchParam.shRefIdLUStng   = locSBitFld.bfInfo_IdLUStng;
         //-lcLUCRefExchParam.shRefOrdNumStng = locSBitFld.bfInfo_OrdNumStng;
         //-lcLUCRefExchParam.chRefOrdNumOut  = locSBitFld.bfInfo_OrdNumOut;
@@ -1934,11 +2751,11 @@ void Shematic::SetupCLUInternalRef(void *pv){
         if(j!=(-1)){
              short shCounterFindObj = 0;
              short shAmtLookObj = 0;
-            
+
             shAmtLookObj = static_cast<short>(EvalAmtIn_arrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng)));
             if(shAmtLookObj == (-1))
                 shAmtLookObj = gblLUAreaAuxVar.shAmountPlacedLogicUnit-j;
-            
+
             rsLV.chVal = 0;rsLV.pCh = static_cast<char*>(0);
             while ((shCounterFindObj) < shAmtLookObj && rsLV.chVal != 1) {
                 i = j + shCounterFindObj;
@@ -1964,6 +2781,290 @@ void Shematic::SetupCLUInternalRef(void *pv){
         }
     }
 }
+void Shematic::SetupCircutLinks2(void *pv) {
+    register long i,j;
+
+//	short shAmtPlacedLU;
+//	short shAmtLUDscElem;//SBitFldCRefInfo Elem
+
+struct {
+	short shAmtLU, shIdx;
+        short shCounterScanedObj,shCounterFindObj;
+        short shAmtLookObj;
+        long lBaseOrdNumStng;
+        SBitFldCRefInfo *pSBitFldCRefInfo;
+        LUCrossRefDsc lcLUCrossRefData;
+        CLUBase  *pCLURef;//*pCLUBase,
+} sLV;
+SBitFld_LUInInfo locSBitFld;
+LUCRefExchParam lcLUCRefExchParam;
+Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
+    i = j = 0;
+//    	    asm(
+//                "bkpt 1"
+//                );
+    sLV.shIdx = sLV.shAmtLU = 0;
+//    rsLV = *((Init2LcVarArea*) pv);
+    sLV.pSBitFldCRefInfo = &arrSBitFldCRefInfo[0]; //Table Links
+    rsLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
+
+
+    if (current_config_prt.n_output != 0) {
+        sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_output;
+        j = 0; //Idx in OutPut for Test
+        sLV.shIdx += current_config_prt.n_input;
+        i = sLV.shIdx; //Offset Output
+        do {
+            //Type Obj == STNG_LU_OUTPUT order num == sLV.shCounterScanedObj+sLV.shIdx
+            i = sLV.shCounterScanedObj + sLV.shIdx;
+            pv = static_cast<void*>(&rsLV.arrLUAreaListElem[i]);
+            //rsLV.pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+            rsLV.pCLUBase = static_cast<CLUBase*> (
+                    (static_cast<LUAreaListElem*> (pv))->pvLU);
+
+            //Take info 2 Possible Variants
+            //1-st STNG_LU_OUTPUT And shShemasOrdNumStng
+            //2-nd use Index in ordered CrCRefInfo
+            for (long ik = 0; ik < rsLV.pCLUBase->chNumInput; ik++) {
+                lcLUCRefExchParam.shLU_ObjScanIndex = sLV.shCounterScanedObj;
+                lcLUCRefExchParam.chLU_OrdNumIn = ik;// + 1; in function use as Idx
+                lcLUCRefExchParam.pCLUBase = rsLV.pCLUBase;
+                FillSBitFld_LUInInfo2( static_cast<void*>(&lcLUCRefExchParam),
+				static_cast<void*>(&locSBitFld) );
+                //Have OutPut Param
+                sLV.lcLUCrossRefData.shRefIdLUStng   = locSBitFld.bfInfo_IdLUStng;
+                sLV.lcLUCrossRefData.shRefOrdNumStng = locSBitFld.bfInfo_OrdNumStng;
+                sLV.lcLUCrossRefData.chRefOrdNumOut  = locSBitFld.bfInfo_OrdNumOut;
+                if(sLV.lcLUCrossRefData.shRefIdLUStng == 0 && sLV.lcLUCrossRefData.shRefOrdNumStng ==0)
+                    j = (-1);
+                else {
+//                    asm(
+//                        "bkpt 1"
+//                        );
+                 //Find Obj
+                j = EvalIdxinarrLUAreaListElem(sLV.lcLUCrossRefData.shRefIdLUStng);
+                }
+                if(j!=(-1)){
+                    sLV.shCounterFindObj = 0;
+                    sLV.shAmtLookObj = EvalAmtIn_arrLUAreaListElem(sLV.lcLUCrossRefData.shRefIdLUStng);
+                    if(sLV.shAmtLookObj == (-1))
+                        sLV.shAmtLookObj = gblLUAreaAuxVar.shAmountPlacedLogicUnit-j;//Test Only
+                    //i = j+sLV.shCounterFindObj;
+                    rsLV.chVal = 0;rsLV.pCh = static_cast<char*>(0);
+                    while ((sLV.shCounterFindObj)<sLV.shAmtLookObj && rsLV.chVal!=1) {
+                        i = j+sLV.shCounterFindObj;
+                        pv = static_cast<void*>(&rsLV.arrLUAreaListElem[i]);
+                        //sLV.pCLURef = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+                        sLV.pCLURef = static_cast<CLUBase*> (
+                                (static_cast<LUAreaListElem*> (pv))->pvLU);
+                        if ((sLV.pCLURef->shShemasIdLUStng == sLV.lcLUCrossRefData.shRefIdLUStng) &&
+                                (sLV.pCLURef->shShemasOrdNumStng == sLV.lcLUCrossRefData.shRefOrdNumStng)
+                            ){//Set UP Logic
+                            rsLV.pCh = static_cast<char*>(sLV.pCLURef->pOut);
+                            rsLV.pCh += sLV.lcLUCrossRefData.chRefOrdNumOut -1;//As Idx
+                            rsLV.chVal = 1;
+//                            asm(
+//                                "bkpt 1"
+//                                );
+                            break;
+                        }
+                    sLV.shCounterFindObj++;
+                    }
+                    if (rsLV.pCh) {
+                        rsLV.arrPchIn = static_cast<char**>(rsLV.pCLUBase->pIn);
+                        rsLV.arrPchIn[ik] = rsLV.pCh;
+
+                    }
+                    if(rsLV.chVal != 1)
+                        rsLV.chErrCount++;//Is need?
+                }
+            }
+        } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+    if (current_config_prt.n_led != 0) {
+        sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_led;
+        j = 0; //Idx in OutPut for Test
+        sLV.shIdx += current_config_prt.n_output;
+        rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
+        do{
+            SetupCLUInternalRef2(static_cast<void*>(&rsLV));
+
+        }while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+    
+    if (current_config_prt.n_alarm != 0) {
+        sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_alarm;
+        j = 0; //Idx in OutPut for Test
+        sLV.shIdx += current_config_prt.n_led + current_config_prt.n_button;
+        rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
+        do{
+            SetupCLUInternalRef2(static_cast<void*>(&rsLV));
+
+        }while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+    
+    if (current_config_prt.n_and != 0) {
+        sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_and;
+        j = 0; //Idx in OutPut for Test
+        sLV.shIdx += current_config_prt.n_alarm 
+        + current_config_prt.n_group_alarm;
+        rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
+        do {
+            SetupCLUInternalRef2(static_cast<void*>(&rsLV));
+        } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+    if (current_config_prt.n_or != 0) {
+        sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_or;
+        j = 0;
+        sLV.shIdx += current_config_prt.n_and;
+        rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
+        do {
+            SetupCLUInternalRef2(static_cast<void*>(&rsLV));
+        } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+    if (current_config_prt.n_xor != 0) {
+	sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_xor;
+        j = 0; //Idx in OutPut for Test
+        sLV.shIdx += current_config_prt.n_or;
+        rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
+        do {
+            SetupCLUInternalRef2(static_cast<void*>(&rsLV));
+        } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+    if (current_config_prt.n_not != 0) {
+	sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_not;
+        j = 0; //Idx in OutPut for Test
+        sLV.shIdx += current_config_prt.n_xor;
+        rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
+        do {
+            SetupCLUInternalRef2(static_cast<void*>(&rsLV));
+        } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+    if (current_config_prt.n_timer != 0) {
+	sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_timer;
+        j = 0; //Idx in OutPut for Test
+        sLV.shIdx += current_config_prt.n_not;
+        rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
+        do {
+            SetupCLUInternalRef2(static_cast<void*>(&rsLV));
+        } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+    if (current_config_prt.n_trigger != 0) {
+	sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_trigger;
+        j = 0; //Idx in OutPut for Test
+        sLV.shIdx += current_config_prt.n_timer;
+        rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
+        do {
+            SetupCLUInternalRef2(static_cast<void*>(&rsLV));
+        } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+
+}
+
+void Shematic::SetupCLUInternalRef2(void *pv){
+    register long i,j;
+//   register Init2LcVarArea *pInit2LcVarArea = (Init2LcVarArea *)pv;
+	SBitFld_LUInInfo locSBitFld;
+    LUCRefExchParam lcLUCRefExchParam;
+    register Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
+    volatile short& shCounterScanedObj = *(static_cast<short*>(rsLV.pV));
+
+
+    i = shCounterScanedObj + rsLV.shIdx;
+    pv = static_cast<void*>(&rsLV.arrLUAreaListElem[i]);
+    //rsLV.pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;static_cast<CLUBase*>(
+    rsLV.pCLUBase = static_cast<CLUBase*>((static_cast<LUAreaListElem*>(pv))->pvLU);
+    for (long ik = 0; ik < rsLV.pCLUBase->chNumInput; ik++) {
+        lcLUCRefExchParam.shLU_ObjScanIndex = shCounterScanedObj;
+        lcLUCRefExchParam.chLU_OrdNumIn = ik;// + 1; in function use as Idx
+        lcLUCRefExchParam.pCLUBase = rsLV.pCLUBase;
+        FillSBitFld_LUInInfo2(static_cast<void*>(&lcLUCRefExchParam), static_cast<void*>(&locSBitFld));
+        
+        //if(sLV.lcLUCrossRefData.shRefIdLUStng == 0 && sLV.lcLUCrossRefData.shRefOrdNumStng ==0)
+        if(locSBitFld.bfInfo_IdLUStng == 0 && locSBitFld.bfInfo_OrdNumStng ==0)
+            j = (-1);
+        else {
+//            asm(
+//                "bkpt 1"
+//            );
+        }    
+         //Find Obj
+        j = EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
+        if(j!=(-1)){
+             short shCounterFindObj = 0;
+             short shAmtLookObj = 0;
+
+            shAmtLookObj = static_cast<short>(EvalAmtIn_arrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng)));
+            if(shAmtLookObj == (-1))
+                shAmtLookObj = gblLUAreaAuxVar.shAmountPlacedLogicUnit-j;
+
+            rsLV.chVal = 0;rsLV.pCh = static_cast<char*>(0);
+            while ((shCounterFindObj) < shAmtLookObj && rsLV.chVal != 1) {
+                i = j + shCounterFindObj;
+                pv = static_cast<void*>(&rsLV.arrLUAreaListElem[i]);
+                //rsLV.pCLURef = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+                rsLV.pCLURef = static_cast<CLUBase*>((static_cast<LUAreaListElem*>(pv))->pvLU);
+                if ((rsLV.pCLURef->shShemasIdLUStng == static_cast<short>(locSBitFld.bfInfo_IdLUStng)) &&
+                        (rsLV.pCLURef->shShemasOrdNumStng == static_cast<short>(locSBitFld.bfInfo_OrdNumStng))
+                        ) {//Set UP Logic
+                    rsLV.pCh = static_cast<char*>(rsLV.pCLURef->pOut);
+                    rsLV.pCh += static_cast<unsigned char>(locSBitFld.bfInfo_OrdNumOut - 1); //As Idx
+                    rsLV.chVal = 1;
+//                     asm(
+//                    "bkpt 1"
+//                    );
+                    break;
+                }
+                shCounterFindObj++;
+            }
+            if (rsLV.pCh) {
+                rsLV.arrPchIn = static_cast<char**>(rsLV.pCLUBase->pIn);
+                rsLV.arrPchIn[ik] = rsLV.pCh;
+            }
+            if(rsLV.chVal != 1)
+                rsLV.chErrCount++;//Is need?
+        }
+    }
+}
+ short shLssLUAreaListElemIndex; 
+void GetLssMuteAlarmBlockAddr(void* pv){
+register long i,j;
+struct {
+LUAreaListElem* arrLUAreaListElem;
+MuteAlarmInOutParam *pInOutParam; 
+CLULss *pCLULss;
+//char* pCh;
+    } sLV;
+sLV.pInOutParam = static_cast<MuteAlarmInOutParam*>(pv);
+sLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
+sLV.pInOutParam->pChBlock = static_cast<char*>(0);
+sLV.pInOutParam->pChAlarm = static_cast<char*>(0);
+sLV.pInOutParam->pChMute  = static_cast<char*>(0); 
+if(shLssLUAreaListElemIndex == 0){
+j = sh.EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_ALARMS);
+shLssLUAreaListElemIndex = j;
+}
+else
+j = shLssLUAreaListElemIndex;
+i = sLV.pInOutParam->lIndexLss + j;
+
+pv = static_cast<void*>( &sLV.arrLUAreaListElem[i ]);
+sLV.pCLULss = static_cast<CLULss*>( ( static_cast<LUAreaListElem*>(pv) )->pvLU);
+pv = static_cast<void*>(sLV.pCLULss->arrPchIn[LSS_IN_NAME__BLOCK_I-1]);
+sLV.pInOutParam->pChBlock = static_cast<char*>(pv);
+sLV.pInOutParam->pChAlarm = static_cast<char*>(&(sLV.pCLULss->arrOut[LSS_OUT_NAME_ALARM-1]));
+sLV.pInOutParam->pChMute  = static_cast<char*>(&(sLV.pCLULss->arrOut[LSS_OUT_NAME_MUTE-1]));
+}
+
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //``````````````````````````````````````````````````````````````````````````````````
 //==================================================================================
@@ -1972,6 +3073,9 @@ void Shematic::SetupCLUInternalRef(void *pv){
 //..................................................................................
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 long InitSchematic(void){
+//    	    asm(
+//                "bkpt 1"
+//                );
 sh.Init();
 return 1;
 }

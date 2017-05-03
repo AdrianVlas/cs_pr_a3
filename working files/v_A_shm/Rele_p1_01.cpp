@@ -82,7 +82,7 @@ const LedShcemasDscRecord Or_05__2_1DscRec = {
 &arOr_05__2_1InDataDsc[0]
 }; 
 //RELE_D_TRG_06__3_2, 
-const LUShcemasInDataDsc arD_TRG_06__3_2InDataDsc[3] = {
+const LUShcemasInDataDsc arD_TRG_06__3_2InDataDsc[2] = {
 {IN_VCC,0},{RELE_And04__2_1,0},{RELE_Or_05__2_1, 0}
 };
 const LedShcemasDscRecord D_TRG_06__3_2DscRec = {
@@ -103,7 +103,7 @@ const LUShcemasInDataDsc arAnd08__2_1InDataDsc[2] = {
 };
 
 const LedShcemasDscRecord And08__2_1DscRec = {
-2,1,LU_GEN_OP_AND,RELE_And08__2_1,
+2,1,LU_GEN_OP_AND,RELE_And07__2_1,
 &arAnd08__2_1InDataDsc[0]
 };
  

@@ -30,4 +30,4 @@ public:
     friend long SetPulseAltSuit(void* pv);
     friend void PulseAlt_Op(void *pObj);
 };
-
+extern void PulseAlt_Op(void *pObj);
