@@ -510,6 +510,7 @@ void main_manu_function_ver2(void)
     case OUTPUTS_MENU2_LEVEL:
     case REGISTRATORS_MENU2_LEVEL:
     case PR_ERR_LIST_MENU2_LEVEL:
+    case PR_ERR_DATA_MENU2_LEVEL:
     case LIST_SETTINGS_MENU2_LEVEL:
     case LIST_SETTINGS_PARAM_MENU2_LEVEL:
     case LIST_INPUTS_MENU2_LEVEL:
@@ -731,6 +732,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, DIAGNOSTICS_MENU2_LEVEL, LABELS_MENU2_LEVEL, INFO_MENU2_LEVEL};
               const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {ANALOG_INPUTS_MENU2_LEVEL, INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
               const enum _menu2_levels next_for_registrators_menu2[MAX_ROW_LIST_REGISTRATORS_M2] = {REGISTRATORS_MENU2_LEVEL, PR_ERR_LIST_MENU2_LEVEL};
+              const enum _menu2_levels next_for_prr_err_list_menu2[2] = {PR_ERR_LIST_MENU2_LEVEL, PR_ERR_DATA_MENU2_LEVEL};
               const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
               const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_SETTINGS_PARAM_MENU2_LEVEL, EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL, LANGUAGE_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL, LIST_PASSWORDS_MENU2_LEVEL};
@@ -782,6 +784,12 @@ void main_manu_function_ver2(void)
                   p = &next_for_registrators_menu2[current_state_menu2.index_position];
                   
                   position_in_current_level_menu2[PR_ERR_LIST_MENU2_LEVEL] = 0;
+                  
+                  break;
+                }
+              case PR_ERR_LIST_MENU2_LEVEL:
+                {
+                  p = &next_for_prr_err_list_menu2[pr_err_record_check_ok];
                   
                   break;
                 }
@@ -2036,6 +2044,19 @@ void new_level_menu(void)
       current_state_menu2.max_row = 0;
       current_state_menu2.func_move = move_into_ekran_event_registraqtors;
       current_state_menu2.func_show = make_ekran_list_event_pr_err;
+      current_state_menu2.func_press_enter = NULL;
+      current_state_menu2.func_press_esc = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
+      current_state_menu2.edition = ED_VIEWING;
+      break;
+    }
+  case PR_ERR_DATA_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = 0;
+      current_state_menu2.max_row = 1;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_data_pr_err;
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;

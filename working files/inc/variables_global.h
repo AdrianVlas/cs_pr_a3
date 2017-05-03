@@ -235,6 +235,8 @@ uint8_t buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
 volatile uint32_t head_fifo_buffer_pr_err_records = 0;
 volatile uint32_t tail_fifo_buffer_pr_err_records = 0;
 unsigned int temporary_block_writing_records_pr_err_into_DataFlash = 0;
+uint32_t pr_err_record_check_ok;
+uint8_t pr_err_into_menu_time_label[7];
 uint32_t number_record_of_pr_err_into_menu = 0xffffffff;
 uint32_t number_record_of_pr_err_into_USB = 0xffffffff;
 uint32_t number_record_of_pr_err_into_RS485 = 0xffffffff;

@@ -177,6 +177,8 @@ extern uint8_t buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
 extern volatile uint32_t head_fifo_buffer_pr_err_records;
 extern volatile uint32_t tail_fifo_buffer_pr_err_records;
 extern unsigned int temporary_block_writing_records_pr_err_into_DataFlash;
+extern uint32_t pr_err_record_check_ok;
+extern uint8_t pr_err_into_menu_time_label[7];
 extern uint32_t number_record_of_pr_err_into_menu;
 extern uint32_t number_record_of_pr_err_into_USB;
 extern uint32_t number_record_of_pr_err_into_RS485;
