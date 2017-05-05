@@ -109,3 +109,16 @@ $ git status
 On branch master
 Your branch is up-to-date with 'origin/Synchro'.
 nothing to commit, working tree clean
+
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo3/cs_pr_a/Device-2.12.x.y (master)
+$ git push -n --repo git@github.com:AdrianVlas/cs_pr_a3.git
+ssh: connect to host github.com port 22: Connection timed out
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo3/cs_pr_a/Device-2.12.x.y (master)
+$ git push -n --repo https://github.com/AdrianVlas/cs_pr_a3.git
+Username for 'https://github.com': vid25prtvcs@gmail.com
+Everything up-to-date

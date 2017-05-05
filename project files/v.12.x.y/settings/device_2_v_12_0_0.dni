@@ -14,7 +14,7 @@ TraceBufferSize=0x00010000
 TraceStallIfFIFOFull=0x00000000
 TracePortSize=0x00000004
 [DebugChecksum]
-Checksum=1805307323
+Checksum=-1462468865
 [CodeCoverage]
 Enabled=_ 0
 [Exceptions]
@@ -32,17 +32,16 @@ mode=0
 [Breakpoints2]
 Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.248.5" 0 0 1 "" 0 "" 0
 Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.299.19" 0 0 1 "" 0 "" 0
-Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp}.226.17" 0 0 1 "" 0 "" 0
-Bp3=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp}.112.1" 0 0 1 "" 0 "" 0
-Bp4=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUAlt.cpp}.72.5" 0 0 1 "" 0 "" 0
-Bp5=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.1894.5" 0 0 1 "" 0 "" 0
-Bp6=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUBGS.cpp}.216.13" 0 0 1 "" 0 "" 0
-Bp7=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULss.cpp}.132.17" 0 0 1 "" 0 "" 0
-Bp8=_ 0 "EMUL_DATA" "m_chStateT1_1Ms" 0 0 0 0 4294967295
-Bp9=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULss.cpp}.176.1" 0 0 1 "" 0 "" 0
-Bp10=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\MALed.cpp}.32.5" 0 0 1 "" 0 "" 0
-Bp11=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.115.1" 0 0 1 "" 0 "" 0
-Count=12
+Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUAlt.cpp}.72.5" 0 0 1 "" 0 "" 0
+Bp3=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.1894.30" 0 0 1 "" 0 "" 0
+Bp4=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUBGS.cpp}.216.13" 0 0 1 "" 0 "" 0
+Bp5=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\MALed.cpp}.32.5" 0 0 1 "" 0 "" 0
+Bp6=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.117.1" 0 0 1 "" 0 "" 0
+Bp7=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.1824.5" 0 0 1 "" 0 "" 0
+Bp8=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUFKey.cpp}.29.11" 0 0 1 "" 0 "" 0
+Bp9=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULss.cpp}.272.5" 0 0 1 "" 0 "" 0
+Bp10=_ 0 "EMUL_DATA" "0x600052E0" 0 0 1 1 255
+Count=11
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""

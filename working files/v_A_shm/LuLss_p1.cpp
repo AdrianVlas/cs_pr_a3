@@ -231,7 +231,7 @@ const LedShcemasDscRecord Or_22__3_1DscRec = {
 //And23__4_1 ,
 const LUShcemasInDataDsc arAnd23__4_1InDataDsc[4] = {
 {LSS_NAME_NORMAL, 0},{LSS_NAME_LSSIN,0},
-{LSS_NAME_BLOCK_INV,0},{LSS_NAME_MUTE_INV,0}
+{LSS_NAME_BLOCK_INV,0},{LSS_NAME_MUTE_INV,1}
 };
 
 const LedShcemasDscRecord And23__4_1DscRec = {
@@ -241,7 +241,7 @@ const LedShcemasDscRecord And23__4_1DscRec = {
 //And24__4_1 ,
 const LUShcemasInDataDsc arAnd24__4_1InDataDsc[4] = {
 {LSS_NAME_NORMAL, 0},{LSS_NAME_LSSIN,0},
-{LSS_NAME_BLOCK_INV,0},{LSS_NAME_MUTE_INV,0}
+{LSS_NAME_BLOCK_INV,0},{LSS_NAME_MUTE_DIR,0}
 };
 
 const LedShcemasDscRecord And24__4_1DscRec = {
@@ -250,8 +250,8 @@ const LedShcemasDscRecord And24__4_1DscRec = {
 };
 //And25__4_1 ,
 const LUShcemasInDataDsc arAnd25__4_1InDataDsc[4] = {
-{LSS_NAME_NORMAL, 0},{LSS_NAME_LSSIN,0},
-{LSS_NAME_BLOCK_INV,0},{LSS_NAME_MUTE_INV,0}
+{LSS_OR_07__2_1, 0},{LSS_NAME_LSS_D,0},
+{LSS_NAME_BLOCK_INV,0},{LSS_NAME_MUTE_INV,1}
 };
 
 const LedShcemasDscRecord And25__4_1DscRec = {
@@ -260,8 +260,8 @@ const LedShcemasDscRecord And25__4_1DscRec = {
 };
 //And26__4_1 ,
 const LUShcemasInDataDsc arAnd26__4_1InDataDsc[4] = {
-{LSS_NAME_NORMAL, 0},{LSS_NAME_LSSIN,0},
-{LSS_NAME_BLOCK_INV,0},{LSS_NAME_MUTE_INV,0}
+{LSS_OR_07__2_1, 0},{LSS_OR_10__2_1,0},
+{LSS_NAME_BLOCK_INV,0},{LSS_NAME_MUTE_DIR,0}
 };
 
 const LedShcemasDscRecord And26__4_1DscRec = {

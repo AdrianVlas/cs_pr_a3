@@ -125,6 +125,7 @@ public:
 	friend long ReInitSchematic(void);
 	friend void DoCalcWrp(void);
 	friend void GetLssMuteAlarmBlockAddr(void* pv);
+    friend void GetLUTestLedInDataAddr(void* pv);
 };
 
 typedef struct tag_LUAreaParamDsc{

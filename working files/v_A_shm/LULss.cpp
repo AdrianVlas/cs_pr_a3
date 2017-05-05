@@ -164,7 +164,61 @@ register long *plTmrVal = &m_NodeCs.lTmrVal;
     return 0;
 }
 
+
+
 #include "LuLss_p1.cpp"
+inline void CLULss::SetStateVarchQTrg(long lIdTrg, char&chQTrg) {
+    if (lIdTrg == LSS_D_TRG_11__4_2) {
+        m_chQTrg11 = chQTrg;
+    } else if (lIdTrg == LSS_D_TRG_29__4_2) {
+        m_chQTrg29 = chQTrg;
+    }
+}
+inline void CLULss::SetStateVarchInC (long lIdTrg, char&chInC) {
+    if (lIdTrg == LSS_D_TRG_11__4_2) {
+        m_chInC11 = chInC;
+    } else if (lIdTrg == LSS_D_TRG_29__4_2) {
+        m_chInC29 = chInC;
+    }
+}
+inline void CLULss::SetStateVarchErrorQTrg(long lIdTrg, char&chErrorQTrg){
+    if (lIdTrg == LSS_D_TRG_11__4_2) {
+            m_chErrorQTrg11 = chErrorQTrg; //Fix Error
+        m_chQTrg11 = 0;
+    } else if (lIdTrg == LSS_D_TRG_29__4_2) {
+            m_chErrorQTrg29 = chErrorQTrg; //Fix Error
+        m_chQTrg29 = 0;
+    }  
+}
+inline long CLULss::GetStateVarchQTrg(long lIdTrg){
+    register long QTrg;
+    if (lIdTrg == LSS_D_TRG_11__4_2) {
+        QTrg = m_chQTrg11;
+    } else if (lIdTrg == LSS_D_TRG_29__4_2) {
+        QTrg = m_chQTrg29;
+    }
+    return QTrg;
+}
+inline long CLULss::GetStateVarchInC (long lIdTrg) {
+    register long lInC;
+    if (lIdTrg == LSS_D_TRG_11__4_2) {
+        lInC = m_chInC11;
+    } else if (lIdTrg == LSS_D_TRG_29__4_2) {
+        lInC = m_chInC29;
+    }
+    return lInC;
+}
+inline long CLULss::GetStateVarchErrorQTrg(long lIdTrg){
+    register long lErrorQTrg;
+    if (lIdTrg == LSS_D_TRG_11__4_2) {
+            lErrorQTrg = m_chErrorQTrg11; //Fix Error
+        m_chQTrg11 = 0;
+    } else if (lIdTrg == LSS_D_TRG_29__4_2) {
+           lErrorQTrg =  m_chErrorQTrg29; //Fix Error
+        m_chQTrg29 = 0;
+    } 
+    return lErrorQTrg;
+}
 //static char chGLB_QTrg29 = 0;static char chGLB_InC29 = 0;
 //static char chGLB_QTrg11 = 0;static char chGLB_InC11 = 0;
 void CLULss::CalcLssSchematic(void){
@@ -184,6 +238,9 @@ arChIntermediaResult[ OFFSET_OUT_IN_LSS_RESET_I     ] = 0;//arChIntermediaResult
 arChIntermediaResult[ OFFSET_OUT_IN_LSS_BLOCK_I     ] = 0;//
 arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_11__4_2    ] = m_chQTrg11;
 arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_11__4_2 + 1  ] = !m_chQTrg11;
+arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_29__4_2    ] = m_chQTrg29;
+arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_29__4_2 + 1  ] = !m_chQTrg29;
+
 arChIntermediaResult[ OFFSET_OUT_IN_LSS_VCC      ] = 1;//
 arChIntermediaResult[ OFFSET_OUT_IN_LSS_GROUND   ] = 0;//
 char *pCh = (this->arrPchIn[(LSS_IN_NAME__LSSIN1 - 1)]);
@@ -262,13 +319,16 @@ do{
         case LU_GEN_OP_D_TRIGGER:
           do{
             long lIdxInC;
+             char chInC,chErrorQTrg,chQTrg;
+            chQTrg = GetStateVarchQTrg(pLUShcemasDscRec->chOrderNumLU);
+            
             j = 0;
                 //Check Set
             k = pLUShcemasDscRec->pInputDscData[0].shOrderNumLU;
             l = arShLssOffsets[k ]  ;
             rl_Val = arChIntermediaResult[l+ (pLUShcemasDscRec->pInputDscData[0].shIndexOut)];
             if (rl_Val == 1) {
-                k = pLUShcemasDscRec->chOrderNumLU;
+                /*k = pLUShcemasDscRec->chOrderNumLU;
                 i = arShLssOffsets[k];
                 arChIntermediaResult[i] = 1;
                 arChIntermediaResult[i + 1] = 0;
@@ -279,14 +339,16 @@ do{
                 } else if (k == LSS_D_TRG_29__4_2) {
                     j = 29;
                     m_chQTrg29 = 1;
-                }
+                }*/
+                j = pLUShcemasDscRec->chOrderNumLU;
+                chQTrg = 1;
             }
             //Check Clr
             k = pLUShcemasDscRec->pInputDscData[1].shOrderNumLU;
             l = arShLssOffsets[k];
             rl_Val = arChIntermediaResult[l+(pLUShcemasDscRec->pInputDscData[1].shIndexOut)];
             if (rl_Val == 1) {
-                k = pLUShcemasDscRec->chOrderNumLU;
+                /*k = pLUShcemasDscRec->chOrderNumLU;
                 i = arShLssOffsets[k];
                 arChIntermediaResult[i] = 0;
                 arChIntermediaResult[i+ 1]   = 1;
@@ -299,56 +361,38 @@ do{
                     if(j == 29)
                         m_chErrorQTrg29 = 1;//Fix Error
                     m_chQTrg29 = 0;
+                }*/
+                if(j == pLUShcemasDscRec->chOrderNumLU) {
+                    chErrorQTrg = GetStateVarchErrorQTrg(pLUShcemasDscRec->chOrderNumLU);
+                    chErrorQTrg = 1; //Fix Error
+                    SetStateVarchErrorQTrg(pLUShcemasDscRec->chOrderNumLU, chErrorQTrg);
                 }
+                chQTrg = 0;  
             }
             else {
-                    //Check D
+                    //Check C
                 j = 0;
-                k = pLUShcemasDscRec->pInputDscData[2].shOrderNumLU;
+                k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
                 l = arShLssOffsets[k];
-                rl_Val = arChIntermediaResult[l+(pLUShcemasDscRec->pInputDscData[2].shIndexOut)];
-                if (rl_Val == 1) {
-                    k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
-                    lIdxInC = arShLssOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
-                    if (arChIntermediaResult[lIdxInC] > 0){
-                        k = pLUShcemasDscRec->chOrderNumLU;
-                       //Chek Curr Trigger
-                        if (k == LSS_D_TRG_11__4_2) {
-                            if(m_chInC11==0){
-                                j++;
-                                m_chQTrg11 = 1;
-                            }
-                                
-                        } else if (k == LSS_D_TRG_29__4_2) {
-                            j++;
-                            m_chQTrg29 = 1;
-                        }
-                        if(j == 1){
-                        //set Out
-                        k = pLUShcemasDscRec->chOrderNumLU;
-                        i = arShLssOffsets[k];
-                        arChIntermediaResult[i ] = 1;
-                        arChIntermediaResult[i+ 1] = 0;
-                        }
-                    }
-                    else{
-                        
-                    }
-                }
-                k = pLUShcemasDscRec->chOrderNumLU;
-                if (k == LSS_D_TRG_11__4_2) {
-
-                    k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
-                    lIdxInC = arShLssOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
-                    m_chInC11 = arChIntermediaResult[lIdxInC];
-                } else if (k == LSS_D_TRG_29__4_2) {
-                    
-                    k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
-                    lIdxInC = arShLssOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
-                    m_chQTrg11 = arChIntermediaResult[lIdxInC];
-                        
+                lIdxInC = arShLssOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+                chInC = GetStateVarchInC(pLUShcemasDscRec->chOrderNumLU);
+                if ((arChIntermediaResult[lIdxInC] > 0) && (chInC ==0 ) ){
+                //Check D
+                k = pLUShcemasDscRec->pInputDscData[2].shOrderNumLU;        
+                chQTrg = arChIntermediaResult[l+(pLUShcemasDscRec->pInputDscData[2].shIndexOut)];  
                 }
             }
+            l = k = pLUShcemasDscRec->chOrderNumLU;
+            i = arShLssOffsets[k];
+            arChIntermediaResult[i] = chQTrg;
+            arChIntermediaResult[i + 1] = !chQTrg;
+            k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
+            lIdxInC = arShLssOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+            chInC = arChIntermediaResult[lIdxInC];
+            
+            SetStateVarchQTrg(l,chQTrg);
+            SetStateVarchInC(l,chInC);
+            
           }while(false);
             shCounterProcessedRec++;
             break;
@@ -401,15 +445,15 @@ arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];//
 arChIntermediaResult[ OFFSET_OUT_OUT_LSS_MUTE     ] = 
 arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];// 
    
-// this->arrOut [LSS_OUT_NAME_ALARM -1] = arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];       
-// this->arrOut [LSS_OUT_NAME_MUTE  -1] = arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];      
+ this->arrOut [LSS_OUT_NAME_ALARM -1] = arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];       
+ this->arrOut [LSS_OUT_NAME_MUTE  -1] = arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];      
 
 }
 
 char chGBL_BP_StopLss = 0;
 void LssOp	(void *pObj){
 CLULss& rCLULss = *(static_cast<CLULss*>(pObj));
-if(chGBL_BP_StopLss == 1)
+if(chGBL_BP_StopLss == rCLULss.shShemasOrdNumStng)
     asm(
                 "bkpt 1"
                 );
