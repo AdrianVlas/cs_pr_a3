@@ -191,6 +191,9 @@ extern void make_ekran_list_registrators(void);
 extern enum _result_pressed_enter_during_edition press_enter_in_setting_language(void);
 extern void press_esc_in_setting_language(void);
 extern void change_setting_language(unsigned int);
+extern void move_into_ekran_event_registraqtors(unsigned int, int);
+extern void make_ekran_list_event_pr_err(void);
+extern void make_ekran_data_pr_err(void);
 
 extern __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *, __CONFIG *);
 extern __result_dym_mem_select action_after_changing_of_configuration(void);
@@ -233,19 +236,9 @@ extern unsigned int sqrt_32(unsigned int);
 extern unsigned int sqrt_64(unsigned long long);
 extern unsigned int get_order(int);
 
-extern void main_function_for_dataflash_resp(int);
-extern void main_function_for_dataflash_req(int);
 extern void start_checking_dataflash(void);
-extern void start_exchange_via_spi(int, unsigned int);
-extern void dataflash_status_read(int);
-extern void dataflash_set_pagesize_256(int);
-extern void dataflash_erase(int);
-extern void dataflash_mamory_page_program_through_buffer(int);
-extern void dataflash_mamory_read(int);
-extern void dataflash_mamory_page_into_buffer(int);
-extern void dataflash_mamory_write_buffer(int);
-extern void dataflash_mamory_buffer_into_memory(int);
-extern void analize_received_data_dataflash(int);
+extern void start_exchange_via_spi_df(uint32_t, uint32_t);
+extern void main_routines_for_spi_df(uint32_t);
 
 extern void control_config(unsigned int);
 extern void control_settings(unsigned int);

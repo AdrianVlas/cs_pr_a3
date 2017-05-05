@@ -122,3 +122,48 @@ user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo3/cs_pr_a/Device-2.12.x.y (master)
 $ git push -n --repo https://github.com/AdrianVlas/cs_pr_a3.git
 Username for 'https://github.com': vid25prtvcs@gmail.com
 Everything up-to-date
+
+
+$ git add -v .
+add 'gitNames.txt'
+add 'project files/settings/device_2_12.wsdt'
+add 'project files/v.12.x.y/device_2_v_12_0_0.dep'
+add 'project files/v.12.x.y/device_2_v_12_0_0.ewd'
+add 'project files/v.12.x.y/device_2_v_12_0_0.ewp'
+add 'project files/v.12.x.y/device_2_v_12_0_0.ewt'
+add 'project files/v.12.x.y/settings/device_2_v_12_0_0.dbgdt'
+add 'project files/v.12.x.y/settings/device_2_v_12_0_0.dni'
+remove 'working files/inc/const_menu2_list_settings_bios.h'
+remove 'working files/inc/const_menu2_param_logical_nodes.h'
+remove 'working files/src/menu_list_settings_bios.c'
+remove 'working files/src/menu_param_logical_nodes.c'
+add 'working files/v_A_shm/LUFKey.cpp'
+add 'working files/v_A_shm/LUFKey.h'
+add 'working files/v_A_shm/LULed.cpp'
+add 'working files/v_A_shm/LULed.h'
+add 'working files/v_A_shm/LULedp1.cpp'
+add 'working files/v_A_shm/LULss.cpp'
+add 'working files/v_A_shm/LULss.h'
+add 'working files/v_A_shm/LUTrig.cpp'
+add 'working files/v_A_shm/LUTrig.hpp'
+add 'working files/v_A_shm/LedAuxDsc.h'
+add 'working files/v_A_shm/LssAuxDsc.h'
+add 'working files/v_A_shm/LuLss_p1.cpp'
+add 'working files/v_A_shm/Shematic.cpp'
+add 'working files/v_A_shm/Shematic.h'
+add 'working files/v_A_shm/notes.cpp'
+add 'working files/v_A_shm/LUTestLed.cpp'
+add 'working files/v_A_shm/LUTestLed.h'
+^^^^^^<<= This means add all files trakced in curr repo
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo3/cs_pr_a/Device-2.12.x.y (master)
+$ git commit -m 'I think Really A-Version on 05-05-2017'
+[master 70eaddf] I think Really A-Version on 05-05-2017
+ 29 files changed, 2614 insertions(+), 3235 deletions(-)
+ rewrite project files/settings/device_2_12.wsdt (75%)
+ rewrite project files/v.12.x.y/settings/device_2_v_12_0_0.dbgdt (73%)
+ delete mode 100644 working files/inc/const_menu2_list_settings_bios.h <-this deleated from directory
+ delete mode 100644 working files/inc/const_menu2_param_logical_nodes.h<-this deleated from directory
+ delete mode 100644 working files/src/menu_list_settings_bios.c        <-this deleated from directory
+ delete mode 100644 working files/src/menu_param_logical_nodes.c       <-this deleated from directory
+ create mode 100644 working files/v_A_shm/LUTestLed.cpp  <- this i add
+ create mode 100644 working files/v_A_shm/LUTestLed.h    <- this i add

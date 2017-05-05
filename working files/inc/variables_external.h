@@ -57,10 +57,10 @@ extern unsigned char crc_trg_func, crc_trg_func_ctrl;
 extern unsigned int pressed_buttons;
 extern unsigned int activation_function_from_interface;
 extern unsigned int reset_trigger_function_from_interface;
-extern unsigned int diagnostyka_before[3];
-extern unsigned int diagnostyka[3];
-extern unsigned int set_diagnostyka[3];
-extern unsigned int clear_diagnostyka[3];
+extern unsigned int diagnostyka_before[2];
+extern unsigned int diagnostyka[2];
+extern unsigned int set_diagnostyka[2];
+extern unsigned int clear_diagnostyka[2];
 
 //extern int global_timers[MAX_NUMBER_GLOBAL_TIMERS];
 
@@ -149,22 +149,23 @@ extern uint32_t state_i2c_task;
 extern unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
 
 //DataFlash
-extern unsigned char RxBuffer_SPI_DF[SIZE_PAGE_DATAFLASH_MAX + 10];
-extern unsigned char TxBuffer_SPI_DF[SIZE_PAGE_DATAFLASH_MAX + 10];
-extern unsigned int number_bytes_transfer_spi_df;
-extern unsigned int number_bytes_transfer_spi_df_copy;
-extern unsigned char TxBuffer_SPI_DF_copy[SIZE_PAGE_DATAFLASH_MAX + 10];
-extern unsigned int code_operation_copy;
-extern int number_chip_dataflsh_exchange;
-extern __DRIVER_SPI_DF driver_spi_df[NUMBER_DATAFLASH_CHIP];
-extern unsigned int error_into_spi_df;
-extern unsigned int dataflash_not_busy;
-extern unsigned int control_tasks_dataflash;
-extern unsigned char buffer_for_manu_read_record[SIZE_ONE_RECORD_PR_ERR];
-extern unsigned char buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
-extern unsigned char buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
+extern uint8_t RxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
+extern uint8_t TxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
+extern uint32_t number_chip_dataflsh_exchange;
+extern uint32_t state_execution_spi_df[NUMBER_DATAFLASH_CHIP];
+extern uint32_t status_register_df[NUMBER_DATAFLASH_CHIP];
+extern uint32_t address_read_write[NUMBER_DATAFLASH_CHIP];
+extern uint32_t number_bytes_read_write[NUMBER_DATAFLASH_CHIP];
+extern uint8_t buffer_serial_DataFlash_read_write[NUMBER_DATAFLASH_CHIP][SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE];
+extern const uint32_t size_page_serial_dataflash[NUMBER_DATAFLASH_CHIP];
+extern const uint32_t number_page_serial_dataflash[NUMBER_DATAFLASH_CHIP];
+extern uint32_t control_spi_df_tasks[NUMBER_DATAFLASH_CHIP];
+extern volatile uint32_t control_tasks_dataflash;
 
-extern unsigned int what_we_are_reading_from_dataflash_1;
+extern uint8_t buffer_for_menu_read_record[SIZE_ONE_RECORD_PR_ERR];
+extern uint8_t buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
+extern uint8_t buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
+
 extern unsigned int what_we_are_reading_from_dataflash_2;
 
 //Реєстратор програмних помилок
@@ -172,15 +173,15 @@ extern unsigned char crc_info_rejestrator_pr_err;
 extern __INFO_REJESTRATOR info_rejestrator_pr_err;
 extern unsigned char crc_info_rejestrator_pr_err_ctrl;
 extern __INFO_REJESTRATOR info_rejestrator_pr_err_ctrl;
-extern unsigned char buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
-extern volatile unsigned int head_fifo_buffer_pr_err_records;
-extern volatile unsigned int tail_fifo_buffer_pr_err_records;
+extern uint8_t buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
+extern volatile uint32_t head_fifo_buffer_pr_err_records;
+extern volatile uint32_t tail_fifo_buffer_pr_err_records;
 extern unsigned int temporary_block_writing_records_pr_err_into_DataFlash;
-extern unsigned int etap_writing_pr_err_into_dataflash;
-extern unsigned int number_recods_writing_into_dataflash_now;
-extern unsigned int number_record_of_pr_err_into_menu;
-extern unsigned int number_record_of_pr_err_into_USB;
-extern unsigned int number_record_of_pr_err_into_RS485;
+extern uint32_t pr_err_record_check_ok;
+extern uint8_t pr_err_into_menu_time_label[7];
+extern uint32_t number_record_of_pr_err_into_menu;
+extern uint32_t number_record_of_pr_err_into_USB;
+extern uint32_t number_record_of_pr_err_into_RS485;
 
 //Очистка інформації по реєстраторах
 extern unsigned int clean_rejestrators;

@@ -91,15 +91,13 @@ void changing_diagnostyka_state(void)
   - Спочатку очищаємо біти а потім встановлюємо, бо фіксація події має більший 
     пріоритет за очищення
   *****/
-  unsigned int clear_diagnostyka_tmp[3], set_diagnostyka_tmp[3];
+  unsigned int clear_diagnostyka_tmp[2], set_diagnostyka_tmp[2];
   
   clear_diagnostyka_tmp[0] = clear_diagnostyka[0];
   clear_diagnostyka_tmp[1] = clear_diagnostyka[1];
-  clear_diagnostyka_tmp[2] = clear_diagnostyka[2];
 
   set_diagnostyka_tmp[0] = set_diagnostyka[0];
   set_diagnostyka_tmp[1] = set_diagnostyka[1];
-  set_diagnostyka_tmp[2] = set_diagnostyka[2];
     
   diagnostyka[0] &= (unsigned int)(~clear_diagnostyka_tmp[0]); 
   diagnostyka[0] |= set_diagnostyka_tmp[0]; 
@@ -107,49 +105,40 @@ void changing_diagnostyka_state(void)
   diagnostyka[1] &= (unsigned int)(~clear_diagnostyka_tmp[1]); 
   diagnostyka[1] |= set_diagnostyka_tmp[1]; 
 
-  diagnostyka[2] &= (unsigned int)(~clear_diagnostyka_tmp[2]); 
-  diagnostyka[2] |= set_diagnostyka_tmp[2]; 
-  
-  diagnostyka[2] &= USED_BITS_IN_LAST_INDEX; 
-
   clear_diagnostyka[0] &= (unsigned int)(~clear_diagnostyka_tmp[0]);
   clear_diagnostyka[1] &= (unsigned int)(~clear_diagnostyka_tmp[1]);
-  clear_diagnostyka[2] &= (unsigned int)(~clear_diagnostyka_tmp[2]);
   
   set_diagnostyka[0] &= (unsigned int)(~set_diagnostyka_tmp[0]);
   set_diagnostyka[1] &= (unsigned int)(~set_diagnostyka_tmp[1]);
-  set_diagnostyka[2] &= (unsigned int)(~set_diagnostyka_tmp[2]);
   /*****/
   
   //Визначаємо, чи відбулися зміни
-  unsigned int value_changes[3], diagnostyka_now[3];
+  unsigned int value_changes[2], diagnostyka_now[2];
   /*
   Робимо копію тепершньої діагностики, бо ця функція працює на найнижчому пріоритеті,
   тому під час роботи може появитися нові значення, які ми не врахували у цій функції
   */
   diagnostyka_now[0] = diagnostyka[0];
   diagnostyka_now[1] = diagnostyka[1];
-  diagnostyka_now[2] = diagnostyka[2];
   value_changes[0] = diagnostyka_before[0] ^ diagnostyka_now[0];
   value_changes[1] = diagnostyka_before[1] ^ diagnostyka_now[1];
-  value_changes[2] = diagnostyka_before[2] ^ diagnostyka_now[2];
   
   /*
   У реєстраторі програмних подій має реєструватися тільки перехід з пасивного стану у активний
-  таких подій як " Старт устр.    " і " Рестарт устр.  "
+  таких подій як "Старт пристр." і "Рестарт пристр."
   тому перехід з активного у пачсивний ми ігноруємо і крім того затираємо біти, які його "засигналізували"
   */
   
   /*****/
-  //Подія " Старт устр.    "
+  //Подія "Старт пристр."
   /*****/
   if (_CHECK_SET_BIT(value_changes, EVENT_START_SYSTEM_BIT) != 0)
   {
-    //Зафіксовано що подія " Старт устр.    " змінила свій стан
+    //Зафіксовано що подія "Старт пристр." змінила свій стан
     if (_CHECK_SET_BIT(diagnostyka_now, EVENT_START_SYSTEM_BIT) == 0)
     {
       /*
-      Новий стан події " Старт устр.    " є неактивний стан
+      Новий стан події " Старт пристр." є неактивний стан
       Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
       - знімаємо встановлений біт про зміну стану діагностики
       - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
@@ -162,15 +151,15 @@ void changing_diagnostyka_state(void)
   /*****/
   
   /*****/
-  //Подія " Рестарт устр.  "
+  //Подія "Рестарт пристр."
   /*****/
   if (_CHECK_SET_BIT(value_changes, EVENT_RESTART_SYSTEM_BIT) != 0)
   {
-    //Зафіксовано що подія " Рестарт устр.  " змінила свій стан
+    //Зафіксовано що подія "Рестарт пристр." змінила свій стан
     if (_CHECK_SET_BIT(diagnostyka_now, EVENT_RESTART_SYSTEM_BIT) == 0)
     {
       /*
-      Новий стан події " Рестарт устр.  " є неактивний стан
+      Новий стан події "Рестарт пристр." є неактивний стан
       Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
       - знімаємо встановлений біт про зміну стану діагностики
       - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
@@ -181,158 +170,163 @@ void changing_diagnostyka_state(void)
     }
   }
   /*****/
-
-  //Перевіряємо, чи треба виконувати дії поо зміні діагностики
-  if (
-      (value_changes[0] != 0) ||
-      (value_changes[1] != 0) ||
-      (value_changes[2] != 0)
-     )
+        
+  /*****/
+  //Подія "Зуп.пристр."
+  /*****/
+  /*
+  У реєстраторі програмних подій має реєструватися тільки перехід з пасивного стану у активний
+  таких події як "Зуп.пристр." і ця подія не має бути активною у текучій діагностиці,
+  бо це, фактично, подія, яка мала місце до останнього включення приладу в роботу.
+  Тобто це подія "попереднього сеансу роботи"
+  тому перехід з пасивного у фіксуємо ми фіксуємо і зразу затираємо цей біт у теперішній діагностіці,
+  яка після цього буде зкопійомана у масив, який відповідає за попередній стан діагностики, так і у масив
+  діагностики, який відповідає за текучий стан подій діагностики
+  */
+  if (_CHECK_SET_BIT(value_changes, EVENT_STOP_SYSTEM_BIT) != 0)
   {
-    //Є біти, які треба встановити, або зняти
-    
-    /*****/
-    //При можливості формуємо запис у реєстратор програмних помилок
-    /*****/
-    if (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) == 0)
+    //Зафіксовано що подія "Зуп.пристр." змінила свій стан
+    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_STOP_SYSTEM_BIT) != 0)
     {
       /*
-      Новий запис робимо тільки тоді, коли попередньо не було зафіксовано 
-      переповнення буферу, інакше чикаємо, поки запис у реєстратор програмних подій
-      знімить подію про переповнення буферу
+      Cтан події "Зуп.пристр." встановився
+      Тому робимо такі операції, щоб вона попара у реєстратора програмних подій, але не відображалася у діагностиці
+      - знімаємо встановлений біт у масиві, який зараз буде копіюватися у масив попереднього стану
+      - знімаємо встановлений біт у масиві, який відповідає за текучий стан подій діагностики
       */
-      
-      //Визначаємо кількість доступних комірок у буфері для реєстратора програмних подій
-      int number_empty_cells;
-      unsigned int head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
-      number_empty_cells = (int)(((unsigned int)tail) - ((unsigned int)head));
-      while (number_empty_cells <= 0) number_empty_cells += MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
-      if (number_empty_cells == 1)
-      {
-        //Це є остання вільна комірка, то помічаємо, що з цим записом відбувається повне заповнення буферу
-        _SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
-        /*
-        відбулася зміна стану діагностики, яку треба врахувати у даному записфі ,тому
-        робимо повторноу копію тепершньої діагностики, яка може врахувати і ті зміни які відбулися
-        між операціями копіювання стану діагностики на початку цієї функції і
-        операцією, як зараз ми будемо виконувати
-        */
-        diagnostyka_now[0] = diagnostyka[0];
-        diagnostyka_now[1] = diagnostyka[1];
-        diagnostyka_now[2] = diagnostyka[2];
+      _CLEAR_BIT(diagnostyka, EVENT_STOP_SYSTEM_BIT);
+      _CLEAR_BIT(diagnostyka_now, EVENT_STOP_SYSTEM_BIT);
+    }
+  }
+  /*****/
+  
+  //Визначаємо кількість доступних комірок у буфері для реєстратора програмних подій
+  int32_t number_empty_cells;
+  uint32_t head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
+  number_empty_cells = (int32_t)(tail - head);
+  while (number_empty_cells <= 0) number_empty_cells += MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
+
+  if (
+      (
+       (value_changes[0] != 0) ||
+       (value_changes[1] != 0)
+      )
+      ||
+      (
+       (_CHECK_SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT) != 0) &&
+       (number_empty_cells > 1)  
+      )
+     )
+  {
+    /***
+    Час фіксації зміни у діагностиці
+    ***/
+    uint8_t time_event[7];
+    uint8_t *label_to_time_array;
+    if (copying_time == 0) label_to_time_array = time;
+    else label_to_time_array = time_copy;
+    for(size_t i = 0; i < 7; i++) time_event[i] = *(label_to_time_array + i);
+    /***/
         
-        //Підраховуємо нову кількість змін в діагностиці
-        value_changes[0] = diagnostyka_before[0] ^ diagnostyka_now[0];
-        value_changes[1] = diagnostyka_before[1] ^ diagnostyka_now[1];
-        value_changes[2] = diagnostyka_before[2] ^ diagnostyka_now[2];
-      }
-
-      //Вираховуємо кількість змін сигналів
-      unsigned int number_changes = 0;
-      for(unsigned int i = 0; i < (8*sizeof(value_changes)); i++)
-      {
-        if (_CHECK_SET_BIT(value_changes, i) != 0) number_changes++;
-      }
-
-      if(number_changes != 0)
-      {
-        /*
-        теоретично може бути ситуація, що ми знімали повідомлення про переповнення буферу
-        FIFO для записів реєстратора програмних подій  і це була єдина зміна, али при цьому
-        є тільки одна вільна комірка, тому ми знову виставили повідомлення про переповнення.
-        Тому ми не можемо зняти це повідомлення - тому і не можемо робити нового запису, 
-        бо фактично і зміни ніякої нема
-        */
-        
-        //Визначаємо індекс у масиві буферу програмних помилок з якого трбе почати заповнювати дані
-        unsigned int index_into_buffer_pr_err = head*SIZE_ONE_RECORD_PR_ERR;
-      
-        //Помічаємо мітку початку запису
-        buffer_pr_err_records[index_into_buffer_pr_err + 0] = LABEL_START_RECORD_PR_ERR;
-
-        //Час фіксації зміни у діагностиці
-        if(
-           (_CHECK_SET_BIT(diagnostyka, EVENT_START_SYSTEM_BIT   ) == 0) &&
-           (_CHECK_SET_BIT(diagnostyka, EVENT_RESTART_SYSTEM_BIT ) == 0) &&
-           (_CHECK_SET_BIT(diagnostyka, EVENT_STOP_SYSTEM_BIT    ) == 0)
+    /***
+    Фіксація самих подій
+    ***/
+    size_t i = 0;
+    while (
+           (
+            (number_empty_cells == 1) &&
+            (_CHECK_SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
+           )
+           ||
+           (i < (8*sizeof(value_changes))) 
+           ||
+           (
+            (_CHECK_SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT) != 0) &&
+            (number_empty_cells > 1)
+           )
           )
-        {
-          //Вже відбулося перше зчитуванння часу - тобто системний час у нас є
-          unsigned char *label_to_time_array;
-          if (copying_time == 0) label_to_time_array = time;
-          else label_to_time_array = time_copy;
-          for(unsigned int i = 0; i < 7; i++) buffer_pr_err_records[index_into_buffer_pr_err + 1 + i] = *(label_to_time_array + i);
-        }
-        else
-        {
-          //Ще не відбулося перше зчитуванння часу - тому покищо ці поля записуємо числом 0xff, а потім, коли системний час зчитається, то ми це поле обновимо
-          for(unsigned int i = 0; i < 7; i++)  buffer_pr_err_records[index_into_buffer_pr_err + 1 + i] = 0xff;
-        }
-
-        buffer_pr_err_records[index_into_buffer_pr_err + 8] = number_changes & 0xff;
+    {
+      size_t event_number;
+      uint32_t event_state;
+      uint32_t fix_event = false;
       
-        //Записуємо попередній стан діагностики
-        buffer_pr_err_records[index_into_buffer_pr_err + 9 ] =  diagnostyka_before[0]        & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 10] = (diagnostyka_before[0] >> 8 ) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 11] = (diagnostyka_before[0] >> 16) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 12] = (diagnostyka_before[0] >> 24) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 13] =  diagnostyka_before[1]        & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 14] = (diagnostyka_before[1] >> 8 ) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 15] = (diagnostyka_before[1] >> 16) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 16] = (diagnostyka_before[1] >> 24) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 17] =  diagnostyka_before[2]        & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 18] = (diagnostyka_before[2] >> 8 ) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 19] = (diagnostyka_before[2] >> 16) & 0xff;
+      if (number_empty_cells <= 0) break;
+      else if (
+               (number_empty_cells == 1) &&
+               (_CHECK_SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
+              )
+      {
+        event_number = ERROR_PR_ERR_OVERLOAD_BIT + 1;
+        event_state = true;
+        fix_event = true;
 
-        //Записуємо теперішній стан діагностики
-        buffer_pr_err_records[index_into_buffer_pr_err + 20] =  diagnostyka_now[0]        & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 21] = (diagnostyka_now[0] >> 8 ) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 22] = (diagnostyka_now[0] >> 16) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 23] = (diagnostyka_now[0] >> 24) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 24] =  diagnostyka_now[1]        & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 25] = (diagnostyka_now[1] >> 8 ) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 26] = (diagnostyka_now[1] >> 16) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 27] = (diagnostyka_now[1] >> 24) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 28] =  diagnostyka_now[2]        & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 29] = (diagnostyka_now[2] >> 8 ) & 0xff;
-        buffer_pr_err_records[index_into_buffer_pr_err + 30] = (diagnostyka_now[2] >> 16) & 0xff;
-        
-        /*
-        У реєстраторі програмних подій має реєструватися тільки перехід з пасивного стану у активний
-        таких події як " Останов.устр.  " і ця подія не має бути активною у текучій діагностиці,
-        бо це, фактично, подія, яка мала місце до останнього включення приладу в роботу.
-        Тобто це подія "попереднього сеансу роботи"
-        тому перехід з пасивного у фіксуємо ми фіксуємо і зразу затираємо цей біт у теперішній діагностіці,
-        яка після цього буде зкомійомана у масив. який відповідає за попередній стан діагностики, так і у масив
-        діагностики, який відповідає за текучий стан подій діагностики
-        */
-        if (_CHECK_SET_BIT(value_changes, EVENT_STOP_SYSTEM_BIT) != 0)
+        _SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
+        _SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT);
+        _SET_BIT(value_changes, ERROR_PR_ERR_OVERLOAD_BIT);
+      }
+      else if (i < 8*sizeof(value_changes))
+      {
+        if (_CHECK_SET_BIT(value_changes, i) != 0)
         {
-          /*
-          Cтан події " Останов.устр.  " змінився (допускається нашим програмним забезпеченням
-          зміна з пасивного стану у активний стан)
-          Тому робимо такі операції
-          - знімаємо встановлений біт у масиві, який зараз буде копіюватися у масив попереднього стану
-          - знімаємо встановлений біт у масиві, який відповідає за текучий стан подій діагностики
-          */
-          _CLEAR_BIT(diagnostyka_now, EVENT_STOP_SYSTEM_BIT);
-          _CLEAR_BIT(diagnostyka, EVENT_STOP_SYSTEM_BIT);
+          event_number = i + 1;
+          event_state = (i != EVENT_STOP_SYSTEM_BIT) ? (_CHECK_SET_BIT(diagnostyka_now, i) != 0) : true;
+          fix_event = true;
         }
-
-        //Фіксуємо попередній стан, який ми вже записали і відносно якого будемо визначати нові зміни
-        diagnostyka_before[0] = diagnostyka_now[0];
-        diagnostyka_before[1] = diagnostyka_now[1];
-        diagnostyka_before[2] = diagnostyka_now[2];
-
-        //Підготовлюємося до запуску запису у реєстратор програмних подій
-          unsigned int next_index_into_fifo_buffer = head + 1;
-          while(next_index_into_fifo_buffer >= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER) next_index_into_fifo_buffer -= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
           
-          //Встановлюємо нове значення голови буфера FIFO 
-          head_fifo_buffer_pr_err_records = next_index_into_fifo_buffer;
+        i++;
+      }
+      else
+      {     
+        event_number = ERROR_PR_ERR_OVERLOAD_BIT + 1;
+        event_state = false;
+        fix_event = true;
+
+        _CLEAR_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
+        _CLEAR_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT);
+        _SET_BIT(value_changes, ERROR_PR_ERR_OVERLOAD_BIT);
+      }  
+      
+      if (fix_event == true)
+      {
+        /***
+        Визначаємо індекс у масиві буферу програмних помилок з якого треба почати заповнювати дані
+        ***/
+        uint32_t index_into_buffer_pr_err = head*SIZE_ONE_RECORD_PR_ERR;
+        /***/
+          
+        /***
+        Формуємо сам запис
+        ***/
+        //Помічаємо мітку початку запису
+        buffer_pr_err_records[index_into_buffer_pr_err++] = LABEL_START_RECORD_PR_ERR;
+        //Дата і час події
+        for(size_t j = 0; j < 7; j++) buffer_pr_err_records[index_into_buffer_pr_err++] = time_event[j];
+        //Подія (двобайтна) і її значення
+        buffer_pr_err_records[index_into_buffer_pr_err++] =   event_number       & 0xff; /*Номер починається з "1" */
+        buffer_pr_err_records[index_into_buffer_pr_err++] = ((event_number >> 8) & 0x7f) | (event_state << 7);
+        /***/
+          
+        /***
+        Дії по завершенню формування запису
+        ***/
+        //Кількість комірок доступних для запису
+        number_empty_cells--;
+          
+        //Head буферу FIFO
+        head++;
+        while (head >= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER) head -= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
+        /***/
       }
     }
-    /*****/
+    head_fifo_buffer_pr_err_records = head;
+    /***/
+    
+    /***
+    Фіксуємо попередній стан, який ми вже записали і відносно якого будемо визначати нові зміни
+    ***/
+    diagnostyka_before[0] = diagnostyka_now[0];
+    diagnostyka_before[1] = diagnostyka_now[1];
+    /***/
   }
 }
 /*****************************************************/

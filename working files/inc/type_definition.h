@@ -477,14 +477,14 @@ typedef struct
 
 typedef struct
 {
-  unsigned int next_address;
-  unsigned int saving_execution;
-  unsigned int number_records;
+  uint32_t next_address;
+  uint32_t previous_address;
+  uint32_t number_records;
 } __INFO_REJESTRATOR;
 
 typedef struct
 {
-  unsigned int state_execution;     //стан виконуваної заразоперації
+  int state_execution;     //стан виконуваної заразоперації
   
   unsigned int code_operation;      //Код виконуваної операції
 

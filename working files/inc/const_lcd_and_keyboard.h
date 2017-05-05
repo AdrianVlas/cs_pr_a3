@@ -42,4 +42,7 @@ enum _bit_key
 #define ACTION_WITH_CARRENT_EKRANE_ONLY_CHANGE_CURSOR        1
 #define ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE   2
 
+
+#define MAX_TIMEOUT_WAITING_REQUESTED_DATA    50000 // 500 мс, якщо врахувати, що ТІM4 тактує з періодом 10 мкс
+
 #endif
