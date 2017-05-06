@@ -1256,6 +1256,8 @@ void min_config(__CONFIG *target_label)
   target_label->n_meander = 0;
 
   target_label->n_tu = 0;
+
+  target_label->n_log = 0;
   
   for(unsigned int i = 0; i < (7+1); i++)
   {
@@ -1667,6 +1669,11 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
             1;
       if (target_config->n_or >= (_n + 1)) target_fix_settings->param[FIX_BLOCK_ALARM] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((_n - 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
     }
+    /***/
+    
+    /***
+    "∆урнал под≥й"
+    ***/
     /***/
     
 //    for(unsigned int i = 0; i < (7+1); i++)

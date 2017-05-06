@@ -44,6 +44,8 @@ extern void min_settings_TRIGGER(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_TRIGGER(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_MEANDER(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_MEANDER(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
+extern void min_settings_LOG(unsigned int, uintptr_t *, size_t, size_t);
+extern void copy_settings_LOG(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern size_t size_all_settings(void);
 extern void copy_settings(__CONFIG *, __SETTINGS_FIX *, __SETTINGS_FIX *, uintptr_t *[], uintptr_t *[]);
 extern unsigned int set_config_and_settings(unsigned int, unsigned int);

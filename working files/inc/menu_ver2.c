@@ -754,7 +754,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
               const enum _menu2_levels next_for_list_passwords_menu2[MAX_ROW_LIST_PASSWORDS_M2] = {SET_NEW_PASSWORD_MENU2_LEVEL, SET_NEW_PASSWORD_MENU2_LEVEL};
-              const enum _menu2_levels next_for_editor_list_logical_nodes_for_input[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_INPUT_MENU2_LEVEL};
+              const enum _menu2_levels next_for_editor_list_logical_nodes_for_input[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_INPUT_MENU2_LEVEL, EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL};
               const enum _menu2_levels next_for_editor_list_selcted_logical_node_type_for_input = EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               const enum _menu2_levels next_for_editor_list_input_of_selcted_logical_node = EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               const enum _menu2_levels next_for_editor_view_chosen_signal_of_selected_logical_node = EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
@@ -919,7 +919,12 @@ void main_manu_function_ver2(void)
                 }
               case EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL:
                 {
-                  p = &next_for_editor_list_logical_nodes_for_output[current_state_menu2.index_position];
+                  int16_t index_position_tmp = current_state_menu2.index_position;
+                  p = &next_for_editor_list_logical_nodes_for_output[index_position_tmp];
+                  
+                  if (index_position_tmp == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) position_in_current_level_menu2[EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+                  else if (index_position_tmp == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_LOG) position_in_current_level_menu2[EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+                    
                   break;
                 }
               case EDITOR_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL:
@@ -2176,7 +2181,8 @@ void new_level_menu(void)
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
           (int*)&p_config->n_meander,
-          (int*)&p_config->n_tu 
+          (int*)&p_config->n_tu,
+          (int*)&p_config->n_log
         };
 
         intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]] - NUMBER_FIX_BLOCKS; 
@@ -2612,7 +2618,8 @@ void new_level_menu(void)
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
           (int*)&p_config->n_meander,
-          (int*)&p_config->n_tu
+          (int*)&p_config->n_tu,
+          (int*)&p_config->n_log
         };
   
         unsigned int number_input = number_input_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_ALL];
@@ -2678,7 +2685,8 @@ void new_level_menu(void)
           TIMER_SIGNALS_OUT,
           TRIGGER_SIGNALS_OUT,
           MEANDER_SIGNALS_OUT,
-          BUTTON_TU_SIGNALS_OUT
+          BUTTON_TU_SIGNALS_OUT,
+          LOG_SIGNALS_OUT
         };
 
         __CONFIG *p_config = &current_config_edit;
@@ -2698,7 +2706,8 @@ void new_level_menu(void)
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
           (int*)&p_config->n_meander,
-          (int*)&p_config->n_tu
+          (int*)&p_config->n_tu,
+          (int*)&p_config->n_log
         };
   
         unsigned int number_output = number_output_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_ALL];
@@ -2771,10 +2780,12 @@ void new_level_menu(void)
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
           (int*)&p_config->n_meander,
-          (int*)&p_config->n_tu
+          (int*)&p_config->n_tu,
+          (int*)&p_config->n_log
         };
   
         size_t number_row = array_n_similar_input_signals[type_logical_node - _ID_FB_FIRST_ALL];
+        if (type_logical_node == ID_FB_LOG) number_row *= p_config->n_log;
         current_state_menu2.p_max_row = (number_row != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_ALL] : NULL;
         current_state_menu2.max_row = number_row;
         

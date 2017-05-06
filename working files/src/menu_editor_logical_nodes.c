@@ -17,7 +17,8 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "МФТ             ",
     "D-Тр            ",
     "ГПС             ",
-    "ТУ              "
+    "ТУ              ",
+    "Ж.Cобытий       "
 },
   {
     "                ",
@@ -34,7 +35,8 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "МФТ             ",
     "D-Тр            ",
     "ГПС             ",
-    "ТУ              "
+    "ТУ              ",
+    "Ж.Подій         "
   },
   {
     "                ",
@@ -51,7 +53,8 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "MFT             ",
     "D-Tr            ",
     "PSG             ",
-    "TC              "
+    "TC              ",
+    "Ev.Log          "
   },
   {
     "                ",
@@ -68,7 +71,8 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "МФТ             ",
     "D-Тр            ",
     "ГПС             ",
-    "ТУ              "
+    "ТУ              ",
+    "Ж.Событий       "
   }
 };
 
@@ -209,6 +213,7 @@ void move_into_editor_list_logical_nodes(unsigned int action, int max_row)
     logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN  ) != 0);
     logical_node_shown[13] = ((p_config->n_meander*0                   ) != 0);
     logical_node_shown[14] = ((p_config->n_tu*0                        ) != 0);
+    logical_node_shown[15] = ((p_config->n_log*LOG_SIGNALS_IN          ) != 0);
   }
   else
   {
@@ -227,6 +232,7 @@ void move_into_editor_list_logical_nodes(unsigned int action, int max_row)
     logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_OUT        ) != 0);
     logical_node_shown[13] = ((p_config->n_meander*MEANDER_SIGNALS_OUT        ) != 0);
     logical_node_shown[14] = ((p_config->n_tu*BUTTON_TU_SIGNALS_OUT           ) != 0);
+    logical_node_shown[15] = ((p_config->n_log*0                              ) != 0);
   };
   
   if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
@@ -326,6 +332,7 @@ void make_ekran_editor_list_logical_node(void)
       logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN  ) != 0);
       logical_node_shown[13] = ((p_config->n_meander*0                   ) != 0);
       logical_node_shown[14] = ((p_config->n_tu*0                        ) != 0);
+      logical_node_shown[15] = ((p_config->n_log*LOG_SIGNALS_IN          ) != 0);
     }     
     else
     {
@@ -344,6 +351,7 @@ void make_ekran_editor_list_logical_node(void)
       logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_OUT        ) != 0);
       logical_node_shown[13] = ((p_config->n_meander*MEANDER_SIGNALS_OUT        ) != 0);
       logical_node_shown[14] = ((p_config->n_tu*BUTTON_TU_OUT                   ) != 0);
+      logical_node_shown[15] = ((p_config->n_log*0                              ) != 0);
     };
   
     const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL_NODES][MAX_COL_LCD + 1] = 
@@ -363,7 +371,8 @@ void make_ekran_editor_list_logical_node(void)
         " МФ-Таймер      ",
         " D-Триггер      ",
         " ГПС            ",
-        " ТУ             "
+        " ТУ             ",
+        " Ж.Событий      "
       },
       {
         " Загальний блок ",
@@ -380,7 +389,8 @@ void make_ekran_editor_list_logical_node(void)
         " БФ-Таймер      ",
         " D-Триґер       ",
         " ГПС            ",
-        " ТУ             "
+        " ТУ             ",
+        " Ж.Подій        "
       },
       {
         " General block  ",
@@ -397,7 +407,8 @@ void make_ekran_editor_list_logical_node(void)
         " MF-Timer       ",
         " D-Trigger      ",
         " PSG            ",
-        " TC             "
+        " TC             ",
+        " Ev.Log         "
       },
       {
         " Общий блок     ",
@@ -414,7 +425,8 @@ void make_ekran_editor_list_logical_node(void)
         " МФ-Таймер      ",
         " D-Триггер      ",
         " ГПС            ",
-        " ТУ             "
+        " ТУ             ",
+        " Ж.Событий      "
       }
     };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
@@ -554,6 +566,7 @@ void make_ekran_editor_list_inputs_of_selected_logical_node(void)
       (const uint8_t*)name_timer_in_signals, 
       (const uint8_t*)name_trigger_in_signals, 
       NULL, 
+      NULL,
       NULL
     };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
@@ -821,6 +834,14 @@ enum _result_pressed_enter_during_edition press_enter_in_editor_list_logical_nod
           p_param_edit = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
+      case ID_FB_LOG:
+        {
+          n_similar_input_signals *= current_config_edit.n_log;
+          
+          p_param_cont = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+          p_param_edit = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+          break;
+        }
       default:
         {
           //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
@@ -953,6 +974,14 @@ void press_esc_in_editor_list_logical_node(void)
         {
           p_param_cont = &(((__settings_for_TRIGGER*)sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           p_param_edit = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          break;
+        }
+      case ID_FB_LOG:
+        {
+          n_similar_input_signals *= current_config_edit.n_log;
+          
+          p_param_cont = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+          p_param_edit = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
           break;
         }
       default:
@@ -1104,6 +1133,21 @@ void move_into_editor_view_chosen_of_selected_logical_node(unsigned int action, 
       
           break;
         }
+      case ID_FB_LOG:
+        {
+          if (current_state_menu2.edition == ED_VIEWING)
+          {
+            n_similar_input_signals *= current_config_prt.n_log;
+            p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+          }
+          else
+          {
+            n_similar_input_signals *=current_config.n_log;
+            p_param = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+          }
+            
+          break;
+        }
       default:
         {
           //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
@@ -1183,7 +1227,8 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
       (const uint8_t*)name_timer_out_signals, 
       (const uint8_t*)name_trigger_out_signals, 
       (const uint8_t*)name_meander_out_signals,
-      (const uint8_t*)name_button_tu_out_signals
+      (const uint8_t*)name_button_tu_out_signals,
+      NULL
     };
     const unsigned int array_max_signal_out[NUMBER_ALL_BLOCKS] = 
     {
@@ -1201,7 +1246,8 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
       TIMER_SIGNALS_OUT, 
       TRIGGER_SIGNALS_OUT, 
       MEANDER_SIGNALS_OUT,
-      BUTTON_TU_SIGNALS_OUT 
+      BUTTON_TU_SIGNALS_OUT,
+      LOG_SIGNALS_OUT
     };
 
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
@@ -1365,6 +1411,21 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
             p_param = &(((__settings_for_TRIGGER*)sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index]);
           }
           
+          break;
+        }
+      case ID_FB_LOG:
+        {
+          if (current_state_menu2.edition == ED_VIEWING)
+          {
+            n_similar_input_signals *= current_config_prt.n_log;
+            p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+          }
+          else
+          {
+            n_similar_input_signals *= current_config.n_log;
+            p_param = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+          }
+            
           break;
         }
       default:
@@ -1601,7 +1662,8 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
       (const uint8_t*)name_timer_out_signals, 
       (const uint8_t*)name_trigger_out_signals, 
       (const uint8_t*)name_meander_out_signals,
-      (const uint8_t*)name_button_tu_out_signals
+      (const uint8_t*)name_button_tu_out_signals,
+      NULL
     };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
     unsigned int position_temp = current_state_menu2.index_position;
@@ -1730,6 +1792,13 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
           case ID_FB_TRIGGER:
             {
               p_param = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
+              break;
+            }
+          case ID_FB_LOG:
+            {
+              n_similar_input_signals *= current_config_edit.n_log;
+              p_param = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + index_in*n_similar_input_signals);
+            
               break;
             }
           default:
@@ -2098,6 +2167,13 @@ void change_set_signal(unsigned int action)
             p_param = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
+        case ID_FB_LOG:
+          {
+            n_similar_input_signals *= current_config_edit.n_log;
+            p_param = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + index_in*n_similar_input_signals);
+            
+            break;
+          }
         default:
           {
             //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
@@ -2292,6 +2368,13 @@ void select_input_signal_ln(void)
       case ID_FB_TRIGGER:
         {
           param = ((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          break;
+        }
+      case ID_FB_LOG:
+        {
+          n_similar_input_signals *= current_config_edit.n_log;
+          param = *((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+            
           break;
         }
       default:

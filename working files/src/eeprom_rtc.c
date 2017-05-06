@@ -600,6 +600,11 @@ void main_routines_for_i2c(void)
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
               break;
             }
+          case ID_FB_LOG:
+            {
+              size_of_block = current_config.n_log*LOG_SIGNALS_IN*sizeof(__LOG_INPUT);
+              break;
+            }
           default:
             {
               //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
@@ -963,6 +968,11 @@ void main_routines_for_i2c(void)
           case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          case ID_FB_LOG:
+            {
+              size_of_block = current_config.n_log*LOG_SIGNALS_IN*sizeof(__LOG_INPUT);
               break;
             }
           default:
@@ -1785,6 +1795,11 @@ void main_routines_for_i2c(void)
           case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          case ID_FB_LOG:
+            {
+              size_of_block = current_config.n_log*LOG_SIGNALS_IN*sizeof(__LOG_INPUT);
               break;
             }
           default:

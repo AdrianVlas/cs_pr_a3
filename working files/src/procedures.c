@@ -585,6 +585,20 @@ void control_settings(unsigned int modified)
 
           break;
         }
+      case ID_FB_LOG:
+        {
+          if (item == 0)
+          {
+            size_of_block = sizeof(__LOG_INPUT);
+            size_of_block *= current_config_prt.n_log;
+            n_item = 1;
+          }
+
+          if  (modified == 0) point_2 = (uint8_t *)((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+          point_1 = (uint8_t *)((__LOG_INPUT*)spca_of_p_prt[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+
+          break;
+        }
       default:
         {
           //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
@@ -1024,6 +1038,17 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_MEANDER) : sizeof(__settings_for_MEANDER));
           break;
         }
+      case ID_FB_LOG:
+        {
+          //Елемент "Журнал подій"
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_log : 0;
+          p_current_field = &current->n_log;
+          n_cur = edited->n_log;
+          
+          min_param = min_settings_LOG;
+          size = n_cur*sizeof(__LOG_INPUT)*LOG_SIGNALS_IN;
+          break;
+        }
       default:
         {
           //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
@@ -1272,6 +1297,16 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         
         copy_settings_LN = copy_settings_MEANDER;
         size = n_prev*sizeof(__settings_for_MEANDER);
+        break;
+      }
+    case ID_FB_LOG:
+      {
+        //Елемент "Журнал подій"
+        n_cur  = current->n_log;
+        current->n_log = n_prev = control->n_log;
+        
+        copy_settings_LN = copy_settings_LOG;
+        size = n_prev*sizeof(__LOG_INPUT)*LOG_SIGNALS_IN;
         break;
       }
     default:
@@ -2023,6 +2058,41 @@ void copy_settings_MEANDER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
 /*****************************************************/
 
 /*****************************************************/
+//Встановлення мінімальних параметрів для елементу "Журнал подій"
+/*****************************************************/
+void min_settings_LOG(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+{
+  UNUSED(mem_to_prt);
+  
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    for (size_t i = 0; i < LOG_SIGNALS_IN; i++)
+    {
+      *((__LOG_INPUT *)(base) + shift*LOG_SIGNALS_IN + i) = 0;
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для елементу "Журнал подій"
+/*****************************************************/
+void copy_settings_LOG(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  UNUSED(mem_to_prt);
+  UNUSED(mem_from_prt);
+  
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    for (size_t i = 0; i < LOG_SIGNALS_IN; i++)
+    {
+      *((__LOG_INPUT *)(base_target) + shift*LOG_SIGNALS_IN + i) = *((__LOG_INPUT *)(base_source) + shift*LOG_SIGNALS_IN + i);
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
 //Розмір у байтах всіх налаштувань (фіксованих і змінних)
 /*****************************************************/
 size_t size_all_settings(void)
@@ -2093,6 +2163,11 @@ size_t size_all_settings(void)
     case ID_FB_MEANDER:
       {
         size_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+        break;
+      }
+    case ID_FB_LOG:
+      {
+        size_block = current_config.n_log*sizeof(__LOG_INPUT)*LOG_SIGNALS_IN;
         break;
       }
     default:
@@ -2227,6 +2302,14 @@ void copy_settings(
             //Функціональний блок "Генератор періодичних сигналів"
             n_prev = source_conf->n_meander;
             copy_settings_LN = copy_settings_MEANDER;
+
+            break;
+          }
+        case ID_FB_LOG:
+          {
+            //Елемент "Журнал подій"
+            n_prev = source_conf->n_log;
+            copy_settings_LN = copy_settings_LOG;
 
             break;
           }
@@ -2548,7 +2631,8 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_timer,
                                           current_config.n_trigger,
                                           current_config.n_meander,
-                                          current_config.n_tu
+                                          current_config.n_tu,
+                                          1,
                                          };
     for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
     {
@@ -2625,6 +2709,14 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
               _n = TRIGGER_SIGNALS_IN;
               p_param      = (((__settings_for_TRIGGER*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_TRIGGER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_LOG:
+            {
+              _n = LOG_SIGNALS_IN*current_config.n_log;
+              moveable_inputs = true;
+              p_param      = (__LOG_INPUT*)sca_of_p[i - _ID_FB_FIRST_VAR];
+              p_param_edit = (__LOG_INPUT*)sca_of_p_edit[i - _ID_FB_FIRST_VAR];
               break;
             }
           default:

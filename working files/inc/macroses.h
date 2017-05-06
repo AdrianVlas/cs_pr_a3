@@ -1,6 +1,8 @@
 #ifndef __MACROSES__
 #define __MACROSES__
 
+#define UNUSED(x) (void)(x)
+
 #define _CHECK_SET_BIT(_array, _number_bit)                                     \
     (_array[_number_bit >> 5] & ( (unsigned int)( 1 << (_number_bit & 0x1f)) ) )                           
 

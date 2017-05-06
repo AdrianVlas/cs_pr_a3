@@ -38,12 +38,14 @@ typedef enum _id_fb
 
         ID_FB_MEANDER,                                                  /*14*/
         ID_FB_TU,                                                       /*15*/
-  
-      _ID_FB_LAST_VAR_CHANGED,                                          /*16*/
-      
-    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*16*/
 
-  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*16*/
+        ID_FB_LOG,                                                      /*16*/
+        
+      _ID_FB_LAST_VAR_CHANGED,                                          /*17*/
+      
+    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*17*/
+
+  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*17*/
 } __id_fb;
 
 typedef struct
@@ -111,6 +113,7 @@ typedef struct
 
   uint32_t n_tu;                        //Кількість ТУ
   
+  uint32_t n_log;                       //Кількість субмодулів Журналу подій
 
   uint8_t time_config[7+1];       //Час останніх змін уставок-витримок-управління
                                         //Останній байт масиву сигналізує мітку звідки зміни були проведені
@@ -426,6 +429,26 @@ typedef struct
   
 } __LN_MEANDER;
 /**********/
+
+
+/**********
+Журнал подій
+**********/
+typedef uint32_t __LOG_INPUT;
+//typedef struct
+//{
+//  
+//  uint32_t param[LOG_SIGNALS_IN];
+//  
+//} __settings_for_LOG;
+//
+//typedef struct
+//{
+//  __settings_for_LOG settings;
+//  
+//} __LN_LOG;
+/**********/
+
 
 typedef enum _action_dyn_mem_select
 {

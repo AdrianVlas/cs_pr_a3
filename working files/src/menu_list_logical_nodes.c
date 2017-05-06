@@ -131,6 +131,14 @@ void make_ekran_list_logical_nodes(void)
   };
   const unsigned int first_index_number_tu[MAX_NAMBER_LANGUAGE] = {3, 3, 3, 3};
 
+  const uint8_t name_log[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+  {
+    " Ж.Событий      ",
+    " Ж.Подій        ",
+    " Ev.Log         ",
+    " Ж.Событий      "
+  };
+  const unsigned int first_index_number_log[MAX_NAMBER_LANGUAGE] = {10, 8, 7, 10};
   
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
@@ -164,7 +172,8 @@ void make_ekran_list_logical_nodes(void)
       &name_timer,
       &name_trigger,
       &name_meander,
-      &name_tu
+      &name_tu,
+      &name_log
     };
     const unsigned int (* const array_p_first_index_number[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE] = 
     {
@@ -181,7 +190,8 @@ void make_ekran_list_logical_nodes(void)
       &first_index_number_timer,
       &first_index_number_trigger,
       &first_index_number_meander,
-      &first_index_number_tu
+      &first_index_number_tu,
+      &first_index_number_log
     };
     
     intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_level]] - NUMBER_FIX_BLOCKS; 

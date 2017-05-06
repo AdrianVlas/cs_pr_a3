@@ -115,7 +115,8 @@ const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS] =
   1, 
   1, 
   0,
-  0
+  0,
+  LOG_SIGNALS_IN
 };
 const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
 {
@@ -132,6 +133,7 @@ const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   1,
   TIMER_SIGNALS_IN,
   TRIGGER_SIGNALS_IN,
+  0,
   0,
   0
 };

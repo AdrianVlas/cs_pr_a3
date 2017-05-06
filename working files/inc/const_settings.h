@@ -15,6 +15,8 @@
 #define AND_SIGNALS_IN                  8
 #define OR_SIGNALS_IN                   8
 
+#define LOG_SIGNALS_IN                  32
+
 #define SFIFT_PARAM_ID                  24
 #define SFIFT_PARAM_N                   16
 #define SFIFT_PARAM_OUT                 0
@@ -25,11 +27,11 @@
 
 #define NUMBER_FIX_BLOCKS       (_ID_FB_LAST_FIX - _ID_FB_FIRST_FIX)
 
-#define NUMBER_VAR_BLOCKS_NONE_CHANGED  (_ID_FB_LAST_VAR_NONE_CHANGED - _ID_FB_FIRST_VAR_NONE_CHANGED)
-#define NUMBER_VAR_BLOCKS_CHANGED       (_ID_FB_LAST_VAR_CHANGED      - _ID_FB_FIRST_VAR_CHANGED     )
+#define NUMBER_VAR_BLOCKS_NONE_CHANGED          (_ID_FB_LAST_VAR_NONE_CHANGED           - _ID_FB_FIRST_VAR_NONE_CHANGED)
+#define NUMBER_VAR_BLOCKS_CHANGED               (_ID_FB_LAST_VAR_CHANGED                - _ID_FB_FIRST_VAR_CHANGED     )
 
-#define NUMBER_VAR_BLOCKS       (NUMBER_VAR_BLOCKS_NONE_CHANGED + NUMBER_VAR_BLOCKS_CHANGED)
-#define NUMBER_ALL_BLOCKS       (NUMBER_FIX_BLOCKS + NUMBER_VAR_BLOCKS)
+#define NUMBER_VAR_BLOCKS               (NUMBER_VAR_BLOCKS_NONE_CHANGED + NUMBER_VAR_BLOCKS_CHANGED)
+#define NUMBER_ALL_BLOCKS               (NUMBER_FIX_BLOCKS + NUMBER_VAR_BLOCKS)
 
 /*
 Блок загальних функцій
@@ -415,5 +417,15 @@ enum __index_delay_meander
   MAX_INDEX_DELAY_MEANDER
 };
 /***/
+
+/*
+Журнал подій
+*/
+enum _LOG_output_signals
+{
+  LOG_SIGNALS_OUT = 0
+};
+/***/
+
 
 #endif

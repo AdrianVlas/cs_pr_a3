@@ -16,9 +16,14 @@ void move_into_list_settings_param(unsigned int action, int max_row)
   p_current_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
    
   if (
-      (p_current_config->n_input != 0) ||
-      (p_current_config->n_output != 0)||
-      (p_current_config->n_led != 0)
+      (p_current_config->n_input != 0      ) ||
+      (p_current_config->n_output != 0     ) ||
+      (p_current_config->n_led != 0        ) ||
+      (p_current_config->n_alarm != 0      ) ||
+      (p_current_config->n_group_alarm != 0) ||
+      (p_current_config->n_timer != 0      ) ||
+      (p_current_config->n_timer != 0      ) ||
+      (p_current_config->n_meander != 0    )
      )
   {
     if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
@@ -133,7 +138,12 @@ void make_ekran_list_settings_param(void)
   if (
       (p_current_config->n_input == 0) &&
       (p_current_config->n_output == 0)&&
-      (p_current_config->n_led == 0)
+      (p_current_config->n_led == 0) &&
+      (p_current_config->n_alarm == 0 ) &&
+      (p_current_config->n_group_alarm == 0) &&
+      (p_current_config->n_timer == 0) &&
+      (p_current_config->n_timer == 0) &&
+      (p_current_config->n_meander == 0)
      )
   {
     const uint8_t name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
