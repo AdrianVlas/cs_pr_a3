@@ -740,11 +740,18 @@ enum _result_pressed_enter_during_edition press_enter_in_editor_list_logical_nod
   /*
                                                              1-е повернення                                                  2-е повернення                                  3-повернення  
   EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_XXX_FOR_INPUT_MENU2_LEVEL->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
-                                                                                                                                                                        |
-                                                                                                                                                                        ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
+                                                                                                                  |                                                        |
+                                                                                                                  |                                                         ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо був вибраний "Загальний блок")
+                                                                                                                   ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
   */
   enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]];
-  if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+  if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+  {
+//    index = 0; //для даного випадку у цій змінній немає сенсу
+//    number_logical_node_in = 1; //для даного випадку у цій змінній немає сенсу
+    type_logical_node_in = ID_FB_LOG;
+  }
+  else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
   {
     index = position_in_current_level_menu2[ekran_before];
     
@@ -838,8 +845,8 @@ enum _result_pressed_enter_during_edition press_enter_in_editor_list_logical_nod
         {
           n_similar_input_signals *= current_config_edit.n_log;
           
-          p_param_cont = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
-          p_param_edit = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+          p_param_cont = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+          p_param_edit = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR]);
           break;
         }
       default:
@@ -882,11 +889,18 @@ void press_esc_in_editor_list_logical_node(void)
   /*
                                                              1-е повернення                                                  2-е повернення                                  3-повернення  
   EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_XXX_FOR_INPUT_MENU2_LEVEL->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
-                                                                                                                                                                        |
-                                                                                                                                                                        ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
+                                                                                                                  |                                                        |
+                                                                                                                  |                                                         ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо був вибраний "Загальний блок")
+                                                                                                                   ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
   */
   enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]];
-  if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+  if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+  {
+//    index = 0; //для даного випадку у цій змінній немає сенсу
+//    number_logical_node_in = 1; //для даного випадку у цій змінній немає сенсу
+    type_logical_node_in = ID_FB_LOG;
+  }
+  else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
   {
     index = position_in_current_level_menu2[ekran_before];
     
@@ -980,8 +994,8 @@ void press_esc_in_editor_list_logical_node(void)
         {
           n_similar_input_signals *= current_config_edit.n_log;
           
-          p_param_cont = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
-          p_param_edit = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+          p_param_cont = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+          p_param_edit = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR]);
           break;
         }
       default:
@@ -1049,7 +1063,13 @@ void move_into_editor_view_chosen_of_selected_logical_node(unsigned int action, 
     unsigned int error = false;
 
     enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-    if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    {
+//      index = 0; //для даного випадку у цій змінній немає сенсу
+//      number_logical_node = 1; //для даного випадку у цій змінній немає сенсу
+      type_logical_node = ID_FB_LOG;
+    }
+    else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
     {
       index = position_in_current_level_menu2[ekran_before];
 
@@ -1138,12 +1158,12 @@ void move_into_editor_view_chosen_of_selected_logical_node(unsigned int action, 
           if (current_state_menu2.edition == ED_VIEWING)
           {
             n_similar_input_signals *= current_config_prt.n_log;
-            p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+            p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_LOG - _ID_FB_FIRST_VAR]);
           }
           else
           {
             n_similar_input_signals *=current_config.n_log;
-            p_param = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+            p_param = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR]);
           }
             
           break;
@@ -1259,7 +1279,13 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
     unsigned int error = false;
 
     enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-    if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    {
+//      index = 0; //для даного випадку у цій змінній немає сенсу
+//      number_logical_node = 1; //для даного випадку у цій змінній немає сенсу
+      type_logical_node = ID_FB_LOG;
+    }
+    else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
     {
       index = position_in_current_level_menu2[ekran_before];
 
@@ -1294,8 +1320,7 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
     }
     if (
         (error == false) &&
-        (max_row != 0) &&
-        (array_p_name[type_logical_node - _ID_FB_FIRST_ALL] != NULL)
+        (max_row != 0)
        )   
     {
       //Формуємо рядки  рядки у робочий екран
@@ -1418,12 +1443,12 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
           if (current_state_menu2.edition == ED_VIEWING)
           {
             n_similar_input_signals *= current_config_prt.n_log;
-            p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+            p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_LOG - _ID_FB_FIRST_VAR]);
           }
           else
           {
             n_similar_input_signals *= current_config.n_log;
-            p_param = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+            p_param = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR]);
           }
             
           break;
@@ -1435,7 +1460,7 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
         }
       }
       
-      unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+      unsigned   int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   
       for (size_t i = 0; i < MAX_ROW_LCD; i++)
       {
@@ -1709,11 +1734,18 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
       /*
                                                                  1-е повернення                                                  2-е повернення                                  3-повернення  
       EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_XXX_FOR_INPUT_MENU2_LEVEL->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
-                                                                                                                                                                            |
-                                                                                                                                                                            ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
+                                                                                                                     |                                                        |
+                                                                                                                     |                                                         ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо був вибраний "Загальний блок")
+                                                                                                                      ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
       */
       ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[ekran_before]];
-      if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      {
+//        index_in = 0; //для даного випадку у цій змінній немає сенсу
+//        number_logical_node_in = 1; //для даного випадку у цій змінній немає сенсу
+        type_logical_node_in = ID_FB_LOG;
+      }
+      else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
       {
         index_in = position_in_current_level_menu2[ekran_before];
     
@@ -1797,7 +1829,7 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
           case ID_FB_LOG:
             {
               n_similar_input_signals *= current_config_edit.n_log;
-              p_param = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + index_in*n_similar_input_signals);
+              p_param = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR]);
             
               break;
             }
@@ -2082,11 +2114,18 @@ void change_set_signal(unsigned int action)
     /*
                                                                1-е повернення                                                  2-е повернення                                  3-повернення  
     EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL->EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL->EDITOR_LIST_XXX_FOR_INPUT_MENU2_LEVEL->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL
-                                                                                                                                                                          |
-                                                                                                                                                                          ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
+                                                                                                                    |                                                        |
+                                                                                                                    |                                                         ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо був вибраний "Загальний блок")
+                                                                                                                     ->EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL (якщо вбув вибраний "Загальний блок")
     */
     ekran_before = previous_level_in_current_level_menu2[previous_level_in_current_level_menu2[ekran_before]];
-    if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+    if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+    {
+//      index_in = 0; //для даного випадку у цій змінній немає сенсу
+//      number_logical_node_in = 1; //для даного випадку у цій змінній немає сенсу
+      type_logical_node_in = ID_FB_LOG;
+    }
+    else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
     {
       index_in = position_in_current_level_menu2[ekran_before];
     
@@ -2170,7 +2209,7 @@ void change_set_signal(unsigned int action)
         case ID_FB_LOG:
           {
             n_similar_input_signals *= current_config_edit.n_log;
-            p_param = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + index_in*n_similar_input_signals);
+            p_param = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR]);
             
             break;
           }
@@ -2296,8 +2335,12 @@ void select_input_signal_ln(void)
   unsigned int number_logical_node;
   unsigned int type_logical_node;
 
-  ekran_before = previous_level_in_current_level_menu2[ekran_before];
   if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+  {
+//    number_logical_node = 1; //для даного випадку у цій змінній немає сенсу
+    type_logical_node = ID_FB_LOG;
+  }
+  else if ((ekran_before = previous_level_in_current_level_menu2[ekran_before]) == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
   {
     number_logical_node = 1;
     type_logical_node = ID_FB_CONTROL_BLOCK;
@@ -2373,7 +2416,7 @@ void select_input_signal_ln(void)
       case ID_FB_LOG:
         {
           n_similar_input_signals *= current_config_edit.n_log;
-          param = *((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + index*n_similar_input_signals);
+          param = *((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR]);
             
           break;
         }

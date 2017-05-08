@@ -69,10 +69,13 @@ _NUMBER_ERRORS
 };
 
 #define MASKA_AVAR_ERROR_0        (unsigned int)(               \
-    (1 << (ERROR_CONFIG_EEPROM_BIT))                            \
+    (1 << (ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT))             \
+  | (1 << (ERROR_CONFIG_EEPROM_BIT))                            \
   | (1 << (ERROR_CONFIG_EEPROM_EMPTY_BIT))                      \
   | (1 << (ERROR_CONFIG_EEPROM_COMPARISON_BIT) )                \
   | (1 << (ERROR_CONFIG_EEPROM_CONTROL_BIT))                    \
+  | (1 << (ERROR_NO_FREE_DYNAMIC_MEMORY_BIT))                   \
+  | (1 << (ERROR_PRT_MEMORY_BIT))                               \
   | (1 << (ERROR_SETTINGS_EEPROM_BIT))                          \
   | (1 << (ERROR_SETTINGS_EEPROM_EMPTY_BIT))                    \
   | (1 << (ERROR_SETTINGS_EEPROM_COMPARISON_BIT) )              \

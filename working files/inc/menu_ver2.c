@@ -914,16 +914,18 @@ void main_manu_function_ver2(void)
                 }
               case EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL:
                 {
-                  p = &next_for_editor_list_logical_nodes_for_input[current_state_menu2.index_position];
+                  int16_t index_position_tmp = current_state_menu2.index_position;
+
+                  p = &next_for_editor_list_logical_nodes_for_input[index_position_tmp];
+                  
+                  if (index_position_tmp == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) position_in_current_level_menu2[EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+                  else if (index_position_tmp == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_LOG) position_in_current_level_menu2[EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+
                   break;
                 }
               case EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL:
                 {
-                  int16_t index_position_tmp = current_state_menu2.index_position;
-                  p = &next_for_editor_list_logical_nodes_for_output[index_position_tmp];
-                  
-                  if (index_position_tmp == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) position_in_current_level_menu2[EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
-                  else if (index_position_tmp == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_LOG) position_in_current_level_menu2[EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+                  p = &next_for_editor_list_logical_nodes_for_output[current_state_menu2.index_position];
                     
                   break;
                 }
@@ -2736,7 +2738,12 @@ void new_level_menu(void)
       unsigned int error = false;
 
       enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-      if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      {
+        current_state_menu2.number_selection = 0;
+        type_logical_node = ID_FB_LOG;
+      }
+      else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
       {
         ekran_before = previous_level_in_current_level_menu2[ekran_before];
         if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
