@@ -1311,6 +1311,15 @@ void scheme2_config(__CONFIG *target_label)
 
   target_label->n_tu = 0;
   
+  target_label->n_log = DIV_TO_HIGHER((
+                                       2/*"Несправність загальна" + "Несправність аварійна"*/ + 
+                                       ((target_label->n_input > 4/*Reset, Mute, Block, Test*/) ? (target_label->n_input - 4) : 0) + 
+                                       ((target_label->n_output >= 4/*Ав.звукова, Ав.світлова, Поп.звукова, Поп.світлова*/) ? 4 : target_label->n_output) +
+                                       target_label->n_led + 
+                                       target_label->n_group_alarm*GROUP_ALARM_SIGNALS_OUT
+                                      ), LOG_SIGNALS_IN);
+                         
+  
   for(unsigned int i = 0; i < (7+1); i++)
   {
     target_label->time_config[i] = DEFAULT_PARAMS_FIX_CHANGES;
@@ -1674,6 +1683,45 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
     /***
     "Журнал подій"
     ***/
+    n = 0;
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 0 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + 0) = ((ID_FB_CONTROL_BLOCK & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((FIX_BLOCK_DEFECT      + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 1 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + 1) = ((ID_FB_CONTROL_BLOCK & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((FIX_BLOCK_AVAR_DEFECT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    n += 2;
+      
+    for (size_t i = 4/*Reset, Mute, Block, Test*/; i < target_config->n_input; i++)
+    {
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i - 4 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + i - 4) = ((ID_FB_INPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((INPUT_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+    }
+    n += ((target_config->n_input > 4/*Reset, Mute, Block, Test*/) ? (target_config->n_input - 4) : 0);
+
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 0 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + 0) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((0 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 1 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + 1) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((1 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 2 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + 2) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((2 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 3 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + 3) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((3 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    n += ((target_config->n_output >= 4/*Ав.звукова, Ав.світлова, Поп.звукова, Поп.світлова*/) ? 4 : target_config->n_output);
+    
+    for (size_t i = 0; i < target_config->n_led; i++)
+    {
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + i) = ((ID_FB_LED & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+    }
+    n += target_config->n_led;
+
+    for (size_t i = 0; i < target_config->n_group_alarm; i++)
+    {
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i*GROUP_ALARM_SIGNALS_OUT + 0 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + i*GROUP_ALARM_SIGNALS_OUT + 0) = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_NNP + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i*GROUP_ALARM_SIGNALS_OUT + 1 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + i*GROUP_ALARM_SIGNALS_OUT + 1) = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_NNM + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i*GROUP_ALARM_SIGNALS_OUT + 2 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + i*GROUP_ALARM_SIGNALS_OUT + 2) = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_CC  + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i*GROUP_ALARM_SIGNALS_OUT + 3 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + i*GROUP_ALARM_SIGNALS_OUT + 3) = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_CE  + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i*GROUP_ALARM_SIGNALS_OUT + 4 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR] + n + i*GROUP_ALARM_SIGNALS_OUT + 4) = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_OC  + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+    }
+    n += target_config->n_group_alarm*GROUP_ALARM_SIGNALS_OUT;
     /***/
     
 //    for(unsigned int i = 0; i < (7+1); i++)

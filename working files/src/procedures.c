@@ -590,7 +590,7 @@ void control_settings(unsigned int modified)
           if (item == 0)
           {
             size_of_block = sizeof(__LOG_INPUT);
-            size_of_block *= current_config_prt.n_log;
+            size_of_block *= current_config_prt.n_log*LOG_SIGNALS_IN;
             n_item = 1;
           }
 
