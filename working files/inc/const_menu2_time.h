@@ -34,4 +34,15 @@ MAX_ROW_TIME_CALIBRATION_M2
 #define COL_VK1                  8
 #define COL_VK2                  9
 
+//const uint8_t calibrating[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+//{
+//  "   Калибровка   ",
+//  "  Калібрування  ",
+//  "  Calibration   ",
+//  "   Калибровка   "
+//};
+//
 #endif
+
+//extern const uint8_t calibrating[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
+

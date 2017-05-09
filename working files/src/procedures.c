@@ -1,5 +1,7 @@
 #include "header.h"
 
+const uint8_t month_names[12*3] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+
 /*****************************************************/
 //Функція, яка визначає кількість біт затримки, який допускається між байтами у RS-485 згідно з визначеними настройками
 /*****************************************************/
@@ -836,7 +838,6 @@ unsigned int control_info_rejestrator(__INFO_REJESTRATOR* info_rejestrator_point
 /*****************************************************/
 int str_to_int_DATE_Mmm(void)
 {
-  static const char month_names[12*3] = "JanFebMarAprMayJunJulAugSepOctNovDec";
   
   int i = 0;
   while(i < 12)

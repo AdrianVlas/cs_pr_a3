@@ -1,168 +1,62 @@
 #include "header.h"
 
-const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL_NODES][MAX_COL_LCD + 1] = 
+const uint8_t * const array_p_name_in[NUMBER_ALL_BLOCKS] = 
 {
-  {
-    "                ",
-    "Д.Вх            ",
-    "В.Р             ",
-    "Св              ",
-    "ФК              ",
-    "СЗС             ",
-    "ШГС             ",
-    "И               ",
-    "ИЛИ             ",
-    "И-ИЛИ           ",
-    "НЕ              ",
-    "МФТ             ",
-    "D-Тр            ",
-    "ГПС             ",
-    "ТУ              ",
-    "Ж.Cобытий       "
-},
-  {
-    "                ",
-    "Д.Вх            ",
-    "В.Р             ",
-    "Св              ",
-    "ФК              ",
-    "СЗС             ",
-    "ШГС             ",
-    "І               ",
-    "АБО             ",
-    "В.АБО           ",
-    "НЕ              ",
-    "БФТ             ",
-    "D-Тр            ",
-    "ГПС             ",
-    "ТУ              ",
-    "Ж.Подій         "
-  },
-  {
-    "                ",
-    "D.In            ",
-    "O.R             ",
-    "LED             ",
-    "DB              ",
-    "СЗС             ",
-    "ШГС             ",
-    "AND             ",
-    "OR              ",
-    "XOR             ",
-    "NOT             ",
-    "MFT             ",
-    "D-Tr            ",
-    "PSG             ",
-    "TC              ",
-    "Ev.Log          "
-  },
-  {
-    "                ",
-    "Д.Вх            ",
-    "В.Р             ",
-    "Св              ",
-    "ФК              ",
-    "СЗС             ",
-    "ШГС             ",
-    "И               ",
-    "ИЛИ             ",
-    "И-ИЛИ           ",
-    "НЕ              ",
-    "МФТ             ",
-    "D-Тр            ",
-    "ГПС             ",
-    "ТУ              ",
-    "Ж.Событий       "
-  }
+  (const uint8_t*)name_fix_block_in_signals, 
+  NULL, 
+  (const uint8_t*)name_output_led_in_signals, 
+  (const uint8_t*)name_output_led_in_signals, 
+  NULL, 
+  (const uint8_t*)name_alarm_in_signals, 
+  NULL, 
+  (const uint8_t*)name_standard_logic_in_signals, 
+  (const uint8_t*)name_standard_logic_in_signals, 
+  (const uint8_t*)name_standard_logic_in_signals, 
+  (const uint8_t*)name_standard_logic_in_signals, 
+  (const uint8_t*)name_timer_in_signals, 
+  (const uint8_t*)name_trigger_in_signals, 
+  NULL, 
+  NULL,
+  NULL
 };
 
-const uint8_t name_fix_buttons[NUMBER_FIX_BUTTONS][MAX_COL_LCD + 1] = 
+const uint8_t * const array_p_name_out[NUMBER_ALL_BLOCKS] = 
 {
-  "MUTE            ",
-  "RESET           ",
-  "TEST            "
+  (const uint8_t*)name_fix_block_out_signals, 
+  (const uint8_t*)name_input_out_signals, 
+  (const uint8_t*)name_output_led_out_signals, 
+  (const uint8_t*)name_output_led_out_signals, 
+  (const uint8_t*)name_button_tu_out_signals, 
+  (const uint8_t*)name_alarm_out_signals, 
+  (const uint8_t*)name_group_alarm_out_signals, 
+  (const uint8_t*)name_standard_logic_out_signals, 
+  (const uint8_t*)name_standard_logic_out_signals, 
+  (const uint8_t*)name_standard_logic_out_signals, 
+  (const uint8_t*)name_standard_logic_out_signals, 
+  (const uint8_t*)name_timer_out_signals, 
+  (const uint8_t*)name_trigger_out_signals, 
+  (const uint8_t*)name_meander_out_signals,
+  (const uint8_t*)name_button_tu_out_signals,
+  NULL
 };
-
-const uint8_t name_fix_block_out_signals[MAX_NAMBER_LANGUAGE][FIX_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1] =
+    
+const enum _menu2_levels levels_tmp[__NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL - __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL] =
 {
-  {NAME_FIX_BLOCK_OUT_SIGNALS_RU},  
-  {NAME_FIX_BLOCK_OUT_SIGNALS_UA},  
-  {NAME_FIX_BLOCK_OUT_SIGNALS_EN},  
-  {NAME_FIX_BLOCK_OUT_SIGNALS_KZ}
+  EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL
 };
-  
-const uint8_t name_input_out_signals[MAX_NAMBER_LANGUAGE][INPUT_SIGNALS_OUT][MAX_COL_LCD + 1] =
-{
-  {NAME_INPUT_OUT_SIGNALS_RU},  
-  {NAME_INPUT_OUT_SIGNALS_UA},  
-  {NAME_INPUT_OUT_SIGNALS_EN},  
-  {NAME_INPUT_OUT_SIGNALS_KZ}
-};
-  
-const uint8_t name_output_led_out_signals[MAX_NAMBER_LANGUAGE][OUTPUT_LED_SIGNALS_OUT][MAX_COL_LCD + 1] =
-{
-  {NAME_OUTPUT_LED_OUT_SIGNALS_RU},  
-  {NAME_OUTPUT_LED_OUT_SIGNALS_UA},  
-  {NAME_OUTPUT_LED_OUT_SIGNALS_EN},  
-  {NAME_OUTPUT_LED_OUT_SIGNALS_KZ}
-};
-  
-const uint8_t name_button_tu_out_signals[MAX_NAMBER_LANGUAGE][BUTTON_TU_SIGNALS_OUT][MAX_COL_LCD + 1] =
-{
-  {NAME_BUTTON_TU_OUT_SIGNALS_RU},  
-  {NAME_BUTTON_TU_OUT_SIGNALS_UA},  
-  {NAME_BUTTON_TU_OUT_SIGNALS_EN},  
-  {NAME_BUTTON_TU_OUT_SIGNALS_KZ}
-};
-
-const uint8_t name_alarm_out_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
-{
-  {NAME_ALARM_OUT_SIGNALS_RU},  
-  {NAME_ALARM_OUT_SIGNALS_UA},  
-  {NAME_ALARM_OUT_SIGNALS_EN},  
-  {NAME_ALARM_OUT_SIGNALS_KZ}
-};
-
-const uint8_t name_group_alarm_out_signals[MAX_NAMBER_LANGUAGE][GROUP_ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
-{
-  {NAME_GROUP_ALARM_OUT_SIGNALS_RU},  
-  {NAME_GROUP_ALARM_OUT_SIGNALS_UA},  
-  {NAME_GROUP_ALARM_OUT_SIGNALS_EN},  
-  {NAME_GROUP_ALARM_OUT_SIGNALS_KZ}
-};
-
-const uint8_t name_standard_logic_out_signals[MAX_NAMBER_LANGUAGE][STANDARD_LOGIC_SIGNALS_OUT][MAX_COL_LCD + 1] =
-{
-  {NAME_STANDARD_LOGIC_OUT_SIGNALS_RU},  
-  {NAME_STANDARD_LOGIC_OUT_SIGNALS_UA},  
-  {NAME_STANDARD_LOGIC_OUT_SIGNALS_EN},  
-  {NAME_STANDARD_LOGIC_OUT_SIGNALS_KZ}
-};
-
-const uint8_t name_timer_out_signals[MAX_NAMBER_LANGUAGE][TIMER_SIGNALS_OUT][MAX_COL_LCD + 1] =
-{
-  {NAME_TIMER_OUT_SIGNALS_RU},  
-  {NAME_TIMER_OUT_SIGNALS_UA},  
-  {NAME_TIMER_OUT_SIGNALS_EN},  
-  {NAME_TIMER_OUT_SIGNALS_KZ}
-};
-  
-const uint8_t name_trigger_out_signals[MAX_NAMBER_LANGUAGE][TRIGGER_SIGNALS_OUT][MAX_COL_LCD + 1] =
-{
-  {NAME_TRIGGER_OUT_SIGNALS_RU},  
-  {NAME_TRIGGER_OUT_SIGNALS_UA},  
-  {NAME_TRIGGER_OUT_SIGNALS_EN},  
-  {NAME_TRIGGER_OUT_SIGNALS_KZ}
-};
-
-const uint8_t name_meander_out_signals[MAX_NAMBER_LANGUAGE][MEANDER_SIGNALS_OUT][MAX_COL_LCD + 1] =
-{
-  {NAME_MEANDER_OUT_SIGNALS_RU},  
-  {NAME_MEANDER_OUT_SIGNALS_UA},  
-  {NAME_MEANDER_OUT_SIGNALS_EN},  
-  {NAME_MEANDER_OUT_SIGNALS_KZ}
-};
-
 /*****************************************************/
 /*
 Функція переміщення по меню
@@ -274,24 +168,8 @@ void make_ekran_editor_list_logical_node(void)
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "  Принять изм.  ",
-      " Прийняти зміни ",
-      "  Apply changes ",
-      "  Принять изм.  "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 2), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 2), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_request));
   }
   else
   {
@@ -354,81 +232,6 @@ void make_ekran_editor_list_logical_node(void)
       logical_node_shown[15] = ((p_config->n_log*0                              ) != 0);
     };
   
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL_NODES][MAX_COL_LCD + 1] = 
-    {
-      {
-        " Общий блок     ",
-        " Д.Входы        ",
-        " В.Реле         ",
-        " Светоиндикаторы",
-        " ФК             ",
-        " СЗС            ",
-        " ШГС            ",
-        " И              ",
-        " ИЛИ            ",
-        " Искл.ИЛИ       ",
-        " НЕ             ",
-        " МФ-Таймер      ",
-        " D-Триггер      ",
-        " ГПС            ",
-        " ТУ             ",
-        " Ж.Событий      "
-      },
-      {
-        " Загальний блок ",
-        " Д.Входи        ",
-        " В.Реле         ",
-        " Світоіндикатори",
-        " ФК             ",
-        " СЗС            ",
-        " ШГС            ",
-        " І              ",
-        " АБО            ",
-        " Викл.АБО       ",
-        " НЕ             ",
-        " БФ-Таймер      ",
-        " D-Триґер       ",
-        " ГПС            ",
-        " ТУ             ",
-        " Ж.Подій        "
-      },
-      {
-        " General block  ",
-        " D.Inputs       ",
-        " O.Relays       ",
-        " LEDs           ",
-        " DB             ",
-        " СЗС            ",
-        " ШГС            ",
-        " AND            ",
-        " OR             ",
-        " XOR            ",
-        " NOT            ",
-        " MF-Timer       ",
-        " D-Trigger      ",
-        " PSG            ",
-        " TC             ",
-        " Ev.Log         "
-      },
-      {
-        " Общий блок     ",
-        " Д.Входы        ",
-        " В.Реле         ",
-        " Светоиндикаторы",
-        " ФК             ",
-        " СЗС            ",
-        " ШГС            ",
-        " И              ",
-        " ИЛИ            ",
-        " Искл.ИЛИ       ",
-        " НЕ             ",
-        " МФ-Таймер      ",
-        " D-Триггер      ",
-        " ГПС            ",
-        " ТУ             ",
-        " Ж.Событий      "
-      }
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int additional_current = 0;
@@ -452,7 +255,7 @@ void make_ekran_editor_list_logical_node(void)
       {
         for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
         {
-          name_string_tmp[index_1 - additional_current][index_2] = name_string[index_language][index_1][index_2];
+          name_string_tmp[index_1 - additional_current][index_2] = name_string_editor_logical_nodes[index_language][index_1][index_2];
         }
       }
     }
@@ -490,85 +293,10 @@ void make_ekran_editor_list_inputs_of_selected_logical_node(void)
 {
   if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY)
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    make_ekran_about_info(0, information_about_info);
+    make_ekran_about_info(0, information_no_edition);
   }
   else
   {
-    const uint8_t name_fix_block_in_signals[MAX_NAMBER_LANGUAGE][FIX_BLOCK_SIGNALS_IN][MAX_COL_LCD + 1] =
-    {
-      {NAME_FIX_BLOCK_IN_SIGNALS_RU},  
-      {NAME_FIX_BLOCK_IN_SIGNALS_UA},  
-      {NAME_FIX_BLOCK_IN_SIGNALS_EN},  
-      {NAME_FIX_BLOCK_IN_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_output_led_in_signals[MAX_NAMBER_LANGUAGE][OUTPUT_LED_SIGNALS_IN][MAX_COL_LCD + 1] =
-    {
-      {NAME_OUTPUT_LED_IN_SIGNALS_RU},  
-      {NAME_OUTPUT_LED_IN_SIGNALS_UA},  
-      {NAME_OUTPUT_LED_IN_SIGNALS_EN},  
-      {NAME_OUTPUT_LED_IN_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_alarm_in_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_IN][MAX_COL_LCD + 1] =
-    {
-      {NAME_ALARM_IN_SIGNALS_RU},  
-      {NAME_ALARM_IN_SIGNALS_UA},  
-      {NAME_ALARM_IN_SIGNALS_EN},  
-      {NAME_ALARM_IN_SIGNALS_KZ}
-    };
-
-    const uint8_t name_standard_logic_in_signals[MAX_NAMBER_LANGUAGE][1][MAX_COL_LCD + 1] =
-    {
-      {NAME_STANDARD_LOGIC_IN_SIGNALS_RU},  
-      {NAME_STANDARD_LOGIC_IN_SIGNALS_UA},  
-      {NAME_STANDARD_LOGIC_IN_SIGNALS_EN},  
-      {NAME_STANDARD_LOGIC_IN_SIGNALS_KZ}
-    };
-
-    const uint8_t name_timer_in_signals[MAX_NAMBER_LANGUAGE][TIMER_SIGNALS_IN][MAX_COL_LCD + 1] =
-    {
-      {NAME_TIMER_IN_SIGNALS_RU},  
-      {NAME_TIMER_IN_SIGNALS_UA},  
-      {NAME_TIMER_IN_SIGNALS_EN},  
-      {NAME_TIMER_IN_SIGNALS_KZ}
-    };
-  
-    const uint8_t name_trigger_in_signals[MAX_NAMBER_LANGUAGE][TRIGGER_SIGNALS_IN][MAX_COL_LCD + 1] =
-    {
-      {NAME_TRIGGER_IN_SIGNALS_RU},  
-      {NAME_TRIGGER_IN_SIGNALS_UA},  
-      {NAME_TRIGGER_IN_SIGNALS_EN},  
-      {NAME_TRIGGER_IN_SIGNALS_KZ}
-    };
-
-    const uint8_t * const array_p_name[NUMBER_ALL_BLOCKS] = 
-    {
-      (const uint8_t*)name_fix_block_in_signals, 
-      NULL, 
-      (const uint8_t*)name_output_led_in_signals, 
-      (const uint8_t*)name_output_led_in_signals, 
-      NULL, 
-      (const uint8_t*)name_alarm_in_signals, 
-      NULL, 
-      (const uint8_t*)name_standard_logic_in_signals, 
-      (const uint8_t*)name_standard_logic_in_signals, 
-      (const uint8_t*)name_standard_logic_in_signals, 
-      (const uint8_t*)name_standard_logic_in_signals, 
-      (const uint8_t*)name_timer_in_signals, 
-      (const uint8_t*)name_trigger_in_signals, 
-      NULL, 
-      NULL,
-      NULL
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
     unsigned int position_temp = current_state_menu2.index_position;
   
@@ -599,7 +327,7 @@ void make_ekran_editor_list_inputs_of_selected_logical_node(void)
     if (
         (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL) &&
         (max_row != 0) &&
-        (array_p_name[type_logical_node - _ID_FB_FIRST_ALL] != NULL)
+        (array_p_name_in[type_logical_node - _ID_FB_FIRST_ALL] != NULL)
        )   
     {
       unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
@@ -611,7 +339,7 @@ void make_ekran_editor_list_inputs_of_selected_logical_node(void)
         if (index_in_ekran < max_row)
         {
           unsigned int part = 0;
-          uint8_t *p = ((uint8_t*)array_p_name[type_logical_node - _ID_FB_FIRST_ALL]) + (index_language*max_row + index_in_ekran)*(MAX_COL_LCD + 1);
+          uint8_t *p = ((uint8_t*)array_p_name_in[type_logical_node - _ID_FB_FIRST_ALL]) + (index_language*max_row + index_in_ekran)*(MAX_COL_LCD + 1);
           unsigned int number_digit, first_index_number, number_logical_node_tmp = number_logical_node;
           size_t k = 0;
           for (size_t j = 0; j < MAX_COL_LCD; j++) 
@@ -694,14 +422,6 @@ void make_ekran_editor_list_inputs_of_selected_logical_node(void)
     {
       //Цього при правильній роботі програми не мало б бути
       error = true;
-      const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-      {
-        "     Ошибка     ",
-        "    Помилка     ",
-        "     Error      ",
-        "     Ошибка     "
-      };
-
       for (size_t i = 0; i < MAX_ROW_LCD; i++)
       {
         for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i == 0) ? information_error[index_language][j] : ' ';
@@ -1222,57 +942,10 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
 {
   if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY)
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    make_ekran_about_info(0, information_about_info);
+    make_ekran_about_info(0, information_no_edition);
   }
   else
   {
-    const uint8_t * const array_p_name[NUMBER_ALL_BLOCKS] = 
-    {
-      (const uint8_t*)name_fix_block_out_signals, 
-      (const uint8_t*)name_input_out_signals, 
-      (const uint8_t*)name_output_led_out_signals, 
-      (const uint8_t*)name_output_led_out_signals, 
-      (const uint8_t*)name_button_tu_out_signals, 
-      (const uint8_t*)name_alarm_out_signals, 
-      (const uint8_t*)name_group_alarm_out_signals, 
-      (const uint8_t*)name_standard_logic_out_signals, 
-      (const uint8_t*)name_standard_logic_out_signals, 
-      (const uint8_t*)name_standard_logic_out_signals, 
-      (const uint8_t*)name_standard_logic_out_signals, 
-      (const uint8_t*)name_timer_out_signals, 
-      (const uint8_t*)name_trigger_out_signals, 
-      (const uint8_t*)name_meander_out_signals,
-      (const uint8_t*)name_button_tu_out_signals,
-      NULL
-    };
-    const unsigned int array_max_signal_out[NUMBER_ALL_BLOCKS] = 
-    {
-      FIX_BLOCK_SIGNALS_OUT, 
-      INPUT_SIGNALS_OUT, 
-      OUTPUT_LED_SIGNALS_OUT, 
-      OUTPUT_LED_SIGNALS_OUT, 
-      BUTTON_TU_SIGNALS_OUT, 
-      ALARM_SIGNALS_OUT, 
-      GROUP_ALARM_SIGNALS_OUT, 
-      STANDARD_LOGIC_SIGNALS_OUT, 
-      STANDARD_LOGIC_SIGNALS_OUT, 
-      STANDARD_LOGIC_SIGNALS_OUT, 
-      STANDARD_LOGIC_SIGNALS_OUT, 
-      TIMER_SIGNALS_OUT, 
-      TRIGGER_SIGNALS_OUT, 
-      MEANDER_SIGNALS_OUT,
-      BUTTON_TU_SIGNALS_OUT,
-      LOG_SIGNALS_OUT
-    };
-
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
     unsigned int position_temp = current_state_menu2.index_position;
   
@@ -1488,7 +1161,7 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
             unsigned int out_input  = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
         
             unsigned int part = 0;
-            uint8_t *p = ((uint8_t*)array_p_name[id_input - _ID_FB_FIRST_ALL]) + (index_language*array_max_signal_out[id_input - _ID_FB_FIRST_ALL] + (out_input - 1))*(MAX_COL_LCD + 1);
+            uint8_t *p = ((uint8_t*)array_p_name_out[id_input - _ID_FB_FIRST_ALL]) + (index_language*number_output_signals_logical_nodes[id_input - _ID_FB_FIRST_ALL] + (out_input - 1))*(MAX_COL_LCD + 1);
             unsigned int number_digit, first_index_number;
             
             unsigned int number_logical_node_tmp;
@@ -1598,19 +1271,10 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
           }
           else
           {
-            const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-            {
-              "     Пусто      ",
-              "     Пусто      ",
-              "     Empty      ",
-              "     Пусто      "
-            };
-            const uint32_t cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
-
-            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_empty[index_language][j];
             if (position_temp == index_in_ekran)
             {
-              current_state_menu2.position_cursor_x = cursor_x_error[index_language];
+              current_state_menu2.position_cursor_x = cursor_x_empty[index_language];
             }
           }
         }
@@ -1626,13 +1290,6 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
     {
       //Цього при правильній роботі програми не мало б бути
       error = true;
-      const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-      {
-        "     Ошибка     ",
-        "    Помилка     ",
-        "     Error      ",
-        "     Ошибка     "
-      };
 
       for (size_t i = 0; i < MAX_ROW_LCD; i++)
       {
@@ -1662,37 +1319,10 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
 {
   if (current_state_menu2.edition == ED_WARNING_ENTER)
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Прев.кол.сигн. ",
-      " Переб.кільк.с. ",
-      " Max.n.of S.Exc.",
-      " Прев.кол.сигн. "
-    };
-
-    make_ekran_about_info(0, information_about_info);
+    make_ekran_about_info(0, information_about_info_1);
   }
   else
   {
-    const uint8_t * const array_p_name[NUMBER_ALL_BLOCKS] = 
-    {
-      (const uint8_t*)name_fix_block_out_signals, 
-      (const uint8_t*)name_input_out_signals, 
-      (const uint8_t*)name_output_led_out_signals, 
-      (const uint8_t*)name_output_led_out_signals, 
-      (const uint8_t*)name_button_tu_out_signals, 
-      (const uint8_t*)name_alarm_out_signals, 
-      (const uint8_t*)name_group_alarm_out_signals, 
-      (const uint8_t*)name_standard_logic_out_signals, 
-      (const uint8_t*)name_standard_logic_out_signals, 
-      (const uint8_t*)name_standard_logic_out_signals, 
-      (const uint8_t*)name_standard_logic_out_signals, 
-      (const uint8_t*)name_timer_out_signals, 
-      (const uint8_t*)name_trigger_out_signals, 
-      (const uint8_t*)name_meander_out_signals,
-      (const uint8_t*)name_button_tu_out_signals,
-      NULL
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
     unsigned int position_temp = current_state_menu2.index_position;
   
@@ -1730,7 +1360,7 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
     if (
         (error == false) &&
         (max_row != 0) &&
-        (array_p_name[type_logical_node_out - _ID_FB_FIRST_ALL] != NULL)
+        (array_p_name_out[type_logical_node_out - _ID_FB_FIRST_ALL] != NULL)
        )   
     {
       //Шукаємо тепер вхідну інформацію
@@ -1864,7 +1494,7 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
             //У непарному номері рядку виводимо заголовок
             unsigned int part = 0;
             
-            uint8_t *p = ((uint8_t*)array_p_name[type_logical_node_out - _ID_FB_FIRST_ALL]) + (index_language*max_row + index_in_ekran_tmp)*(MAX_COL_LCD + 1);
+            uint8_t *p = ((uint8_t*)array_p_name_out[type_logical_node_out - _ID_FB_FIRST_ALL]) + (index_language*max_row + index_in_ekran_tmp)*(MAX_COL_LCD + 1);
             unsigned int number_digit, first_index_number;
             
             unsigned int number_logical_node_tmp;
@@ -1985,21 +1615,6 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
           }
           else
           {
-            const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-            {
-              {"     Откл.      ", "      Вкл.      "},
-              {"     Вимк.      ", "     Ввімк.     "},
-              {"      Off       ", "       On       "},
-              {"     Сљнд.      ", "     Косу.      "}
-            };
-            const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
-            {
-              {4, 5},
-              {4, 4},
-              {5, 6},
-              {4, 4}
-            };
-            
             //Шукаємо, чи сигнал на який вказаний курсор  налаштований як віхдний для вибраного функцонального блоку
             unsigned int present = false;
             for (size_t j = 0; j < n_similar_input_signals; j++)
@@ -2022,10 +1637,10 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
               }
             }
           
-            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][present][j];
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_on_off[index_language][present][j];
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x[index_language][present];
+              current_state_menu2.position_cursor_x = cursor_x_on_off[index_language][present];
             }
           }
         }
@@ -2040,14 +1655,6 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
     else
     {
       //Цього при правильній роботі програми не мало б бути
-      const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-      {
-        "     Ошибка     ",
-        "    Помилка     ",
-        "     Error      ",
-        "     Ошибка     "
-      };
-
       for (size_t i = 0; i < MAX_ROW_LCD; i++)
       {
         for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i == 0) ? information_error[index_language][j] : ' ';
@@ -2447,23 +2054,6 @@ void select_input_signal_ln(void)
         }
         else
         {
-          const enum _menu2_levels levels_tmp[__NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL - __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL] =
-          {
-            EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL,
-            EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL
-          };
           enum _menu2_levels tmp = previous_level_in_current_level_menu2[EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = levels_tmp[(id_input - 1) - 1];
           current_state_menu2.number_selection = position_in_current_level_menu2[tmp] = n_input - 1;
         

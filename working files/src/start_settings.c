@@ -1,6 +1,88 @@
 #include "header.h"
 
+const uint8_t string_info[MAX_NAMBER_LANGUAGE][7][MAX_COL_LCD] = 
+{
+  {
+    "Конфигурации нет",
+    " Ош.конфигурации",
+    " Недост.динам.п.",
+    "  Настроек нет  ",
+    "  Ош.настроек   ",
+    "  Триг.инф.нет  ",
+    "  Ош.триг.инф.  "
+  },
+  {
+    "   Конф.нема    ",
+    "Пом.конфігурації",
+    " Недост.динам.п.",
+    "Налаштувань нема",
+    " Пом.налаштувань",
+    " Триґ.інф.нема  ",
+    " Пом.триґ.інф.  "
+  },
+  {
+    "    No Conf.    ",
+    "   Conf.Err.    ",
+    "No enough dyn.m.",
+    "  No settings   ",
+    " Settings Err.  ",
+    "  Триг.инф.нет  ",
+    "  Ош.триг.инф.  "
+  },
+  {
+    "Конфигурации нет",
+    " Ош.конфигурации",
+    " Недост.динам.п.",
+    "  Настроек нет  ",
+    "  Ош.настроек   ",
+    "  Триг.инф.нет  ",
+    "  Ош.триг.инф.  "
+  } 
+};
+const uint8_t string_action[MAX_NAMBER_LANGUAGE][3][MAX_COL_LCD] =
+{
+  {
+    "Мин.парам.:Enter",
+    " Сбросить: Enter",
+    " Схема 2: Enter "
+  },
+  {
+    "Мін.парам.:Enter",
+    " Скинути: Enter ",
+    " Схема 2: Enter "
+  },
+  {
+    "Min.param :Enter",
+    "  Reset: Enter  ",
+    " Scheme 2: Enter"
+  },
+  {
+    "Мин.парам.:Enter",
+    " Сбросить: Enter",
+    " Схема 2: Enter "
+  }
+};
 
+const uint8_t name_string_restart[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD] = 
+{
+  {
+    " Перезапустите  ",
+    "   устройство   "
+  },
+  {
+    " Перезапустіть  ",
+    "    пристрій    "
+  },
+  {
+    "     Reset      ",
+    "   the device   "
+  },
+  {
+    " Перезапустите  ",
+    "   устройство   "
+  }
+};
+  
 /**************************************/
 //Тестування зовнішньої SRAM
 /**************************************/
@@ -1742,69 +1824,6 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
 /**************************************/
 void error_reading_with_eeprom()
 {
-  const unsigned char string_info[MAX_NAMBER_LANGUAGE][7][MAX_COL_LCD] = 
-  {
-    {
-      "Конфигурации нет",
-      " Ош.конфигурации",
-      " Недост.динам.п.",
-      "  Настроек нет  ",
-      "  Ош.настроек   ",
-      "  Триг.инф.нет  ",
-      "  Ош.триг.инф.  "
-    },
-    {
-      "   Конф.нема    ",
-      "Пом.конфігурації",
-      " Недост.динам.п.",
-      "Налаштувань нема",
-      " Пом.налаштувань",
-      " Триґ.інф.нема  ",
-      " Пом.триґ.інф.  "
-    },
-    {
-      "    No Conf.    ",
-      "   Conf.Err.    ",
-      "No enough dyn.m.",
-      "  No settings   ",
-      " Settings Err.  ",
-      "  Триг.инф.нет  ",
-      "  Ош.триг.инф.  "
-    },
-    {
-      "Конфигурации нет",
-      " Ош.конфигурации",
-      " Недост.динам.п.",
-      "  Настроек нет  ",
-      "  Ош.настроек   ",
-      "  Триг.инф.нет  ",
-      "  Ош.триг.инф.  "
-    } 
-  };
-  const unsigned char string_action[MAX_NAMBER_LANGUAGE][3][MAX_COL_LCD] =
-  {
-    {
-      "Мин.парам.:Enter",
-      " Сбросить: Enter",
-      " Схема 2: Enter "
-    },
-    {
-      "Мін.парам.:Enter",
-      " Скинути: Enter ",
-      " Схема 2: Enter "
-    },
-    {
-      "Min.param :Enter",
-      "  Reset: Enter  ",
-      " Scheme 2: Enter"
-    },
-    {
-      "Мин.парам.:Enter",
-      " Сбросить: Enter",
-      " Схема 2: Enter "
-    }
-  };
-  
   int index_language;
   if (((state_i2c_task & STATE_CONFIG_EEPROM_GOOD) == 0) || ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) == 0)) index_language = index_language_in_array(LANGUAGE_ABSENT);
   else index_language = index_language_in_array(settings_fix_prt.language);
@@ -2073,26 +2092,6 @@ void start_checking_dataflash(void)
   
   if (page_size_256_total == 0)
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD] = 
-    {
-      {
-        " Перезапустите  ",
-        "   устройство   "
-      },
-      {
-        " Перезапустіть  ",
-        "    пристрій    "
-      },
-      {
-        "     Reset      ",
-        "   the device   "
-      },
-      {
-        " Перезапустите  ",
-        "   устройство   "
-      }
-    };
-
     int index_language = index_language_in_array(settings_fix_prt.language);
     
     //Робота з watchdogs
@@ -2109,7 +2108,7 @@ void start_checking_dataflash(void)
     //Копіюємо  рядки у робочий екран
     for (size_t i= 0; i < MAX_ROW_LCD; i++)
     {
-      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][i][j];
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_restart[index_language][i][j];
     }
   
     //Обновити повністю весь екран

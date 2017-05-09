@@ -20,4 +20,27 @@ enum __index_language_m2
 
 #define MAX_ROW_FOR_VIEW_SETTING_LANGUAGE             1
 
+//const uint8_t name_string_language[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_SETTING_LANGUAGE][MAX_COL_LCD + 1] = 
+//{
+//  "      Язык      ",
+//  "      Мова      ",
+//  "    Language    ",
+//  "      Язык      "
+//};
+//
+//uint8_t information_language[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+//{
+//  "    Русский     ",
+//  "   Українська   ",
+//  "    English     ",
+//  "     Казак      "
+//};
+//const unsigned int cursor_x_language[MAX_NAMBER_LANGUAGE] = {3, 2, 3, 4};
+
 #endif
+
+//extern const uint8_t name_string_language[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_SETTING_LANGUAGE][MAX_COL_LCD + 1];
+//extern uint8_t information_language[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
+//extern const unsigned int cursor_x_language[MAX_NAMBER_LANGUAGE];
+
+

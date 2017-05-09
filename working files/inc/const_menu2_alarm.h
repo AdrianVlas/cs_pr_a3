@@ -21,10 +21,10 @@
 
 
 #define NAME_ALARM_IN_SIGNALS_EN        \
-  "L.In.            ",                  \
-  "Mute             ",                  \
-  "Block            ",                  \
-  "Reset            "                    
+  "L.In.           ",                  \
+  "Mute            ",                  \
+  "Block           ",                  \
+  "Reset           "                    
 
 #define NAME_ALARM_IN_SIGNALS_KZ        \
   "À.¬ı.           ",                   \
@@ -42,11 +42,93 @@
   "“Ë¯‡            "
 
 #define NAME_ALARM_OUT_SIGNALS_EN       \
-  "Alarm            ",                  \
-  "Mute             "
+  "Alarm           ",                  \
+  "Mute            "
 
 #define NAME_ALARM_OUT_SIGNALS_KZ       \
   "“Ë‚Ó„‡         ",                   \
   "“Ë¯ËÌ‡          "
-    
+
+//const uint8_t name_string_alarm_delay[MAX_NAMBER_LANGUAGE][ALARM_SET_DELAYS][MAX_COL_LCD + 1] = 
+//{
+//  {
+//    "     œÂËÓ‰     "
+//  },
+//  {
+//    "     œÂ≥Ó‰     "
+//  },
+//  {
+//    "     Period     "
+//  },
+//  {
+//    "     œÂËÓ‰     "
+//  }
+//};
+//    
+//const uint8_t name_string_alarm_control[MAX_NAMBER_LANGUAGE][MAX_INDEX_CTRL_ALARM][MAX_COL_LCD + 1] = 
+//{
+//  {
+//    "     –ÂÊËÏ      "
+//  },
+//  {
+//    "     –ÂÊËÏ      "
+//  },
+//  {
+//    "      Mode      "
+//  },
+//  {
+//    "     –ÂÊËÏ      "
+//  }
+//};
+//
+//const uint8_t information_alarm_control[MAX_NAMBER_LANGUAGE][ALARM_MODES_NUMBER][MAX_COL_LCD + 1] = 
+//{
+//  {"    œ–Œ—“Œ…     ", "   “–»√√≈Õ€…    ", "    «¿ƒ.¬–.     "},
+//  {"    œ–Œ—“»…     ", "    “–»•≈Õ€…    ", "    «¿ƒ.◊¿—     "},
+//  {"     SIMPLE     ", "    TRIGGER     ", "    «¿ƒ.¬–.     "},
+//  {"    œ–Œ—“»…     ", "   “–»√√≈Õ€…    ", "    «¿ƒ.¬–.     "}
+//};
+//const unsigned int cursor_x_alarm_control[MAX_NAMBER_LANGUAGE][ALARM_MODES_NUMBER] = 
+//{
+//  {3, 2, 3},
+//  {3, 3, 3},
+//  {4, 3, 3},
+//  {3, 2, 3}
+//};
+//
+//const uint8_t name_alarm_in_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_IN][MAX_COL_LCD + 1] =
+//{
+//  {NAME_ALARM_IN_SIGNALS_RU},  
+//  {NAME_ALARM_IN_SIGNALS_UA},  
+//  {NAME_ALARM_IN_SIGNALS_EN},  
+//  {NAME_ALARM_IN_SIGNALS_KZ}
+//};
+//
+//const uint8_t name_alarm_out_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_OUT][MAX_COL_LCD + 1] =
+//{
+//  {NAME_ALARM_OUT_SIGNALS_RU},  
+//  {NAME_ALARM_OUT_SIGNALS_UA},  
+//  {NAME_ALARM_OUT_SIGNALS_EN},  
+//  {NAME_ALARM_OUT_SIGNALS_KZ}
+//};
+//
+//const uint8_t name_alarm[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+//{
+//  " —«—            ",
+//  " —«—            ",
+//  " Alarm          ",
+//  " —«—            "
+//};
+//const unsigned int first_index_number_alarm[MAX_NAMBER_LANGUAGE] = {4, 4, 6, 4};
+//    
 #endif 
+
+//extern const uint8_t name_string_alarm_delay[MAX_NAMBER_LANGUAGE][ALARM_SET_DELAYS][MAX_COL_LCD + 1];
+//extern const uint8_t name_string_alarm_control[MAX_NAMBER_LANGUAGE][MAX_INDEX_CTRL_ALARM][MAX_COL_LCD + 1];
+//extern const uint8_t information_alarm_control[MAX_NAMBER_LANGUAGE][ALARM_MODES_NUMBER][MAX_COL_LCD + 1];
+//extern const unsigned int cursor_x_alarm_control[MAX_NAMBER_LANGUAGE][ALARM_MODES_NUMBER];
+//extern const uint8_t name_alarm_in_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_IN][MAX_COL_LCD + 1];
+//extern const uint8_t name_alarm_out_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_OUT][MAX_COL_LCD + 1];
+//extern const uint8_t name_alarm[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
+//extern const unsigned int first_index_number_alarm[MAX_NAMBER_LANGUAGE];
+

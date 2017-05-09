@@ -11,95 +11,16 @@ void make_ekran_configuration(void)
       (current_state_menu2.edition == ED_WARNING_ENTER)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-    
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Дин.пам.недост.",
-      " Дин.пам.недост.",
-      " Дин.пам.недост.",
-      " Дин.пам.недост."
-    };
-    
-    const uint8_t information_about_out_of_range[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-    
     const uint8_t (*p_information)[MAX_COL_LCD + 1];
     
     enum _edition_stats edition = current_state_menu2.edition;
-    if (edition == ED_WARNING_EDITION_BUSY) p_information = information_about_info;
-    else if (edition == ED_WARNING_ENTER_ESC) p_information = information_about_out_of_range;
-    else p_information = information_about_error;
+    if (edition == ED_WARNING_EDITION_BUSY) p_information = information_no_edition;
+    else if (edition == ED_WARNING_ENTER_ESC) p_information = information_out_of_limits;
+    else p_information = information_no_free_dyn_mem;
     make_ekran_about_info( ((edition == ED_WARNING_ENTER_ESC) ? 1 : 0), p_information);
   }
   else 
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGURATION][MAX_COL_LCD + 1] = 
-    {
-      {
-        "      СЗС       ",
-        "      ШГС       ",
-        "       И        ",
-        "      ИЛИ       ",
-        "    Искл.ИЛИ    ",
-        "       НЕ       ",
-        "   МФ-Таймер    ",
-        "   D-Триггер    ",
-        "      ГПС       ",
-        "       ТУ       ",
-        " Журнал событий "
-      },
-      {
-        "      СЗС       ",
-        "      ШГС       ",
-        "       І        ",
-        "      АБО       ",
-        "    Викл.АБО    ",
-        "       НЕ       ",
-        "   БФ-Таймер    ",
-        "    D-Триґер    ",
-        "      ГПС       ",
-        "       ТУ       ",
-        "  Журнал подій  "
-      },
-      {
-        "      СЗС       ",
-        "      ШГС       ",
-        "      AND       ",
-        "       OR       ",
-        "      XOR       ",
-        "      NOT       ",
-        "    MF-Timer    ",
-        "   D-Trigger    ",
-        "      PSG       ",
-        "       TC       ",
-        "   Event Log    "
-      },
-      {
-        "      СЗС       ",
-        "      ШГС       ",
-        "       И        ",
-        "      ИЛИ       ",
-        "    Искл.ИЛИ    ",
-        "       НЕ       ",
-        "   МФ-Таймер    ",
-        "   D-Триггер    ",
-        "      ГПС       ",
-        "       ТУ       ",
-        " Журнал событий "
-      }
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
 
     unsigned int position_temp = current_state_menu2.index_position;
@@ -123,7 +44,7 @@ void make_ekran_configuration(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_configuration[index_language][index_in_ekran_tmp][j];
           first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
 
           switch (index_in_ekran_tmp)

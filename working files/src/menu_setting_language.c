@@ -10,34 +10,11 @@ void make_ekran_setting_language(void)
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_out_of_limits));
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_SETTING_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "      Язык      ",
-      "      Мова      ",
-      "    Language    ",
-      "      Язык      "
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -52,24 +29,15 @@ void make_ekran_setting_language(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string_language[index_language][index_in_ekran_tmp][j];
         }
         else
         {
           //У парному номері рядку виводимо значення уставки
-          uint8_t information[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-          {
-            "    Русский     ",
-            "   Українська   ",
-            "    English     ",
-            "     Казак      "
-          };
-          const unsigned int cursor_x[MAX_NAMBER_LANGUAGE] = {3, 2, 3, 4};
-          
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_language[index_language][j];
           if (position_temp == index_in_ekran_tmp)
           {
-            current_state_menu2.position_cursor_x = cursor_x[index_language];
+            current_state_menu2.position_cursor_x = cursor_x_language[index_language];
           }
         }
       }

@@ -1,33 +1,12 @@
 #include "header.h"
 
+const uint8_t symbols[MAX_NAMBER_LANGUAGE][5 + 1] = {"симв.", "симв.", "symb.", "симв."};
+
 /*****************************************************/
 //Формуємо екран відображення заголовків настроювання комунікації
 /*****************************************************/
 void make_ekran_choose_communication_parameters(void)
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_CHCP_M2][MAX_COL_LCD + 1] = 
-  {
-    {
-      " Имя ячейки     ",
-      " Адрес ячейки   ",
-      " Настр.RS-485   "
-    },
-    {
-      " Ім'я комірки   ",
-      " Адреса комірки ",
-      " Налашт.RS-485  "
-    },
-    {
-      " Bay name       ",
-      " Bay Address    ",
-      " RS-485 Settings"
-    },
-    {
-      " Имя ячейки     ",
-      " Адрес ячейки   ",
-      " Настр.RS-485   "
-    }
-  };
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
 
   unsigned int position_temp = current_state_menu2.index_position;
@@ -38,7 +17,7 @@ void make_ekran_choose_communication_parameters(void)
   {
     for (size_t j = 0; j < MAX_COL_LCD; j++) 
     {
-      working_ekran[i][j] = (index_in_ekran < MAX_ROW_CHCP_M2) ? name_string[index_language][index_in_ekran][j] : ' ';
+      working_ekran[i][j] = (index_in_ekran < MAX_ROW_CHCP_M2) ? name_string_choose_communication_parameters[index_language][index_in_ekran][j] : ' ';
     }
     index_in_ekran++;
   }
@@ -104,34 +83,11 @@ void make_ekran_address(void)
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_out_of_limits));
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_ADDRESS_M2][MAX_COL_LCD + 1] = 
-    {
-      "     Адрес      ",
-      "     Адреса     ",
-      "    Address     ",
-      "     Адрес      "
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -154,7 +110,7 @@ void make_ekran_address(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_choose_communication_parameters_address[index_language][index_in_ekran_tmp][j];
 
           first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
           vaga = 100; //максимальний ваговий коефіцієнт
@@ -321,33 +277,6 @@ void change_address(unsigned int action)
 /*****************************************************/
 void make_ekran_choose_setting_RS485(void)
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_SETTING_RS485_M2][MAX_COL_LCD + 1] = 
-  {
-    {
-      " Скорость обмена",
-      " Контр.четности ",
-      " Колич.стоп-бит ",
-      " Конец приёма   "
-    },
-    {
-      " Швидкість обм. ",
-      " Контр.парності ",
-      "Кільк.стоп-біт  ",
-      "Кінець приймання"
-    },
-    {
-      " Baud rate      ",
-      " Parity         ",
-      " Stop Bits      ",
-      "End of Reception"
-    },
-    {
-      " Скорость обмена",
-      " Контр.четности ",
-      " Колич.стоп-бит ",
-      " Конец приёма   "
-    }
-  };
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
   unsigned int position_temp = current_state_menu2.index_position;
@@ -358,7 +287,7 @@ void make_ekran_choose_setting_RS485(void)
   {
     for (size_t j = 0; j < MAX_COL_LCD; j++) 
     {
-      working_ekran[i][j] = (index_in_ekran < MAX_ROW_SETTING_RS485_M2) ? name_string[index_language][index_in_ekran][j] : ' ';
+      working_ekran[i][j] = (index_in_ekran < MAX_ROW_SETTING_RS485_M2) ? name_string_choose_communication_parameters_RS485[index_language][index_in_ekran][j] : ' ';
     }
     index_in_ekran++;
   }
@@ -386,34 +315,11 @@ void make_ekran_baud_RS485(void)
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_out_of_limits));
   }
   else
   {
-    const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_BAUD_RS485][MAX_COL_LCD + 1] = 
-    {
-      " Скорость обмена",
-      " Швидкість обм. ",
-      "   Baud rate    ",
-      " Скорость обмена"
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -433,42 +339,21 @@ void make_ekran_baud_RS485(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_choose_communication_parameters_speed[index_language][index_in_ekran_tmp][j];
         }
         else
         {
           //У парному номері рядку виводимо значення уставки
           if (value < MAX_NUMBER_BAUD_RS485)
           {
-            const uint8_t information[MAX_NUMBER_BAUD_RS485][MAX_COL_LCD + 1] = 
-            {
-              "      9600      ",
-              "     14400      ",
-              "     19200      ",
-              "     28800      ",
-              "     38400      ",
-              "     57600      ",
-              "     115200     "
-            };
-            const unsigned int cursor_x[MAX_NUMBER_BAUD_RS485] = {5, 4, 4, 4, 4, 4, 4};
-
-            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[value][j];
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_speed[value][j];
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x[value];
+              current_state_menu2.position_cursor_x = cursor_x_communication_parameters_pare[value];
             }
           }
           else
           {
-            const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-            {
-              "     Ошибка     ",
-              "    Помилка     ",
-              "     Error      ",
-              "     Ошибка     "
-            };
-            const unsigned int cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 3, 4, 4};
-
             for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
             if (position_temp == index_in_ekran_tmp)
             {
@@ -588,34 +473,11 @@ void make_ekran_pare_RS485()
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_out_of_limits));
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_PARE_RS485][MAX_COL_LCD + 1] = 
-    {
-      " Контр.четности ",
-      " Контр.парності ",
-      "     Parity     ",
-      " Контр.четности "
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -635,44 +497,20 @@ void make_ekran_pare_RS485()
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_stringe_communication_parameters_pare[index_language][index_in_ekran_tmp][j];
         }
         else
         {
           if (value < MAX_NUMBER_PARE_RS485)
           {
-            const uint8_t information[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485][MAX_COL_LCD + 1] = 
-            {
-              {"      Нет       ", "     Нечет.     ", "      Чет.      "},
-              {"      Нема      ", "    Непарн.     ", "      Парн.     "},
-              {"      None      ", "      Odd       ", "      Even      "},
-              {"      Нет       ", "     Нечет.     ", "      Чет.      "}
-            };
-            const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485 + 1] = 
-            {
-              {5, 4, 5, 4},
-              {5, 3, 5, 3},
-              {5, 5, 5, 4},
-              {5, 4, 5, 4}
-            };
-
-            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][value][j];
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_pare[index_language][value][j];
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x[index_language][value];
+              current_state_menu2.position_cursor_x = cursor_x_pare[index_language][value];
             }
           }
           else
           {
-            const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-            {
-              "     Ошибка     ",
-              "    Помилка     ",
-              "     Error      ",
-              "     Ошибка     "
-            };
-            const unsigned int cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 3, 4, 4};
-
             for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
             if (position_temp == index_in_ekran_tmp)
             {
@@ -792,34 +630,11 @@ void make_ekran_stopbits_RS485()
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_out_of_limits));
   }
   else
   {
-    const unsigned char name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_STOP_BITS_RS485][MAX_COL_LCD + 1] = 
-    {
-      " Колич.стоп-бит ",
-      "Кільк.стоп-біт  ",
-      "   Stop Bits    ",
-      " Колич.стоп-бит "
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -839,44 +654,20 @@ void make_ekran_stopbits_RS485()
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_stringe_communication_parameters_stopbits[index_language][index_in_ekran_tmp][j];
         }
         else
         {
           if (value < MAX_NUMBER_STOP_BITS_RS485)
           {
-            const unsigned char information[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485][MAX_COL_LCD + 1] = 
-            {
-              {"      Один      ", "      Два       "},
-              {"      Один      ", "      Два       "},
-              {"      One       ", "      Two       "},
-              {"      Один      ", "      Два       "}
-            };
-            const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485] = 
-            {
-              {5, 5},
-              {5, 5},
-              {5, 5},
-              {5, 5}
-            };
-
-            for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][value][j];
+            for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information_stopbits[index_language][value][j];
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x[index_language][value];
+              current_state_menu2.position_cursor_x = cursor_x_stopbits[index_language][value];
             }
           }
           else
           {
-            const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-            {
-              "     Ошибка     ",
-              "    Помилка     ",
-              "     Error      ",
-              "     Ошибка     "
-            };
-            const unsigned int cursor_x_error[MAX_NAMBER_LANGUAGE] = {4, 3, 4, 4};
-
             for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
             if (position_temp == index_in_ekran_tmp)
             {
@@ -997,35 +788,11 @@ void make_ekran_timeout_RS485(void)
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_out_of_limits));
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_TIMEOUT_RS485][MAX_COL_LCD + 1] = 
-    {
-      "  Конец приёма  ",
-      "Кінець приймання",
-      "End of Reception",
-      "  Конец приёма  "
-    };
-    const uint8_t symbols[MAX_NAMBER_LANGUAGE][5 + 1] = {"симв.", "симв.", "symb.", "симв."};
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -1046,7 +813,7 @@ void make_ekran_timeout_RS485(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_stringe_communication_parameters_timeout[index_language][index_in_ekran_tmp][j];
 
           first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
           vaga = 100; //максимальний ваговий коефіцієнт для вилілення старшого розряду

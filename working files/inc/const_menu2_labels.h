@@ -11,4 +11,26 @@ enum __index_labels_m2
 
 #define MAX_ROW_TIME_CONFIG_OR_SETTINGS      1 
 
+//const uint8_t name_string_labels[MAX_NAMBER_LANGUAGE][MAX_ROW_LABELS_M2][MAX_COL_LCD + 1] = 
+//{
+//  {
+//    " Метка конфиг.  ",
+//    " Метка настроек "
+//  },
+//  {
+//    " Мітка конфіг.  ",
+//    " Мітка налашт.  "
+//  },
+//  {
+//    " Configur.Mark  ",
+//    " Settings Mark  "
+//  },
+//  {
+//    " Метка конфиг.  ",
+//    " Метка настроек "
+//  }
+//};
+
 #endif
+
+//extern const uint8_t name_string_labels[MAX_NAMBER_LANGUAGE][MAX_ROW_LABELS_M2][MAX_COL_LCD + 1];

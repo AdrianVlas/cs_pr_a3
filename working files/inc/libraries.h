@@ -6,7 +6,6 @@
 #include "platform_config.h"
 #include "hw_config.h"
 #include "macroses.h"
-#include "type_definition.h"
 
 #include "usbd_cdc_core.h"
 #include "usbd_usr.h"

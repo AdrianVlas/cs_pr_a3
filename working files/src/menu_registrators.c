@@ -5,26 +5,6 @@
 /*****************************************************/
 void make_ekran_list_registrators(void)
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_REGISTRATORS_M2][MAX_COL_LCD + 1] = 
-  {
-    {
-      " Журнал событий ",
-      " Архив диагност."
-    },
-    {
-      " Журнал подій   ",
-      " Архів діагност."
-    },
-    {
-      " Event Log      ",
-      " Diagn.Archive  "
-    },
-    {
-      " Журнал событий ",
-      " Архив диагност."
-    }
-  };
-
   int index_language = index_language_in_array(settings_fix_prt.language);
   
   unsigned int position_temp = current_state_menu2.index_position;
@@ -35,7 +15,7 @@ void make_ekran_list_registrators(void)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
     if (index_in_ekran < MAX_ROW_LIST_REGISTRATORS_M2)
-      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran][j];
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_registrators[index_language][index_in_ekran][j];
     else
       for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = ' ';
 
@@ -94,31 +74,11 @@ void make_ekran_list_event_pr_err(void)
   
   if (*current_state_menu2.p_max_row == 0)
   {
-    const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-    {
-      {
-        "      Нет       ",
-        "    записей     "
-      },
-      {
-        "     Нема       ",
-        "    записів     "
-      },
-      {
-        "    Records     ",
-        "   are absent   "
-      },
-      {
-        "      Нет       ",
-        "    записей     "
-      }
-    };
-
     //Копіюємо  рядки у робочий екран
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
       //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i < 2) ? information[index_language][i][j] : ' ';
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i < 2) ? information_no_records[index_language][i][j] : ' ';
     }
 
     //Курсор по горизонталі відображається на першій позиції
@@ -142,25 +102,6 @@ void make_ekran_list_event_pr_err(void)
       uint32_t index_in_ekran_tmp = index_in_ekran >> 1;
       if (index_in_ekran_tmp < (uint32_t)(*current_state_menu2.p_max_row))
       {
-        const uint8_t info_data_corrupted[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-        {
-          {
-            "     Данные     ",
-            "   повреждены   "
-          },
-          {
-            "      Дані      ",
-            "   пошкоджені   "
-          },
-          {
-            "      Data      ",
-            " are corrupted  "
-          },
-          {
-            "     Данные     ",
-            "   повреждены   "
-          }
-        };
         if ((i & 0x1) == 0)
         {
           //Пергий рідок з двох на відображення запису
@@ -193,31 +134,11 @@ void make_ekran_list_event_pr_err(void)
             record_read_ok = false;
             _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT);
 
-            const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-            {
-              {
-               "    Time-out    ",
-               " ожидания истек "
-              },
-              {
-               "    Time-out    ",
-               " очікування вич."
-              },
-              {
-               "    Time-out    ",
-               "    is over     "
-              },
-              {
-               "    Time-out    ",
-               " ожидания истек "
-              }
-            };
-
             //Копіюємо  рядки у робочий екран
             for (size_t j = 0; j < MAX_ROW_LCD; j++)
             {
               //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-              for (size_t k = 0; k < MAX_COL_LCD; j++) working_ekran[j][k] = (j < 2) ? information[index_language][j][k] : ' ';
+              for (size_t k = 0; k < MAX_COL_LCD; j++) working_ekran[j][k] = (j < 2) ? information_timeout[index_language][j][k] : ' ';
             }
             
             //Курсор по горизонталі відображається на першій позиції
@@ -261,22 +182,7 @@ void make_ekran_list_event_pr_err(void)
             
             if (record_check_ok == true)
             {
-              const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_DIAGNOSTYKA][MAX_COL_LCD + 1] = 
-              {
-                {
-                  NAME_DIAGN_RU
-                },
-                {
-                  NAME_DIAGN_UA
-                },
-                {
-                  NAME_DIAGN_EN
-                },
-                {
-                  NAME_DIAGN_KZ
-                }
-              };
-              for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][event_number - 1][j];
+              for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_pr_err[index_language][event_number - 1][j];
             }
             else
             {
@@ -290,14 +196,6 @@ void make_ekran_list_event_pr_err(void)
           
           if (record_check_ok == true)
           {
-            const uint8_t passive_active[MAX_NAMBER_LANGUAGE][2][5] = 
-            {
-              {"Пасс.", "Акт. "},
-              {"Пас. ", "Акт. "},
-              {"Pass.", "Act. "},
-              {"Пасс.", "Акт. "}
-            };
-            
            uint32_t number = index_in_ekran_tmp;
             uint32_t number_digit = max_number_digit_in_number(number);
             for (size_t j = 0; j < MAX_COL_LCD; j++) 

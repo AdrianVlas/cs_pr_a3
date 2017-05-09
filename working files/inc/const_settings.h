@@ -1,6 +1,51 @@
 #ifndef __CONST_SETTINGS__
 #define __CONST_SETTINGS__
 
+enum _id_fb
+{
+  _ID_FB_FIRST_ALL = 1,                                                 /*1*/
+  
+    _ID_FB_FIRST_FIX = _ID_FB_FIRST_ALL,                                /*1*/
+
+      ID_FB_CONTROL_BLOCK = _ID_FB_FIRST_FIX,                           /*1*/
+      
+    _ID_FB_LAST_FIX,                                                    /*2*/
+
+    _ID_FB_FIRST_VAR = _ID_FB_LAST_FIX,                                 /*2*/
+    
+      _ID_FB_FIRST_VAR_NONE_CHANGED = _ID_FB_FIRST_VAR,                 /*2*/
+
+        ID_FB_INPUT = _ID_FB_FIRST_VAR_NONE_CHANGED,                    /*2*/
+        ID_FB_OUTPUT,                                                   /*3*/
+        ID_FB_LED,                                                      /*4*/
+        ID_FB_BUTTON,                                                   /*5*/
+
+      _ID_FB_LAST_VAR_NONE_CHANGED,                                     /*6*/
+
+      _ID_FB_FIRST_VAR_CHANGED = _ID_FB_LAST_VAR_NONE_CHANGED,          /*6*/
+      
+        ID_FB_ALARM = _ID_FB_FIRST_VAR_CHANGED,                         /*6*/
+        ID_FB_GROUP_ALARM,                                              /*7*/
+        ID_FB_AND,                                                      /*8*/
+        ID_FB_OR,                                                       /*9*/
+        ID_FB_XOR,                                                      /*10*/
+        ID_FB_NOT,                                                      /*11*/
+
+        ID_FB_TIMER,                                                    /*12*/
+        ID_FB_TRIGGER,                                                  /*13*/
+
+        ID_FB_MEANDER,                                                  /*14*/
+        ID_FB_TU,                                                       /*15*/
+
+        ID_FB_LOG,                                                      /*16*/
+        
+      _ID_FB_LAST_VAR_CHANGED,                                          /*17*/
+      
+    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*17*/
+
+  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*17*/
+};
+
 #define BIT_CHANGED_CONFIGURATION       0
 #define MASKA_CHANGED_CONFIGURATION     (1 << BIT_CHANGED_CONFIGURATION)
 #define BIT_CHANGED_SETTINGS            1
@@ -427,5 +472,5 @@ enum _LOG_output_signals
 };
 /***/
 
-
 #endif
+

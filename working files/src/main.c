@@ -1,7 +1,9 @@
 /* Includes ------------------------------------------------------------------*/
-#include "constants.h"
 #include "libraries.h"
+#include "constants.h"
+#include "type_definition.h"
 #include "variables_global.h"
+#include "strings_global.h"
 #include "functions_global.h"
 #include "../v_A_shm/I_Shm.h"
 #include "../v_A_shm/IStng.h"

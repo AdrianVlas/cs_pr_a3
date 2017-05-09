@@ -10,47 +10,11 @@ void make_ekran_delay_timer(void)
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_out_of_limits));
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][TIMER_SET_DELAYS][MAX_COL_LCD + 1] = 
-    {
-      {
-        "  Таймер паузы  ",
-        " Таймер работы  "
-      },
-      {
-        "  Таймер паузи  ",
-        " Таймер роботи  "
-      },
-      {
-        "  Pause Timer   ",
-        " Operation Timer"
-      },
-      {
-        "  Таймер паузы  ",
-        " Таймер работы  "
-      }
-    };
-    
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -74,7 +38,7 @@ void make_ekran_delay_timer(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string_timer_delay[index_language][index_in_ekran_tmp][j];
           first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
 
           switch (index_in_ekran_tmp)

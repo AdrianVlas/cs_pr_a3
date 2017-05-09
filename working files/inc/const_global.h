@@ -39,6 +39,8 @@ enum _fix_button
   
   NUMBER_FIX_BUTTONS
 };
+
+
 #define NUMBER_GENERAL_BUTTONS         2
 #define NUMBER_BUTTONS                 (NUMBER_FIX_BUTTONS + NUMBER_GENERAL_BUTTONS)
 

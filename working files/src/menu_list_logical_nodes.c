@@ -1,145 +1,47 @@
 #include "header.h"
 
+const uint8_t (* const array_p_name[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+{
+  &name_input,
+  &name_output,
+  &name_led,
+  &name_button,
+  &name_alarm,
+  &name_group_alarm,
+  &name_and,
+  &name_or,
+  &name_xor,
+  &name_not,
+  &name_timer,
+  &name_trigger,
+  &name_meander,
+  &name_tu,
+  &name_log
+};
+const unsigned int (* const array_p_first_index_number[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE] = 
+{
+  &first_index_number_input,
+  &first_index_number_output,
+  &first_index_number_led,
+  &first_index_number_button,
+  &first_index_number_alarm,
+  &first_index_number_group_alarm,
+  &first_index_number_and,
+  &first_index_number_or,
+  &first_index_number_xor,
+  &first_index_number_not,
+  &first_index_number_timer,
+  &first_index_number_trigger,
+  &first_index_number_meander,
+  &first_index_number_tu,
+  &first_index_number_log
+};
+
 /*****************************************************/
 //Ôîðìóºìî åêðàí â³äîáðàæåííÿ ñïèñêó ôóíêö³îíàëüíèõ áëîê³â ïåâíîãî òèïó
 /*****************************************************/
 void make_ekran_list_logical_nodes(void)
 {
-  const uint8_t name_input[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " Ä.Âõ.          ",
-    " Ä.Âõ.          ",
-    " DI             ",
-    " Ä.Âõ.          "
-  };
-  const unsigned int first_index_number_input[MAX_NAMBER_LANGUAGE] = {6, 6, 3, 6};
-  
-  const uint8_t name_output[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " Â.Ðåëå          ",
-    " Â.Ðåëå          ",
-    " DO              ",
-    " Â.Ðåëå          "
-  };
-  const unsigned int first_index_number_output[MAX_NAMBER_LANGUAGE] = {7, 7, 3, 7};
-  
-  const uint8_t name_led[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " Ñâ.             ",
-    " Ñâ.             ",
-    " LED             ",
-    " Ñâ.             "
-  };
-  const unsigned int first_index_number_led[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
-
-  const uint8_t name_button[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " ÔÊ             ",
-    " ÔÊ             ",
-    " DB             ",
-    " ÔÊ             "
-  };
-  const unsigned int first_index_number_button[MAX_NAMBER_LANGUAGE] = {3, 3, 3, 3};
-  
-  const uint8_t name_alarm[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " ÑÇÑ            ",
-    " ÑÇÑ            ",
-    " Alarm          ",
-    " ÑÇÑ            "
-  };
-  const unsigned int first_index_number_alarm[MAX_NAMBER_LANGUAGE] = {4, 4, 6, 4};
-
-  const uint8_t name_group_alarm[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " ØÃÑ            ",
-    " ØÃÑ            ",
-    " Gr.Alarm       ",
-    " ØÃÑ            "
-  };
-  const unsigned int first_index_number_group_alarm[MAX_NAMBER_LANGUAGE] = {4, 4, 9, 4};
-
-  const uint8_t name_and[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " È              ",
-    " ²              ",
-    " AND            ",
-    " È              "
-  };
-  const unsigned int first_index_number_and[MAX_NAMBER_LANGUAGE] = {2, 2, 4, 2};
-
-  const uint8_t name_or[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " ÈËÈ            ",
-    " ÀÁÎ            ",
-    " OR             ",
-    " ÈËÈ            "
-  };
-  const unsigned int first_index_number_or[MAX_NAMBER_LANGUAGE] = {4, 4, 3, 4};
-
-  const uint8_t name_xor[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " Èñêë.ÈËÈ       ",
-    " Âèêë.ÀÁÎ       ",
-    " XOR            ",
-    " Èñêë.ÈËÈ       "
-  };
-  const unsigned int first_index_number_xor[MAX_NAMBER_LANGUAGE] = {9, 9, 4, 9};
-
-  const uint8_t name_not[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-      " ÍÅ             ",
-      " ÍÅ             ",
-      " NOT            ",
-      " ÍÅ             ",
-  };
-  const unsigned int first_index_number_not[MAX_NAMBER_LANGUAGE] = {3, 3, 4, 3};
-
-  const uint8_t name_timer[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " ÌÔ-Òàéìåð      ",
-    " ÁÔ-Òàéìåð      ",
-    " MF-Timer       ",
-    " ÌÔ-Òàéìåð      "
-  };
-  const unsigned int first_index_number_timer[MAX_NAMBER_LANGUAGE] = {10, 10, 9, 10};
-
-  const uint8_t name_trigger[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-   " D-Òðèããåð      ",
-   " D-Òðè´åð       ",
-   " D-Trigger      ",
-   " D-Òðèããåð      "
-  };
-  const unsigned int first_index_number_trigger[MAX_NAMBER_LANGUAGE] = {10, 9, 10, 10};
-
-  const uint8_t name_meander[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " ÃÏÑ            ",
-    " ÃÏÑ            ",
-    " PSG            ",
-    " ÃÏÑ            "
-  };
-  const unsigned int first_index_number_meander[MAX_NAMBER_LANGUAGE] = {4, 4, 4, 4};
-
-  const uint8_t name_tu[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " ÒÓ             ",
-    " ÒÓ             ",
-    " TC             ",
-    " ÒÓ             "
-  };
-  const unsigned int first_index_number_tu[MAX_NAMBER_LANGUAGE] = {3, 3, 3, 3};
-
-  const uint8_t name_log[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " Æ.Ñîáûòèé      ",
-    " Æ.Ïîä³é        ",
-    " Ev.Log         ",
-    " Æ.Ñîáûòèé      "
-  };
-  const unsigned int first_index_number_log[MAX_NAMBER_LANGUAGE] = {10, 8, 7, 10};
-  
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
   const uint8_t *p_name;
@@ -157,43 +59,6 @@ void make_ekran_list_logical_nodes(void)
       )
      )   
   {
-    const uint8_t (* const array_p_name[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      &name_input,
-      &name_output,
-      &name_led,
-      &name_button,
-      &name_alarm,
-      &name_group_alarm,
-      &name_and,
-      &name_or,
-      &name_xor,
-      &name_not,
-      &name_timer,
-      &name_trigger,
-      &name_meander,
-      &name_tu,
-      &name_log
-    };
-    const unsigned int (* const array_p_first_index_number[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE] = 
-    {
-      &first_index_number_input,
-      &first_index_number_output,
-      &first_index_number_led,
-      &first_index_number_button,
-      &first_index_number_alarm,
-      &first_index_number_group_alarm,
-      &first_index_number_and,
-      &first_index_number_or,
-      &first_index_number_xor,
-      &first_index_number_not,
-      &first_index_number_timer,
-      &first_index_number_trigger,
-      &first_index_number_meander,
-      &first_index_number_tu,
-      &first_index_number_log
-    };
-    
     intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_level]] - NUMBER_FIX_BLOCKS; 
     p_name = (*array_p_name[index])[index_language];
     p_first_index_number = &(*array_p_first_index_number[index])[index_language];
@@ -271,12 +136,6 @@ void make_ekran_list_logical_nodes(void)
           (index_in_ekran < NUMBER_FIX_BUTTONS)    
          )
       {
-        const uint8_t name_fix_buttons[NUMBER_FIX_BUTTONS][MAX_COL_LCD + 1] = 
-        {
-         " MUTE           ",
-         " RESET          ",
-         " TEST           "
-        };
         for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_fix_buttons[index_in_ekran][j];
       }
       else

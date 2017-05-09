@@ -81,6 +81,7 @@ extern enum _menu2_levels previous_level_in_current_level_menu2[MAX_NUMBER_MENU2
 extern enum _menu2_levels next_level_in_current_level_menu2[MAX_NUMBER_MENU2_LEVEL];    //Масив у якому збкрігається занчення екранів куди ми хочемо перейти з поточного екрану
 extern void *p_menu_param_1, *p_menu_param_2;
 extern const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS];
+extern const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS];
 extern const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS];
 
 extern unsigned int periodical_tasks_TEST_CONFIG;

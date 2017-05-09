@@ -5,26 +5,6 @@
 /*****************************************************/
 void make_ekran_info()
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_INFO_M2][MAX_COL_LCD + 1] = 
-  {
-    {
-      "   Версия ПО    ",
-      "   Версия КП    "
-    },
-    {
-      "   Версія ПЗ    ",
-      "   Версія КП    "
-    },
-    {
-      "   VER.of F/W   ",
-      "   VER.of MM    "
-    },
-    {
-      "   Версия ПО    ",
-      "   Версия КП    "
-    }
-  };
-
   int index_language = index_language_in_array(settings_fix_prt.language);
   
   unsigned int position_temp = current_state_menu2.index_position;
@@ -41,7 +21,7 @@ void make_ekran_info()
       if ((i & 0x1) == 0)
       {
         //У непарному номері рядку виводимо заголовок
-        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran>>1][j];
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_info[index_language][index_in_ekran>>1][j];
         
         if ((index_in_ekran >> 1) == INDEX_INFO_M2_FIWMWARE)
         {

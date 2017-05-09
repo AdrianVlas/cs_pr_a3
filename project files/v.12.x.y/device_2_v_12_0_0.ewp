@@ -4403,6 +4403,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_alarm.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_button_tu.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_choose_communication_parameters.h</name>
         </file>
         <file>
@@ -4436,6 +4439,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_list_settings_param.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_log.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_main.h</name>
         </file>
         <file>
@@ -4457,6 +4463,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_setting_language.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_standard_logic.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_state_inputs_outputs.h</name>
         </file>
         <file>
@@ -4466,7 +4475,16 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_timer.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_trigger.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu_ver2.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\strings_external.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\strings_global.h</name>
         </file>
       </group>
       <group>
@@ -4625,7 +4643,7 @@
           <name>$PROJ_DIR$\..\..\working files\src\menu_timer.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\inc\menu_ver2.c</name>
+          <name>$PROJ_DIR$\..\..\working files\src\menu_ver2.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\menu_view_measurement.c</name>

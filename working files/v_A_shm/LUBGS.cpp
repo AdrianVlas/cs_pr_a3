@@ -1,6 +1,5 @@
 
 #include "LUBGS.hpp"
-#include "../inc/constants.h"
 
 #include <stdbool.h>
 #include <math.h>
@@ -10,6 +9,7 @@
 #include "stm32f2xx.h"
 #include "hw_config.h"
 #include "../inc/macroses.h"
+#include "../inc/constants.h"
 #include "../inc/type_definition.h"
 #include "../inc/variables_external.h"//
 
