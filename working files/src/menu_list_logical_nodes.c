@@ -97,10 +97,10 @@ void make_ekran_list_logical_nodes(void)
 
   const uint8_t name_timer[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
   {
-    " БФ-Таймер      ",
+    " МФ-Таймер      ",
     " БФ-Таймер      ",
     " MF-Timer       ",
-    " БФ-Таймер      "
+    " МФ-Таймер      "
   };
   const unsigned int first_index_number_timer[MAX_NAMBER_LANGUAGE] = {10, 10, 9, 10};
 

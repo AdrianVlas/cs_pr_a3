@@ -32,7 +32,7 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "юан             ",
     "б.юан           ",
     "ме              ",
-    "лтр             ",
+    "атр             ",
     "D-рП            ",
     "цоя             ",
     "рс              ",
