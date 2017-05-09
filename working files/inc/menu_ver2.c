@@ -690,7 +690,7 @@ void main_manu_function_ver2(void)
                 /*
                 Натискування ENTER у підтвердження внесення змін введених нових зв'язків
                 */
-                if (current_state_menu2.func_press_esc != NULL) current_state_menu2.func_press_enter();
+                if (current_state_menu2.func_press_enter != NULL) current_state_menu2.func_press_enter();
 
                 //Повертаємо режим редагування для цього вікна
                 current_state_menu2.edition = ED_EDITION;
@@ -758,7 +758,7 @@ void main_manu_function_ver2(void)
               const enum _menu2_levels next_for_editor_list_selcted_logical_node_type_for_input = EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               const enum _menu2_levels next_for_editor_list_input_of_selcted_logical_node = EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               const enum _menu2_levels next_for_editor_view_chosen_signal_of_selected_logical_node = EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
-              const enum _menu2_levels next_for_editor_list_logical_nodes_for_output[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL};
+              const enum _menu2_levels next_for_editor_list_logical_nodes_for_output[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL};
               const enum _menu2_levels next_for_editor_list_selcted_logical_node_type_for_output = EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
               
               const enum _menu2_levels *p = NULL;
@@ -926,6 +926,8 @@ void main_manu_function_ver2(void)
               case EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL:
                 {
                   p = &next_for_editor_list_logical_nodes_for_output[current_state_menu2.index_position];
+                  
+                  if (current_state_menu2.index_position == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) position_in_current_level_menu2[EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
                     
                   break;
                 }

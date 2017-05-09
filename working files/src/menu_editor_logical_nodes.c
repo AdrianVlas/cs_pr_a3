@@ -736,6 +736,9 @@ enum _result_pressed_enter_during_edition press_enter_in_editor_list_logical_nod
   size_t n_similar_input_signals;
   uint32_t *p_param_cont, *p_param_edit;
 
+  //Оскільки ми багато чого могли змінити, тому коли вертаємося у список налаштованих функцій переходимо не на той сигнал з якого входили у редагування (бо його могли прибрати або залишити), а на перший відображуваний сигнал
+  position_in_current_level_menu2[EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+
   //Шукаємо тепер вхідну інформацію
   /*
                                                              1-е повернення                                                  2-е повернення                                  3-повернення  
@@ -2416,7 +2419,7 @@ void select_input_signal_ln(void)
       case ID_FB_LOG:
         {
           n_similar_input_signals *= current_config_edit.n_log;
-          param = *((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+          param = *((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + position);
             
           break;
         }
