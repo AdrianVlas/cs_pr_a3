@@ -21,7 +21,9 @@ memset(static_cast<void*>(arrPchIn),0xcc,sizeof(char*)*shCLULed_1_0_AmtIn);
 	chNumOutput = static_cast<char>(shCLUFKey_x_y_AmtOut);
 	for (long i = 0; i < chNumOutput; i++)
         arrOut[i] = 0;
+    chKeyPres = 0;    
 }
+
 void FKey_Op(void *pObj){
 long i;
 	CLUFKey *pCLUFKey = static_cast<CLUFKey*>(pObj);
@@ -29,4 +31,9 @@ long i;
 i = pCLUFKey->shShemasOrdNumStng;
     i--;
     //Look State
+    i = static_cast<char*>(pCLUFKey->pIn)[0];
+    if(i!= 0)
+    pCLUFKey->chKeyPres = i;
+    pCLUFKey->arrOut[0] = i;
+    //static_cast<char*>(pCLUFKey->pIn)[0];
 }

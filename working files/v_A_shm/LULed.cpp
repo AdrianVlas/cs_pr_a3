@@ -33,7 +33,9 @@ CLULed::CLULed(char chM,char chI){
     chIteration = chI;
     chNumInput = static_cast<char> (TOTAL_LED_VISIO_IN);//shCLULed_1_0_AmtIn
     chNumOutput = static_cast<char> (TOTAL_LED_VISIO_OUTPUT);//shCLULed_1_0_AmtOut
-    
+     m_chQTrg06 = 0;
+     m_chInC06  = 0;
+     m_chErrorQTrg06 = 0;
     
 
     //Set Input parameters
@@ -75,7 +77,7 @@ CLULed& rCLULed = *(static_cast<CLULed*> (pObj));
         short shVal;
     } sLV;
     */
-    if (chGLBIn1_5) {
+    if (chGLBIn1_5 == rCLULed.shShemasOrdNumStng) {
         asm(
         "bkpt 1"
         );
@@ -101,7 +103,7 @@ return;
 }
 
 #include "LULedp1.cpp"
-static char chGLB_QTrg = 0;static char chGLB_InC = 0;
+//static char chGLB_QTrg = 0;static char chGLB_InC = 0;
 void CLULed::CalcLedSchematic(void){
 register long rl_Val,i;
 
@@ -117,6 +119,10 @@ arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SIMPLE_SELECTOR  ] = 0;//Now Defaul
 arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_EXTANDED_SELECTOR] = 0;//Now Default
 
 char *pCh = (this->arrPchIn[(LED_IN_NAME__LEDIN - 1)]);
+if(*pCh != 0 && this->shShemasOrdNumStng == 1)
+        asm(
+        "bkpt 1"
+        );
 arChIntermediaResult[OFFSET_OUT_IN_00_LEDIN                   ] = pCh[0];//Now Default
 pCh = (this->arrPchIn[(LED_IN_NAME__RESET - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_01_RESET                   ] = pCh[0];//Now Default
@@ -138,6 +144,12 @@ else{
 pCh = (this->arrPchIn[(LED_IN_NAME__C2 - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_05_C2] = pCh[0];
 }
+arChIntermediaResult[IN_06_TEST_BL] = !( *(this->arrPchIn[(LED_IN_NAME__TEST_M - 1)]) );
+arChIntermediaResult[IN_07_TIN    ] = *(this->arrPchIn[(LED_IN_NAME__TLEDIN - 1)]);
+arChIntermediaResult[IN_08_TEST   ] = *(this->arrPchIn[(LED_IN_NAME__TEST_M - 1)]);
+arChIntermediaResult[IN_06_TEST_BL] =  0;
+arChIntermediaResult[IN_07_TIN    ] =  0;
+arChIntermediaResult[IN_08_TEST   ] =  0;
 
 
 if(this->m_LedCfgSuit.chSel1 == 0){
@@ -158,18 +170,22 @@ arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SIMPLE_SELECTOR] = 1;
 else{
 arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_EXTANDED_SELECTOR] = 1;
 }
+arChIntermediaResult[OFFSET_OUT_IN_LED_VCC   ] = 1;
+arChIntermediaResult[OFFSET_OUT_IN_LED_GROUND] = 0;
 
 
 
-
-for (i = OFFSET_OUT_Not06__1_1; i < OFFSET_OUT_And23__2_1; i++)//OFFSET_OUT_Or_22__3_1
+for (i = OFFSET_OUT_LED_NOT_01__1_1; i < OFFSET_OUT_IN_MNU_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
     arChIntermediaResult[i] = 0xcc;
+    //Attention! Energy Saved Param should be Init First
+//arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] = m_chQTrg06;
+//arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2+1] = !m_chQTrg06;    
     rl_Val = 0;
     long k, j, l;
-    short shCounterProcessedRec = Not06__1_1;
+    short shCounterProcessedRec = LED_NOT_01__1_1;
 
     do {
-pLUShcemasDscRec = arPLedShcemasDscRecords[shCounterProcessedRec - Not06__1_1];
+pLUShcemasDscRec = arPLedShcemasDscRecords[shCounterProcessedRec - LED_NOT_01__1_1];
         i = pLUShcemasDscRec->chTypeOperation;
         switch (i) {
             case LU_GEN_OP_AND:
@@ -198,21 +214,8 @@ pLUShcemasDscRec = arPLedShcemasDscRecords[shCounterProcessedRec - Not06__1_1];
                 arChIntermediaResult[i] = rl_Val;
                 shCounterProcessedRec++;
                 break;
-            case LU_GEN_OP_XOR:
-                i = pLUShcemasDscRec->pInputDscData[0].shOrderNumLU;
-                rl_Val = arShOffsets[i];
-                i = rl_Val + pLUShcemasDscRec->pInputDscData[0].shIndexOut;
-                j = arChIntermediaResult[i];
-                i = pLUShcemasDscRec->pInputDscData[1].shOrderNumLU;
-                rl_Val = arShOffsets[i];
-                i = rl_Val + pLUShcemasDscRec->pInputDscData[1].shIndexOut;
-                rl_Val = j^arChIntermediaResult[i];
-                k = pLUShcemasDscRec->chOrderNumLU;
-                i = arShOffsets[k];
-                arChIntermediaResult[i] = rl_Val;
-                shCounterProcessedRec++;
-                break;
             case LU_GEN_OP_NOT:
+                do{
                 LUShcemasInDataDsc const *pLUShcemasInDataDsc;
                 rl_Val = 0;
                 pLUShcemasInDataDsc = pLUShcemasDscRec->pInputDscData;
@@ -223,36 +226,117 @@ pLUShcemasDscRec = arPLedShcemasDscRecords[shCounterProcessedRec - Not06__1_1];
                 k = pLUShcemasDscRec->chOrderNumLU;
                 i = arShOffsets[k];
                 arChIntermediaResult[i] = !rl_Val;
+                }while(false);
                 shCounterProcessedRec++;
                 break;
-            case LU_GEN_OP_RS_TRIGGER:
+            case LU_GEN_OP_D_TRIGGER_TYPE3:
+            case LU_GEN_OP_D_TRIGGER:
+              do{
                 long lIdxInC;
+                j = 0;
+                    //Check Set
                 k = pLUShcemasDscRec->pInputDscData[0].shOrderNumLU;
-                l = arShOffsets[k];
-                lIdxInC = l + pLUShcemasDscRec->pInputDscData[0].shIndexOut;
-                
-                rl_Val = chGLB_QTrg;
+                l = arShOffsets[k ]  ;
+                rl_Val = arChIntermediaResult[l+ (pLUShcemasDscRec->pInputDscData[0].shIndexOut)];
+                if (rl_Val == 1) {
+                    /*k = pLUShcemasDscRec->chOrderNumLU;
+                    i = arShOffsets[k];
+                    arChIntermediaResult[i] = 1;
+                    arChIntermediaResult[i + 1] = 0;*/
+//                    if (k == LSS_D_TRG_11__4_2) {
+//                        j = 11;
+//                        m_chQTrg11 = 1;
+//
+//                    } else if (k == LSS_D_TRG_29__4_2) {
+//                        j = 29;
+//                        m_chQTrg29 = 1;
+//                    }
+                    m_chQTrg06 = 1;
+                    j = 6;
+                }
+                //Check Clr
                 k = pLUShcemasDscRec->pInputDscData[1].shOrderNumLU;
                 l = arShOffsets[k];
-                j = l + pLUShcemasDscRec->pInputDscData[1].shIndexOut; //
-
-                l = arShOffsets[IN_MNU_NORMAL_SELECTOR];
-                if (arChIntermediaResult[j] || arChIntermediaResult[l]) {
-                    chGLB_QTrg = rl_Val = 0; //Clr
-                } else {
-                    //k = pLUShcemasDscRec->pInputDscData[0].shOrderNumLU;
-                    //l = arShOffsets[k];
-                    //j = l + pLUShcemasDscRec->pInputDscData[0].shIndexOut;
-                    if ((chGLB_InC == 0) && (arChIntermediaResult[lIdxInC] > 0))
-                        chGLB_QTrg = rl_Val = 1;
+                rl_Val = arChIntermediaResult[l+(pLUShcemasDscRec->pInputDscData[1].shIndexOut)];
+                if (rl_Val == 1) {
+                    /*k = pLUShcemasDscRec->chOrderNumLU;
+                    i = arShOffsets[k];
+                    arChIntermediaResult[i] = 0;
+                    arChIntermediaResult[i+ 1]   = 1;
+*/
+//                    if (k == LSS_D_TRG_11__4_2) {
+//                        if(j == 11)
+//                            m_chErrorQTrg11 = 1;//Fix Error
+//                        m_chQTrg11 = 0;
+//                    } else if (k == LSS_D_TRG_29__4_2) {
+//                        if(j == 29)
+//                            m_chErrorQTrg29 = 1;//Fix Error
+//                        m_chQTrg29 = 0;
+//                    }
+                    if(j == 06)
+                        m_chErrorQTrg06 = 1;//Fix Error
+                    m_chQTrg06 = 0;    
                 }
-                //Work on change from 0 to 1
-                //rl_Val = chGLB_QTrg;
-                k = pLUShcemasDscRec->chOrderNumLU;
-                i = arShOffsets[k];
-                arChIntermediaResult[i] = rl_Val;
-                arChIntermediaResult[i+1] = !rl_Val;
-                chGLB_InC = arChIntermediaResult[lIdxInC];
+                else {
+                        //Check D
+                    j = 0;
+                    k = pLUShcemasDscRec->pInputDscData[2].shOrderNumLU;
+                    l = arShOffsets[k];
+                    rl_Val = arChIntermediaResult[l+(pLUShcemasDscRec->pInputDscData[2].shIndexOut)];
+                    if (rl_Val == 1) {
+                        k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
+                        lIdxInC = arShOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+                        if (arChIntermediaResult[lIdxInC] > 0){
+                            k = pLUShcemasDscRec->chOrderNumLU;
+                           //Chek Curr Trigger
+//                            if (k == LSS_D_TRG_11__4_2) {
+//                                if(m_chInC11==0){
+//                                    j++;
+//                                    m_chQTrg11 = 1;
+//                                }
+//
+//                            } else if (k == LSS_D_TRG_29__4_2) {
+//                                j++;
+//                                m_chQTrg29 = 1;
+//                            }
+                            if(m_chInC06 ==0 ){
+                                j++;
+                                m_chQTrg06 = 1;
+                            }
+                            /*if(j == 1){
+                            //set Out
+                            k = pLUShcemasDscRec->chOrderNumLU;
+                            i = arShOffsets[k];
+                            arChIntermediaResult[i ] = 1;
+                            arChIntermediaResult[i+ 1] = 0;
+                            }*/
+                        }
+
+                    }
+                    k = pLUShcemasDscRec->chOrderNumLU;
+//                    if (k == LSS_D_TRG_11__4_2) {
+//
+//                        k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
+//                        lIdxInC = arShOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+//                        m_chInC11 = arChIntermediaResult[lIdxInC];
+//                    } else if (k == LSS_D_TRG_29__4_2) {
+//
+//                        k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
+//                        lIdxInC = arShOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+//                        m_chQTrg11 = arChIntermediaResult[lIdxInC];
+//
+//                    }
+                    
+                    
+                }
+                k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
+                    lIdxInC = arShOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+                    m_chInC06 = arChIntermediaResult[lIdxInC];
+                    k = pLUShcemasDscRec->chOrderNumLU;
+                    i = arShOffsets[k];
+                    arChIntermediaResult[i] = m_chQTrg06;
+                    arChIntermediaResult[i + 1] = !m_chQTrg06;
+              }while(false);
                 shCounterProcessedRec++;
                 break;
                 //Read Input Data
@@ -267,26 +351,27 @@ pLUShcemasDscRec = arPLedShcemasDscRecords[shCounterProcessedRec - Not06__1_1];
                     );
         }
   
-    } while (shCounterProcessedRec < And23__2_1);//IN_MNU_NORMAL_SELECTOR
+    } while (shCounterProcessedRec <= LED_OR_17__3_1);//
     
-    this->arrOut[(LED_OUT_NAME__LED_STATE_OUTPUT-1)] = arChIntermediaResult[OFFSET_OUT_Or_11__2_1];
+    this->arrOut[(LED_OUT_NAME__LED_STATE_OUTPUT-1)] = arChIntermediaResult[OFFSET_OUT_LED_OR_17__3_1];
     bool bbState = false;
-    bbState = arChIntermediaResult[OFFSET_OUT_Or_22__3_1                   ]; //rCLULed.arrOut[0];
+    bbState = arChIntermediaResult[OFFSET_OUT_LED_OR_17__3_1]; //
     char *pCh1,*pCh2;
     pCh1 = (this->arrPchIn[(LED_IN_NAME__TEST_M - 1)]);
-    arChIntermediaResult[OFFSET_OUT_And23__2_1] = bbState
+    arChIntermediaResult[OFFSET_OUT_LED_AND_18__2_1] = bbState
     && (!(*pCh1));
     
     pCh2 = this->arrPchIn[(LED_IN_NAME__TLEDIN - 1)];
-    arChIntermediaResult[OFFSET_OUT_And24__2_1] = *pCh1 && *pCh2;
+    arChIntermediaResult[OFFSET_OUT_LED_AND_19__2_1] = *pCh1 && *pCh2;
 
-    bbState = arChIntermediaResult[OFFSET_OUT_And24__2_1] || arChIntermediaResult[OFFSET_OUT_And23__2_1];
+    bbState = arChIntermediaResult[OFFSET_OUT_LED_AND_19__2_1] 
+    || arChIntermediaResult[OFFSET_OUT_LED_AND_18__2_1];
     i = this->shShemasOrdNumStng;
     i--;
- /*   if (bbState) {
+    if (bbState) {
         LedStateUI32Bit.ul_val |= (1) << i;
     } else {
         LedStateUI32Bit.ul_val &= ~((1) << i); //Phis write to Led
-    }*/
+    }
 }
 
