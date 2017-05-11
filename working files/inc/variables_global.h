@@ -78,10 +78,10 @@ unsigned char crc_trg_func, crc_trg_func_ctrl;
 unsigned int pressed_buttons = 0;
 unsigned int activation_function_from_interface = 0;
 unsigned int reset_trigger_function_from_interface = 0;
-unsigned int diagnostyka_before[3] = {0, 0, 0};
-unsigned int diagnostyka[3] = {0, 0, 0};
-unsigned int set_diagnostyka[3] = {0, 0, 0};
-unsigned int clear_diagnostyka[3] = {0, 0, 0};
+unsigned int diagnostyka_before[2] = {0, 0};
+unsigned int diagnostyka[2] = {0, 0};
+unsigned int set_diagnostyka[2] = {0, 0};
+unsigned int clear_diagnostyka[2] = {0, 0};
 
 //SRAM1 int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
 
@@ -209,41 +209,37 @@ uint32_t state_i2c_task = STATE_FIRST_READING_RTC;
 SRAM1 unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
 
 //DataFlash
-unsigned char RxBuffer_SPI_DF[SIZE_PAGE_DATAFLASH_MAX + 10];
-unsigned char TxBuffer_SPI_DF[SIZE_PAGE_DATAFLASH_MAX + 10];
-unsigned int number_bytes_transfer_spi_df;
-unsigned int number_bytes_transfer_spi_df_copy;
-unsigned char TxBuffer_SPI_DF_copy[SIZE_PAGE_DATAFLASH_MAX + 10];
-unsigned int code_operation_copy;
-int number_chip_dataflsh_exchange = -1;
-__DRIVER_SPI_DF driver_spi_df[NUMBER_DATAFLASH_CHIP] = {
-                                                        {TRANSACTION_EXECUTING_NONE, CODE_OPERATION_NONE},
-                                                        {TRANSACTION_EXECUTING_NONE, CODE_OPERATION_NONE}
-                                                       };
-unsigned int error_into_spi_df = 0;/*Ненульве значення означає, що зафіксована помилка при прийом/передачі через SPI_DF*/
-unsigned int dataflash_not_busy = 0;
-unsigned int control_tasks_dataflash = 0;
-unsigned char buffer_for_manu_read_record[SIZE_ONE_RECORD_PR_ERR];
-unsigned char buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
-unsigned char buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
+uint8_t RxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
+uint8_t TxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
+uint32_t number_chip_dataflsh_exchange = INDEX_DATAFLASH_1;
+uint32_t state_execution_spi_df[NUMBER_DATAFLASH_CHIP] = {TRANSACTION_EXECUTING_NONE, TRANSACTION_EXECUTING_NONE};
+uint32_t status_register_df[NUMBER_DATAFLASH_CHIP];
+uint32_t address_read_write[NUMBER_DATAFLASH_CHIP];
+uint32_t number_bytes_read_write[NUMBER_DATAFLASH_CHIP];
+uint8_t buffer_serial_DataFlash_read_write[NUMBER_DATAFLASH_CHIP][SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE];
+const uint32_t size_page_serial_dataflash[NUMBER_DATAFLASH_CHIP] = {SIZE_PAGE_DATAFLASH_1, SIZE_PAGE_DATAFLASH_2};
+const uint32_t number_page_serial_dataflash[NUMBER_DATAFLASH_CHIP] = {NUMBER_PAGES_INTO_DATAFLASH_1, NUMBER_PAGES_INTO_DATAFLASH_2};
+uint32_t control_spi_df_tasks[NUMBER_DATAFLASH_CHIP] = {0, 0};
+volatile uint32_t control_tasks_dataflash = 0;
 
-unsigned int what_we_are_reading_from_dataflash_1;
-unsigned int what_we_are_reading_from_dataflash_2;
+SRAM1 uint8_t buffer_for_menu_read_record[SIZE_ONE_RECORD_PR_ERR];
+SRAM1 uint8_t buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
+SRAM1 uint8_t buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 
 //Реєстратор програмних помилок
 unsigned char crc_info_rejestrator_pr_err;
 __INFO_REJESTRATOR info_rejestrator_pr_err;
 unsigned char crc_info_rejestrator_pr_err_ctrl;
 __INFO_REJESTRATOR info_rejestrator_pr_err_ctrl;
-unsigned char buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
-volatile unsigned int head_fifo_buffer_pr_err_records = 0;
-volatile unsigned int tail_fifo_buffer_pr_err_records = 0;
+uint8_t buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
+volatile uint32_t head_fifo_buffer_pr_err_records = 0;
+volatile uint32_t tail_fifo_buffer_pr_err_records = 0;
 unsigned int temporary_block_writing_records_pr_err_into_DataFlash = 0;
-unsigned int etap_writing_pr_err_into_dataflash = ETAP_NONE;
-unsigned int number_recods_writing_into_dataflash_now = 0;
-unsigned int number_record_of_pr_err_into_menu = 0xffff;
-unsigned int number_record_of_pr_err_into_USB = 0xffff;
-unsigned int number_record_of_pr_err_into_RS485 = 0xffff;
+uint32_t pr_err_record_check_ok;
+uint8_t pr_err_into_menu_time_label[7];
+uint32_t number_record_of_pr_err_into_menu = 0xffffffff;
+uint32_t number_record_of_pr_err_into_USB = 0xffffffff;
+uint32_t number_record_of_pr_err_into_RS485 = 0xffffffff;
 
 //Очистка інформації по реєстраторах
 unsigned int clean_rejestrators = 0;

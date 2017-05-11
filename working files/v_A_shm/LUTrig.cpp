@@ -1,11 +1,15 @@
 
 #include "LUTrig.hpp"
-
+char chGBL_BP_StopLUTrig = 0;
 void DTRG_Op_4_2(void *pObj) {
     CLUTrig& refCLUDTrg = *(static_cast<CLUTrig *> (pObj));
     long k, j, l; //
     //char *pCh;
     k = 0;
+    if(chGBL_BP_StopLUTrig == refCLUDTrg.shShemasOrdNumStng)
+    asm(
+                "bkpt 1"
+                );
 //pCh = refCLUDTrg.arrPchIn[DTRG__4_2_IN_NAME__SET - 1];
     if (*(refCLUDTrg.arrPchIn[DTRG__4_2_IN_NAME__SET - 1])) //{
         k |= 1; //} 
@@ -35,13 +39,13 @@ void DTRG_Op_4_2(void *pObj) {
     } else
         if (k == 1) {
         refCLUDTrg.chQ = 1;
-        refCLUDTrg.chIn_C = 0;//
+        //refCLUDTrg.chIn_C = 0;//
         refCLUDTrg.arrOut[DTRG__4_2_OUT_NAME_Q - 1] = 1;
         refCLUDTrg.arrOut[DTRG__4_2_OUT_NAME_Q_INV - 1] = 0;
     } else
         if (k == 2) {
         refCLUDTrg.chQ = 0;
-        refCLUDTrg.chIn_C = 0;//
+        //refCLUDTrg.chIn_C = 0;//
         refCLUDTrg.arrOut[DTRG__4_2_OUT_NAME_Q - 1] = 0;
         refCLUDTrg.arrOut[DTRG__4_2_OUT_NAME_Q_INV - 1] = 1;
         
@@ -49,7 +53,7 @@ void DTRG_Op_4_2(void *pObj) {
         refCLUDTrg.chError = 1;
         
     }
-
+refCLUDTrg.chIn_C = *(refCLUDTrg.arrPchIn[DTRG__4_2_IN_NAME__C_SLASH - 1]);
 }
 
 CLUTrig::CLUTrig(void) {

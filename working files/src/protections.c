@@ -371,10 +371,9 @@ inline void main_protection(void)
   /**************************/
   diagnostyca_adc_execution();
 
-  unsigned int diagnostyka_tmp[3];
+  unsigned int diagnostyka_tmp[2];
   diagnostyka_tmp[0] = diagnostyka[0];
   diagnostyka_tmp[1] = diagnostyka[1];
-  diagnostyka_tmp[2] = diagnostyka[2];
 
   diagnostyka_tmp[0] &= (unsigned int)(~clear_diagnostyka[0]); 
   diagnostyka_tmp[0] |= set_diagnostyka[0]; 
@@ -382,17 +381,11 @@ inline void main_protection(void)
   diagnostyka_tmp[1] &= (unsigned int)(~clear_diagnostyka[1]); 
   diagnostyka_tmp[1] |= set_diagnostyka[1]; 
 
-  diagnostyka_tmp[2] &= (unsigned int)(~clear_diagnostyka[2]); 
-  diagnostyka_tmp[2] |= set_diagnostyka[2]; 
-  
-  diagnostyka_tmp[2] &= USED_BITS_IN_LAST_INDEX; 
-
   _CLEAR_BIT(diagnostyka_tmp, EVENT_START_SYSTEM_BIT);
   _CLEAR_BIT(diagnostyka_tmp, EVENT_DROP_POWER_BIT);
   if (
       (diagnostyka_tmp[0] != 0) ||
-      (diagnostyka_tmp[1] != 0) ||
-      (diagnostyka_tmp[2] != 0)
+      (diagnostyka_tmp[1] != 0)
      )   
   {
     _SET_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
@@ -401,8 +394,7 @@ inline void main_protection(void)
     /**************************/
     if (
         ((diagnostyka_tmp[0] & MASKA_AVAR_ERROR_0) != 0) ||
-        ((diagnostyka_tmp[1] & MASKA_AVAR_ERROR_1) != 0) ||
-        ((diagnostyka_tmp[2] & MASKA_AVAR_ERROR_2) != 0)
+        ((diagnostyka_tmp[1] & MASKA_AVAR_ERROR_1) != 0)
        )   
     {
       _SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);

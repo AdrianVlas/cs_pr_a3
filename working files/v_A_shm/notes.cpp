@@ -19,4 +19,8 @@ p_param = &(((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (numbe
    1Timer 1Or 1D-Trg 1Not + 2 And as BSS
    4- Bss 19-20 BIN 
    Typical Situation (4+20)* 1Timer 1Or 1D-Trg 1Not + 2 And
-   
+5-8
+
+
+
+ 

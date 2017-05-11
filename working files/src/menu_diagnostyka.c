@@ -12,11 +12,10 @@
 /*****************************************************/
 void move_into_diagnostics(unsigned int action, int max_row)
 {
-  unsigned int diagnostyka_tmp[3] = {diagnostyka[0], diagnostyka[1], (diagnostyka[2] & USED_BITS_IN_LAST_INDEX)};
+  unsigned int diagnostyka_tmp[2] = {diagnostyka[0], diagnostyka[1]};
   if (
       (diagnostyka_tmp[0] == 0) &&
-      (diagnostyka_tmp[1] == 0) &&
-      (diagnostyka_tmp[2] == 0)
+      (diagnostyka_tmp[1] == 0)
      ) 
   {
     current_state_menu2.index_position = 0;
@@ -89,8 +88,7 @@ void make_ekran_diagnostics(void)
     
   if (
       (diagnostyka[0] == 0) &&
-      (diagnostyka[1] == 0) &&
-      (diagnostyka[2] == 0) 
+      (diagnostyka[1] == 0)
      )
   {
     //Це означає, що ніякої помилки не зафіксовано

@@ -32,6 +32,7 @@
 #include "I_Shm.h"
 #include "MALed.hpp"
 #include "RunErLed.hpp"
+#include "LUTestLed.h"
 //#include "../inc/variables_external.h"
 //#include "../inc/libraries.h"
 
@@ -94,7 +95,8 @@ char chGblGround = 0;
 char chGblVcc    = 1;
 CMuteAlarmLed eMuteAlarmLed;
 CLURunErrorLed eRunErrorLed;
-
+CLUTestLed eLUTestLed;
+        
 Shematic::Shematic(void) {
     //Debug Code
     ar_n_Output_Dsc[0].UN_BitFld_LUInInfo.sBitFld_LUInInfo.bfInfo_OrdNumOut
@@ -174,7 +176,8 @@ void Shematic::DoCalc(void) {
     }
 	eMuteAlarmLed.EvalMuteAlarmLed();
         eRunErrorLed.EvalRunErrorLed();
-	//run Error
+	eLUTestLed.CalCLUTestLedSchematic();
+        //run Error
 }
 
 Shematic::~Shematic(void) {
@@ -1269,6 +1272,7 @@ void Shematic::Init2(void) {
 	shLssLUAreaListElemIndex = 0;
     //DetectCircutLinks();
     lsLcVarArea.shCounterInitCLUObj = 1;
+    eLUTestLed.LinkTestLedTimers();
     if( current_config_prt.n_input ){
         CLUDInput_0_1 locCLUDInput_0_1(10, 0); // = CLUDInput_0_1(0,10);
         short shLC__n_input = current_config_prt.n_input;
@@ -1490,7 +1494,7 @@ void Shematic::Init2(void) {
     }
 
 SetupCircutLinks2(static_cast<void*>(&lsLcVarArea));
-
+eLUTestLed.UpdateCLUTestLed();
 }
 
 void Shematic::SetupCLUDInput_0_1StngParam(void *pv){
@@ -1645,13 +1649,15 @@ shRelativeIndexLU -= 1;
         locRef_CLULed.m_LedCfgSuit.chSel2 = bbSel2;
         locRef_CLULed.m_LedCfgSuit.chSel3 = bbSel3;
     }while(bbVar);
+    
     //-LUCfgInfo sLcLUCfgInfo;
     //-sLcLUCfgInfo.pvLUClass = static_cast<void*>(locPCLULed);
     //-sLcLUCfgInfo.pvCfgSuit = static_cast<void*>(&(locPCLULed->m_LedCfgSuit));
     //-sLcLUCfgInfo.pvChangeSuitFn = reinterpret_cast<void*>(0);
     //-i = ChangeCfgLULed(static_cast<void*>(&sLcLUCfgInfo));
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
-
+    locRef_CLULed.arrPchIn[LED_IN_NAME__TEST_M-1 ] = &(eLUTestLed.arrOut[TEST_LED_OUT_NAME_TEST_M]);
+    locRef_CLULed.arrPchIn[LED_IN_NAME__TLEDIN-1 ] = &(eLUTestLed.arrOut[TEST_LED_OUT_NAME_TEST_M+1+j]);
 
     GlobalObjectMap.arPCLULed[j] = static_cast<CLULed*>(
       pInit2LcVarArea->pCLUBase);
@@ -1818,10 +1824,15 @@ void Shematic::SetupCLUFKeyStngParam(void *pv){
     locRef_CLUFKey.chTypeLogicFunction = LU_OP_F_KEY;
     locRef_CLUFKey.LogicFunc = FKey_Op;
     locRef_CLUFKey.LogicFunc(pInit2LcVarArea->pCLUBase);
-     //bool bbVar = false;
-    //do{
-    //
-    //}while(bbVar);
+     bool bbVar = false;
+    do{
+        __LN_BUTTON_TU *pLN_BUTTON_TU;
+        short shRelativeIndexLU = 0;
+     pLN_BUTTON_TU = reinterpret_cast<__LN_BUTTON_TU*>( spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);   
+     j = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_KEY);
+        shRelativeIndexLU = locRef_CLUFKey.shLUBieldOrdNum - j - 1;
+    locRef_CLUFKey.pIn = static_cast<void*>(&(pLN_BUTTON_TU[shRelativeIndexLU].active_state[0]));
+    }while(bbVar);
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
 
     GlobalObjectMap.arPCLUFKey[j] = locPCLUFKey;
@@ -3064,7 +3075,28 @@ sLV.pInOutParam->pChBlock = static_cast<char*>(pv);
 sLV.pInOutParam->pChAlarm = static_cast<char*>(&(sLV.pCLULss->arrOut[LSS_OUT_NAME_ALARM-1]));
 sLV.pInOutParam->pChMute  = static_cast<char*>(&(sLV.pCLULss->arrOut[LSS_OUT_NAME_MUTE-1]));
 }
+void GetLUTestLedInDataAddr(void* pv){
+register long i,j;
+struct {
+LUAreaListElem* arrLUAreaListElem;
+TestLedInOutParam *pInOutParam; 
+CLUFKey *pCLUFKey;
+//char* pCh;
+    } sLV;
+sLV.pInOutParam = static_cast<TestLedInOutParam*>(pv);
+sLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
+sLV.pInOutParam->pChTest  = static_cast<char*>(0); 
+sLV.pInOutParam->pChReset = static_cast<char*>(0); 
 
+//Only Now find Elem Test
+j = sh.EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_KEY);
+i = j + FIX_BUTTON_TEST;
+pv = static_cast<void*>( &sLV.arrLUAreaListElem[i ]);
+sLV.pCLUFKey = static_cast<CLUFKey*>( ( static_cast<LUAreaListElem*>(pv) )->pvLU);    
+sLV.pInOutParam->pChTest = static_cast<char*>(&(sLV.pCLUFKey->arrOut[0]));
+//Set Reset to VCC
+sLV.pInOutParam->pChReset = &chGblVcc;
+}
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //``````````````````````````````````````````````````````````````````````````````````
 //==================================================================================

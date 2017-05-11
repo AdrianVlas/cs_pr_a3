@@ -1100,8 +1100,8 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
     else if (
              ((clean_rejestrators & CLEAN_PR_ERR) != 0) ||
              (
-              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB  ) != 0)) ||
-              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485) != 0))
+              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  )) != 0)) ||
+              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT)) != 0))
              ) 
             )
     {
@@ -1850,10 +1850,10 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
         */
         (
          (control_tasks_dataflash & (
-                                     TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH    |
-                                     TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB   |
-                                     TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485 |
-                                     TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU
+                                     (1 << TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT   ) |
+                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  ) |
+                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT) |
+                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )
                                     )
          ) != 0
         )
@@ -1880,8 +1880,8 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
     else if (
              ((clean_rejestrators & CLEAN_PR_ERR) != 0) ||
              (
-              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB  ) != 0)) ||
-              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485) != 0))
+              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  )) != 0)) ||
+              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT)) != 0))
              ) 
             )
     {
@@ -1903,7 +1903,7 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
         //Подаємо команду читання реєстратора програмних подій для  інтерфейсу USB
 
         //Подаємо команду зчитати дані у бувер пам'яті для USB
-        control_tasks_dataflash |= TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB;
+        control_tasks_dataflash |= (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT);
       }
       else if (type_interface == RS485_RECUEST)
       {
@@ -1912,7 +1912,7 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
         //Подаємо команду читання реєстратора програмних подій для  інтерфейсу RS-485
 
         //Подаємо команду зчитати дані у бувер пам'яті для RS-485
-        control_tasks_dataflash |= TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485;
+        control_tasks_dataflash |= (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT);
       }
       else
       {

@@ -2493,9 +2493,11 @@ void main_routines_for_i2c(void)
 
             //Перевіряємо чи всі поляу у своїх допустимих межах
             if(
-               (info_rejestrator_pr_err.next_address   >= MIN_ADDRESS_PR_ERR_AREA) && 
-               (info_rejestrator_pr_err.next_address   <= MAX_ADDRESS_PR_ERR_AREA) &&
-               (info_rejestrator_pr_err.number_records <= MAX_NUMBER_RECORDS_INTO_PR_ERR)  
+               (info_rejestrator_pr_err.next_address     >= MIN_ADDRESS_PR_ERR_AREA       ) && 
+               (info_rejestrator_pr_err.next_address     <= MAX_ADDRESS_PR_ERR_AREA_WORK  ) &&
+               (info_rejestrator_pr_err.previous_address >= MIN_ADDRESS_PR_ERR_AREA       ) && 
+               (info_rejestrator_pr_err.previous_address <= MAX_ADDRESS_PR_ERR_AREA_WORK  ) &&
+               (info_rejestrator_pr_err.number_records   <= MAX_NUMBER_RECORDS_INTO_PR_ERR)  
               )
             {
               //Всі величину мають допустимі значення
@@ -2505,7 +2507,7 @@ void main_routines_for_i2c(void)
               //Тоді помічаємо, що у нашій флешці на один запис є менше
               //Перевіряємо, чи у процесі запису програмної події не відбувся перезапуск/запуск приладу.
               //Тоді записи у сторінці, яку записували може бути пошкодженими
-              if (info_rejestrator_pr_err.saving_execution !=0 )
+              if (info_rejestrator_pr_err.next_address != info_rejestrator_pr_err.previous_address)
               {
                 //Виставляємо повідомлення про цю подію
                 _SET_BIT(set_diagnostyka, ERROR_PR_ERR_LOSS_INFORMATION_BIT);
@@ -2526,9 +2528,22 @@ void main_routines_for_i2c(void)
                 */
                 _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
 
-                info_rejestrator_pr_err.saving_execution = 0;
+                uint32_t next_address = info_rejestrator_pr_err.next_address, previous_address = info_rejestrator_pr_err.previous_address;
+                int32_t diff_address = next_address - previous_address;
+                while (diff_address < 0) diff_address += SIZE_PR_ERR_AREA - (SIZE_PR_ERR_AREA % SIZE_ONE_RECORD_PR_ERR);
+                uint32_t lost_records = diff_address/SIZE_ONE_RECORD_PR_ERR;
+                if (
+                    (lost_records > info_rejestrator_pr_err.number_records) ||
+                    (lost_records*SIZE_ONE_RECORD_PR_ERR != diff_address)  
+                   )
+                {
+                  //Теоретично, таких ситуацій не мало б бути
+                  info_rejestrator_pr_err.next_address = info_rejestrator_pr_err.previous_address = MIN_ADDRESS_PR_ERR_AREA;
+                  info_rejestrator_pr_err.number_records = 0;
+                }
                 
-                
+                info_rejestrator_pr_err.next_address = info_rejestrator_pr_err.previous_address;
+                info_rejestrator_pr_err.number_records -= lost_records;
               }   
             }
             else
@@ -2553,8 +2568,7 @@ void main_routines_for_i2c(void)
               _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
 
               //Очищаємо структуру інформації по реєстраторі програмних подій
-              info_rejestrator_pr_err.next_address = MIN_ADDRESS_PR_ERR_AREA;
-              info_rejestrator_pr_err.saving_execution = 0;
+              info_rejestrator_pr_err.next_address = info_rejestrator_pr_err.previous_address = MIN_ADDRESS_PR_ERR_AREA;
               info_rejestrator_pr_err.number_records = 0;
             }
           }
@@ -2633,8 +2647,7 @@ void main_routines_for_i2c(void)
             _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
 
             //Очищаємо структуру інформації по реєстраторі програмних подій
-            info_rejestrator_pr_err.next_address = MIN_ADDRESS_PR_ERR_AREA;
-            info_rejestrator_pr_err.saving_execution = 0;
+            info_rejestrator_pr_err.next_address = info_rejestrator_pr_err.previous_address = MIN_ADDRESS_PR_ERR_AREA;
             info_rejestrator_pr_err.number_records = 0;
           }
         }
@@ -2680,8 +2693,7 @@ void main_routines_for_i2c(void)
           _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
 
           //Очищаємо структуру інформації по реєстраторі програмних подій
-          info_rejestrator_pr_err.next_address = MIN_ADDRESS_PR_ERR_AREA;
-          info_rejestrator_pr_err.saving_execution = 0;
+          info_rejestrator_pr_err.next_address = info_rejestrator_pr_err.previous_address = MIN_ADDRESS_PR_ERR_AREA;
           info_rejestrator_pr_err.number_records = 0;
         }
       }
@@ -2817,12 +2829,12 @@ void main_routines_for_i2c(void)
               Якби перша половина цієї умови (head_fifo_buffer_pr_err_records > 0)
               по незрозумілій причині для мене не виконувалася то тоді ми нічого не міняємо, і тоді 
               head_fifo_buffer_pr_err_records = 0 і tail_fifo_buffer_pr_err_records = 0,
-              а це буде означати. що немає нових записів у черзі до запису і тому я думаю. що нічого 
+              а це буде означати, що немає нових записів у черзі до запису і тому я думаю, що нічого 
               надзвичайного не мало б статися. Хоч це і неможливо, на мій погляд, і з точки зору ідеології
               розробленого програмного забезпечення.
               
               Якби ця умова по незрозумілій причині для мене не виконувалася повністю.
-              То я з нову ж таки не можу зрозуміти, чого така виникла ситтуація, але думю. що тоді ніяких корекцій
+              То я з нову ж таки не можу зрозуміти, чого така виникла ситтуація, але думю, що тоді ніяких корекцій
               не варта робити, бо хоч це і неможливо, на мій погляд, і з точки зору ідеології
               розробленого програмного забезпечення  - аде я не думаю, що це б привело до неправильної 
               роботи "основної" частини програмного забезпечення
@@ -2862,10 +2874,10 @@ void main_routines_for_i2c(void)
           записування записів у мікросхему DataFlash.
           При цьому не треба боятися, що у такий момент, що часові сітки дозволені 
           і з модуля формування запису і дорозставляння часових міток з цієї частини програми
-          буде втачена достовірність часової мітки, бо поки ми не вийдемо з цієї
+          буде втрачена достовірність часової мітки, бо поки ми не вийдемо з цієї
           частини програми, то не буде запущено читання нового значення часу. Тобто
-          на цей момент часу не боже бути "свіжішої" часової мітки, ніж та що є зараз. 
-          І старшою часовою часовоюміткою може бути тільки мітка вимкнення приладу.
+          на цей момент часу не може бути "свіжішої" часової мітки, ніж та що є зараз. 
+          І старшою часовою міткою може бути тільки мітка вимкнення приладу.
           */
           do
           {
@@ -2874,7 +2886,7 @@ void main_routines_for_i2c(void)
                    (local_point_for_time <  SIZE_BUFFER_FOR_PR_ERR)
                   )
             {
-              for(unsigned int i = 0; i < 7; i++)  buffer_pr_err_records[local_point_for_time + i] = time[i]; /*використовувати time_copy і calibration_copy не треба бо іде обробка одної функції main_routines_for_i2c*/ 
+              for(size_t i = 0; i < 7; i++)  buffer_pr_err_records[local_point_for_time + i] = time[i]; /*використовувати time_copy і calibration_copy не треба бо іде обробка одної функції main_routines_for_i2c*/ 
               local_point_for_time += SIZE_ONE_RECORD_PR_ERR;
             }
 

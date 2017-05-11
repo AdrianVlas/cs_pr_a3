@@ -9,6 +9,7 @@ public:
     CLUFKey(void);
     ~CLUFKey(void);
 	CLUFKey(char chM,char chI) ;
+    char chKeyPres;
     char arrOut [shCLUFKey_x_y_AmtOut];
     friend void FKey_Op(void *pObj);
 };

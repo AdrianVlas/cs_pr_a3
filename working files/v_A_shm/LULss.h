@@ -37,7 +37,16 @@ public:
 	long T1_1Ms(long lActivKey);
 	long T1_2Ms(long lActivKey);
 	long TCs(long lActivKey);
-	
+//	void inline SetStateTrg(long lIdTrg, void* pvState);
+//	void inline ClrStateTrg(long lIdTrg, void* pvState);
+	inline void SetStateVarchQTrg(long lIdTrg, char&chQTrg);
+	inline void SetStateVarchInC (long lIdTrg, char&chInC);
+	inline void SetStateVarchErrorQTrg(long lIdTrg, char&chErrorQTrg);
+	inline long GetStateVarchQTrg(long lIdTrg);
+	inline long GetStateVarchErrorQTrg(long lIdTrg);
+    inline long GetStateVarchInC (long lIdTrg);
+	inline void SetTrg(long lIdTrg);
+	inline void ClrTrg(long lIdTrg);
 	void UpdateCLss(void);
 	long LinkLssTimers(void);
 	friend void LssOp	(void *pObj);

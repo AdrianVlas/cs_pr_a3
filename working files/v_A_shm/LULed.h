@@ -27,6 +27,9 @@ public:
 	char* arrPchIn[TOTAL_LED_VISIO_IN];//
 	char* arrPchSchIn[shCLULed_1_0_AmtIn];//
 //	char* arrPchAlternator[2];//
+    char m_chQTrg06;
+    char m_chInC06;
+	char m_chErrorQTrg06;
 	char  arrOut  [TOTAL_LED_VISIO_OUTPUT];//Trash field
 	LedCfgSuit m_LedCfgSuit;
 	friend void PUT_Op_1_0_    (void *pObj);
