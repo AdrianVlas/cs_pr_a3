@@ -14,26 +14,4 @@ enum __index_info_m2
 #define COL_INFO_BEGIN_2                     5
 #define COL_END_END_2                        9
 
-//const uint8_t name_string_info[MAX_NAMBER_LANGUAGE][MAX_ROW_INFO_M2][MAX_COL_LCD + 1] = 
-//{
-//  {
-//    "   Версия ПО    ",
-//    "   Версия КП    "
-//  },
-//  {
-//    "   Версія ПЗ    ",
-//    "   Версія КП    "
-//  },
-//  {
-//    "   VER.of F/W   ",
-//    "   VER.of MM    "
-//  },
-//  {
-//    "   Версия ПО    ",
-//    "   Версия КП    "
-//  }
-//};
-
 #endif
-
-//extern const uint8_t name_string_info[MAX_NAMBER_LANGUAGE][MAX_ROW_INFO_M2][MAX_COL_LCD + 1];
