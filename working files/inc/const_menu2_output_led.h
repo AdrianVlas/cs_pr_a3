@@ -29,10 +29,10 @@
 
     
 #define NAME_OUTPUT_LED_OUT_SIGNALS_RU  \
-  "Виход           "
+  "Выход           "
 
 #define NAME_OUTPUT_LED_OUT_SIGNALS_UA  \
-  "Вихід           "
+  "Выхід           "
 
 #define NAME_OUTPUT_LED_OUT_SIGNALS_EN  \
   "Output          "

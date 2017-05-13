@@ -7,7 +7,7 @@
 #define MASKA_CTRL_INPUT_M2  ((1 << MAX_INDEX_CTRL_INPUT) - 1)
 
 #define NAME_INPUT_OUT_SIGNALS_RU       \
-  "Виход           "
+  "Выход           "
 
 #define NAME_INPUT_OUT_SIGNALS_UA       \
   "Вихід           "
@@ -16,7 +16,7 @@
   "Output          "
 
 #define NAME_INPUT_OUT_SIGNALS_KZ       \
-  "Виход           "
+  "Выход           "
 
 #endif 
   

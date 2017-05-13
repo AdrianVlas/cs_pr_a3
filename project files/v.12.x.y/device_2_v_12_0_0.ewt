@@ -1427,6 +1427,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_editor_logical_nodes.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_fix_block.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_group_alarm.h</name>
         </file>
         <file>

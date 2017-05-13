@@ -6,7 +6,7 @@
 #define COL_DELAY_MEANDER_PERIOD_END                  9
 
 #define NAME_MEANDER_OUT_SIGNALS_RU      \
-  "Виход           "
+  "Выход           "
 
 #define NAME_MEANDER_OUT_SIGNALS_UA      \
   "Вихід           "
@@ -15,7 +15,7 @@
   "Output          "
 
 #define NAME_MEANDER_OUT_SIGNALS_KZ      \
-  "Виход           "
+  "Выход           "
 
 #endif 
 

@@ -2,7 +2,7 @@
 #define __CONST_BUTTONS_TUS_MENU2__
 
 #define NAME_BUTTON_TU_OUT_SIGNALS_RU       \
-  "Виход           "
+  "Выход           "
 
 #define NAME_BUTTON_TU_OUT_SIGNALS_UA       \
   "Вихід           "
@@ -11,6 +11,6 @@
   "Output          "
 
 #define NAME_BUTTON_TU_OUT_SIGNALS_KZ       \
-  "Виход           "
+  "Выход           "
 
 #endif 
