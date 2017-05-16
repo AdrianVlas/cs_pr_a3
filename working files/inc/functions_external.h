@@ -231,7 +231,7 @@ extern void error_start_i2c(void);
 
 extern void control_reading_ADCs(void);
 extern void operate_test_ADCs(void);
-extern void method_sum_sqr_data(void);
+//extern void method_sum_sqr_data(void);
 extern void calc_measurement(void);
 extern unsigned int norma_value(unsigned long long);
 extern unsigned int sqrt_32(unsigned int);

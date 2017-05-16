@@ -4,50 +4,58 @@
 #define NAME_FIX_BLOCK_IN_SIGNALS_RU    \
   "Тревога         ",                   \
   "Тишина          ",                   \
-  "Блок.           "
+  "Блок.           ",                   \
+  "Тест.Вход       ",                   \
+  "Тест.Сброс      "
 
 #define NAME_FIX_BLOCK_IN_SIGNALS_UA    \
   "Тривога         ",                   \
   "Тиша            ",                   \
-  "Блок.           "
+  "Блок.           ",                   \
+  "Тест.Вхід       ",                   \
+  "Тест.Скид.      "
 
 
 #define NAME_FIX_BLOCK_IN_SIGNALS_EN    \
-  "Alarm           ",                  \
-  "Mute            ",                  \
-  "Block           "
+  "Alarm           ",                   \
+  "Mute            ",                   \
+  "Block           ",                   \
+  "Test.Input      ",                   \
+  "Test.Reset      "
 
 #define NAME_FIX_BLOCK_IN_SIGNALS_KZ    \
   "Тревога         ",                   \
   "Тишина          ",                   \
-  "Блокировка      "
+  "Блок.           ",                   \
+  "Тест.Вход       ",                   \
+  "Тест.Сброс      "
 
 #define NAME_FIX_BLOCK_OUT_SIGNALS_RU   \
   "Общ.Неиспр.     ",                   \
   "Авар.Неиспр.    ",                   \
-  "Тест            ",                   \
-  "Журнал событий  ",                   \
-  "Изм.настроек    "
+  "Изм.настроек    ",                   \
+  "Ош.раб.Триггера ",                   \
+  "Ош.схемы        "
 
 #define NAME_FIX_BLOCK_OUT_SIGNALS_UA   \
   "Заг.Неспр.      ",                   \
   "Авар.Неспр.     ",                   \
-  "Тест            ",                   \
-  "Журнал подій    ",                   \
-  "Зм.налашт.      "
+  "Зм.налашт.      ",                   \
+  "Пом.роб.триґ.   ",                   \
+  "Пом.схеми       "
 
 #define NAME_FIX_BLOCK_OUT_SIGNALS_EN   \
   "Total Fault     ",                   \
   "Emergence Fault ",                   \
-  "Test            ",                   \
-  "Event log       ",                   \
-  "Changed settings"
+  "Changed settings",                   \
+  "Ош.раб.Триггера ",                   \
+  "Ош.схемы        "
 
 #define NAME_FIX_BLOCK_OUT_SIGNALS_KZ   \
   "Неиспр.         ",                   \
   "Авар.Неиспр.    ",                   \
-  "Тест            ",                   \
-  "Журнал событий  ",                   \
-  "Изм.настроек    "
+  "Изм.настроек    ",                   \
+  "Ош.раб.Триггера ",                   \
+  "Ош.схемы        "
 
 #endif 

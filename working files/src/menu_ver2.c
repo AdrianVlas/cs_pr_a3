@@ -93,7 +93,7 @@ const enum _menu2_levels next_for_editor_list_logical_nodes_for_input[MAX_ROW_ED
 const enum _menu2_levels next_for_editor_list_selcted_logical_node_type_for_input = EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
 const enum _menu2_levels next_for_editor_list_input_of_selcted_logical_node = EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
 const enum _menu2_levels next_for_editor_view_chosen_signal_of_selected_logical_node = EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
-const enum _menu2_levels next_for_editor_list_logical_nodes_for_output[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL};
+const enum _menu2_levels next_for_editor_list_logical_nodes_for_output[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL};
 const enum _menu2_levels next_for_editor_list_selcted_logical_node_type_for_output = EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
 
 /*****************************************************/
@@ -971,7 +971,14 @@ void main_manu_function_ver2(void)
                 {
                   p = &next_for_editor_list_logical_nodes_for_output[current_state_menu2.index_position];
                   
-                  if (current_state_menu2.index_position == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) position_in_current_level_menu2[EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+                  if (
+                      (current_state_menu2.index_position == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) ||
+                      (current_state_menu2.index_position == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_LOG)
+                     )
+                  {
+                    position_in_current_level_menu2[EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+                    current_state_menu2.number_selection = 0;
+                  }
                     
                   break;
                 }
@@ -1028,6 +1035,7 @@ void main_manu_function_ver2(void)
               case EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
                 {
                   p = &next_for_editor_view_chosen_signal_of_selected_logical_node;
+                  position_in_current_level_menu2[EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = 0;
                   break;
                 }
               case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
@@ -2656,7 +2664,8 @@ void new_level_menu(void)
       if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
       {
 //        number_logical_node = 1;
-        type_logical_node = ID_FB_CONTROL_BLOCK;
+        if (position_in_current_level_menu2[ekran_before] == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) type_logical_node = ID_FB_CONTROL_BLOCK;
+        else type_logical_node = ID_FB_EVENT_LOG;
       }
       else if (
                (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
@@ -2724,7 +2733,7 @@ void new_level_menu(void)
       if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
       {
         current_state_menu2.number_selection = 0;
-        type_logical_node = ID_FB_LOG;
+        type_logical_node = ID_FB_EVENT_LOG;
       }
       else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
       {
@@ -2775,7 +2784,7 @@ void new_level_menu(void)
         };
   
         size_t number_row = array_n_similar_input_signals[type_logical_node - _ID_FB_FIRST_ALL];
-        if (type_logical_node == ID_FB_LOG) number_row *= p_config->n_log;
+        if (type_logical_node == ID_FB_EVENT_LOG) number_row *= p_config->n_log;
         current_state_menu2.p_max_row = (number_row != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_ALL] : NULL;
         current_state_menu2.max_row = number_row;
         

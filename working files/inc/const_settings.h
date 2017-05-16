@@ -37,7 +37,7 @@ enum _id_fb
         ID_FB_MEANDER,                                                  /*14*/
         ID_FB_TU,                                                       /*15*/
 
-        ID_FB_LOG,                                                      /*16*/
+        ID_FB_EVENT_LOG,                                                /*16*/
         
       _ID_FB_LAST_VAR_CHANGED,                                          /*17*/
       
@@ -62,13 +62,15 @@ enum _id_fb
 
 #define LOG_SIGNALS_IN                  32
 
+#define SFIFT_PARAM_INTERNAL_BITS       31
 #define SFIFT_PARAM_ID                  24
 #define SFIFT_PARAM_N                   16
 #define SFIFT_PARAM_OUT                 0
 
-#define MASKA_PARAM_ID                  ((1 << (8*sizeof(uint32_t) - SFIFT_PARAM_ID )) - 1)
-#define MASKA_PARAM_N                   ((1 << (SFIFT_PARAM_ID     - SFIFT_PARAM_N  )) - 1)
-#define MASKA_PARAM_OUT                 ((1 << (SFIFT_PARAM_N      - SFIFT_PARAM_OUT)) - 1)
+#define MASKA_PARAM_INTERNAL_BITS       ((1 << (8*sizeof(uint32_t)        - SFIFT_PARAM_INTERNAL_BITS )) - 1)
+#define MASKA_PARAM_ID                  ((1 << (SFIFT_PARAM_INTERNAL_BITS - SFIFT_PARAM_ID            )) - 1)
+#define MASKA_PARAM_N                   ((1 << (SFIFT_PARAM_ID            - SFIFT_PARAM_N             )) - 1)
+#define MASKA_PARAM_OUT                 ((1 << (SFIFT_PARAM_N             - SFIFT_PARAM_OUT           )) - 1)
 
 #define NUMBER_FIX_BLOCKS       (_ID_FB_LAST_FIX - _ID_FB_FIRST_FIX)
 
@@ -85,9 +87,9 @@ enum _FIX_BLOCK_output_signals
 {
   FIX_BLOCK_DEFECT = 0,
   FIX_BLOCK_AVAR_DEFECT,
-  FIX_BLOCK_TEST,
-  FIX_BLOCK_SETTINGS_LOG_WORK,
   FIX_BLOCK_SETTINGS_CHANGED,
+  FIX_BLOCK_D_TRIGGER_STATE_INCORRECT,
+  FIX_BLOCK_SCHEME_INCORRECT,
   
   FIX_BLOCK_SIGNALS_OUT
 };
@@ -102,6 +104,8 @@ enum _FIX_BLOCK_input_signals
   FIX_BLOCK_ALARM = 0,
   FIX_BLOCK_MUTE,
   FIX_BLOCK_BLOCK,
+  FIX_VLOCK_TEST_INPUT,
+  FIX_VLOCK_TEST_RESET,
   
   FIX_BLOCK_SIGNALS_IN
 };
@@ -466,9 +470,11 @@ enum __index_delay_meander
 /*
 ∆урнал под≥й
 */
-enum _LOG_output_signals
+enum _EVENT_LOG_output_signals
 {
-  LOG_SIGNALS_OUT = 0
+  EVENT_LOG_WORK = 0,
+  
+  EVENT_LOG_SIGNALS_OUT
 };
 /***/
 

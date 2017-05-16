@@ -234,7 +234,7 @@ void error_start_i2c(void);
 
 void control_reading_ADCs(void);
 void operate_test_ADCs(void);
-void method_sum_sqr_data(void);
+//void method_sum_sqr_data(void);
 void calc_measurement(void);
 unsigned int norma_value(unsigned long long);
 unsigned int sqrt_32(unsigned int);

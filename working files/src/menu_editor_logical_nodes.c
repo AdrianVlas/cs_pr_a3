@@ -37,7 +37,7 @@ const uint8_t * const array_p_name_out[NUMBER_ALL_BLOCKS] =
   (const uint8_t*)name_trigger_out_signals, 
   (const uint8_t*)name_meander_out_signals,
   (const uint8_t*)name_button_tu_out_signals,
-  NULL
+  (const uint8_t*)name_event_log_out_signals
 };
     
 const enum _menu2_levels levels_tmp[__NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL - __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL] =
@@ -126,7 +126,7 @@ void move_into_editor_list_logical_nodes(unsigned int action, int max_row)
     logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_OUT        ) != 0);
     logical_node_shown[13] = ((p_config->n_meander*MEANDER_SIGNALS_OUT        ) != 0);
     logical_node_shown[14] = ((p_config->n_tu*BUTTON_TU_SIGNALS_OUT           ) != 0);
-    logical_node_shown[15] = ((p_config->n_log*0                              ) != 0);
+    logical_node_shown[15] = ((p_config->n_log*EVENT_LOG_SIGNALS_OUT          ) != 0);
   };
   
   if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
@@ -229,7 +229,7 @@ void make_ekran_editor_list_logical_node(void)
       logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_OUT        ) != 0);
       logical_node_shown[13] = ((p_config->n_meander*MEANDER_SIGNALS_OUT        ) != 0);
       logical_node_shown[14] = ((p_config->n_tu*BUTTON_TU_OUT                   ) != 0);
-      logical_node_shown[15] = ((p_config->n_log*0                              ) != 0);
+      logical_node_shown[15] = ((p_config->n_log*EVENT_LOG_SIGNALS_OUT          ) != 0);
     };
   
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
@@ -472,7 +472,7 @@ enum _result_pressed_enter_during_edition press_enter_in_editor_list_logical_nod
   {
 //    index = 0; //для даного випадку у цій змінній немає сенсу
 //    number_logical_node_in = 1; //для даного випадку у цій змінній немає сенсу
-    type_logical_node_in = ID_FB_LOG;
+    type_logical_node_in = ID_FB_EVENT_LOG;
   }
   else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
   {
@@ -564,12 +564,12 @@ enum _result_pressed_enter_during_edition press_enter_in_editor_list_logical_nod
           p_param_edit = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
-      case ID_FB_LOG:
+      case ID_FB_EVENT_LOG:
         {
           n_similar_input_signals *= current_config_edit.n_log;
           
-          p_param_cont = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR]);
-          p_param_edit = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+          p_param_cont = ((__LOG_INPUT*)sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+          p_param_edit = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
           break;
         }
       default:
@@ -621,7 +621,7 @@ void press_esc_in_editor_list_logical_node(void)
   {
 //    index = 0; //для даного випадку у цій змінній немає сенсу
 //    number_logical_node_in = 1; //для даного випадку у цій змінній немає сенсу
-    type_logical_node_in = ID_FB_LOG;
+    type_logical_node_in = ID_FB_EVENT_LOG;
   }
   else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
   {
@@ -713,12 +713,12 @@ void press_esc_in_editor_list_logical_node(void)
           p_param_edit = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
-      case ID_FB_LOG:
+      case ID_FB_EVENT_LOG:
         {
           n_similar_input_signals *= current_config_edit.n_log;
           
-          p_param_cont = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR]);
-          p_param_edit = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+          p_param_cont = ((__LOG_INPUT*)sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+          p_param_edit = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
           break;
         }
       default:
@@ -790,7 +790,7 @@ void move_into_editor_view_chosen_of_selected_logical_node(unsigned int action, 
     {
 //      index = 0; //для даного випадку у цій змінній немає сенсу
 //      number_logical_node = 1; //для даного випадку у цій змінній немає сенсу
-      type_logical_node = ID_FB_LOG;
+      type_logical_node = ID_FB_EVENT_LOG;
     }
     else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
     {
@@ -876,17 +876,17 @@ void move_into_editor_view_chosen_of_selected_logical_node(unsigned int action, 
       
           break;
         }
-      case ID_FB_LOG:
+      case ID_FB_EVENT_LOG:
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
             n_similar_input_signals *= current_config_prt.n_log;
-            p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+            p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
           }
           else
           {
             n_similar_input_signals *=current_config.n_log;
-            p_param = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+            p_param = ((__LOG_INPUT*)sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
           }
             
           break;
@@ -905,7 +905,7 @@ void move_into_editor_view_chosen_of_selected_logical_node(unsigned int action, 
           if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
           while (
                  (current_state_menu2.index_position != 0) &&
-                 (p_param[current_state_menu2.index_position] == 0)
+                 ((p_param[current_state_menu2.index_position] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))) == 0)
                 )
           {
             if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
@@ -921,7 +921,7 @@ void move_into_editor_view_chosen_of_selected_logical_node(unsigned int action, 
           if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
           while (
                  (current_state_menu2.index_position != 0) &&
-                 (p_param[current_state_menu2.index_position] == 0)
+                 ((p_param[current_state_menu2.index_position] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))) == 0)
                 )
           {
             if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
@@ -959,7 +959,7 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
     {
 //      index = 0; //для даного випадку у цій змінній немає сенсу
 //      number_logical_node = 1; //для даного випадку у цій змінній немає сенсу
-      type_logical_node = ID_FB_LOG;
+      type_logical_node = ID_FB_EVENT_LOG;
     }
     else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
     {
@@ -1114,17 +1114,17 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
           
           break;
         }
-      case ID_FB_LOG:
+      case ID_FB_EVENT_LOG:
         {
           if (current_state_menu2.edition == ED_VIEWING)
           {
             n_similar_input_signals *= current_config_prt.n_log;
-            p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+            p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
           }
           else
           {
             n_similar_input_signals *= current_config.n_log;
-            p_param = ((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+            p_param = ((__LOG_INPUT*)sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
           }
             
           break;
@@ -1144,7 +1144,7 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
         while (
                (index_in_ekran != 0) &&
                (index_in_ekran < max_row) &&
-               (p_param[index_in_ekran] == 0)
+               ((p_param[index_in_ekran] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))) == 0)
               )
         {
           index_in_ekran++;
@@ -1153,7 +1153,7 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
         //Наступні рядки треба перевірити, чи їх требе відображати
         if (index_in_ekran < max_row)
         {
-          uint32_t param = p_param[index_in_ekran];
+          uint32_t param = p_param[index_in_ekran] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS));
           if (param != 0)
           {
             unsigned int id_input   = (param >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;
@@ -1215,8 +1215,14 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
                     else 
                     {
                       if (
-                          (id_input == ID_FB_BUTTON) &&
-                          ((n_input - 1) < NUMBER_FIX_BUTTONS)  
+                          (
+                           (id_input == ID_FB_BUTTON) &&
+                           ((n_input - 1) < NUMBER_FIX_BUTTONS)  
+                          )
+                          ||
+                          (
+                           (id_input == ID_FB_EVENT_LOG)
+                          ) 
                          )   
                       {
                         number_logical_node_tmp = 0;
@@ -1333,7 +1339,8 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
     if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
     {
       number_logical_node_out = 1;
-      type_logical_node_out = ID_FB_CONTROL_BLOCK;
+      if (position_in_current_level_menu2[ekran_before] == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) type_logical_node_out = ID_FB_CONTROL_BLOCK;
+      else type_logical_node_out = ID_FB_EVENT_LOG;
     }
     else if (
              (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
@@ -1376,7 +1383,7 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
       {
 //        index_in = 0; //для даного випадку у цій змінній немає сенсу
 //        number_logical_node_in = 1; //для даного випадку у цій змінній немає сенсу
-        type_logical_node_in = ID_FB_LOG;
+        type_logical_node_in = ID_FB_EVENT_LOG;
       }
       else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
       {
@@ -1459,10 +1466,10 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
               p_param = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
               break;
             }
-          case ID_FB_LOG:
+          case ID_FB_EVENT_LOG:
             {
               n_similar_input_signals *= current_config_edit.n_log;
-              p_param = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+              p_param = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
             
               break;
             }
@@ -1540,8 +1547,14 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
                     else 
                     {
                       if (
-                          (type_logical_node_out == ID_FB_BUTTON) &&
-                          ((number_logical_node_out - 1) < NUMBER_FIX_BUTTONS)  
+                          (
+                           (type_logical_node_out == ID_FB_BUTTON) &&
+                           ((number_logical_node_out - 1) < NUMBER_FIX_BUTTONS)  
+                          )   
+                          ||
+                          (
+                           (type_logical_node_out == ID_FB_EVENT_LOG)
+                          ) 
                          )   
                       {
                         number_logical_node_tmp = 0;
@@ -1619,7 +1632,7 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
             unsigned int present = false;
             for (size_t j = 0; j < n_similar_input_signals; j++)
             {
-              uint32_t param = p_param[j];
+              uint32_t param = p_param[j] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS));
               if (param != 0)
               {
                 if (((param >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ) != type_logical_node_out   ) continue;
@@ -1695,7 +1708,8 @@ void change_set_signal(unsigned int action)
   if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
   {
     number_logical_node_out = 1;
-    type_logical_node_out = ID_FB_CONTROL_BLOCK;
+    if (position_in_current_level_menu2[ekran_before] == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) type_logical_node_out = ID_FB_CONTROL_BLOCK;
+    else type_logical_node_out = ID_FB_EVENT_LOG;
   }
   else if (
            (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
@@ -1733,7 +1747,7 @@ void change_set_signal(unsigned int action)
     {
 //      index_in = 0; //для даного випадку у цій змінній немає сенсу
 //      number_logical_node_in = 1; //для даного випадку у цій змінній немає сенсу
-      type_logical_node_in = ID_FB_LOG;
+      type_logical_node_in = ID_FB_EVENT_LOG;
     }
     else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
     {
@@ -1816,10 +1830,10 @@ void change_set_signal(unsigned int action)
             p_param = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
-        case ID_FB_LOG:
+        case ID_FB_EVENT_LOG:
           {
             n_similar_input_signals *= current_config_edit.n_log;
-            p_param = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+            p_param = ((__LOG_INPUT*)sca_of_p_edit[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
             
             break;
           }
@@ -1845,7 +1859,7 @@ void change_set_signal(unsigned int action)
       unsigned int index_position = current_state_menu2.index_position;
       for (size_t i = 0; i < n_similar_input_signals; i++)
       {
-        uint32_t param = p_param[i];
+        uint32_t param = p_param[i] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS));
         if (param != 0)
         {
           if (((param >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ) != type_logical_node_out  ) continue;
@@ -1864,7 +1878,7 @@ void change_set_signal(unsigned int action)
           size_t j = (i + 1);
           while (j < n_similar_input_signals)
           {     
-            param =  p_param[j - 1] = p_param[j];
+            param =  p_param[j - 1] = p_param[j] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS));
             if (param == 0) break;
             
             j++;
@@ -1880,7 +1894,7 @@ void change_set_signal(unsigned int action)
         /*Пробуємо встановити цей сигнал Вимк.->Ввімк.*/
         size_t i = 0;
         while (
-               (p_param[i] != 0) &&
+               ((p_param[i] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))) != 0) &&
                (i < n_similar_input_signals)
               )   
         {
@@ -1899,10 +1913,10 @@ void change_set_signal(unsigned int action)
             uint32_t param_1;
             do
             {
-              param_1 = p_param[index_1];
+              param_1 = p_param[index_1] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS));
               for (size_t index_2 = (index_1 + 1); index_2 < n_similar_input_signals; index_2++)
               {
-                uint32_t param_2 = p_param[index_2];
+                uint32_t param_2 = p_param[index_2] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS));
                 if (
                     (param_2 != 0) &&
                     (
@@ -1917,7 +1931,7 @@ void change_set_signal(unsigned int action)
                 }
               }
             }
-            while (param_1 != p_param[index_1]);
+            while (param_1 != (p_param[index_1] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))));
           }
         }
         else
@@ -1948,7 +1962,7 @@ void select_input_signal_ln(void)
   if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
   {
 //    number_logical_node = 1; //для даного випадку у цій змінній немає сенсу
-    type_logical_node = ID_FB_LOG;
+    type_logical_node = ID_FB_EVENT_LOG;
   }
   else if ((ekran_before = previous_level_in_current_level_menu2[ekran_before]) == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
   {
@@ -2023,10 +2037,10 @@ void select_input_signal_ln(void)
           param = ((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
           break;
         }
-      case ID_FB_LOG:
+      case ID_FB_EVENT_LOG:
         {
           n_similar_input_signals *= current_config_edit.n_log;
-          param = *((__LOG_INPUT*)sca_of_p_edit[ID_FB_LOG - _ID_FB_FIRST_VAR] + position);
+          param = (*((__LOG_INPUT*)sca_of_p_edit[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + position)) & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS));
             
           break;
         }
@@ -2047,10 +2061,21 @@ void select_input_signal_ln(void)
         current_state_menu2.current_level = EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
         position_in_current_level_menu2[EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = out_input - 1;
       
-        if (id_input == ID_FB_CONTROL_BLOCK)
+        if (
+            (id_input == ID_FB_CONTROL_BLOCK) ||
+            (id_input == ID_FB_EVENT_LOG)
+           )   
         {
           previous_level_in_current_level_menu2[EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
-          position_in_current_level_menu2[EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = 0;
+          if (id_input == ID_FB_CONTROL_BLOCK)
+          {
+            position_in_current_level_menu2[EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK;
+          }
+          else
+          {
+            position_in_current_level_menu2[EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = INDEX_EDITOR_LIST_LOGICAL_NODES_M2_LOG;
+            current_state_menu2.number_selection = 0;
+          }
         }
         else
         {

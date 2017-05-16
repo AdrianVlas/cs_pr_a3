@@ -31,6 +31,9 @@ extern const uint32_t first_index_number_button[MAX_NAMBER_LANGUAGE];
 extern const uint8_t name_tu[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint32_t first_index_number_tu[MAX_NAMBER_LANGUAGE];
 
+extern const uint8_t name_event_log_out_signals[MAX_NAMBER_LANGUAGE][EVENT_LOG_SIGNALS_OUT][MAX_COL_LCD + 1];
+
+
 extern const uint8_t name_string_choose_communication_parameters[MAX_NAMBER_LANGUAGE][MAX_ROW_CHCP_M2][MAX_COL_LCD + 1];
 extern const uint8_t name_string_choose_communication_parameters_address[MAX_NAMBER_LANGUAGE][MAX_ROW_ADDRESS_M2][MAX_COL_LCD + 1];
 extern const uint8_t name_string_choose_communication_parameters_RS485[MAX_NAMBER_LANGUAGE][MAX_ROW_SETTING_RS485_M2][MAX_COL_LCD + 1];

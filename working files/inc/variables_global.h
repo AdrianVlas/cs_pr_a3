@@ -135,7 +135,7 @@ const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   TRIGGER_SIGNALS_OUT,
   MEANDER_SIGNALS_OUT,
   BUTTON_TU_SIGNALS_OUT,
-  LOG_SIGNALS_OUT
+  EVENT_LOG_SIGNALS_OUT
 };
 
 

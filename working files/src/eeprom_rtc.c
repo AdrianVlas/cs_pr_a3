@@ -600,7 +600,7 @@ void main_routines_for_i2c(void)
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
               break;
             }
-          case ID_FB_LOG:
+          case ID_FB_EVENT_LOG:
             {
               size_of_block = current_config.n_log*LOG_SIGNALS_IN*sizeof(__LOG_INPUT);
               break;
@@ -970,7 +970,7 @@ void main_routines_for_i2c(void)
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
               break;
             }
-          case ID_FB_LOG:
+          case ID_FB_EVENT_LOG:
             {
               size_of_block = current_config.n_log*LOG_SIGNALS_IN*sizeof(__LOG_INPUT);
               break;
@@ -1797,7 +1797,7 @@ void main_routines_for_i2c(void)
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
               break;
             }
-          case ID_FB_LOG:
+          case ID_FB_EVENT_LOG:
             {
               size_of_block = current_config.n_log*LOG_SIGNALS_IN*sizeof(__LOG_INPUT);
               break;

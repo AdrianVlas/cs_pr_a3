@@ -587,7 +587,7 @@ void control_settings(unsigned int modified)
 
           break;
         }
-      case ID_FB_LOG:
+      case ID_FB_EVENT_LOG:
         {
           if (item == 0)
           {
@@ -596,8 +596,8 @@ void control_settings(unsigned int modified)
             n_item = 1;
           }
 
-          if  (modified == 0) point_2 = (uint8_t *)((__LOG_INPUT*)sca_of_p[ID_FB_LOG - _ID_FB_FIRST_VAR]);
-          point_1 = (uint8_t *)((__LOG_INPUT*)spca_of_p_prt[ID_FB_LOG - _ID_FB_FIRST_VAR]);
+          if  (modified == 0) point_2 = (uint8_t *)((__LOG_INPUT*)sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+          point_1 = (uint8_t *)((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + 1);
 
           break;
         }
@@ -1039,7 +1039,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_MEANDER) : sizeof(__settings_for_MEANDER));
           break;
         }
-      case ID_FB_LOG:
+      case ID_FB_EVENT_LOG:
         {
           //≈лемент "∆урнал под≥й"
           n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_log : 0;
@@ -1048,6 +1048,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           
           min_param = min_settings_LOG;
           size = n_cur*sizeof(__LOG_INPUT)*LOG_SIGNALS_IN;
+          if ((mem_for_prt == true) && (n_cur != 0)) size += sizeof(__LOG_INPUT);
           break;
         }
       default:
@@ -1300,7 +1301,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         size = n_prev*sizeof(__settings_for_MEANDER);
         break;
       }
-    case ID_FB_LOG:
+    case ID_FB_EVENT_LOG:
       {
         //≈лемент "∆урнал под≥й"
         n_cur  = current->n_log;
@@ -2063,15 +2064,16 @@ void copy_settings_MEANDER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
 /*****************************************************/
 void min_settings_LOG(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
 {
-  UNUSED(mem_to_prt);
-  
   for (size_t shift = index_first; shift < index_last; shift++)
   {
     for (size_t i = 0; i < LOG_SIGNALS_IN; i++)
     {
-      *((__LOG_INPUT *)(base) + shift*LOG_SIGNALS_IN + i) = 0;
+      if (mem_to_prt == true) *((__LOG_INPUT *)(base) + 1 + shift*LOG_SIGNALS_IN + i) = 0;
+      else *((__LOG_INPUT *)(base) + shift*LOG_SIGNALS_IN + i) = 0;
     }
   }
+  
+  if ((mem_to_prt == true) && (index_first == 0)) *((__LOG_INPUT *)base) = 0;
 }
 /*****************************************************/
 
@@ -2080,14 +2082,27 @@ void min_settings_LOG(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
 /*****************************************************/
 void copy_settings_LOG(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
 {
-  UNUSED(mem_to_prt);
-  UNUSED(mem_from_prt);
-  
   for (size_t shift = index_target; shift < index_source; shift++)
   {
     for (size_t i = 0; i < LOG_SIGNALS_IN; i++)
     {
-      *((__LOG_INPUT *)(base_target) + shift*LOG_SIGNALS_IN + i) = *((__LOG_INPUT *)(base_source) + shift*LOG_SIGNALS_IN + i);
+      if ((mem_to_prt == false) && (mem_from_prt == true))
+      {
+        *((__LOG_INPUT *)(base_target) + shift*LOG_SIGNALS_IN + i) = *((__LOG_INPUT *)(base_source) + 1 + shift*LOG_SIGNALS_IN + i);
+      }
+      else if ((mem_to_prt == true) && (mem_from_prt == false))
+      {
+        *((__LOG_INPUT *)(base_target) + 1 + shift*LOG_SIGNALS_IN + i) = *((__LOG_INPUT *)(base_source) + shift*LOG_SIGNALS_IN + i);
+      }
+      else if ((mem_to_prt == false) && (mem_from_prt == false))
+      {
+        *((__LOG_INPUT *)(base_target) + shift*LOG_SIGNALS_IN + i) = *((__LOG_INPUT *)(base_source) + shift*LOG_SIGNALS_IN + i);
+      }
+      else
+      {
+        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+        total_error_sw_fixed(46);
+      }
     }
   }
 }
@@ -2166,7 +2181,7 @@ size_t size_all_settings(void)
         size_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
         break;
       }
-    case ID_FB_LOG:
+    case ID_FB_EVENT_LOG:
       {
         size_block = current_config.n_log*sizeof(__LOG_INPUT)*LOG_SIGNALS_IN;
         break;
@@ -2306,7 +2321,7 @@ void copy_settings(
 
             break;
           }
-        case ID_FB_LOG:
+        case ID_FB_EVENT_LOG:
           {
             //≈лемент "∆урнал под≥й"
             n_prev = source_conf->n_log;
@@ -2633,7 +2648,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_trigger,
                                           current_config.n_meander,
                                           current_config.n_tu,
-                                          1,
+                                          (current_config.n_tu != 0) ? 1 : 0,
                                          };
     for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
     {
@@ -2712,7 +2727,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
               p_param_edit = (((__settings_for_TRIGGER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
-          case ID_FB_LOG:
+          case ID_FB_EVENT_LOG:
             {
               _n = LOG_SIGNALS_IN*current_config.n_log;
               moveable_inputs = true;
