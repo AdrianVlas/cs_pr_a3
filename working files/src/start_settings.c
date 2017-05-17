@@ -988,6 +988,7 @@ void start_settings_peripherals(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 
     main_routines_for_i2c();
@@ -1020,6 +1021,7 @@ void start_settings_peripherals(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 
     main_routines_for_i2c();
@@ -1052,6 +1054,7 @@ void start_settings_peripherals(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 
     main_routines_for_i2c();
@@ -1086,6 +1089,7 @@ void start_settings_peripherals(void)
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
 
       main_routines_for_i2c();
@@ -1118,6 +1122,7 @@ void start_settings_peripherals(void)
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
 
       main_routines_for_i2c();
@@ -1285,6 +1290,7 @@ void start_settings_peripherals(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 
   /**********************/
@@ -1310,6 +1316,7 @@ void start_settings_peripherals(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 }
 /**************************************/
@@ -1851,6 +1858,7 @@ void error_reading_with_eeprom()
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
     
     unsigned int index_info, index_action, information_type;
@@ -1926,6 +1934,7 @@ void error_reading_with_eeprom()
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
     }
 
@@ -1969,6 +1978,7 @@ void error_reading_with_eeprom()
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
 
       main_routines_for_i2c();
@@ -2016,6 +2026,7 @@ void error_reading_with_eeprom()
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
       
       main_routines_for_i2c();
@@ -2062,6 +2073,7 @@ void start_checking_dataflash(void)
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
     }
     
@@ -2087,6 +2099,7 @@ void start_checking_dataflash(void)
                         GPIO_PIN_EXTERNAL_WATCHDOG,
                         (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                        );
+          control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
         }
       }
     }
@@ -2107,6 +2120,7 @@ void start_checking_dataflash(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 
     //Копіюємо  рядки у робочий екран
@@ -2133,6 +2147,7 @@ void start_checking_dataflash(void)
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
     }
   }

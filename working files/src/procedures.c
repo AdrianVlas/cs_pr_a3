@@ -174,6 +174,69 @@ void changing_diagnostyka_state(void)
   /*****/
         
   /*****/
+  //Подія "Пр.Рестарт пр."
+  /*****/
+  if (_CHECK_SET_BIT(value_changes, EVENT_SOFT_RESTART_SYSTEM_BIT) != 0)
+  {
+    //Зафіксовано що подія "Пр.Рестарт пр." змінила свій стан
+    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_SOFT_RESTART_SYSTEM_BIT) == 0)
+    {
+      /*
+      Новий стан події "Пр.Рестарт пр." є неактивний стан
+      Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
+      - знімаємо встановлений біт про зміну стану діагностики
+      - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
+      - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
+      */
+      _CLEAR_BIT(value_changes, EVENT_SOFT_RESTART_SYSTEM_BIT);
+      _CLEAR_BIT(diagnostyka_before, EVENT_SOFT_RESTART_SYSTEM_BIT);
+    }
+  }
+  /*****/
+        
+  /*****/
+  //Подія "Зм.конфіругації"
+  /*****/
+  if (_CHECK_SET_BIT(value_changes, EVENT_CHANGE_CONFIGURATION_BIT) != 0)
+  {
+    //Зафіксовано що подія "Зм.конфіругації" змінила свій стан
+    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_CHANGE_CONFIGURATION_BIT) == 0)
+    {
+      /*
+      Новий стан події "Зм.конфіругації" є неактивний стан
+      Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
+      - знімаємо встановлений біт про зміну стану діагностики
+      - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
+      - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
+      */
+      _CLEAR_BIT(value_changes, EVENT_CHANGE_CONFIGURATION_BIT);
+      _CLEAR_BIT(diagnostyka_before, EVENT_CHANGE_CONFIGURATION_BIT);
+    }
+  }
+  /*****/
+        
+  /*****/
+  //Подія "Зм.налаштувань"
+  /*****/
+  if (_CHECK_SET_BIT(value_changes, EVENT_CHANGE_SETTINGS_BIT) != 0)
+  {
+    //Зафіксовано що подія "Зм.налаштувань" змінила свій стан
+    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_CHANGE_SETTINGS_BIT) == 0)
+    {
+      /*
+      Новий стан події "Зм.налаштувань" є неактивний стан
+      Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
+      - знімаємо встановлений біт про зміну стану діагностики
+      - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
+      - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
+      */
+      _CLEAR_BIT(value_changes, EVENT_CHANGE_SETTINGS_BIT);
+      _CLEAR_BIT(diagnostyka_before, EVENT_CHANGE_SETTINGS_BIT);
+    }
+  }
+  /*****/
+        
+  /*****/
   //Подія "Зуп.пристр."
   /*****/
   /*
@@ -2425,8 +2488,13 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
     {
       __CONFIG current_config_tmp = current_config_prt;
-//      __disable_interrupt();
+      TIM_Cmd(TIM2, DISABLE); //Зупиняємо систему логіки
       result = allocate_dynamic_memory_for_settings(REMAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, &current_config, &current_config_tmp);
+      if (result == DYN_MEM_SELECT_OK)
+      {
+        //Фіксуємо, що відбулася зміна конфігурації
+        _SET_BIT(set_diagnostyka, EVENT_CHANGE_CONFIGURATION_BIT);
+      }
     }
 
     if (result == DYN_MEM_SELECT_OK)
@@ -2434,8 +2502,10 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       if (config_settings_modified & MASKA_CHANGED_SETTINGS)
       {
         //Відбувалися зміни у налаштуваннях
-//        __disable_interrupt(); /*конфігурація може записуватися, а може не записуватися, тому у цьому місці переривання вже можуть бути забороненими, або ще ні*/
+        TIM_Cmd(TIM2, DISABLE); //Зупиняємо систему логіки
         copy_settings(&current_config, &settings_fix_prt, &settings_fix, spca_of_p_prt, sca_of_p);
+        //Фіксуємо, що відбулася зміна налаштувань
+        _SET_BIT(set_diagnostyka, EVENT_CHANGE_SETTINGS_BIT);
         
         /***
           Зміни у Андрієвій системі
@@ -2445,11 +2515,10 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         if (res != 0) result = PRT_MEM_ERROR;
         /***/
       }
-//      __enable_interrupt(); /*могла бути ситуація. що конфігурація змінювалася без зміни налаштувнь*/
     }
     else if (result == DYN_MEM_NO_ENOUGH_MEM) 
     {
-//      __enable_interrupt();
+      TIM_Cmd(TIM2, ENABLE); //Відновлюємо роботу системи логіки
       /*
       при такому негативному резульаті зміни конфігурації все ж таки конфігурація повернулася 
       до свого попереднього стану, тому можна відновити інших більш пріоритетних систем, зокрема,
@@ -2531,6 +2600,51 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       settings_fix_prt.time_setpoints[7] = settings_fix.time_setpoints[7] = settings_fix_edit.time_setpoints[7] = (uint8_t)(source & 0xff);
       
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+      
+      /***
+      Очікуємо, поки процес запису у EEPROM повністю завершиться
+      ***/
+      while(
+            (
+             (control_i2c_taskes[0]     != 0) ||
+             (control_i2c_taskes[1]     != 0) ||
+             (driver_i2c.state_execution > 0)
+            )
+            ||
+            (
+             (control_tasks_dataflash != 0) ||
+             (state_execution_spi_df[INDEX_DATAFLASH_1] != TRANSACTION_EXECUTING_NONE) ||
+             (state_execution_spi_df[INDEX_DATAFLASH_2] != TRANSACTION_EXECUTING_NONE)
+            )
+           )
+      {
+        //Робота з watchdogs
+        if((control_word_of_watchdog & (UNITED_BITS_WATCHDOG & (uint32_t)(~WATCHDOG_PROTECTION))) == (UNITED_BITS_WATCHDOG & (uint32_t)(~WATCHDOG_PROTECTION)))
+        {
+          //Змінюємо стан біту зовнішнього Watchdog на протилежний
+          GPIO_WriteBit(
+                        GPIO_EXTERNAL_WATCHDOG,
+                        GPIO_PIN_EXTERNAL_WATCHDOG,
+                        (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+                       );
+          control_word_of_watchdog &= (UNITED_BITS_WATCHDOG & (uint32_t)(~WATCHDOG_PROTECTION));
+        }
+
+        main_routines_for_i2c();
+        changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+        if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
+        {
+          //Повне роозблоковування обміну з мікросхемами для драйверу I2C
+          _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+        }
+      }
+      /***/
+      
+      /***
+      Подаємо команду на перезапуск
+      ***/
+      NVIC_SystemReset();
+      /***/
     }
     else if (result == DYN_MEM_NO_ENOUGH_MEM) 
     {
