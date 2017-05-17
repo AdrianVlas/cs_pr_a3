@@ -301,7 +301,13 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
       {
       case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_alarm != current_config.n_alarm) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_alarm != current_config.n_alarm)
+          {
+            if (check_data_setpoint(current_config_edit.n_alarm, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
@@ -317,47 +323,101 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
         }
       case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_and != current_config.n_and) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_and != current_config.n_and)
+          {
+            if (check_data_setpoint(current_config_edit.n_and, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_or != current_config.n_or) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_or != current_config.n_or)
+          {
+            if (check_data_setpoint(current_config_edit.n_or, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_xor != current_config.n_xor) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_xor != current_config.n_xor)
+          {
+            if (check_data_setpoint(current_config_edit.n_xor, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_not != current_config.n_not) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_not != current_config.n_not)
+          {
+            if (check_data_setpoint(current_config_edit.n_not, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_timer != current_config.n_timer) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_timer != current_config.n_timer)
+          {
+            if (check_data_setpoint(current_config_edit.n_timer, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_trigger != current_config.n_trigger) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_trigger != current_config.n_trigger)
+          {
+            if (check_data_setpoint(current_config_edit.n_trigger, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_meander != current_config.n_meander) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_meander != current_config.n_meander)
+          {
+            if (check_data_setpoint(current_config_edit.n_meander, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_tu != current_config.n_tu) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_tu != current_config.n_tu)
+          {
+            if (check_data_setpoint(current_config_edit.n_tu, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_log != current_config.n_log) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_log != current_config.n_log)
+          {
+            if (check_data_setpoint(current_config_edit.n_log, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       }
