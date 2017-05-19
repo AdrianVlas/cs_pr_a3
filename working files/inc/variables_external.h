@@ -52,7 +52,6 @@ extern unsigned int measurement_low[NUMBER_ANALOG_CANALES];
 extern const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2];
 extern const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2];
 extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
-extern uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 extern unsigned char crc_trg_func, crc_trg_func_ctrl;
 extern unsigned int pressed_buttons;
 extern unsigned int activation_function_from_interface;

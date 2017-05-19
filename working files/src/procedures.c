@@ -1497,7 +1497,6 @@ void min_settings_INPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
       for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8); i++)
       {
         ((__LN_INPUT *)(base) + shift)->active_state[i] = 0;
-        ((__LN_INPUT *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -1558,7 +1557,6 @@ void min_settings_OUTPUT_LED(unsigned int mem_to_prt, uintptr_t *base, size_t in
       for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8); i++)
       {
         ((__LN_OUTPUT_LED *)(base) + shift)->active_state[i] = 0;
-        ((__LN_OUTPUT_LED *)(base) + shift)->trigger_state[i] = 0;
       }
       for (size_t i = 0; i < DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8); i++)
       {
@@ -1613,7 +1611,6 @@ void min_settings_BUTTON(unsigned int mem_to_prt, uintptr_t *base, size_t index_
       for (size_t i = 0; i < DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8); i++)
       {
         ((__LN_BUTTON *)(base) + shift)->active_state[i] = 0;
-        ((__LN_BUTTON *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -1646,7 +1643,6 @@ void min_settings_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
       for (size_t i = 0; i < DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8); i++)
       {
         ((__LN_ALARM *)(base) + shift)->active_state[i] = 0;
-        ((__LN_ALARM *)(base) + shift)->trigger_state[i] = 0;
       }
       for (size_t i = 0; i < DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8); i++)
       {
@@ -1720,7 +1716,6 @@ void min_settings_GROUP_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t i
       for (size_t i = 0; i < DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8); i++)
       {
         ((__LN_GROUP_ALARM *)(base) + shift)->active_state[i] = 0;
-        ((__LN_GROUP_ALARM *)(base) + shift)->trigger_state[i] = 0;
         ((__LN_GROUP_ALARM *)(base) + shift)->NNC = 0;
       }
     }
@@ -1783,7 +1778,6 @@ void min_settings_AND(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
       for (size_t i = 0; i < DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8); i++)
       {
         ((__LN_AND *)(base) + shift)->active_state[i] = 0;
-        ((__LN_AND *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -1839,7 +1833,6 @@ void min_settings_OR(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
       for (size_t i = 0; i < DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8); i++)
       {
         ((__LN_OR *)(base) + shift)->active_state[i] = 0;
-        ((__LN_OR *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -1895,7 +1888,6 @@ void min_settings_XOR(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
       for (size_t i = 0; i < DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8); i++)
       {
         ((__LN_XOR *)(base) + shift)->active_state[i] = 0;
-        ((__LN_XOR *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -1951,7 +1943,6 @@ void min_settings_NOT(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
       for (size_t i = 0; i < DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8); i++)
       {
         ((__LN_NOT *)(base) + shift)->active_state[i] = 0;
-        ((__LN_NOT *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -2015,7 +2006,6 @@ void min_settings_TIMER(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
       for (size_t i = 0; i < DIV_TO_HIGHER(TIMER_SIGNALS_OUT, 8); i++)
       {
         ((__LN_TIMER *)(base) + shift)->active_state[i] = 0;
-        ((__LN_TIMER *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -2071,7 +2061,6 @@ void min_settings_TRIGGER(unsigned int mem_to_prt, uintptr_t *base, size_t index
       for (size_t i = 0; i < DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8); i++)
       {
         ((__LN_TRIGGER *)(base) + shift)->active_state[i] = 0;
-        ((__LN_TRIGGER *)(base) + shift)->trigger_state[i] = 0;
       }
       for (size_t i = 0; i < DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8); i++)
       {
@@ -2188,7 +2177,6 @@ void min_settings_TU(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
       for (size_t i = 0; i < DIV_TO_HIGHER(TU_SIGNALS_OUT, 8); i++)
       {
         ((__LN_TU *)(base) + shift)->active_state[i] = 0;
-        ((__LN_TU *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -2244,7 +2232,6 @@ void min_settings_TS(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
       for (size_t i = 0; i < DIV_TO_HIGHER(TS_SIGNALS_OUT, 8); i++)
       {
         ((__LN_TS *)(base) + shift)->active_state[i] = 0;
-        ((__LN_TS *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }

@@ -149,7 +149,6 @@ typedef struct
   
   int32_t work_delay[INPUT_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8)];
 
 } __LN_INPUT;
 /**********/
@@ -170,7 +169,6 @@ typedef struct
   __settings_for_OUTPUT_LED settings;
 
   uint8_t active_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8)];
 
   uint8_t d_trigger_state[DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)];
   uint8_t d_trigger_state_tmp[DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)];
@@ -184,7 +182,6 @@ typedef struct
 typedef struct
 {
   uint8_t active_state[DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8)];
 
 } __LN_BUTTON;
 /**********/
@@ -206,7 +203,6 @@ typedef struct
 
   int32_t work_delay[ALARM_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8)];
 
   uint8_t d_trigger_state[DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)];
   uint8_t d_trigger_state_tmp[DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)];
@@ -232,7 +228,6 @@ typedef struct
 
   int32_t work_delay[GROUP_ALARM_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8)];
   uint32_t NNC; /*New number of Curcuit*/
 
 } __LN_GROUP_ALARM;
@@ -253,7 +248,6 @@ typedef struct
   __settings_for_AND settings;
 
   uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
 
 } __LN_AND;
 /**********/
@@ -274,7 +268,6 @@ typedef struct
   __settings_for_OR settings;
 
   uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
   
 } __LN_OR;
 /**********/
@@ -294,7 +287,6 @@ typedef struct
   __settings_for_XOR settings;
   
   uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
   
 } __LN_XOR;
 /**********/
@@ -315,7 +307,6 @@ typedef struct
   __settings_for_NOT settings;
   
   uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
   
 } __LN_NOT;
 /**********/
@@ -338,7 +329,6 @@ typedef struct
   
   int32_t work_delay[TIMER_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(TIMER_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(TIMER_SIGNALS_OUT, 8)];
   
 } __LN_TIMER;
 /**********/
@@ -359,7 +349,6 @@ typedef struct
   __settings_for_TRIGGER settings;
   
   uint8_t active_state[DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8)];
 
   uint8_t d_trigger_state[DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)];
   uint8_t d_trigger_state_tmp[DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)];
@@ -403,7 +392,6 @@ typedef struct
   __settings_for_TU settings;
   
   uint8_t active_state[DIV_TO_HIGHER(TU_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(TU_SIGNALS_OUT, 8)];
   
 } __LN_TU;
 /**********/
@@ -423,7 +411,6 @@ typedef struct
   __settings_for_TS settings;
   
   uint8_t active_state[DIV_TO_HIGHER(TS_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(TS_SIGNALS_OUT, 8)];
   
 } __LN_TS;
 /**********/
