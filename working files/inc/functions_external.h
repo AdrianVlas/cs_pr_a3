@@ -46,6 +46,8 @@ extern void min_settings_MEANDER(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_MEANDER(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_TU(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_TU(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
+extern void min_settings_TS(unsigned int, uintptr_t *, size_t, size_t);
+extern void copy_settings_TS(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_LOG(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_LOG(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern size_t size_all_settings(void);

@@ -44,7 +44,7 @@ Koef_1 = 84,978173543997808495193432804655 для фазних струмів (5439/64 = 84,9843
 #define VAGA_DILENNJA_I               6
 #define MNOGNYK_I_DIJUCHE             5439          
 #define VAGA_DILENNJA_I_DIJUCHE       6
-#define MNOGNYK_I_DIJUCHE_FLOAT       /*84.984375f*/2.16796875f
+#define MNOGNYK_I_DIJUCHE_FLOAT       /*84.984375f*/2.2334941490216921293665612437774f
 
 /*
 Коефіцієнт, який переводить число з АЦП у мB

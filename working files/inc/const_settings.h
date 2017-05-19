@@ -36,14 +36,15 @@ enum _id_fb
 
         ID_FB_MEANDER,                                                  /*14*/
         ID_FB_TU,                                                       /*15*/
+        ID_FB_TS,                                                       /*16*/
 
-        ID_FB_EVENT_LOG,                                                /*16*/
+        ID_FB_EVENT_LOG,                                                /*17*/
         
-      _ID_FB_LAST_VAR_CHANGED,                                          /*17*/
+      _ID_FB_LAST_VAR_CHANGED,                                          /*18*/
       
-    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*17*/
+    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*18*/
 
-  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*17*/
+  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*18*/
 };
 
 #define BIT_CHANGED_CONFIGURATION       0
@@ -483,6 +484,27 @@ enum _TU_input_signals
   TU_BLOCK = 0,
   
   TU_SIGNALS_IN
+    
+};
+/***/
+
+/*
+ря
+*/
+enum _TS_output_signals
+{
+  TS_OUT = 0,
+  
+  TS_SIGNALS_OUT
+    
+};
+
+enum _TS_input_signals
+{
+  TS_LOGIC_INPUT = 0,
+  TS_BLOCK,
+  
+  TS_SIGNALS_IN
     
 };
 /***/

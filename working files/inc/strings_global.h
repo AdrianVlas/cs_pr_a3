@@ -420,6 +420,7 @@ const uint8_t name_string_configuration[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGU
     "   D-Триггер    ",
     "      ГПС       ",
     "       ТУ       ",
+    "       ТС       ",
     " Журнал событий "
   },
   {
@@ -433,6 +434,7 @@ const uint8_t name_string_configuration[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGU
     "    D-Триґер    ",
     "      ГПС       ",
     "       ТУ       ",
+    "       ТС       ",
     "  Журнал подій  "
 },
   {
@@ -446,6 +448,7 @@ const uint8_t name_string_configuration[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGU
     "   D-Trigger    ",
     "      PSG       ",
     "       TC       ",
+    "       TS       ",
     "   Event Log    "
   },
   {
@@ -459,6 +462,7 @@ const uint8_t name_string_configuration[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGU
     "   D-Триггер    ",
     "      ГПС       ",
     "       ТУ       ",
+    "       ТС       ",
     " Журнал событий "
   }
 };
@@ -481,6 +485,7 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "D-Тр            ",
     "ГПС             ",
     "ТУ              ",
+    "ТС              ",
     "Ж.Cобытий       "
   },
   {
@@ -499,6 +504,7 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "D-Тр            ",
     "ГПС             ",
     "ТУ              ",
+    "ТС              ",
     "Ж.Подій         "
   },
   {
@@ -517,6 +523,7 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "D-Tr            ",
     "PSG             ",
     "TC              ",
+    "TS              ",
     "Ev.Log          "
   },
   {
@@ -535,6 +542,7 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "D-Тр            ",
     "ГПС             ",
     "ТУ              ",
+    "ТС              ",
     "Ж.Событий       "
   }
 };
@@ -557,6 +565,7 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " D-Триггер      ",
     " ГПС            ",
     " ТУ             ",
+    " ТС             ",
     " Ж.Событий      "
   },
   {
@@ -575,6 +584,7 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " D-Триґер       ",
     " ГПС            ",
     " ТУ             ",
+    " ТС             ",
     " Ж.Подій        "
   },
   {
@@ -593,6 +603,7 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " D-Trigger      ",
     " PSG            ",
     " TC             ",
+    " TS             ",
     " Ev.Log         "
   },
   {
@@ -611,6 +622,7 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " D-Триггер      ",
     " ГПС            ",
     " ТУ             ",
+    " ТС             ",
     " Ж.Событий      "
   }
 };
@@ -1444,5 +1456,30 @@ const uint8_t name_tu[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] =
  " ТУ             "
 };
 const uint32_t first_index_number_tu[MAX_NAMBER_LANGUAGE] = {3, 3, 3, 3};
+
+const uint8_t name_ts_in_signals[MAX_NAMBER_LANGUAGE][TS_SIGNALS_IN][MAX_COL_LCD + 1] =
+{
+  {NAME_TS_IN_SIGNALS_RU},  
+  {NAME_TS_IN_SIGNALS_UA},  
+  {NAME_TS_IN_SIGNALS_EN},  
+  {NAME_TS_IN_SIGNALS_KZ}
+};
+
+const uint8_t name_ts_out_signals[MAX_NAMBER_LANGUAGE][TS_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_TS_OUT_SIGNALS_RU},  
+  {NAME_TS_OUT_SIGNALS_UA},  
+  {NAME_TS_OUT_SIGNALS_EN},  
+  {NAME_TS_OUT_SIGNALS_KZ}
+};
+
+const uint8_t name_ts[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+{
+ " ТС             ",
+ " ТС             ",
+ " TS             ",
+ " ТС             "
+};
+const uint32_t first_index_number_ts[MAX_NAMBER_LANGUAGE] = {3, 3, 3, 3};
 
 #endif

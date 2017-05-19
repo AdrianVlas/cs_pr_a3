@@ -26,6 +26,7 @@
 #include "const_menu2_timer.h"
 #include "const_menu2_meander.h"
 #include "const_menu2_tu.h"
+#include "const_menu2_ts.h"
 #include "const_menu2_list_settings_param.h"
 #include "const_menu2_input.h"
 #include "const_menu2_output_led.h"

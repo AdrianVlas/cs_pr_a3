@@ -151,6 +151,16 @@ void make_ekran_configuration(void)
 
               break;
             }
+          case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_ts;
+
+              break;
+            }
           case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
             {
               vaga = 100; //максимальний ваговий коефіцієнт
@@ -200,6 +210,7 @@ void make_ekran_configuration(void)
       case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
         {
           current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
@@ -277,6 +288,7 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
       case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
         {
           current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
@@ -409,6 +421,17 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
           }
           break;
         }
+      case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_ts != current_config.n_ts)
+          {
+            if (check_data_setpoint(current_config_edit.n_ts, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
+          break;
+        }
       case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
         {
           if (current_config_edit.n_log != current_config.n_log)
@@ -503,6 +526,11 @@ void press_esc_in_configuration(void)
       current_config_edit.n_tu = current_config.n_tu;
       break;
     }
+  case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_ts = current_config.n_ts;
+      break;
+    }
   case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
     {
       current_config_edit.n_log = current_config.n_log;
@@ -594,6 +622,12 @@ void change_configuration(unsigned int action)
         col_end = COL_CONF_3DIGIT_END;
         break;
       }
+    case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_ts;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
     case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
       {
         p_value = &current_config_edit.n_log;
@@ -624,6 +658,7 @@ void change_configuration(unsigned int action)
     case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
     case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
     case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
+    case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
     case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
       {
         col_begin = COL_CONF_3DIGIT_BEGIN;

@@ -654,11 +654,24 @@ void control_settings(unsigned int modified)
           if (item == 0)
           {
             size_of_block = sizeof(__settings_for_TU);
-            n_item = current_config_prt.n_tu;
+            n_item = current_config_prt. n_tu;
           }
 
           if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_TU*)sca_of_p[ID_FB_TU - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_TU*)spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]) + item)->settings) ;
+
+          break;
+        }
+      case ID_FB_TS:
+        {
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_TS);
+            n_item = current_config_prt.n_ts;
+          }
+
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_TS*)sca_of_p[ID_FB_TS - _ID_FB_FIRST_VAR]) + item);
+          point_1 = (uint8_t *)(&(((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
@@ -1115,6 +1128,17 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TU) : sizeof(__settings_for_TU));
           break;
         }
+      case ID_FB_TS:
+        {
+          //ТС
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_ts : 0;
+          p_current_field = &current->n_ts;
+          n_cur = edited->n_ts;
+          
+          min_param = min_settings_TS;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TS) : sizeof(__settings_for_TS));
+          break;
+        }
       case ID_FB_EVENT_LOG:
         {
           //Елемент "Журнал подій"
@@ -1376,6 +1400,16 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         
         copy_settings_LN = copy_settings_TU;
         size = n_prev*sizeof(__settings_for_TU);
+        break;
+      }
+    case ID_FB_TS:
+      {
+        //ТС
+        n_cur  = current->n_ts;
+        current->n_ts = n_prev = control->n_ts;
+        
+        copy_settings_LN = copy_settings_TS;
+        size = n_prev*sizeof(__settings_for_TS);
         break;
       }
     case ID_FB_EVENT_LOG:
@@ -2193,6 +2227,62 @@ void copy_settings_TU(unsigned int mem_to_prt, unsigned int mem_from_prt, uintpt
 /*****************************************************/
 
 /*****************************************************/
+//Встановлення мінімальних параметрів для функціоанльного блоку "ТС"
+/*****************************************************/
+void min_settings_TS(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    for (size_t i = 0; i < TS_SIGNALS_IN; i++)
+    {
+      if (mem_to_prt == true) ((__LN_TS *)(base) + shift)->settings.param[i] = 0;
+      else ((__settings_for_TS *)(base) + shift)->param[i] = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(TS_SIGNALS_OUT, 8); i++)
+      {
+        ((__LN_TS *)(base) + shift)->active_state[i] = 0;
+        ((__LN_TS *)(base) + shift)->trigger_state[i] = 0;
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для функціоанльного блоку "ТС"
+/*****************************************************/
+void copy_settings_TS(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    for (size_t i = 0; i < TS_SIGNALS_IN; i++)
+    {
+      if ((mem_to_prt == false) && (mem_from_prt == true))
+      {
+        ((__settings_for_TS *)(base_target) + shift)->param[i] = ((__LN_TS *)(base_source) + shift)->settings.param[i];
+      }
+      else if ((mem_to_prt == true) && (mem_from_prt == false))
+      {
+        ((__LN_TS *)(base_target) + shift)->settings.param[i] = ((__settings_for_TS *)(base_source) + shift)->param[i];
+      }
+      else if ((mem_to_prt == false) && (mem_from_prt == false))
+      {
+        ((__settings_for_TS *)(base_target) + shift)->param[i] = ((__settings_for_TS *)(base_source) + shift)->param[i];
+      }
+      else
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(40);
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
 //Встановлення мінімальних параметрів для елементу "Журнал подій"
 /*****************************************************/
 void min_settings_LOG(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
@@ -2316,6 +2406,11 @@ size_t size_all_settings(void)
     case ID_FB_TU:
       {
         size_block = current_config.n_tu*sizeof(__settings_for_TU);
+        break;
+      }
+    case ID_FB_TS:
+      {
+        size_block = current_config.n_ts*sizeof(__settings_for_TS);
         break;
       }
     case ID_FB_EVENT_LOG:
@@ -2462,6 +2557,14 @@ void copy_settings(
             //ТУ
             n_prev = source_conf->n_tu;
             copy_settings_LN = copy_settings_TU;
+
+            break;
+          }
+        case ID_FB_TS:
+          {
+            //ТС
+            n_prev = source_conf->n_ts;
+            copy_settings_LN = copy_settings_TS;
 
             break;
           }
@@ -2843,7 +2946,8 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_trigger,
                                           current_config.n_meander,
                                           current_config.n_tu,
-                                          (current_config.n_tu != 0) ? 1 : 0,
+                                          current_config.n_ts,
+                                          (current_config.n_log != 0) ? 1 : 0,
                                          };
     for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
     {
@@ -2926,6 +3030,13 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
               _n = TU_SIGNALS_IN;
               p_param      = (((__settings_for_TU*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_TU*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_TS:
+            {
+              _n = TS_SIGNALS_IN;
+              p_param      = (((__settings_for_TS*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_TS*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_EVENT_LOG:

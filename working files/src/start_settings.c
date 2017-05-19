@@ -1345,6 +1345,7 @@ void min_config(__CONFIG *target_label)
   target_label->n_meander = 0;
 
   target_label->n_tu = 0;
+  target_label->n_ts = 0;
 
   target_label->n_log = 0;
   
@@ -1399,6 +1400,7 @@ void scheme2_config(__CONFIG *target_label)
   target_label->n_meander = 0;
 
   target_label->n_tu = 0;
+  target_label->n_ts = 0;
   
   target_label->n_log = DIV_TO_HIGHER((
                                        2/*"Несправність загальна" + "Несправність аварійна"*/ + 

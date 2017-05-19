@@ -17,6 +17,7 @@ const uint8_t * const array_p_name_in[NUMBER_ALL_BLOCKS] =
   (const uint8_t*)name_trigger_in_signals, 
   NULL, 
   (const uint8_t*)name_tu_in_signals,
+  (const uint8_t*)name_ts_in_signals,
   NULL
 };
 
@@ -37,6 +38,7 @@ const uint8_t * const array_p_name_out[NUMBER_ALL_BLOCKS] =
   (const uint8_t*)name_trigger_out_signals, 
   (const uint8_t*)name_meander_out_signals,
   (const uint8_t*)name_tu_out_signals,
+  (const uint8_t*)name_ts_out_signals,
   (const uint8_t*)name_event_log_out_signals
 };
     
@@ -55,7 +57,8 @@ const enum _menu2_levels levels_tmp[__NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGIC
   EDITOR_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL,
   EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL,
   EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL,
-  EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL
+  EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_TSS_FOR_OUTPUT_MENU2_LEVEL
 };
 /*****************************************************/
 /*
@@ -107,7 +110,8 @@ void move_into_editor_list_logical_nodes(unsigned int action, int max_row)
     logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN  ) != 0);
     logical_node_shown[13] = ((p_config->n_meander*0                   ) != 0);
     logical_node_shown[14] = ((p_config->n_tu*TU_SIGNALS_IN            ) != 0);
-    logical_node_shown[15] = ((p_config->n_log*LOG_SIGNALS_IN          ) != 0);
+    logical_node_shown[15] = ((p_config->n_ts*TS_SIGNALS_IN            ) != 0);
+    logical_node_shown[16] = ((p_config->n_log*LOG_SIGNALS_IN          ) != 0);
   }
   else
   {
@@ -126,7 +130,8 @@ void move_into_editor_list_logical_nodes(unsigned int action, int max_row)
     logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_OUT        ) != 0);
     logical_node_shown[13] = ((p_config->n_meander*MEANDER_SIGNALS_OUT        ) != 0);
     logical_node_shown[14] = ((p_config->n_tu*TU_SIGNALS_OUT                  ) != 0);
-    logical_node_shown[15] = ((p_config->n_log*EVENT_LOG_SIGNALS_OUT          ) != 0);
+    logical_node_shown[15] = ((p_config->n_ts*TS_SIGNALS_OUT                  ) != 0);
+    logical_node_shown[16] = ((p_config->n_log*EVENT_LOG_SIGNALS_OUT          ) != 0);
   };
   
   if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
@@ -210,7 +215,8 @@ void make_ekran_editor_list_logical_node(void)
       logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN  ) != 0);
       logical_node_shown[13] = ((p_config->n_meander*0                   ) != 0);
       logical_node_shown[14] = ((p_config->n_tu*TU_SIGNALS_IN            ) != 0);
-      logical_node_shown[15] = ((p_config->n_log*LOG_SIGNALS_IN          ) != 0);
+      logical_node_shown[15] = ((p_config->n_ts*TS_SIGNALS_IN            ) != 0);
+      logical_node_shown[16] = ((p_config->n_log*LOG_SIGNALS_IN          ) != 0);
     }     
     else
     {
@@ -229,7 +235,8 @@ void make_ekran_editor_list_logical_node(void)
       logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_OUT        ) != 0);
       logical_node_shown[13] = ((p_config->n_meander*MEANDER_SIGNALS_OUT        ) != 0);
       logical_node_shown[14] = ((p_config->n_tu*TU_SIGNALS_OUT                  ) != 0);
-      logical_node_shown[15] = ((p_config->n_log*EVENT_LOG_SIGNALS_OUT          ) != 0);
+      logical_node_shown[15] = ((p_config->n_ts*TS_SIGNALS_OUT                  ) != 0);
+      logical_node_shown[16] = ((p_config->n_log*EVENT_LOG_SIGNALS_OUT          ) != 0);
     };
   
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
@@ -570,6 +577,12 @@ enum _result_pressed_enter_during_edition press_enter_in_editor_list_logical_nod
           p_param_edit = &(((__settings_for_TU*)sca_of_p_edit[ID_FB_TU - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
+      case ID_FB_TS:
+        {
+          p_param_cont = &(((__settings_for_TS*)sca_of_p[ID_FB_TS - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_TS*)sca_of_p_edit[ID_FB_TS - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          break;
+        }
       case ID_FB_EVENT_LOG:
         {
           n_similar_input_signals *= current_config_edit.n_log;
@@ -717,6 +730,12 @@ void press_esc_in_editor_list_logical_node(void)
         {
           p_param_cont = &(((__settings_for_TU*)sca_of_p[ID_FB_TU - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           p_param_edit = &(((__settings_for_TU*)sca_of_p_edit[ID_FB_TU - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          break;
+        }
+      case ID_FB_TS:
+        {
+          p_param_cont = &(((__settings_for_TS*)sca_of_p[ID_FB_TS - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_TS*)sca_of_p_edit[ID_FB_TS - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_EVENT_LOG:
@@ -1133,6 +1152,19 @@ void make_ekran_editor_view_chosen_of_selected_logical_node(void)
           
           break;
         }
+      case ID_FB_TS:
+        {
+          if (current_state_menu2.edition == ED_VIEWING)
+          {
+            p_param = &(((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->settings.param[index]);
+          }
+          else
+          {
+            p_param = &(((__settings_for_TS*)sca_of_p[ID_FB_TS - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index]);
+          }
+          
+          break;
+        }
       case ID_FB_EVENT_LOG:
         {
           if (current_state_menu2.edition == ED_VIEWING)
@@ -1488,6 +1520,11 @@ void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void)
           case ID_FB_TU:
             {
               p_param = &(((__settings_for_TU*)sca_of_p_edit[ID_FB_TU - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
+              break;
+            }
+          case ID_FB_TS:
+            {
+              p_param = &(((__settings_for_TS*)sca_of_p_edit[ID_FB_TS - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
               break;
             }
           case ID_FB_EVENT_LOG:
@@ -1859,6 +1896,11 @@ void change_set_signal(unsigned int action)
             p_param = &(((__settings_for_TU*)sca_of_p_edit[ID_FB_TU - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
+        case ID_FB_TS:
+          {
+            p_param = &(((__settings_for_TS*)sca_of_p_edit[ID_FB_TS - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
+            break;
+          }
         case ID_FB_EVENT_LOG:
           {
             n_similar_input_signals *= current_config_edit.n_log;
@@ -2069,6 +2111,11 @@ void select_input_signal_ln(void)
       case ID_FB_TU:
         {
           param = ((__settings_for_TU*)sca_of_p_edit[ID_FB_TU - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          break;
+        }
+      case ID_FB_TS:
+        {
+          param = ((__settings_for_TS*)sca_of_p_edit[ID_FB_TS - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
           break;
         }
       case ID_FB_EVENT_LOG:

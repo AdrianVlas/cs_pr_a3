@@ -1487,6 +1487,9 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_trigger.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_ts.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_tu.h</name>
         </file>
         <file>

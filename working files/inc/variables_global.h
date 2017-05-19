@@ -116,6 +116,7 @@ const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS] =
   1, 
   0,
   1,
+  1,
   LOG_SIGNALS_IN
 };
 const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
@@ -135,6 +136,7 @@ const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   TRIGGER_SIGNALS_OUT,
   MEANDER_SIGNALS_OUT,
   TU_SIGNALS_OUT,
+  TS_SIGNALS_OUT,
   EVENT_LOG_SIGNALS_OUT
 };
 
@@ -156,6 +158,7 @@ const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   TRIGGER_SIGNALS_IN,
   0,
   TU_SIGNALS_IN,
+  TS_SIGNALS_IN,
   0
 };
 

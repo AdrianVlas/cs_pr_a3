@@ -16,6 +16,7 @@ const uint8_t (* const array_p_name[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE][MAX
   &name_trigger,
   &name_meander,
   &name_tu,
+  &name_ts,
   &name_log
 };
 const unsigned int (* const array_p_first_index_number[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE] = 
@@ -34,6 +35,7 @@ const unsigned int (* const array_p_first_index_number[NUMBER_VAR_BLOCKS])[MAX_N
   &first_index_number_trigger,
   &first_index_number_meander,
   &first_index_number_tu,
+  &first_index_number_ts,
   &first_index_number_log
 };
 

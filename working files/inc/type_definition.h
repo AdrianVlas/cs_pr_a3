@@ -69,6 +69,7 @@ typedef struct
   uint32_t n_meander;                   //Кількість генераторів меандру
 
   uint32_t n_tu;                        //Кількість ТУ
+  uint32_t n_ts;                        //Кількість ТС
   
   uint32_t n_log;                       //Кількість субмодулів Журналу подій
 
@@ -407,6 +408,25 @@ typedef struct
 } __LN_TU;
 /**********/
 
+/**********
+Функціональний блок "ТС"
+**********/
+typedef struct
+{
+  uint32_t param[TS_SIGNALS_IN];
+  
+} __settings_for_TS;
+
+typedef struct
+{
+  
+  __settings_for_TS settings;
+  
+  uint8_t active_state[DIV_TO_HIGHER(TS_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(TS_SIGNALS_OUT, 8)];
+  
+} __LN_TS;
+/**********/
 
 /**********
 Журнал подій

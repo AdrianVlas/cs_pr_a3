@@ -604,6 +604,11 @@ void main_routines_for_i2c(void)
               size_of_block = current_config.n_tu*sizeof(__settings_for_TU);
               break;
             }
+          case ID_FB_TS:
+            {
+              size_of_block = current_config.n_ts*sizeof(__settings_for_TS);
+              break;
+            }
           case ID_FB_EVENT_LOG:
             {
               size_of_block = current_config.n_log*LOG_SIGNALS_IN*sizeof(__LOG_INPUT);
@@ -976,6 +981,11 @@ void main_routines_for_i2c(void)
           case ID_FB_TU:
             {
               size_of_block = current_config.n_tu*sizeof(__settings_for_TU);
+              break;
+            }
+          case ID_FB_TS:
+            {
+              size_of_block = current_config.n_ts*sizeof(__settings_for_TS);
               break;
             }
           case ID_FB_EVENT_LOG:
@@ -1807,6 +1817,11 @@ void main_routines_for_i2c(void)
           case ID_FB_TU:
             {
               size_of_block = current_config.n_tu*sizeof(__settings_for_TU);
+              break;
+            }
+          case ID_FB_TS:
+            {
+              size_of_block = current_config.n_ts*sizeof(__settings_for_TS);
               break;
             }
           case ID_FB_EVENT_LOG:
