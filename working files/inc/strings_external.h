@@ -24,12 +24,10 @@ extern const uint8_t name_alarm_out_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_O
 extern const uint8_t name_alarm[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const unsigned int first_index_number_alarm[MAX_NAMBER_LANGUAGE];
 
-extern const uint8_t name_button_tu_out_signals[MAX_NAMBER_LANGUAGE][BUTTON_TU_SIGNALS_OUT][MAX_COL_LCD + 1];
+extern const uint8_t name_button_out_signals[MAX_NAMBER_LANGUAGE][BUTTON_SIGNALS_OUT][MAX_COL_LCD + 1];
 extern const uint8_t name_fix_buttons[NUMBER_FIX_BUTTONS][MAX_COL_LCD + 1];
 extern const uint8_t name_button[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint32_t first_index_number_button[MAX_NAMBER_LANGUAGE];
-extern const uint8_t name_tu[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
-extern const uint32_t first_index_number_tu[MAX_NAMBER_LANGUAGE];
 
 extern const uint8_t name_event_log_out_signals[MAX_NAMBER_LANGUAGE][EVENT_LOG_SIGNALS_OUT][MAX_COL_LCD + 1];
 
@@ -151,3 +149,8 @@ extern const uint8_t name_trigger_in_signals[MAX_NAMBER_LANGUAGE][TRIGGER_SIGNAL
 extern const uint8_t name_trigger_out_signals[MAX_NAMBER_LANGUAGE][TRIGGER_SIGNALS_OUT][MAX_COL_LCD + 1];
 extern const uint8_t name_trigger[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint32_t first_index_number_trigger[MAX_NAMBER_LANGUAGE];
+
+extern const uint8_t name_tu_in_signals[MAX_NAMBER_LANGUAGE][TU_SIGNALS_IN][MAX_COL_LCD + 1];
+extern const uint8_t name_tu_out_signals[MAX_NAMBER_LANGUAGE][TU_SIGNALS_OUT][MAX_COL_LCD + 1];
+extern const uint8_t name_tu[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
+extern const uint32_t first_index_number_tu[MAX_NAMBER_LANGUAGE];

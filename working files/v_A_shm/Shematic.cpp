@@ -1826,9 +1826,9 @@ void Shematic::SetupCLUFKeyStngParam(void *pv){
     locRef_CLUFKey.LogicFunc(pInit2LcVarArea->pCLUBase);
      bool bbVar = false;
     do{
-        __LN_BUTTON_TU *pLN_BUTTON_TU;
+        __LN_BUTTON *pLN_BUTTON_TU;
         short shRelativeIndexLU = 0;
-     pLN_BUTTON_TU = reinterpret_cast<__LN_BUTTON_TU*>( spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);   
+     pLN_BUTTON_TU = reinterpret_cast<__LN_BUTTON*>( spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);   
      j = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_KEY);
         shRelativeIndexLU = locRef_CLUFKey.shLUBieldOrdNum - j - 1;
     locRef_CLUFKey.pIn = static_cast<void*>(&(pLN_BUTTON_TU[shRelativeIndexLU].active_state[0]));
@@ -2463,7 +2463,7 @@ volatile CLUBase* plcCLUBase;
 union {
 //__LN_INPUT        *pLN_INPUT      ;
 __LN_OUTPUT_LED   *pLN_OUTPUT_LED ;
-//__LN_BUTTON_TU    *pLN_BUTTON_TU  ;
+//__LN_BUTTON     *pLN_BUTTON_TU  ;
 __LN_ALARM        *pLN_ALARM      ;
 __LN_GROUP_ALARM  *pLN_GROUP_ALARM;
 __LN_AND          *pLN_AND        ;
@@ -2496,7 +2496,7 @@ shRelativeIndexLU = plcCLUBase->shLUBieldOrdNum - i-1;
             
             break;
 //        case TARAS_ALAS_STNG_LU_KEY:
-//            UN_LN.pLN_INPUT = reinterpret_cast<__LN_BUTTON_TU*>( spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+//            UN_LN.pLN_INPUT = reinterpret_cast<__LN_BUTTON*>( spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
 //            break;
         case TARAS_ALAS_STNG_LU_ALARMS:
             UN_LN.pLN_ALARM = reinterpret_cast<__LN_ALARM*>( spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]);

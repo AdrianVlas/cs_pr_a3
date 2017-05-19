@@ -115,7 +115,7 @@ const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS] =
   1, 
   1, 
   0,
-  0,
+  1,
   LOG_SIGNALS_IN
 };
 const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
@@ -124,7 +124,7 @@ const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   INPUT_SIGNALS_OUT,
   OUTPUT_LED_SIGNALS_OUT,
   OUTPUT_LED_SIGNALS_OUT,
-  BUTTON_TU_SIGNALS_OUT,
+  BUTTON_SIGNALS_OUT,
   ALARM_SIGNALS_OUT,
   GROUP_ALARM_SIGNALS_OUT,
   STANDARD_LOGIC_SIGNALS_OUT,
@@ -134,7 +134,7 @@ const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   TIMER_SIGNALS_OUT,
   TRIGGER_SIGNALS_OUT,
   MEANDER_SIGNALS_OUT,
-  BUTTON_TU_SIGNALS_OUT,
+  TU_SIGNALS_OUT,
   EVENT_LOG_SIGNALS_OUT
 };
 
@@ -155,7 +155,7 @@ const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   TIMER_SIGNALS_IN,
   TRIGGER_SIGNALS_IN,
   0,
-  0,
+  TU_SIGNALS_IN,
   0
 };
 

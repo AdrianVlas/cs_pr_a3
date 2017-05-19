@@ -1409,7 +1409,7 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_alarm.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_button_tu.h</name>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_button.h</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_choose_communication_parameters.h</name>
@@ -1485,6 +1485,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_trigger.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_tu.h</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu_ver2.h</name>

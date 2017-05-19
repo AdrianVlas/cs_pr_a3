@@ -520,12 +520,11 @@ void control_settings(unsigned int modified)
           break;
         }
       case ID_FB_BUTTON:
-      case ID_FB_TU:
         {
           if (item == 0)
           {
             size_of_block = 0;
-            n_item = (block == ID_FB_BUTTON) ? current_config_prt.n_button : current_config_prt.n_tu;
+            n_item = current_config_prt.n_button;
           }
 
           if  (modified == 0) point_2 = NULL;
@@ -647,6 +646,19 @@ void control_settings(unsigned int modified)
 
           if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_MEANDER*)sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]) + item)->settings) ;
+
+          break;
+        }
+      case ID_FB_TU:
+        {
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_TU);
+            n_item = current_config_prt.n_tu;
+          }
+
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_TU*)sca_of_p[ID_FB_TU - _ID_FB_FIRST_VAR]) + item);
+          point_1 = (uint8_t *)(&(((__LN_TU*)spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
         }
@@ -983,24 +995,14 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           break;
         }
       case ID_FB_BUTTON:
-      case ID_FB_TU:
         {
-          //ФК і ТУ
-          if (index_1 == ID_FB_BUTTON)
-          {
-            n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_button : 0;
-            p_current_field = &current->n_button;
-            n_cur = edited->n_button;
-          }
-          else
-          {
-            n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_tu : 0;
-            p_current_field = &current->n_tu;
-            n_cur = edited->n_tu;
-          }
+          //ФК
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_button : 0;
+          p_current_field = &current->n_button;
+          n_cur = edited->n_button;
           
-          min_param = min_settings_BUTTON_TU;
-          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_BUTTON_TU) : 0);
+          min_param = min_settings_BUTTON;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_BUTTON) : 0);
           break;
         }
       case ID_FB_ALARM:
@@ -1100,6 +1102,17 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           
           min_param = min_settings_MEANDER;
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_MEANDER) : sizeof(__settings_for_MEANDER));
+          break;
+        }
+      case ID_FB_TU:
+        {
+          //ТУ
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_tu : 0;
+          p_current_field = &current->n_tu;
+          n_cur = edited->n_tu;
+          
+          min_param = min_settings_TU;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TU) : sizeof(__settings_for_TU));
           break;
         }
       case ID_FB_EVENT_LOG:
@@ -1256,19 +1269,10 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         break;
       }
     case ID_FB_BUTTON:
-    case ID_FB_TU:
       {
-        //ФК і ТУ
-        if (index_1 == ID_FB_BUTTON)
-        {
-          n_cur  = current->n_button;
-          current->n_button = n_prev = control->n_button;
-        }
-        else
-        {
-          n_cur  = current->n_tu;
-          current->n_tu = n_prev = control->n_tu;
-        }
+        //ФК
+        n_cur  = current->n_button;
+        current->n_button = n_prev = control->n_button;
         
         copy_settings_LN = NULL;
         size = n_prev*0;
@@ -1362,6 +1366,16 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         
         copy_settings_LN = copy_settings_MEANDER;
         size = n_prev*sizeof(__settings_for_MEANDER);
+        break;
+      }
+    case ID_FB_TU:
+      {
+        //ТУ
+        n_cur  = current->n_tu;
+        current->n_tu = n_prev = control->n_tu;
+        
+        copy_settings_LN = copy_settings_TU;
+        size = n_prev*sizeof(__settings_for_TU);
         break;
       }
     case ID_FB_EVENT_LOG:
@@ -1554,18 +1568,18 @@ void copy_settings_OUTPUT_LED(unsigned int mem_to_prt, unsigned int mem_from_prt
 /*****************************************************/
 
 /*****************************************************/
-//Встановлення мінімальних параметрів для ФК/ТУ
+//Встановлення мінімальних параметрів для ФК
 /*****************************************************/
-void min_settings_BUTTON_TU(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+void min_settings_BUTTON(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < DIV_TO_HIGHER(BUTTON_TU_SIGNALS_OUT, 8); i++)
+      for (size_t i = 0; i < DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8); i++)
       {
-        ((__LN_BUTTON_TU *)(base) + shift)->active_state[i] = 0;
-        ((__LN_BUTTON_TU *)(base) + shift)->trigger_state[i] = 0;
+        ((__LN_BUTTON *)(base) + shift)->active_state[i] = 0;
+        ((__LN_BUTTON *)(base) + shift)->trigger_state[i] = 0;
       }
     }
   }
@@ -2123,6 +2137,62 @@ void copy_settings_MEANDER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
 /*****************************************************/
 
 /*****************************************************/
+//Встановлення мінімальних параметрів для функціоанльного блоку "ТУ"
+/*****************************************************/
+void min_settings_TU(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    for (size_t i = 0; i < TU_SIGNALS_IN; i++)
+    {
+      if (mem_to_prt == true) ((__LN_TU *)(base) + shift)->settings.param[i] = 0;
+      else ((__settings_for_TU *)(base) + shift)->param[i] = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(TU_SIGNALS_OUT, 8); i++)
+      {
+        ((__LN_TU *)(base) + shift)->active_state[i] = 0;
+        ((__LN_TU *)(base) + shift)->trigger_state[i] = 0;
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для функціоанльного блоку "ТУ"
+/*****************************************************/
+void copy_settings_TU(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    for (size_t i = 0; i < TU_SIGNALS_IN; i++)
+    {
+      if ((mem_to_prt == false) && (mem_from_prt == true))
+      {
+        ((__settings_for_TU *)(base_target) + shift)->param[i] = ((__LN_TU *)(base_source) + shift)->settings.param[i];
+      }
+      else if ((mem_to_prt == true) && (mem_from_prt == false))
+      {
+        ((__LN_TU *)(base_target) + shift)->settings.param[i] = ((__settings_for_TU *)(base_source) + shift)->param[i];
+      }
+      else if ((mem_to_prt == false) && (mem_from_prt == false))
+      {
+        ((__settings_for_TU *)(base_target) + shift)->param[i] = ((__settings_for_TU *)(base_source) + shift)->param[i];
+      }
+      else
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(39);
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
 //Встановлення мінімальних параметрів для елементу "Журнал подій"
 /*****************************************************/
 void min_settings_LOG(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
@@ -2194,9 +2264,8 @@ size_t size_all_settings(void)
         break;
       }
     case ID_FB_BUTTON:
-    case ID_FB_TU:
       {
-        size_block = ((i == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
+        size_block = current_config.n_button*0;
         break;
       }
     case ID_FB_ALARM:
@@ -2242,6 +2311,11 @@ size_t size_all_settings(void)
     case ID_FB_MEANDER:
       {
         size_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+        break;
+      }
+    case ID_FB_TU:
+      {
+        size_block = current_config.n_tu*sizeof(__settings_for_TU);
         break;
       }
     case ID_FB_EVENT_LOG:
@@ -2304,10 +2378,9 @@ void copy_settings(
             break;
           }
         case ID_FB_BUTTON:
-        case ID_FB_TU:
           {
-            //ФК і ТУ
-            n_prev = (i == ID_FB_BUTTON) ? source_conf->n_button : source_conf->n_tu;
+            //ФК
+            n_prev = source_conf->n_button;
             copy_settings_LN = NULL;
 
             break;
@@ -2381,6 +2454,14 @@ void copy_settings(
             //Функціональний блок "Генератор періодичних сигналів"
             n_prev = source_conf->n_meander;
             copy_settings_LN = copy_settings_MEANDER;
+
+            break;
+          }
+        case ID_FB_TU:
+          {
+            //ТУ
+            n_prev = source_conf->n_tu;
+            copy_settings_LN = copy_settings_TU;
 
             break;
           }
@@ -2770,8 +2851,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
           (i != ID_FB_GROUP_ALARM) &&
           (i != ID_FB_INPUT) &&
           (i != ID_FB_BUTTON) &&
-          (i != ID_FB_MEANDER) &&
-          (i != ID_FB_TU)
+          (i != ID_FB_MEANDER)
          )
       {
         uint32_t *p_param, *p_param_edit;
@@ -2839,6 +2919,13 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
               _n = TRIGGER_SIGNALS_IN;
               p_param      = (((__settings_for_TRIGGER*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_TRIGGER*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_TU:
+            {
+              _n = TU_SIGNALS_IN;
+              p_param      = (((__settings_for_TU*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_TU*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_EVENT_LOG:

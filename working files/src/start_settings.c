@@ -1617,8 +1617,8 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
             break;
           }
         }
-        if (target_config->n_button >= (button + 1)) ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[0] = ((ID_FB_BUTTON & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((button + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((BUTTON_TU_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-        if (target_config->n_input  >= (0      + 1)) ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[1] = ((ID_FB_INPUT  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i_tmp  + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((INPUT_OUT     + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+        if (target_config->n_button >= (button + 1)) ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[0] = ((ID_FB_BUTTON & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((button + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((BUTTON_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+        if (target_config->n_input  >= (0      + 1)) ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[1] = ((ID_FB_INPUT  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i_tmp  + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((INPUT_OUT  + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
       }
       else if ((i_tmp -= 4) < DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN))
       {

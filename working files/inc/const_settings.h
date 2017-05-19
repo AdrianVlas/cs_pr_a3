@@ -202,18 +202,18 @@ enum __index_ctrl_output_led
 /***/
 
 /*
-‘ +“”
+‘ 
 */
-enum _BUTTON_TU_output_signals
+enum _BUTTON_output_signals
 {
-  BUTTON_TU_OUT = 0,
+  BUTTON_OUT = 0,
   
-  BUTTON_TU_SIGNALS_OUT
+  BUTTON_SIGNALS_OUT
 };
 
-enum _BUTTON_TU_d_trigger
+enum _BUTTON_d_trigger
 {
-  BUTTON_TU_D_TRIGGER_TOTAL = 0
+  BUTTON_D_TRIGGER_TOTAL = 0
 };
 /***/
 
@@ -464,6 +464,26 @@ enum __index_delay_meander
   INDEX_DELAY_MEANDER_PERIOD = 0,
   
   MAX_INDEX_DELAY_MEANDER
+};
+/***/
+
+/*
+“”
+*/
+enum _TU_output_signals
+{
+  TU_OUT = 0,
+  
+  TU_SIGNALS_OUT
+    
+};
+
+enum _TU_input_signals
+{
+  TU_BLOCK = 0,
+  
+  TU_SIGNALS_IN
+    
 };
 /***/
 

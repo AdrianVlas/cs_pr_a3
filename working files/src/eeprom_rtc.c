@@ -550,9 +550,8 @@ void main_routines_for_i2c(void)
               break;
             }
           case ID_FB_BUTTON:
-          case ID_FB_TU:
             {
-              size_of_block = ((block == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
+              size_of_block = current_config.n_button*0;
               break;
             }
           case ID_FB_ALARM:
@@ -598,6 +597,11 @@ void main_routines_for_i2c(void)
           case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          case ID_FB_TU:
+            {
+              size_of_block = current_config.n_tu*sizeof(__settings_for_TU);
               break;
             }
           case ID_FB_EVENT_LOG:
@@ -920,9 +924,8 @@ void main_routines_for_i2c(void)
               break;
             }
           case ID_FB_BUTTON:
-          case ID_FB_TU:
             {
-              size_of_block = ((block == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
+              size_of_block = current_config.n_button*0;
               break;
             }
           case ID_FB_ALARM:
@@ -968,6 +971,11 @@ void main_routines_for_i2c(void)
           case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          case ID_FB_TU:
+            {
+              size_of_block = current_config.n_tu*sizeof(__settings_for_TU);
               break;
             }
           case ID_FB_EVENT_LOG:
@@ -1747,9 +1755,8 @@ void main_routines_for_i2c(void)
               break;
             }
           case ID_FB_BUTTON:
-          case ID_FB_TU:
             {
-              size_of_block = ((block == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
+              size_of_block = current_config.n_button*0;
               break;
             }
           case ID_FB_ALARM:
@@ -1795,6 +1802,11 @@ void main_routines_for_i2c(void)
           case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          case ID_FB_TU:
+            {
+              size_of_block = current_config.n_tu*sizeof(__settings_for_TU);
               break;
             }
           case ID_FB_EVENT_LOG:

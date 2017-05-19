@@ -178,14 +178,14 @@ typedef struct
 /**********/
 
 /**********
-ФК + ТУ
+ФК
 **********/
 typedef struct
 {
-  uint8_t active_state[DIV_TO_HIGHER(BUTTON_TU_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(BUTTON_TU_SIGNALS_OUT, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8)];
 
-} __LN_BUTTON_TU;
+} __LN_BUTTON;
 /**********/
 
 /**********
@@ -385,6 +385,26 @@ typedef struct
   uint8_t active_state[DIV_TO_HIGHER(MEANDER_SIGNALS_OUT, 8)];
   
 } __LN_MEANDER;
+/**********/
+
+/**********
+Функціональний блок "ТУ"
+**********/
+typedef struct
+{
+  uint32_t param[TU_SIGNALS_IN];
+  
+} __settings_for_TU;
+
+typedef struct
+{
+  
+  __settings_for_TU settings;
+  
+  uint8_t active_state[DIV_TO_HIGHER(TU_SIGNALS_OUT, 8)];
+  uint8_t trigger_state[DIV_TO_HIGHER(TU_SIGNALS_OUT, 8)];
+  
+} __LN_TU;
 /**********/
 
 
