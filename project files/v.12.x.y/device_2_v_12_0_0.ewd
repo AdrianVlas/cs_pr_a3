@@ -910,11 +910,11 @@
         <option>
           <name>CCTcpIpAlt</name>
           <version>0</version>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCJLinkTcpIpSerialNo</name>
-          <state></state>
+          <state>164103890</state>
         </option>
         <option>
           <name>CCCpuClockEdit</name>
