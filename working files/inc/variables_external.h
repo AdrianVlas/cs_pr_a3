@@ -1,3 +1,6 @@
+#ifndef __EXTERNAL_VARIABLES_H
+#define __EXTERNAL_VARIABLES_H
+
 extern unsigned int semaphore_adc_irq;
 extern unsigned int adc_DATA_VAL_read;
 extern unsigned int adc_TEST_VAL_read;
@@ -274,3 +277,6 @@ extern unsigned int __ICFEDIT_region_RAM1_size__;
 
 
 #endif
+
+#endif
+

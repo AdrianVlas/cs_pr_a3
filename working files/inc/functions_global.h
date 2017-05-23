@@ -228,7 +228,6 @@ void Error_modbus(unsigned char, unsigned char, unsigned char, unsigned char *);
 unsigned int Get_data(unsigned char *, unsigned int, unsigned int);
 unsigned int Set_data(unsigned short int, unsigned int, unsigned int, /*unsigned int,*/ unsigned int);
 //unsigned int Get_data_file(unsigned char*, unsigned char*, unsigned int*, unsigned int);
-void set_previous_ranguvannja(void);
 
 ErrorStatus check_errors_i2c(void);
 unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);

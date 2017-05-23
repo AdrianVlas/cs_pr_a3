@@ -1,3 +1,6 @@
+#ifndef __CONSTANTS__
+#define __CONSTANTS__
+
 #include "const_global.h"
 
 #include "const_settings.h"
@@ -54,3 +57,5 @@
 #include "const_modbus_memory_map.h"
 
 #include "SEGGER_SYSVIEW.h"
+
+#endif 

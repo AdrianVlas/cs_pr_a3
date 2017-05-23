@@ -1,3 +1,6 @@
+#ifndef __EXTERNAL_FUNCTIONS_H
+#define __EXTERNAL_FUNCTIONS_H
+
 extern USB_OTG_CORE_HANDLE           USB_OTG_dev;
 extern uint32_t USBD_OTG_ISR_Handler (USB_OTG_CORE_HANDLE *pdev);
 
@@ -225,7 +228,6 @@ extern void Error_modbus(unsigned int, unsigned int, unsigned int, unsigned char
 extern unsigned int Get_data(unsigned char *, unsigned int, unsigned int);
 extern unsigned int Set_data(unsigned short int, unsigned int, unsigned int, /*unsigned int,*/ unsigned int);
 //extern unsigned int Get_data_file(unsigned char*, unsigned char*, unsigned int*, unsigned int);
-extern void set_previous_ranguvannja(void);
 
 extern ErrorStatus check_errors_i2c(void);
 extern unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);
@@ -285,3 +287,4 @@ extern int str_to_int_DATE_Mmm(void);
 
 extern long ChangeCfg(void* pv);
 
+#endif

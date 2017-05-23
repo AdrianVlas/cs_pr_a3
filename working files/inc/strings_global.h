@@ -1,5 +1,5 @@
-#ifndef __STRINGS_VARIABLES_H
-#define __STRINGS_VARIABLES_H
+#ifndef __STRINGS_GLOBAL_H
+#define __STRINGS_GLOBAL_H
 
 const uint8_t information_no_edition[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
 {
