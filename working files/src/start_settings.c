@@ -736,6 +736,10 @@ void start_settings_peripherals(void)
   /*Контроль живлення */
   GPIO_InitStructure.GPIO_Pin = POWER_CTRL_PIN;
   GPIO_Init(POWER_CTRL, &GPIO_InitStructure);
+  if ((POWER_CTRL->IDR & POWER_CTRL_PIN) == (uint32_t)Bit_RESET)
+  {
+    _SET_BIT(set_diagnostyka, EVENT_DROP_POWER_BIT);
+  }
   /**************/
 
   /**************/
