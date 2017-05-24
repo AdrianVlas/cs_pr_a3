@@ -607,8 +607,27 @@ void TIM4_IRQHandler(void)
     /***************************/
     //Обробка алгоритму функціональних кнопок
     /***************************/
-    pressed_buttons    |= (new_state_keyboard & ( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) )) >> _NUMBER_MOVING_KEY;
+    uint32_t pressed_buttons = (new_state_keyboard & ( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) )) >> _NUMBER_MOVING_KEY;
     new_state_keyboard &= (unsigned int)(~( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) ));
+
+    __LN_BUTTON *p_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+    for (uint32_t i = 0; i < current_config_prt.n_button; i++)
+    {
+      if ((pressed_buttons & (1 << i)) != 0)
+      {
+        //Зафіксовано, що кнопка зараз натиснута
+        
+        //Встановлюємо MUTEX
+        p_button->internal_input[BUTTON_INT_MUTEX >> 3] |= (1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1)));
+        
+        //Встановлюємо вхідну інформацію
+        p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] |= (1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1)));
+
+        //Скидаємо MUTEX
+        p_button->internal_input[BUTTON_INT_MUTEX >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1))));
+      }
+      p_button++;
+    }
     /***************************/
     /***********************************************************/
   

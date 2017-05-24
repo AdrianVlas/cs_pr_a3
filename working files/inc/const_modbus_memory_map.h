@@ -39,9 +39,9 @@
 /*****************************************************/
 /* Адресний простір виходів  */
 /*****************************************************/
-#define MA_OUTPUTS                        100
-#define BIT_MA_OUTPUTS_BASE                   100
-#define BIT_MA_OUTPUTS_FIRST                  100
+#define MA_OUTPUTS                        200
+#define BIT_MA_OUTPUTS_BASE                   200
+#define BIT_MA_OUTPUTS_FIRST                  200
 #define BIT_MA_OUTPUTS_LAST                   (BIT_MA_OUTPUTS_FIRST + NUMBER_OUTPUTS - 1)
 /*****************************************************/
 

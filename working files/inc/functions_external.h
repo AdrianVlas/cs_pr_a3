@@ -223,6 +223,7 @@ extern void USART_RS485_Configure(void);
 extern void restart_monitoring_RS485(void);
 extern void start_transmint_data_via_RS_485(unsigned int);
 extern unsigned short int  AddCRC(unsigned char, unsigned short int);
+extern uint32_t bit_adr_to_reg_adr(uint32_t, uint32_t, uint32_t*, uint32_t*);
 extern void modbus_rountines(unsigned int);
 extern void Error_modbus(unsigned int, unsigned int, unsigned int, unsigned char*);
 extern unsigned int Get_data(unsigned char *, unsigned int, unsigned int);

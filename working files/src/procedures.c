@@ -1493,7 +1493,7 @@ void min_settings_INPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < INPUT_SET_DELAYS; i++) ((__LN_INPUT *)(base) + shift)->work_delay[i] = -1;
+//      for (size_t i = 0; i < INPUT_WORK_DELAYS; i++) ((__LN_INPUT *)(base) + shift)->work_delay[i] = -1;
       for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8); i++)
       {
         ((__LN_INPUT *)(base) + shift)->active_state[i] = 0;
@@ -1612,6 +1612,11 @@ void min_settings_BUTTON(unsigned int mem_to_prt, uintptr_t *base, size_t index_
       {
         ((__LN_BUTTON *)(base) + shift)->active_state[i] = 0;
       }
+
+      for (size_t i = 0; i < DIV_TO_HIGHER(BUTTON_SIGNALS_INT_IN, 8); i++)
+      {
+        ((__LN_BUTTON *)(base) + shift)->internal_input[i] = 0;
+      }
     }
   }
 }
@@ -1639,7 +1644,7 @@ void min_settings_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < ALARM_WORK_DELAYS; i++) ((__LN_ALARM *)(base) + shift)->work_delay[i] = -1;
+//      for (size_t i = 0; i < ALARM_WORK_DELAYS; i++) ((__LN_ALARM *)(base) + shift)->work_delay[i] = -1;
       for (size_t i = 0; i < DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8); i++)
       {
         ((__LN_ALARM *)(base) + shift)->active_state[i] = 0;
@@ -1712,7 +1717,7 @@ void min_settings_GROUP_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t i
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < GROUP_ALARM_WORK_DELAYS; i++) ((__LN_GROUP_ALARM *)(base) + shift)->work_delay[i] = -1;
+//      for (size_t i = 0; i < GROUP_ALARM_WORK_DELAYS; i++) ((__LN_GROUP_ALARM *)(base) + shift)->work_delay[i] = -1;
       for (size_t i = 0; i < DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8); i++)
       {
         ((__LN_GROUP_ALARM *)(base) + shift)->active_state[i] = 0;
@@ -2002,7 +2007,7 @@ void min_settings_TIMER(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < TIMER_WORK_DELAYS; i++) ((__LN_TIMER *)(base) + shift)->work_delay[i] = -1;
+//      for (size_t i = 0; i < TIMER_WORK_DELAYS; i++) ((__LN_TIMER *)(base) + shift)->work_delay[i] = -1;
       for (size_t i = 0; i < DIV_TO_HIGHER(TIMER_SIGNALS_OUT, 8); i++)
       {
         ((__LN_TIMER *)(base) + shift)->active_state[i] = 0;
@@ -2121,7 +2126,7 @@ void min_settings_MEANDER(unsigned int mem_to_prt, uintptr_t *base, size_t index
     
     if (mem_to_prt == true)
     {
-      for (size_t i = 0; i < MEANDER_WORK_DELAYS; i++) ((__LN_MEANDER *)(base) + shift)->work_delay[i] = -1;
+//      for (size_t i = 0; i < MEANDER_WORK_DELAYS; i++) ((__LN_MEANDER *)(base) + shift)->work_delay[i] = -1;
       for (size_t i = 0; i < DIV_TO_HIGHER(MEANDER_SIGNALS_OUT, 8); i++)
       {
         ((__LN_MEANDER *)(base) + shift)->active_state[i] = 0;

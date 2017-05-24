@@ -332,12 +332,31 @@ inline void main_protection(void)
   /**************************/
   //Опрацьовуємо натиснуті кнопки
   /**************************/
-  __LN_BUTTON *arr_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+  __LN_BUTTON *p_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
   for (uint32_t i = 0; i < current_config_prt.n_button; i++)
   {
-    arr_button[i].active_state [BUTTON_OUT >> 3]  = ((pressed_buttons >> i) & 0x1) << (BUTTON_OUT & ((1 << 3) - 1));
+    //Скидаємо  попередній стан
+    p_button->active_state [BUTTON_OUT >> 3]  &= (uint8_t)(~( 1 << (BUTTON_OUT & ((1 << 3) - 1))));
+    
+    //Перевіряємо, чи не встановлений MUTEX
+    if ((p_button->internal_input[BUTTON_INT_MUTEX >> 3] & (1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1)))) == 0)
+    {
+      //MUTEX не встановлений
+      
+      //Визначаємо стан вхідної інформації
+      uint32_t state_tmp = ((p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] & (1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1)))) != 0);
+      if (state_tmp)
+      {
+        //Встановлюємо вихід
+        p_button->active_state [BUTTON_OUT >> 3]  |= (1 << (BUTTON_OUT & ((1 << 3) - 1)));
+        
+        //Скидаємо інформацію з входу
+        p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1))));
+      }
+    }
+    //Переводимо вказівник на наступну кнопку
+    p_button++;
   }
-  pressed_buttons = 0;
   /**************************/
     
   /**************************/

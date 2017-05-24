@@ -122,12 +122,12 @@ enum _settings_delay_of_INPUT
   INPUT_SET_DELAYS
 };
 
-enum _work_delay_of_INPUT
-{
-  INPUT_WORK_DELAY_DOPUSK = 0,
-  
-  INPUT_WORK_DELAYS
-};
+//enum _work_delay_of_INPUT
+//{
+//  INPUT_WORK_DELAY_DOPUSK = 0,
+//  
+//  INPUT_WORK_DELAYS
+//};
 
 enum __index_ctrl_input
 {
@@ -212,6 +212,14 @@ enum _BUTTON_output_signals
   BUTTON_SIGNALS_OUT
 };
 
+enum _BUTTON_internal_input_signals
+{
+  BUTTON_INT_MUTEX = 0,
+  BUTTON_INT_ACTIVATION,
+  
+  BUTTON_SIGNALS_INT_IN
+};
+
 enum _BUTTON_d_trigger
 {
   BUTTON_D_TRIGGER_TOTAL = 0
@@ -228,12 +236,12 @@ enum _settings_delay_of_ALARM
   ALARM_SET_DELAYS
 };
 
-enum _work_delay_of_ALARM
-{
-  ALARM_WORK_DELAY_PERIOD = 0,
-  
-  ALARM_WORK_DELAYS
-};
+//enum _work_delay_of_ALARM
+//{
+//  ALARM_WORK_DELAY_PERIOD = 0,
+//  
+//  ALARM_WORK_DELAYS
+//};
 
 enum _ALARM_output_signals
 {
@@ -298,12 +306,12 @@ enum _settings_delay_of_GROUP_ALARM
   GROUP_ALARM_SET_DELAYS
 };
 
-enum _work_delay_of_GROUP_ALARM
-{
-  GROUP_ALARM_WORK_DELAY_DELAY = 0,
-  
-  GROUP_ALARM_WORK_DELAYS
-};
+//enum _work_delay_of_GROUP_ALARM
+//{
+//  GROUP_ALARM_WORK_DELAY_DELAY = 0,
+//  
+//  GROUP_ALARM_WORK_DELAYS
+//};
 
 enum _GROUP_ALARM_output_signals
 {
@@ -364,16 +372,16 @@ enum _settings_delay_of_TIMER
   TIMER_SET_DELAYS
 };
 
-enum _work_delay_of_TIMER
-{
-  TIMER_WORK_DELAY_PAUSE_RISE = 0,
-  TIMER_WORK_DELAY_PAUSE_FALL,
-  TIMER_WORK_DELAY_WORK_IMPULSE_RISE,
-  TIMER_WORK_DELAY_WORK_DELAY_RISE,
-  TIMER_WORK_DELAY_WORK_IMPULSE_FALL,
-  
-  TIMER_WORK_DELAYS
-};
+//enum _work_delay_of_TIMER
+//{
+//  TIMER_WORK_DELAY_PAUSE_RISE = 0,
+//  TIMER_WORK_DELAY_PAUSE_FALL,
+//  TIMER_WORK_DELAY_WORK_IMPULSE_RISE,
+//  TIMER_WORK_DELAY_WORK_DELAY_RISE,
+//  TIMER_WORK_DELAY_WORK_IMPULSE_FALL,
+//  
+//  TIMER_WORK_DELAYS
+//};
 
 enum _TIMER_output_signals
 {
@@ -445,12 +453,12 @@ enum _MEANDER_d_trigger
   MEANDER_D_TRIGGER_TOTAL
 };
 
-enum _work_delay_of_MEANDER
-{
-  MEANDER_WORK_DELAY_PERIOD = 0,
-  
-  MEANDER_WORK_DELAYS
-};
+//enum _work_delay_of_MEANDER
+//{
+//  MEANDER_WORK_DELAY_PERIOD = 0,
+//  
+//  MEANDER_WORK_DELAYS
+//};
 
 enum _MEANDER_output_signals
 {

@@ -74,7 +74,6 @@ const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2] = {0, 2};
 const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2] = {{0, 8}};
 uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 unsigned char crc_trg_func, crc_trg_func_ctrl;
-unsigned int pressed_buttons = 0;
 unsigned int activation_function_from_interface = 0;
 unsigned int reset_trigger_function_from_interface = 0;
 unsigned int diagnostyka_before[2] = {0, 0};
