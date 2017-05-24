@@ -395,6 +395,8 @@ typedef struct
   
   uint8_t active_state[DIV_TO_HIGHER(TU_SIGNALS_OUT, 8)];
   
+  uint8_t internal_input[DIV_TO_HIGHER(TU_SIGNALS_INT_IN, 8)];
+  
 } __LN_TU;
 /**********/
 
@@ -414,6 +416,8 @@ typedef struct
   
   uint8_t active_state[DIV_TO_HIGHER(TS_SIGNALS_OUT, 8)];
   
+  uint8_t internal_input[DIV_TO_HIGHER(TS_SIGNALS_INT_IN, 8)];
+
 } __LN_TS;
 /**********/
 

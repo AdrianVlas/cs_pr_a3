@@ -348,7 +348,7 @@ inline void main_protection(void)
       if (state_tmp)
       {
         //Âñòàíîâëşºìî âèõ³ä
-        p_button->active_state [BUTTON_OUT >> 3]  |= (1 << (BUTTON_OUT & ((1 << 3) - 1)));
+        p_button->active_state[BUTTON_OUT >> 3]  |= (1 << (BUTTON_OUT & ((1 << 3) - 1)));
         
         //Ñêèäàºìî ³íôîğìàö³ş ç âõîäó
         p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1))));

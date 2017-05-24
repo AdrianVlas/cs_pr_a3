@@ -2183,6 +2183,11 @@ void min_settings_TU(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
       {
         ((__LN_TU *)(base) + shift)->active_state[i] = 0;
       }
+
+      for (size_t i = 0; i < DIV_TO_HIGHER(TU_SIGNALS_INT_IN, 8); i++)
+      {
+        ((__LN_TU *)(base) + shift)->internal_input[i] = 0;
+      }
     }
   }
 }
@@ -2237,6 +2242,11 @@ void min_settings_TS(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
       for (size_t i = 0; i < DIV_TO_HIGHER(TS_SIGNALS_OUT, 8); i++)
       {
         ((__LN_TS *)(base) + shift)->active_state[i] = 0;
+      }
+
+      for (size_t i = 0; i < DIV_TO_HIGHER(TS_SIGNALS_INT_IN, 8); i++)
+      {
+        ((__LN_TS *)(base) + shift)->internal_input[i] = 0;
       }
     }
   }

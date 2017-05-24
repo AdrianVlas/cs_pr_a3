@@ -494,6 +494,16 @@ enum _TU_input_signals
   TU_SIGNALS_IN
     
 };
+
+enum _TU_internal_input_signals
+{
+  TU_INT_MUTEX = 0,
+  TU_INT_ACTIVATION,
+  
+  TU_SIGNALS_INT_IN
+};
+
+
 /***/
 
 /*
@@ -515,6 +525,16 @@ enum _TS_input_signals
   TS_SIGNALS_IN
     
 };
+
+enum _TS_internal_input_signals
+{
+  TS_INT_MUTEX = 0,
+  TS_INT_READING,
+  
+  TS_SIGNALS_INT_IN
+};
+
+
 /***/
 
 /*
