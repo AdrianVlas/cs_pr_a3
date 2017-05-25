@@ -1997,7 +1997,6 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = change_time;
       current_state_menu2.binary_data = false;
-      current_state_menu2.edition = ED_VIEWING;
       break;
     }
   case MEASUREMENT_MENU2_LEVEL:

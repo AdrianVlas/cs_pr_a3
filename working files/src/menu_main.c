@@ -216,6 +216,11 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
     //Входимо в режим редагування
     current_state_menu2.edition = ED_EDITION;
   }
+  else if (new_level == TIME_MANU2_LEVEL)
+  {
+    //Входимо в режим без редагування
+    current_state_menu2.edition = ED_VIEWING;
+  }
   return result;
 }
 /*****************************************************/

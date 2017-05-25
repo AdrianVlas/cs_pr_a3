@@ -2576,26 +2576,32 @@ inline void start_transmint_data_via_RS_485(unsigned int count)
 /***********************************************************************************/
 //Перетворення бітової адреси у регістрову
 /***********************************************************************************/
-uint32_t bit_adr_to_reg_adr(uint32_t bit_adr_first, uint32_t bit_adr_last, uint32_t *p_reg_adr, uint32_t *p_offset)
+uint32_t bit_adr_to_reg_adr(uint32_t bit_adr, uint32_t *p_reg_adr, uint32_t *p_offset)
 { 
-  UNUSED(bit_adr_first);
-  UNUSED(bit_adr_last);
-  UNUSED(p_reg_adr);
-  UNUSED(p_offset);
   uint32_t result = true;
   
-//  if((add_data >= BIT_MA_OUTPUTS_BASE   ) && ((add_data + number - 1) <= BIT_MA_INPUTS_LAST   ))
-//  {
-//    //Стан виходів + входів
-//    offset = add_data - BIT_MA_OUTPUTS_BASE;
-//    first_address_of_word_for_function_3_or_4 = MA_OUTPUTS;
-//  }
-//  else if((add_data >= BIT_MA_LEDS_BASE      ) && ((add_data + number - 1) <= BIT_MA_LEDS_LAST      ))
-//  {
-//    //Стан світлоіндикаторів
-//    offset = add_data - BIT_MA_LEDS_BASE;
-//    first_address_of_word_for_function_3_or_4 = MA_LEDS;
-//  }
+  if((bit_adr >= BIT_MA_OUTPUTS_FIRST) && (bit_adr <= BIT_MA_OUTPUTS_LAST))
+  {
+    *p_offset = bit_adr - BIT_MA_OUTPUTS_BASE;
+    *p_reg_adr = MA_OUTPUTS;
+  }
+  else if((bit_adr >= BIT_MA_INPUTS_FIRST) && (bit_adr <= BIT_MA_INPUTS_LAST))
+  {
+    *p_offset = bit_adr - BIT_MA_INPUTS_BASE;
+    *p_reg_adr = MA_INPUTS;
+  }
+  else if((bit_adr >= BIT_MA_BUTTONS_FIRST) && (bit_adr <= BIT_MA_BUTTONS_LAST))
+  {
+    *p_offset = bit_adr - BIT_MA_BUTTONS_BASE;
+    *p_reg_adr = MA_BUTTONS;
+  }
+  else if((bit_adr >= BIT_MA_LEDS_FIRST) && (bit_adr <= BIT_MA_LEDS_LAST))
+  {
+    //Стан світлоіндикаторів
+    *p_offset = bit_adr - BIT_MA_LEDS_BASE;
+    *p_reg_adr = MA_LEDS;
+  }
+  else result = false;
             
   return result;
 }

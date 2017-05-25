@@ -40,27 +40,36 @@
 /* Адресний простір виходів  */
 /*****************************************************/
 #define MA_OUTPUTS                        200
-#define BIT_MA_OUTPUTS_BASE                   200
-#define BIT_MA_OUTPUTS_FIRST                  200
-#define BIT_MA_OUTPUTS_LAST                   (BIT_MA_OUTPUTS_FIRST + NUMBER_OUTPUTS - 1)
+#define BIT_MA_OUTPUTS_BASE                   18000
+#define BIT_MA_OUTPUTS_FIRST                  BIT_MA_OUTPUTS_BASE
+#define BIT_MA_OUTPUTS_LAST                   (BIT_MA_OUTPUTS_FIRST + MAX_NUMBER_LOGICAL_NODES - 1)
 /*****************************************************/
 
 /*****************************************************/
 /* Адресний простір входів  */
 /*****************************************************/
-#define MA_INPUTS                         200
-#define BIT_MA_INPUTS_BASE                    200
-#define BIT_MA_INPUTS_FIRST                   200
-#define BIT_MA_INPUTS_LAST                    (BIT_MA_INPUTS_FIRST + NUMBER_INPUTS - 1)
+#define MA_INPUTS                         300
+#define BIT_MA_INPUTS_BASE                    19000
+#define BIT_MA_INPUTS_FIRST                   BIT_MA_INPUTS_BASE
+#define BIT_MA_INPUTS_LAST                    (BIT_MA_INPUTS_FIRST + MAX_NUMBER_LOGICAL_NODES - 1)
+/*****************************************************/
+
+/*****************************************************/
+/* Адресний простір функціональних кнопок  */
+/*****************************************************/
+#define MA_BUTTONS                         308
+#define BIT_MA_BUTTONS_BASE                   19128
+#define BIT_MA_BUTTONS_FIRST                  BIT_MA_BUTTONS_BASE
+#define BIT_MA_BUTTONS_LAST                   (BIT_MA_BUTTONS_FIRST + MAX_NUMBER_LOGICAL_NODES - 1)
 /*****************************************************/
 
 /*****************************************************/
 /* Адресний простір світлоіндикаторів  */
 /*****************************************************/
-#define MA_LEDS                           232
-#define BIT_MA_LEDS_BASE                      232
-#define BIT_MA_LEDS_FIRST                     232
-#define BIT_MA_LEDS_LAST                      (BIT_MA_LEDS_FIRST + NUMBER_LEDS - 1)
+#define MA_LEDS                           400
+#define BIT_MA_LEDS_BASE                      20000
+#define BIT_MA_LEDS_FIRST                     BIT_MA_LEDS_BASE
+#define BIT_MA_LEDS_LAST                      (BIT_MA_LEDS_FIRST + MAX_NUMBER_LOGICAL_NODES - 1)
 /*****************************************************/
 
 /*****************************************************/
