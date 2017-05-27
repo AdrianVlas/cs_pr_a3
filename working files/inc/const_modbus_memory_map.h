@@ -1,9 +1,6 @@
 #ifndef __CONST_MODBUS_MEMORY_MAP__
 #define __CONST_MODBUS_MEMORY_MAP__
 
-#define SET_DATA_INTO_EDIT_TABLE          0
-#define SET_DATA_IMMEDITATE               1
-
 /*****************************************************/
 /* Адресний простір тільки для читання (Блок 1) */
 /*****************************************************/
@@ -406,94 +403,19 @@
 #define BIT_MA_GENERAL_AF_LAST                  (BIT_MA_GENERAL_AF_BASE + ((M_ADDRESS_LAST_GENERAL_AF - M_ADDRESS_FIRST_GENERAL_AF + 1) << 4) - 1)
 /*****************************************************/
 
-///*****************************************************/
-///* Митєві вимірювання розраховані фетодом перетворення Фур'є */
-///*****************************************************/
-//#define M_ADDRESS_FIRST_MEASUREMENTS_1        320
-//
-//#define OFFSET_MEASUREMENT_UA_1                 0
-//#define OFFSET_MEASUREMENT_UB_1                 1
-//#define OFFSET_MEASUREMENT_UC_1                 2
-//#define OFFSET_MEASUREMENT_IA_1                 3
-//#define OFFSET_MEASUREMENT_IB_1                 4
-//#define OFFSET_MEASUREMENT_IC_1                 5
-////#define OFFSET_MEASUREMENT_I04_1                6
-//#define OFFSET_ACTIVE_POWER                     7
-//#define OFFSET_REACTIVE_POWER                   8
-//#define OFFSET_FULL_POWER                       9
-//#define OFFSET_COS_PHI                          10
-////#define OFFSET_MEASUREMENT_3I0                  11
-//#define OFFSET_FREQUENCY_1                      12
-//#define OFFSET_EA_PLUS_LWB                      13
-//#define OFFSET_EA_PLUS_MWB                      14
-//#define OFFSET_EA_MINUS_LWB                     15
-//#define OFFSET_EA_MINUS_MWB                     16
-//#define OFFSET_ER_1_LWB                         17
-//#define OFFSET_ER_1_MWB                         18
-//#define OFFSET_ER_2_LWB                         19
-//#define OFFSET_ER_2_MWB                         20
-//#define OFFSET_ER_3_LWB                         21
-//#define OFFSET_ER_3_MWB                         22
-//#define OFFSET_ER_4_LWB                         23
-//#define OFFSET_ER_4_MWB                         24
-//#define OFFSET_MEASUREMENT_UAB_1                25
-//#define OFFSET_MEASUREMENT_UBC_1                26
-//#define OFFSET_MEASUREMENT_UCA_1                27
-////#define OFFSET_MEASUREMENT_3U0_1                28
-////#define OFFSET_MEASUREMENT_3I0_r                29
-////#define OFFSET_MEASUREMENT_3I0_HIGH_GARM        30
-//#define OFFSET_MEASUREMENT_I1                   31
-//#define OFFSET_MEASUREMENT_I2                   32
-//
-//
-//#define OFFSET_MEASUREMENT_UA_2                 35
-//#define OFFSET_MEASUREMENT_UB_2                 36
-//#define OFFSET_MEASUREMENT_UC_2                 37
-//#define OFFSET_MEASUREMENT_UAB_2                38
-//#define OFFSET_MEASUREMENT_UBC_2                39
-//#define OFFSET_MEASUREMENT_UCA_2                40
-//
-//#define OFFSET_FREQUENCY_2                      42
-//
-//#define OFFSET_BASE_CANAL_FOR_ANGLE             44
-//
-//#define BASE_CANAL_NONE                                 0
-//#define BASE_CANAL_UA_TN1                               1
-//#define BASE_CANAL_UB_TN1                               2
-//#define BASE_CANAL_UC_TN1                               3
-//#define BASE_CANAL_UAB_TN1                              4
-//#define BASE_CANAL_UBC_TN1                              5
-//#define BASE_CANAL_UCA_TN1                              6
-//#define BASE_CANAL_3U0                                  7
-//#define BASE_CANAL_UA_TN2                               8
-//#define BASE_CANAL_UB_TN2                               9
-//#define BASE_CANAL_UC_TN2                               10
-//#define BASE_CANAL_UAB_TN2                              11
-//#define BASE_CANAL_UBC_TN2                              12
-//#define BASE_CANAL_UCA_TN2                              13
-//
-//#define OFFSET_ANGLE_UA_1                       45
-//#define OFFSET_ANGLE_UB_1                       46
-//#define OFFSET_ANGLE_UC_1                       47
-//#define OFFSET_ANGLE_UAB_1                      48
-//#define OFFSET_ANGLE_UBC_1                      49
-//#define OFFSET_ANGLE_UCA_1                      50
-////#define OFFSET_ANGLE_3U0_1                      51
-//#define OFFSET_ANGLE_UA_2                       52
-//#define OFFSET_ANGLE_UB_2                       53
-//#define OFFSET_ANGLE_UC_2                       54
-//#define OFFSET_ANGLE_UAB_2                      55
-//#define OFFSET_ANGLE_UBC_2                      56
-//#define OFFSET_ANGLE_UCA_2                      57
-//#define OFFSET_ANGLE_IA_1                       58
-//#define OFFSET_ANGLE_IB_1                       59
-//#define OFFSET_ANGLE_IC_1                       60
-////#define OFFSET_ANGLE_I04_1                      61
-////#define OFFSET_ANGLE_3I0                        62
-////#define OFFSET_ANGLE_3I0_r                      63
-//
-//#define M_ADDRESS_LAST_MEASUREMENTS_1         388
-///*****************************************************/
+/*****************************************************/
+/* Митєві вимірювання розраховані фетодом перетворення Фур'є */
+/*****************************************************/
+#define M_ADDRESS_FIRST_MEASUREMENTS_1        700
+
+#define OFFSET_MEASUREMENT_U                    0
+#define OFFSET_MEASUREMENT_I1                   1
+#define OFFSET_MEASUREMENT_I2                   2
+#define OFFSET_MEASUREMENT_I3                   3
+#define OFFSET_MEASUREMENT_I4                   4
+
+#define M_ADDRESS_LAST_MEASUREMENTS_1         704
+/*****************************************************/
 
 /**************Лічильник ресурсів********************/
 #define M_COUNTER_FIRST                       389
@@ -1181,16 +1103,6 @@
 #define MA_TOTAL_NUMBER_RECORDS_PR_ERR        61802
 #define MA_FIRST_ADR_PR_ERR_WINDOW            61803
 #define MA_LASR_ADR_PR_ERR_WINDOW             61818
-/*****************************************************/
-
-/*****************************************************/
-/* Митєві вимірювання розраховані фетодом квадратного кореня суми квадратів миттєвих значень за період */
-/*****************************************************/
-//#define M_ADDRESS_FIRST_MEASUREMENTS_2        61904
-//
-//#define OFFSET_MEASUREMENT_3I0_I              3
-//
-//#define M_ADDRESS_LAST_MEASUREMENTS_2         61921
 /*****************************************************/
 
 /*****************************************************/

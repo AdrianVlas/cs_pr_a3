@@ -257,7 +257,17 @@ void main_manu_function_ver2(void)
               {
                 if (
                     (current_state_menu2.current_level == TIME_MANU2_LEVEL) ||
-                    (config_settings_modified == 0)
+                    (
+                     (config_settings_modified == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT  ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT      ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT   ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_CONFIG_EEPROM_BIT      ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT    ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT    ) == 0)
+                    )   
                    )   
                 {
                   current_state_menu2.edition = ED_EDITION;

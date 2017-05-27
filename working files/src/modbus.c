@@ -55,7 +55,7 @@ inline void Error_modbus(unsigned int address, unsigned int function, unsigned i
 /***********************************************************************************/
 //Читання даних
 /***********************************************************************************/
-inline unsigned int Get_data(unsigned char *data, unsigned int address_data, unsigned int type_interface)
+inline unsigned int Get_data(unsigned char *data, unsigned int address_data, unsigned int type_interface, __getting_data target_task, __bit_byte bit_byte)
 {
   unsigned int error = 0, temp_value = 0;
   
@@ -160,7 +160,7 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
     if ( !((address_data_tmp >= M_ADDRESS_FIRST_USER_REGISTER_DATA) && (address_data_tmp <= M_ADDRESS_LAST_USER_REGISTER_DATA)) )
     {
       unsigned char local_temp_value[2];
-      unsigned local_error = Get_data(local_temp_value, address_data_tmp, type_interface);
+      unsigned local_error = Get_data(local_temp_value, address_data_tmp, type_interface, target_task, bit_byte);
 
       if (local_error == 0) temp_value = local_temp_value[1] | (local_temp_value[0] << 8);
       else error = local_error;
@@ -176,62 +176,6 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
   else if (address_data == MA_LEDS)
   {
   }
-//  else if (
-//           (address_data >= M_ADDRESS_FIRST_CURRENT_AF ) && (address_data <= M_ADDRESS_LAST_CURRENT_AF) ||
-//           (address_data >= M_ADDRESS_FIRST_GENERAL_AF ) && (address_data <= M_ADDRESS_LAST_GENERAL_AF)
-//          )
-//  {
-//#define SIZE_OUTPUT_ARRAY       (M_ADDRESS_LAST_GENERAL_AF - M_ADDRESS_FIRST_GENERAL_AF + 1)
-//    
-//    //Блок текучих активних функцій або загальних функцій
-//    unsigned int input_array[N_BIG], base_address;
-//    unsigned short int output_array[SIZE_OUTPUT_ARRAY];
-//    
-//    //Спочатку очищаємо весь вихідний масив
-//    for (unsigned int i = 0; i< SIZE_OUTPUT_ARRAY; i++ ) output_array[i] = 0;
-//#undef SIZE_OUTPUT_ARRAY
-//
-//    //Копіюємо вхідну інформацію
-//    if ((address_data >= M_ADDRESS_FIRST_CURRENT_AF ) && (address_data <= M_ADDRESS_LAST_CURRENT_AF))
-//    {
-//      for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = active_functions[i];
-//      
-//      unsigned int password_set_tmp;
-//      if (type_interface == USB_RECUEST) password_set_tmp = password_set_USB;
-//      else if (type_interface == RS485_RECUEST) password_set_tmp = password_set_RS485;
-//        
-//      if (password_set_tmp != 0) 
-//      {
-//        output_array[(BIT_MA_PASSWORD_SET - BIT_MA_CURRENT_AF_BASE) >> 4] |= 
-//          (0x1 << ((BIT_MA_PASSWORD_SET - BIT_MA_CURRENT_AF_BASE) & 0xf));
-//      }
-//        
-//      base_address = M_ADDRESS_FIRST_CURRENT_AF;
-//    }
-//    else
-//    {
-//      if (type_interface == USB_RECUEST)
-//      {
-////        for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = trigger_functions_USB[i];
-//      }
-//      else if (type_interface == RS485_RECUEST)
-//      {
-////        for (unsigned int i = 0; i < N_BIG; i++) input_array[i] = trigger_functions_RS485[i];
-//      }
-//      else
-//      {
-//          //Теоретично цього ніколи не мало б бути
-//          total_error_sw_fixed(48);
-//      }
-//      base_address = M_ADDRESS_FIRST_GENERAL_AF;
-//    }
-//    
-//    //Конвертуємо отриманий результат в порядок "універсальної карти пам'яті"
-////    convert_order_list_function_to_gmm(input_array, output_array);
-//    /*****************************************************/
-//    
-//    temp_value  = output_array[address_data - base_address];
-//  }
 //  else if ((address_data >= M_ADDRESS_FIRST_MEASUREMENTS_1) && (address_data <= M_ADDRESS_LAST_MEASUREMENTS_1))
 //  {
 //    //Митєві вимірювання розраховані фетодом перетворення Фур'є
@@ -1331,7 +1275,7 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
 /***********************************************************************************/
 //Запис даних
 /***********************************************************************************/
-inline unsigned int Set_data(unsigned short int data, unsigned int address_data, unsigned int method_setting, /*unsigned int to_be_continue, */unsigned int type_interface)
+inline unsigned int Set_data(unsigned short int data, unsigned int address_data, __settings_data method_setting, /*unsigned int to_be_continue, */unsigned int type_interface)
 {
   unsigned int error = 0, temp_value;
   
@@ -2696,89 +2640,18 @@ void modbus_rountines(unsigned int type_interface)
             number_word_transmit = (number_byte_transmit + 1) >> 1;
           }
                    
+          unsigned int first_address_of_word_for_function_3_or_4;
           if(
              (number != 0   ) &&
              (number <= 2000) &&
-             (
-#if (BIT_MA_OUTPUTS_LAST + 1) < BIT_MA_INPUTS_LAST
-              ((add_data >= BIT_MA_OUTPUTS_BASE   ) && ((add_data + number - 1) <= BIT_MA_OUTPUTS_LAST   )) ||
-              ((add_data >= BIT_MA_INPUTS_BASE    ) && ((add_data + number - 1) <= BIT_MA_INPUTS_LAST    )) ||
-#else
-              ((add_data >= BIT_MA_OUTPUTS_BASE   ) && ((add_data + number - 1) <= BIT_MA_INPUTS_LAST    )) ||
-#endif
-              ((add_data >= BIT_MA_LEDS_BASE      ) && ((add_data + number - 1) <= BIT_MA_LEDS_LAST      )) ||
-              ((add_data >= BIT_MA_CONTROL_BASE   ) && ((add_data + number - 1) <= BIT_MA_CONTROL_LAST   )) ||
-#if (BIT_MA_CURRENT_AF_LAST + 1) < BIT_MA_GENERAL_AF_BASE
-              ((add_data >= BIT_MA_CURRENT_AF_BASE) && ((add_data + number - 1) <= BIT_MA_CURRENT_AF_LAST)) ||
-              ((add_data >= BIT_MA_GENERAL_AF_BASE) && ((add_data + number - 1) <= BIT_MA_GENERAL_AF_LAST)) 
-#else
-              ((add_data >= BIT_MA_CURRENT_AF_BASE) && ((add_data + number - 1) <= BIT_MA_GENERAL_AF_LAST)) 
-#endif
-             )
+             (bit_adr_to_reg_adr(add_data, &first_address_of_word_for_function_3_or_4, &offset))  
             )
           {
-            unsigned int first_address_of_word_for_function_3_or_4;
-
             //Формуємо початок відповіді
             *transmited_buffer = *(received_buffer);
             *(transmited_buffer + 1) = *(received_buffer + 1);
             *(transmited_buffer + 2) = number_byte_transmit;
 
-#if (BIT_MA_OUTPUTS_LAST + 1) < BIT_MA_INPUTS_LAST            
-            if((add_data >= BIT_MA_OUTPUTS_BASE   ) && ((add_data + number - 1) <= BIT_MA_OUTPUTS_LAST   ))
-            {
-              //Стан виходів
-              offset = add_data - BIT_MA_OUTPUTS_BASE;
-              first_address_of_word_for_function_3_or_4 = MA_OUTPUTS;
-            }
-            else if((add_data >= BIT_MA_INPUTS_BASE    ) && ((add_data + number - 1) <= BIT_MA_INPUTS_LAST    ))
-            {
-              //Стан входів
-              offset = add_data - BIT_MA_INPUTS_BASE;
-              first_address_of_word_for_function_3_or_4 = MA_INPUTS;
-            }
-#else
-            if((add_data >= BIT_MA_OUTPUTS_BASE   ) && ((add_data + number - 1) <= BIT_MA_INPUTS_LAST   ))
-            {
-              //Стан виходів + входів
-              offset = add_data - BIT_MA_OUTPUTS_BASE;
-              first_address_of_word_for_function_3_or_4 = MA_OUTPUTS;
-            }
-#endif
-            else if((add_data >= BIT_MA_LEDS_BASE      ) && ((add_data + number - 1) <= BIT_MA_LEDS_LAST      ))
-            {
-              //Стан світлоіндикаторів
-              offset = add_data - BIT_MA_LEDS_BASE;
-              first_address_of_word_for_function_3_or_4 = MA_LEDS;
-            }
-            else if((add_data >= BIT_MA_CONTROL_BASE   ) && ((add_data + number - 1) <= BIT_MA_CONTROL_LAST   ))
-            {
-              //Стан функцій захистів
-              offset = add_data - BIT_MA_CONTROL_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_CONTROL_BASE;
-            }
-#if (BIT_MA_CURRENT_AF_LAST + 1) < BIT_MA_GENERAL_AF_BASE
-            else if((add_data >= BIT_MA_CURRENT_AF_BASE) && ((add_data + number - 1) <= BIT_MA_CURRENT_AF_LAST))
-            {
-              //Стан активних функцій
-              offset = add_data - BIT_MA_CURRENT_AF_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_FIRST_CURRENT_AF;
-            }
-            else if((add_data >= BIT_MA_GENERAL_AF_BASE) && ((add_data + number - 1) <= BIT_MA_GENERAL_AF_LAST))
-            {
-              //Стан активних функцій
-              offset = add_data - BIT_MA_GENERAL_AF_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_FIRST_GENERAL_AF;
-            }
-#else
-            else if((add_data >= BIT_MA_CURRENT_AF_BASE) && ((add_data + number - 1) <= BIT_MA_GENERAL_AF_LAST))
-            {
-              //Стан активних функцій
-              offset = add_data - BIT_MA_CURRENT_AF_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_FIRST_CURRENT_AF;
-            }
-#endif
-            
             //Визначаємо, з якого слова треба розпочати зчитування цілими словами
             first_address_of_word_for_function_3_or_4 += (offset >> 4);
             //Визначаємо ще остачу від ділення
@@ -2795,7 +2668,7 @@ void modbus_rountines(unsigned int type_interface)
             
             //Зчитуємо спочатку цілі слова
             unsigned int i=0;
-            while((i < number_word_read) && ((error = Get_data((transmited_buffer + 3 + 2*i), (first_address_of_word_for_function_3_or_4 + i), type_interface))==0)) i++;
+            while((i < number_word_read) && ((error = Get_data((transmited_buffer + 3 + 2*i), (first_address_of_word_for_function_3_or_4 + i), type_interface, GET_DATA_IMMEDITATE, BIT_REQUEST))==0)) i++;
           }
           else
           {
@@ -2828,7 +2701,7 @@ void modbus_rountines(unsigned int type_interface)
                 *(transmited_buffer + 3 + 2*i + 1) = (temp_value_for_offset >> 8) & 0xff;
             }
             
-            //В останньому байті треба зайві біти змасувати
+            //В останньому байті треба зайві біти змаскувати
             if (max_bit_in_high_byte != 0)
             {
               for(unsigned int i = 0; i < max_bit_in_high_byte; i++) maska = (maska << 1) + 0x1;
@@ -2875,8 +2748,7 @@ void modbus_rountines(unsigned int type_interface)
             add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
 
             if (
-                /*((add_data >= M_ADDRESS_FIRST_MEASUREMENTS_1 ) && (add_data <= M_ADDRESS_LAST_MEASUREMENTS_1)) ||
-                ((add_data >= M_ADDRESS_FIRST_MEASUREMENTS_2 ) && (add_data <= M_ADDRESS_LAST_MEASUREMENTS_2)) ||*/
+                ((add_data >= M_ADDRESS_FIRST_MEASUREMENTS_1 ) && (add_data <= M_ADDRESS_LAST_MEASUREMENTS_1)) ||
                 ((add_data >= M_ADDRESS_FIRST_TMP_MEASURMENTS) && (add_data <  M_ADDRESS_LAST_TMP_MEASURMENTS))  
                )
             {
@@ -2890,7 +2762,7 @@ void modbus_rountines(unsigned int type_interface)
             }
 
             unsigned int i=0;
-            while((i<number) && ((error = Get_data((transmited_buffer+3+2*i),(add_data+i), type_interface))==0))i++;
+            while((i<number) && ((error = Get_data((transmited_buffer+3+2*i),(add_data+i), type_interface, GET_DATA_IMMEDITATE, BYTE_REQUEST))==0))i++;
           }
 
           if (error == 0)
@@ -2923,66 +2795,15 @@ void modbus_rountines(unsigned int type_interface)
           add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
           value    = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
 
+          unsigned int first_address_of_word_for_function_3_or_4;
+           
           if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
           {
             //Теоретично такого бути не мало б ніколи
             error = ERROR_SLAVE_DEVICE_FAILURE;
           }
-          else if(
-                  (
-                   ((value == 0 ) || (value == 0xff00)) && 
-                   (
-                    ((add_data >= BIT_MA_CONTROL_BASE) && (add_data <= BIT_MA_CONTROL_LAST)) || /*Настройки захистів*/
-                    (add_data == BIT_MA_NEW_SETTINGS_SET) /*Команда активації внесених змін у налаштування приладу через інтерфейс*/ 
-                   )
-                  )   
-                  || 
-                  (
-                   (value == 0xff00) 
-                   &&
-                   (
-                    (add_data == BIT_MA_RESET_GENERAL_AF) /*Скидання загальних функцій*/
-                    ||
-                    (  
-                     ((add_data >= BIT_MA_INPUT_DF1) && (add_data <= BIT_MA_INPUT_DF8)) || /*Входи Определяємих функцій*/
-                     ((add_data >= BIT_MA_DT1_SET  ) && (add_data <= BIT_MA_DT4_RESET))/* ||*/ /*Оприділювальні триггери*/
-//                     ( add_data == BIT_MA_RESET_LEDS                                  ) || /*Очищення індикації*/
-//                     ( add_data == BIT_MA_RESET_RELES                                 )    /*Скидання реле*/
-                    )
-                   )   
-                  )
-                 )
+          else if (bit_adr_to_reg_adr(add_data, &first_address_of_word_for_function_3_or_4, &offset))
           {
-            unsigned int first_address_of_word_for_function_3_or_4;
-           
-            //Визначаємо початковий базовий регістр і зміщення відношно його першого біту
-            if ((add_data >= BIT_MA_CONTROL_BASE) && (add_data <= BIT_MA_CONTROL_LAST))
-            {
-              //Стан функцій захистів
-              offset = add_data - BIT_MA_CONTROL_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_CONTROL_BASE;
-            }
-            else if ((add_data >= BIT_MA_INPUT_DF1) && (add_data <= BIT_MA_INPUT_DF8))
-            {
-              offset = add_data - BIT_MA_DF_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_DF;
-            }
-            else if (( add_data >= BIT_MA_DT1_SET) && (add_data <= BIT_MA_DT4_RESET ))
-            {
-              offset = add_data - BIT_MA_DT_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_DT;
-            }
-            else if(
-//                    (add_data == BIT_MA_RESET_LEDS            ) || /*Очищення індикації*/
-//                    (add_data == BIT_MA_RESET_RELES           ) || /*Скидання реле*/
-                    (add_data == BIT_MA_RESET_GENERAL_AF      ) || /*Скидання загальних функцій*/
-                    (add_data == BIT_MA_NEW_SETTINGS_SET      )    /*Команда активації внесених змін у налаштування приладу через інтерфейс*/
-                   )
-            {
-              offset = add_data - BIT_MA_COMMAND_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_COMMAND_BASE;
-            }
-            
             //Виконуємо дію
             if (first_address_of_word_for_function_3_or_4 == M_ADDRESS_CONTROL_BASE)
             {
@@ -3008,7 +2829,7 @@ void modbus_rountines(unsigned int type_interface)
             
                 //Зчитуємо спочатку ціле слово
                 unsigned char temp_value_in_char[2];
-                error = Get_data(temp_value_in_char, first_address_of_word_for_function_3_or_4, type_interface);
+                error = Get_data(temp_value_in_char, first_address_of_word_for_function_3_or_4, type_interface, GET_DATA_IMMEDITATE, BIT_REQUEST);
                 temp_value = temp_value_in_char[1];
                 temp_value |= temp_value_in_char[0] << 8;
 
@@ -3039,15 +2860,6 @@ void modbus_rountines(unsigned int type_interface)
               }
             }
             else if (
-                     (
-                      ((first_address_of_word_for_function_3_or_4 == M_ADDRESS_DF) || (first_address_of_word_for_function_3_or_4 == M_ADDRESS_DT))
-                      &&
-                      (
-                       ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
-                       ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
-                      ) 
-                     )
-                     ||  
                      (
                       (first_address_of_word_for_function_3_or_4 == M_ADDRESS_COMMAND_BASE)
                       &&
@@ -3542,7 +3354,7 @@ void modbus_rountines(unsigned int type_interface)
                 //Зчитуємо спочатку ціле слово
                 unsigned short int temp_value;
                 unsigned char temp_value_in_char[2];
-                error = Get_data(temp_value_in_char,first_address_of_word_for_function_3_or_4, type_interface);
+                error = Get_data(temp_value_in_char,first_address_of_word_for_function_3_or_4, type_interface, GET_DATA_FOR_EDITING, BIT_REQUEST);
                 temp_value = temp_value_in_char[1];
                 temp_value |= temp_value_in_char[0] << 8;
 
@@ -3597,7 +3409,7 @@ void modbus_rountines(unsigned int type_interface)
                         first_address_of_word_for_function_3_or_4++;
   
                         //Зчитуємо ціле слово
-                        error = Get_data(temp_value_in_char,first_address_of_word_for_function_3_or_4, type_interface);
+                        error = Get_data(temp_value_in_char,first_address_of_word_for_function_3_or_4, type_interface, GET_DATA_FOR_EDITING, BIT_REQUEST);
                         temp_value = temp_value_in_char[1];
                         temp_value |= temp_value_in_char[0] << 8;
                       }
