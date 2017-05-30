@@ -2626,7 +2626,7 @@ void main_routines_for_i2c(void)
           //Контролдьна сума сходиться
           
           //Зберігаємо контрольну суму (не інвертовану)
-          crc_info_rejestrator_pr_err = crc_eeprom_info_rejestrator_log;
+          crc_info_rejestrator_log = crc_eeprom_info_rejestrator_log;
 
           state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_FAIL_BIT));
           state_i2c_task |= MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_GOOD_BIT);
