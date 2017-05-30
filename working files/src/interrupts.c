@@ -683,7 +683,7 @@ void TIM4_IRQHandler(void)
       
       //Запуск читання часу з RTC тільки піся успішного зчитування настройок
       //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
-      if ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0) 
+      if ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) != 0) 
       {
         _SET_BIT(control_i2c_taskes, TASK_START_READ_RTC_BIT);
         _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
@@ -694,6 +694,7 @@ void TIM4_IRQHandler(void)
       periodical_tasks_TEST_SETTINGS                = 
       periodical_tasks_TEST_USTUVANNJA              = 
       periodical_tasks_TEST_TRG_FUNC                = 
+      periodical_tasks_TEST_INFO_REJESTRATOR_LOG    = 
       periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR = 
       periodical_tasks_TEST_FLASH_MEMORY            = true;
       
@@ -823,7 +824,7 @@ void TIM4_IRQHandler(void)
     //Перевіряємо необхідність очистки реєстратора програмних подій
     /***********************************************************/
     if (
-        ((clean_rejestrators & CLEAN_PR_ERR) != 0)
+        ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0)
         &&  
         (
          (control_tasks_dataflash & (
@@ -851,7 +852,7 @@ void TIM4_IRQHandler(void)
       number_record_of_pr_err_into_RS485 = 0xffffffff;
 
       //Знімаємо команду очистки реєстратора програмних подій
-      clean_rejestrators &= (unsigned int)(~CLEAN_PR_ERR);
+      clean_rejestrators &= (unsigned int)(~MASKA_FOR_BIT(CLEAN_PR_ERR_BIT));
     }
     /***********************************************************/
     
@@ -868,7 +869,7 @@ void TIM4_IRQHandler(void)
     if (periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR != 0)
     {
       //Стоїть у черзі активна задача зроботи резервні копії даних
-      if ((state_i2c_task & STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD) != 0)
+      if ((state_i2c_task & MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT)) != 0)
       {
         //Робимо копію тільки тоді, коли структура інформації реєстратора успішно зчитана і сформована контрольна сума
         if (
@@ -899,25 +900,25 @@ void TIM4_IRQHandler(void)
     /***********************************************************/
     //Періодично запускаємо звертання то мікросхем DataFlash
     /***********************************************************/
-    uint32_t number_chip_dataflsh_exchange_local = number_chip_dataflsh_exchange;
-    if (number_chip_dataflsh_exchange_local < NUMBER_DATAFLASH_CHIP)
+    uint32_t number_chip_dataflash_exchange_local = number_chip_dataflash_exchange;
+    if (number_chip_dataflash_exchange_local < NUMBER_DATAFLASH_CHIP)
     {
-      if (state_execution_spi_df[number_chip_dataflsh_exchange_local] != TRANSACTION_EXECUTING)
+      if (state_execution_spi_df[number_chip_dataflash_exchange_local] != TRANSACTION_EXECUTING)
       {
         //Немає обміну по вибраній мікросехмі
         
         //Змінюємо номер мікросхеми, до якої ми будемо звертатися при натупних трансакціях, якщо зараз не запущена ніяка трансакція
-        number_chip_dataflsh_exchange_local = number_chip_dataflsh_exchange = (number_chip_dataflsh_exchange_local < (NUMBER_DATAFLASH_CHIP - 1)) ? (number_chip_dataflsh_exchange_local++) : INDEX_DATAFLASH_1;
+        number_chip_dataflash_exchange_local = number_chip_dataflash_exchange = (number_chip_dataflash_exchange_local < (NUMBER_DATAFLASH_CHIP - 1)) ? (number_chip_dataflash_exchange_local++) : INDEX_DATAFLASH_1;
 
-        if (control_spi_df_tasks[number_chip_dataflsh_exchange_local] != 0) main_routines_for_spi_df(number_chip_dataflsh_exchange_local);
+        if (control_spi_df_tasks[number_chip_dataflash_exchange_local] != 0) main_routines_for_spi_df(number_chip_dataflash_exchange_local);
         
-        if (control_spi_df_tasks[number_chip_dataflsh_exchange_local] == 0)
+        if (control_spi_df_tasks[number_chip_dataflash_exchange_local] == 0)
         {
           static uint32_t control_tasks_dataflash_active;
           /***
           Оброка трансакцій, які вже були запущені
           ***/
-          switch (number_chip_dataflsh_exchange_local)
+          switch (number_chip_dataflash_exchange_local)
           {
           case INDEX_DATAFLASH_1:
             {
@@ -985,7 +986,7 @@ void TIM4_IRQHandler(void)
           /***
           Підготовлюємо  нові трансакції по необхідності
           ***/
-          switch (number_chip_dataflsh_exchange_local)
+          switch (number_chip_dataflash_exchange_local)
           {
           case INDEX_DATAFLASH_1:
             {
@@ -1205,7 +1206,7 @@ void TIM4_IRQHandler(void)
           /***
           Якщо для вибраної мікросхеми є що виконувати, то виконуємо ці дії
           ***/
-          if (control_spi_df_tasks[number_chip_dataflsh_exchange_local] != 0) main_routines_for_spi_df(number_chip_dataflsh_exchange_local);
+          if (control_spi_df_tasks[number_chip_dataflash_exchange_local] != 0) main_routines_for_spi_df(number_chip_dataflash_exchange_local);
           /***/
         }
       }
@@ -1425,12 +1426,12 @@ void SPI_DF_IRQHandler(void)
     total_error_sw_fixed(34);
   }
 
-   if (number_chip_dataflsh_exchange < NUMBER_DATAFLASH_CHIP)
+   if (number_chip_dataflash_exchange < NUMBER_DATAFLASH_CHIP)
   {
-    if(state_execution_spi_df[number_chip_dataflsh_exchange] != TRANSACTION_EXECUTING_NONE)
+    if(state_execution_spi_df[number_chip_dataflash_exchange] != TRANSACTION_EXECUTING_NONE)
     {
       //Помічаємо, що відбулася помилка у процесі виконання попередньої операції прийом-передачі
-      state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTED_ERROR;
+      state_execution_spi_df[number_chip_dataflash_exchange] = TRANSACTION_EXECUTED_ERROR;
     }
   }
   else
@@ -1483,8 +1484,8 @@ void DMA_StreamSPI_DF_Rx_IRQHandler(void)
   DMA_ClearFlag(DMA_StreamSPI_DF_Rx, DMA_FLAG_TCSPI_DF_Rx | DMA_FLAG_HTSPI_DF_Rx | DMA_FLAG_TEISPI_DF_Rx | DMA_FLAG_DMEISPI_DF_Rx | DMA_FLAG_FEISPI_DF_Rx);
   
   //Виставляємо повідомлення, що дані передані і готові до наступного аналізу
-  if (number_chip_dataflsh_exchange < NUMBER_DATAFLASH_CHIP)
-    state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTED_WAIT_ANALIZE;
+  if (number_chip_dataflash_exchange < NUMBER_DATAFLASH_CHIP)
+    state_execution_spi_df[number_chip_dataflash_exchange] = TRANSACTION_EXECUTED_WAIT_ANALIZE;
   else
   {
     //Відбулася невизначена помилка, тому треба піти на перезавантаження

@@ -1019,7 +1019,7 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
       error = ERROR_ILLEGAL_DATA_ADDRESS;
     }
     else if (
-             ((clean_rejestrators & CLEAN_PR_ERR) != 0) ||
+             ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0) ||
              (
               ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  )) != 0)) ||
               ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT)) != 0))
@@ -1779,7 +1779,7 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
          ) != 0
         )
         ||
-        ((clean_rejestrators & CLEAN_PR_ERR) != 0)  
+        ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0)  
        ) 
     {
       //Зараз іде зчитування для інтерфейсу запису реєстратора програмних подій, або відкрите вікно відображення запису, тому ця операція є тимчасово недоступною
@@ -1788,7 +1788,7 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
     else
     {
       //Помічаємо, що треба очистити реєстратор програмних подій
-      clean_rejestrators |= CLEAN_PR_ERR;
+      clean_rejestrators |= MASKA_FOR_BIT(CLEAN_PR_ERR_BIT);
     }
   }
   else if (address_data == MA_CURRENT_NUMBER_RECORD_PR_ERR)
@@ -1799,7 +1799,7 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
       error = ERROR_SLAVE_DEVICE_FAILURE;
     }
     else if (
-             ((clean_rejestrators & CLEAN_PR_ERR) != 0) ||
+             ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0) ||
              (
               ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  )) != 0)) ||
               ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT)) != 0))

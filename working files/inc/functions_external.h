@@ -253,7 +253,7 @@ extern void control_config(unsigned int);
 extern void control_settings(unsigned int);
 extern void control_ustuvannja(void);
 extern void control_trg_func(void);
-extern unsigned int control_info_rejestrator(__INFO_REJESTRATOR*, unsigned char);
+extern unsigned int control_info_rejestrator(__INFO_REJESTRATOR*, uint8_t);
 
 extern void test_external_SRAM(void);
 

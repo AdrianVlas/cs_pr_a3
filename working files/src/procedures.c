@@ -892,7 +892,7 @@ void control_trg_func(void)
 /*****************************************************/
 //Контроль достовірності інформації по реєстраторах
 /*****************************************************/
-unsigned int control_info_rejestrator(__INFO_REJESTRATOR* info_rejestrator_point, unsigned char crc_info_rejestrator)
+unsigned int control_info_rejestrator(__INFO_REJESTRATOR* info_rejestrator_point, uint8_t crc_info_rejestrator)
 {
   unsigned int result;
   unsigned char crc_info_rejestrator_tmp = 0, temp_value_1;

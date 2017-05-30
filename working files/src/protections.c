@@ -580,13 +580,90 @@ void TIM2_IRQHandler(void)
     /***********************************************************/
 
     /***********************************************************/
+    //Перевіряємо необхідність очистки журналу подій
+    /***********************************************************/
+    //Журнал подій
+    if (
+        ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_LOG_BIT)) != 0)
+        &&  
+        (
+         (control_tasks_dataflash & (
+                                     MASKA_FOR_BIT(TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT   ) |
+                                     MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT  ) |
+                                     MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT) |
+                                     MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT )
+                                    )
+         ) == 0
+        )
+       )   
+    {
+      //Виставлено каманда очистити журнал подій
+
+      //Виставляємо команду запису цієї структури у EEPROM
+      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+
+      //Очищаємо структуру інформації по журналі подій
+      info_rejestrator_log.next_address = info_rejestrator_log.previous_address = MIN_ADDRESS_LOG_AREA;
+      info_rejestrator_log.number_records = 0;
+
+      //Помічаємо, що номер запису не вибраний
+      number_record_of_log_into_menu  = 0xffff;
+      number_record_of_log_into_USB   = 0xffff;
+      number_record_of_log_into_RS485 = 0xffff;
+
+      //Знімаємо команду очистки журналу подій
+      clean_rejestrators &= (unsigned int)(~MASKA_FOR_BIT(CLEAN_LOG_BIT));
+    }
+    /***********************************************************/
+    
+    /***********************************************************/
+    //Підготовлюємо новий запис для Журналу подій
+    /***********************************************************/
+    /***********************************************************/
+    
+    /***********************************************************/
+    //Перевірка на необхідність зроботи резервну копію даних для самоконтролю
+    /***********************************************************/
+    //Реєстратор програмних подій
+    if (periodical_tasks_TEST_INFO_REJESTRATOR_LOG != 0)
+    {
+      //Стоїть у черзі активна задача зроботи резервні копії даних
+      if ((state_i2c_task & MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_GOOD_BIT)) != 0)
+      {
+        //Робимо копію тільки тоді, коли структура інформації реєстратора успішно зчитана і сформована контрольна сума
+        if (
+            (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT) == 0) &&
+            (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_LOG_EEPROM_BIT    ) == 0) &&
+            (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_LOG_EEPROM_BIT ) == 0) &&
+            (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_LOG_EEPROM_BIT    ) == 0)
+           ) 
+        {
+          //На даний моммент не іде читання-запис структури інформації реєстратора, тому можна здійснити копіювання
+          info_rejestrator_log_ctrl = info_rejestrator_log;
+          crc_info_rejestrator_log_ctrl = crc_info_rejestrator_log;
+
+          //Скидаємо активну задачу формування резервної копії 
+          periodical_tasks_TEST_INFO_REJESTRATOR_LOG = false;
+          //Виставляємо активну задачу контролю достовірності по резервній копії 
+          periodical_tasks_TEST_INFO_REJESTRATOR_LOG_LOCK = true;
+        }
+      }
+      else
+      {
+        //Скидаємо активну задачу формування резервної копії 
+        periodical_tasks_TEST_INFO_REJESTRATOR_LOG = false;
+      }
+    }
+    /***********************************************************/
+
+    /***********************************************************/
     //Перевірка на необхідність зроботи резервні копії даних для самоконтролю
     /***********************************************************/
     //Триґерна інформація
     if (periodical_tasks_TEST_TRG_FUNC != 0)
     {
       //Стоїть у черзі активна задача зроботи резервні копії даних
-      if ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) != 0)
+      if ((state_i2c_task & MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_GOOD_BIT)) != 0)
       {
         //Робимо копію тільки тоді, коли триґерна інформація успішно зчитана і сформована контрольна сума
         if (
