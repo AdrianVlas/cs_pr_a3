@@ -1982,8 +1982,8 @@ void change_set_signal(unsigned int action)
           for (size_t index_1 = 0; index_1 < n_similar_input_signals; index_1++)
           {
             uint32_t param_1;
-            do
-            {
+//            do
+//            {
               param_1 = p_param[index_1] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS));
               for (size_t index_2 = (index_1 + 1); index_2 < n_similar_input_signals; index_2++)
               {
@@ -1998,11 +1998,12 @@ void change_set_signal(unsigned int action)
                 {
                   p_param[index_1] = param_2;
                   p_param[index_2] = param_1;
-                  break;
+                  param_1 = param_2;/*v2*/
+//                  break;
                 }
               }
-            }
-            while (param_1 != (p_param[index_1] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))));
+//            }
+//            while (param_1 != (p_param[index_1] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))));
           }
         }
         else
