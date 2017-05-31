@@ -14,5 +14,6 @@ public:
     char   arrOut [shCLUXor_2_1_AmtOut]; //
     friend void XOR_Op_8_1(void *pObj);
 };
+extern void XOR_Op_8_1(void *pObj);
 
 

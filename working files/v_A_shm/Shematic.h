@@ -28,7 +28,8 @@ LU_MFT,
 LU_FKEY,
 LU_LSS,
 LU_BGS,
-LU_TU
+LU_TU,
+LU_TS
 
 };
 
@@ -77,10 +78,22 @@ extern void DoCalcWrp(void);
 class Shematic
 {
     char chInitTerminated;
+    void* pLUAreaList;
+    void* p_current_config_prt;//__CONFIG *
+    short arIdxLUAreaListElem[LU_TS];
+    char chMaxIteratoin;
+    char chIteration;
+    char chSumNLedPlusNOut;
+    short shSum8Elem;
+
 public:
     Shematic(void);
     ~Shematic(void);
     void DoCalc(void);
+    void DoCalcLU(void);
+    void DoCalcLUSources(void);
+    void LUSelector( long lIdxLU);
+    void LUIterator(long AmountCalcLU, long lIdxLU);
     void Init(void);
     void Init1(void);
     void PrintPointsState(void);
@@ -112,6 +125,7 @@ public:
     void SetupCLUTrigStngParam(void *pv);
     void SetupCPulseAlternatorStngParam(void *pv);
     void SetupCLUTuStngParam(void *pv);
+    void SetupCLUTsStngParam(void *pv);
     //void SetupCLUvStngParam(void *pv);
     long FillSBitFld_LUInInfo(void *pvIn,void *pvOut);
     long FillSBitFld_LUInInfo2(void *pvIn,void *pvOut);
@@ -258,8 +272,8 @@ typedef union
 
 void ResetarNum(void);
 extern  short shLssLUAreaListElemIndex; 
-
-
+extern  const short arrShCalcLUOrderNumsSchmPage2[];
+extern  const char  arrChCalcLUOrderNumsSchmPage2[];
 
 
 

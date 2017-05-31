@@ -19,4 +19,5 @@ public:
 
 };
 
+extern void NOT_Op_1_1    (void *pObj);
 
