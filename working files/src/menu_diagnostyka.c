@@ -1,5 +1,31 @@
 #include "header.h"
 
+#define NUMBER_ROW_FOR_NO_ERRORS 2
+
+const uint8_t name_string_diagnostyka[MAX_NAMBER_LANGUAGE][NUMBER_ROW_FOR_NO_ERRORS + MAX_ROW_FOR_DIAGNOSTYKA][MAX_COL_LCD + 1] = 
+{
+  {
+    "      Нет       ",
+    "     ошибок     ",
+    NAME_DIAGN_RU
+  },
+  {
+    "     Немає      ",
+    "    помилок     ",
+    NAME_DIAGN_UA
+  },
+  {
+    "       No       ",
+    "     errors     ",
+    NAME_DIAGN_EN
+  },
+  {
+    "      Кате      ",
+    "      жок       ",
+    NAME_DIAGN_KZ
+  }
+};
+
 /*****************************************************/
 /*
 Функція переміщення по меню
@@ -57,33 +83,8 @@ void move_into_diagnostics(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_diagnostics(void)
 {
-#define NUMBER_ROW_FOR_NO_ERRORS 2
   
   unsigned int position_temp = current_state_menu2.index_position;
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][NUMBER_ROW_FOR_NO_ERRORS + MAX_ROW_FOR_DIAGNOSTYKA][MAX_COL_LCD + 1] = 
-  {
-    {
-      "      Нет       ",
-      "     ошибок     ",
-      NAME_DIAGN_RU
-    },
-    {
-      "     Немає      ",
-      "    помилок     ",
-      NAME_DIAGN_UA
-    },
-    {
-      "       No       ",
-      "     errors     ",
-      NAME_DIAGN_EN
-    },
-    {
-      "      Кате      ",
-      "      жок       ",
-      NAME_DIAGN_KZ
-    }
-  };
-
   int index_language = index_language_in_array(settings_fix_prt.language);
     
   if (
@@ -101,7 +102,7 @@ void make_ekran_diagnostics(void)
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
       //Копіюємо в робочий екран інформацію, що нічого не відранжовано
-      for (size_t j = 0; j < MAX_COL_LCD; j++)working_ekran[i][j] = (i < NUMBER_ROW_FOR_NO_ERRORS) ? name_string[index_language][i][j] : ' ';
+      for (size_t j = 0; j < MAX_COL_LCD; j++)working_ekran[i][j] = (i < NUMBER_ROW_FOR_NO_ERRORS) ? name_string_diagnostyka[index_language][i][j] : ' ';
     }
     //Курсор не видимий
     current_state_menu2.cursor_on = 0;
@@ -131,7 +132,7 @@ void make_ekran_diagnostics(void)
       if (index_1 < (MAX_ROW_FOR_DIAGNOSTYKA - offset))
       {
         for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
-          name_string_tmp[index_1][index_2] = name_string[index_language][NUMBER_ROW_FOR_NO_ERRORS + index_1 + offset][index_2];
+          name_string_tmp[index_1][index_2] = name_string_diagnostyka[index_language][NUMBER_ROW_FOR_NO_ERRORS + index_1 + offset][index_2];
       }
     }
     /************************************************************/
@@ -160,7 +161,6 @@ void make_ekran_diagnostics(void)
   //Обновити повністю весь екран
   current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
   
-#undef NUMBER_ROW_FOR_NO_ERRORS
 }
 /*****************************************************/
 
@@ -168,3 +168,6 @@ void make_ekran_diagnostics(void)
 //
 /*****************************************************/
 /*****************************************************/
+
+#undef NUMBER_ROW_FOR_NO_ERRORS
+

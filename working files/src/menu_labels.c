@@ -1,29 +1,18 @@
 #include "header.h"
 
+const uint8_t error_meas[MAX_NAMBER_LANGUAGE][7 + 1] = 
+{
+  " Ошибка",
+  "Помилка",
+  "  Error",
+  " Ошибка"
+};
+
 /*****************************************************/
 //Формуємо екран відображення списку міток настроювання
 /*****************************************************/
 void make_ekran_list_labels(void)
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_LABELS_M2][MAX_COL_LCD + 1] = 
-  {
-    {
-      " Метка конфиг.  ",
-      " Метка настроек "
-    },
-    {
-      " Мітка конфіг.  ",
-      " Мітка налашт.  "
-    },
-    {
-      " Configur.Mark  ",
-      " Settings Mark  "
-    },
-    {
-      " Метка конфиг.  ",
-      " Метка настроек "
-    }
-  };
   int index_language = index_language_in_array(settings_fix_prt.language);
   
   unsigned int position_temp = current_state_menu2.index_position;
@@ -33,7 +22,7 @@ void make_ekran_list_labels(void)
   for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-    for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = (index_in_ekran < MAX_ROW_LABELS_M2) ? name_string[index_language][index_in_ekran][j] : ' ';
+    for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = (index_in_ekran < MAX_ROW_LABELS_M2) ? name_string_labels[index_language][index_in_ekran][j] : ' ';
 
     index_in_ekran++;
   }
@@ -142,13 +131,6 @@ void make_ekran_time_config_or_settings(void)
   else
   {
     //теоретично ми сюди б не мали ніколи заходити, але якщо ми сюди зайшли, то виводимо сигналізацію про помилку на екран
-    const uint8_t error_meas[MAX_NAMBER_LANGUAGE][7 + 1] = 
-    {
-      " Ошибка",
-      "Помилка",
-      "  Error",
-      " Ошибка"
-    };
     int index_language = index_language_in_array(settings_fix_prt.language);
       
     for (size_t i = 0; i < 7; i++) name_string[INDEX_TIME_CALIBRATION_M2_TIME][9 + i] = error_meas[index_language][i];

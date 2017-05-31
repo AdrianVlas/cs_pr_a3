@@ -79,61 +79,10 @@ void make_ekran_list_settings(void)
            (current_state_menu2.edition == ED_INFO)
           )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Дин.пам.недост.",
-      " Дин.пам.недост.",
-      " Дин.пам.недост.",
-      " Дин.пам.недост."
-    };
-
-    make_ekran_about_info(0, ((current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(0, ((current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_no_free_dyn_mem));
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_M2][MAX_COL_LCD + 1] = 
-    {
-      {
-        " Конфигурация   ",
-        " Параметриров.  ",
-        " Редактор       ",
-        " Язык           ",
-        " Коммуникация   ",
-        " Пароли         "
-      },
-      {
-        " Конфігурація   ",
-        " Параметрування ",
-        " Редактор       ",
-        " Мова           ",
-        " Комунікація    ",
-        " Паролі         "
-      },
-      {
-        " Configuration  ",
-        " Parametrization",
-        " Editor         ",
-        " Language       ",
-        " Communication  ",
-        " Passwords      "
-      },
-      {
-        " Конфигурация   ",
-        " Параметриров.  ",
-        " Редактор       ",
-        " Язык           ",
-        " Коммуникация   ",
-        " Пароли         "
-      }
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
 
     unsigned int additional_current = 0;
@@ -169,7 +118,7 @@ void make_ekran_list_settings(void)
       {
         for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
         {
-          name_string_tmp[index_1 - additional_current][index_2] = name_string[index_language][index_1][index_2];
+          name_string_tmp[index_1 - additional_current][index_2] = name_string_list_settings[index_language][index_1][index_2];
         }
       }
     }

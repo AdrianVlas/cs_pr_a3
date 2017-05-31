@@ -1,6 +1,88 @@
 #include "header.h"
 
+const uint8_t string_info[MAX_NAMBER_LANGUAGE][7][MAX_COL_LCD] = 
+{
+  {
+    "Конфигурации нет",
+    " Ош.конфигурации",
+    " Недост.динам.п.",
+    "  Настроек нет  ",
+    "  Ош.настроек   ",
+    "  Триг.инф.нет  ",
+    "  Ош.триг.инф.  "
+  },
+  {
+    "   Конф.нема    ",
+    "Пом.конфігурації",
+    " Недост.динам.п.",
+    "Налаштувань нема",
+    " Пом.налаштувань",
+    " Триґ.інф.нема  ",
+    " Пом.триґ.інф.  "
+  },
+  {
+    "    No Conf.    ",
+    "   Conf.Err.    ",
+    "No enough dyn.m.",
+    "  No settings   ",
+    " Settings Err.  ",
+    "  Триг.инф.нет  ",
+    "  Ош.триг.инф.  "
+  },
+  {
+    "Конфигурации нет",
+    " Ош.конфигурации",
+    " Недост.динам.п.",
+    "  Настроек нет  ",
+    "  Ош.настроек   ",
+    "  Триг.инф.нет  ",
+    "  Ош.триг.инф.  "
+  } 
+};
+const uint8_t string_action[MAX_NAMBER_LANGUAGE][3][MAX_COL_LCD] =
+{
+  {
+    "Мин.парам.:Enter",
+    " Сбросить: Enter",
+    " Схема 2: Enter "
+  },
+  {
+    "Мін.парам.:Enter",
+    " Скинути: Enter ",
+    " Схема 2: Enter "
+  },
+  {
+    "Min.param :Enter",
+    "  Reset: Enter  ",
+    " Scheme 2: Enter"
+  },
+  {
+    "Мин.парам.:Enter",
+    " Сбросить: Enter",
+    " Схема 2: Enter "
+  }
+};
 
+const uint8_t name_string_restart[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD] = 
+{
+  {
+    " Перезапустите  ",
+    "   устройство   "
+  },
+  {
+    " Перезапустіть  ",
+    "    пристрій    "
+  },
+  {
+    "     Reset      ",
+    "   the device   "
+  },
+  {
+    " Перезапустите  ",
+    "   устройство   "
+  }
+};
+  
 /**************************************/
 //Тестування зовнішньої SRAM
 /**************************************/
@@ -906,6 +988,7 @@ void start_settings_peripherals(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 
     main_routines_for_i2c();
@@ -938,6 +1021,7 @@ void start_settings_peripherals(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 
     main_routines_for_i2c();
@@ -970,6 +1054,7 @@ void start_settings_peripherals(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 
     main_routines_for_i2c();
@@ -1004,6 +1089,7 @@ void start_settings_peripherals(void)
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
 
       main_routines_for_i2c();
@@ -1036,6 +1122,7 @@ void start_settings_peripherals(void)
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
 
       main_routines_for_i2c();
@@ -1203,6 +1290,7 @@ void start_settings_peripherals(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 
   /**********************/
@@ -1228,6 +1316,7 @@ void start_settings_peripherals(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 }
 /**************************************/
@@ -1256,6 +1345,9 @@ void min_config(__CONFIG *target_label)
   target_label->n_meander = 0;
 
   target_label->n_tu = 0;
+  target_label->n_ts = 0;
+
+  target_label->n_log = 0;
   
   for(unsigned int i = 0; i < (7+1); i++)
   {
@@ -1308,6 +1400,16 @@ void scheme2_config(__CONFIG *target_label)
   target_label->n_meander = 0;
 
   target_label->n_tu = 0;
+  target_label->n_ts = 0;
+  
+  target_label->n_log = DIV_TO_HIGHER((
+                                       2/*"Несправність загальна" + "Несправність аварійна"*/ + 
+                                       ((target_label->n_input > 4/*Reset, Mute, Block, Test*/) ? (target_label->n_input - 4) : 0) + 
+                                       ((target_label->n_output >= 4/*Ав.звукова, Ав.світлова, Поп.звукова, Поп.світлова*/) ? 4 : target_label->n_output) +
+                                       target_label->n_led + 
+                                       target_label->n_group_alarm*GROUP_ALARM_SIGNALS_OUT
+                                      ), LOG_SIGNALS_IN);
+                         
   
   for(unsigned int i = 0; i < (7+1); i++)
   {
@@ -1433,7 +1535,7 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
     if ((target_config->n_led >= (n + 1)) && (target_config->n_or >= 5)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR] + n)->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((5 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
 
     n += 1;
-    if (target_config->n_led >= (n + 1)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR] + n)->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_CONTROL_BLOCK & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((FIX_BLOCK_SETTINGS_LOG_WORK + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if (target_config->n_led >= (n + 1)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR] + n)->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_EVENT_LOG & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((EVENT_LOG_WORK + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
 
     n += 1;
     for (size_t i = 0; i < n; i++)
@@ -1517,8 +1619,8 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
             break;
           }
         }
-        if (target_config->n_button >= (button + 1)) ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[0] = ((ID_FB_BUTTON & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((button + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((BUTTON_TU_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-        if (target_config->n_input  >= (0      + 1)) ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[1] = ((ID_FB_INPUT  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i_tmp  + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((INPUT_OUT     + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+        if (target_config->n_button >= (button + 1)) ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[0] = ((ID_FB_BUTTON & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((button + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((BUTTON_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+        if (target_config->n_input  >= (0      + 1)) ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->param[1] = ((ID_FB_INPUT  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i_tmp  + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((INPUT_OUT  + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
       }
       else if ((i_tmp -= 4) < DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN))
       {
@@ -1655,7 +1757,8 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
     Фіксований блок
     ***/
     {
-      if (target_config->n_or >= (2 + 1)) target_fix_settings->param[FIX_BLOCK_BLOCK] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((2 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);    
+      if (target_config->n_trigger >= (0 + 1)) target_fix_settings->param[FIX_BLOCK_BLOCK] = ((ID_FB_TRIGGER & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((0 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((TRIGGER_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);    
+      if (target_config->n_or >= (3 + 1)) target_fix_settings->param[FIX_VLOCK_TEST_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((3 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);    
 
       size_t _n = 4/*Reset, Mute, Block, Test*/ + 
       DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN)/*Контрольні сигнали всіх ШГС*/ + 
@@ -1667,6 +1770,53 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
             1;
       if (target_config->n_or >= (_n + 1)) target_fix_settings->param[FIX_BLOCK_ALARM] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((_n - 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
     }
+    /***/
+    
+    /***
+    "Журнал подій"
+    ***/
+    n = 0;
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 0 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 0) = ((ID_FB_CONTROL_BLOCK & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((FIX_BLOCK_DEFECT      + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 1 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 1) = ((ID_FB_CONTROL_BLOCK & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((FIX_BLOCK_AVAR_DEFECT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    n += 2;
+      
+    for (size_t i = 4/*Reset, Mute, Block, Test*/; i < target_config->n_input; i++)
+    {
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i - 4 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + i - 4) = ((ID_FB_INPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((INPUT_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+    }
+    n += ((target_config->n_input > 4/*Reset, Mute, Block, Test*/) ? (target_config->n_input - 4) : 0);
+
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 0 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 0) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((0 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 1 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 1) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((1 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 2 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 2) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((2 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 3 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 3) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((3 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    n += ((target_config->n_output >= 4/*Ав.звукова, Ав.світлова, Поп.звукова, Поп.світлова*/) ? 4 : target_config->n_output);
+    
+
+    uint32_t led_to_log = target_config->n_group_alarm + n_binary_chanal;
+    if (target_config->n_led < led_to_log) led_to_log = target_config->n_led;
+    for (size_t i = 0; i < led_to_log; i++)
+    {
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + i) = ((ID_FB_LED & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+    }
+    n += led_to_log;
+
+    for (size_t i = 0; i < target_config->n_group_alarm; i++)
+    {
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i*GROUP_ALARM_SIGNALS_OUT + 0 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + i*GROUP_ALARM_SIGNALS_OUT + 0) = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_NNP + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i*GROUP_ALARM_SIGNALS_OUT + 1 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + i*GROUP_ALARM_SIGNALS_OUT + 1) = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_NNM + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i*GROUP_ALARM_SIGNALS_OUT + 2 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + i*GROUP_ALARM_SIGNALS_OUT + 2) = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_CC  + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i*GROUP_ALARM_SIGNALS_OUT + 3 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + i*GROUP_ALARM_SIGNALS_OUT + 3) = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_CE  + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+      if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + i*GROUP_ALARM_SIGNALS_OUT + 4 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + i*GROUP_ALARM_SIGNALS_OUT + 4) = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_OC  + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
+    }
+    n += target_config->n_group_alarm*GROUP_ALARM_SIGNALS_OUT;
     /***/
     
 //    for(unsigned int i = 0; i < (7+1); i++)
@@ -1687,69 +1837,6 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
 /**************************************/
 void error_reading_with_eeprom()
 {
-  const unsigned char string_info[MAX_NAMBER_LANGUAGE][7][MAX_COL_LCD] = 
-  {
-    {
-      "Конфигурации нет",
-      " Ош.конфигурации",
-      " Недост.динам.п.",
-      "  Настроек нет  ",
-      "  Ош.настроек   ",
-      "  Триг.инф.нет  ",
-      "  Ош.триг.инф.  "
-    },
-    {
-      "   Конф.нема    ",
-      "Пом.конфігурації",
-      " Недост.динам.п.",
-      "Налаштувань нема",
-      " Пом.налаштувань",
-      " Триґ.інф.нема  ",
-      " Пом.триґ.інф.  "
-    },
-    {
-      "    No Conf.    ",
-      "   Conf.Err.    ",
-      "No enough dyn.m.",
-      "  No settings   ",
-      " Settings Err.  ",
-      "  Триг.инф.нет  ",
-      "  Ош.триг.инф.  "
-    },
-    {
-      "Конфигурации нет",
-      " Ош.конфигурации",
-      " Недост.динам.п.",
-      "  Настроек нет  ",
-      "  Ош.настроек   ",
-      "  Триг.инф.нет  ",
-      "  Ош.триг.инф.  "
-    } 
-  };
-  const unsigned char string_action[MAX_NAMBER_LANGUAGE][3][MAX_COL_LCD] =
-  {
-    {
-      "Мин.парам.:Enter",
-      " Сбросить: Enter",
-      " Схема 2: Enter "
-    },
-    {
-      "Мін.парам.:Enter",
-      " Скинути: Enter ",
-      " Схема 2: Enter "
-    },
-    {
-      "Min.param :Enter",
-      "  Reset: Enter  ",
-      " Scheme 2: Enter"
-    },
-    {
-      "Мин.парам.:Enter",
-      " Сбросить: Enter",
-      " Схема 2: Enter "
-    }
-  };
-  
   int index_language;
   if (((state_i2c_task & STATE_CONFIG_EEPROM_GOOD) == 0) || ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) == 0)) index_language = index_language_in_array(LANGUAGE_ABSENT);
   else index_language = index_language_in_array(settings_fix_prt.language);
@@ -1773,6 +1860,7 @@ void error_reading_with_eeprom()
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
     
     unsigned int index_info, index_action, information_type;
@@ -1848,6 +1936,7 @@ void error_reading_with_eeprom()
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
     }
 
@@ -1891,6 +1980,7 @@ void error_reading_with_eeprom()
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
 
       main_routines_for_i2c();
@@ -1938,6 +2028,7 @@ void error_reading_with_eeprom()
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
       
       main_routines_for_i2c();
@@ -1984,6 +2075,7 @@ void start_checking_dataflash(void)
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
     }
     
@@ -2009,6 +2101,7 @@ void start_checking_dataflash(void)
                         GPIO_PIN_EXTERNAL_WATCHDOG,
                         (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                        );
+          control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
         }
       }
     }
@@ -2018,26 +2111,6 @@ void start_checking_dataflash(void)
   
   if (page_size_256_total == 0)
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD] = 
-    {
-      {
-        " Перезапустите  ",
-        "   устройство   "
-      },
-      {
-        " Перезапустіть  ",
-        "    пристрій    "
-      },
-      {
-        "     Reset      ",
-        "   the device   "
-      },
-      {
-        " Перезапустите  ",
-        "   устройство   "
-      }
-    };
-
     int index_language = index_language_in_array(settings_fix_prt.language);
     
     //Робота з watchdogs
@@ -2049,12 +2122,13 @@ void start_checking_dataflash(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
 
     //Копіюємо  рядки у робочий екран
     for (size_t i= 0; i < MAX_ROW_LCD; i++)
     {
-      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][i][j];
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_restart[index_language][i][j];
     }
   
     //Обновити повністю весь екран
@@ -2075,6 +2149,7 @@ void start_checking_dataflash(void)
                       GPIO_PIN_EXTERNAL_WATCHDOG,
                       (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                      );
+        control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
       }
     }
   }

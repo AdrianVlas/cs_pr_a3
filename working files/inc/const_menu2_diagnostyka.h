@@ -53,8 +53,11 @@ ERROR_DIGITAL_OUTPUTS_BIT,
 ERROR_PR_ERR_OVERLOAD_BIT,
 ERROR_PR_ERR_LOSS_INFORMATION_BIT,
 
+EVENT_CHANGE_CONFIGURATION_BIT,
+EVENT_CHANGE_SETTINGS_BIT,
 EVENT_START_SYSTEM_BIT,
 EVENT_RESTART_SYSTEM_BIT,
+EVENT_SOFT_RESTART_SYSTEM_BIT,
 EVENT_STOP_SYSTEM_BIT,
 EVENT_DROP_POWER_BIT,
 
@@ -69,10 +72,13 @@ _NUMBER_ERRORS
 };
 
 #define MASKA_AVAR_ERROR_0        (unsigned int)(               \
-    (1 << (ERROR_CONFIG_EEPROM_BIT))                            \
+    (1 << (ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT))             \
+  | (1 << (ERROR_CONFIG_EEPROM_BIT))                            \
   | (1 << (ERROR_CONFIG_EEPROM_EMPTY_BIT))                      \
   | (1 << (ERROR_CONFIG_EEPROM_COMPARISON_BIT) )                \
   | (1 << (ERROR_CONFIG_EEPROM_CONTROL_BIT))                    \
+  | (1 << (ERROR_NO_FREE_DYNAMIC_MEMORY_BIT))                   \
+  | (1 << (ERROR_PRT_MEMORY_BIT))                               \
   | (1 << (ERROR_SETTINGS_EEPROM_BIT))                          \
   | (1 << (ERROR_SETTINGS_EEPROM_EMPTY_BIT))                    \
   | (1 << (ERROR_SETTINGS_EEPROM_COMPARISON_BIT) )              \
@@ -146,17 +152,17 @@ _NUMBER_ERRORS
   " Ош.вых.реле    ",   \
   "Переп.буф.пр.ош.",   \
   " Потеря д.пр.ош.",   \
+  "Изм.конфиругации",   \
+  " Изм.настроек   ",   \
   " Старт устр.    ",   \
   " Рестарт устр.  ",   \
+  "Пр.Рестарт устр.",   \
   " Останов.устр.  ",   \
   " Пропад.питания ",   \
   " Отказ ЖКИ      ",   \
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
-  " Ошибка 52      ",   \
-  " Ошибка 53      ",   \
-  " Ошибка 54      ",   \
   " Ошибка 55      ",   \
   " Ошибка 56      ",   \
   " Ошибка 57      ",   \
@@ -212,17 +218,17 @@ _NUMBER_ERRORS
   " Пом.вих.реле   ",   \
   "Переп.буф.р.пр.п",   \
   " Втрата д.р.пр.п",   \
+  " Зм.конфіругації",   \
+  " Зм.налаштувань ",   \
   " Старт пристр.  ",   \
   " Рестарт пристр.",   \
+  " Пр.Рестарт пр. ",   \
   " Зуп.пристр.    ",   \
   " Пропад.живлення",   \
   " Відмова РКІ    ",   \
   " Пом.SPI_DF     ",   \
   " Пом.зовн.SRAM  ",   \
   " Пом.внутр.FLASH",   \
-  " Помилка 52     ",   \
-  " Помилка 53     ",   \
-  " Помилка 54     ",   \
   " Помилка 55     ",   \
   " Помилка 56     ",   \
   " Помилка 57     ",   \
@@ -278,17 +284,17 @@ _NUMBER_ERRORS
   " DO Ctrl.Err.   ",   \
   "OVF of PER buff.",   \
   " PER Data lost  ",   \
+  " Conf.changed   ",   \
+  "Settings changed",   \
   " Device Start   ",   \
   " Device Restart ",   \
+  " Device SFTRST  ",   \
   " Device Stop    ",   \
   " Пропад.питания ",   \
   " LCD Fail       ",   \
   " DF SPI Err.    ",   \
   " Ext.SRAM Err.  ",   \
   " Int.FLASH Err. ",   \
-  " Error 52       ",   \
-  " Error 53       ",   \
-  " Error 54       ",   \
   " Error 55       ",   \
   " Error 56       ",   \
   " Error 57       ",   \
@@ -344,17 +350,17 @@ _NUMBER_ERRORS
   " Ош.вых.реле    ",   \
   "Переп.буф.пр.ош.",   \
   " Потеря д.пр.ош.",   \
+  "Изм.конфиругации",   \
+  " Изм.настроек   ",   \
   " Старт устр.    ",   \
   " Рестарт устр.  ",   \
+  "Пр.Рестарт устр.",   \
   " Останов.устр.  ",   \
   " Пропад.питания ",   \
   " Отказ ЖКИ      ",   \
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
-  " Ошибка 52      ",   \
-  " Ошибка 53      ",   \
-  " Ошибка 54      ",   \
   " Ошибка 55      ",   \
   " Ошибка 56      ",   \
   " Ошибка 57      ",   \

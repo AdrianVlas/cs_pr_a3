@@ -550,9 +550,8 @@ void main_routines_for_i2c(void)
               break;
             }
           case ID_FB_BUTTON:
-          case ID_FB_TU:
             {
-              size_of_block = ((block == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
+              size_of_block = current_config.n_button*0;
               break;
             }
           case ID_FB_ALARM:
@@ -598,6 +597,21 @@ void main_routines_for_i2c(void)
           case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          case ID_FB_TU:
+            {
+              size_of_block = current_config.n_tu*sizeof(__settings_for_TU);
+              break;
+            }
+          case ID_FB_TS:
+            {
+              size_of_block = current_config.n_ts*sizeof(__settings_for_TS);
+              break;
+            }
+          case ID_FB_EVENT_LOG:
+            {
+              size_of_block = current_config.n_log*LOG_SIGNALS_IN*sizeof(__LOG_INPUT);
               break;
             }
           default:
@@ -915,9 +929,8 @@ void main_routines_for_i2c(void)
               break;
             }
           case ID_FB_BUTTON:
-          case ID_FB_TU:
             {
-              size_of_block = ((block == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
+              size_of_block = current_config.n_button*0;
               break;
             }
           case ID_FB_ALARM:
@@ -963,6 +976,21 @@ void main_routines_for_i2c(void)
           case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          case ID_FB_TU:
+            {
+              size_of_block = current_config.n_tu*sizeof(__settings_for_TU);
+              break;
+            }
+          case ID_FB_TS:
+            {
+              size_of_block = current_config.n_ts*sizeof(__settings_for_TS);
+              break;
+            }
+          case ID_FB_EVENT_LOG:
+            {
+              size_of_block = current_config.n_log*LOG_SIGNALS_IN*sizeof(__LOG_INPUT);
               break;
             }
           default:
@@ -1737,9 +1765,8 @@ void main_routines_for_i2c(void)
               break;
             }
           case ID_FB_BUTTON:
-          case ID_FB_TU:
             {
-              size_of_block = ((block == ID_FB_BUTTON) ? current_config.n_button : current_config.n_tu)*0;
+              size_of_block = current_config.n_button*0;
               break;
             }
           case ID_FB_ALARM:
@@ -1785,6 +1812,21 @@ void main_routines_for_i2c(void)
           case ID_FB_MEANDER:
             {
               size_of_block = current_config.n_meander*sizeof(__settings_for_MEANDER);
+              break;
+            }
+          case ID_FB_TU:
+            {
+              size_of_block = current_config.n_tu*sizeof(__settings_for_TU);
+              break;
+            }
+          case ID_FB_TS:
+            {
+              size_of_block = current_config.n_ts*sizeof(__settings_for_TS);
+              break;
+            }
+          case ID_FB_EVENT_LOG:
+            {
+              size_of_block = current_config.n_log*LOG_SIGNALS_IN*sizeof(__LOG_INPUT);
               break;
             }
           default:
@@ -2787,10 +2829,12 @@ void main_routines_for_i2c(void)
       calibration_copy = calibration;
       
       if(
-         (_CHECK_SET_BIT(    diagnostyka, EVENT_START_SYSTEM_BIT  ) != 0) ||
-         (_CHECK_SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT  ) != 0) ||
-         (_CHECK_SET_BIT(    diagnostyka, EVENT_RESTART_SYSTEM_BIT) != 0) ||
-         (_CHECK_SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT) != 0)
+         (_CHECK_SET_BIT(    diagnostyka, EVENT_START_SYSTEM_BIT       ) != 0) ||
+         (_CHECK_SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT       ) != 0) ||
+         (_CHECK_SET_BIT(    diagnostyka, EVENT_RESTART_SYSTEM_BIT     ) != 0) ||
+         (_CHECK_SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT     ) != 0) ||
+         (_CHECK_SET_BIT(    diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT) != 0) ||
+         (_CHECK_SET_BIT(set_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT) != 0)
         )
       {
         //До цього часу ще не зчитано першої реальної часової мітки
@@ -2893,6 +2937,7 @@ void main_routines_for_i2c(void)
             //Скидаємо біти запуску програми або її перезапуску
             _SET_BIT(clear_diagnostyka, EVENT_START_SYSTEM_BIT);
             _SET_BIT(clear_diagnostyka, EVENT_RESTART_SYSTEM_BIT);
+            _SET_BIT(clear_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT);
           }
           while (
                  (local_point_for_time < (head_fifo_buffer_pr_err_records*SIZE_ONE_RECORD_PR_ERR)) &&

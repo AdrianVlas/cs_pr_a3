@@ -17,6 +17,8 @@ public:
     ~CLULss(void);
 	CLULss(char chM,char chI);
 	void CalcLssSchematic(void);
+	void CalcLssSchematicOpt(void);
+	void CalcLssSchematicOpt3(void);
 	char* arrPchIn[TOTAL_LSS_IN];
 	char  arrOut  [TOTAL_LSS_OUTPUT];//Trash field
 	LssCfgSuit m_LssCfgSuit;
@@ -33,7 +35,9 @@ public:
     char m_chInC29;
     char m_chInC11;
 	char m_chErrorQTrg11;
-	
+	short m_shAmountProcessedRec;
+    short m_shStartRecord;
+     LedShcemasDscRecord** m_pArLssShcemasDscRecords;//PConst
 	long T1_1Ms(long lActivKey);
 	long T1_2Ms(long lActivKey);
 	long TCs(long lActivKey);
@@ -54,3 +58,7 @@ public:
 
 extern void LssOp	(void *pObj);
 
+extern const LedShcemasDscRecord* const arPLssShcemasSimpleModeDscRecords[];
+extern const short shPLssShcemasSimpleModeDscRecords;
+extern const LedShcemasDscRecord* const arPLssShcemasTriggerModeDscRecords[];
+extern const short shPLssShcemasTriggerModeDscRecords;

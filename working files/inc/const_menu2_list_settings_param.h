@@ -14,5 +14,5 @@ enum __index_list_settings_param_m2
   MAX_ROW_LIST_SETTINGS_PARAM_M2
 };
 
-
 #endif
+

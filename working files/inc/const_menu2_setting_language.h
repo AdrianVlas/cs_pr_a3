@@ -21,3 +21,4 @@ enum __index_language_m2
 #define MAX_ROW_FOR_VIEW_SETTING_LANGUAGE             1
 
 #endif
+

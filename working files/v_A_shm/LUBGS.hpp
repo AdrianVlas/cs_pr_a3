@@ -30,6 +30,7 @@ public:
     long lTReset(long lActivKey);
     char* arrPchIn[TOTAL_BGS_VISIO_IN]; //
     char arrOut [TOTAL_BGS_VISIO_OUT]; //Tra
+static char m_chCounterCall;
     char m_chLinkedTimers; //Field bit
     char m_chStateTWait;
     char m_chStateTReset;

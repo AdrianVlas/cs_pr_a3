@@ -1,7 +1,9 @@
 /* Includes ------------------------------------------------------------------*/
-#include "constants.h"
 #include "libraries.h"
+#include "constants.h"
+#include "type_definition.h"
 #include "variables_global.h"
+#include "strings_global.h"
 #include "functions_global.h"
 #include "../v_A_shm/I_Shm.h"
 #include "../v_A_shm/IStng.h"
@@ -361,8 +363,13 @@ int main(void)
   _SET_BIT(set_diagnostyka, EVENT_STOP_SYSTEM_BIT);
   changing_diagnostyka_state();//Підготовлюємо новий запис для реєстратора програмних подій
   
-  //Перевіряємо, що відбулося: запуск приладу, чи перезапуск (перезапуск роботи приладу без зняття оперативного живлення) 
-  if (RCC_GetFlagStatus(RCC_FLAG_PORRST) != SET)
+  //Перевіряємо, що відбулося: запуск приладу, програмний перезапуск чи перезапуск (перезапуск роботи приладу без зняття оперативного живлення) 
+  if (RCC_GetFlagStatus(RCC_FLAG_SFTRST) == SET)
+  {
+    //Виставляємо подію про програмний перезапуск пристрою
+    _SET_BIT(set_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT);
+  }
+  else if (RCC_GetFlagStatus(RCC_FLAG_PORRST) != SET)
   {
     //Виставляємо подію про перезапуск пристрою (бо не зафіксовано подію Power-on/Power-down)
     _SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT);
@@ -389,7 +396,7 @@ int main(void)
           
     //Дозволяєм роботу таймера вимірювальної системи
     TIM_Cmd(TIM5, ENABLE);
-    // Дозволяєм роботу таймера системи захистів
+    // Дозволяєм роботу таймера системи логіки
     TIM_Cmd(TIM2, ENABLE);
 
     //Ініціалізація LCD
@@ -463,6 +470,7 @@ int main(void)
                   GPIO_PIN_EXTERNAL_WATCHDOG,
                   (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                  );
+    control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
   }
   restart_resurs_count = 0xff;/*Ненульове значення перезапускає лічильники*/
   

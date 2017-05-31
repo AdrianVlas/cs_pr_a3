@@ -25,6 +25,4 @@ enum __index_list_passwords_m2
   MAX_ROW_LIST_PASSWORDS_M2
 };
 
-
-
 #endif

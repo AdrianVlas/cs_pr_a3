@@ -70,13 +70,15 @@ m_chNumberAnalogChanell = 0;
 
 ch_DTrg = 0;
 ch_C1 = 0;
-}
 
+
+}
+ char CBGSig::m_chCounterCall = 99;
 long CBGSig::LinkBGSigTimers(void) {
     register long i = 0;
     //Insert TpauseMft
     chGlSem++;
-    
+    this->m_chCounterCall = 99;
     if (PushTmrNode(&m_NodeTWait)) {//static_cast<void*>(
         i++;
         m_chLinkedTimers |= 2;
@@ -166,12 +168,24 @@ pOut = static_cast<void*>(arrOut);
 //    chGlSem--;
 //    return i;
 //}
+
+char shIdxBGSBkpt = 0;
 void BGSig_Op(void *pObj) {
+register long i;
     CBGSig& rCBGSig = *(static_cast<CBGSig*> (pObj));
-//    asm(
-//                "bkpt 1"
-//                );
+    i = rCBGSig.m_chCounterCall;
+   if(i == 0){
+       rCBGSig.m_chCounterCall = 0;
+        if(rCBGSig.shLUBieldOrdNum == shIdxBGSBkpt)
+   asm(
+               "bkpt 1"
+               );
     rCBGSig.CalcBusGrSigSchematic();
+    }
+//    else{
+//        rCBGSig.m_chCounterCall = ++i;
+//    }
+    
 }
 
 #include "LUBgsp1.cpp"

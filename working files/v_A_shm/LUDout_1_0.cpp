@@ -31,6 +31,13 @@ CLUDout_1_0::CLUDout_1_0(char chM,char chI)//,LUOutDsc* pLUOutDsc)
     chIteration = chI;
     chNumInput  = static_cast<char>(TOTAL_RELE_VISIO_IN );
     chNumOutput = static_cast<char>(TOTAL_RELE_VISIO_OUTPUT);
+     m_chQTrg06 = 0;
+     m_chInC06  = 0;
+     m_chErrorQTrg06 = 0;
+    m_shStartRecord = 0;
+    m_shAmountProcessedRec = 0;
+    m_pArShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+    &arPReleShcemasDscRecords[0]);
     //chTypeLogicFunction = LU_OP_SET_OUT;
     //LogicFunc  = SET_OUT_Op;//???
 
@@ -49,6 +56,7 @@ CLUDout_1_0::CLUDout_1_0(char chM,char chI)//,LUOutDsc* pLUOutDsc)
 CLUDout_1_0::~CLUDout_1_0(void) {
     
 }
+
 char chGBLBPStopSetOut = 0;
 void SET_OUT_Op(void *pObj) {
     //CLUDout_1_0 *pCLUDout_1_0 = reinterpret_cast<CLUDout_1_0 *>(pObj);
@@ -60,8 +68,54 @@ void SET_OUT_Op(void *pObj) {
     rCLUDout_1_0.CalcReleySchematic();   
 }
 #include "Rele_p1.cpp"
-static char chGLB_QTrg = 0;
-static char chGLB_InC = 0;
+void CLUDout_1_0::UpdateCLUDout_1_0(void){
+    if(m_ReleyCfgSuit.chSel2 == 0){//OFFSET_OUT_IN_RELE_STABLE_SELECTOR
+        if(m_ReleyCfgSuit.chSel1 == 0){//OFFSET_OUT_IN_RELE_NORMAL_SELECTOR
+            m_shAmountProcessedRec = shAmtDOShcemasStableSimpleDscRecords + RELE_Not01__1_1;
+            m_shStartRecord = RELE_Not01__1_1; 
+            m_pArShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+            &arPDOShcemasStableDirectDscRecords[0]);
+
+        }
+        else{//OFFSET_OUT_IN_RELE_TRIGGER_SELECTOR
+            m_shAmountProcessedRec = shAmtDOShcemasStableTriggerDscRecords + RELE_Not01__1_1;
+            m_shStartRecord = RELE_Not01__1_1; 
+            m_pArShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+            &arPDOShcemasStableTriggerDscRecords[0]);
+        }
+    }
+    else{//OFFSET_OUT_IN_RELE_PULSE_SELECTOR
+        if(m_ReleyCfgSuit.chSel3 == 0){//OFFSET_OUT_IN_RELE_PULSE_SIMPLE_SELECTOR
+            if(m_ReleyCfgSuit.chSel1 == 0){//OFFSET_OUT_IN_RELE_NORMAL_SELECTOR
+                m_shAmountProcessedRec = shAmtDOShcemasPulseC1SimpleModeDscRecords + RELE_Not01__1_1;
+                m_shStartRecord = RELE_Not01__1_1; 
+                m_pArShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+                &arPDOShcemasPulseC1SimpleDscRecords[0]);
+            }
+            else{//OFFSET_OUT_IN_RELE_TRIGGER_SELECTOR
+                m_shAmountProcessedRec = shAmtDOShcemasPulseC1TrigModeDscRecords + RELE_Not01__1_1;
+                m_shStartRecord = RELE_Not01__1_1; 
+                m_pArShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+                &arPDOShcemasPulseC1TrigDscRecords[0]);
+            }
+        }
+        else{//OFFSET_OUT_IN_RELE_PULSE_EXTANDED_SELECTOR
+            if(m_ReleyCfgSuit.chSel1 == 0){// //OFFSET_OUT_IN_RELE_NORMAL_SELECTOR
+                m_shAmountProcessedRec = shAmtDOShcemasPulseC2SimpleModeDscRecords + RELE_Not01__1_1;
+                m_shStartRecord = RELE_Not01__1_1; 
+                m_pArShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+                &arPDOShcemasPulseC2SimpleDscRecords[0]);
+            }
+            else{////OFFSET_OUT_IN_RELE_TRIGGER_SELECTOR
+                m_shAmountProcessedRec = shAmtDOShcemasPulseC2TrigModeDscRecords + RELE_Not01__1_1;
+                m_shStartRecord = RELE_Not01__1_1; 
+                m_pArShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+                &arPDOShcemasPulseC2TrigDscRecords[0]);
+            }
+        }
+    }
+}
+
 
 void CLUDout_1_0::CalcReleySchematic(void){
 register long rl_Val,i;
@@ -74,12 +128,12 @@ arChIntermediaResult[OFFSET_OUT_IN_RELE_STABLE_SELECTOR          ] = 0;//
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SELECTOR           ] = 0;//
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SIMPLE_SELECTOR    ] = 0;//
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_EXTANDED_SELECTOR  ] = 0;//
-arChIntermediaResult[OFFSET_OUT_IN_RELE__RIN                     ] = 0;//
-arChIntermediaResult[OFFSET_OUT_IN_RELE__RESET                   ] = 0;//
-arChIntermediaResult[OFFSET_OUT_IN_RELE__BL_IMP                  ] = 0;//
-arChIntermediaResult[OFFSET_OUT_IN_RELE__C1_C2                   ] = 0;//
-arChIntermediaResult[OFFSET_OUT_IN_RELE_C1                       ] = 0;//
-arChIntermediaResult[OFFSET_OUT_IN_RELE_C2                       ] = 0;//
+//arChIntermediaResult[OFFSET_OUT_IN_RELE__RIN                     ] = 0;//
+//arChIntermediaResult[OFFSET_OUT_IN_RELE__RESET                   ] = 0;//
+//arChIntermediaResult[OFFSET_OUT_IN_RELE__BL_IMP                  ] = 0;//
+//arChIntermediaResult[OFFSET_OUT_IN_RELE__C1_C2                   ] = 0;//
+//arChIntermediaResult[OFFSET_OUT_IN_RELE_C1                       ] = 0;//
+//arChIntermediaResult[OFFSET_OUT_IN_RELE_C2                       ] = 0;//
 
 char *pCh = (this->arrPchIn[(RELEY_IN_NAME__RIN - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_RELE__RIN ] = pCh[0];
@@ -91,28 +145,38 @@ pCh = (this->arrPchIn[(RELEY_IN_NAME__C1_C2 - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_RELE__C1_C2] = pCh[0];//
 if(this->m_ReleyCfgSuit.chSel1 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_RELE_NORMAL_SELECTOR] = 1;
+i = 0;
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_RELE_TRIGGER_SELECTOR] = 1;
+ i = 1;
 }
 if(this->m_ReleyCfgSuit.chSel2 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_RELE_STABLE_SELECTOR] = 1;
+rl_Val = 0;
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SELECTOR] = 1;
+rl_Val = 1;
 }
 if(this->m_ReleyCfgSuit.chSel3 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SIMPLE_SELECTOR] = 1;
+    //arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1] =  0;
+    //arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1] =  0;
+    //arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_EXTANDED_SELECTOR] = 1;
 }
 
+//
+//
+//
 for (i = OFFSET_OUT_RELE_Not01__1_1; i < OFFSET_OUT_IN_RELE_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
     arChIntermediaResult[i] = 0xcc;
 rl_Val = 0;
 long k, j, l;
-short shCounterProcessedRec = RELE_Not01__1_1;
+short shCounterProcessedRec = m_shStartRecord;//RELE_Not01__1_1;
   do {
     pLUShcemasDscRec = arPReleShcemasDscRecords[shCounterProcessedRec - RELE_Not01__1_1];
     i = pLUShcemasDscRec->chTypeOperation;
@@ -174,7 +238,7 @@ short shCounterProcessedRec = RELE_Not01__1_1;
             arChIntermediaResult[l] = !rl_Val;
             shCounterProcessedRec++;
             break;
-        case LU_GEN_OP_RS_TRIGGER:
+        /*case LU_GEN_OP_RS_TRIGGER:
             long lIdxInC;
             k = pLUShcemasDscRec->pInputDscData[0].shOrderNumLU;
             l = arReleShOffsets[k];
@@ -199,6 +263,76 @@ short shCounterProcessedRec = RELE_Not01__1_1;
             arChIntermediaResult[i + 1] = !rl_Val;
             chGLB_InC = arChIntermediaResult[lIdxInC];
                 shCounterProcessedRec++;
+            break;*/
+            case LU_GEN_OP_D_TRIGGER_TYPE3:
+            case LU_GEN_OP_D_TRIGGER:
+              do{
+                long lIdxInC;
+                j = 0;
+                    //Check Set
+                k = pLUShcemasDscRec->pInputDscData[0].shOrderNumLU;
+                l = arReleShOffsets[k ]  ;
+                rl_Val = arChIntermediaResult[l+ (pLUShcemasDscRec->pInputDscData[0].shIndexOut)];
+                if (rl_Val == 1) {
+
+                    m_chQTrg06 = 1;
+                    j = 6;
+                }
+                //Check Clr
+                k = pLUShcemasDscRec->pInputDscData[1].shOrderNumLU;
+                l = arReleShOffsets[k];
+                rl_Val = arChIntermediaResult[l+(pLUShcemasDscRec->pInputDscData[1].shIndexOut)];
+                if (rl_Val == 1) {
+
+                    if(j == 0x6)
+                        m_chErrorQTrg06 = 1;//Fix Error
+                    m_chQTrg06 = 0;    
+                }
+                else {
+/*                        //Check D
+                    j = 0;
+                    k = pLUShcemasDscRec->pInputDscData[2].shOrderNumLU;
+                    l = arReleShOffsets[k];
+                    rl_Val = arChIntermediaResult[l+(pLUShcemasDscRec->pInputDscData[2].shIndexOut)];
+                    if (rl_Val == 1) {
+                        k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
+                        lIdxInC = arReleShOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+                        if (arChIntermediaResult[lIdxInC] > 0){
+                            k = pLUShcemasDscRec->chOrderNumLU;
+
+                            if(m_chInC06 ==0 ){
+                                j++;
+                                m_chQTrg06 = 1;
+                            }
+
+                        }
+
+                    }
+                    k = pLUShcemasDscRec->chOrderNumLU;
+*/
+                    j = 0;
+                    k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
+                    l = arReleShOffsets[k];
+                    lIdxInC = arReleShOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+                    if ((arChIntermediaResult[lIdxInC] > 0) && (m_chInC06 == 0)) {
+                        //Check D
+                        k = pLUShcemasDscRec->pInputDscData[2].shOrderNumLU;
+                        m_chQTrg06 = arChIntermediaResult[l + (pLUShcemasDscRec->pInputDscData[2].shIndexOut)];
+                    }
+
+                }
+
+                
+                k = pLUShcemasDscRec->chOrderNumLU;
+                i = arReleShOffsets[k];
+                arChIntermediaResult[i] = m_chQTrg06;
+                arChIntermediaResult[i + 1] = !m_chQTrg06;
+                k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
+                lIdxInC = arReleShOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+                m_chInC06 = arChIntermediaResult[lIdxInC];
+                
+              }while(false);
+            shCounterProcessedRec++;
             break;
 
         default:
@@ -208,10 +342,10 @@ short shCounterProcessedRec = RELE_Not01__1_1;
                 );
     }
 
-  } while (shCounterProcessedRec < IN_RELE_NORMAL_SELECTOR);
+  } while (shCounterProcessedRec < m_shAmountProcessedRec);//IN_RELE_NORMAL_SELECTOR
     this->arrOut[(RELE_OUT_NAME__RELE_STATE_OUTPUT - 1)] = arChIntermediaResult[OFFSET_OUT_RELE_Or_07__2_1];
     bool bbState = false;
-    bbState = arChIntermediaResult[OFFSET_OUT_RELE_Or_17__3_1];
+    bbState = arChIntermediaResult[OFFSET_OUT_RELE_Or_18__3_1];
     i = this->shShemasOrdNumStng;
     i--;
     if (bbState) {

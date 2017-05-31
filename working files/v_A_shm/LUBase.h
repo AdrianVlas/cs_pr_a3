@@ -28,7 +28,8 @@ LU_OP_LSS,
 LU_OP_BGS,
 LU_OP_D_TRG__4_2,
 LU_OP_F_KEY,
-LU_OP_TU
+LU_OP_TU,
+LU_OP_TS
 };
  void AND_Op    (void *pObj);
  void OR__Op    (void *pObj);
@@ -95,6 +96,7 @@ public:
 	
 	//Out Reference
 	void* pOut;//List Addr//BaseInPoint* pOut;//List Addr
+    void* pvCfgLN;
 	void SetOrderNumber(void);
 	friend void AND_Op    (void *pObj);
 	friend void OR__Op    (void *pObj);
