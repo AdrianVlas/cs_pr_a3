@@ -20,8 +20,8 @@
 
 
 #define NAME_TIMER_IN_SIGNALS_EN        \
-  "L.In.            ",                  \
-  "Reset            "                    
+  "L.In.           ",                  \
+  "Reset           "                    
 
 #define NAME_TIMER_IN_SIGNALS_KZ        \
   "Ë.Âõ.           ",                   \

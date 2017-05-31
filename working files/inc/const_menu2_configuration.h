@@ -6,5 +6,4 @@
 #define COL_CONF_3DIGIT_BEGIN                           6
 #define COL_CONF_3DIGIT_END                             8
 
-
 #endif

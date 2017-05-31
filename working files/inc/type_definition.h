@@ -3,48 +3,7 @@
 
 #define SRAM1 _Pragma("location=\"variables_RAM1\"")
 
-typedef enum _id_fb
-{
-  _ID_FB_FIRST_ALL = 1,                                                 /*1*/
-  
-    _ID_FB_FIRST_FIX = _ID_FB_FIRST_ALL,                                /*1*/
-
-      ID_FB_CONTROL_BLOCK = _ID_FB_FIRST_FIX,                           /*1*/
-      
-    _ID_FB_LAST_FIX,                                                    /*2*/
-
-    _ID_FB_FIRST_VAR = _ID_FB_LAST_FIX,                                 /*2*/
-    
-      _ID_FB_FIRST_VAR_NONE_CHANGED = _ID_FB_FIRST_VAR,                 /*2*/
-
-        ID_FB_INPUT = _ID_FB_FIRST_VAR_NONE_CHANGED,                    /*2*/
-        ID_FB_OUTPUT,                                                   /*3*/
-        ID_FB_LED,                                                      /*4*/
-        ID_FB_BUTTON,                                                   /*5*/
-
-      _ID_FB_LAST_VAR_NONE_CHANGED,                                     /*6*/
-
-      _ID_FB_FIRST_VAR_CHANGED = _ID_FB_LAST_VAR_NONE_CHANGED,          /*6*/
-      
-        ID_FB_ALARM = _ID_FB_FIRST_VAR_CHANGED,                         /*6*/
-        ID_FB_GROUP_ALARM,                                              /*7*/
-        ID_FB_AND,                                                      /*8*/
-        ID_FB_OR,                                                       /*9*/
-        ID_FB_XOR,                                                      /*10*/
-        ID_FB_NOT,                                                      /*11*/
-
-        ID_FB_TIMER,                                                    /*12*/
-        ID_FB_TRIGGER,                                                  /*13*/
-
-        ID_FB_MEANDER,                                                  /*14*/
-        ID_FB_TU,                                                       /*15*/
-  
-      _ID_FB_LAST_VAR_CHANGED,                                          /*16*/
-      
-    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*16*/
-
-  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*16*/
-} __id_fb;
+typedef enum _id_fb  __id_fb;
 
 typedef struct
 {
@@ -110,7 +69,9 @@ typedef struct
   uint32_t n_meander;                   //Кількість генераторів меандру
 
   uint32_t n_tu;                        //Кількість ТУ
+  uint32_t n_ts;                        //Кількість ТС
   
+  uint32_t n_log;                       //Кількість субмодулів Журналу подій
 
   uint8_t time_config[7+1];       //Час останніх змін уставок-витримок-управління
                                         //Останній байт масиву сигналізує мітку звідки зміни були проведені
@@ -188,7 +149,6 @@ typedef struct
   
   int32_t work_delay[INPUT_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8)];
 
 } __LN_INPUT;
 /**********/
@@ -209,7 +169,6 @@ typedef struct
   __settings_for_OUTPUT_LED settings;
 
   uint8_t active_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8)];
 
   uint8_t d_trigger_state[DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)];
   uint8_t d_trigger_state_tmp[DIV_TO_HIGHER(OUTPUT_LED_D_TRIGGER_TOTAL, 8)];
@@ -218,14 +177,13 @@ typedef struct
 /**********/
 
 /**********
-ФК + ТУ
+ФК
 **********/
 typedef struct
 {
-  uint8_t active_state[DIV_TO_HIGHER(BUTTON_TU_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(BUTTON_TU_SIGNALS_OUT, 8)];
+  uint8_t active_state[DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8)];
 
-} __LN_BUTTON_TU;
+} __LN_BUTTON;
 /**********/
 
 /**********
@@ -245,7 +203,6 @@ typedef struct
 
   int32_t work_delay[ALARM_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8)];
 
   uint8_t d_trigger_state[DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)];
   uint8_t d_trigger_state_tmp[DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)];
@@ -271,7 +228,6 @@ typedef struct
 
   int32_t work_delay[GROUP_ALARM_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8)];
   uint32_t NNC; /*New number of Curcuit*/
 
 } __LN_GROUP_ALARM;
@@ -292,7 +248,6 @@ typedef struct
   __settings_for_AND settings;
 
   uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
 
 } __LN_AND;
 /**********/
@@ -313,7 +268,6 @@ typedef struct
   __settings_for_OR settings;
 
   uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
   
 } __LN_OR;
 /**********/
@@ -333,7 +287,6 @@ typedef struct
   __settings_for_XOR settings;
   
   uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
   
 } __LN_XOR;
 /**********/
@@ -354,7 +307,6 @@ typedef struct
   __settings_for_NOT settings;
   
   uint8_t active_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(STANDARD_LOGIC_SIGNALS_OUT, 8)];
   
 } __LN_NOT;
 /**********/
@@ -377,7 +329,6 @@ typedef struct
   
   int32_t work_delay[TIMER_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(TIMER_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(TIMER_SIGNALS_OUT, 8)];
   
 } __LN_TIMER;
 /**********/
@@ -398,7 +349,6 @@ typedef struct
   __settings_for_TRIGGER settings;
   
   uint8_t active_state[DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8)];
-  uint8_t trigger_state[DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8)];
 
   uint8_t d_trigger_state[DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)];
   uint8_t d_trigger_state_tmp[DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8)];
@@ -426,6 +376,63 @@ typedef struct
   
 } __LN_MEANDER;
 /**********/
+
+/**********
+Функціональний блок "ТУ"
+**********/
+typedef struct
+{
+  uint32_t param[TU_SIGNALS_IN];
+  
+} __settings_for_TU;
+
+typedef struct
+{
+  
+  __settings_for_TU settings;
+  
+  uint8_t active_state[DIV_TO_HIGHER(TU_SIGNALS_OUT, 8)];
+  
+} __LN_TU;
+/**********/
+
+/**********
+Функціональний блок "ТС"
+**********/
+typedef struct
+{
+  uint32_t param[TS_SIGNALS_IN];
+  
+} __settings_for_TS;
+
+typedef struct
+{
+  
+  __settings_for_TS settings;
+  
+  uint8_t active_state[DIV_TO_HIGHER(TS_SIGNALS_OUT, 8)];
+  
+} __LN_TS;
+/**********/
+
+/**********
+Журнал подій
+**********/
+typedef uint32_t __LOG_INPUT;
+//typedef struct
+//{
+//  
+//  uint32_t param[LOG_SIGNALS_IN];
+//  
+//} __settings_for_LOG;
+//
+//typedef struct
+//{
+//  __settings_for_LOG settings;
+//  
+//} __LN_LOG;
+/**********/
+
 
 typedef enum _action_dyn_mem_select
 {

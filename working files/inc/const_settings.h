@@ -1,6 +1,52 @@
 #ifndef __CONST_SETTINGS__
 #define __CONST_SETTINGS__
 
+enum _id_fb
+{
+  _ID_FB_FIRST_ALL = 1,                                                 /*1*/
+  
+    _ID_FB_FIRST_FIX = _ID_FB_FIRST_ALL,                                /*1*/
+
+      ID_FB_CONTROL_BLOCK = _ID_FB_FIRST_FIX,                           /*1*/
+      
+    _ID_FB_LAST_FIX,                                                    /*2*/
+
+    _ID_FB_FIRST_VAR = _ID_FB_LAST_FIX,                                 /*2*/
+    
+      _ID_FB_FIRST_VAR_NONE_CHANGED = _ID_FB_FIRST_VAR,                 /*2*/
+
+        ID_FB_INPUT = _ID_FB_FIRST_VAR_NONE_CHANGED,                    /*2*/
+        ID_FB_OUTPUT,                                                   /*3*/
+        ID_FB_LED,                                                      /*4*/
+        ID_FB_BUTTON,                                                   /*5*/
+
+      _ID_FB_LAST_VAR_NONE_CHANGED,                                     /*6*/
+
+      _ID_FB_FIRST_VAR_CHANGED = _ID_FB_LAST_VAR_NONE_CHANGED,          /*6*/
+      
+        ID_FB_ALARM = _ID_FB_FIRST_VAR_CHANGED,                         /*6*/
+        ID_FB_GROUP_ALARM,                                              /*7*/
+        ID_FB_AND,                                                      /*8*/
+        ID_FB_OR,                                                       /*9*/
+        ID_FB_XOR,                                                      /*10*/
+        ID_FB_NOT,                                                      /*11*/
+
+        ID_FB_TIMER,                                                    /*12*/
+        ID_FB_TRIGGER,                                                  /*13*/
+
+        ID_FB_MEANDER,                                                  /*14*/
+        ID_FB_TU,                                                       /*15*/
+        ID_FB_TS,                                                       /*16*/
+
+        ID_FB_EVENT_LOG,                                                /*17*/
+        
+      _ID_FB_LAST_VAR_CHANGED,                                          /*18*/
+      
+    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*18*/
+
+  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*18*/
+};
+
 #define BIT_CHANGED_CONFIGURATION       0
 #define MASKA_CHANGED_CONFIGURATION     (1 << BIT_CHANGED_CONFIGURATION)
 #define BIT_CHANGED_SETTINGS            1
@@ -15,21 +61,25 @@
 #define AND_SIGNALS_IN                  8
 #define OR_SIGNALS_IN                   8
 
+#define LOG_SIGNALS_IN                  32
+
+#define SFIFT_PARAM_INTERNAL_BITS       31
 #define SFIFT_PARAM_ID                  24
 #define SFIFT_PARAM_N                   16
 #define SFIFT_PARAM_OUT                 0
 
-#define MASKA_PARAM_ID                  ((1 << (8*sizeof(uint32_t) - SFIFT_PARAM_ID )) - 1)
-#define MASKA_PARAM_N                   ((1 << (SFIFT_PARAM_ID     - SFIFT_PARAM_N  )) - 1)
-#define MASKA_PARAM_OUT                 ((1 << (SFIFT_PARAM_N      - SFIFT_PARAM_OUT)) - 1)
+#define MASKA_PARAM_INTERNAL_BITS       ((1 << (8*sizeof(uint32_t)        - SFIFT_PARAM_INTERNAL_BITS )) - 1)
+#define MASKA_PARAM_ID                  ((1 << (SFIFT_PARAM_INTERNAL_BITS - SFIFT_PARAM_ID            )) - 1)
+#define MASKA_PARAM_N                   ((1 << (SFIFT_PARAM_ID            - SFIFT_PARAM_N             )) - 1)
+#define MASKA_PARAM_OUT                 ((1 << (SFIFT_PARAM_N             - SFIFT_PARAM_OUT           )) - 1)
 
 #define NUMBER_FIX_BLOCKS       (_ID_FB_LAST_FIX - _ID_FB_FIRST_FIX)
 
-#define NUMBER_VAR_BLOCKS_NONE_CHANGED  (_ID_FB_LAST_VAR_NONE_CHANGED - _ID_FB_FIRST_VAR_NONE_CHANGED)
-#define NUMBER_VAR_BLOCKS_CHANGED       (_ID_FB_LAST_VAR_CHANGED      - _ID_FB_FIRST_VAR_CHANGED     )
+#define NUMBER_VAR_BLOCKS_NONE_CHANGED          (_ID_FB_LAST_VAR_NONE_CHANGED           - _ID_FB_FIRST_VAR_NONE_CHANGED)
+#define NUMBER_VAR_BLOCKS_CHANGED               (_ID_FB_LAST_VAR_CHANGED                - _ID_FB_FIRST_VAR_CHANGED     )
 
-#define NUMBER_VAR_BLOCKS       (NUMBER_VAR_BLOCKS_NONE_CHANGED + NUMBER_VAR_BLOCKS_CHANGED)
-#define NUMBER_ALL_BLOCKS       (NUMBER_FIX_BLOCKS + NUMBER_VAR_BLOCKS)
+#define NUMBER_VAR_BLOCKS               (NUMBER_VAR_BLOCKS_NONE_CHANGED + NUMBER_VAR_BLOCKS_CHANGED)
+#define NUMBER_ALL_BLOCKS               (NUMBER_FIX_BLOCKS + NUMBER_VAR_BLOCKS)
 
 /*
 Áëîê çàãàëüíèõ ôóíêö³é
@@ -38,9 +88,9 @@ enum _FIX_BLOCK_output_signals
 {
   FIX_BLOCK_DEFECT = 0,
   FIX_BLOCK_AVAR_DEFECT,
-  FIX_BLOCK_TEST,
-  FIX_BLOCK_SETTINGS_LOG_WORK,
   FIX_BLOCK_SETTINGS_CHANGED,
+  FIX_BLOCK_D_TRIGGER_STATE_INCORRECT,
+  FIX_BLOCK_SCHEME_INCORRECT,
   
   FIX_BLOCK_SIGNALS_OUT
 };
@@ -55,6 +105,8 @@ enum _FIX_BLOCK_input_signals
   FIX_BLOCK_ALARM = 0,
   FIX_BLOCK_MUTE,
   FIX_BLOCK_BLOCK,
+  FIX_VLOCK_TEST_INPUT,
+  FIX_VLOCK_TEST_RESET,
   
   FIX_BLOCK_SIGNALS_IN
 };
@@ -151,18 +203,18 @@ enum __index_ctrl_output_led
 /***/
 
 /*
-ÔÊ+ÒÓ
+ÔÊ
 */
-enum _BUTTON_TU_output_signals
+enum _BUTTON_output_signals
 {
-  BUTTON_TU_OUT = 0,
+  BUTTON_OUT = 0,
   
-  BUTTON_TU_SIGNALS_OUT
+  BUTTON_SIGNALS_OUT
 };
 
-enum _BUTTON_TU_d_trigger
+enum _BUTTON_d_trigger
 {
-  BUTTON_TU_D_TRIGGER_TOTAL = 0
+  BUTTON_D_TRIGGER_TOTAL = 0
 };
 /***/
 
@@ -416,4 +468,57 @@ enum __index_delay_meander
 };
 /***/
 
+/*
+ÒÓ
+*/
+enum _TU_output_signals
+{
+  TU_OUT = 0,
+  
+  TU_SIGNALS_OUT
+    
+};
+
+enum _TU_input_signals
+{
+  TU_BLOCK = 0,
+  
+  TU_SIGNALS_IN
+    
+};
+/***/
+
+/*
+ÒÑ
+*/
+enum _TS_output_signals
+{
+  TS_OUT = 0,
+  
+  TS_SIGNALS_OUT
+    
+};
+
+enum _TS_input_signals
+{
+  TS_LOGIC_INPUT = 0,
+  TS_BLOCK,
+  
+  TS_SIGNALS_IN
+    
+};
+/***/
+
+/*
+Æóðíàë ïîä³é
+*/
+enum _EVENT_LOG_output_signals
+{
+  EVENT_LOG_WORK = 0,
+  
+  EVENT_LOG_SIGNALS_OUT
+};
+/***/
+
 #endif
+

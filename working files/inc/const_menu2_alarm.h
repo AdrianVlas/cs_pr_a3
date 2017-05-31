@@ -21,10 +21,10 @@
 
 
 #define NAME_ALARM_IN_SIGNALS_EN        \
-  "L.In.            ",                  \
-  "Mute             ",                  \
-  "Block            ",                  \
-  "Reset            "                    
+  "L.In.           ",                  \
+  "Mute            ",                  \
+  "Block           ",                  \
+  "Reset           "                    
 
 #define NAME_ALARM_IN_SIGNALS_KZ        \
   "Л.Вх.           ",                   \
@@ -42,11 +42,11 @@
   "Тиша            "
 
 #define NAME_ALARM_OUT_SIGNALS_EN       \
-  "Alarm            ",                  \
-  "Mute             "
+  "Alarm           ",                  \
+  "Mute            "
 
 #define NAME_ALARM_OUT_SIGNALS_KZ       \
   "Тривога         ",                   \
   "Тишина          "
-    
+
 #endif 

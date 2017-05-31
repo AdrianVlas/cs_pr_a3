@@ -61,50 +61,6 @@ void move_into_main(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_main(void)
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_MAIN_M2][MAX_COL_LCD + 1] = 
-  {
-    {
-     " Часы           ",
-     " Измерения      ",
-     " Входы-Выходы   ",
-     " Регистраторы   ",
-     " Настройки      ",
-     " Диагностика    ",
-     " Метка настроек ",
-     " Версия ПО и КП "
-    },
-    {
-     " Годинник       ",
-     " Вимірювання    ",
-     " Входи-Виходи   ",
-     " Реєстратори    ",
-     " Налаштування   ",
-     " Діагностика    ",
-     " Мітка налашт.  ",
-     " Версія ПЗ і КП "
-    },
-    {
-     " Clock          ",
-     " Measurement    ",
-     " Inputs-Outputs ",
-     " Recorders      ",
-     " Settings       ",
-     " Diagnostic     ",
-     " Settings Mark  ",
-     " VER.of F/W & MM"
-    },
-    {
-     " Саfат          ",
-     " Љлшем          ",
-     " Кіріс-Шыfыс    ",
-     " Тіркегіштер    ",
-     " Реттегіш       ",
-     " Диагностика    ",
-     " Метка настроек ",
-     " Версия ПО и КП "
-    }
-  };
-
   int index_language = index_language_in_array(settings_fix_prt.language);
   
   unsigned int additional_current = 0;
@@ -140,7 +96,7 @@ void make_ekran_main(void)
     {
       for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
       {
-        name_string_tmp[index_1 - additional_current][index_2] = name_string[index_language][index_1][index_2];
+        name_string_tmp[index_1 - additional_current][index_2] = name_string_main[index_language][index_1][index_2];
       }
     }
   }

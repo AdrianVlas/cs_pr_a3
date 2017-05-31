@@ -22,5 +22,23 @@ p_param = &(((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (numbe
 5-8
 
 
+void Shematic::DoCalcLU(void) {
+
+    register long i, j;
+    register void* pv;
+
+    struct {
+        //long lId,lsizeobj;
+        short shAmountCalcLU, shRes;
+        void *pV;
+        LUAreaListElem* arrLUAreaListElem;
+        CLUBase* pCLUBase;
+    } sLV;
+    sLV.shAmountCalcLU = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
+    sLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
+    i = 0;
+    
+}
+
 
  

@@ -16,7 +16,7 @@
 
     
 #define NAME_STANDARD_LOGIC_OUT_SIGNALS_RU      \
-  "Виход           "
+  "Выход           "
 
 #define NAME_STANDARD_LOGIC_OUT_SIGNALS_UA      \
   "Вихід           "
@@ -25,7 +25,6 @@
   "Output          "
 
 #define NAME_STANDARD_LOGIC_OUT_SIGNALS_KZ      \
-  "Виход           "
+  "Выход           "
 
-    
 #endif 

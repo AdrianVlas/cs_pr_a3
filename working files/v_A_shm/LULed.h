@@ -31,13 +31,27 @@ public:
     char m_chInC06;
 	char m_chErrorQTrg06;
 	char  arrOut  [TOTAL_LED_VISIO_OUTPUT];//Trash field
+    short m_shAmountProcessedRec;
+    short m_shStartRecord;
+    LedShcemasDscRecord** m_pArLedShcemasDscRecords;//PConst
 	LedCfgSuit m_LedCfgSuit;
+    
 	friend void PUT_Op_1_0_    (void *pObj);
 	friend void SET_LED_Op(void *pObj);
 	friend void ChangeLedCfgSuit(void *pObj);
 };
 
-
+extern const LedShcemasDscRecord* const arPLedShcemasDscRecords[]; 
+extern const LedShcemasDscRecord* const arPLedShcemasStableDirectDscRecords[]; 
+extern const LedShcemasDscRecord* const arPLedShcemasStableTriggerDscRecords[]; 
+extern const LedShcemasDscRecord* const arPLedShcemasPulseC1SimpleDscRecords[]; 
+extern const LedShcemasDscRecord* const arPLedShcemasPulseC1TrigDscRecords[]; 
+extern const LedShcemasDscRecord* const arPLedShcemasPulseC2TrigDscRecords[]; 
+extern const short shAmtLedShcemasSimpleModeDscRecords;
+extern const short shAmtLedShcemasTriggerModeDscRecords;
+extern const short shAmtLedShcemasPulseC1SimpleModeDscRecords;
+extern const short shAmtLedShcemasPulseC1TrigModeDscRecords;
+extern const short shAmtLedShcemasPulseC2TrigModeDscRecords;
 //typedef long(*fnPvrL)(void *pv);
 //enum G{
 //

@@ -22,6 +22,7 @@ CLUBase::CLUBase(void) {
     //shOrderNumberCLUBase
     pOut = static_cast<void*> (0); //(void*)0;
     pIn = static_cast<void*> (0); //(void*)0;
+    pvCfgLN = static_cast<void*> (0); 
 } 
 extern LUAreaAuxVar gblLUAreaAuxVar;
 

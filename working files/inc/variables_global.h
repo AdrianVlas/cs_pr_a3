@@ -73,7 +73,6 @@ unsigned int measurement_low[NUMBER_ANALOG_CANALES];
 const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2] = {0, 2};
 const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2] = {{0, 8}};
 uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
-uint8_t fix_block_trigger_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 unsigned char crc_trg_func, crc_trg_func_ctrl;
 unsigned int pressed_buttons = 0;
 unsigned int activation_function_from_interface = 0;
@@ -115,8 +114,32 @@ const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS] =
   1, 
   1, 
   0,
-  0
+  1,
+  1,
+  LOG_SIGNALS_IN
 };
+const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
+{
+  FIX_BLOCK_SIGNALS_OUT,
+  INPUT_SIGNALS_OUT,
+  OUTPUT_LED_SIGNALS_OUT,
+  OUTPUT_LED_SIGNALS_OUT,
+  BUTTON_SIGNALS_OUT,
+  ALARM_SIGNALS_OUT,
+  GROUP_ALARM_SIGNALS_OUT,
+  STANDARD_LOGIC_SIGNALS_OUT,
+  STANDARD_LOGIC_SIGNALS_OUT,
+  STANDARD_LOGIC_SIGNALS_OUT,
+  STANDARD_LOGIC_SIGNALS_OUT,
+  TIMER_SIGNALS_OUT,
+  TRIGGER_SIGNALS_OUT,
+  MEANDER_SIGNALS_OUT,
+  TU_SIGNALS_OUT,
+  TS_SIGNALS_OUT,
+  EVENT_LOG_SIGNALS_OUT
+};
+
+
 const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
 {
   FIX_BLOCK_SIGNALS_IN,
@@ -133,6 +156,8 @@ const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   TIMER_SIGNALS_IN,
   TRIGGER_SIGNALS_IN,
   0,
+  TU_SIGNALS_IN,
+  TS_SIGNALS_IN,
   0
 };
 

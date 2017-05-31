@@ -3,5 +3,5 @@
 
 #define MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT          NUMBER_ANALOG_CANALES
 
-
 #endif
+

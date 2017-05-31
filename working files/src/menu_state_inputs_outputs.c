@@ -94,29 +94,6 @@ void move_into_ekran_list_inputs_outputs(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_list_inputs_outputs(void)
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_INPUT_OUTPUT_M2][MAX_COL_LCD + 1] = 
-  {
-    {
-      " Сост.ШГС       ",
-      " Сост.входов    ",
-      " Сост.выходов   "
-    },
-    {
-      " Стан ШГС       ",
-      " Стан входів    ",
-      " Стан виходів   "
-    },
-    {
-      " Inputs G.Alarms",
-      " Inputs state   ",
-      " Outputs state  "
-    },
-    {
-      " Сост.ШГС       ",
-      " Кіріс жаfдайы  ",
-      " Шыfыс жаfдайы  "
-    }
-  };
   int index_language = index_language_in_array(settings_fix_prt.language);
 
   unsigned int additional_current = 0;
@@ -155,7 +132,7 @@ void make_ekran_list_inputs_outputs(void)
     {
       for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
       {
-        name_string_tmp[index_1 - additional_current][index_2] = name_string[index_language][index_1][index_2];
+        name_string_tmp[index_1 - additional_current][index_2] = name_string_inputs_outputs[index_language][index_1][index_2];
       }
     }
   }

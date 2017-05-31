@@ -1,5 +1,23 @@
 #include "header.h"
 
+const unsigned char matrix[16][8] = {
+                                     {0x0A, 0x00, 0x0E, 0x04, 0x04, 0x04, 0x0E, 0x00}, // Ї
+                                     {0x00, 0x0A, 0x00, 0x0C, 0x04, 0x04, 0x0E, 0x00}, // ї
+                                     {0x01, 0x1F, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00}, // Ґ
+                                     {0x00, 0x00, 0x01, 0x1F, 0x10, 0x10, 0x10, 0x00}, // ґ
+                                     {0x0E, 0x11, 0x10, 0x1C, 0x10, 0x11, 0x0E, 0x00}, // Є
+                                     {0x00, 0x00, 0x0E, 0x11, 0x1C, 0x11, 0x0E, 0x00}, // є
+                                     {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
+                                     {0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Љ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                     {0x00, 0x00, 0x0E, 0x11, 0x1F, 0x11, 0x0E, 0x00}, // љ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                     {0x0E, 0x11, 0x01, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                     {0x00, 0x00, 0x0E, 0x01, 0x1F, 0x11, 0x0E, 0x00}, // ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                     {0x11, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04, 0x00}, // Ђ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                     {0x00, 0x00, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04},  // ђ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                     {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
+                                     {0x0E, 0x11, 0x11, 0x11, 0x11, 0x0A, 0x1B, 0x00}, // Ї, як замынник  великоъ букви Омега для англійської розкладки клавіатури
+                                     {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}  // ‰, як замінник грецької літери "дельта"
+                                    }; 
 /*****************************************************/
 //Очікування, поки контролер LCD буде вільним
 /*****************************************************/
@@ -161,6 +179,7 @@ void lcd_init(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
     
     new_count_tim4 = ((uint16_t)TIM4->CNT);
@@ -188,6 +207,7 @@ void lcd_init(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
     new_count_tim4 = ((uint16_t)TIM4->CNT);
     if (new_count_tim4 >= current_count_tim4) delta = new_count_tim4 - current_count_tim4;
@@ -214,6 +234,7 @@ void lcd_init(void)
                     GPIO_PIN_EXTERNAL_WATCHDOG,
                     (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                    );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
     }
     new_count_tim4 = ((uint16_t)TIM4->CNT);
     if (new_count_tim4 >= current_count_tim4) delta = new_count_tim4 - current_count_tim4;
@@ -235,6 +256,7 @@ void lcd_init(void)
                   GPIO_PIN_EXTERNAL_WATCHDOG,
                   (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                  );
+    control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
   }
 
   //Встановлюємо 2 рядки і розмір шрифту 5*7 і таблицю символів з кириличними символами
@@ -264,6 +286,7 @@ void lcd_init(void)
                   GPIO_PIN_EXTERNAL_WATCHDOG,
                   (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                  );
+    control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
   }
 }
 /*****************************************************/
@@ -484,24 +507,6 @@ int index_language_in_array(int language)
 
     current_language = language_tmp;
           
-    const unsigned char matrix[16][8] = {
-                                         {0x0A, 0x00, 0x0E, 0x04, 0x04, 0x04, 0x0E, 0x00}, // Ї
-                                         {0x00, 0x0A, 0x00, 0x0C, 0x04, 0x04, 0x0E, 0x00}, // ї
-                                         {0x01, 0x1F, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00}, // Ґ
-                                         {0x00, 0x00, 0x01, 0x1F, 0x10, 0x10, 0x10, 0x00}, // ґ
-                                         {0x0E, 0x11, 0x10, 0x1C, 0x10, 0x11, 0x0E, 0x00}, // Є
-                                         {0x00, 0x00, 0x0E, 0x11, 0x1C, 0x11, 0x0E, 0x00}, // є
-                                         {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
-                                         {0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Љ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                         {0x00, 0x00, 0x0E, 0x11, 0x1F, 0x11, 0x0E, 0x00}, // љ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                         {0x0E, 0x11, 0x01, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                         {0x00, 0x00, 0x0E, 0x01, 0x1F, 0x11, 0x0E, 0x00}, // ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                         {0x11, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04, 0x00}, // Ђ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                         {0x00, 0x00, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04},  // ђ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                         {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
-                                         {0x0E, 0x11, 0x11, 0x11, 0x11, 0x0A, 0x1B, 0x00}, // Ї, як замынник  великоъ букви Омега для англійської розкладки клавіатури
-                                         {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}  // ‰, як замінник грецької літери "дельта"
-                                        }; 
             
     unsigned int number_new_extra_symbols = 0, index_for_symbol;
             

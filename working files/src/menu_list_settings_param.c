@@ -16,9 +16,14 @@ void move_into_list_settings_param(unsigned int action, int max_row)
   p_current_config = (current_state_menu2.edition == ED_VIEWING) ? &current_config_prt : &current_config;
    
   if (
-      (p_current_config->n_input != 0) ||
-      (p_current_config->n_output != 0)||
-      (p_current_config->n_led != 0)
+      (p_current_config->n_input != 0      ) ||
+      (p_current_config->n_output != 0     ) ||
+      (p_current_config->n_led != 0        ) ||
+      (p_current_config->n_alarm != 0      ) ||
+      (p_current_config->n_group_alarm != 0) ||
+      (p_current_config->n_timer != 0      ) ||
+      (p_current_config->n_timer != 0      ) ||
+      (p_current_config->n_meander != 0    )
      )
   {
     if (action & ((1 << BIT_REWRITE) | (1 << BIT_KEY_DOWN)))
@@ -133,29 +138,14 @@ void make_ekran_list_settings_param(void)
   if (
       (p_current_config->n_input == 0) &&
       (p_current_config->n_output == 0)&&
-      (p_current_config->n_led == 0)
+      (p_current_config->n_led == 0) &&
+      (p_current_config->n_alarm == 0 ) &&
+      (p_current_config->n_group_alarm == 0) &&
+      (p_current_config->n_timer == 0) &&
+      (p_current_config->n_timer == 0) &&
+      (p_current_config->n_meander == 0)
      )
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-    {
-      {
-        "  ФБ отсутсвуют ",
-        "  в устройстве  "
-      },
-      {
-        "  ФБ відсутні   ",
-        "   у пристрої   "
-      },
-      {
-        " LN are absent  ",
-        "   in device    "
-      },
-      {
-        " ФБ отсутсвуют  ",
-        "  в устройстве  "
-      }
-    };
-
     unsigned int index_in_ekran = 0;
     //Копіюємо  рядки у робочий екран
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
@@ -163,7 +153,7 @@ void make_ekran_list_settings_param(void)
       //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
       for (size_t j = 0; j < MAX_COL_LCD; j++) 
       {
-        working_ekran[i][j] = (index_in_ekran < 2) ? name_string[index_language][index_in_ekran][j] : ' ';
+        working_ekran[i][j] = (index_in_ekran < 2) ? name_string_list_settings_param_info[index_language][index_in_ekran][j] : ' ';
       }
       index_in_ekran++;
     }
@@ -179,46 +169,6 @@ void make_ekran_list_settings_param(void)
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_PARAM_M2][MAX_COL_LCD + 1] = 
-    {
-      {
-        " Д.Входы        ",
-        " В.Реле         ",
-        " Светоиндикаторы",
-        " СЗС            ",
-        " ШГС            ",
-        " Таймера        ",
-        " ГПС            "
-      },
-      {
-        " Д.Входи        ",
-        " В.Реле         ",
-        " Світоіндикатори",
-        " СЗС            ",
-        " ШГС            ",
-        " Таймери        ",
-        " ГПС            "
-      },
-      {
-        " D.Inputs       ",
-        " O.Relays       ",
-        " LEDs           ",
-        " Alarms         ",
-        " Group Alarms   ",
-        " Timers         ",
-        " Meanders       "
-      },
-      {
-        " Д.Входы        ",
-        " В.Реле         ",
-        " Светоиндикаторы",
-        " СЗС            ",
-        " ШГС            ",
-        " Таймери        ",
-        " ГПС            "
-      }
-    };
-
     unsigned int additional_current = 0;
     unsigned int position_temp = current_state_menu2.index_position;
 
@@ -275,7 +225,7 @@ void make_ekran_list_settings_param(void)
       {
         for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
         {
-          name_string_tmp[index_1 - additional_current][index_2] = name_string[index_language][index_1][index_2];
+          name_string_tmp[index_1 - additional_current][index_2] = name_stringlist_settings_param[index_language][index_1][index_2];
         }
       }
     }

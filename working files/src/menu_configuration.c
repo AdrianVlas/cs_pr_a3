@@ -10,93 +10,17 @@ void make_ekran_configuration(void)
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC) ||
       (current_state_menu2.edition == ED_WARNING_ENTER)
      )   
-        
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-    
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Дин.пам.недост.",
-      " Дин.пам.недост.",
-      " Дин.пам.недост.",
-      " Дин.пам.недост."
-    };
-    
-    const uint8_t information_about_out_of_range[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-    
     const uint8_t (*p_information)[MAX_COL_LCD + 1];
     
     enum _edition_stats edition = current_state_menu2.edition;
-    if (edition == ED_WARNING_EDITION_BUSY) p_information = information_about_info;
-    else if (edition == ED_WARNING_ENTER_ESC) p_information = information_about_out_of_range;
-    else p_information = information_about_error;
+    if (edition == ED_WARNING_EDITION_BUSY) p_information = information_no_edition;
+    else if (edition == ED_WARNING_ENTER_ESC) p_information = information_out_of_limits;
+    else p_information = information_no_free_dyn_mem;
     make_ekran_about_info( ((edition == ED_WARNING_ENTER_ESC) ? 1 : 0), p_information);
   }
   else 
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGURATION][MAX_COL_LCD + 1] = 
-    {
-      {
-        "      СЗС       ",
-        "      ШГС       ",
-        "       И        ",
-        "      ИЛИ       ",
-        "    Искл.ИЛИ    ",
-        "       НЕ       ",
-        "   МФ-Таймер    ",
-        "   D-Триггер    ",
-        "      ГПС       ",
-        "       ТУ       "
-      },
-      {
-        "      СЗС       ",
-        "      ШГС       ",
-        "       І        ",
-        "      АБО       ",
-        "    Викл.АБО    ",
-        "       НЕ       ",
-        "   БФ-Таймер    ",
-        "    D-Триґер    ",
-        "      ГПС       ",
-        "       ТУ       "
-      },
-      {
-        "      СЗС       ",
-        "      ШГС       ",
-        "      AND       ",
-        "       OR       ",
-        "      XOR       ",
-        "      NOT       ",
-        "    MF-Timer    ",
-        "   D-Trigger    ",
-        "      PSG       ",
-        "       TC       "
-      },
-      {
-        "      СЗС       ",
-        "      ШГС       ",
-        "       И        ",
-        "      ИЛИ       ",
-        "    Искл.ИЛИ    ",
-        "       НЕ       ",
-        "   МФ-Таймер    ",
-        "   D-Триггер    ",
-        "      ГПС       ",
-        "       ТУ       "
-      }
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
 
     unsigned int position_temp = current_state_menu2.index_position;
@@ -120,7 +44,7 @@ void make_ekran_configuration(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_configuration[index_language][index_in_ekran_tmp][j];
           first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
 
           switch (index_in_ekran_tmp)
@@ -227,6 +151,26 @@ void make_ekran_configuration(void)
 
               break;
             }
+          case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_ts;
+
+              break;
+            }
+          case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
+            {
+              vaga = 100; //максимальний ваговий коефіцієнт
+              col_begin = COL_CONF_3DIGIT_BEGIN;
+              col_end = COL_CONF_3DIGIT_END;
+
+              value = p_current_config->n_log;
+
+              break;
+            }
           default:
             {
               //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
@@ -266,6 +210,8 @@ void make_ekran_configuration(void)
       case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
         {
           current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
           last_position_cursor_x = COL_CONF_3DIGIT_END;
@@ -342,6 +288,8 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
       case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
       case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+      case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
         {
           current_state_menu2.position_cursor_x = COL_CONF_3DIGIT_BEGIN;
           break;
@@ -365,7 +313,13 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
       {
       case (ID_FB_ALARM - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_alarm != current_config.n_alarm) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_alarm != current_config.n_alarm)
+          {
+            if (check_data_setpoint(current_config_edit.n_alarm, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR_CHANGED):
@@ -381,42 +335,112 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
         }
       case (ID_FB_AND - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_and != current_config.n_and) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_and != current_config.n_and)
+          {
+            if (check_data_setpoint(current_config_edit.n_and, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_OR - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_or != current_config.n_or) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_or != current_config.n_or)
+          {
+            if (check_data_setpoint(current_config_edit.n_or, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_XOR - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_xor != current_config.n_xor) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_xor != current_config.n_xor)
+          {
+            if (check_data_setpoint(current_config_edit.n_xor, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_NOT - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_not != current_config.n_not) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_not != current_config.n_not)
+          {
+            if (check_data_setpoint(current_config_edit.n_not, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_TIMER - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_timer != current_config.n_timer) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_timer != current_config.n_timer)
+          {
+            if (check_data_setpoint(current_config_edit.n_timer, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_trigger != current_config.n_trigger) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_trigger != current_config.n_trigger)
+          {
+            if (check_data_setpoint(current_config_edit.n_trigger, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_meander != current_config.n_meander) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_meander != current_config.n_meander)
+          {
+            if (check_data_setpoint(current_config_edit.n_meander, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
         {
-          if (current_config_edit.n_tu != current_config.n_tu) result = RPEDE_DATA_CHANGED_OK;
+          if (current_config_edit.n_tu != current_config.n_tu)
+          {
+            if (check_data_setpoint(current_config_edit.n_tu, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
+          break;
+        }
+      case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_ts != current_config.n_ts)
+          {
+            if (check_data_setpoint(current_config_edit.n_ts, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
+          break;
+        }
+      case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
+        {
+          if (current_config_edit.n_log != current_config.n_log)
+          {
+            if (check_data_setpoint(current_config_edit.n_log, 0, MAX_NUMBER_LOGICAL_NODES) == 1)
+              result = RPEDE_DATA_CHANGED_OK;
+            else
+              result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
+          }
           break;
         }
       }
@@ -500,6 +524,16 @@ void press_esc_in_configuration(void)
   case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
     {
       current_config_edit.n_tu = current_config.n_tu;
+      break;
+    }
+  case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_ts = current_config.n_ts;
+      break;
+    }
+  case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
+    {
+      current_config_edit.n_log = current_config.n_log;
       break;
     }
   }
@@ -588,6 +622,18 @@ void change_configuration(unsigned int action)
         col_end = COL_CONF_3DIGIT_END;
         break;
       }
+    case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_ts;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
+    case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
+      {
+        p_value = &current_config_edit.n_log;
+        col_end = COL_CONF_3DIGIT_END;
+        break;
+      }
     }
     
     if (p_value != NULL)
@@ -612,6 +658,8 @@ void change_configuration(unsigned int action)
     case (ID_FB_TRIGGER - _ID_FB_FIRST_VAR_CHANGED):
     case (ID_FB_MEANDER - _ID_FB_FIRST_VAR_CHANGED):
     case (ID_FB_TU - _ID_FB_FIRST_VAR_CHANGED):
+    case (ID_FB_TS - _ID_FB_FIRST_VAR_CHANGED):
+    case (ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR_CHANGED):
       {
         col_begin = COL_CONF_3DIGIT_BEGIN;
         col_end = COL_CONF_3DIGIT_END;

@@ -5,28 +5,12 @@
 /*****************************************************/
 void make_ekran_password(void)
 {
-  const uint8_t name_string_1[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    " Введите пароль:",
-    " Введіть пароль:",
-    " Enter password:",
-    " Введите пароль:"
-  };
-
-  const uint8_t name_string_2[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    "  Новый пароль: ",
-    "  Новий пароль: ",
-    "  New password: ",
-    "  Новый пароль: "
-  };
-
   //Визначаємо з яким масивом будемо працювати
   const uint8_t (*point_to_working_array)[MAX_COL_LCD + 1];
   if (current_state_menu2.current_level == SET_NEW_PASSWORD_MENU2_LEVEL)
-    point_to_working_array = name_string_2;
+    point_to_working_array = name_string_level_password_2;
   else
-    point_to_working_array = name_string_1;
+    point_to_working_array = name_string_level_password_1;
 
   uint8_t name_string_tmp[MAX_ROW_FOR_LEVEL_PASSWORD][MAX_COL_LCD + 1];
 
@@ -90,32 +74,10 @@ void make_ekran_choose_passwords(void)
 {
   if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY)
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-    make_ekran_about_info(0, information_about_info);
+    make_ekran_about_info(0, information_no_edition);
   }
   else
   {
-    const uint8_t password_item[MAX_ROW_LIST_PASSWORDS_M2][MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-    {
-      {
-        {" Смена пароля 1 ", " Уст.пароля 1   "},
-        {" Зміна паролю 1 ", " Вст.паролю 1   "},
-        {" Pass.1 Change  ", " Password 1 Set "},
-        {" Смена пароля 1 ", " Уст.пароля 1   "}
-      },
-      {
-        {" Смена пароля 2 ", " Уст.пароля 2   "},
-        {" Зміна паролю 2 ", " Вст.паролю 2   "},
-        {" Pass.2 Change  ", " Password 2 Set "},
-        {" Смена пароля 2 ", " Уст.пароля 2   "}
-      },
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -136,7 +98,7 @@ void make_ekran_choose_passwords(void)
           password = p_settings_fix->password_2;
       
         unsigned int index_of_information = ( password != 0) ? 0 : 1;
-        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = password_item[index_in_ekran][index_language][index_of_information][j];
+        for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = password_item_level_password[index_in_ekran][index_language][index_of_information][j];
       } 
       else
         for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = ' ';

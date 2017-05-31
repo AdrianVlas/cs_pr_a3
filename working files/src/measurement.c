@@ -188,31 +188,32 @@ void operate_test_ADCs(void)
 /*************************************************************************
 Опрацьовуємо дані для методу суми квадратів миттєвих значень
  *************************************************************************/
-void method_sum_sqr_data(void)
-{
-  uint32_t index_array_of_sqr_current_data_tmp = index_array_of_sqr_current_data;
-  for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++)
-  {
-    int32_t data = ADCs_data[i];
-    uint32_t square_data = data*data;
-    
-    sum_sqr_data_irq[i] += square_data;
-    sum_sqr_data_irq[i] -= sqr_current_data[index_array_of_sqr_current_data_tmp][i];
-    sqr_current_data[index_array_of_sqr_current_data_tmp][i] = square_data;
-  }
-    
-  if((++index_array_of_sqr_current_data_tmp) == NUMBER_POINT)
-    index_array_of_sqr_current_data = 0;
-  else if (index_array_of_sqr_current_data_tmp > NUMBER_POINT)
-  {
-    //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
-    total_error_sw_fixed(58);
-  }
-
-  //Копіювання для інших систем
-  unsigned int bank_sum_sqr_data_tmp = bank_sum_sqr_data;
-  for(unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++ ) sum_sqr_data[bank_sum_sqr_data_tmp][i] = sum_sqr_data_irq[i];
-}
+//void method_sum_sqr_data(void)
+//{
+//  uint32_t index_array_of_sqr_current_data_tmp = index_array_of_sqr_current_data;
+//  for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++)
+//  {
+//    int32_t data = ADCs_data[i];
+//    uint32_t square_data = data*data;
+//    
+//    sum_sqr_data_irq[i] += square_data;
+//    sum_sqr_data_irq[i] -= sqr_current_data[index_array_of_sqr_current_data_tmp][i];
+//    sqr_current_data[index_array_of_sqr_current_data_tmp][i] = square_data;
+//  }
+//    
+//  if((++index_array_of_sqr_current_data_tmp) == NUMBER_POINT)
+//    index_array_of_sqr_current_data_tmp = 0;
+//  else if (index_array_of_sqr_current_data_tmp > NUMBER_POINT)
+//  {
+//    //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+//    total_error_sw_fixed(58);
+//  }
+//  index_array_of_sqr_current_data = index_array_of_sqr_current_data_tmp;
+//
+//  //Копіювання для інших систем
+//  unsigned int bank_sum_sqr_data_tmp = bank_sum_sqr_data;
+//  for(unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++ ) sum_sqr_data[bank_sum_sqr_data_tmp][i] = sum_sqr_data_irq[i];
+//}
 /*************************************************************************/
 
 /*****************************************************/
@@ -287,192 +288,221 @@ void SPI_ADC_IRQHandler(void)
     if ((status_adc_read_work & DATA_VAL_READ) != 0)
     {
       command_word |= (1 << I_I1 ) | (1 << I_I2 ) | (1 << I_I3 )/*  | (1 << I_I4 )*/  | (1 << I_U);
-    }
-      
-    uint32_t _x1, _x2, _DX, _dx;
-    int _y1, _y2;
-    long long _y;
-      
-    unsigned int gnd_adc_tmp  = gnd_adc; 
-    unsigned int vref_adc_tmp = vref_adc; 
 
-    uint32_t _x = previous_tick_VAL;
-    /*****/
-    //Формуємо значення I1
-    /*****/
-    if ((command_word & (1 << I_I1)) != 0)
-    {
-      _x1 = ADCs_data_raw[I_I1].tick;
-      _y1 = ADCs_data_raw[I_I1].value;
+      uint32_t _x1, _x2, _DX, _dx;
+      int _y1, _y2;
+      long long _y;
+      
+      unsigned int gnd_adc_tmp  = gnd_adc; 
+      unsigned int vref_adc_tmp = vref_adc; 
+
+      uint32_t index_array_of_sqr_current_data_tmp = index_array_of_sqr_current_data;
+      uint32_t square_data;
+      int32_t data;
+      unsigned int bank_sum_sqr_data_tmp = bank_sum_sqr_data;
+
+      uint32_t _x = previous_tick_VAL;
+      /*****/
+      //Формуємо значення I1
+      /*****/
+      if ((command_word & (1 << I_I1)) != 0)
+      {
+        _x1 = ADCs_data_raw[I_I1].tick;
+        _y1 = ADCs_data_raw[I_I1].value;
         
-      _y2 = output_adc[C_I1_1].value - gnd_adc_tmp - vref_adc_tmp;
-      if (abs(_y2) > 87)
-      {
-        _x2 = output_adc[C_I1_1].tick;
-        _y2 = (int)(_y2*ustuvannja_meas[I_I1])>>(USTUVANNJA_VAGA - 4);
-      }
-      else
-      {
-        _y2 = output_adc[C_I1_16].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_I1_1].value - gnd_adc_tmp - vref_adc_tmp;
+        if (abs(_y2) > 87)
+        { 
+          _x2 = output_adc[C_I1_1].tick;
+          _y2 = (int)(_y2*ustuvannja_meas[I_I1])>>(USTUVANNJA_VAGA - 4);
+        }
+        else
+        {
+          _y2 = output_adc[C_I1_16].value - gnd_adc_tmp - vref_adc_tmp;
 
-        _x2 = output_adc[C_I1_16].tick;
-        _y2 = (int)((-_y2)*ustuvannja_meas[I_I1])>>(USTUVANNJA_VAGA);
-      }
+          _x2 = output_adc[C_I1_16].tick;
+          _y2 = (int)((-_y2)*ustuvannja_meas[I_I1])>>(USTUVANNJA_VAGA);
+        }
       
-      if (_x2 > _x1) _DX = _x2 - _x1;
-      else
-      {
-        uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
-        _DX = _DX_64;
-      }
-      if (_x >= _x1) _dx = _x - _x1;
-      else
-      {
-        uint64_t _dx_64 = _x + 0x100000000 - _x1;
-        _dx = _dx_64;
-      }
-      _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
+        if (_x2 > _x1) _DX = _x2 - _x1;
+        else
+        {
+          uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
+          _DX = _DX_64;
+        }
+        if (_x >= _x1) _dx = _x - _x1;
+        else
+        {
+          uint64_t _dx_64 = _x + 0x100000000 - _x1;
+          _dx = _dx_64;
+        }
+        _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
 
-      ADCs_data[I_I1] = _y;
+        data = _y;
+        ADCs_data[I_I1] = data;
+        square_data = data*data;
+        sum_sqr_data_irq[I_I1] += square_data;
+        sum_sqr_data[bank_sum_sqr_data_tmp][I_I1] = sum_sqr_data_irq[I_I1] -= sqr_current_data[index_array_of_sqr_current_data_tmp][I_I1];
+        sqr_current_data[index_array_of_sqr_current_data_tmp][I_I1] = square_data;
       
-      ADCs_data_raw[I_I1].tick = _x2;
-      ADCs_data_raw[I_I1].value = _y2;
-    }
-    /*****/
+        ADCs_data_raw[I_I1].tick = _x2;
+        ADCs_data_raw[I_I1].value = _y2;
+      }
+      /*****/
 
-    /*****/
-    //Формуємо значення I2
-    /*****/
-    if ((command_word & (1 << I_I2)) != 0)
-    {
-      _x1 = ADCs_data_raw[I_I2].tick;
-      _y1 = ADCs_data_raw[I_I2].value;
+      /*****/
+      //Формуємо значення I2
+      /*****/
+      if ((command_word & (1 << I_I2)) != 0)
+      {
+        _x1 = ADCs_data_raw[I_I2].tick;
+        _y1 = ADCs_data_raw[I_I2].value;
         
-      _y2 = output_adc[C_I2_1].value - gnd_adc_tmp - vref_adc_tmp;
-      if (abs(_y2) > 87)
-      {
-        _x2 = output_adc[C_I2_1].tick;
-        _y2 = (int)(_y2*ustuvannja_meas[I_I2])>>(USTUVANNJA_VAGA - 4);
-      }
-      else
-      {
-        _y2 = output_adc[C_I2_16].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_I2_1].value - gnd_adc_tmp - vref_adc_tmp;
+        if (abs(_y2) > 87)
+        {
+          _x2 = output_adc[C_I2_1].tick;
+          _y2 = (int)(_y2*ustuvannja_meas[I_I2])>>(USTUVANNJA_VAGA - 4);
+        }
+        else
+        {
+          _y2 = output_adc[C_I2_16].value - gnd_adc_tmp - vref_adc_tmp;
 
-        _x2 = output_adc[C_I2_16].tick;
-        _y2 = (int)((-_y2)*ustuvannja_meas[I_I2])>>(USTUVANNJA_VAGA);
-      }
+          _x2 = output_adc[C_I2_16].tick;
+          _y2 = (int)((-_y2)*ustuvannja_meas[I_I2])>>(USTUVANNJA_VAGA);
+        }
       
-      if (_x2 > _x1) _DX = _x2 - _x1;
-      else
-      {
-        uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
-        _DX = _DX_64;
-      }
-      if (_x >= _x1) _dx = _x - _x1;
-      else
-      {
-        uint64_t _dx_64 = _x + 0x100000000 - _x1;
-        _dx = _dx_64;
-      }
-      _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
+        if (_x2 > _x1) _DX = _x2 - _x1;
+        else
+        {
+          uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
+          _DX = _DX_64;
+        }
+        if (_x >= _x1) _dx = _x - _x1;
+        else
+        {
+          uint64_t _dx_64 = _x + 0x100000000 - _x1;
+          _dx = _dx_64;
+        }
+        _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
 
-      ADCs_data[I_I2] = _y;
+        data = _y;
+        ADCs_data[I_I2] = data;
+        square_data = data*data;
+        sum_sqr_data_irq[I_I2] += square_data;
+        sum_sqr_data[bank_sum_sqr_data_tmp][I_I2] = sum_sqr_data_irq[I_I2] -= sqr_current_data[index_array_of_sqr_current_data_tmp][I_I2];
+        sqr_current_data[index_array_of_sqr_current_data_tmp][I_I2] = square_data;
       
-      ADCs_data_raw[I_I2].tick = _x2;
-      ADCs_data_raw[I_I2].value = _y2;
-    }
-    /*****/
+        ADCs_data_raw[I_I2].tick = _x2;
+        ADCs_data_raw[I_I2].value = _y2;
+      }
+      /*****/
     
-    /*****/
-    //Формуємо значення I3
-    /*****/
-    if ((command_word & (1 << I_I3)) != 0)
-    {
-      _x1 = ADCs_data_raw[I_I3].tick;
-      _y1 = ADCs_data_raw[I_I3].value;
+      /*****/
+      //Формуємо значення I3
+      /*****/
+      if ((command_word & (1 << I_I3)) != 0)
+      {
+        _x1 = ADCs_data_raw[I_I3].tick;
+        _y1 = ADCs_data_raw[I_I3].value;
         
-      _y2 = output_adc[C_I3_1].value - gnd_adc_tmp - vref_adc_tmp;
-      if (abs(_y2) > 87)
-      {
-        _x2 = output_adc[C_I3_1].tick;
-        _y2 = (int)(_y2*ustuvannja_meas[I_I3])>>(USTUVANNJA_VAGA - 4);
-      }
-      else
-      {
-        _y2 = output_adc[C_I3_16].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_I3_1].value - gnd_adc_tmp - vref_adc_tmp;
+        if (abs(_y2) > 87)
+        {
+          _x2 = output_adc[C_I3_1].tick;
+          _y2 = (int)(_y2*ustuvannja_meas[I_I3])>>(USTUVANNJA_VAGA - 4);
+        }
+        else
+        {
+          _y2 = output_adc[C_I3_16].value - gnd_adc_tmp - vref_adc_tmp;
 
-        _x2 = output_adc[C_I3_16].tick;
-        _y2 = (int)((-_y2)*ustuvannja_meas[I_I3])>>(USTUVANNJA_VAGA);
-      }
+          _x2 = output_adc[C_I3_16].tick;
+          _y2 = (int)((-_y2)*ustuvannja_meas[I_I3])>>(USTUVANNJA_VAGA);
+        }
       
-      if (_x2 > _x1) _DX = _x2 - _x1;
-      else
-      {
-        uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
-        _DX = _DX_64;
-      }
-      if (_x >= _x1) _dx = _x - _x1;
-      else
-      {
-        uint64_t _dx_64 = _x + 0x100000000 - _x1;
-        _dx = _dx_64;
-      }
-      _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
+        if (_x2 > _x1) _DX = _x2 - _x1;
+        else
+        {
+          uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
+          _DX = _DX_64;
+        }
+        if (_x >= _x1) _dx = _x - _x1;
+        else
+        {
+          uint64_t _dx_64 = _x + 0x100000000 - _x1;
+          _dx = _dx_64;
+        }
+        _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
 
-      ADCs_data[I_I3] = _y;
+        data = _y;
+        ADCs_data[I_I3] = data;
+        square_data = data*data;
+        sum_sqr_data_irq[I_I3] += square_data;
+        sum_sqr_data[bank_sum_sqr_data_tmp][I_I3] = sum_sqr_data_irq[I_I3] -= sqr_current_data[index_array_of_sqr_current_data_tmp][I_I3];
+        sqr_current_data[index_array_of_sqr_current_data_tmp][I_I3] = square_data;
       
-      ADCs_data_raw[I_I3].tick = _x2;
-      ADCs_data_raw[I_I3].value = _y2;
-    }
-    /*****/
+        ADCs_data_raw[I_I3].tick = _x2;
+        ADCs_data_raw[I_I3].value = _y2;
+      }
+      /*****/
 
-    /*****/
-    //Формуємо значення U
-    /*****/
-    if ((command_word & (1 << I_U)) != 0)
-    {
-      _x1 = ADCs_data_raw[I_U].tick;
-      _y1 = ADCs_data_raw[I_U].value;
+      /*****/
+      //Формуємо значення U
+      /*****/
+      if ((command_word & (1 << I_U)) != 0)
+      {
+        _x1 = ADCs_data_raw[I_U].tick;
+        _y1 = ADCs_data_raw[I_U].value;
         
-      _y2 = output_adc[C_U_1].value - gnd_adc_tmp - vref_adc_tmp;
-      if (abs(_y2) > 87)
-      {
-        _x2 = output_adc[C_U_1].tick;
-        _y2 = (int)(_y2*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA - 4);
-      }
-      else
-      {
-        _y2 = output_adc[C_U_16].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_U_1].value - gnd_adc_tmp - vref_adc_tmp;
+        if (abs(_y2) > 87)
+        {
+          _x2 = output_adc[C_U_1].tick;
+          _y2 = (int)(_y2*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA - 4);
+        }
+        else
+        {
+          _y2 = output_adc[C_U_16].value - gnd_adc_tmp - vref_adc_tmp;
 
-        _x2 = output_adc[C_U_16].tick;
-        _y2 = (int)((-_y2)*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA);
-      }
+          _x2 = output_adc[C_U_16].tick;
+          _y2 = (int)((-_y2)*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA);
+        }
       
-      if (_x2 > _x1) _DX = _x2 - _x1;
-      else
-      {
-        uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
-        _DX = _DX_64;
-      }
-      if (_x >= _x1) _dx = _x - _x1;
-      else
-      {
-        uint64_t _dx_64 = _x + 0x100000000 - _x1;
-        _dx = _dx_64;
-      }
-      _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
+        if (_x2 > _x1) _DX = _x2 - _x1;
+        else
+        {
+          uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
+          _DX = _DX_64;
+        }
+        if (_x >= _x1) _dx = _x - _x1;
+        else
+        {
+          uint64_t _dx_64 = _x + 0x100000000 - _x1;
+          _dx = _dx_64;
+        }
+        _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
 
-      ADCs_data[I_U] = _y;
+        data = _y;
+        ADCs_data[I_U] = data;
+        square_data = data*data;
+        sum_sqr_data_irq[I_U] += square_data;
+        sum_sqr_data[bank_sum_sqr_data_tmp][I_U] = sum_sqr_data_irq[I_U] -= sqr_current_data[index_array_of_sqr_current_data_tmp][I_U];
+        sqr_current_data[index_array_of_sqr_current_data_tmp][I_U] = square_data;
       
-      ADCs_data_raw[I_U].tick = _x2;
-      ADCs_data_raw[I_U].value = _y2;
-    }
-    /*****/
+        ADCs_data_raw[I_U].tick = _x2;
+        ADCs_data_raw[I_U].value = _y2;
+      }
+      /*****/
 
-    if ((status_adc_read_work & DATA_VAL_READ) != 0)
-    {
-      method_sum_sqr_data();
-        
+      if((++index_array_of_sqr_current_data_tmp) == NUMBER_POINT)
+        index_array_of_sqr_current_data_tmp = 0;
+      else if (index_array_of_sqr_current_data_tmp > NUMBER_POINT)
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(58);
+      }
+      index_array_of_sqr_current_data = index_array_of_sqr_current_data_tmp;
+
       status_adc_read_work &= (unsigned int)(~DATA_VAL_READ);
 
       /**************************************************/
@@ -481,7 +511,7 @@ void SPI_ADC_IRQHandler(void)
       control_word_of_watchdog |= WATCHDOG_MEASURE_STOP_VAL;
       /**************************************************/
     }
-    
+      
     /********************************************************
     Формуємо масив миттєвих значень
     ********************************************************/

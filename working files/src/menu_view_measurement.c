@@ -239,15 +239,6 @@ void make_ekran_measurement(void)
     " U  =           "
   };
   
-  const uint32_t index_array[MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT] = 
-  {
-    IM_I1,
-    IM_I2,
-    IM_I3,
-    IM_I4,
-    IM_U
-  };
-  
   //Копіюємо вимірювання які потрібні для відображення
   semaphore_measure_values_low1 = 1;
   for (size_t i = 0; i < MAX_ROW_FOR_MEASURMENT_ANALOG_INPUT; i++ ) 

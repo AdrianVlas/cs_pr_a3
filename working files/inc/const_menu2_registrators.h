@@ -32,5 +32,4 @@ enum __index_list_registrators_m2
 #define COL_HST1_R                                12
 #define COL_HST2_R                                13
 
-
 #endif

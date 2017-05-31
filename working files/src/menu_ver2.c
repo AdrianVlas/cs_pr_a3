@@ -1,5 +1,101 @@
 #include "header.h"
 
+const uint8_t name_string_error_1[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+{
+  {
+    " Дин.пам.недост.",
+    " Перезап.прибор "
+  },
+  {
+    " Дин.пам.недост.",
+    " Перезап.прилад "
+  },
+  {
+    " Дин.пам.недост.",
+    " Restart device "
+  },
+  {
+    " Дин.пам.недост.",
+    " Перезап.прибор "
+  }
+};
+
+const uint8_t name_string_error_2[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+{
+  "Повтор?Enter/Esc",
+  "Повтор?Enter/Esc",
+  "Repeat?Enter/Esc",
+  "Повтор?Enter/Esc"
+};
+
+const uint8_t name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
+{
+  {
+   "Ввести изменения",
+   "Да-ENTER Нет-ESC"
+  },
+  {
+   "  Ввести зміни  ",
+   "Так-ENTER Ні-ESC"
+  },
+  {
+   " Enter changes  ",
+   "Yes-ENTER No-ESC"
+  },
+  {
+   "Ввести изменения",
+   "Да-ENTER Нет-ESC"
+  }
+};
+
+const uint8_t name_string_continue[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+{
+  "Продолжить:Enter",
+  "Продовжити:Enter",
+  " Continue: Enter",
+  "Продолжить:Enter"
+};
+
+const uint8_t name_string_ask[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+{
+  "Да-Enter/Нет-Esc",
+  "Так-Enter/Ні-Esc",
+  "Yes-Enter/No-Esc",
+  "Да-Enter/Нет-Esc"
+};
+
+const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, DIAGNOSTICS_MENU2_LEVEL, LABELS_MENU2_LEVEL, INFO_MENU2_LEVEL};
+const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {ANALOG_INPUTS_MENU2_LEVEL, INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
+const enum _menu2_levels next_for_registrators_menu2[MAX_ROW_LIST_REGISTRATORS_M2] = {REGISTRATORS_MENU2_LEVEL, PR_ERR_LIST_MENU2_LEVEL};
+const enum _menu2_levels next_for_prr_err_list_menu2[2] = {PR_ERR_LIST_MENU2_LEVEL, PR_ERR_DATA_MENU2_LEVEL};
+const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
+const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_SETTINGS_PARAM_MENU2_LEVEL, EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL, LANGUAGE_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL, LIST_PASSWORDS_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_settings_param_menu2[MAX_ROW_LIST_SETTINGS_PARAM_M2] = {LIST_INPUTS_MENU2_LEVEL, LIST_OUTPUTS_MENU2_LEVEL, LIST_LEDS_MENU2_LEVEL, LIST_ALARMS_MENU2_LEVEL, LIST_GROUP_ALARMS_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_MEANDERS_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_inputs_menu2 = LIST_SETTINGS_INPUT_MENU2_LEVEL;
+const enum _menu2_levels next_for_list_settings_input_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_INPUT_MENU2_LEVEL, CTRL_INPUT_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_outputs_menu2 = LIST_SETTINGS_OUTPUT_MENU2_LEVEL;
+const enum _menu2_levels next_for_list_settings_output_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_OUTPUT_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_leds_menu2 = LIST_SETTINGS_LED_MENU2_LEVEL;
+const enum _menu2_levels next_for_list_settings_led_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_LED_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_alarms_menu2 = LIST_SETTINGS_ALARM_MENU2_LEVEL;
+const enum _menu2_levels next_for_list_settings_alarm_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_ALARM_MENU2_LEVEL, CTRL_ALARM_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_group_alarms_menu2 = LIST_SETTINGS_GROUP_ALARM_MENU2_LEVEL;
+const enum _menu2_levels next_for_list_settings_group_alarm_menu2[MAX_ROW_LIST_SETTINGS_PDC_M2] = {PICKUP_GROUP_ALARM_MENU2_LEVEL, DELAY_GROUP_ALARM_MENU2_LEVEL, CTRL_GROUP_ALARM_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_LEVEL;
+const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_TIMER_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_meanders_menu2 = LIST_SETTINGS_MEANDER_MENU2_LEVEL;
+const enum _menu2_levels next_for_list_settings_meander_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_MEANDER_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_passwords_menu2[MAX_ROW_LIST_PASSWORDS_M2] = {SET_NEW_PASSWORD_MENU2_LEVEL, SET_NEW_PASSWORD_MENU2_LEVEL};
+const enum _menu2_levels next_for_editor_list_logical_nodes_for_input[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TSS_FOR_INPUT_MENU2_LEVEL, EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL};
+const enum _menu2_levels next_for_editor_list_selcted_logical_node_type_for_input = EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
+const enum _menu2_levels next_for_editor_list_input_of_selcted_logical_node = EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
+const enum _menu2_levels next_for_editor_view_chosen_signal_of_selected_logical_node = EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
+const enum _menu2_levels next_for_editor_list_logical_nodes_for_output[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TSS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL};
+const enum _menu2_levels next_for_editor_list_selcted_logical_node_type_for_output = EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
+
 /*****************************************************/
 //Функція меню з якої здійснюються всі інші операції
 /*****************************************************/
@@ -8,32 +104,12 @@ void main_manu_function_ver2(void)
   //Перевіряємо чи якась кнопка натиснута
   if (current_state_menu2.edition == ED_ERROR) 
   {
-    const uint8_t name_string_error[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-    {
-      {
-        " Дин.пам.недост.",
-        " Перезап.прибор "
-      },
-      {
-        " Дин.пам.недост.",
-        " Перезап.прилад "
-        ""
-      },
-      {
-        " Дин.пам.недост.",
-        " Restart device "
-      },
-      {
-        " Дин.пам.недост.",
-        " Перезап.прибор "
-      }
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
     
     //Копіюємо  рядки у робочий екран
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
-      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i < 2) ? name_string_error[index_language][i][j] : ' ';
+      for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = (i < 2) ? name_string_error_1[index_language][i][j] : ' ';
     }
   
     //Курсор невидимий
@@ -542,6 +618,7 @@ void main_manu_function_ver2(void)
     case EDITOR_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL:
     case EDITOR_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL:
     case EDITOR_LIST_TUS_FOR_INPUT_MENU2_LEVEL:
+    case EDITOR_LIST_TSS_FOR_INPUT_MENU2_LEVEL:
     case EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
     case EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
     case EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL:
@@ -559,6 +636,7 @@ void main_manu_function_ver2(void)
     case EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
     case EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
     case EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL:
+    case EDITOR_LIST_TSS_FOR_OUTPUT_MENU2_LEVEL:
     case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
     case NAME_OF_CELL_MENU2_LEVEL:
     case SETTINGS_RS485_MENU2_LEVEL:
@@ -690,7 +768,7 @@ void main_manu_function_ver2(void)
                 /*
                 Натискування ENTER у підтвердження внесення змін введених нових зв'язків
                 */
-                if (current_state_menu2.func_press_esc != NULL) current_state_menu2.func_press_enter();
+                if (current_state_menu2.func_press_enter != NULL) current_state_menu2.func_press_enter();
 
                 //Повертаємо режим редагування для цього вікна
                 current_state_menu2.edition = ED_EDITION;
@@ -729,38 +807,6 @@ void main_manu_function_ver2(void)
             }
             else
             {
-              const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, DIAGNOSTICS_MENU2_LEVEL, LABELS_MENU2_LEVEL, INFO_MENU2_LEVEL};
-              const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {ANALOG_INPUTS_MENU2_LEVEL, INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
-              const enum _menu2_levels next_for_registrators_menu2[MAX_ROW_LIST_REGISTRATORS_M2] = {REGISTRATORS_MENU2_LEVEL, PR_ERR_LIST_MENU2_LEVEL};
-              const enum _menu2_levels next_for_prr_err_list_menu2[2] = {PR_ERR_LIST_MENU2_LEVEL, PR_ERR_DATA_MENU2_LEVEL};
-              const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
-              const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_SETTINGS_PARAM_MENU2_LEVEL, EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL, LANGUAGE_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL, LIST_PASSWORDS_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_param_menu2[MAX_ROW_LIST_SETTINGS_PARAM_M2] = {LIST_INPUTS_MENU2_LEVEL, LIST_OUTPUTS_MENU2_LEVEL, LIST_LEDS_MENU2_LEVEL, LIST_ALARMS_MENU2_LEVEL, LIST_GROUP_ALARMS_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_MEANDERS_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_inputs_menu2 = LIST_SETTINGS_INPUT_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_input_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_INPUT_MENU2_LEVEL, CTRL_INPUT_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_outputs_menu2 = LIST_SETTINGS_OUTPUT_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_output_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_OUTPUT_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_leds_menu2 = LIST_SETTINGS_LED_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_led_menu2[MAX_ROW_LIST_SETTINGS_C_M2] = {CTRL_LED_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_alarms_menu2 = LIST_SETTINGS_ALARM_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_alarm_menu2[MAX_ROW_LIST_SETTINGS_DC_M2] = {DELAY_ALARM_MENU2_LEVEL, CTRL_ALARM_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_group_alarms_menu2 = LIST_SETTINGS_GROUP_ALARM_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_group_alarm_menu2[MAX_ROW_LIST_SETTINGS_PDC_M2] = {PICKUP_GROUP_ALARM_MENU2_LEVEL, DELAY_GROUP_ALARM_MENU2_LEVEL, CTRL_GROUP_ALARM_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_TIMER_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_meanders_menu2 = LIST_SETTINGS_MEANDER_MENU2_LEVEL;
-              const enum _menu2_levels next_for_list_settings_meander_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_MEANDER_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
-              const enum _menu2_levels next_for_list_passwords_menu2[MAX_ROW_LIST_PASSWORDS_M2] = {SET_NEW_PASSWORD_MENU2_LEVEL, SET_NEW_PASSWORD_MENU2_LEVEL};
-              const enum _menu2_levels next_for_editor_list_logical_nodes_for_input[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_INPUT_MENU2_LEVEL};
-              const enum _menu2_levels next_for_editor_list_selcted_logical_node_type_for_input = EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
-              const enum _menu2_levels next_for_editor_list_input_of_selcted_logical_node = EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
-              const enum _menu2_levels next_for_editor_view_chosen_signal_of_selected_logical_node = EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL;
-              const enum _menu2_levels next_for_editor_list_logical_nodes_for_output[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL};
-              const enum _menu2_levels next_for_editor_list_selcted_logical_node_type_for_output = EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
-              
               const enum _menu2_levels *p = NULL;
               
               switch (current_state_menu2.current_level)
@@ -914,12 +960,28 @@ void main_manu_function_ver2(void)
                 }
               case EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL:
                 {
-                  p = &next_for_editor_list_logical_nodes_for_input[current_state_menu2.index_position];
+                  int16_t index_position_tmp = current_state_menu2.index_position;
+
+                  p = &next_for_editor_list_logical_nodes_for_input[index_position_tmp];
+                  
+                  if (index_position_tmp == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) position_in_current_level_menu2[EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+                  else if (index_position_tmp == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_LOG) position_in_current_level_menu2[EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+
                   break;
                 }
               case EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL:
                 {
                   p = &next_for_editor_list_logical_nodes_for_output[current_state_menu2.index_position];
+                  
+                  if (
+                      (current_state_menu2.index_position == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) ||
+                      (current_state_menu2.index_position == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_LOG)
+                     )
+                  {
+                    position_in_current_level_menu2[EDITOR_LIST_OUTPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL] = 0;
+                    current_state_menu2.number_selection = 0;
+                  }
+                    
                   break;
                 }
               case EDITOR_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL:
@@ -936,6 +998,7 @@ void main_manu_function_ver2(void)
               case EDITOR_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL:
               case EDITOR_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL:
               case EDITOR_LIST_TUS_FOR_INPUT_MENU2_LEVEL:
+              case EDITOR_LIST_TSS_FOR_INPUT_MENU2_LEVEL:
                 {
                   p = &next_for_editor_list_selcted_logical_node_type_for_input;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
@@ -958,6 +1021,7 @@ void main_manu_function_ver2(void)
               case EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
               case EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
               case EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL:
+              case EDITOR_LIST_TSS_FOR_OUTPUT_MENU2_LEVEL:
                 {
                   p = &next_for_editor_list_selcted_logical_node_type_for_output;
                   current_state_menu2.number_selection = current_state_menu2.index_position;
@@ -975,6 +1039,7 @@ void main_manu_function_ver2(void)
               case EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL:
                 {
                   p = &next_for_editor_view_chosen_signal_of_selected_logical_node;
+                  position_in_current_level_menu2[EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL] = 0;
                   break;
                 }
               case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
@@ -1707,25 +1772,6 @@ void move_into_ekran_simple(unsigned int action, int max_row)
 /*****************************************************/
 void make_ekran_ask_rewrite(void)
 {
-  const uint8_t name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-  {
-    {
-     "Ввести изменения",
-     "Да-ENTER Нет-ESC"
-    },
-    {
-     "  Ввести зміни  ",
-     "Так-ENTER Ні-ESC"
-    },
-    {
-     " Enter changes  ",
-     "Yes-ENTER No-ESC"
-    },
-    {
-     "Ввести изменения",
-     "Да-ENTER Нет-ESC"
-    }
-  };
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
   //Копіюємо  рядки у робочий екран
@@ -1747,33 +1793,9 @@ void make_ekran_ask_rewrite(void)
 /*****************************************************/
 void make_ekran_about_info(unsigned int info, const uint8_t information[][MAX_COL_LCD + 1])
 {
-  const uint8_t name_string_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    "Продолжить:Enter",
-    "Продовжити:Enter",
-    " Continue: Enter",
-    "Продолжить:Enter"
-  };
-
-  const uint8_t name_string_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    "Повтор?Enter/Esc",
-    "Повтор?Enter/Esc",
-    "Repeat?Enter/Esc",
-    "Повтор?Enter/Esc"
-  };
-
-  const uint8_t name_string_ask[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-  {
-    "Да-Enter/Нет-Esc",
-    "Так-Enter/Ні-Esc",
-    "Yes-Enter/No-Esc",
-    "Да-Enter/Нет-Esc"
-  };
-
   const uint8_t (*p_name_string)[MAX_COL_LCD + 1];
-  if (info == 0) p_name_string = name_string_info;
-  else if (info == 1) p_name_string = name_string_error;
+  if (info == 0) p_name_string = name_string_continue;
+  else if (info == 1) p_name_string = name_string_error_2;
   else p_name_string = name_string_ask;
   
   int index_language = index_language_in_array(select_struct_settings_fix()->language);
@@ -2114,6 +2136,7 @@ void new_level_menu(void)
   case EDITOR_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL:
   case EDITOR_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL:
   case EDITOR_LIST_TUS_FOR_INPUT_MENU2_LEVEL:
+  case EDITOR_LIST_TSS_FOR_INPUT_MENU2_LEVEL:
   case EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL:
   case EDITOR_LIST_OUTPUTS_FOR_OUTPUT_MENU2_LEVEL:
   case EDITOR_LIST_LEDS_FOR_OUTPUT_MENU2_LEVEL:
@@ -2128,6 +2151,7 @@ void new_level_menu(void)
   case EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL:
   case EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL:
   case EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL:
+  case EDITOR_LIST_TSS_FOR_OUTPUT_MENU2_LEVEL:
     {
       __CONFIG *p_config;
       switch (current_state_menu2.edition)
@@ -2176,7 +2200,9 @@ void new_level_menu(void)
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
           (int*)&p_config->n_meander,
-          (int*)&p_config->n_tu 
+          (int*)&p_config->n_tu,
+          (int*)&p_config->n_ts,
+          (int*)&p_config->n_log
         };
 
         intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_state_menu2.current_level]] - NUMBER_FIX_BLOCKS; 
@@ -2612,7 +2638,9 @@ void new_level_menu(void)
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
           (int*)&p_config->n_meander,
-          (int*)&p_config->n_tu
+          (int*)&p_config->n_tu,
+          (int*)&p_config->n_ts,
+          (int*)&p_config->n_log
         };
   
         unsigned int number_input = number_input_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_ALL];
@@ -2644,7 +2672,8 @@ void new_level_menu(void)
       if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
       {
 //        number_logical_node = 1;
-        type_logical_node = ID_FB_CONTROL_BLOCK;
+        if (position_in_current_level_menu2[ekran_before] == INDEX_EDITOR_LIST_LOGICAL_NODES_M2_CONTROL_BLOCK) type_logical_node = ID_FB_CONTROL_BLOCK;
+        else type_logical_node = ID_FB_EVENT_LOG;
       }
       else if (
                (ekran_before >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
@@ -2662,25 +2691,6 @@ void new_level_menu(void)
 
       if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
       {
-        const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
-        {
-          FIX_BLOCK_SIGNALS_OUT,
-          INPUT_SIGNALS_OUT,
-          OUTPUT_LED_SIGNALS_OUT,
-          OUTPUT_LED_SIGNALS_OUT,
-          BUTTON_TU_SIGNALS_OUT,
-          ALARM_SIGNALS_OUT,
-          GROUP_ALARM_SIGNALS_OUT,
-          STANDARD_LOGIC_SIGNALS_OUT,
-          STANDARD_LOGIC_SIGNALS_OUT,
-          STANDARD_LOGIC_SIGNALS_OUT,
-          STANDARD_LOGIC_SIGNALS_OUT,
-          TIMER_SIGNALS_OUT,
-          TRIGGER_SIGNALS_OUT,
-          MEANDER_SIGNALS_OUT,
-          BUTTON_TU_SIGNALS_OUT
-        };
-
         __CONFIG *p_config = &current_config_edit;
         int *p_max_row[NUMBER_ALL_BLOCKS] = 
         {
@@ -2698,7 +2708,9 @@ void new_level_menu(void)
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
           (int*)&p_config->n_meander,
-          (int*)&p_config->n_tu
+          (int*)&p_config->n_tu,
+          (int*)&p_config->n_ts,
+          (int*)&p_config->n_log
         };
   
         unsigned int number_output = number_output_signals_logical_nodes[type_logical_node - _ID_FB_FIRST_ALL];
@@ -2727,7 +2739,12 @@ void new_level_menu(void)
       unsigned int error = false;
 
       enum _menu2_levels ekran_before = previous_level_in_current_level_menu2[current_state_menu2.current_level];
-      if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
+      if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
+      {
+        current_state_menu2.number_selection = 0;
+        type_logical_node = ID_FB_EVENT_LOG;
+      }
+      else if (ekran_before == EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL)
       {
         ekran_before = previous_level_in_current_level_menu2[ekran_before];
         if (ekran_before == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
@@ -2771,10 +2788,13 @@ void new_level_menu(void)
           (int*)&p_config->n_timer,
           (int*)&p_config->n_trigger,
           (int*)&p_config->n_meander,
-          (int*)&p_config->n_tu
+          (int*)&p_config->n_tu,
+          (int*)&p_config->n_ts,
+          (int*)&p_config->n_log
         };
   
         size_t number_row = array_n_similar_input_signals[type_logical_node - _ID_FB_FIRST_ALL];
+        if (type_logical_node == ID_FB_EVENT_LOG) number_row *= p_config->n_log;
         current_state_menu2.p_max_row = (number_row != 0) ? p_max_row[type_logical_node - _ID_FB_FIRST_ALL] : NULL;
         current_state_menu2.max_row = number_row;
         

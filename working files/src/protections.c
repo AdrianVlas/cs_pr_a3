@@ -124,21 +124,36 @@ inline unsigned int sqrt_32(unsigned int y)
 /*****************************************************/
 inline void calc_measurement(void)
 {
-  unsigned long long sum_sqr_data_local[NUMBER_ANALOG_CANALES];
+  uint32_t sqrt_sum_sqr_data_local[NUMBER_ANALOG_CANALES];
   
   //Копіюємо вхідні велечини у локальні змінні
   /*
   Оскільки для інтеградбного розгахунку сума квадратів з період ділиться на період, 
   що для дискретного випадку аналогічно діленню на кількість виборок, то ми це ділення якраз і робимо зміщенням
   */
-  unsigned int bank_sum_sqr_data_tmp = (bank_sum_sqr_data + 1) & 0x1;
+  unsigned int bank_sum_sqr_data_tmp = bank_sum_sqr_data;
+  bank_sum_sqr_data = (bank_sum_sqr_data + 1) & 0x1;
   for(uint32_t i =0; i < NUMBER_ANALOG_CANALES; i++ )
   {
     /***/
     //Розраховуємо діюче значення 3I0 по інтегральній сформулі
     /***/
     /*Добуваємо квадратний корінь*/
-    sum_sqr_data_local[i] = sqrt_64(sum_sqr_data[bank_sum_sqr_data_tmp][i]);
+    sqrt_sum_sqr_data_local[i] = sqrt_64(sum_sqr_data[bank_sum_sqr_data_tmp][i]);
+//    uint64_t in_64 = sum_sqr_data[bank_sum_sqr_data_tmp][i];
+//    if ((in_64 & (uint64_t)(~0x7FFFFFFF)) == 0)
+//    {
+//      q31_t in = in_64, out;
+//      arm_sqrt_q31(in, &out);
+//      sqrt_sum_sqr_data_local[i] = out;
+//    }
+//    else
+//    {
+//      q31_t in = (in_64 >> 4), out;
+//      arm_sqrt_q31(in, &out);
+//      sqrt_sum_sqr_data_local[i] = out << 2;
+//    }
+      
   
     /*Для приведення цього значення у мА/мВ треба помножити на свій коефіцієнт*/
     /*Ще сигнал зараз є підсиленим у 16 раз, тому ділим його на 16*/
@@ -159,7 +174,7 @@ inline void calc_measurement(void)
     */
     
     float mnognyk = (i < (NUMBER_ANALOG_CANALES - 1)) ? MNOGNYK_I_DIJUCHE_FLOAT : MNOGNYK_U_DIJUCHE_FLOAT;
-    float value_float = mnognyk*((float)sum_sqr_data_local[i])/(64.0f); /*64 = 4*16. 16 - це підсилення каналів "Analog Input"; 4 - це sqrt(16), а 16 береться з того, що 32 = 16*2 */
+    float value_float = mnognyk*((float)sqrt_sum_sqr_data_local[i])/(64.0f); /*64 = 4*16. 16 - це підсилення каналів "Analog Input"; 4 - це sqrt(16), а 16 береться з того, що 32 = 16*2 */
     measurement[i] = (unsigned int)value_float; 
     /***/
   }
@@ -317,11 +332,10 @@ inline void main_protection(void)
   /**************************/
   //Опрацьовуємо натиснуті кнопки
   /**************************/
-  __LN_BUTTON_TU *arr_button = (__LN_BUTTON_TU*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+  __LN_BUTTON *arr_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
   for (uint32_t i = 0; i < current_config_prt.n_button; i++)
   {
-    arr_button[i].trigger_state[BUTTON_TU_OUT >> 3] |=
-    arr_button[i].active_state [BUTTON_TU_OUT >> 3]  = ((pressed_buttons >> i) & 0x1) << (BUTTON_TU_OUT & ((1 << 3) - 1));
+    arr_button[i].active_state [BUTTON_OUT >> 3]  = ((pressed_buttons >> i) & 0x1) << (BUTTON_OUT & ((1 << 3) - 1));
   }
   pressed_buttons = 0;
   /**************************/

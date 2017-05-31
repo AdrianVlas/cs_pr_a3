@@ -10,50 +10,11 @@ void make_ekran_control_group_alarm(void)
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_out_of_limits));
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][MAX_INDEX_CTRL_GROUP_ALARM][MAX_COL_LCD + 1] = 
-    {
-      {
-        "   Состояние    ",
-        "  Контроль ШГС  ",
-        "      Ток       "
-      },
-      {
-        "      Стан      ",
-        "  Контроль ШГС  ",
-        "     Струм      "
-      },
-      {
-        "      Стан      ",
-        "  Контроль ШГС  ",
-        "    Current     "
-      },
-      {
-        "   Состояние    ",
-        "  Контроль ШГС  ",
-        "      Ток       "
-      }
-    };
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -73,7 +34,7 @@ void make_ekran_control_group_alarm(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_group_alarm[index_language][index_in_ekran_tmp][j];
         }
         else
         {
@@ -83,25 +44,10 @@ void make_ekran_control_group_alarm(void)
               (index_in_ekran_tmp == INDEX_CTRL_GROUP_ALARM_CTRL_STATE)  
              ) 
           {
-            const uint8_t information[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
-            {
-              {"     Откл.      ", "      Вкл.      "},
-              {"     Вимк.      ", "     Ввімк.     "},
-              {"      Off       ", "       On       "},
-              {"     Сљнд.      ", "     Косу.      "}
-            };
-            const unsigned int cursor_x[MAX_NAMBER_LANGUAGE][2] = 
-            {
-              {4, 5},
-              {4, 4},
-              {5, 6},
-              {4, 4}
-            };
-          
-            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information[index_language][(p_settings->control >> index_in_ekran_tmp) & 0x1][j];
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_on_off[index_language][(p_settings->control >> index_in_ekran_tmp) & 0x1][j];
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x[index_language][(p_settings->control >> index_in_ekran_tmp) & 0x1];
+              current_state_menu2.position_cursor_x = cursor_x_on_off[index_language][(p_settings->control >> index_in_ekran_tmp) & 0x1];
             }
           }
           else if (index_in_ekran_tmp == INDEX_CTRL_GROUP_ALARM_I)
@@ -109,19 +55,10 @@ void make_ekran_control_group_alarm(void)
             uint32_t I_number = (p_settings->analog_input_control >> group_alarm_analog_ctrl_patten[index_in_ekran_tmp - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) & ((1 << group_alarm_analog_ctrl_patten[index_in_ekran_tmp - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
             if (I_number == 0)
             {
-              const uint8_t information_empty[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-              {
-                "      Нет       ",
-                "      Нема      ",
-                "      None      ",
-                "      Нет       "
-              };
-              const uint32_t cursor_x_empty[MAX_NAMBER_LANGUAGE] = {5, 5, 5, 5};
-
-              for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_empty[index_language][j];
+              for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_none[index_language][j];
               if (position_temp == index_in_ekran_tmp)
               {
-                current_state_menu2.position_cursor_x = cursor_x_empty[index_language];
+                current_state_menu2.position_cursor_x = cursor_x_none[index_language];
               }
             }
             else
@@ -293,43 +230,11 @@ void make_ekran_delay_group_alarm(void)
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_out_of_limits));
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][GROUP_ALARM_SET_DELAYS][MAX_COL_LCD + 1] = 
-    {
-      {
-        "   T Задержки   ",
-      },
-      {
-        "   T Затримки   ",
-      },
-      {
-        "   T Задержки   ",
-      },
-      {
-        "   T Задержки   ",
-      }
-    };
-    
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -353,7 +258,7 @@ void make_ekran_delay_group_alarm(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string_group_alarm_delay[index_language][index_in_ekran_tmp][j];
           first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
 
           switch (index_in_ekran_tmp)
@@ -590,43 +495,11 @@ void make_ekran_pickup_group_alarm(void)
       (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
      )   
   {
-    const uint8_t information_about_info[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "Ред.не разрешено",
-      "Ред.не дозволене",
-      "Ed.isn't allowed",
-      "Ред.не разрешено",
-    };
-
-    const uint8_t information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-
     enum _edition_stats edition = current_state_menu2.edition;
-    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_about_info : information_about_error));
+    make_ekran_about_info(((edition == ED_WARNING_EDITION_BUSY) ? 0 : 1), ((edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_out_of_limits));
   }
   else
   {
-    const uint8_t name_string[MAX_NAMBER_LANGUAGE][GROUP_ALARM_PICKUPS][MAX_COL_LCD + 1] = 
-    {
-      {
-        "       ‰I       "
-      },
-      {
-        "       ‰I       "
-      },
-      {
-        "       ‰I       "
-      },
-      {
-        "       ‰I       "
-      }
-    };
-    
     int index_language = index_language_in_array(select_struct_settings_fix()->language);
   
     unsigned int position_temp = current_state_menu2.index_position;
@@ -650,7 +523,7 @@ void make_ekran_pickup_group_alarm(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string_group_alarm_pickup[index_language][index_in_ekran_tmp][j];
           first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
 
           switch (index_in_ekran_tmp)

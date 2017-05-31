@@ -27,8 +27,8 @@
   "C               "
     
 #define NAME_TRIGGER_OUT_SIGNALS_RU     \
-  "Виход           ",                   \
-  "Инв.Виход       "
+  "Выход           ",                   \
+  "Инв.Выход       "
 
 #define NAME_TRIGGER_OUT_SIGNALS_UA     \
   "Вихід           ",                   \
@@ -39,9 +39,8 @@
   "Inv.Output      "
 
 #define NAME_TRIGGER_OUT_SIGNALS_KZ     \
-  "Виход           ",                   \
-  "Инв.Виход       "
+  "Выход           ",                   \
+  "Инв.Выход       "
 
     
-
 #endif 

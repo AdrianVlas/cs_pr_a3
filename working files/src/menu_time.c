@@ -58,14 +58,7 @@ void make_ekran_time(void)
   }
   else if (current_state_menu2.edition == ED_WARNING_ENTER_ESC)
   {
-    const unsigned char information_about_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      " Вых.за диапазон",
-      " Вих.за діапазон",
-      "  Out of Limits ",
-      "Вых.за диапазон "
-    };
-    make_ekran_about_info(1, information_about_error);
+    make_ekran_about_info(1, information_out_of_limits);
   }
   else
   {
@@ -75,14 +68,6 @@ void make_ekran_time(void)
       "    XX:XX:XX    ",
       "                ",
       "      X XX      "
-    };
-  
-    const uint8_t calibrating[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-    {
-      "   Калибровка   ",
-      "  Калібрування  ",
-      "  Calibration   ",
-      "   Калибровка   "
     };
   
     int index_language = index_language_in_array(settings_fix_prt.language);
