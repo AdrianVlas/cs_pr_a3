@@ -21,6 +21,13 @@ i = pCLUTu->shShemasOrdNumStng;
     i--;
     //Look State
 }
+void CLUTu::UpdateCLUTu(void){
+//Set Input parameters
+pIn = static_cast<void*>(arrPchIn);
+//Set OutPut parameters
+pOut = static_cast<void*>(arrOut);
+
+}
 
 
 

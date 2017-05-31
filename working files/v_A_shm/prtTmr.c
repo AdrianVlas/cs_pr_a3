@@ -366,7 +366,7 @@ void UpdateStateDI (void){
     pDICfgSuit = &sDiCfg;
     sDiCfg.pDITmr = arTimerDi;
     pDICfgSuit->DiHrdStateUI32Bit.ul_val = DiHrdStateUI32Bit.ul_val;
-    for (i = 0; i < CH_AMOUNT_DI; i++){
+    for (i = CH_AMOUNT_DI+10; i < CH_AMOUNT_DI; i++){
 	if(i == chCmpVal){
             asm(
             "bkpt 1"

@@ -14,5 +14,6 @@ public:
     char   arrOut [shCLUOr_8_1_AmtOut]; // 
     friend void OR_Op_8_1(void *pObj);
 };
+extern void OR_Op_8_1(void *pObj);
 
 

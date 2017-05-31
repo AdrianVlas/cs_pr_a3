@@ -36,7 +36,10 @@ CLULed::CLULed(char chM,char chI){
      m_chQTrg06 = 0;
      m_chInC06  = 0;
      m_chErrorQTrg06 = 0;
-    
+    m_shStartRecord = 0;
+    m_shAmountProcessedRec = 0;
+    m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+    &arPLedShcemasDscRecords[0]);
 
     //Set Input parameters
     //pIn = (void*)arrPchIn;
@@ -119,10 +122,10 @@ arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SIMPLE_SELECTOR  ] = 0;//Now Defaul
 arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_EXTANDED_SELECTOR] = 0;//Now Default
 
 char *pCh = (this->arrPchIn[(LED_IN_NAME__LEDIN - 1)]);
-if(*pCh != 0 && this->shShemasOrdNumStng == 1)
+/* if(*pCh != 0 && this->shShemasOrdNumStng == 1)
         asm(
         "bkpt 1"
-        );
+        ); */
 arChIntermediaResult[OFFSET_OUT_IN_00_LEDIN                   ] = pCh[0];//Now Default
 pCh = (this->arrPchIn[(LED_IN_NAME__RESET - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_01_RESET                   ] = pCh[0];//Now Default
@@ -152,40 +155,100 @@ arChIntermediaResult[IN_07_TIN    ] =  0;
 arChIntermediaResult[IN_08_TEST   ] =  0;
 
 
+for (i = OFFSET_OUT_LED_NOT_01__1_1; i < OFFSET_OUT_IN_MNU_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
+    arChIntermediaResult[i] = 0xcc;
+   
+
+rl_Val = 0;
 if(this->m_LedCfgSuit.chSel1 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_MNU_NORMAL_SELECTOR] = 1;
+    m_shAmountProcessedRec = shAmtLedShcemasSimpleModeDscRecords + LED_NOT_01__1_1;
+    m_shStartRecord = LED_NOT_01__1_1; 
+   m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+    &arPLedShcemasStableDirectDscRecords[0]);
+    arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1] =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1] =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
+
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_MNU_TRIGGER_SELECTOR] = 1;
+    m_shAmountProcessedRec = shAmtLedShcemasTriggerModeDscRecords
+    +LED_NOT_01__1_1;
+    m_shStartRecord = LED_NOT_01__1_1; 
+   m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+    &arPLedShcemasStableTriggerDscRecords[0]);
+    arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1]   =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1]   =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_NOT_01__1_1]   =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_AND_02__2_1]   =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_AND_03__2_1]   =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_AND_04__2_1]   =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_Or_05__2_1]    =  0;
+    
+    rl_Val = 1;
 }
 if(this->m_LedCfgSuit.chSel2 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_MNU_STABLE_SELECTOR] = 1;
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SELECTOR] = 1;
+    if(this->m_LedCfgSuit.chSel3 == 0){
+    arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SIMPLE_SELECTOR] = 1;
+        if(rl_Val == 0){
+            m_shAmountProcessedRec = shAmtLedShcemasPulseC1SimpleModeDscRecords
+            +LED_NOT_01__1_1;
+            m_shStartRecord = LED_NOT_01__1_1; 
+           m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+            &arPLedShcemasPulseC1SimpleDscRecords[0]);
+        }
+        else{
+            m_shAmountProcessedRec = shAmtLedShcemasPulseC1TrigModeDscRecords
+            +LED_NOT_01__1_1;
+            m_shStartRecord = LED_NOT_01__1_1; 
+           m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+            &arPLedShcemasPulseC1TrigDscRecords[0]);
+        }
+
+    
+    }
+    else{
+        arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_EXTANDED_SELECTOR] = 1;
+            m_shAmountProcessedRec = shAmtLedShcemasPulseC2TrigModeDscRecords
+            +LED_NOT_01__1_1;
+        m_shStartRecord = LED_NOT_01__1_1; 
+       m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+        &arPLedShcemasPulseC2TrigDscRecords[0]);
+    }
+        arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1]   =  0;
+        arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1]   =  0;
+        arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
+        arChIntermediaResult[OFFSET_OUT_LED_NOT_01__1_1]   =  0;
+        arChIntermediaResult[OFFSET_OUT_LED_AND_02__2_1]   =  0;
+        arChIntermediaResult[OFFSET_OUT_LED_AND_03__2_1]   =  0;
+        arChIntermediaResult[OFFSET_OUT_LED_AND_04__2_1]   =  0;
+        arChIntermediaResult[OFFSET_OUT_LED_Or_05__2_1]    =  0;
+        arChIntermediaResult[OFFSET_OUT_LED_AND_10__2_1]   = 0;
+        arChIntermediaResult[OFFSET_OUT_LED_OR_11__2_1 ]   = 0;
+        arChIntermediaResult[OFFSET_OUT_LED_OR_12__2_1 ]   = 0;
 }
-if(this->m_LedCfgSuit.chSel3 == 0){
-arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SIMPLE_SELECTOR] = 1;
-}
-else{
-arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_EXTANDED_SELECTOR] = 1;
-}
+
 arChIntermediaResult[OFFSET_OUT_IN_LED_VCC   ] = 1;
 arChIntermediaResult[OFFSET_OUT_IN_LED_GROUND] = 0;
 
 
-
-for (i = OFFSET_OUT_LED_NOT_01__1_1; i < OFFSET_OUT_IN_MNU_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
-    arChIntermediaResult[i] = 0xcc;
+ 
     //Attention! Energy Saved Param should be Init First
 //arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] = m_chQTrg06;
 //arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2+1] = !m_chQTrg06;    
     rl_Val = 0;
     long k, j, l;
-    short shCounterProcessedRec = LED_NOT_01__1_1;
+    short shCounterProcessedRec = m_shStartRecord;//LED_NOT_01__1_1;
 
     do {
-pLUShcemasDscRec = arPLedShcemasDscRecords[shCounterProcessedRec - LED_NOT_01__1_1];
+//pLUShcemasDscRec = arPLedShcemasDscRecords[shCounterProcessedRec - LED_NOT_01__1_1];
+pLUShcemasDscRec =m_pArLedShcemasDscRecords[shCounterProcessedRec - LED_NOT_01__1_1];
         i = pLUShcemasDscRec->chTypeOperation;
         switch (i) {
             case LU_GEN_OP_AND:
@@ -351,7 +414,8 @@ pLUShcemasDscRec = arPLedShcemasDscRecords[shCounterProcessedRec - LED_NOT_01__1
                     );
         }
   
-    } while (shCounterProcessedRec <= LED_OR_17__3_1);//
+    } while (shCounterProcessedRec < m_shAmountProcessedRec);//LED_OR_17__3_1
+    //while (shCounterProcessedRec < m_shAmountProcessedRec);
     
     this->arrOut[(LED_OUT_NAME__LED_STATE_OUTPUT-1)] = arChIntermediaResult[OFFSET_OUT_LED_OR_17__3_1];
     bool bbState = false;

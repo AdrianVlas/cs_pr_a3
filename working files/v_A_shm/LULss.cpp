@@ -42,6 +42,11 @@ m_chInC29  = 0;
 m_chInC11  = 0;	
 m_chErrorQTrg29 = 0;
 m_chErrorQTrg11 = 0;	
+m_shStartRecord = 0;
+m_shAmountProcessedRec = 0;
+m_pArLssShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+&arPLssShcemasSimpleModeDscRecords[0]);
+//const_cast<const LedShcemasDscRecord*>();
 }
 void CLULss::UpdateCLss(void) {
 //Set Input parameters
@@ -252,23 +257,35 @@ arChIntermediaResult[OFFSET_OUT_IN_LSS_RESET_I] = pCh[0];//
 pCh = (this->arrPchIn[(LSS_IN_NAME__BLOCK_I - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_LSS_BLOCK_I] = pCh[0];//
 
-    if (m_LssCfgSuit.chSel == LSS_MODE_SIMPLE)
+    if (m_LssCfgSuit.chSel == LSS_MODE_SIMPLE){
         arChIntermediaResult[ OFFSET_OUT_IN_LSS_NORMAL ] = 1; //
-    else //{
-        if (m_LssCfgSuit.chSel == LSS_MODE_TRIGGER)
+        m_shAmountProcessedRec = shPLssShcemasSimpleModeDscRecords;
+        m_shStartRecord = LSS_NOT_01__1_1; 
+        m_pArLssShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+        &arPLssShcemasSimpleModeDscRecords[0]);
+    }
+    else {
+        if (m_LssCfgSuit.chSel == LSS_MODE_TRIGGER){
             arChIntermediaResult[ OFFSET_OUT_IN_LSS_TRIGGER ] = 1; //
+            }
     else
-        if (m_LssCfgSuit.chSel == LSS_MODE_PERIOD)
+        if (m_LssCfgSuit.chSel == LSS_MODE_PERIOD){
         arChIntermediaResult[ OFFSET_OUT_IN_LSS_TIMELIMITED ] = 1; //
-    //}
+        }
+        m_shAmountProcessedRec = shPLssShcemasTriggerModeDscRecords;  
+        m_shStartRecord = LSS_NOT_01__1_1;
+        m_pArLssShcemasDscRecords =  const_cast< LedShcemasDscRecord** >(
+        &arPLssShcemasTriggerModeDscRecords[0]);      
+    }
 
 //for (i = OFFSET_OUT_LSS_NOT_01__1_1; i < OFFSET_OUT_IN_LSS_VCC; i++)//OFFSET_OUT_Or_22__3_1
 //    arChIntermediaResult[i] = 0xcc;
 rl_Val = 0;
 long k, j, l;
-short shCounterProcessedRec = LSS_NOT_01__1_1;
+short shCounterProcessedRec = m_shStartRecord;//LSS_NOT_01__1_1;
 do{
-    pLUShcemasDscRec = arPLssShcemasDscRecords[shCounterProcessedRec - LSS_NOT_01__1_1];
+    //pLUShcemasDscRec = arPLssShcemasDscRecords[shCounterProcessedRec - LSS_NOT_01__1_1];
+    pLUShcemasDscRec = m_pArLssShcemasDscRecords[shCounterProcessedRec];
     i = pLUShcemasDscRec->chTypeOperation;
     switch (i) {
         case LU_GEN_OP_AND:
@@ -438,6 +455,221 @@ do{
         default:
             ;
         } //switch    
+    } while (shCounterProcessedRec < m_shAmountProcessedRec);//IN_SIMPLE_SELECTOR
+arChIntermediaResult[ OFFSET_OUT_OUT_LSS_ALARM    ] = 
+arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];//
+
+arChIntermediaResult[ OFFSET_OUT_OUT_LSS_MUTE     ] = 
+arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];// 
+   
+ this->arrOut [LSS_OUT_NAME_ALARM -1] = arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];       
+ this->arrOut [LSS_OUT_NAME_MUTE  -1] = arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];      
+
+}
+void CLULss::CalcLssSchematicOpt(void){
+register long rl_Val,i;
+
+#pragma data_alignment=4
+char arChIntermediaResult[(TOTAL_LSS_LU_CALC_POINT)];
+const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
+//for (i = OFFSET_OUT_LSS_NOT_01__1_1; i < OFFSET_OUT_IN_LSS_VCC; i++)//OFFSET_OUT_Or_22__3_1
+//    arChIntermediaResult[i] = 0xcc;
+arChIntermediaResult[ OFFSET_OUT_IN_LSS_NORMAL      ] = 0;//
+arChIntermediaResult[ OFFSET_OUT_IN_LSS_TRIGGER     ] = 0;//
+arChIntermediaResult[ OFFSET_OUT_IN_LSS_TIMELIMITED ] = 0;//
+arChIntermediaResult[ OFFSET_OUT_IN_LSS_LSSIN1      ] = 0;//
+arChIntermediaResult[ OFFSET_OUT_IN_LSS_MUTE_I      ] = 0;//
+arChIntermediaResult[ OFFSET_OUT_IN_LSS_RESET_I     ] = 0;//arChIntermediaResult[  ] = 0;//
+arChIntermediaResult[ OFFSET_OUT_IN_LSS_BLOCK_I     ] = 0;//
+
+arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_11__4_2    ] = m_chQTrg11;
+arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_11__4_2 + 1  ] = !m_chQTrg11;
+arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_29__4_2    ] = m_chQTrg29;
+arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_29__4_2 + 1  ] = !m_chQTrg29;
+
+arChIntermediaResult[ OFFSET_OUT_IN_LSS_VCC      ] = 1;//
+arChIntermediaResult[ OFFSET_OUT_IN_LSS_GROUND   ] = 0;//
+char *pCh = (this->arrPchIn[(LSS_IN_NAME__LSSIN1 - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_LSS_LSSIN1 ] = pCh[0];
+pCh = (this->arrPchIn[(LSS_IN_NAME__MUTE_I - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_LSS_MUTE_I ] = pCh[0];//
+pCh = (this->arrPchIn[(LSS_IN_NAME__RESET_I - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_LSS_RESET_I] = pCh[0];//
+pCh = (this->arrPchIn[(LSS_IN_NAME__BLOCK_I - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_LSS_BLOCK_I] = pCh[0];//
+
+    if (m_LssCfgSuit.chSel == LSS_MODE_SIMPLE)
+        arChIntermediaResult[ OFFSET_OUT_IN_LSS_NORMAL ] = 1; //
+    else //{
+        if (m_LssCfgSuit.chSel == LSS_MODE_TRIGGER)
+            arChIntermediaResult[ OFFSET_OUT_IN_LSS_TRIGGER ] = 1; //
+    else
+        if (m_LssCfgSuit.chSel == LSS_MODE_PERIOD)
+        arChIntermediaResult[ OFFSET_OUT_IN_LSS_TIMELIMITED ] = 1; //
+    //}
+
+//for (i = OFFSET_OUT_LSS_NOT_01__1_1; i < OFFSET_OUT_IN_LSS_VCC; i++)//OFFSET_OUT_Or_22__3_1
+//    arChIntermediaResult[i] = 0xcc;
+rl_Val = 0;
+long k, j, l;
+/*
+if(){
+
+}
+else{
+    if(){ Think About Mode selector
+    
+    }
+}
+*/
+short shCounterProcessedRec = LSS_NOT_01__1_1;
+do{
+    pLUShcemasDscRec = arPLssShcemasDscRecords[shCounterProcessedRec - LSS_NOT_01__1_1];
+    i = pLUShcemasDscRec->chTypeOperation;
+    switch (i) {
+        case LU_GEN_OP_AND:
+            rl_Val = 1;
+            for (i = 0; (i < pLUShcemasDscRec->chAmtIn) &&(rl_Val == 1); i++) {
+                k = pLUShcemasDscRec->pInputDscData[i].shOrderNumLU;
+                l = arShLssOffsets[k];
+                j = l + pLUShcemasDscRec->pInputDscData[i].shIndexOut;
+                rl_Val &= arChIntermediaResult[j];
+            }
+            //arChIntermediaResult[shCounterProcessedRec++] = rl_Val;
+            k = pLUShcemasDscRec->chOrderNumLU;
+            i = arShLssOffsets[k]; //shCounterProcessedRec must be LED_SCHEMATIC_LU_ORDER_NUMS
+            arChIntermediaResult[i] = rl_Val;
+            shCounterProcessedRec++;
+            break;
+        case LU_GEN_OP_OR:
+            rl_Val = 0;
+            for (i = 0; (i < pLUShcemasDscRec->chAmtIn) &&(rl_Val == 0); i++) {
+                k = pLUShcemasDscRec->pInputDscData[i].shOrderNumLU;
+                l = arShLssOffsets[k];
+                j = l + pLUShcemasDscRec->pInputDscData[i].shIndexOut;
+                rl_Val |= arChIntermediaResult[j];
+            }
+            //arChIntermediaResult[shCounterProcessedRec++] = rl_Val;
+            k = pLUShcemasDscRec->chOrderNumLU;
+            i = arShLssOffsets[k]; //shCounterProcessedRec must be LED_SCHEMATIC_LU_ORDER_NUMS
+            arChIntermediaResult[i] = rl_Val;
+            shCounterProcessedRec++;
+            break;    
+        case LU_GEN_OP_NOT:
+            do{
+            LUShcemasInDataDsc const *pLUShcemasInDataDsc;
+            rl_Val = 0;
+            pLUShcemasInDataDsc = pLUShcemasDscRec->pInputDscData;
+            i = pLUShcemasInDataDsc[0].shOrderNumLU;
+            rl_Val = arShLssOffsets[i];
+            i = rl_Val + pLUShcemasInDataDsc[0].shIndexOut;
+            rl_Val = arChIntermediaResult[i];
+                //arChIntermediaResult[shCounterProcessedRec++] = rl_Val;
+            k = pLUShcemasDscRec->chOrderNumLU;
+            l = arShLssOffsets[k]; //shCounterProcessedRec must be LED_SCHEMATIC_LU_ORDER_NUMS
+            arChIntermediaResult[l] = !rl_Val;
+            }while(false);
+            shCounterProcessedRec++;
+            break;
+        case LU_GEN_OP_D_TRIGGER_TYPE3:
+        case LU_GEN_OP_D_TRIGGER:
+          do{
+            long lIdxInC;
+             char chInC,chErrorQTrg,chQTrg;
+            chQTrg = GetStateVarchQTrg(pLUShcemasDscRec->chOrderNumLU);
+            
+            j = 0;
+                //Check Set
+            k = pLUShcemasDscRec->pInputDscData[0].shOrderNumLU;
+            l = arShLssOffsets[k ]  ;
+            rl_Val = arChIntermediaResult[l+ (pLUShcemasDscRec->pInputDscData[0].shIndexOut)];
+            if (rl_Val == 1) {
+
+                j = pLUShcemasDscRec->chOrderNumLU;
+                chQTrg = 1;
+            }
+            //Check Clr
+            k = pLUShcemasDscRec->pInputDscData[1].shOrderNumLU;
+            l = arShLssOffsets[k];
+            rl_Val = arChIntermediaResult[l+(pLUShcemasDscRec->pInputDscData[1].shIndexOut)];
+            if (rl_Val == 1) {
+
+                if(j == pLUShcemasDscRec->chOrderNumLU) {
+                    chErrorQTrg = GetStateVarchErrorQTrg(pLUShcemasDscRec->chOrderNumLU);
+                    chErrorQTrg = 1; //Fix Error
+                    SetStateVarchErrorQTrg(pLUShcemasDscRec->chOrderNumLU, chErrorQTrg);
+                }
+                chQTrg = 0;  
+            }
+            else {
+                    //Check C
+                j = 0;
+                k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
+                l = arShLssOffsets[k];
+                lIdxInC = arShLssOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+                chInC = GetStateVarchInC(pLUShcemasDscRec->chOrderNumLU);
+                if ((arChIntermediaResult[lIdxInC] > 0) && (chInC ==0 ) ){
+                //Check D
+                k = pLUShcemasDscRec->pInputDscData[2].shOrderNumLU;        
+                chQTrg = arChIntermediaResult[l+(pLUShcemasDscRec->pInputDscData[2].shIndexOut)];  
+                }
+            }
+            l = k = pLUShcemasDscRec->chOrderNumLU;
+            i = arShLssOffsets[k];
+            arChIntermediaResult[i] = chQTrg;
+            arChIntermediaResult[i + 1] = !chQTrg;
+            k = pLUShcemasDscRec->pInputDscData[3].shOrderNumLU;
+            lIdxInC = arShLssOffsets[k]+(pLUShcemasDscRec->pInputDscData[3].shIndexOut);
+            chInC = arChIntermediaResult[lIdxInC];
+            
+            SetStateVarchQTrg(l,chQTrg);
+            SetStateVarchInC(l,chInC);
+            
+          }while(false);
+            shCounterProcessedRec++;
+            break;
+        case LU_GEN_OP_DELAY1:
+            do{
+            LUShcemasInDataDsc const *pLUShcemasInDataDsc;
+            rl_Val = 0;
+            pLUShcemasInDataDsc = pLUShcemasDscRec->pInputDscData;
+            i = pLUShcemasInDataDsc[0].shOrderNumLU;
+            l = arShLssOffsets[i];
+            i = l + pLUShcemasInDataDsc[0].shIndexOut;
+            rl_Val = arChIntermediaResult[i];
+            rl_Val = TCs(rl_Val);
+            k = pLUShcemasDscRec->chOrderNumLU;
+            l = arShLssOffsets[k]; //shCounterProcessedRec must be LED_SCHEMATIC_LU_ORDER_NUMS
+            arChIntermediaResult[l] = rl_Val;
+            }while(false);
+            shCounterProcessedRec++;
+            break;
+        case LU_GEN_OP_PULSE:
+            do{
+            LUShcemasInDataDsc const *pLUShcemasInDataDsc;
+            rl_Val = 0;
+            pLUShcemasInDataDsc = pLUShcemasDscRec->pInputDscData;
+            i = pLUShcemasInDataDsc[0].shOrderNumLU;
+            l = arShLssOffsets[i];
+            i = l + pLUShcemasInDataDsc[0].shIndexOut;
+            rl_Val = arChIntermediaResult[i];
+            j = 0;//
+            k = pLUShcemasDscRec->chOrderNumLU;
+            if (k == LSS_DELAY_05_1_1) {
+                rl_Val = T1_1Ms(rl_Val);
+            } else if (k == LSS_DELAY_06_1_1) {
+                rl_Val = T1_2Ms(rl_Val);
+            }
+            k = pLUShcemasDscRec->chOrderNumLU;
+            l = arShLssOffsets[k]; //shCounterProcessedRec must be LED_SCHEMATIC_LU_ORDER_NUMS
+            arChIntermediaResult[l] = rl_Val;
+            }while(false);
+            shCounterProcessedRec++;
+            break;
+            
+        default:
+            ;
+        } //switch    
     } while (shCounterProcessedRec < IN_SIMPLE_SELECTOR);//IN_LSS_VCC
 arChIntermediaResult[ OFFSET_OUT_OUT_LSS_ALARM    ] = 
 arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];//
@@ -457,7 +689,7 @@ if(chGBL_BP_StopLss == rCLULss.shShemasOrdNumStng)
     asm(
                 "bkpt 1"
                 );
-rCLULss.CalcLssSchematic();				
+rCLULss.CalcLssSchematicOpt();				
 }
 
 

@@ -1761,6 +1761,9 @@
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.h</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\CLUTs.cpp</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\ExtPoint.cpp</name>
       </file>
       <file>
@@ -1828,6 +1831,12 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\RunErLed.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\Schem_O.cpp</name>
+        <configuration>
+          <name>Flash-Debug</name>
+        </configuration>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp</name>

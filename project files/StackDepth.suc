@@ -81,7 +81,7 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          
 
 //Андрія функції
-exclude  ChangeCfg, "Shematic::DoCalc()", SetHrdLed, "Null_OP(void*)", "SET_LED_Op(void *)", "LedAuxOp1", "LedAuxOp2", "LedAuxOp3", "LedAuxOp4", "PulseAlt_Op(void *)", "AND_Op_8_1(void *)", "NOT_Op(void *)", "BGSig_Op(void *)", "READ_DI_Op(void *)", "SET_OUT_Op(void *)", "FKey_Op(void *)", "LssOp(void *)", "NOT_Op_1_1(void *)", "DTRG_Op_4_2(void *)", "TU_Op(void *)", "Mft_Op(void *)";
+exclude  ChangeCfg, "Shematic::DoCalc()", SetHrdLed, "Null_OP(void*)", "SET_LED_Op(void *)", "LedAuxOp1", "LedAuxOp2", "LedAuxOp3", "LedAuxOp4", "PulseAlt_Op(void *)", "AND_Op_8_1(void *)", "NOT_Op(void *)", "BGSig_Op(void *)", "READ_DI_Op(void *)", "SET_OUT_Op(void *)", "FKey_Op(void *)", "LssOp(void *)", "NOT_Op_1_1(void *)", "DTRG_Op_4_2(void *)", "TU_Op(void *)", "Mft_Op(void *)", "OR_Op_8_1(void *)", "XOR_Op_8_1(void *)", "Ts__2_1_Op(void *)";
 
 max recursion depth Get_data : 2;
 
