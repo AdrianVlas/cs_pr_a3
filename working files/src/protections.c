@@ -804,6 +804,38 @@ void TIM2_IRQHandler(void)
 /*****************************************************/
 void event_log_handler(void)
 {
+  //¬изначаЇмо к≥льк≥сть доступних ком≥рок у буфер≥ дл€ ∆урналу под≥й
+  int32_t number_empty_cells;
+  uint32_t head = head_fifo_buffer_log_records, tail = tail_fifo_buffer_log_records;
+  number_empty_cells = (int32_t)(tail - head);
+  while (number_empty_cells <= 0) number_empty_cells += MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
+  
+  uint32_t *p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
+  uint32_t param = *param;
+  
+  size_t i = 0;
+  while (
+         (i < (current_config_prt.n_log*LOG_SIGNALS_IN)) &&
+         ((param = (*p_param)) != 0) 
+        )   
+  {
+    unsigned int state_before = (param >> SFIFT_PARAM_INTERNAL_BITS) & MASKA_PARAM_INTERNAL_BITS;
+    unsigned int id_input     = (param >> SFIFT_PARAM_ID           ) & MASKA_PARAM_ID ;
+    unsigned int n_input      = (param >> SFIFT_PARAM_N            ) & MASKA_PARAM_N  ;
+    unsigned int out_input    = (param >> SFIFT_PARAM_OUT          ) & MASKA_PARAM_OUT;
+    
+    switch (id_input)
+    {
+    default:
+      {
+        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+        total_error_sw_fixed(6);
+      }
+    }
+        
+    i++;
+  }
+
 }
 /*****************************************************/
 
