@@ -808,24 +808,128 @@ void event_log_handler(void)
   int32_t number_empty_cells;
   uint32_t head = head_fifo_buffer_log_records, tail = tail_fifo_buffer_log_records;
   number_empty_cells = (int32_t)(tail - head);
-  while (number_empty_cells <= 0) number_empty_cells += MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
+  if (
+      (number_empty_cells == 0) &&
+      (_CHECK_SET_BIT(diagnostyka, ERROR_LOG_OVERLOAD_BIT) == 0)
+     )
+  {
+    number_empty_cells = MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
+  }
+  while (number_empty_cells < 0) number_empty_cells += MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
+
+  /***
+  Час фіксації зміни
+  ***/
+  uint8_t *label_to_time_array;
+  if (copying_time == 0) label_to_time_array = time;
+  else label_to_time_array = time_copy;
+  /***/
   
-  uint32_t *p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
-  uint32_t param = *param;
+  uint32_t *p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]); /*поки що вказівник вказує на елемент де записуються вихідні сигнали, але пре-інкрементація дасть, що вказівник буде вже вказувати та перший вхід при вході у цикл*/
+  uint32_t param;
   
   size_t i = 0;
   while (
          (i < (current_config_prt.n_log*LOG_SIGNALS_IN)) &&
-         ((param = (*p_param)) != 0) 
+         ((param = (*(++p_param))) != 0) &&
+         (number_empty_cells > 0)  
         )   
   {
-    unsigned int state_before = (param >> SFIFT_PARAM_INTERNAL_BITS) & MASKA_PARAM_INTERNAL_BITS;
-    unsigned int id_input     = (param >> SFIFT_PARAM_ID           ) & MASKA_PARAM_ID ;
-    unsigned int n_input      = (param >> SFIFT_PARAM_N            ) & MASKA_PARAM_N  ;
-    unsigned int out_input    = (param >> SFIFT_PARAM_OUT          ) & MASKA_PARAM_OUT;
+    uint32_t state_before = (param >> SFIFT_PARAM_INTERNAL_BITS) & MASKA_PARAM_INTERNAL_BITS;
+    uint32_t id_input     = (param >> SFIFT_PARAM_ID           ) & MASKA_PARAM_ID ;
+    uint32_t n_input      = (param >> SFIFT_PARAM_N            ) & MASKA_PARAM_N  ;
+    uint32_t out_input    = (param >> SFIFT_PARAM_OUT          ) & MASKA_PARAM_OUT;
+    
+    uint32_t state_now;
+    uint32_t NNC_now = 0, NNC_before = 0;
+    __LN_GROUP_ALARM *point;
     
     switch (id_input)
     {
+    case ID_FB_CONTROL_BLOCK:
+      {
+        state_now = (fix_block_active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_INPUT:
+      {
+        state_now = (((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_OUTPUT:
+    case ID_FB_LED:
+      {
+        state_now = (((__LN_OUTPUT_LED*)spca_of_p_prt[id_input - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_BUTTON:
+      {
+        state_now = (((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_ALARM:
+      {
+        state_now = (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_GROUP_ALARM:
+      {
+        point = (__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + n_input;
+        state_now = (point->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        NNC_now = point->NNC;
+        NNC_before = point->NNC_before;
+        break;
+      }
+    case ID_FB_AND:
+      {
+        state_now = (((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_OR:
+      {
+        state_now = (((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_XOR:
+      {
+        state_now = (((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_NOT:
+      {
+        state_now = (((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_TIMER:
+      {
+        state_now = (((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_TRIGGER:
+      {
+        state_now = (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_MEANDER:
+      {
+        state_now = (((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_TU:
+      {
+        state_now = (((__LN_TU*)spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_TS:
+      {
+        state_now = (((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+        break;
+      }
+    case ID_FB_EVENT_LOG:
+      {
+        state_now = (*((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) & (out_input & ((1 << 5) - 1)) != 0);
+        break;
+      }
     default:
       {
         //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
@@ -833,9 +937,75 @@ void event_log_handler(void)
       }
     }
         
+    if (
+        (state_before != state_now) ||
+        (
+         (id_input == ID_FB_GROUP_ALARM) &&
+         (state_now == true) && 
+         (NNC_now != NNC_before)  
+        )   
+       )   
+    {
+      //Є що записувати у Журнал подій
+
+      /***
+      Визначаємо індекс у масиві буфері Журналу подій з якого треба почати заповнювати дані
+      ***/
+      uint32_t index_into_buffer_log = head*SIZE_ONE_RECORD_LOG;
+      /***/
+      
+      /***
+      Формуємо сам запис
+      ***/
+      //Помічаємо мітку початку запису
+      buffer_log_records[index_into_buffer_log++] = LABEL_START_RECORD_LOG;
+      //Дата і час події
+      for(size_t j = 0; j < 7; j++) buffer_log_records[index_into_buffer_log++] = *(label_to_time_array + j);
+      
+      //Визначаємо новий стан з його фіксацією
+      param = (param & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))) | ((state_now & MASKA_PARAM_INTERNAL_BITS) << SFIFT_PARAM_INTERNAL_BITS);
+      *p_param = param;
+      
+      buffer_log_records[index_into_buffer_log++] = (param >> (0*8)) & 0xff;
+      buffer_log_records[index_into_buffer_log++] = (param >> (1*8)) & 0xff;
+      buffer_log_records[index_into_buffer_log++] = (param >> (2*8)) & 0xff;
+      buffer_log_records[index_into_buffer_log++] = (param >> (3*8)) & 0xff;
+
+      buffer_log_records[index_into_buffer_log] = NNC_now;
+      if (id_input == ID_FB_GROUP_ALARM)
+      {
+        point->NNC_before = NNC_now;
+      } 
+      /***/
+
+      /***
+      Дії по завершенню формування запису
+      ***/
+      //Кількість комірок доступних для запису
+      number_empty_cells--;
+          
+      //Head буферу FIFO
+      head++;
+      while (head >= MAX_NUMBER_RECORDS_LOG_INTO_BUFFER) head -= MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
+      /***/
+    }
+    
     i++;
   }
+  head_fifo_buffer_log_records = head;
 
+  if  (
+       (number_empty_cells == 0) &&
+       (param != 0) &&
+       (i < (current_config_prt.n_log*LOG_SIGNALS_IN))
+      ) 
+  {
+    _SET_BIT(set_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
+  }
+  else
+  {
+    _SET_BIT(clear_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
+  }
 }
 /*****************************************************/
 

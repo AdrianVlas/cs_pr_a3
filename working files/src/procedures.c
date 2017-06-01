@@ -115,15 +115,9 @@ void changing_diagnostyka_state(void)
   /*****/
   
   //Визначаємо, чи відбулися зміни
-  unsigned int value_changes[2], diagnostyka_now[2];
-  /*
-  Робимо копію тепершньої діагностики, бо ця функція працює на найнижчому пріоритеті,
-  тому під час роботи може появитися нові значення, які ми не врахували у цій функції
-  */
-  diagnostyka_now[0] = diagnostyka[0];
-  diagnostyka_now[1] = diagnostyka[1];
-  value_changes[0] = diagnostyka_before[0] ^ diagnostyka_now[0];
-  value_changes[1] = diagnostyka_before[1] ^ diagnostyka_now[1];
+  unsigned int value_changes[2];
+  value_changes[0] = diagnostyka_before[0] ^ diagnostyka[0];
+  value_changes[1] = diagnostyka_before[1] ^ diagnostyka[1];
   
   /*
   У реєстраторі програмних подій має реєструватися тільки перехід з пасивного стану у активний
@@ -137,7 +131,7 @@ void changing_diagnostyka_state(void)
   if (_CHECK_SET_BIT(value_changes, EVENT_START_SYSTEM_BIT) != 0)
   {
     //Зафіксовано що подія "Старт пристр." змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_START_SYSTEM_BIT) == 0)
+    if (_CHECK_SET_BIT(diagnostyka, EVENT_START_SYSTEM_BIT) == 0)
     {
       /*
       Новий стан події " Старт пристр." є неактивний стан
@@ -158,7 +152,7 @@ void changing_diagnostyka_state(void)
   if (_CHECK_SET_BIT(value_changes, EVENT_RESTART_SYSTEM_BIT) != 0)
   {
     //Зафіксовано що подія "Рестарт пристр." змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_RESTART_SYSTEM_BIT) == 0)
+    if (_CHECK_SET_BIT(diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0)
     {
       /*
       Новий стан події "Рестарт пристр." є неактивний стан
@@ -179,7 +173,7 @@ void changing_diagnostyka_state(void)
   if (_CHECK_SET_BIT(value_changes, EVENT_SOFT_RESTART_SYSTEM_BIT) != 0)
   {
     //Зафіксовано що подія "Пр.Рестарт пр." змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_SOFT_RESTART_SYSTEM_BIT) == 0)
+    if (_CHECK_SET_BIT(diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT) == 0)
     {
       /*
       Новий стан події "Пр.Рестарт пр." є неактивний стан
@@ -200,7 +194,7 @@ void changing_diagnostyka_state(void)
   if (_CHECK_SET_BIT(value_changes, EVENT_CHANGE_CONFIGURATION_BIT) != 0)
   {
     //Зафіксовано що подія "Зм.конфіругації" змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_CHANGE_CONFIGURATION_BIT) == 0)
+    if (_CHECK_SET_BIT(diagnostyka, EVENT_CHANGE_CONFIGURATION_BIT) == 0)
     {
       /*
       Новий стан події "Зм.конфіругації" є неактивний стан
@@ -221,7 +215,7 @@ void changing_diagnostyka_state(void)
   if (_CHECK_SET_BIT(value_changes, EVENT_CHANGE_SETTINGS_BIT) != 0)
   {
     //Зафіксовано що подія "Зм.налаштувань" змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_CHANGE_SETTINGS_BIT) == 0)
+    if (_CHECK_SET_BIT(diagnostyka, EVENT_CHANGE_SETTINGS_BIT) == 0)
     {
       /*
       Новий стан події "Зм.налаштувань" є неактивний стан
@@ -251,7 +245,7 @@ void changing_diagnostyka_state(void)
   if (_CHECK_SET_BIT(value_changes, EVENT_STOP_SYSTEM_BIT) != 0)
   {
     //Зафіксовано що подія "Зуп.пристр." змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka_now, EVENT_STOP_SYSTEM_BIT) != 0)
+    if (_CHECK_SET_BIT(diagnostyka, EVENT_STOP_SYSTEM_BIT) != 0)
     {
       /*
       Cтан події "Зуп.пристр." встановився
@@ -260,7 +254,6 @@ void changing_diagnostyka_state(void)
       - знімаємо встановлений біт у масиві, який відповідає за текучий стан подій діагностики
       */
       _CLEAR_BIT(diagnostyka, EVENT_STOP_SYSTEM_BIT);
-      _CLEAR_BIT(diagnostyka_now, EVENT_STOP_SYSTEM_BIT);
     }
   }
   /*****/
@@ -269,7 +262,14 @@ void changing_diagnostyka_state(void)
   int32_t number_empty_cells;
   uint32_t head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
   number_empty_cells = (int32_t)(tail - head);
-  while (number_empty_cells <= 0) number_empty_cells += MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
+  if (
+      (number_empty_cells == 0) &&
+      (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) == 0)
+     )
+  {
+    number_empty_cells = MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
+  }
+  while (number_empty_cells < 0) number_empty_cells += MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
 
   if (
       (
@@ -278,7 +278,7 @@ void changing_diagnostyka_state(void)
       )
       ||
       (
-       (_CHECK_SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT) != 0) &&
+       (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) != 0) &&
        (number_empty_cells > 1)  
       )
      )
@@ -286,11 +286,9 @@ void changing_diagnostyka_state(void)
     /***
     Час фіксації зміни у діагностиці
     ***/
-    uint8_t time_event[7];
     uint8_t *label_to_time_array;
     if (copying_time == 0) label_to_time_array = time;
     else label_to_time_array = time_copy;
-    for(size_t i = 0; i < 7; i++) time_event[i] = *(label_to_time_array + i);
     /***/
         
     /***
@@ -300,13 +298,13 @@ void changing_diagnostyka_state(void)
     while (
            (
             (number_empty_cells == 1) &&
-            (_CHECK_SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
+            (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
            )
            ||
            (i < (8*sizeof(value_changes))) 
            ||
            (
-            (_CHECK_SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT) != 0) &&
+            (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) != 0) &&
             (number_empty_cells > 1)
            )
           )
@@ -318,7 +316,7 @@ void changing_diagnostyka_state(void)
       if (number_empty_cells <= 0) break;
       else if (
                (number_empty_cells == 1) &&
-               (_CHECK_SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
+               (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
               )
       {
         event_number = ERROR_PR_ERR_OVERLOAD_BIT + 1;
@@ -326,7 +324,6 @@ void changing_diagnostyka_state(void)
         fix_event = true;
 
         _SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
-        _SET_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT);
         _SET_BIT(value_changes, ERROR_PR_ERR_OVERLOAD_BIT);
       }
       else if (i < 8*sizeof(value_changes))
@@ -334,7 +331,7 @@ void changing_diagnostyka_state(void)
         if (_CHECK_SET_BIT(value_changes, i) != 0)
         {
           event_number = i + 1;
-          event_state = (i != EVENT_STOP_SYSTEM_BIT) ? (_CHECK_SET_BIT(diagnostyka_now, i) != 0) : true;
+          event_state = (i != EVENT_STOP_SYSTEM_BIT) ? (_CHECK_SET_BIT(diagnostyka, i) != 0) : true;
           fix_event = true;
         }
           
@@ -347,14 +344,13 @@ void changing_diagnostyka_state(void)
         fix_event = true;
 
         _CLEAR_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
-        _CLEAR_BIT(diagnostyka_now, ERROR_PR_ERR_OVERLOAD_BIT);
         _SET_BIT(value_changes, ERROR_PR_ERR_OVERLOAD_BIT);
       }  
       
       if (fix_event == true)
       {
         /***
-        Визначаємо індекс у масиві буферу програмних помилок з якого треба почати заповнювати дані
+        Визначаємо індекс у масиві буфері програмних помилок з якого треба почати заповнювати дані
         ***/
         uint32_t index_into_buffer_pr_err = head*SIZE_ONE_RECORD_PR_ERR;
         /***/
@@ -365,7 +361,7 @@ void changing_diagnostyka_state(void)
         //Помічаємо мітку початку запису
         buffer_pr_err_records[index_into_buffer_pr_err++] = LABEL_START_RECORD_PR_ERR;
         //Дата і час події
-        for(size_t j = 0; j < 7; j++) buffer_pr_err_records[index_into_buffer_pr_err++] = time_event[j];
+        for(size_t j = 0; j < 7; j++) buffer_pr_err_records[index_into_buffer_pr_err++] = *(label_to_time_array + j);
         //Подія (двобайтна) і її значення
         buffer_pr_err_records[index_into_buffer_pr_err++] =   event_number       & 0xff; /*Номер починається з "1" */
         buffer_pr_err_records[index_into_buffer_pr_err++] = ((event_number >> 8) & 0x7f) | (event_state << 7);
@@ -389,8 +385,8 @@ void changing_diagnostyka_state(void)
     /***
     Фіксуємо попередній стан, який ми вже записали і відносно якого будемо визначати нові зміни
     ***/
-    diagnostyka_before[0] = diagnostyka_now[0];
-    diagnostyka_before[1] = diagnostyka_now[1];
+    diagnostyka_before[0] = diagnostyka[0];
+    diagnostyka_before[1] = diagnostyka[1];
     /***/
   }
 }
@@ -700,7 +696,17 @@ void control_settings(unsigned int modified)
     if ((size_of_block != 0) && (n_item != 0))
     {
       //Контроль контрольної суми налаштувань для захистів
-      temp_value = *(point_1 + shift);
+      if (
+          (block != ID_FB_EVENT_LOG) ||
+          ((shift % sizeof(__LOG_INPUT)) != (sizeof(__LOG_INPUT) - 1))  
+         )   
+      {
+        temp_value = *(point_1 + shift);
+      }
+      else 
+      {
+        temp_value = *(point_1 + shift) & (uint8_t)(~(MASKA_PARAM_INTERNAL_BITS << (SFIFT_PARAM_INTERNAL_BITS % sizeof(__LOG_INPUT))));
+      }
       crc_settings_tmp += temp_value;
 
       //Контроль налаштувань для захистів з налаштуваннями-контейнером
@@ -1721,7 +1727,7 @@ void min_settings_GROUP_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t i
       for (size_t i = 0; i < DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8); i++)
       {
         ((__LN_GROUP_ALARM *)(base) + shift)->active_state[i] = 0;
-        ((__LN_GROUP_ALARM *)(base) + shift)->NNC = 0;
+        ((__LN_GROUP_ALARM *)(base) + shift)->NNC_before = ((__LN_GROUP_ALARM *)(base) + shift)->NNC = 0;
       }
     }
   }

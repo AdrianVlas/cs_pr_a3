@@ -231,6 +231,8 @@ typedef struct
 //  int32_t work_delay[GROUP_ALARM_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8)];
   uint32_t NNC; /*New number of Curcuit*/
+  
+  uint32_t NNC_before; /*попередній стан NNC*/
 
 } __LN_GROUP_ALARM;
 /**********/
