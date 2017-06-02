@@ -619,6 +619,7 @@ void TIM2_IRQHandler(void)
     /***********************************************************/
     //ѕ≥дготовлюЇмо новий запис дл€ ∆урналу под≥й
     /***********************************************************/
+    event_log_handler();
     /***********************************************************/
     
     /***********************************************************/
@@ -828,6 +829,10 @@ void event_log_handler(void)
   uint32_t *p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]); /*поки що вказ≥вник вказуЇ на елемент де записуютьс€ вих≥дн≥ сигнали, але пре-≥нкрементац≥€ дасть, що вказ≥вник буде вже вказувати та перший вх≥д при вход≥ у цикл*/
   uint32_t param;
   
+//  uint32_t id_input_prev = 0;
+//  int32_t n_input_before = 0;
+//  uintptr_t *address;
+  
   size_t i = 0;
   while (
          (i < (current_config_prt.n_log*LOG_SIGNALS_IN)) &&
@@ -837,104 +842,289 @@ void event_log_handler(void)
   {
     uint32_t state_before = (param >> SFIFT_PARAM_INTERNAL_BITS) & MASKA_PARAM_INTERNAL_BITS;
     uint32_t id_input     = (param >> SFIFT_PARAM_ID           ) & MASKA_PARAM_ID ;
-    uint32_t n_input      = (param >> SFIFT_PARAM_N            ) & MASKA_PARAM_N  ;
-    uint32_t out_input    = (param >> SFIFT_PARAM_OUT          ) & MASKA_PARAM_OUT;
+    int32_t n_input       = ((param >> SFIFT_PARAM_N            ) & MASKA_PARAM_N  ) - 1;
+    int32_t out_input     = ((param >> SFIFT_PARAM_OUT          ) & MASKA_PARAM_OUT) - 1;
     
     uint32_t state_now;
     uint32_t NNC_now = 0, NNC_before = 0;
     __LN_GROUP_ALARM *point;
     
-    switch (id_input)
+    if ((n_input >= 0) && (out_input >= 0))
     {
-    case ID_FB_CONTROL_BLOCK:
+      switch (id_input)
       {
-        state_now = (fix_block_active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
+      case ID_FB_CONTROL_BLOCK:
+        {
+          state_now = (fix_block_active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_INPUT:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_INPUT*)(address) + 1);
+//          }
+//          state_now = (((__LN_INPUT*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_OUTPUT:
+      case ID_FB_LED:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_OUTPUT_LED*)spca_of_p_prt[id_input - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_OUTPUT_LED*)(address) + 1);
+//          }
+//          state_now = (((__LN_OUTPUT_LED*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_OUTPUT_LED*)spca_of_p_prt[id_input - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_BUTTON:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_BUTTON*)(address) + 1);
+//          }
+//          state_now = (((__LN_BUTTON*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_ALARM:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_ALARM*)(address) + 1);
+//          }
+//          state_now = (((__LN_ALARM*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_GROUP_ALARM:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_GROUP_ALARM*)(address) + 1);
+//          }
+//          state_now = (((__LN_GROUP_ALARM*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          NNC_now = ((__LN_GROUP_ALARM*)address)->NNC;
+//          NNC_before = ((__LN_GROUP_ALARM*)address)->NNC_before;
+          point = (__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + n_input;
+          state_now = (point->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          NNC_now = point->NNC;
+          NNC_before = point->NNC_before;
+          break;
+        }
+      case ID_FB_AND:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_AND*)(address) + 1);
+//          }
+//          state_now = (((__LN_AND*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_OR:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_OR*)(address) + 1);
+//          }
+//          state_now = (((__LN_OR*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_XOR:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_XOR*)(address) + 1);
+//          }
+//          state_now = (((__LN_XOR*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_NOT:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_NOT*)(address) + 1);
+//          }
+//          state_now = (((__LN_NOT*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_TIMER:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TIMER*)(address) + 1);
+//          }
+//          state_now = (((__LN_TIMER*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_TRIGGER:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input)
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TRIGGER*)(address) + 1);
+//          }
+//          state_now = (((__LN_TRIGGER*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_MEANDER:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input)
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_MEANDER*)(address) + 1);
+//          }
+//          state_now = (((__LN_MEANDER*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_TU:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TU*)spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input)
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TU*)(address) + 1);
+//          }
+//          state_now = (((__LN_TU*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_TU*)spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_TS:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input)
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TS*)(address) + 1);
+//          }
+//          state_now = (((__LN_TS*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = (((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          break;
+        }
+      case ID_FB_EVENT_LOG:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+//          }
+//          state_now = (*((__LOG_INPUT*)address) &  (out_input & ((1 << 5) - 1)) != 0);
+          state_now = (*((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) & (out_input & ((1 << 5) - 1)) != 0);
+          break;
+        }
+      default:
+        {
+          //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+          total_error_sw_fixed(6);
+        }
       }
-    case ID_FB_INPUT:
-      {
-        state_now = (((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_OUTPUT:
-    case ID_FB_LED:
-      {
-        state_now = (((__LN_OUTPUT_LED*)spca_of_p_prt[id_input - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_BUTTON:
-      {
-        state_now = (((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_ALARM:
-      {
-        state_now = (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_GROUP_ALARM:
-      {
-        point = (__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + n_input;
-        state_now = (point->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        NNC_now = point->NNC;
-        NNC_before = point->NNC_before;
-        break;
-      }
-    case ID_FB_AND:
-      {
-        state_now = (((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_OR:
-      {
-        state_now = (((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_XOR:
-      {
-        state_now = (((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_NOT:
-      {
-        state_now = (((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_TIMER:
-      {
-        state_now = (((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_TRIGGER:
-      {
-        state_now = (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_MEANDER:
-      {
-        state_now = (((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_TU:
-      {
-        state_now = (((__LN_TU*)spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_TS:
-      {
-        state_now = (((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-        break;
-      }
-    case ID_FB_EVENT_LOG:
-      {
-        state_now = (*((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) & (out_input & ((1 << 5) - 1)) != 0);
-        break;
-      }
-    default:
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(6);
-      }
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(7);
     }
         
     if (
@@ -974,6 +1164,7 @@ void event_log_handler(void)
       buffer_log_records[index_into_buffer_log] = NNC_now;
       if (id_input == ID_FB_GROUP_ALARM)
       {
+//        ((__LN_GROUP_ALARM*)address)->NNC_before = NNC_now;
         point->NNC_before = NNC_now;
       } 
       /***/
