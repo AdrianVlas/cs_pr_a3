@@ -705,7 +705,17 @@ void control_settings(unsigned int modified)
       }
       else 
       {
-        temp_value = *(point_1 + shift) & (uint8_t)(~(MASKA_PARAM_INTERNAL_BITS << (SFIFT_PARAM_INTERNAL_BITS % sizeof(__LOG_INPUT))));
+//        uint32_t a1 = MASKA_PARAM_INTERNAL_BITS;
+//        uint32_t a2 = SFIFT_PARAM_INTERNAL_BITS;
+//        uint32_t a3 = 8;
+//        uint32_t a4 = a2 % a3;
+//        uint32_t a5 = a1 << a4;
+//        uint8_t a6  = (uint32_t)(~a5);
+//        uint8_t a7  = *(point_1 + shift);
+//        uint8_t a8  = a7 & a6;
+//        temp_value = a8;
+
+        temp_value = *(point_1 + shift) & (uint8_t)(~(MASKA_PARAM_INTERNAL_BITS << (SFIFT_PARAM_INTERNAL_BITS % 8)));
       }
       crc_settings_tmp += temp_value;
 
