@@ -201,6 +201,7 @@ extern enum _result_pressed_enter_during_edition press_enter_in_setting_language
 extern void press_esc_in_setting_language(void);
 extern void change_setting_language(unsigned int);
 extern void move_into_ekran_event_registraqtors(unsigned int, int);
+extern void make_ekran_list_event_log(void);
 extern void make_ekran_list_event_pr_err(void);
 extern void make_ekran_data_pr_err(void);
 

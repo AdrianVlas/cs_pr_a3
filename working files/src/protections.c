@@ -855,7 +855,7 @@ void event_log_handler(void)
       {
       case ID_FB_CONTROL_BLOCK:
         {
-          state_now = (fix_block_active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = ((fix_block_active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_INPUT:
@@ -871,8 +871,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_INPUT*)(address) + 1);
 //          }
-//          state_now = (((__LN_INPUT*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_INPUT*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_OUTPUT:
@@ -889,8 +889,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_OUTPUT_LED*)(address) + 1);
 //          }
-//          state_now = (((__LN_OUTPUT_LED*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_OUTPUT_LED*)spca_of_p_prt[id_input - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_OUTPUT_LED*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_OUTPUT_LED*)spca_of_p_prt[id_input - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_BUTTON:
@@ -906,8 +906,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_BUTTON*)(address) + 1);
 //          }
-//          state_now = (((__LN_BUTTON*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_BUTTON*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_ALARM:
@@ -923,8 +923,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_ALARM*)(address) + 1);
 //          }
-//          state_now = (((__LN_ALARM*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_ALARM*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_GROUP_ALARM:
@@ -940,11 +940,11 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_GROUP_ALARM*)(address) + 1);
 //          }
-//          state_now = (((__LN_GROUP_ALARM*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_GROUP_ALARM*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
 //          NNC_now = ((__LN_GROUP_ALARM*)address)->NNC;
 //          NNC_before = ((__LN_GROUP_ALARM*)address)->NNC_before;
           point = (__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + n_input;
-          state_now = (point->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+          state_now = ((point->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           NNC_now = point->NNC;
           NNC_before = point->NNC_before;
           break;
@@ -962,8 +962,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_AND*)(address) + 1);
 //          }
-//          state_now = (((__LN_AND*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_AND*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_OR:
@@ -979,8 +979,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_OR*)(address) + 1);
 //          }
-//          state_now = (((__LN_OR*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_OR*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_XOR:
@@ -996,8 +996,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_XOR*)(address) + 1);
 //          }
-//          state_now = (((__LN_XOR*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_XOR*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_NOT:
@@ -1013,8 +1013,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_NOT*)(address) + 1);
 //          }
-//          state_now = (((__LN_NOT*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_NOT*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_TIMER:
@@ -1030,8 +1030,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_TIMER*)(address) + 1);
 //          }
-//          state_now = (((__LN_TIMER*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_TIMER*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_TRIGGER:
@@ -1047,8 +1047,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_TRIGGER*)(address) + 1);
 //          }
-//          state_now = (((__LN_TRIGGER*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_TRIGGER*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_MEANDER:
@@ -1064,8 +1064,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_MEANDER*)(address) + 1);
 //          }
-//          state_now = (((__LN_MEANDER*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_MEANDER*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_TU:
@@ -1081,8 +1081,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_TU*)(address) + 1);
 //          }
-//          state_now = (((__LN_TU*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_TU*)spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_TU*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_TU*)spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_TS:
@@ -1098,8 +1098,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LN_TS*)(address) + 1);
 //          }
-//          state_now = (((__LN_TS*)address)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
-          state_now = (((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (out_input & ((1 << 3) - 1)) != 0);
+//          state_now = ((((__LN_TS*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
       case ID_FB_EVENT_LOG:
@@ -1110,8 +1110,8 @@ void event_log_handler(void)
 //            n_input_before = n_input;
 //            address = (uintptr_t*)((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
 //          }
-//          state_now = (*((__LOG_INPUT*)address) &  (out_input & ((1 << 5) - 1)) != 0);
-          state_now = (*((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) & (out_input & ((1 << 5) - 1)) != 0);
+//          state_now = ((*((__LOG_INPUT*)address) &  (1 << (out_input & ((1 << 5) - 1)))) != 0);
+          state_now = ((*((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) & (1 << (out_input & ((1 << 5) - 1)))) != 0);
           break;
         }
       default:

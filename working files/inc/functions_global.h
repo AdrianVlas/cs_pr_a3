@@ -203,6 +203,7 @@ unsigned int max_number_digit_in_number(int);
 void move_into_ekran_input_or_output(unsigned int, int);
 void make_ekran_list_registrators(void);
 void move_into_ekran_event_registraqtors(unsigned int, int);
+void make_ekran_list_event_log(void);
 void make_ekran_list_event_pr_err(void);
 void make_ekran_data_pr_err(void);
 
