@@ -248,7 +248,9 @@ const uint32_t number_page_serial_dataflash[NUMBER_DATAFLASH_CHIP] = {NUMBER_PAG
 uint32_t control_spi_df_tasks[NUMBER_DATAFLASH_CHIP] = {0, 0};
 volatile uint32_t control_tasks_dataflash = 0;
 
-SRAM1 uint8_t buffer_for_menu_read_record[SIZE_ONE_RECORD_PR_ERR];
+SRAM1 uint8_t buffer_for_menu_read_record[SIZE_MAX_ONE_RECORD];
+SRAM1 uint8_t buffer_for_USB_read_record_log[SIZE_ONE_RECORD_LOG];
+SRAM1 uint8_t buffer_for_RS485_read_record_log[SIZE_ONE_RECORD_LOG];
 SRAM1 uint8_t buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 SRAM1 uint8_t buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 

@@ -79,6 +79,12 @@ enum _index_dataflash
 #define MAX_ADDRESS_PR_ERR_AREA_WORK          (MAX_ADDRESS_PR_ERR_AREA - (SIZE_PR_ERR_AREA % SIZE_ONE_RECORD_PR_ERR))
 #define MAX_NUMBER_RECORDS_INTO_PR_ERR        (SIZE_PR_ERR_AREA / SIZE_ONE_RECORD_PR_ERR)
 
+#if (SIZE_ONE_RECORD_LOG >= SIZE_ONE_RECORD_PR_ERR)
+#define SIZE_MAX_ONE_RECORD SIZE_ONE_RECORD_LOG
+#else
+#define SIZE_MAX_ONE_RECORD SIZE_ONE_RECORD_PR_ERR
+#endif
+
 #define TRANSACTION_EXECUTING_NONE              0
 #define TRANSACTION_EXECUTING                   1
 #define TRANSACTION_EXECUTED_WAIT_ANALIZE       2
@@ -102,6 +108,13 @@ enum _task_df_bit
   
   TASK_ERASE_DATAFLASH_2_BIT = _SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2
 };
+
+#define TASK_FOR_LOG (                                                                   \
+                      MASKA_FOR_BIT(TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT)          |\
+                      MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT)        |\
+                      MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT)         |\
+                      MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT)        \
+                     )   
 
 #define LABEL_START_RECORD_LOG          0xA5
 #define LABEL_START_RECORD_PR_ERR       0x5A
