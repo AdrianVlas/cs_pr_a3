@@ -1260,9 +1260,6 @@ void start_settings_peripherals(void)
 
   /* Дозволяємо переривання від каналу 1 таймера 3*/
   TIM_ITConfig(TIM3, TIM_IT_CC1, ENABLE);
-
-  /* Дозволяєм роботу таймера */
-  TIM_Cmd(TIM3, ENABLE);
   /**********************/
 
   /**********************/
