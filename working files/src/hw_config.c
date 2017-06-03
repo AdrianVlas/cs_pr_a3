@@ -58,8 +58,9 @@ void Set_System(void)
   //APB1
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C     |
                          RCC_APB1Periph_TIM2    |
-                         RCC_APB1Periph_TIM5    |
+                         RCC_APB1Periph_TIM3    |
                          RCC_APB1Periph_TIM4    |
+                         RCC_APB1Periph_TIM5    |
                          RCC_APB1Periph_SPI_ADC |
                          RCC_USARTRS_485,
                          
@@ -155,6 +156,20 @@ void Interrupts_Config(void)
   NVIC_Init(&NVIC_InitStructure);
   /*******************************/
   
+  /*******************************/
+  /* Переривання від TIM3, який запускається кожні 1мс для роботи модулів захистів*/
+  /*
+  Pre-emption пріоритет = 1 
+  Subpriority пріоритет = 0
+  */
+  /*******************************/
+  NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+  /*******************************/
+
   /*******************************/
   /* Переривання від TIM2, який запускається кожні 1мс для роботи модулів захистів*/
   /*

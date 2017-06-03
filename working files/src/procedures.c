@@ -2811,7 +2811,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
            )
       {
         //Робота з watchdogs
-        if((control_word_of_watchdog & (UNITED_BITS_WATCHDOG & (uint32_t)(~WATCHDOG_PROTECTION))) == (UNITED_BITS_WATCHDOG & (uint32_t)(~WATCHDOG_PROTECTION)))
+        if((control_word_of_watchdog & (UNITED_BITS_WATCHDOG & (uint32_t)(~(WATCHDOG_PROTECTION | WATCHDOG_PROTECTION_1)))) == (UNITED_BITS_WATCHDOG & (uint32_t)(~(WATCHDOG_PROTECTION | WATCHDOG_PROTECTION_1))))
         {
           //Змінюємо стан біту зовнішнього Watchdog на протилежний
           GPIO_WriteBit(
@@ -2819,7 +2819,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
                         GPIO_PIN_EXTERNAL_WATCHDOG,
                         (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
                        );
-          control_word_of_watchdog &= (UNITED_BITS_WATCHDOG & (uint32_t)(~WATCHDOG_PROTECTION));
+          control_word_of_watchdog &= (UNITED_BITS_WATCHDOG & (uint32_t)(~(WATCHDOG_PROTECTION | WATCHDOG_PROTECTION_1)));
         }
 
         main_routines_for_i2c();

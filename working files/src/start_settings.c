@@ -548,7 +548,7 @@ void start_settings_peripherals(void)
   /**********************/
   //Настроюємо DBG модуль
   /**********************/
-  DBGMCU_APB1PeriphConfig(DBGMCU_TIM2_STOP | DBGMCU_TIM5_STOP | DBGMCU_TIM4_STOP | DBGMCU_I2C1_SMBUS_TIMEOUT, ENABLE);
+  DBGMCU_APB1PeriphConfig(DBGMCU_TIM2_STOP | DBGMCU_TIM5_STOP | DBGMCU_TIM3_STOP | DBGMCU_TIM4_STOP | DBGMCU_I2C1_SMBUS_TIMEOUT, ENABLE);
   /**********************/
 
   /**********************/
@@ -1232,6 +1232,38 @@ void start_settings_peripherals(void)
   //Переконфігуровуємо I2C
   low_speed_i2c = 0xff;
   Configure_I2C(I2C);
+
+
+  /**********************/
+  //Настроювання TIM3 на генерацію переривань кожні 1 мс для логіки
+  /**********************/
+  /* Настроюємо TIM3 */
+  /* ---------------------------------------------------------------
+  TIM3 Настроювання: Output Compare Timing Mode:
+  TIM3CLK = (30*2) МГц, Prescaler = 2000, TIM3 counter clock = 30 кГц
+  CC1 update rate = TIM3 counter clock / CCR1_Val = 1000 Hz
+  --------------------------------------------------------------- */
+  TIM_TimeBaseStructure.TIM_Period = 65535;
+  TIM_TimeBaseStructure.TIM_Prescaler = (2000-1);
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+
+  /* Output Compare Timing Mode настроювання: Канал:1 */
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_Timing;
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable;
+  TIM_OCInitStructure.TIM_Pulse = TIM3_CCR1_VAL;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+  TIM_OC1Init(TIM3, &TIM_OCInitStructure);
+  
+  TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Disable);
+
+  /* Дозволяємо переривання від каналу 1 таймера 3*/
+  TIM_ITConfig(TIM3, TIM_IT_CC1, ENABLE);
+
+  /* Дозволяєм роботу таймера */
+  TIM_Cmd(TIM3, ENABLE);
+  /**********************/
 
   /**********************/
   //Настроювання TIM2 на генерацію переривань кожні 1 мс для системи захистів

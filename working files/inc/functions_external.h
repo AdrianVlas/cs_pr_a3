@@ -274,6 +274,7 @@ extern void PendSV_Handler(void);
 extern void SysTick_Handler(void);
 extern void USB_LP_CAN1_RX0_IRQHandler(void);
 extern void TIM2_IRQHandler(void);
+extern void TIM3_IRQHandler(void);
 extern void TIM4_IRQHandler(void);
 extern void TIM5_IRQHandler(void);
 extern void I2C_EV_IRQHandler(void);

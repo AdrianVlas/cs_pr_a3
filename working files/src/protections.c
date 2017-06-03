@@ -531,6 +531,85 @@ inline void main_protection(void)
 /*****************************************************/
 
 /*****************************************************/
+//Переривання від таймеру TIM3, який обслуговує логіку пристрою
+/*****************************************************/
+void TIM3_IRQHandler(void)
+{
+#ifdef SYSTEM_VIEWER_ENABLE
+  SEGGER_SYSVIEW_RecordEnterISR();
+#endif
+  
+  if (TIM_GetITStatus(TIM3, TIM_IT_CC1) != RESET)
+  {
+    /***********************************************************************************************/
+    //Переривання відбулося вік каналу 1, який генерує переривання кожні 1 мс
+    /***********************************************************************************************/
+    TIM3->SR = (uint16_t)((~(uint32_t)TIM_IT_CC1) & 0xffff);
+    uint16_t current_tick = TIM3->CCR1;
+  
+    /***********************************************************/
+    //Встановлюємо "значення лічильника для наступного переривання"
+    /***********************************************************/
+    uint16_t capture_new;
+    unsigned int delta;
+    TIM3->CCR1 = (capture_new = (current_tick + (delta = TIM3_CCR1_VAL)));
+    
+    unsigned int repeat;
+    unsigned int previous_tick;
+    do
+    {
+      repeat = 0;
+      current_tick = TIM3->CNT;
+
+      uint32_t delta_time = 0;
+      if (capture_new < current_tick)
+        delta_time = capture_new + 0x10000 - current_tick;
+      else delta_time = capture_new - current_tick;
+
+      if ((delta_time > delta) || (delta_time == 0))
+      {
+        if (TIM_GetITStatus(TIM3, TIM_IT_CC1) == RESET)
+        {
+          if (delta < TIM3_CCR1_VAL)
+          {
+            uint32_t delta_tick;
+            if (current_tick < previous_tick)
+              delta_tick = current_tick + 0x10000 - previous_tick;
+            else delta_tick = current_tick - previous_tick;
+              
+            delta = delta_tick + 1;
+          }
+          else if (delta == TIM3_CCR1_VAL)
+            delta = 1; /*Намагаємося, щоб нове переивання запустилося як омога скоріше*/
+          else
+          {
+            //Теоретично цього ніколи не мало б бути
+            total_error_sw_fixed(9);
+          }
+          TIM3->CCR1 = (capture_new = (TIM3->CNT +  delta));
+          previous_tick = current_tick;
+          repeat = 0xff;
+        }
+      }
+    }
+    while (repeat != 0);
+    /***********************************************************/
+
+    /***********************************************************/
+    //Виставляємо повідомлення про те, що канал 1 TIM3, що відповідає логіку працює
+    /***********************************************************/
+    control_word_of_watchdog |= WATCHDOG_PROTECTION_1;
+    /***********************************************************/
+    /***********************************************************************************************/
+  }
+
+#ifdef SYSTEM_VIEWER_ENABLE
+  SEGGER_SYSVIEW_RecordExitISR();
+#endif
+}
+/*****************************************************/
+
+/*****************************************************/
 //Переривання від таймеру TIM2, який обслуговує систему захистів
 /*****************************************************/
 void TIM2_IRQHandler(void)
