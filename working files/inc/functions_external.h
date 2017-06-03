@@ -203,7 +203,7 @@ extern void change_setting_language(unsigned int);
 extern void move_into_ekran_event_registraqtors(unsigned int, int);
 extern void make_ekran_list_event_log(void);
 extern void make_ekran_list_event_pr_err(void);
-extern void make_ekran_data_pr_err(void);
+extern void make_ekran_data_reg(void);
 
 extern __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *, __CONFIG *);
 extern __result_dym_mem_select action_after_changing_of_configuration(void);
@@ -246,7 +246,7 @@ extern unsigned int sqrt_32(unsigned int);
 extern unsigned int sqrt_64(unsigned long long);
 extern unsigned int get_order(int);
 
-extern void event_log_handler(void);
+extern uint32_t event_log_handler(void);
 
 extern void start_checking_dataflash(void);
 extern void start_exchange_via_spi_df(uint32_t, uint32_t);

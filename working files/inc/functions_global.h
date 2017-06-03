@@ -205,7 +205,7 @@ void make_ekran_list_registrators(void);
 void move_into_ekran_event_registraqtors(unsigned int, int);
 void make_ekran_list_event_log(void);
 void make_ekran_list_event_pr_err(void);
-void make_ekran_data_pr_err(void);
+void make_ekran_data_reg(void);
 
 __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *, __CONFIG *);
 __result_dym_mem_select action_after_changing_of_configuration(void);
@@ -246,7 +246,7 @@ unsigned int sqrt_32(unsigned int);
 unsigned int sqrt_64(unsigned long long);
 unsigned int get_order(int);
 
-void event_log_handler(void);
+uint32_t event_log_handler(void);
 
 void start_checking_dataflash(void);
 void start_exchange_via_spi_df(uint32_t, uint32_t);

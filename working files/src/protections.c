@@ -619,7 +619,16 @@ void TIM2_IRQHandler(void)
     /***********************************************************/
     //Підготовлюємо новий запис для Журналу подій
     /***********************************************************/
-    event_log_handler();
+    if (event_log_handler())
+    {
+      //Додано новий запис у Журнал подій
+      *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) |= (__LOG_INPUT)(1 << EVENT_LOG_WORK);
+    }
+    else
+    {
+      //Новий запис у Журнал подій не додавався
+      *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) &= (__LOG_INPUT)(~(1 << EVENT_LOG_WORK));
+    }
     /***********************************************************/
     
     /***********************************************************/
@@ -802,9 +811,16 @@ void TIM2_IRQHandler(void)
 
 /*****************************************************/
 //Функція фіксація змін подій у Журналі подій
+/*
+Резукльтат виконання функції
+0 - не додавався запис у Журнал поді
+1 - доданий запис у Журнал подій
+*/
 /*****************************************************/
-void event_log_handler(void)
+uint32_t event_log_handler(void)
 {
+  uint32_t result = false;
+  
   //Визначаємо кількість доступних комірок у буфері для Журналу подій
   int32_t number_empty_cells;
   uint32_t head = head_fifo_buffer_log_records, tail = tail_fifo_buffer_log_records;
@@ -1137,6 +1153,7 @@ void event_log_handler(void)
        )   
     {
       //Є що записувати у Журнал подій
+      result = true;
 
       /***
       Визначаємо індекс у масиві буфері Журналу подій з якого треба почати заповнювати дані
@@ -1187,8 +1204,8 @@ void event_log_handler(void)
 
   if  (
        (number_empty_cells == 0) &&
-       (param != 0) &&
-       (i < (current_config_prt.n_log*LOG_SIGNALS_IN))
+       (i < (current_config_prt.n_log*LOG_SIGNALS_IN)) &&
+       (param != 0)
       ) 
   {
     _SET_BIT(set_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
@@ -1197,6 +1214,8 @@ void event_log_handler(void)
   {
     _SET_BIT(clear_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
   }
+  
+  return result;
 }
 /*****************************************************/
 

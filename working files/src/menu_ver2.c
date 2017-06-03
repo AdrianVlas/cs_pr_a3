@@ -598,6 +598,7 @@ void main_manu_function_ver2(void)
     case OUTPUTS_MENU2_LEVEL:
     case REGISTRATORS_MENU2_LEVEL:
     case LOG_LIST_MENU2_LEVEL:
+    case LOG_DATA_MENU2_LEVEL:
     case PR_ERR_LIST_MENU2_LEVEL:
     case PR_ERR_DATA_MENU2_LEVEL:
     case LIST_SETTINGS_MENU2_LEVEL:
@@ -2100,12 +2101,13 @@ void new_level_menu(void)
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
+  case LOG_DATA_MENU2_LEVEL:
   case PR_ERR_DATA_MENU2_LEVEL:
     {
       current_state_menu2.p_max_row = 0;
       current_state_menu2.max_row = 1;
       current_state_menu2.func_move = move_into_ekran_simple;
-      current_state_menu2.func_show = make_ekran_data_pr_err;
+      current_state_menu2.func_show = make_ekran_data_reg;
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;

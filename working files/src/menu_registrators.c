@@ -94,7 +94,7 @@ void make_ekran_list_event_log(void)
     uint32_t position_temp = current_state_menu2.index_position;
     uint32_t index_in_ekran = ((position_temp << 1) >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
     
-    uint32_t record_read_ok, record_check_ok, id_input, n_input, out_input, event_state;
+    uint32_t record_read_ok, record_check_ok, id_input, n_input, out_input, event_state, NNC;
     for (size_t i = 0; i < MAX_ROW_LCD; i++)
     {
       uint32_t index_in_ekran_tmp = index_in_ekran >> 1;
@@ -169,6 +169,9 @@ void make_ekran_list_event_log(void)
               id_input  = (param >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;
               n_input   = (param >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
               out_input = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
+              
+              NNC = buffer_for_menu_read_record[12];
+              
               record_check_ok = true;
             }
             else record_check_ok = false;
@@ -311,19 +314,62 @@ void make_ekran_list_event_log(void)
           
           if (record_check_ok == true)
           {
-           uint32_t number = index_in_ekran_tmp;
+            uint32_t number = index_in_ekran_tmp;
             uint32_t number_digit = max_number_digit_in_number(number);
+            uint32_t number_digit_NNC, NNC_tmp;
+            uint32_t cor = 0;
+            
+            if ((id_input == ID_FB_GROUP_ALARM) && (NNC != 0))
+            {
+              number_digit_NNC = max_number_digit_in_number(NNC);
+              NNC_tmp = NNC;
+            }
             for (size_t j = 0; j < MAX_COL_LCD; j++) 
             {
               if (j < 5)
               {
-                working_ekran[i][j] = passive_active[index_language][event_state][j];
+                uint8_t symbol = passive_active[index_language][event_state][j];
+                working_ekran[i][j] = symbol;
+                if (symbol == ' ') cor++;
+              }
+              else if ((j >= 5) && (j <= 9))
+              {
+                if ((id_input == ID_FB_GROUP_ALARM) && (NNC != 0))
+                {
+                  if (j == 5) working_ekran[i][5 - cor] = '(';
+                  else if (j < (5 + number_digit_NNC + 1))
+                  {
+                    /*
+                    Заповнюємо значення зправа  на ліво
+                    індекс = (6 - cor) + number_digit_NNC - 1 - ((j - cor) - (6 - cor)) =
+                    = (6 - cor) + number_digit_NNC - 1 - (j - cor) + (6 - cor) =
+                    = 2*(6 - cor) + number_digit_NNC - 1 - (j - cor) =
+                    */
+                    working_ekran[i][2*(6 - cor) + number_digit_NNC - 1 - (j - cor)] = (NNC_tmp % 10) + 0x30;
+                    NNC_tmp /= 10;
+                  }
+                  else if (j == (5 + number_digit_NNC + 1))  working_ekran[i][j - cor] = ')';
+                  else if (j <= 9) working_ekran[i][j - cor] = ' ';
+                  
+                  if (j == 9) 
+                  {
+                    for (size_t k = 0; k < cor; k++ ) working_ekran[i][9 - k] = ' ';
+                  }
+                }
+                else working_ekran[i][j] = ' ';
               }
               else
               {
                 if (j < (MAX_COL_LCD - number_digit)) working_ekran[i][j] = ' ';
                 else
                 {
+                  /*
+                  Заповнюємо значення зправа  на ліво
+                  індекс = (MAX_COL_LCD - number_digit) + number_digit - 1 - (j - (MAX_COL_LCD - number_digit)) =
+                  = MAX_COL_LCD - number_digit + number_digit - 1 - (j - MAX_COL_LCD + number_digit) =
+                  = MAX_COL_LCD - 1 - j + MAX_COL_LCD - number_digit =
+                  = 2*MAX_COL_LCD - number_digit - 1 - j =
+                  */
                   working_ekran[i][2*MAX_COL_LCD - number_digit - 1 - j] = (number % 10) + 0x30;
                   number /= 10;
                 }
@@ -514,6 +560,13 @@ void make_ekran_list_event_pr_err(void)
                 if (j < (MAX_COL_LCD - number_digit)) working_ekran[i][j] = ' ';
                 else
                 {
+                  /*
+                  Заповнюємо значення зправа  на ліво
+                  індекс = (MAX_COL_LCD - number_digit) + number_digit - 1 - (j - (MAX_COL_LCD - number_digit)) =
+                  = MAX_COL_LCD - number_digit + number_digit - 1 - (j - MAX_COL_LCD + number_digit) =
+                  = MAX_COL_LCD - 1 - j + MAX_COL_LCD - number_digit =
+                  = 2*MAX_COL_LCD - number_digit - 1 - j =
+                  */
                   working_ekran[i][2*MAX_COL_LCD - number_digit - 1 - j] = (number % 10) + 0x30;
                   number /= 10;
                 }
@@ -560,9 +613,9 @@ void make_ekran_list_event_pr_err(void)
 /*****************************************************/
 
 /*****************************************************/
-//Формуємо екран відображення дати реєстратора програмих подій
+//Формуємо екран відображення дати реєстраторів
 /*****************************************************/
-void make_ekran_data_pr_err(void)
+void make_ekran_data_reg(void)
 {
   uint8_t name_string[2][MAX_COL_LCD + 1] = 
   {
@@ -570,36 +623,45 @@ void make_ekran_data_pr_err(void)
     "   XX:XX:XX.XX   "
   };
   
+  uint8_t *point_into_menu_time_label;
+  if (current_state_menu2.current_level == LOG_DATA_MENU2_LEVEL) point_into_menu_time_label = log_into_menu_time_label;
+  else if (current_state_menu2.current_level == PR_ERR_DATA_MENU2_LEVEL) point_into_menu_time_label = pr_err_into_menu_time_label;
+  else
+  {
+    //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+    total_error_sw_fixed(7);
+  }
+  
   /******************************************/
   //Заповнюємо поля відповідними цифрами
   /******************************************/
   //День
-  name_string[ROW_R_Y_][COL_DY1_R] = (pr_err_into_menu_time_label[4] >>  4) + 0x30;
-  name_string[ROW_R_Y_][COL_DY2_R] = (pr_err_into_menu_time_label[4] & 0xf) + 0x30;
+  name_string[ROW_R_Y_][COL_DY1_R] = (point_into_menu_time_label[4] >>  4) + 0x30;
+  name_string[ROW_R_Y_][COL_DY2_R] = (point_into_menu_time_label[4] & 0xf) + 0x30;
 
   //Місяць
-  name_string[ROW_R_Y_][COL_MY1_R] = (pr_err_into_menu_time_label[5] >>  4) + 0x30;
-  name_string[ROW_R_Y_][COL_MY2_R] = (pr_err_into_menu_time_label[5] & 0xf) + 0x30;
+  name_string[ROW_R_Y_][COL_MY1_R] = (point_into_menu_time_label[5] >>  4) + 0x30;
+  name_string[ROW_R_Y_][COL_MY2_R] = (point_into_menu_time_label[5] & 0xf) + 0x30;
 
   //Рік
-  name_string[ROW_R_Y_][COL_SY1_R] = (pr_err_into_menu_time_label[6] >>  4) + 0x30;
-  name_string[ROW_R_Y_][COL_SY2_R] = (pr_err_into_menu_time_label[6] & 0xf) + 0x30;
+  name_string[ROW_R_Y_][COL_SY1_R] = (point_into_menu_time_label[6] >>  4) + 0x30;
+  name_string[ROW_R_Y_][COL_SY2_R] = (point_into_menu_time_label[6] & 0xf) + 0x30;
 
   //Година
-  name_string[ROW_R_T_][COL_HT1_R] = (pr_err_into_menu_time_label[3] >>  4) + 0x30;
-  name_string[ROW_R_T_][COL_HT2_R] = (pr_err_into_menu_time_label[3] & 0xf) + 0x30;
+  name_string[ROW_R_T_][COL_HT1_R] = (point_into_menu_time_label[3] >>  4) + 0x30;
+  name_string[ROW_R_T_][COL_HT2_R] = (point_into_menu_time_label[3] & 0xf) + 0x30;
 
   //Хвилини
   name_string[ROW_R_T_][COL_MT1_R] = (pr_err_into_menu_time_label[2] >>  4) + 0x30;
   name_string[ROW_R_T_][COL_MT2_R] = (pr_err_into_menu_time_label[2] & 0xf) + 0x30;
 
   //Секунди
-  name_string[ROW_R_T_][COL_ST1_R] = (pr_err_into_menu_time_label[1] >>  4) + 0x30;
-  name_string[ROW_R_T_][COL_ST2_R] = (pr_err_into_menu_time_label[1] & 0xf) + 0x30;
+  name_string[ROW_R_T_][COL_ST1_R] = (point_into_menu_time_label[1] >>  4) + 0x30;
+  name_string[ROW_R_T_][COL_ST2_R] = (point_into_menu_time_label[1] & 0xf) + 0x30;
 
   //Соті секунд
-  name_string[ROW_R_T_][COL_HST1_R] = (pr_err_into_menu_time_label[0] >>  4) + 0x30;
-  name_string[ROW_R_T_][COL_HST2_R] = (pr_err_into_menu_time_label[0] & 0xf) + 0x30;
+  name_string[ROW_R_T_][COL_HST1_R] = (point_into_menu_time_label[0] >>  4) + 0x30;
+  name_string[ROW_R_T_][COL_HST2_R] = (point_into_menu_time_label[0] & 0xf) + 0x30;
 
   //Копіюємо  рядки у робочий екран
   for (size_t i = 0; i < MAX_ROW_LCD; i++)
