@@ -1,6 +1,8 @@
 #ifndef __STRINGS_EXTERNAL_H
 #define __STRINGS_EXTERNAL_H
 
+extern const uint8_t name_string_ask[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
+
 extern const uint8_t information_no_edition[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint8_t information_out_of_limits[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];

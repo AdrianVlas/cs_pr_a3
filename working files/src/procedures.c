@@ -2956,7 +2956,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_tu,
                                           current_config.n_ts,
                                           (current_config.n_log != 0) ? 1 : 0,
-                                         };
+                                         };  
     for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
     {
       if (

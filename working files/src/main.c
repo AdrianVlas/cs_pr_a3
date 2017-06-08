@@ -411,6 +411,15 @@ int main(void)
   //Стартова настройка периферії процесора
   start_settings_peripherals();
   
+#ifdef TEST_MODE
+  //Ініціалізація LCD
+  lcd_init();
+  changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+    
+  //Запит на встановлення мінімальних налаштувань
+  empty_settings();
+#endif
+  
   if(
      ((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT  )) != 0) &&
      ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) != 0) &&
@@ -425,17 +434,21 @@ int main(void)
     TIM_Cmd(TIM2, ENABLE);
     TIM_Cmd(TIM3, ENABLE);
 
+#ifndef TEST_MODE
     //Ініціалізація LCD
     lcd_init();
     changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+#endif
   }
   else
   {
     //Випадок, якщо настройки успішно не зчитані, або їх взагалі немає
     
+#ifndef TEST_MODE
     //Ініціалізація LCD
     lcd_init();
     changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+#endif
   
     //Якщо настройки не зчитані успішно з EEPROM, то спочатку виводимо на екран повідомлення про це
     while (

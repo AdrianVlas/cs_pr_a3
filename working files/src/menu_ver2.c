@@ -56,14 +56,6 @@ const uint8_t name_string_continue[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] =
   "Продолжить:Enter"
 };
 
-const uint8_t name_string_ask[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-{
-  "Да-Enter/Нет-Esc",
-  "Так-Enter/Ні-Esc",
-  "Yes-Enter/No-Esc",
-  "Да-Enter/Нет-Esc"
-};
-
 const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, DIAGNOSTICS_MENU2_LEVEL, LABELS_MENU2_LEVEL, INFO_MENU2_LEVEL};
 const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {ANALOG_INPUTS_MENU2_LEVEL, INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
 const enum _menu2_levels next_for_registrators_menu2[MAX_ROW_LIST_REGISTRATORS_M2] = {LOG_LIST_MENU2_LEVEL, PR_ERR_LIST_MENU2_LEVEL};

@@ -292,4 +292,8 @@ extern int str_to_int_DATE_Mmm(void);
 
 extern long ChangeCfg(void* pv);
 
+#ifdef TEST_MODE
+extern void empty_settings(void);
+#endif
+
 #endif
