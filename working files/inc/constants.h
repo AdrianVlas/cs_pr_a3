@@ -56,6 +56,4 @@
 #include "const_interfaces.h"
 #include "const_modbus_memory_map.h"
 
-#include "SEGGER_SYSVIEW.h"
-
 #endif 

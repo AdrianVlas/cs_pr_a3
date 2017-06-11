@@ -1,9 +1,9 @@
 /*********************************************************************
-*               SEGGER MICROCONTROLLER GmbH & Co. KG                 *
-*       Solutions for real time microcontroller applications         *
+*                SEGGER Microcontroller GmbH & Co. KG                *
+*                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 2015 - 2016  SEGGER Microcontroller GmbH & Co. KG        *
+*       (c) 2015 - 2017  SEGGER Microcontroller GmbH & Co. KG        *
 *                                                                    *
 *       www.segger.com     Support: support@segger.com               *
 *                                                                    *
@@ -15,30 +15,44 @@
 *                                                                    *
 * All rights reserved.                                               *
 *                                                                    *
-* * This software may in its unmodified form be freely redistributed *
-*   in source form.                                                  *
-* * The source code may be modified, provided the source code        *
-*   retains the above copyright notice, this list of conditions and  *
-*   the following disclaimer.                                        *
-* * Modified versions of this software in source or linkable form    *
-*   may not be distributed without prior consent of SEGGER.          *
+* SEGGER strongly recommends to not make any changes                 *
+* to or modify the source code of this software in order to stay     *
+* compatible with the RTT protocol and J-Link.                       *
 *                                                                    *
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS "AS IS" AND     *
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,  *
-* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A        *
-* PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL               *
-* SEGGER Microcontroller BE LIABLE FOR ANY DIRECT, INDIRECT,         *
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES           *
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS    *
-* OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS            *
-* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,       *
-* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING          *
-* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS *
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.       *
+* Redistribution and use in source and binary forms, with or         *
+* without modification, are permitted provided that the following    *
+* conditions are met:                                                *
+*                                                                    *
+* o Redistributions of source code must retain the above copyright   *
+*   notice, this list of conditions and the following disclaimer.    *
+*                                                                    *
+* o Redistributions in binary form must reproduce the above          *
+*   copyright notice, this list of conditions and the following      *
+*   disclaimer in the documentation and/or other materials provided  *
+*   with the distribution.                                           *
+*                                                                    *
+* o Neither the name of SEGGER Microcontroller GmbH & Co. KG         *
+*   nor the names of its contributors may be used to endorse or      *
+*   promote products derived from this software without specific     *
+*   prior written permission.                                        *
+*                                                                    *
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND             *
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,        *
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF           *
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE           *
+* DISCLAIMED. IN NO EVENT SHALL SEGGER Microcontroller BE LIABLE FOR *
+* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR           *
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT  *
+* OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;    *
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF      *
+* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT          *
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE  *
+* USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH   *
+* DAMAGE.                                                            *
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       SystemView version: V2.28                                    *
+*       SystemView version: V2.50                                    *
 *                                                                    *
 **********************************************************************
 ---------------------------END-OF-HEADER------------------------------
@@ -46,6 +60,7 @@ File    : SEGGER_RTT.c
 Purpose : Implementation of SEGGER real-time transfer (RTT) which
           allows real-time communication on targets which support
           debugger memory accesses while the CPU is running.
+Revision: $Rev: 6249 $
 
 Additional information:
           Type "int" is assumed to be 32-bits in size
@@ -54,6 +69,16 @@ Additional information:
 
           RTT channel 0 is always present and reserved for Terminal usage.
           Name is fixed to "Terminal"
+
+          Effective buffer size: SizeOfBuffer - 1
+
+          WrOff == RdOff:       Buffer is empty
+          WrOff == (RdOff - 1): Buffer is full
+          WrOff >  RdOff:       Free space includes wrap-around
+          WrOff <  RdOff:       Used space includes wrap-around
+          (WrOff == (SizeOfBuffer - 1)) && (RdOff == 0):  
+                                Buffer full and wrap-around after next byte
+
 
 ----------------------------------------------------------------------
 */
@@ -83,6 +108,20 @@ Additional information:
 
 #ifndef   SEGGER_RTT_MAX_NUM_DOWN_BUFFERS
   #define SEGGER_RTT_MAX_NUM_DOWN_BUFFERS                  2    // Number of down-buffers (H->T) available on this target
+#endif
+
+#ifndef SEGGER_RTT_BUFFER_SECTION
+  #if defined(SEGGER_RTT_SECTION)
+    #define SEGGER_RTT_BUFFER_SECTION SEGGER_RTT_SECTION
+  #endif
+#endif
+
+#ifndef   SEGGER_RTT_ALIGNMENT
+  #define SEGGER_RTT_ALIGNMENT                            0
+#endif
+
+#ifndef   SEGGER_RTT_BUFFER_ALIGNMENT
+  #define SEGGER_RTT_BUFFER_ALIGNMENT                     0
 #endif
 
 #ifndef   SEGGER_RTT_MODE_DEFAULT
@@ -121,6 +160,73 @@ Additional information:
 
 /*********************************************************************
 *
+*       Defines, fixed
+*
+**********************************************************************
+*/
+#if (defined __ICCARM__) || (defined __ICCRX__)
+  #define RTT_PRAGMA(P) _Pragma(#P)
+#endif
+
+#if SEGGER_RTT_ALIGNMENT || SEGGER_RTT_BUFFER_ALIGNMENT
+  #if (defined __GNUC__)
+    #define SEGGER_RTT_ALIGN(Var, Alignment) Var __attribute__ ((aligned (Alignment)))
+  #elif (defined __ICCARM__) || (defined __ICCRX__)
+    #define PRAGMA(A) _Pragma(#A)
+#define SEGGER_RTT_ALIGN(Var, Alignment) RTT_PRAGMA(data_alignment=Alignment) \
+                                  Var
+  #elif (defined __CC_ARM)
+    #define SEGGER_RTT_ALIGN(Var, Alignment) Var __attribute__ ((aligned (Alignment)))
+  #else
+    #error "Alignment not supported for this compiler."
+  #endif
+#else
+  #define SEGGER_RTT_ALIGN(Var, Alignment) Var
+#endif
+
+#if defined(SEGGER_RTT_SECTION) || defined (SEGGER_RTT_BUFFER_SECTION)
+  #if (defined __GNUC__)
+    #define SEGGER_RTT_PUT_SECTION(Var, Section) __attribute__ ((section (Section))) Var
+  #elif (defined __ICCARM__) || (defined __ICCRX__)
+#define SEGGER_RTT_PUT_SECTION(Var, Section) RTT_PRAGMA(location=Section) \
+                                        Var
+  #elif (defined __CC_ARM)
+    #define SEGGER_RTT_PUT_SECTION(Var, Section) __attribute__ ((section (Section), zero_init))  Var
+  #else
+    #error "Section placement not supported for this compiler."
+  #endif
+#else
+  #define SEGGER_RTT_PUT_SECTION(Var, Section) Var
+#endif
+
+
+#if SEGGER_RTT_ALIGNMENT
+  #define SEGGER_RTT_CB_ALIGN(Var)  SEGGER_RTT_ALIGN(Var, SEGGER_RTT_ALIGNMENT)
+#else
+  #define SEGGER_RTT_CB_ALIGN(Var)  Var
+#endif
+
+#if SEGGER_RTT_BUFFER_ALIGNMENT
+  #define SEGGER_RTT_BUFFER_ALIGN(Var)  SEGGER_RTT_ALIGN(Var, SEGGER_RTT_BUFFER_ALIGNMENT)
+#else
+  #define SEGGER_RTT_BUFFER_ALIGN(Var)  Var
+#endif
+
+
+#if defined(SEGGER_RTT_SECTION)
+  #define SEGGER_RTT_PUT_CB_SECTION(Var) SEGGER_RTT_PUT_SECTION(Var, SEGGER_RTT_SECTION)
+#else
+  #define SEGGER_RTT_PUT_CB_SECTION(Var) Var
+#endif
+
+#if defined(SEGGER_RTT_BUFFER_SECTION)
+  #define SEGGER_RTT_PUT_BUFFER_SECTION(Var) SEGGER_RTT_PUT_SECTION(Var, SEGGER_RTT_BUFFER_SECTION)
+#else
+  #define SEGGER_RTT_PUT_BUFFER_SECTION(Var) Var
+#endif
+
+/*********************************************************************
+*
 *       Static const data
 *
 **********************************************************************
@@ -135,14 +241,12 @@ static unsigned char _aTerminalId[16] = { '0', '1', '2', '3', '4', '5', '6', '7'
 **********************************************************************
 */
 //
-// Allocate buffers for channel 0
+// RTT Control Block and allocate buffers for channel 0
 //
-static char _acUpBuffer  [BUFFER_SIZE_UP];
-static char _acDownBuffer[BUFFER_SIZE_DOWN];
-//
-// Initialize SEGGER Real-time-Terminal control block (CB)
-//
-SEGGER_RTT_CB _SEGGER_RTT;
+SEGGER_RTT_PUT_CB_SECTION(SEGGER_RTT_CB_ALIGN(SEGGER_RTT_CB _SEGGER_RTT));
+
+SEGGER_RTT_PUT_BUFFER_SECTION(SEGGER_RTT_BUFFER_ALIGN(static char _acUpBuffer  [BUFFER_SIZE_UP]));
+SEGGER_RTT_PUT_BUFFER_SECTION(SEGGER_RTT_BUFFER_ALIGN(static char _acDownBuffer[BUFFER_SIZE_DOWN]));
 
 static char _ActiveTerminal;
 
@@ -453,6 +557,89 @@ unsigned SEGGER_RTT_Read(unsigned BufferIndex, void* pBuffer, unsigned BufferSiz
   SEGGER_RTT_UNLOCK();
   //
   return NumBytesRead;
+}
+
+/*********************************************************************
+*
+*       SEGGER_RTT_WriteWithOverwriteNoLock
+*
+*  Function description
+*    Stores a specified number of characters in SEGGER RTT
+*    control block.
+*    SEGGER_RTT_WriteWithOverwriteNoLock does not lock the application 
+*    and overwrites data if the data does not fit into the buffer.
+*
+*  Parameters
+*    BufferIndex  Index of "Up"-buffer to be used (e.g. 0 for "Terminal").
+*    pBuffer      Pointer to character array. Does not need to point to a \0 terminated string.
+*    NumBytes     Number of bytes to be stored in the SEGGER RTT control block.
+*
+*  Notes
+*    (1) If there is not enough space in the "Up"-buffer, data is overwritten.
+*    (2) For performance reasons this function does not call Init()
+*        and may only be called after RTT has been initialized.
+*        Either by calling SEGGER_RTT_Init() or calling another RTT API function first.
+*    (3) Do not use SEGGER_RTT_WriteWithOverwriteNoLock if a J-Link 
+*        connection reads RTT data.
+*/
+void SEGGER_RTT_WriteWithOverwriteNoLock(unsigned BufferIndex, const void* pBuffer, unsigned NumBytes) {
+  const char*           pData;
+  SEGGER_RTT_BUFFER_UP* pRing;
+  unsigned              Avail;
+
+  pData = (const char *)pBuffer;
+  //
+  // Get "to-host" ring buffer and copy some elements into local variables.
+  //
+  pRing = &_SEGGER_RTT.aUp[BufferIndex];
+  //
+  // Check if we will overwrite data and need to adjust the RdOff.
+  //
+  if (pRing->WrOff == pRing->RdOff) {
+    Avail = pRing->SizeOfBuffer - 1u;
+  } else if ( pRing->WrOff < pRing->RdOff) {
+    Avail = pRing->RdOff - pRing->WrOff - 1u;
+  } else {
+    Avail = pRing->RdOff - pRing->WrOff - 1u + pRing->SizeOfBuffer;
+  }
+  if (NumBytes > Avail) {
+    pRing->RdOff += (NumBytes - Avail);
+    while (pRing->RdOff >= pRing->SizeOfBuffer) {
+      pRing->RdOff -= pRing->SizeOfBuffer;
+    }
+  }
+  //
+  // Write all data, no need to check the RdOff, but possibly handle multiple wrap-arounds
+  //
+  Avail = pRing->SizeOfBuffer - pRing->WrOff;
+  do {
+    if (Avail > NumBytes) {
+      //
+      // Last round
+      //
+#if 1 // memcpy() is good for large amounts of data, but the overhead is too big for small amounts. Use a simple byte loop instead.
+      char* pDst;
+      pDst = pRing->pBuffer + pRing->WrOff;
+      pRing->WrOff += NumBytes;
+      do {
+        *pDst++ = *pData++;
+      } while (--NumBytes);
+#else
+      memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
+      pRing->WrOff += NumBytes;
+#endif
+      break;  //Alternatively: NumBytes = 0;
+    } else {
+      //
+      //  Wrap-around necessary, write until wrap-around and reset WrOff
+      //
+      memcpy(pRing->pBuffer + pRing->WrOff, pData, Avail);
+      pData += Avail;
+      pRing->WrOff = 0;
+      NumBytes -= Avail;
+      Avail = (pRing->SizeOfBuffer - 1);
+    }
+  } while (NumBytes);
 }
 
 /*********************************************************************
@@ -839,7 +1026,7 @@ int SEGGER_RTT_AllocDownBuffer(const char* sName, void* pBuffer, unsigned Buffer
   } while (BufferIndex < _SEGGER_RTT.MaxNumDownBuffers);
   if (BufferIndex < _SEGGER_RTT.MaxNumDownBuffers) {
     _SEGGER_RTT.aDown[BufferIndex].sName        = sName;
-    _SEGGER_RTT.aDown[BufferIndex].pBuffer      = pBuffer;
+    _SEGGER_RTT.aDown[BufferIndex].pBuffer      = (char*)pBuffer;
     _SEGGER_RTT.aDown[BufferIndex].SizeOfBuffer = BufferSize;
     _SEGGER_RTT.aDown[BufferIndex].RdOff        = 0u;
     _SEGGER_RTT.aDown[BufferIndex].WrOff        = 0u;
@@ -884,7 +1071,7 @@ int SEGGER_RTT_AllocUpBuffer(const char* sName, void* pBuffer, unsigned BufferSi
   } while (BufferIndex < _SEGGER_RTT.MaxNumUpBuffers);
   if (BufferIndex < _SEGGER_RTT.MaxNumUpBuffers) {
     _SEGGER_RTT.aUp[BufferIndex].sName        = sName;
-    _SEGGER_RTT.aUp[BufferIndex].pBuffer      = pBuffer;
+    _SEGGER_RTT.aUp[BufferIndex].pBuffer      = (char*)pBuffer;
     _SEGGER_RTT.aUp[BufferIndex].SizeOfBuffer = BufferSize;
     _SEGGER_RTT.aUp[BufferIndex].RdOff        = 0u;
     _SEGGER_RTT.aUp[BufferIndex].WrOff        = 0u;
@@ -915,6 +1102,11 @@ int SEGGER_RTT_AllocUpBuffer(const char* sName, void* pBuffer, unsigned BufferSi
 *  Return value
 *    >= 0 - O.K.
 *     < 0 - Error
+*
+*  Additional information
+*    Buffer 0 is configured on compile-time.
+*    May only be called once per buffer.
+*    Buffer name and flags can be reconfigured using the appropriate functions.
 */
 int SEGGER_RTT_ConfigUpBuffer(unsigned BufferIndex, const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags) {
   int r;
@@ -924,7 +1116,7 @@ int SEGGER_RTT_ConfigUpBuffer(unsigned BufferIndex, const char* sName, void* pBu
     SEGGER_RTT_LOCK();
     if (BufferIndex > 0u) {
       _SEGGER_RTT.aUp[BufferIndex].sName        = sName;
-      _SEGGER_RTT.aUp[BufferIndex].pBuffer      = pBuffer;
+      _SEGGER_RTT.aUp[BufferIndex].pBuffer      = (char*)pBuffer;
       _SEGGER_RTT.aUp[BufferIndex].SizeOfBuffer = BufferSize;
       _SEGGER_RTT.aUp[BufferIndex].RdOff        = 0u;
       _SEGGER_RTT.aUp[BufferIndex].WrOff        = 0u;
@@ -957,6 +1149,11 @@ int SEGGER_RTT_ConfigUpBuffer(unsigned BufferIndex, const char* sName, void* pBu
 *  Return value
 *    >= 0  O.K.
 *     < 0  Error
+*
+*  Additional information
+*    Buffer 0 is configured on compile-time.
+*    May only be called once per buffer.
+*    Buffer name and flags can be reconfigured using the appropriate functions.
 */
 int SEGGER_RTT_ConfigDownBuffer(unsigned BufferIndex, const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags) {
   int r;
@@ -966,7 +1163,7 @@ int SEGGER_RTT_ConfigDownBuffer(unsigned BufferIndex, const char* sName, void* p
     SEGGER_RTT_LOCK();
     if (BufferIndex > 0u) {
       _SEGGER_RTT.aDown[BufferIndex].sName        = sName;
-      _SEGGER_RTT.aDown[BufferIndex].pBuffer      = pBuffer;
+      _SEGGER_RTT.aDown[BufferIndex].pBuffer      = (char*)pBuffer;
       _SEGGER_RTT.aDown[BufferIndex].SizeOfBuffer = BufferSize;
       _SEGGER_RTT.aDown[BufferIndex].RdOff        = 0u;
       _SEGGER_RTT.aDown[BufferIndex].WrOff        = 0u;
@@ -1044,6 +1241,68 @@ int SEGGER_RTT_SetNameDownBuffer(unsigned BufferIndex, const char* sName) {
 
 /*********************************************************************
 *
+*       SEGGER_RTT_SetFlagsUpBuffer
+*
+*  Function description
+*    Run-time configuration of specific up-buffer flags (T->H).
+*    Buffer to be configured is specified by index.
+*
+*  Parameters
+*    BufferIndex  Index of the buffer.
+*    Flags        Flags to set for the buffer.
+*
+*  Return value
+*    >= 0  O.K.
+*     < 0  Error
+*/
+int SEGGER_RTT_SetFlagsUpBuffer(unsigned BufferIndex, unsigned Flags) {
+  int r;
+
+  INIT();
+  if (BufferIndex < (unsigned)_SEGGER_RTT.MaxNumUpBuffers) {
+    SEGGER_RTT_LOCK();
+    _SEGGER_RTT.aUp[BufferIndex].Flags = Flags;
+    SEGGER_RTT_UNLOCK();
+    r =  0;
+  } else {
+    r = -1;
+  }
+  return r;
+}
+
+/*********************************************************************
+*
+*       SEGGER_RTT_SetFlagsDownBuffer
+*
+*  Function description
+*    Run-time configuration of specific Down-buffer flags (T->H).
+*    Buffer to be configured is specified by index.
+*
+*  Parameters
+*    BufferIndex  Index of the buffer to renamed.
+*    Flags        Flags to set for the buffer.
+*
+*  Return value
+*    >= 0  O.K.
+*     < 0  Error
+*/
+int SEGGER_RTT_SetFlagsDownBuffer(unsigned BufferIndex, unsigned Flags) {
+  int r;
+
+  INIT();
+  if (BufferIndex < (unsigned)_SEGGER_RTT.MaxNumDownBuffers) {
+    SEGGER_RTT_LOCK();
+    _SEGGER_RTT.aDown[BufferIndex].Flags = Flags;
+    SEGGER_RTT_UNLOCK();
+    r =  0;
+  } else {
+    r = -1;
+  }
+  return r;
+}
+
+/*********************************************************************
+*
 *       SEGGER_RTT_Init
 *
 *  Function description
@@ -1052,7 +1311,7 @@ int SEGGER_RTT_SetNameDownBuffer(unsigned BufferIndex, const char* sName) {
 *
 */
 void SEGGER_RTT_Init (void) {
-  INIT();
+  _DoInit();
 }
 
 /*********************************************************************

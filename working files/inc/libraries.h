@@ -17,6 +17,10 @@
 #include <arm_math.h>
 #include <stdlib.h>
 
+#ifdef SYSTEM_VIEWER_ENABLE
+#include "SEGGER_SYSVIEW.h"
+#endif
+
 #pragma section = "variables_RAM1"
 
 #endif
