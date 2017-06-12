@@ -1,6 +1,8 @@
 #ifndef __LIBRARIES_H
 #define __LIBRARIES_H
 
+#pragma section = "variables_RAM1"
+
 #include "stm32f2xx.h"
 #include "stm32f2xx_it.h"
 #include "platform_config.h"
@@ -21,6 +23,5 @@
 #include "SEGGER_SYSVIEW.h"
 #endif
 
-#pragma section = "variables_RAM1"
 
 #endif

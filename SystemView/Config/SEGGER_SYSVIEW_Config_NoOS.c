@@ -86,7 +86,7 @@ extern unsigned int SystemCoreClock;
 #define SYSVIEW_CPU_FREQ        (SystemCoreClock)
 
 // The lowest RAM address used for IDs (pointers)
-#define SYSVIEW_RAM_BASE        (0x60000000)
+#define SYSVIEW_RAM_BASE        (0x20000000)
 
 /********************************************************************* 
 *
