@@ -332,12 +332,31 @@ inline void main_protection(void)
   /**************************/
   //Опрацьовуємо натиснуті кнопки
   /**************************/
-  __LN_BUTTON *arr_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+  __LN_BUTTON *p_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
   for (uint32_t i = 0; i < current_config_prt.n_button; i++)
   {
-    arr_button[i].active_state [BUTTON_OUT >> 3]  = ((pressed_buttons >> i) & 0x1) << (BUTTON_OUT & ((1 << 3) - 1));
+    //Скидаємо  попередній стан
+    p_button->active_state [BUTTON_OUT >> 3]  &= (uint8_t)(~( 1 << (BUTTON_OUT & ((1 << 3) - 1))));
+    
+    //Перевіряємо, чи не встановлений MUTEX
+    if ((p_button->internal_input[BUTTON_INT_MUTEX >> 3] & (1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1)))) == 0)
+    {
+      //MUTEX не встановлений
+      
+      //Визначаємо стан вхідної інформації
+      uint32_t state_tmp = ((p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] & (1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1)))) != 0);
+      if (state_tmp)
+      {
+        //Встановлюємо вихід
+        p_button->active_state[BUTTON_OUT >> 3]  |= (1 << (BUTTON_OUT & ((1 << 3) - 1)));
+        
+        //Скидаємо інформацію з входу
+        p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1))));
+      }
+    }
+    //Переводимо вказівник на наступну кнопку
+    p_button++;
   }
-  pressed_buttons = 0;
   /**************************/
     
   /**************************/
@@ -355,12 +374,17 @@ inline void main_protection(void)
   //Розрахунок вимірювань
   /***********************************************************/
   calc_measurement();
-  RdHrdIn((void*)&DiHrdStateUI32Bit);
+  //RdHrdIn((void*)&DiHrdStateUI32Bit);
   
-  SetHrdOut((void*)&DoStateUI32Bit);
-  SetHrdLed((void*)&LedStateUI32Bit);
+  
   //TmrCalls();
   DoCalcWrp();
+  if(chGlb_ActivatorWREeprom>0){
+    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+    chGlb_ActivatorWREeprom = 0;
+  }
+  SetHrdOut((void*)&DoStateUI32Bit);
+  SetHrdLed((void*)&LedStateUI32Bit);
   //Копіюємо вимірювання для низькопріоритетних і високопріоритетних завдань
   unsigned int bank_measurement_high_tmp = (bank_measurement_high ^ 0x1) & 0x1;
   if(semaphore_measure_values_low1 == 0)
@@ -512,6 +536,86 @@ inline void main_protection(void)
 /*****************************************************/
 
 /*****************************************************/
+//Переривання від таймеру TIM3, який обслуговує логіку пристрою
+/*****************************************************/
+void TIM3_IRQHandler(void)
+{
+#ifdef SYSTEM_VIEWER_ENABLE
+  SEGGER_SYSVIEW_RecordEnterISR();
+#endif
+  
+  if (TIM_GetITStatus(TIM3, TIM_IT_CC1) != RESET)
+  {
+    /***********************************************************************************************/
+    //Переривання відбулося вік каналу 1, який генерує переривання кожні 1 мс
+    /***********************************************************************************************/
+    TIM3->SR = (uint16_t)((~(uint32_t)TIM_IT_CC1) & 0xffff);
+    uint16_t current_tick = TIM3->CCR1;
+    RdHrdIn((void*)&DiHrdStateUI32Bit);
+    UpdateStateDI(); 
+    /***********************************************************/
+    //Встановлюємо "значення лічильника для наступного переривання"
+    /***********************************************************/
+    uint16_t capture_new;
+    unsigned int delta;
+    TIM3->CCR1 = (capture_new = (current_tick + (delta = TIM3_CCR1_VAL)));
+    
+    unsigned int repeat;
+    unsigned int previous_tick;
+    do
+    {
+      repeat = 0;
+      current_tick = TIM3->CNT;
+
+      uint32_t delta_time = 0;
+      if (capture_new < current_tick)
+        delta_time = capture_new + 0x10000 - current_tick;
+      else delta_time = capture_new - current_tick;
+
+      if ((delta_time > delta) || (delta_time == 0))
+      {
+        if (TIM_GetITStatus(TIM3, TIM_IT_CC1) == RESET)
+        {
+          if (delta < TIM3_CCR1_VAL)
+          {
+            uint32_t delta_tick;
+            if (current_tick < previous_tick)
+              delta_tick = current_tick + 0x10000 - previous_tick;
+            else delta_tick = current_tick - previous_tick;
+              
+            delta = delta_tick + 1;
+          }
+          else if (delta == TIM3_CCR1_VAL)
+            delta = 1; /*Намагаємося, щоб нове переивання запустилося як омога скоріше*/
+          else
+          {
+            //Теоретично цього ніколи не мало б бути
+            total_error_sw_fixed(9);
+          }
+          TIM3->CCR1 = (capture_new = (TIM3->CNT +  delta));
+          previous_tick = current_tick;
+          repeat = 0xff;
+        }
+      }
+    }
+    while (repeat != 0);
+    /***********************************************************/
+
+    /***********************************************************/
+    //Виставляємо повідомлення про те, що канал 1 TIM3, що відповідає логіку працює
+    /***********************************************************/
+    control_word_of_watchdog |= WATCHDOG_PROTECTION_1;
+    /***********************************************************/
+    /***********************************************************************************************/
+  }
+
+#ifdef SYSTEM_VIEWER_ENABLE
+  SEGGER_SYSVIEW_RecordExitISR();
+#endif
+}
+/*****************************************************/
+
+/*****************************************************/
 //Переривання від таймеру TIM2, який обслуговує систему захистів
 /*****************************************************/
 void TIM2_IRQHandler(void)
@@ -561,13 +665,100 @@ void TIM2_IRQHandler(void)
     /***********************************************************/
 
     /***********************************************************/
+    //Перевіряємо необхідність очистки журналу подій
+    /***********************************************************/
+    //Журнал подій
+    if (
+        ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_LOG_BIT)) != 0)
+        &&  
+        (
+         (control_tasks_dataflash & (
+                                     MASKA_FOR_BIT(TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT   ) |
+                                     MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT  ) |
+                                     MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT) |
+                                     MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT )
+                                    )
+         ) == 0
+        )
+       )   
+    {
+      //Виставлено каманда очистити журнал подій
+
+      //Виставляємо команду запису цієї структури у EEPROM
+      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+
+      //Очищаємо структуру інформації по журналі подій
+      info_rejestrator_log.next_address = info_rejestrator_log.previous_address = MIN_ADDRESS_LOG_AREA;
+      info_rejestrator_log.number_records = 0;
+
+      //Помічаємо, що номер запису не вибраний
+      number_record_of_log_into_menu  = 0xffff;
+      number_record_of_log_into_USB   = 0xffff;
+      number_record_of_log_into_RS485 = 0xffff;
+
+      //Знімаємо команду очистки журналу подій
+      clean_rejestrators &= (unsigned int)(~MASKA_FOR_BIT(CLEAN_LOG_BIT));
+    }
+    /***********************************************************/
+    
+    /***********************************************************/
+    //Підготовлюємо новий запис для Журналу подій
+    /***********************************************************/
+    if (event_log_handler())
+    {
+      //Додано новий запис у Журнал подій
+      *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) |= (__LOG_INPUT)(1 << EVENT_LOG_WORK);
+    }
+    else
+    {
+      //Новий запис у Журнал подій не додавався
+      *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) &= (__LOG_INPUT)(~(1 << EVENT_LOG_WORK));
+    }
+    /***********************************************************/
+    
+    /***********************************************************/
+    //Перевірка на необхідність зроботи резервну копію даних для самоконтролю
+    /***********************************************************/
+    //Реєстратор програмних подій
+    if (periodical_tasks_TEST_INFO_REJESTRATOR_LOG != 0)
+    {
+      //Стоїть у черзі активна задача зроботи резервні копії даних
+      if ((state_i2c_task & MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_GOOD_BIT)) != 0)
+      {
+        //Робимо копію тільки тоді, коли структура інформації реєстратора успішно зчитана і сформована контрольна сума
+        if (
+            (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT) == 0) &&
+            (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_LOG_EEPROM_BIT    ) == 0) &&
+            (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_LOG_EEPROM_BIT ) == 0) &&
+            (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_LOG_EEPROM_BIT    ) == 0)
+           ) 
+        {
+          //На даний моммент не іде читання-запис структури інформації реєстратора, тому можна здійснити копіювання
+          info_rejestrator_log_ctrl = info_rejestrator_log;
+          crc_info_rejestrator_log_ctrl = crc_info_rejestrator_log;
+
+          //Скидаємо активну задачу формування резервної копії 
+          periodical_tasks_TEST_INFO_REJESTRATOR_LOG = false;
+          //Виставляємо активну задачу контролю достовірності по резервній копії 
+          periodical_tasks_TEST_INFO_REJESTRATOR_LOG_LOCK = true;
+        }
+      }
+      else
+      {
+        //Скидаємо активну задачу формування резервної копії 
+        periodical_tasks_TEST_INFO_REJESTRATOR_LOG = false;
+      }
+    }
+    /***********************************************************/
+
+    /***********************************************************/
     //Перевірка на необхідність зроботи резервні копії даних для самоконтролю
     /***********************************************************/
     //Триґерна інформація
     if (periodical_tasks_TEST_TRG_FUNC != 0)
     {
       //Стоїть у черзі активна задача зроботи резервні копії даних
-      if ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) != 0)
+      if ((state_i2c_task & MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_GOOD_BIT)) != 0)
       {
         //Робимо копію тільки тоді, коли триґерна інформація успішно зчитана і сформована контрольна сума
         if (
@@ -702,4 +893,415 @@ void TIM2_IRQHandler(void)
 #endif
 }
 /*****************************************************/
+
+/*****************************************************/
+//Функція фіксація змін подій у Журналі подій
+/*
+Резукльтат виконання функції
+0 - не додавався запис у Журнал поді
+1 - доданий запис у Журнал подій
+*/
+/*****************************************************/
+uint32_t event_log_handler(void)
+{
+  uint32_t result = false;
+  
+  //Визначаємо кількість доступних комірок у буфері для Журналу подій
+  int32_t number_empty_cells;
+  uint32_t head = head_fifo_buffer_log_records, tail = tail_fifo_buffer_log_records;
+  number_empty_cells = (int32_t)(tail - head);
+  if (
+      (number_empty_cells == 0) &&
+      (_CHECK_SET_BIT(diagnostyka, ERROR_LOG_OVERLOAD_BIT) == 0)
+     )
+  {
+    number_empty_cells = MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
+  }
+  while (number_empty_cells < 0) number_empty_cells += MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
+
+  /***
+  Час фіксації зміни
+  ***/
+  uint8_t *label_to_time_array;
+  if (copying_time == 0) label_to_time_array = time;
+  else label_to_time_array = time_copy;
+  /***/
+  
+  uint32_t *p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]); /*поки що вказівник вказує на елемент де записуються вихідні сигнали, але пре-інкрементація дасть, що вказівник буде вже вказувати та перший вхід при вході у цикл*/
+  uint32_t param;
+  
+//  uint32_t id_input_prev = 0;
+//  int32_t n_input_before = 0;
+//  uintptr_t *address;
+  
+  size_t i = 0;
+  while (
+         (i < (current_config_prt.n_log*LOG_SIGNALS_IN)) &&
+         ((param = (*(++p_param))) != 0) &&
+         (number_empty_cells > 0)  
+        )   
+  {
+    uint32_t state_before = (param >> SFIFT_PARAM_INTERNAL_BITS) & MASKA_PARAM_INTERNAL_BITS;
+    uint32_t id_input     = (param >> SFIFT_PARAM_ID           ) & MASKA_PARAM_ID ;
+    int32_t n_input       = ((param >> SFIFT_PARAM_N            ) & MASKA_PARAM_N  ) - 1;
+    int32_t out_input     = ((param >> SFIFT_PARAM_OUT          ) & MASKA_PARAM_OUT) - 1;
+    
+    uint32_t state_now;
+    uint32_t NNC_now = 0, NNC_before = 0;
+    __LN_GROUP_ALARM *point;
+    
+    if ((n_input >= 0) && (out_input >= 0))
+    {
+      switch (id_input)
+      {
+      case ID_FB_CONTROL_BLOCK:
+        {
+          state_now = ((fix_block_active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_INPUT:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_INPUT*)(address) + 1);
+//          }
+//          state_now = ((((__LN_INPUT*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_OUTPUT:
+      case ID_FB_LED:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_OUTPUT_LED*)spca_of_p_prt[id_input - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_OUTPUT_LED*)(address) + 1);
+//          }
+//          state_now = ((((__LN_OUTPUT_LED*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_OUTPUT_LED*)spca_of_p_prt[id_input - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_BUTTON:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_BUTTON*)(address) + 1);
+//          }
+//          state_now = ((((__LN_BUTTON*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_ALARM:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_ALARM*)(address) + 1);
+//          }
+//          state_now = ((((__LN_ALARM*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_GROUP_ALARM:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_GROUP_ALARM*)(address) + 1);
+//          }
+//          state_now = ((((__LN_GROUP_ALARM*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+//          NNC_now = ((__LN_GROUP_ALARM*)address)->NNC;
+//          NNC_before = ((__LN_GROUP_ALARM*)address)->NNC_before;
+          point = (__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + n_input;
+          state_now = ((point->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          NNC_now = point->NNC;
+          NNC_before = point->NNC_before;
+          break;
+        }
+      case ID_FB_AND:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_AND*)(address) + 1);
+//          }
+//          state_now = ((((__LN_AND*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_AND*)spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_OR:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_OR*)(address) + 1);
+//          }
+//          state_now = ((((__LN_OR*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_OR*)spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_XOR:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_XOR*)(address) + 1);
+//          }
+//          state_now = ((((__LN_XOR*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_XOR*)spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_NOT:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_NOT*)(address) + 1);
+//          }
+//          state_now = ((((__LN_NOT*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_NOT*)spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_TIMER:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TIMER*)(address) + 1);
+//          }
+//          state_now = ((((__LN_TIMER*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_TIMER*)spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_TRIGGER:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input)
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TRIGGER*)(address) + 1);
+//          }
+//          state_now = ((((__LN_TRIGGER*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_TRIGGER*)spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_MEANDER:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input)
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_MEANDER*)(address) + 1);
+//          }
+//          state_now = ((((__LN_MEANDER*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_MEANDER*)spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_TU:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TU*)spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input)
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TU*)(address) + 1);
+//          }
+//          state_now = ((((__LN_TU*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_TU*)spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_TS:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input)
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_TS*)(address) + 1);
+//          }
+//          state_now = ((((__LN_TS*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_EVENT_LOG:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+//          }
+//          state_now = ((*((__LOG_INPUT*)address) &  (1 << (out_input & ((1 << 5) - 1)))) != 0);
+          state_now = ((*((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) & (1 << (out_input & ((1 << 5) - 1)))) != 0);
+          break;
+        }
+      default:
+        {
+          //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+          total_error_sw_fixed(6);
+        }
+      }
+    }
+    else
+    {
+      //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+      total_error_sw_fixed(7);
+    }
+        
+    if (
+        (state_before != state_now) ||
+        (
+         (id_input == ID_FB_GROUP_ALARM) &&
+         (state_now == true) && 
+         (NNC_now != NNC_before)  
+        )   
+       )   
+    {
+      //Є що записувати у Журнал подій
+      result = true;
+
+      /***
+      Визначаємо індекс у масиві буфері Журналу подій з якого треба почати заповнювати дані
+      ***/
+      uint32_t index_into_buffer_log = head*SIZE_ONE_RECORD_LOG;
+      /***/
+      
+      /***
+      Формуємо сам запис
+      ***/
+      //Помічаємо мітку початку запису
+      buffer_log_records[index_into_buffer_log++] = LABEL_START_RECORD_LOG;
+      //Дата і час події
+      for(size_t j = 0; j < 7; j++) buffer_log_records[index_into_buffer_log++] = *(label_to_time_array + j);
+      
+      //Визначаємо новий стан з його фіксацією
+      param = (param & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))) | ((state_now & MASKA_PARAM_INTERNAL_BITS) << SFIFT_PARAM_INTERNAL_BITS);
+      *p_param = param;
+      
+      buffer_log_records[index_into_buffer_log++] = (param >> (0*8)) & 0xff;
+      buffer_log_records[index_into_buffer_log++] = (param >> (1*8)) & 0xff;
+      buffer_log_records[index_into_buffer_log++] = (param >> (2*8)) & 0xff;
+      buffer_log_records[index_into_buffer_log++] = (param >> (3*8)) & 0xff;
+
+      buffer_log_records[index_into_buffer_log] = NNC_now;
+      if (id_input == ID_FB_GROUP_ALARM)
+      {
+//        ((__LN_GROUP_ALARM*)address)->NNC_before = NNC_now;
+        point->NNC_before = NNC_now;
+      } 
+      /***/
+
+      /***
+      Дії по завершенню формування запису
+      ***/
+      //Кількість комірок доступних для запису
+      number_empty_cells--;
+          
+      //Head буферу FIFO
+      head++;
+      while (head >= MAX_NUMBER_RECORDS_LOG_INTO_BUFFER) head -= MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
+      /***/
+    }
+    
+    i++;
+  }
+  head_fifo_buffer_log_records = head;
+
+  if  (
+       (number_empty_cells == 0) &&
+       (i < (current_config_prt.n_log*LOG_SIGNALS_IN)) &&
+       (param != 0)
+      ) 
+  {
+    _SET_BIT(set_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
+  }
+  else
+  {
+    _SET_BIT(clear_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
+  }
+  
+  return result;
+}
+/*****************************************************/
+
 

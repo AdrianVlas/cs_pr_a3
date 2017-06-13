@@ -26,10 +26,10 @@ ERROR_TRG_FUNC_EEPROM_BIT,
 ERROR_TRG_FUNC_EEPROM_EMPTY_BIT,
 ERROR_TRG_FUNC_EEPROM_COMPARISON_BIT,
 ERROR_TRG_FUNC_EEPROM_CONTROL_BIT,
-ERROR_INFO_REJESTRATOR_DR_EEPROM_BIT,
-ERROR_INFO_REJESTRATOR_DR_EEPROM_EMPTY_BIT,
-ERROR_INFO_REJESTRATOR_DR_COMPARISON_BIT,
-ERROR_INFO_REJESTRATOR_DR_CONTROL_BIT,
+ERROR_INFO_REJESTRATOR_LOG_EEPROM_BIT,
+ERROR_INFO_REJESTRATOR_LOG_EEPROM_EMPTY_BIT,
+ERROR_INFO_REJESTRATOR_LOG_COMPARISON_BIT,
+ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT,
 ERROR_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT,
 ERROR_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT,
 ERROR_INFO_REJESTRATOR_PR_ERR_COMPARISON_BIT,
@@ -50,6 +50,8 @@ ERROR_VDD_ADC_TEST_COARSE_BIT,
 
 ERROR_DIGITAL_OUTPUTS_BIT,
 
+ERROR_LOG_OVERLOAD_BIT,
+ERROR_LOG_LOSS_INFORMATION_BIT,
 ERROR_PR_ERR_OVERLOAD_BIT,
 ERROR_PR_ERR_LOSS_INFORMATION_BIT,
 
@@ -130,10 +132,10 @@ _NUMBER_ERRORS
   "  Триг.инф.нет  ",   \
   "Ош.зап.триг.инф.",   \
   "Ош.контр.триг.и.",   \
-  " Ош.инф.д.рег.  ",   \
-  " Инф.д.рег.нет  ",   \
-  " Ош.зап.и.д.рег.",   \
-  " Ош.контр.д.рег.",   \
+  " Ош.инф.ж.соб.  ",   \
+  " Инф.ж.соб.нет  ",   \
+  " Ош.зап.и.ж.соб.",   \
+  " Ош.контр.ж.соб.",   \
   "Ош.инф.рег.пр.с.",   \
   "Инф.рег.пр.с.нет",   \
   "Ош.зап.и.р.пр.с.",   \
@@ -150,6 +152,8 @@ _NUMBER_ERRORS
   "Тест VREF АЦП гр",   \
   "Тест VDD АЦП гр.",   \
   " Ош.вых.реле    ",   \
+  "Переп.буф.ж.соб.",   \
+  " Потеря д.ж.соб.",   \
   "Переп.буф.пр.ош.",   \
   " Потеря д.пр.ош.",   \
   "Изм.конфиругации",   \
@@ -163,8 +167,6 @@ _NUMBER_ERRORS
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
-  " Ошибка 55      ",   \
-  " Ошибка 56      ",   \
   " Ошибка 57      ",   \
   " Ошибка 58      ",   \
   " Ошибка 59      ",   \
@@ -196,10 +198,10 @@ _NUMBER_ERRORS
   " Триґ.інф.нема  ",   \
   " Пом.зап.триґ.і.",   \
   "Пом.контр.триґ.і",   \
-  " Пом.інф.д.р.   ",   \
-  " Інф.д.р.нема   ",   \
-  " Пом.зап.і.д.р. ",   \
-  " Пом.контр.д.р. ",   \
+  " Пом.інф.ж.п.   ",   \
+  " Інф.ж.п.нема   ",   \
+  " Пом.зап.і.ж.п. ",   \
+  " Пом.контр.ж.п. ",   \
   " Пом.інф.р.пр.п.",   \
   " Інф.р.пр.п.нема",   \
   "Пом.зап.і.р.пр.п",   \
@@ -216,6 +218,8 @@ _NUMBER_ERRORS
   "Тест VREF АЦП гр",   \
   "Тест VDD АЦП гр.",   \
   " Пом.вих.реле   ",   \
+  " Переп.буф.ж.п. ",   \
+  " Втрата д.ж.п.  ",   \
   "Переп.буф.р.пр.п",   \
   " Втрата д.р.пр.п",   \
   " Зм.конфіругації",   \
@@ -229,8 +233,6 @@ _NUMBER_ERRORS
   " Пом.SPI_DF     ",   \
   " Пом.зовн.SRAM  ",   \
   " Пом.внутр.FLASH",   \
-  " Помилка 55     ",   \
-  " Помилка 56     ",   \
   " Помилка 57     ",   \
   " Помилка 58     ",   \
   " Помилка 59     ",   \
@@ -262,10 +264,10 @@ _NUMBER_ERRORS
   "  Триг.инф.нет  ",   \
   "Ош.зап.триг.инф.",   \
   "Ош.контр.триг.и.",   \
-  " D.Rec.Inf.Err. ",   \
-  " No D.Rec.Inf.  ",   \
-  "Inf.D.Rec.W.Err.",   \
-  " D.Rec.Ctrl.Err.",   \
+  " Ev.Log.Inf.Err.",   \
+  " No Ev.Log.Inf. ",   \
+  "Inf.Ev.Log.W.Err",   \
+  "Ev.Log.Ctrl.Err.",   \
   " PER Inf.Err.   ",   \
   " No Inf.of PER  ",   \
   "Inf.W.Err.of PER",   \
@@ -282,6 +284,8 @@ _NUMBER_ERRORS
   " ADC:VREF Test R",   \
   " ADC:VDD Test R.",   \
   " DO Ctrl.Err.   ",   \
+  "OVF of Ev.Log.b.",   \
+  "Ev.Log.Data lost",   \
   "OVF of PER buff.",   \
   " PER Data lost  ",   \
   " Conf.changed   ",   \
@@ -295,8 +299,6 @@ _NUMBER_ERRORS
   " DF SPI Err.    ",   \
   " Ext.SRAM Err.  ",   \
   " Int.FLASH Err. ",   \
-  " Error 55       ",   \
-  " Error 56       ",   \
   " Error 57       ",   \
   " Error 58       ",   \
   " Error 59       ",   \
@@ -328,10 +330,10 @@ _NUMBER_ERRORS
   "  Триг.инф.нет  ",   \
   "Ош.зап.триг.инф.",   \
   "Ош.контр.триг.и.",   \
-  " Ош.инф.д.рег.  ",   \
-  " Инф.д.рег.нет  ",   \
-  " Ош.зап.и.д.рег.",   \
-  " Ош.контр.д.рег.",   \
+  " Ош.инф.ж.соб.  ",   \
+  " Инф.ж.соб.нет  ",   \
+  " Ош.зап.и.ж.соб.",   \
+  " Ош.контр.ж.соб.",   \
   "Ош.инф.рег.пр.с.",   \
   "Инф.рег.пр.с.нет",   \
   "Ош.зап.и.р.пр.с.",   \
@@ -348,6 +350,8 @@ _NUMBER_ERRORS
   "Тест VREF АЦП гр",   \
   "Тест VDD АЦП гр.",   \
   " Ош.вых.реле    ",   \
+  "Переп.буф.ж.соб.",   \
+  " Потеря д.ж.соб.",   \
   "Переп.буф.пр.ош.",   \
   " Потеря д.пр.ош.",   \
   "Изм.конфиругации",   \
@@ -361,8 +365,6 @@ _NUMBER_ERRORS
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
-  " Ошибка 55      ",   \
-  " Ошибка 56      ",   \
   " Ошибка 57      ",   \
   " Ошибка 58      ",   \
   " Ошибка 59      ",   \

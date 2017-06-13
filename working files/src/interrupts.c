@@ -607,8 +607,27 @@ void TIM4_IRQHandler(void)
     /***************************/
     //Обробка алгоритму функціональних кнопок
     /***************************/
-    pressed_buttons    |= (new_state_keyboard & ( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) )) >> _NUMBER_MOVING_KEY;
+    uint32_t pressed_buttons = (new_state_keyboard & ( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) )) >> _NUMBER_MOVING_KEY;
     new_state_keyboard &= (unsigned int)(~( (1<<BIT_KEY_1) | (1<<BIT_KEY_2) | (1<<BIT_KEY_MUTE) | (1<<BIT_KEY_RESET) | (1<<BIT_KEY_TEST) ));
+
+    __LN_BUTTON *p_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+    for (uint32_t i = 0; i < current_config_prt.n_button; i++)
+    {
+      if ((pressed_buttons & (1 << i)) != 0)
+      {
+        //Зафіксовано, що кнопка зараз натиснута
+        
+        //Встановлюємо MUTEX
+        p_button->internal_input[BUTTON_INT_MUTEX >> 3] |= (1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1)));
+        
+        //Встановлюємо вхідну інформацію
+        p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] |= (1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1)));
+
+        //Скидаємо MUTEX
+        p_button->internal_input[BUTTON_INT_MUTEX >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1))));
+      }
+      p_button++;
+    }
     /***************************/
     /***********************************************************/
   
@@ -664,7 +683,7 @@ void TIM4_IRQHandler(void)
       
       //Запуск читання часу з RTC тільки піся успішного зчитування настройок
       //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
-      if ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0) 
+      if ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) != 0) 
       {
         _SET_BIT(control_i2c_taskes, TASK_START_READ_RTC_BIT);
         _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
@@ -675,6 +694,7 @@ void TIM4_IRQHandler(void)
       periodical_tasks_TEST_SETTINGS                = 
       periodical_tasks_TEST_USTUVANNJA              = 
       periodical_tasks_TEST_TRG_FUNC                = 
+      periodical_tasks_TEST_INFO_REJESTRATOR_LOG    = 
       periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR = 
       periodical_tasks_TEST_FLASH_MEMORY            = true;
       
@@ -804,7 +824,7 @@ void TIM4_IRQHandler(void)
     //Перевіряємо необхідність очистки реєстратора програмних подій
     /***********************************************************/
     if (
-        ((clean_rejestrators & CLEAN_PR_ERR) != 0)
+        ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0)
         &&  
         (
          (control_tasks_dataflash & (
@@ -832,7 +852,7 @@ void TIM4_IRQHandler(void)
       number_record_of_pr_err_into_RS485 = 0xffffffff;
 
       //Знімаємо команду очистки реєстратора програмних подій
-      clean_rejestrators &= (unsigned int)(~CLEAN_PR_ERR);
+      clean_rejestrators &= (unsigned int)(~MASKA_FOR_BIT(CLEAN_PR_ERR_BIT));
     }
     /***********************************************************/
     
@@ -849,7 +869,7 @@ void TIM4_IRQHandler(void)
     if (periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR != 0)
     {
       //Стоїть у черзі активна задача зроботи резервні копії даних
-      if ((state_i2c_task & STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD) != 0)
+      if ((state_i2c_task & MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT)) != 0)
       {
         //Робимо копію тільки тоді, коли структура інформації реєстратора успішно зчитана і сформована контрольна сума
         if (
@@ -880,33 +900,82 @@ void TIM4_IRQHandler(void)
     /***********************************************************/
     //Періодично запускаємо звертання то мікросхем DataFlash
     /***********************************************************/
-    uint32_t number_chip_dataflsh_exchange_local = number_chip_dataflsh_exchange;
-    if (number_chip_dataflsh_exchange_local < NUMBER_DATAFLASH_CHIP)
+    uint32_t number_chip_dataflash_exchange_local = number_chip_dataflash_exchange;
+    if (number_chip_dataflash_exchange_local < NUMBER_DATAFLASH_CHIP)
     {
-      if (state_execution_spi_df[number_chip_dataflsh_exchange_local] != TRANSACTION_EXECUTING)
+      if (state_execution_spi_df[number_chip_dataflash_exchange_local] != TRANSACTION_EXECUTING)
       {
         //Немає обміну по вибраній мікросехмі
         
         //Змінюємо номер мікросхеми, до якої ми будемо звертатися при натупних трансакціях, якщо зараз не запущена ніяка трансакція
-        number_chip_dataflsh_exchange_local = number_chip_dataflsh_exchange = (number_chip_dataflsh_exchange_local < (NUMBER_DATAFLASH_CHIP - 1)) ? (number_chip_dataflsh_exchange_local++) : INDEX_DATAFLASH_1;
+        number_chip_dataflash_exchange_local = number_chip_dataflash_exchange = (number_chip_dataflash_exchange_local < (NUMBER_DATAFLASH_CHIP - 1)) ? (number_chip_dataflash_exchange_local++) : INDEX_DATAFLASH_1;
 
-        if (control_spi_df_tasks[number_chip_dataflsh_exchange_local] != 0) main_routines_for_spi_df(number_chip_dataflsh_exchange_local);
+        if (control_spi_df_tasks[number_chip_dataflash_exchange_local] != 0) main_routines_for_spi_df(number_chip_dataflash_exchange_local);
         
-        if (control_spi_df_tasks[number_chip_dataflsh_exchange_local] == 0)
+        if (control_spi_df_tasks[number_chip_dataflash_exchange_local] == 0)
         {
           static uint32_t control_tasks_dataflash_active;
           /***
           Оброка трансакцій, які вже були запущені
           ***/
-          switch (number_chip_dataflsh_exchange_local)
+          switch (number_chip_dataflash_exchange_local)
           {
           case INDEX_DATAFLASH_1:
             {
               if ((control_tasks_dataflash_active & (MASKA_FOR_BIT(_SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2) - 1)) != 0)
               {
-                if (0)
+                if ((control_tasks_dataflash_active & MASKA_FOR_BIT(TASK_ERASE_DATAFLASH_1_BIT)) != 0)
                 {
-                  //Дії над журналом подій
+                  //Покищо ця опреція є реалізованою, але не використовується
+
+                  /***
+                  Скидаємо команду стирання DataFlash1
+                  ***/
+                  _CLEAR_STATE(control_tasks_dataflash_active, TASK_ERASE_DATAFLASH_1_BIT);
+                  _CLEAR_STATE(control_tasks_dataflash       , TASK_ERASE_DATAFLASH_1_BIT);
+                  /***/
+                }
+                else if ((control_tasks_dataflash_active & TASK_FOR_LOG) != 0)
+                {
+                  //Дії над Журналом подій
+                  if ((control_tasks_dataflash_active & MASKA_FOR_BIT(TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT)) != 0)
+                  {
+                    /***
+                    Виставляємо команду запису структури Журналу подій у EEPROM
+                    ***/
+                    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+                    info_rejestrator_log.previous_address = info_rejestrator_log.next_address;
+                    /***/
+
+                    /***
+                    Скидаємо команду запису даних у DataFlash
+                    ***/
+                    _CLEAR_STATE(control_tasks_dataflash_active, TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT);
+                    _CLEAR_STATE(control_tasks_dataflash       , TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT);
+                    /***/
+                  }
+                  else
+                  {
+                    uint8_t *point_buffer = NULL;
+                    
+                    if ((control_tasks_dataflash_active & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT )) != 0) point_buffer = buffer_for_menu_read_record;
+                    else if ((control_tasks_dataflash_active & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT )) != 0) point_buffer = buffer_for_USB_read_record_log;
+                    else if ((control_tasks_dataflash_active & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )) != 0) point_buffer = buffer_for_RS485_read_record_log;
+                    
+                    if (point_buffer != NULL)
+                    {
+                      for (size_t i = 0; i < SIZE_ONE_RECORD_LOG; i++) point_buffer[i] = buffer_serial_DataFlash_read_write[INDEX_DATAFLASH_1][i];
+
+                      /***
+                      Скидаємо команду читання даних з DataFlash
+                      
+                      Так як і робота з верхнім рівнем і з меню ведеться на найнижчому пріоритеті, то за умови очікування зчитування даних не може бути одночасно виставлено команду читати для різних джерел
+                      ***/
+                      control_tasks_dataflash_active &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )));
+                      control_tasks_dataflash        &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )));
+                      /***/
+                    }
+                  } 
                 }
                 else
                 {
@@ -957,6 +1026,17 @@ void TIM4_IRQHandler(void)
             {
               if ((control_tasks_dataflash_active & (uint32_t)(~(MASKA_FOR_BIT(_SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2) - 1))) != 0)
               {
+                if ((control_tasks_dataflash_active & MASKA_FOR_BIT(TASK_ERASE_DATAFLASH_2_BIT)) != 0)
+                {
+                  //Покищо ця опреція є реалізованою, але не використовується
+
+                  /***
+                  Скидаємо команду стирання DataFlash2
+                  ***/
+                  _CLEAR_STATE(control_tasks_dataflash_active, TASK_ERASE_DATAFLASH_2_BIT);
+                  _CLEAR_STATE(control_tasks_dataflash       , TASK_ERASE_DATAFLASH_2_BIT);
+                  /***/
+                }
               }
               break;
             }
@@ -966,17 +1046,182 @@ void TIM4_IRQHandler(void)
           /***
           Підготовлюємо  нові трансакції по необхідності
           ***/
-          switch (number_chip_dataflsh_exchange_local)
+          switch (number_chip_dataflash_exchange_local)
           {
           case INDEX_DATAFLASH_1:
             {
               /***
               Підготовка нових записів для запису у Журнал подій
               ***/
-              /***/
-              if (0)
+              uint32_t head = head_fifo_buffer_log_records, tail = tail_fifo_buffer_log_records;
+              if ((POWER_CTRL->IDR & POWER_CTRL_PIN) != (uint32_t)Bit_RESET) /*На даний момент на вході блоку живлення подається живлення*/ 
               {
-                //Дії над журналом подій
+                if (head != tail) _SET_STATE(control_tasks_dataflash, TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT);  //Є нові записи у буфері подій  
+              }
+              /***/
+              if ((control_tasks_dataflash & (
+                                               MASKA_FOR_BIT(TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT   ) |
+                                               MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT  ) |
+                                               MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT) |
+                                               MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT )
+                                              )) != 0)
+              {
+                //Дії над Журналом подій
+                if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT)) != 0)
+                {
+                  //Початок запису нових записів у Журнал подій
+                  
+                  /***
+                  Виставляємо активну задачу запису записів Журналу подій
+                  ***/
+                  _SET_STATE(control_tasks_dataflash_active, TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT);                  
+                  /***/
+                  
+                  /***
+                  Виставляємо команди: запису даних у DataFlash і запису структури Журналу подій у EEPROM
+                  ***/
+                  _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+                  _SET_STATE(control_spi_df_tasks[INDEX_DATAFLASH_1], TASK_START_WRITE_SERIAL_DATAFLASH_BIT);
+                  /***/
+                  
+                  /***
+                  Визначаємо адресу з якої треба записувати
+                  ***/
+                  address_read_write[INDEX_DATAFLASH_1] = info_rejestrator_log.next_address;
+                  /***/
+
+                  /***
+                  Визначаємо кількість байт для запису
+                  ***/
+                  number_bytes_read_write[INDEX_DATAFLASH_1] = 0;
+                  /***/
+                    
+                  size_t i = 0;
+                  while (
+                         (head != tail) &&
+                         ((i + SIZE_ONE_RECORD_LOG) <= SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE)  
+                        )   
+                  {
+                    /***
+                    Визначаємо індекс у масиві буферу Журналу подій з якого треба почати заповнювати дані
+                    ***/
+                    uint32_t index_into_buffer_log = (tail++)*SIZE_ONE_RECORD_LOG;
+                    while (tail >= MAX_NUMBER_RECORDS_LOG_INTO_BUFFER) tail -= MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
+                    /***/
+                    
+                    /***
+                    Копіюємо дані для запису
+                    ***/
+                    for (size_t j = 0; j < SIZE_ONE_RECORD_LOG; j++ ) buffer_serial_DataFlash_read_write[INDEX_DATAFLASH_1][i++] = buffer_log_records[index_into_buffer_log++];
+                    /***/
+                    
+                    /***
+                    Визначаємо кількість байт для запису
+                    ***/
+                    number_bytes_read_write[INDEX_DATAFLASH_1] += SIZE_ONE_RECORD_LOG;
+                    /***/
+
+                    /***
+                    Визначаємо кількість записів у Реєстраторі програмних подій
+                    ***/
+                    if (info_rejestrator_log.number_records < MAX_NUMBER_RECORDS_INTO_LOG) info_rejestrator_log.number_records++;
+                    /***/
+                    
+                    /***
+                    Визначаємо наступну адресу з якої треба буде записувати
+                    ***/
+                    info_rejestrator_log.next_address += SIZE_ONE_RECORD_LOG;
+                    if (info_rejestrator_log.next_address > MAX_ADDRESS_LOG_AREA_WORK) 
+                    {
+                      info_rejestrator_log.next_address = MIN_ADDRESS_LOG_AREA;
+                      
+                      //Треба припинити заповнювати буфер, записвати пфідготовлені значення, а аж потім продовжити  знову записувати незаписані дані
+                      break;
+                    }
+                    /***/
+                  }
+                  tail_fifo_buffer_log_records = tail;
+                }
+                else
+                {
+                  //Початок читання записів з Журналу подій
+                  uint32_t number_record = 0xffffffff;
+                  if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT )) != 0) 
+                  {
+                    /***
+                    Виставляємо активну задачу читання запису Журналу подій для меню
+                    ***/
+                    _SET_STATE(control_tasks_dataflash_active, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT);                  
+                    /***/
+                    number_record = number_record_of_log_into_menu;
+                  }
+                  else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT )) != 0) 
+                  {
+                    /***
+                    Виставляємо активну задачу читання запису Журналу подій для USB
+                    ***/
+                    _SET_STATE(control_tasks_dataflash_active, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT);                  
+                    /***/
+                    number_record = number_record_of_log_into_USB;
+                  }
+                  else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )) != 0) 
+                  {
+                    /***
+                    Виставляємо активну задачу читання запису Журналу подій для RS485
+                    ***/
+                    _SET_STATE(control_tasks_dataflash_active, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT);                  
+                    /***/
+                    number_record = number_record_of_log_into_RS485;
+                  }
+                  
+                  if (number_record < info_rejestrator_log.number_records)
+                  {
+                    uint32_t address_1 = info_rejestrator_log.next_address;
+                    int32_t address_2 = address_1 - (number_record + 1)*SIZE_ONE_RECORD_LOG;
+                    while  (address_2 < MIN_ADDRESS_LOG_AREA) address_2 += SIZE_LOG_AREA - (SIZE_LOG_AREA % SIZE_ONE_RECORD_LOG);
+
+                    /***
+                    Визначаємо адресу з якої треба зчитувати
+                    ***/
+                    address_read_write[INDEX_DATAFLASH_1] = (uint32_t)address_2;
+                    /***/
+
+                    /***
+                    Визначаємо кількість байт для зчитування
+                    ***/
+                    number_bytes_read_write[INDEX_DATAFLASH_1] = SIZE_ONE_RECORD_LOG;
+                    /***/
+
+                    /***
+                    Виставляємо команду читання даних з DataFlash
+                    ***/
+                    _SET_STATE(control_spi_df_tasks[INDEX_DATAFLASH_1], TASK_START_READ_SERIAL_DATAFLASH_BIT);
+                    /***/
+                  }
+                  else
+                  {
+                    //Думаю, що це є нереальна ситуація
+                    uint8_t *point_buffer = NULL;
+                    
+                    if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT )) != 0) point_buffer = buffer_for_menu_read_record;
+                    else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT )) != 0) point_buffer = buffer_for_USB_read_record_log;
+                    else if ((control_tasks_dataflash & MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )) != 0) point_buffer = buffer_for_RS485_read_record_log;
+                    
+                    if (point_buffer != NULL)
+                    {
+                      for (size_t i = 0; i < SIZE_ONE_RECORD_LOG; i++) point_buffer[i] = 0;
+                    }
+
+                    /***
+                    Скидаємо команду читання даних з DataFlash
+                      
+                    Так як і робюота з верхнім рівнем і з меню ведеться на найнижчому пріоритеті, то за умови очікування зчитування даних не може бути одночасно виставлено команду читати для різних джерел
+                    ***/
+                    control_tasks_dataflash_active &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )));
+                    control_tasks_dataflash        &= (uint32_t)(~(MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT ) | MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT ) |  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )));
+                    /***/
+                  }
+                }
                 
                 //Вихід після запуску дій по роботі з Журналом подій
                 break;
@@ -985,7 +1230,7 @@ void TIM4_IRQHandler(void)
               /***
               Підготовка нових записів для запису у Реєстратор програмних подій
               ***/
-              uint32_t head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
+              head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
               if (
                   /***
                   Перший раз вже зчитаний час з моменту перезапуску
@@ -1045,7 +1290,7 @@ void TIM4_IRQHandler(void)
                   size_t i = 0;
                   while (
                          (head != tail) &&
-                         (i < SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE)  
+                         ((i + SIZE_ONE_RECORD_PR_ERR) <= SIZE_BUFFER_SERIAL_DATAFLASH_READ_WRITE)  
                         )   
                   {
                     /***
@@ -1186,7 +1431,7 @@ void TIM4_IRQHandler(void)
           /***
           Якщо для вибраної мікросхеми є що виконувати, то виконуємо ці дії
           ***/
-          if (control_spi_df_tasks[number_chip_dataflsh_exchange_local] != 0) main_routines_for_spi_df(number_chip_dataflsh_exchange_local);
+          if (control_spi_df_tasks[number_chip_dataflash_exchange_local] != 0) main_routines_for_spi_df(number_chip_dataflash_exchange_local);
           /***/
         }
       }
@@ -1406,12 +1651,12 @@ void SPI_DF_IRQHandler(void)
     total_error_sw_fixed(34);
   }
 
-   if (number_chip_dataflsh_exchange < NUMBER_DATAFLASH_CHIP)
+   if (number_chip_dataflash_exchange < NUMBER_DATAFLASH_CHIP)
   {
-    if(state_execution_spi_df[number_chip_dataflsh_exchange] != TRANSACTION_EXECUTING_NONE)
+    if(state_execution_spi_df[number_chip_dataflash_exchange] != TRANSACTION_EXECUTING_NONE)
     {
       //Помічаємо, що відбулася помилка у процесі виконання попередньої операції прийом-передачі
-      state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTED_ERROR;
+      state_execution_spi_df[number_chip_dataflash_exchange] = TRANSACTION_EXECUTED_ERROR;
     }
   }
   else
@@ -1464,8 +1709,8 @@ void DMA_StreamSPI_DF_Rx_IRQHandler(void)
   DMA_ClearFlag(DMA_StreamSPI_DF_Rx, DMA_FLAG_TCSPI_DF_Rx | DMA_FLAG_HTSPI_DF_Rx | DMA_FLAG_TEISPI_DF_Rx | DMA_FLAG_DMEISPI_DF_Rx | DMA_FLAG_FEISPI_DF_Rx);
   
   //Виставляємо повідомлення, що дані передані і готові до наступного аналізу
-  if (number_chip_dataflsh_exchange < NUMBER_DATAFLASH_CHIP)
-    state_execution_spi_df[number_chip_dataflsh_exchange] = TRANSACTION_EXECUTED_WAIT_ANALIZE;
+  if (number_chip_dataflash_exchange < NUMBER_DATAFLASH_CHIP)
+    state_execution_spi_df[number_chip_dataflash_exchange] = TRANSACTION_EXECUTED_WAIT_ANALIZE;
   else
   {
     //Відбулася невизначена помилка, тому треба піти на перезавантаження

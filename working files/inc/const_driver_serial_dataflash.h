@@ -61,10 +61,14 @@ enum _index_dataflash
 #define NUMBER_PAGES_INTO_LOG            480
 #define NUMBER_PAGES_INTO_PR_ERR        (NUMBER_PAGES_INTO_DATAFLASH_1 - NUMBER_PAGES_INTO_LOG)
 
+#define SIZE_ONE_RECORD_LOG                   13
+#define MAX_NUMBER_RECORDS_LOG_INTO_BUFFER    100 //максимальнакількість записів в буфері типу FIFO, які чекають на запису DataFlash
+#define SIZE_BUFFER_FOR_LOG                   (SIZE_ONE_RECORD_LOG*MAX_NUMBER_RECORDS_LOG_INTO_BUFFER)
 #define MIN_ADDRESS_LOG_AREA                  0x0
 #define SIZE_LOG_AREA                         (NUMBER_PAGES_INTO_LOG << VAGA_SIZE_PAGE_DATAFLASH_1)
 #define MAX_ADDRESS_LOG_AREA                  (MIN_ADDRESS_LOG_AREA + SIZE_LOG_AREA - 1)
-#define MAX_ADDRESS_LOG_AREA_WORK             (MAX_ADDRESS_LOG_AREA)
+#define MAX_ADDRESS_LOG_AREA_WORK             (MAX_ADDRESS_LOG_AREA - (SIZE_LOG_AREA % SIZE_ONE_RECORD_LOG))
+#define MAX_NUMBER_RECORDS_INTO_LOG           (SIZE_LOG_AREA / SIZE_ONE_RECORD_LOG)
 
 #define SIZE_ONE_RECORD_PR_ERR                10
 #define MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER 32 //максимальнакількість записів в буфері типу FIFO, які чекають на запису DataFlash
@@ -75,6 +79,12 @@ enum _index_dataflash
 #define MAX_ADDRESS_PR_ERR_AREA_WORK          (MAX_ADDRESS_PR_ERR_AREA - (SIZE_PR_ERR_AREA % SIZE_ONE_RECORD_PR_ERR))
 #define MAX_NUMBER_RECORDS_INTO_PR_ERR        (SIZE_PR_ERR_AREA / SIZE_ONE_RECORD_PR_ERR)
 
+#if (SIZE_ONE_RECORD_LOG >= SIZE_ONE_RECORD_PR_ERR)
+#define SIZE_MAX_ONE_RECORD SIZE_ONE_RECORD_LOG
+#else
+#define SIZE_MAX_ONE_RECORD SIZE_ONE_RECORD_PR_ERR
+#endif
+
 #define TRANSACTION_EXECUTING_NONE              0
 #define TRANSACTION_EXECUTING                   1
 #define TRANSACTION_EXECUTED_WAIT_ANALIZE       2
@@ -83,6 +93,12 @@ enum _index_dataflash
 enum _task_df_bit
 {
   TASK_ERASE_DATAFLASH_1_BIT = 0,
+  
+  TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT,
+  TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT,
+  TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT,
+  TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT,
+
   TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT,
   TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT,
   TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT,
@@ -93,9 +109,20 @@ enum _task_df_bit
   TASK_ERASE_DATAFLASH_2_BIT = _SEPARATOR_BIT_TASKS_DATADLASH1_AND_TASKS_DATADLASH2
 };
 
+#define TASK_FOR_LOG (                                                                   \
+                      MASKA_FOR_BIT(TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT)          |\
+                      MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT)        |\
+                      MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT)         |\
+                      MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT)        \
+                     )   
+
+#define LABEL_START_RECORD_LOG          0xA5
 #define LABEL_START_RECORD_PR_ERR       0x5A
 
-#define CLEAN_PR_ERR_BIT      0
-#define CLEAN_PR_ERR          (1 << CLEAN_PR_ERR_BIT)
+enum _clean_registrators_bit
+{
+  CLEAN_LOG_BIT = 0,
+  CLEAN_PR_ERR_BIT
+};
 
 #endif

@@ -1,6 +1,25 @@
 #include "header.h"
 
-const uint8_t string_info[MAX_NAMBER_LANGUAGE][7][MAX_COL_LCD] = 
+#ifdef TEST_MODE
+
+const uint8_t string_test_info[MAX_NAMBER_LANGUAGE][1][MAX_COL_LCD + 1] = 
+{
+  {
+    " Мин.настройки  "
+  },
+  {
+    "Мін.налаштування"
+  },
+  {
+    "  Min.settings  "
+  },
+  {
+    " Мин.настройки  "
+  } 
+};
+#endif
+
+const uint8_t string_info[MAX_NAMBER_LANGUAGE][7][MAX_COL_LCD + 1] = 
 {
   {
     "Конфигурации нет",
@@ -39,7 +58,7 @@ const uint8_t string_info[MAX_NAMBER_LANGUAGE][7][MAX_COL_LCD] =
     "  Ош.триг.инф.  "
   } 
 };
-const uint8_t string_action[MAX_NAMBER_LANGUAGE][3][MAX_COL_LCD] =
+const uint8_t string_action[MAX_NAMBER_LANGUAGE][3][MAX_COL_LCD + 1] =
 {
   {
     "Мин.парам.:Enter",
@@ -63,7 +82,7 @@ const uint8_t string_action[MAX_NAMBER_LANGUAGE][3][MAX_COL_LCD] =
   }
 };
 
-const uint8_t name_string_restart[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD] = 
+const uint8_t name_string_restart[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
 {
   {
     " Перезапустите  ",
@@ -548,7 +567,7 @@ void start_settings_peripherals(void)
   /**********************/
   //Настроюємо DBG модуль
   /**********************/
-  DBGMCU_APB1PeriphConfig(DBGMCU_TIM2_STOP | DBGMCU_TIM5_STOP | DBGMCU_TIM4_STOP | DBGMCU_I2C1_SMBUS_TIMEOUT, ENABLE);
+  DBGMCU_APB1PeriphConfig(DBGMCU_TIM2_STOP | DBGMCU_TIM5_STOP | DBGMCU_TIM3_STOP | DBGMCU_TIM4_STOP | DBGMCU_I2C1_SMBUS_TIMEOUT, ENABLE);
   /**********************/
 
   /**********************/
@@ -736,6 +755,10 @@ void start_settings_peripherals(void)
   /*Контроль живлення */
   GPIO_InitStructure.GPIO_Pin = POWER_CTRL_PIN;
   GPIO_Init(POWER_CTRL, &GPIO_InitStructure);
+  if ((POWER_CTRL->IDR & POWER_CTRL_PIN) == (uint32_t)Bit_RESET)
+  {
+    _SET_BIT(set_diagnostyka, EVENT_DROP_POWER_BIT);
+  }
   /**************/
 
   /**************/
@@ -971,8 +994,41 @@ void start_settings_peripherals(void)
   /**********************/
   //Читаємо збережені дані юстування з EEPROM
   /**********************/
-  comparison_writing &= (unsigned int)(~COMPARISON_WRITING_USTUVANNJA);/*зчитування, а не порівняння*/
+  comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_USTUVANNJA_BIT));/*зчитування, а не порівняння*/
   _SET_BIT(control_i2c_taskes, TASK_START_READ_USTUVANNJA_EEPROM_BIT);
+  while(
+        (control_i2c_taskes[0]     != 0) ||
+        (control_i2c_taskes[1]     != 0) ||
+        (driver_i2c.state_execution > 0)
+       )
+  {
+    //Робота з watchdogs
+    if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+    {
+      //Змінюємо стан біту зовнішнього Watchdog на протилежний
+      GPIO_WriteBit(
+                    GPIO_EXTERNAL_WATCHDOG,
+                    GPIO_PIN_EXTERNAL_WATCHDOG,
+                    (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+                   );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
+    }
+
+    main_routines_for_i2c();
+    changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+    if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
+    {
+      //Повне роозблоковування обміну з мікросхемами для драйверу I2C
+      _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+    }
+  }
+  /**********************/
+
+  /**********************/
+  //Читаємо збережені дані Журналу подій з EEPROM
+  /**********************/
+  comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_LOG_BIT));/*зчитування, а не порівняння*/
+  _SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_LOG_EEPROM_BIT);
   while(
         (control_i2c_taskes[0]     != 0) ||
         (control_i2c_taskes[1]     != 0) ||
@@ -1004,7 +1060,7 @@ void start_settings_peripherals(void)
   /**********************/
   //Читаємо збережені дані реєстратора програмних подій з EEPROM
   /**********************/
-  comparison_writing &= (unsigned int)(~COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR);/*зчитування, а не порівняння*/
+  comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR_BIT));/*зчитування, а не порівняння*/
   _SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
   while(
         (control_i2c_taskes[0]     != 0) ||
@@ -1037,7 +1093,7 @@ void start_settings_peripherals(void)
   /**********************/
   //Читаємо збережені дані конфігурації з EEPROM
   /**********************/
-  comparison_writing &= (unsigned int)(~COMPARISON_WRITING_CONFIG);/*зчитування, а не порівняння*/
+  comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_CONFIG_BIT));/*зчитування, а не порівняння*/
   _SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT);
   while(
         (control_i2c_taskes[0]     != 0) ||
@@ -1067,12 +1123,12 @@ void start_settings_peripherals(void)
   }
   /**********************/
 
-  if((state_i2c_task & STATE_CONFIG_EEPROM_GOOD) != 0)
+  if((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)) != 0)
   {
     /**********************/
     //Читаємо збережені дані настройок з EEPROM
     /**********************/
-    comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);/*зчитування, а не порівняння*/
+    comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_SETTINGS_BIT));/*зчитування, а не порівняння*/
     _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
     while(
           (control_i2c_taskes[0]     != 0) ||
@@ -1105,7 +1161,7 @@ void start_settings_peripherals(void)
     /**********************/
     //Читаємо збережені дані про тригерну інформацію
     /**********************/
-    comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);/*зчитування, а не порівняння*/
+    comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_TRG_FUNC_BIT));/*зчитування, а не порівняння*/
     _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
     while(
           (control_i2c_taskes[0]     != 0) ||
@@ -1144,15 +1200,15 @@ void start_settings_peripherals(void)
     Тому помічаємо інформацію, що вищеперечисленої інформації немає
     */
     //Помічаємо, що прочитаний блок настройок є пустим
-    state_i2c_task &= (unsigned int)(~(STATE_SETTINGS_EEPROM_FAIL | STATE_SETTINGS_EEPROM_GOOD));
-    state_i2c_task |= STATE_SETTINGS_EEPROM_EMPTY;
+    state_i2c_task &= (uint32_t)(~(MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_FAIL_BIT) | MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)));
+    state_i2c_task |= MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_EMPTY_BIT);
     //Виствляємо повідомлення у слові діагностики
     _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
     _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_EMPTY_BIT);
 
     //Помічаємо, що прочитаний блок є пустим
-    state_i2c_task &= (unsigned int)(~(STATE_TRG_FUNC_EEPROM_FAIL | STATE_TRG_FUNC_EEPROM_GOOD));
-    state_i2c_task |= STATE_TRG_FUNC_EEPROM_EMPTY;
+    state_i2c_task &= (uint32_t)(~(MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_FAIL_BIT) | MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_GOOD_BIT)));
+    state_i2c_task |= MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_EMPTY_BIT);
     //Виствляємо повідомлення у слові діагностики
     _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
     _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_EMPTY_BIT);
@@ -1195,6 +1251,35 @@ void start_settings_peripherals(void)
   //Переконфігуровуємо I2C
   low_speed_i2c = 0xff;
   Configure_I2C(I2C);
+
+
+  /**********************/
+  //Настроювання TIM3 на генерацію переривань кожні 1 мс для логіки
+  /**********************/
+  /* Настроюємо TIM3 */
+  /* ---------------------------------------------------------------
+  TIM3 Настроювання: Output Compare Timing Mode:
+  TIM3CLK = (30*2) МГц, Prescaler = 2000, TIM3 counter clock = 30 кГц
+  CC1 update rate = TIM3 counter clock / CCR1_Val = 1000 Hz
+  --------------------------------------------------------------- */
+  TIM_TimeBaseStructure.TIM_Period = 65535;
+  TIM_TimeBaseStructure.TIM_Prescaler = (2000-1);
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+
+  /* Output Compare Timing Mode настроювання: Канал:1 */
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_Timing;
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable;
+  TIM_OCInitStructure.TIM_Pulse = TIM3_CCR1_VAL;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+  TIM_OC1Init(TIM3, &TIM_OCInitStructure);
+  
+  TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Disable);
+
+  /* Дозволяємо переривання від каналу 1 таймера 3*/
+  TIM_ITConfig(TIM3, TIM_IT_CC1, ENABLE);
+  /**********************/
 
   /**********************/
   //Настроювання TIM2 на генерацію переривань кожні 1 мс для системи захистів
@@ -1349,10 +1434,12 @@ void min_config(__CONFIG *target_label)
 
   target_label->n_log = 0;
   
-  for(unsigned int i = 0; i < (7+1); i++)
-  {
-    target_label->time_config[i] = DEFAULT_PARAMS_FIX_CHANGES;
-  }
+  uint8_t *label_to_time_array;
+  if (copying_time == 0) label_to_time_array = time;
+  else label_to_time_array = time_copy;
+     
+  for (size_t i = 0; i < 7; i++) target_label->time_config[i] = *(label_to_time_array + i);
+  target_label->time_config[7] = DEFAULT_PARAMS_FIX_CHANGES;
 }
 /**************************************/
 
@@ -1411,10 +1498,12 @@ void scheme2_config(__CONFIG *target_label)
                                       ), LOG_SIGNALS_IN);
                          
   
-  for(unsigned int i = 0; i < (7+1); i++)
-  {
-    target_label->time_config[i] = DEFAULT_PARAMS_FIX_CHANGES;
-  }
+  uint8_t *label_to_time_array;
+  if (copying_time == 0) label_to_time_array = time;
+  else label_to_time_array = time_copy;
+     
+  for (size_t i = 0; i < 7; i++) target_label->time_config[i] = *(label_to_time_array + i);
+  target_label->time_config[7] = DEFAULT_PARAMS_FIX_CHANGES;
 }
 /**************************************/
 
@@ -1452,10 +1541,12 @@ void min_settings(__SETTINGS_FIX *target_label)
   
   target_label->language = LANGUAGE_EN;
   
-  for(unsigned int i = 0; i < (7+1); i++)
-  {
-    target_label->time_setpoints[i] = DEFAULT_PARAMS_FIX_CHANGES;
-  }
+  uint8_t *label_to_time_array;
+  if (copying_time == 0) label_to_time_array = time;
+  else label_to_time_array = time_copy;
+     
+  for (size_t i = 0; i < 7; i++) target_label->time_setpoints[i] = *(label_to_time_array + i);
+  target_label->time_setpoints[7] = DEFAULT_PARAMS_FIX_CHANGES;
 }
 /**************************************/
 
@@ -1819,10 +1910,12 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
     n += target_config->n_group_alarm*GROUP_ALARM_SIGNALS_OUT;
     /***/
     
-//    for(unsigned int i = 0; i < (7+1); i++)
-//    {
-//      target_label->time_setpoints[i] = DEFAULT_PARAMS_FIX_CHANGES;
-//    }
+    uint8_t *label_to_time_array;
+    if (copying_time == 0) label_to_time_array = time;
+    else label_to_time_array = time_copy;
+     
+    for (size_t i = 0; i < 7; i++) target_fix_settings->time_setpoints[i] = *(label_to_time_array + i);
+    target_fix_settings->time_setpoints[7] = DEFAULT_PARAMS_FIX_CHANGES;
   }
   else
   {
@@ -1838,17 +1931,17 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
 void error_reading_with_eeprom()
 {
   int index_language;
-  if (((state_i2c_task & STATE_CONFIG_EEPROM_GOOD) == 0) || ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) == 0)) index_language = index_language_in_array(LANGUAGE_ABSENT);
+  if (((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)) == 0) || ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) == 0)) index_language = index_language_in_array(LANGUAGE_ABSENT);
   else index_language = index_language_in_array(settings_fix_prt.language);
 
   if ((state_i2c_task & (
-                         STATE_CONFIG_EEPROM_EMPTY          | 
-                         STATE_CONFIG_EEPROM_FAIL           | 
-                         STATE_CONFIG_EEPROM_NO_FREE_MEMORY |
-                         STATE_SETTINGS_EEPROM_EMPTY        | 
-                         STATE_SETTINGS_EEPROM_FAIL         | 
-                         STATE_TRG_FUNC_EEPROM_EMPTY        | 
-                         STATE_TRG_FUNC_EEPROM_FAIL
+                         MASKA_FOR_BIT(STATE_CONFIG_EEPROM_EMPTY_BIT)          | 
+                         MASKA_FOR_BIT(STATE_CONFIG_EEPROM_FAIL_BIT)           | 
+                         MASKA_FOR_BIT(STATE_CONFIG_EEPROM_NO_FREE_MEMORY_BIT) |
+                         MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_EMPTY_BIT)        | 
+                         MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_FAIL_BIT)         | 
+                         MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_EMPTY_BIT)        | 
+                         MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_FAIL_BIT)
                         )) != 0)
   {
     //Робота з watchdogs
@@ -1864,43 +1957,43 @@ void error_reading_with_eeprom()
     }
     
     unsigned int index_info, index_action, information_type;
-    if((state_i2c_task & STATE_CONFIG_EEPROM_EMPTY) != 0)
+    if((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_EMPTY_BIT)) != 0)
     {
       index_info = 0;
       index_action = 2;
       information_type = 1;
     }
-    else if((state_i2c_task & STATE_CONFIG_EEPROM_FAIL) != 0)
+    else if((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_FAIL_BIT)) != 0)
     {
       index_info = 1;
       index_action = 2;
       information_type = 1;
     }
-    else if((state_i2c_task & STATE_CONFIG_EEPROM_NO_FREE_MEMORY) != 0)
+    else if((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_NO_FREE_MEMORY_BIT)) != 0)
     {
       index_info = 2;
       index_action = 2;
       information_type = 1;
     }
-    else if((state_i2c_task & STATE_SETTINGS_EEPROM_EMPTY) != 0)
+    else if((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_EMPTY_BIT)) != 0)
     {
       index_info = 3;
       index_action = 2;
       information_type = 2;
     }
-    else if((state_i2c_task & STATE_SETTINGS_EEPROM_FAIL) != 0)
+    else if((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_FAIL_BIT)) != 0)
     {
       index_info = 4;
       index_action = 2;
       information_type = 2;
     }
-    else if((state_i2c_task & STATE_TRG_FUNC_EEPROM_EMPTY) != 0)
+    else if((state_i2c_task & MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_EMPTY_BIT)) != 0)
     {
       index_info = 5;
       index_action = 1;
       information_type = 3;
     }
-    else if((state_i2c_task & STATE_TRG_FUNC_EEPROM_FAIL) != 0)
+    else if((state_i2c_task & MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_FAIL_BIT)) != 0)
     {
       index_info = 6;
       index_action = 1;
@@ -1996,19 +2089,19 @@ void error_reading_with_eeprom()
     if (information_type == 1)
     {
       //Повтрокно зчитуємо конфігурацію
-      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_CONFIG);/*зчитування, а не порівняння*/
+      comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_CONFIG_BIT));/*зчитування, а не порівняння*/
       _SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT);
     }
     else if (information_type == 2)
     {
       //Повтрокно зчитуємо налаштування
-      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);/*зчитування, а не порівняння*/
+      comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_SETTINGS_BIT));/*зчитування, а не порівняння*/
       _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
     }
     else if (information_type == 3)
     {
       //Повтрокно зчитуємо триґерну інформацію
-      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);/*зчитування, а не порівняння*/
+      comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_TRG_FUNC_BIT));/*зчитування, а не порівняння*/
       _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
     }
 
@@ -2054,17 +2147,17 @@ void start_checking_dataflash(void)
   
   for (unsigned int i = 0; i < NUMBER_DATAFLASH_CHIP; i++)
   {
-    number_chip_dataflsh_exchange = INDEX_DATAFLASH_1 + i;
+    number_chip_dataflash_exchange = INDEX_DATAFLASH_1 + i;
     
     page_size_256 = 1;
 
-    _SET_STATE(control_spi_df_tasks[number_chip_dataflsh_exchange], TASK_READ_SR_DF_BIT);
+    _SET_STATE(control_spi_df_tasks[number_chip_dataflash_exchange], TASK_READ_SR_DF_BIT);
     while(
-          (control_spi_df_tasks[number_chip_dataflsh_exchange] != 0) ||
-          (state_execution_spi_df[number_chip_dataflsh_exchange] != TRANSACTION_EXECUTING_NONE)
+          (control_spi_df_tasks[number_chip_dataflash_exchange] != 0) ||
+          (state_execution_spi_df[number_chip_dataflash_exchange] != TRANSACTION_EXECUTING_NONE)
          )
     {
-      main_routines_for_spi_df(number_chip_dataflsh_exchange);
+      main_routines_for_spi_df(number_chip_dataflash_exchange);
 
       //Робота з watchdogs
       if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
@@ -2079,18 +2172,18 @@ void start_checking_dataflash(void)
       }
     }
     
-    page_size_256 &= status_register_df[number_chip_dataflsh_exchange] & (1<< 0); 
+    page_size_256 &= status_register_df[number_chip_dataflash_exchange] & (1<< 0); 
     if (page_size_256 == 0)
     {
       //Треба подати команду на перевід мікросхеми з розміром сторінки 256 байт
       
-      _SET_STATE(control_spi_df_tasks[number_chip_dataflsh_exchange], TASK_START_MAKE_PAGE_SIZE_256_BIT);
+      _SET_STATE(control_spi_df_tasks[number_chip_dataflash_exchange], TASK_START_MAKE_PAGE_SIZE_256_BIT);
       while(
-            (control_spi_df_tasks[number_chip_dataflsh_exchange] != 0) ||
-            (state_execution_spi_df[number_chip_dataflsh_exchange] != TRANSACTION_EXECUTING_NONE)
+            (control_spi_df_tasks[number_chip_dataflash_exchange] != 0) ||
+            (state_execution_spi_df[number_chip_dataflash_exchange] != TRANSACTION_EXECUTING_NONE)
            )
       {
-        main_routines_for_spi_df(number_chip_dataflsh_exchange);
+        main_routines_for_spi_df(number_chip_dataflash_exchange);
  
         //Робота з watchdogs
         if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
@@ -2154,7 +2247,7 @@ void start_checking_dataflash(void)
     }
   }
 
-  number_chip_dataflsh_exchange = INDEX_DATAFLASH_1;
+  number_chip_dataflash_exchange = INDEX_DATAFLASH_1;
 }
 /**************************************/
 
@@ -2205,6 +2298,167 @@ void start_tim4_canal3_for_interrupt_10mkc(void)
   TIM_ITConfig(TIM4, TIM_IT_CC3, ENABLE);
 }
 /**************************************/
+
+/**************************************/
+//Скдання налаштувань до "нульових" значень під час тестування приладу
+/**************************************/
+#ifdef TEST_MODE
+void empty_settings()
+{
+  int index_language;
+  if (((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)) == 0) || ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) == 0)) index_language = index_language_in_array(LANGUAGE_ABSENT);
+  else index_language = index_language_in_array(settings_fix_prt.language);
+
+  //Копіюємо  рядки у робочий екран
+  for (unsigned int i=0; i< MAX_ROW_LCD; i++)
+  {
+    for (unsigned int j = 0; j<MAX_COL_LCD; j++) 
+    {
+      if (i == 0) working_ekran[i][j] = string_test_info[index_language][0][j];
+      else if (i == 1) working_ekran[i][j] = name_string_ask[index_language][j];
+      else working_ekran[i][j] = ' ';
+    }
+  }
+  
+  //Обновити повністю весь екран
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+
+  //Обновляємо інформацію на екрані
+  view_whole_ekran();
+    
+  //Чекаємо поки не буде натиснута кнопка ENTER
+  while ((new_state_keyboard & ((1<<BIT_KEY_ENTER) | (1<<BIT_KEY_ESC))) == 0)
+  {
+    //Робота з watchdogs
+    if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+    {
+      //Змінюємо стан біту зовнішнього Watchdog на протилежний
+      GPIO_WriteBit(
+                    GPIO_EXTERNAL_WATCHDOG,
+                    GPIO_PIN_EXTERNAL_WATCHDOG,
+                    (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+                   );
+      control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
+    }
+  }
+  
+  if ((new_state_keyboard & (1<<BIT_KEY_ENTER)) != 0)
+  {
+    //Звільняємо всю пам'ять
+    for (__id_fb index_1 = _ID_FB_FIRST_VAR; index_1 < _ID_FB_LAST_VAR; index_1++)
+    {
+      free(sca_of_p_edit[index_1 - _ID_FB_FIRST_VAR]);
+      free(sca_of_p[index_1 - _ID_FB_FIRST_VAR]);
+      free(spca_of_p_prt[index_1 - _ID_FB_FIRST_VAR]);
+    }
+    
+    __CONFIG current_config_tmp;
+    min_config(&current_config_tmp);
+    current_config_prt.device_id = current_config.device_id = current_config_edit.device_id = current_config_tmp.device_id;
+    
+    __result_dym_mem_select          result = allocate_dynamic_memory_for_settings(MAKE_DYN_MEM, true, spca_of_p_prt , NULL         , &current_config_prt , &current_config_tmp, NULL               );
+    if (result == DYN_MEM_SELECT_OK) result = allocate_dynamic_memory_for_settings(MAKE_DYN_MEM, false, sca_of_p     , spca_of_p_prt, &current_config     , &current_config_tmp, &current_config_prt);
+    if (result == DYN_MEM_SELECT_OK) result = allocate_dynamic_memory_for_settings(MAKE_DYN_MEM, false, sca_of_p_edit, sca_of_p     , &current_config_edit, &current_config_tmp, &current_config    );
+    for (size_t t = 0; t < (7 + 1); t++) current_config_edit.time_config[t] = current_config.time_config[t] = current_config_prt.time_config[t] = current_config_tmp.time_config[t];
+
+    if (result == DYN_MEM_SELECT_OK) 
+    {
+      min_settings(&settings_fix); /*Для фіксованого блоку немає додаткових особливих налаштувань у переустановлених кнфігураціях*/
+        
+      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
+      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+        
+      //Чекаємо завершення запису
+      while(
+            (control_i2c_taskes[0]     != 0) ||
+            (control_i2c_taskes[1]     != 0) ||
+            (driver_i2c.state_execution > 0)
+           )
+      {
+        //Робота з watchdogs
+        if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+        {
+          //Змінюємо стан біту зовнішнього Watchdog на протилежний
+          GPIO_WriteBit(
+                        GPIO_EXTERNAL_WATCHDOG,
+                        GPIO_PIN_EXTERNAL_WATCHDOG,
+                        (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+                       );
+          control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
+        }
+
+        main_routines_for_i2c();
+        changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+        //Оскільки ще тамер вимірювальної системи не запущений, то цю операцію треба робити тут
+        if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
+        {
+          //Повне роозблоковування запуск заблокованих задач запису в EEPROM для драйверу I2C
+          _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+        }
+      }
+      //Повтрокно зчитуємо конфігурацію-налаштування-тригерну інформацію
+      comparison_writing &= (uint16_t)(~(
+                                         MASKA_FOR_BIT(COMPARISON_WRITING_CONFIG_BIT  ) |
+                                         MASKA_FOR_BIT(COMPARISON_WRITING_SETTINGS_BIT) |
+                                         MASKA_FOR_BIT(COMPARISON_WRITING_TRG_FUNC_BIT)
+                                        )   
+                                      );/*зчитування, а не порівняння*/
+      _SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT);
+      _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
+      _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
+
+      //Чекаємо завершення читання
+      while(
+            (control_i2c_taskes[0]     != 0) ||
+            (control_i2c_taskes[1]     != 0) ||
+            (driver_i2c.state_execution > 0)
+           )
+      {
+        //Робота з watchdogs
+        if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
+        {
+          //Змінюємо стан біту зовнішнього Watchdog на протилежний
+          GPIO_WriteBit(
+                        GPIO_EXTERNAL_WATCHDOG,
+                        GPIO_PIN_EXTERNAL_WATCHDOG,
+                        (BitAction)(1 - GPIO_ReadOutputDataBit(GPIO_EXTERNAL_WATCHDOG, GPIO_PIN_EXTERNAL_WATCHDOG))
+                       );
+          control_word_of_watchdog &= (uint32_t)(~WATCHDOG_KYYBOARD);
+        }
+      
+        main_routines_for_i2c();
+        changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+        //Оскільки ще тамер вимірювальної системи не запущений, то цю операцію треба робити тут
+        if (_CHECK_SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT) != 0)
+        {
+          //Повне роозблоковування запуск заблокованих задач запису в EEPROM для драйверу I2C
+          _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+        }
+      }
+    }
+    else
+    {
+      state_i2c_task |= MASKA_FOR_BIT(STATE_CONFIG_EEPROM_NO_FREE_MEMORY_BIT);
+
+      //Виствляємо повідомлення у слові діагностики
+      _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+      
+      //Звільняємо всю пам'ять
+      for (__id_fb index_1 = _ID_FB_FIRST_VAR; index_1 < _ID_FB_LAST_VAR; index_1++)
+      {
+        free(sca_of_p_edit[index_1 - _ID_FB_FIRST_VAR]);
+        free(sca_of_p[index_1 - _ID_FB_FIRST_VAR]);
+        free(spca_of_p_prt[index_1 - _ID_FB_FIRST_VAR]);
+      }
+    }
+  }
+  
+  new_state_keyboard = 0;
+}  
+#endif
+/**************************************/
+
 
 /**************************************/
 //

@@ -43,7 +43,8 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          move_into_ekran_list_inputs_outputs, make_ekran_list_inputs_outputs,
                                          move_into_ekran_input_or_output, make_ekran_state_inputs_or_outputs,
                                          make_ekran_list_registrators,
-                                         move_into_ekran_event_registraqtors, make_ekran_list_event_pr_err, make_ekran_data_pr_err,
+                                         move_into_ekran_event_registraqtors, 
+                                         make_ekran_list_event_log, make_ekran_list_event_pr_err, make_ekran_data_reg,
                                          move_into_list_settings, make_ekran_list_settings, press_esc_in_list_settings,
                                          make_ekran_configuration, press_enter_in_configuration, press_esc_in_configuration, change_configuration,
                                          make_ekran_list_logical_nodes,
@@ -85,7 +86,7 @@ exclude  ChangeCfg, "Shematic::DoCalc()", SetHrdLed, "Null_OP(void*)", "SET_LED_
 
 max recursion depth Get_data : 2;
 
-call graph root [Interrupt]: NMI_Handler, HardFault_Handler, MemManage_Handler, BusFault_Handler, UsageFault_Handler, SVC_Handler, DebugMon_Handler, PendSV_Handler, SysTick_Handler, TIM2_IRQHandler, TIM4_IRQHandler, TIM5_IRQHandler, I2C1_EV_IRQHandler, I2C1_ER_IRQHandler, DMA1_Stream7_IRQHandler, DMA1_Stream0_IRQHandler, SPI2_IRQHandler, DMA2_Stream0_IRQHandler, SPI1_IRQHandler, USART2_IRQHandler, DMA1_Stream6_IRQHandler, EXTI0_IRQHandler, OTG_FS_IRQHandler;
+call graph root [Interrupt]: NMI_Handler, HardFault_Handler, MemManage_Handler, BusFault_Handler, UsageFault_Handler, SVC_Handler, DebugMon_Handler, PendSV_Handler, SysTick_Handler, TIM2_IRQHandler, TIM4_IRQHandler, TIM3_IRQHandler, TIM5_IRQHandler, I2C1_EV_IRQHandler, I2C1_ER_IRQHandler, DMA1_Stream7_IRQHandler, DMA1_Stream0_IRQHandler, SPI2_IRQHandler, DMA2_Stream0_IRQHandler, SPI1_IRQHandler, USART2_IRQHandler, DMA1_Stream6_IRQHandler, EXTI0_IRQHandler, OTG_FS_IRQHandler;
 call graph root [System]: SystemInit;
 
 exclude USBD_USR_DeviceConnected, USBD_USR_DeviceDisconnected;

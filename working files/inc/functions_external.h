@@ -1,3 +1,6 @@
+#ifndef __EXTERNAL_FUNCTIONS_H
+#define __EXTERNAL_FUNCTIONS_H
+
 extern USB_OTG_CORE_HANDLE           USB_OTG_dev;
 extern uint32_t USBD_OTG_ISR_Handler (USB_OTG_CORE_HANDLE *pdev);
 
@@ -198,8 +201,9 @@ extern enum _result_pressed_enter_during_edition press_enter_in_setting_language
 extern void press_esc_in_setting_language(void);
 extern void change_setting_language(unsigned int);
 extern void move_into_ekran_event_registraqtors(unsigned int, int);
+extern void make_ekran_list_event_log(void);
 extern void make_ekran_list_event_pr_err(void);
-extern void make_ekran_data_pr_err(void);
+extern void make_ekran_data_reg(void);
 
 extern __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *, __CONFIG *);
 extern __result_dym_mem_select action_after_changing_of_configuration(void);
@@ -220,12 +224,12 @@ extern void USART_RS485_Configure(void);
 extern void restart_monitoring_RS485(void);
 extern void start_transmint_data_via_RS_485(unsigned int);
 extern unsigned short int  AddCRC(unsigned char, unsigned short int);
+extern uint32_t bit_adr_to_reg_adr(uint32_t, uint32_t*, uint32_t*);
 extern void modbus_rountines(unsigned int);
 extern void Error_modbus(unsigned int, unsigned int, unsigned int, unsigned char*);
-extern unsigned int Get_data(unsigned char *, unsigned int, unsigned int);
-extern unsigned int Set_data(unsigned short int, unsigned int, unsigned int, /*unsigned int,*/ unsigned int);
+extern unsigned int Get_data(unsigned char *, unsigned int, unsigned in, __getting_data, __bit_byte);
+extern unsigned int Set_data(unsigned short int, unsigned int, __settings_data, /*unsigned int,*/ unsigned int);
 //extern unsigned int Get_data_file(unsigned char*, unsigned char*, unsigned int*, unsigned int);
-extern void set_previous_ranguvannja(void);
 
 extern ErrorStatus check_errors_i2c(void);
 extern unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);
@@ -242,6 +246,8 @@ extern unsigned int sqrt_32(unsigned int);
 extern unsigned int sqrt_64(unsigned long long);
 extern unsigned int get_order(int);
 
+extern uint32_t event_log_handler(void);
+
 extern void start_checking_dataflash(void);
 extern void start_exchange_via_spi_df(uint32_t, uint32_t);
 extern void main_routines_for_spi_df(uint32_t);
@@ -250,7 +256,7 @@ extern void control_config(unsigned int);
 extern void control_settings(unsigned int);
 extern void control_ustuvannja(void);
 extern void control_trg_func(void);
-extern unsigned int control_info_rejestrator(__INFO_REJESTRATOR*, unsigned char);
+extern unsigned int control_info_rejestrator(__INFO_REJESTRATOR*, uint8_t);
 
 extern void test_external_SRAM(void);
 
@@ -268,6 +274,7 @@ extern void PendSV_Handler(void);
 extern void SysTick_Handler(void);
 extern void USB_LP_CAN1_RX0_IRQHandler(void);
 extern void TIM2_IRQHandler(void);
+extern void TIM3_IRQHandler(void);
 extern void TIM4_IRQHandler(void);
 extern void TIM5_IRQHandler(void);
 extern void I2C_EV_IRQHandler(void);
@@ -285,3 +292,8 @@ extern int str_to_int_DATE_Mmm(void);
 
 extern long ChangeCfg(void* pv);
 
+#ifdef TEST_MODE
+extern void empty_settings(void);
+#endif
+
+#endif

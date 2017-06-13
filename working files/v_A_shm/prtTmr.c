@@ -246,14 +246,26 @@ void SetHrdOut(void*pv){
     register long i,j;
     register void *pvRlc;
     i = ((UI32Bit*) pv)->ar_uch[0]; 
-    j = i&1;
-    
+    j = i&0x10;//Find 5 bit
+    if(j){
+		j = 1;//Set 5bit
+		chGbl_REL_1_6__ROWS_A_D__RW_VAL |= j;
+		}
+	else{
+		j = chGbl_REL_1_6__ROWS_A_D__RW_VAL;
+		j >>= 1;
+		j <<= 1;
+		chGbl_REL_1_6__ROWS_A_D__RW_VAL = j;
+		}
     pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_WRITE_RDO__REL_1_6__ROWS_A__D<<1));
     *((char*)pvRlc) = j;//???
     pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO_REL7_REL14<<1));
     i = ((UI32Bit*) pv)->ar_uch[0]; 
-    j = i>>1;
-    j &= 0x3f;
+    //j = i>>1;
+    //j &= 0x3f;
+	j = i;
+    j &= 0x6f;
+	
     *((char*)pvRlc) = j;
 
     
@@ -366,7 +378,7 @@ void UpdateStateDI (void){
     pDICfgSuit = &sDiCfg;
     sDiCfg.pDITmr = arTimerDi;
     pDICfgSuit->DiHrdStateUI32Bit.ul_val = DiHrdStateUI32Bit.ul_val;
-    for (i = CH_AMOUNT_DI+10; i < CH_AMOUNT_DI; i++){
+    for (i = 0; i < CH_AMOUNT_DI; i++){//--CH_AMOUNT_DI+10
 	if(i == chCmpVal){
             asm(
             "bkpt 1"

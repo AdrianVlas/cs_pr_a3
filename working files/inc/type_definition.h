@@ -147,7 +147,7 @@ typedef struct
 {
   __settings_for_INPUT settings;
   
-  int32_t work_delay[INPUT_WORK_DELAYS];
+//  int32_t work_delay[INPUT_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8)];
 
 } __LN_INPUT;
@@ -182,6 +182,8 @@ typedef struct
 typedef struct
 {
   uint8_t active_state[DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8)];
+  
+  uint8_t internal_input[DIV_TO_HIGHER(BUTTON_SIGNALS_INT_IN, 8)];
 
 } __LN_BUTTON;
 /**********/
@@ -201,7 +203,7 @@ typedef struct
 {
   __settings_for_ALARM settings;
 
-  int32_t work_delay[ALARM_WORK_DELAYS];
+//  int32_t work_delay[ALARM_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8)];
 
   uint8_t d_trigger_state[DIV_TO_HIGHER(ALARM_D_TRIGGER_TOTAL, 8)];
@@ -226,9 +228,11 @@ typedef struct
 {
   __settings_for_GROUP_ALARM settings;
 
-  int32_t work_delay[GROUP_ALARM_WORK_DELAYS];
+//  int32_t work_delay[GROUP_ALARM_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8)];
   uint32_t NNC; /*New number of Curcuit*/
+  
+  uint32_t NNC_before; /*попередній стан NNC*/
 
 } __LN_GROUP_ALARM;
 /**********/
@@ -327,7 +331,7 @@ typedef struct
   
   __settings_for_TIMER settings;
   
-  int32_t work_delay[TIMER_WORK_DELAYS];
+//  int32_t work_delay[TIMER_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(TIMER_SIGNALS_OUT, 8)];
   
 } __LN_TIMER;
@@ -371,7 +375,7 @@ typedef struct
   
   __settings_for_MEANDER settings;
   
-  int32_t work_delay[MEANDER_WORK_DELAYS];
+//  int32_t work_delay[MEANDER_WORK_DELAYS];
   uint8_t active_state[DIV_TO_HIGHER(MEANDER_SIGNALS_OUT, 8)];
   
 } __LN_MEANDER;
@@ -393,6 +397,8 @@ typedef struct
   
   uint8_t active_state[DIV_TO_HIGHER(TU_SIGNALS_OUT, 8)];
   
+  uint8_t internal_input[DIV_TO_HIGHER(TU_SIGNALS_INT_IN, 8)];
+  
 } __LN_TU;
 /**********/
 
@@ -412,6 +418,8 @@ typedef struct
   
   uint8_t active_state[DIV_TO_HIGHER(TS_SIGNALS_OUT, 8)];
   
+  uint8_t internal_input[DIV_TO_HIGHER(TS_SIGNALS_INT_IN, 8)];
+
 } __LN_TS;
 /**********/
 
@@ -518,5 +526,23 @@ typedef struct
   int value;
 } EXTENDED_SAMPLE;
 
+typedef enum _getting_data
+{
+  GET_DATA_FOR_EDITING = 0,
+  GET_DATA_IMMEDITATE
+} __getting_data;
+
+typedef enum _setting_data
+{
+  SET_DATA_INTO_EDIT_TABLE = 0,
+  SET_DATA_IMMEDITATE
+} __settings_data;
+
+typedef enum _bit_byte
+{
+  BIT_REQUEST = 0,
+  BYTE_REQUEST
+    
+} __bit_byte;
 
 #endif

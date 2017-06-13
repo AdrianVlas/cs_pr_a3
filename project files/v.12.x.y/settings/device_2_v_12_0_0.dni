@@ -14,7 +14,7 @@ TraceBufferSize=0x00010000
 TraceStallIfFIFOFull=0x00000000
 TracePortSize=0x00000004
 [DebugChecksum]
-Checksum=-1253663466
+Checksum=236240869
 [CodeCoverage]
 Enabled=_ 0
 [Exceptions]
@@ -27,6 +27,38 @@ MixedMode=1
 [Trace1]
 Enabled=0
 ShowSource=1
+[Disassemble mode]
+mode=0
+[Breakpoints2]
+Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.311.19" 0 0 1 "" 0 "" 0
+Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUAlt.cpp}.72.5" 0 0 1 "" 0 "" 0
+Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.1899.5" 0 0 1 "" 0 "" 0
+Bp3=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUBGS.cpp}.217.9" 0 0 1 "" 0 "" 0
+Bp4=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\MALed.cpp}.32.5" 0 0 1 "" 0 "" 0
+Bp5=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.122.1" 0 0 1 "" 0 "" 0
+Bp6=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.1833.5" 0 0 1 "" 0 "" 0
+Bp7=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUFKey.cpp}.29.11" 0 0 1 "" 0 "" 0
+Bp8=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULss.cpp}.477.15" 0 0 1 "" 0 "" 0
+Bp9=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\main.c}.388.3" 0 0 1 "" 0 "" 0
+Bp10=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp}.158.1" 0 0 1 "" 0 "" 0
+Bp11=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp}.176.5" 0 0 1 "" 0 "" 0
+Bp12=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp}.251.1" 0 0 1 "" 0 "" 0
+Bp13=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Schem_O.cpp}.132.1" 0 0 1 "" 0 "" 0
+Bp14=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\start_settings.c}.545.3" 0 0 1 "" 0 "" 0
+Bp15=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\start_settings.c}.1075.7" 0 0 1 "" 0 "" 0
+Bp16=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\start_settings.c}.1108.7" 0 0 1 "" 0 "" 0
+Bp17=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Tim3.c}.65.1" 0 0 1 "" 0 "" 0
+Bp18=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Tim3.c}.92.9" 0 0 1 "" 0 "" 0
+Bp19=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\main.c}.423.3" 0 0 1 "" 0 "" 0
+Bp20=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\protections.c}.555.5" 0 0 1 "" 0 "" 0
+Bp21=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\protections.c}.555.5" 0 0 1 "" 0 "" 0
+Bp22=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUDout_1_0.cpp}.377.5" 0 0 1 "" 0 "" 0
+Bp23=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.251.3" 0 0 1 "" 0 "" 0
+Bp24=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.253.1" 0 0 1 "" 0 "" 0
+Bp25=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\main.c}.412.3" 0 0 1 "" 0 "" 0
+Bp26=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\eeprom_rtc.c}.2027.13" 0 0 1 "" 0 "" 0
+Bp27=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.3345.17" 0 0 1 "" 0 "" 0
+Count=28
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -34,6 +66,9 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
+[Aliases]
+Count=0
+SuppressDialog=0
 [DriverProfiling]
 Enabled=0
 Mode=1
@@ -44,27 +79,3 @@ Exclusions=
 Enabled=0
 [CallStackStripe]
 ShowTiming=1
-[Disassemble mode]
-mode=0
-[Breakpoints2]
-Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.248.5" 0 0 1 "" 0 "" 0
-Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.299.19" 0 0 1 "" 0 "" 0
-Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUAlt.cpp}.72.5" 0 0 1 "" 0 "" 0
-Bp3=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.1899.5" 0 0 1 "" 0 "" 0
-Bp4=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUBGS.cpp}.217.9" 0 0 1 "" 0 "" 0
-Bp5=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\MALed.cpp}.32.5" 0 0 1 "" 0 "" 0
-Bp6=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.122.1" 0 0 1 "" 0 "" 0
-Bp7=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.1833.16" 0 0 1 "" 0 "" 0
-Bp8=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUFKey.cpp}.29.11" 0 0 1 "" 0 "" 0
-Bp9=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULss.cpp}.477.1" 0 0 1 "" 0 "" 0
-Bp10=_ 0 "EMUL_DATA" "0x600052E0" 0 0 1 1 255
-Bp11=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\main.c}.380.5" 0 0 1 "" 0 "" 0
-Bp12=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp}.158.1" 0 0 1 "" 0 "" 0
-Bp13=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp}.176.5" 0 0 1 "" 0 "" 0
-Bp14=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp}.251.1" 0 0 1 "" 0 "" 0
-Bp15=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.3323.17" 0 0 1 "" 0 "" 0
-Bp16=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Schem_O.cpp}.127.1" 0 0 1 "" 0 "" 0
-Count=17
-[Aliases]
-Count=0
-SuppressDialog=0

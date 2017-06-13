@@ -23,6 +23,8 @@
 extern __CONFIG current_config_prt; 
  __CONFIG ccfg;
 */
+char chGlb_ActivatorWREeprom = 0;
+
 char chGlbAmountRegisteredElem = 0;
 long lGlbRegisteredElemField = 0;
 const char chAmtSchematicElement = 15;//

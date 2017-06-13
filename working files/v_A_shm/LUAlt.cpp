@@ -1,6 +1,8 @@
 
 #include "LUAlt.hpp"
 #include <string.h>
+#include "IStng.h"
+
 CPulseAlternator::CPulseAlternator(void) :CLUBase() {
 m_chLinkedTimers = 0; //Field bit
 m_chStateT       = 0;
@@ -89,5 +91,6 @@ void PulseAlt_Op(void *pObj){
     i = rPulseAlt.TAlt(j);
 	
 rPulseAlt.arrOut[0] = static_cast<char>(i);
-
+    register __LN_MEANDER *pLN_MEANDER = static_cast<__LN_MEANDER*>(rPulseAlt.pvCfgLN);
+    pLN_MEANDER->active_state[( MEANDER_OUT/8) ] = i<< MEANDER_OUT;
 }

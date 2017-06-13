@@ -2,8 +2,8 @@
 #include "libraries.h"
 #include "constants.h"
 #include "type_definition.h"
-#include "variables_global.h"
 #include "strings_global.h"
+#include "variables_global.h"
 #include "functions_global.h"
 #include "../v_A_shm/I_Shm.h"
 #include "../v_A_shm/IStng.h"
@@ -188,7 +188,7 @@ inline void periodical_operations(void)
   if (periodical_tasks_TEST_CONFIG != 0)
   {
     //Стоїть у черзі активна задача самоконтролю конфігурації
-    if ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD) != 0)
+    if ((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)) != 0)
     {
       //Перевірку здійснюємо тільки тоді, коли конфігурація була успішно прочитана
       if (
@@ -214,7 +214,7 @@ inline void periodical_operations(void)
   else if (periodical_tasks_TEST_SETTINGS != 0)
   {
     //Стоїть у черзі активна задача самоконтролю таблиці настройок
-    if ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0)
+    if ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) != 0)
     {
       //Перевірку здійснюємо тільки тоді, коли таблиця настройок була успішно прочитана
       if (
@@ -240,7 +240,7 @@ inline void periodical_operations(void)
   else if (periodical_tasks_TEST_USTUVANNJA != 0)
   {
     //Стоїть у черзі активна задача самоконтролю юстування (і щоб не ускладнювати задачу і серійного номеру пристрою)
-    if ((state_i2c_task & STATE_USTUVANNJA_EEPROM_GOOD) != 0)
+    if ((state_i2c_task & MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_GOOD_BIT)) != 0)
     {
       //Перевірку здійснюємо тільки тоді, коли юстування було успішно прочитане
       if (
@@ -273,6 +273,31 @@ inline void periodical_operations(void)
     //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації
     periodical_tasks_TEST_TRG_FUNC_LOCK = false;
   }
+  else if (periodical_tasks_TEST_INFO_REJESTRATOR_LOG_LOCK != 0)
+  {
+    //Стоїть у черзі активна задача самоконтролю по резервній копії для Журналу подій
+    //Виконуємо її
+    unsigned int result;
+    result = control_info_rejestrator(&info_rejestrator_log_ctrl, crc_info_rejestrator_log_ctrl);
+      
+    if (result == 1)
+    {
+      //Контроль достовірності реєстратора пройшов успішно
+    
+      //Скидаємо повідомлення у слові діагностики
+      _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT);
+    }
+    else
+    {
+      //Контроль достовірності реєстратора не пройшов
+
+      //Виствляємо повідомлення у слові діагностики
+      _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT);
+    }
+
+    //Скидаємо активну задачу самоконтролю по резервній копії для Журналу подій
+    periodical_tasks_TEST_INFO_REJESTRATOR_LOG_LOCK = false;
+  }
   else if (periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK != 0)
   {
     //Стоїть у черзі активна задача самоконтролю по резервній копії для реєстратора програмних подій
@@ -295,7 +320,7 @@ inline void periodical_operations(void)
       _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
     }
 
-    //Скидаємо активну задачу самоконтролю по резервній копії для аналогового реєстратора
+    //Скидаємо активну задачу самоконтролю по резервній копії для реєстратора програмних подій
     periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK = false;
   }
   /*******************/
@@ -386,36 +411,50 @@ int main(void)
   //Стартова настройка периферії процесора
   start_settings_peripherals();
   
+#ifdef TEST_MODE
+  //Ініціалізація LCD
+  lcd_init();
+  changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+    
+  //Запит на встановлення мінімальних налаштувань
+  empty_settings();
+#endif
+  
   if(
-     ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD  ) != 0) &&
-     ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) != 0) &&
-     ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) != 0)
+     ((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT  )) != 0) &&
+     ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) != 0) &&
+     ((state_i2c_task & MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_GOOD_BIT)) != 0)
     )   
   {
     //Випадок, якщо настройки успішно зчитані
           
     //Дозволяєм роботу таймера вимірювальної системи
     TIM_Cmd(TIM5, ENABLE);
-    // Дозволяєм роботу таймера системи логіки
+    // Дозволяєм роботу таймерів системи логіки
     TIM_Cmd(TIM2, ENABLE);
+    TIM_Cmd(TIM3, ENABLE);
 
+#ifndef TEST_MODE
     //Ініціалізація LCD
     lcd_init();
     changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+#endif
   }
   else
   {
     //Випадок, якщо настройки успішно не зчитані, або їх взагалі немає
     
+#ifndef TEST_MODE
     //Ініціалізація LCD
     lcd_init();
     changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
+#endif
   
     //Якщо настройки не зчитані успішно з EEPROM, то спочатку виводимо на екран повідомлення про це
     while (
-           ((state_i2c_task & STATE_CONFIG_EEPROM_GOOD  ) == 0) ||
-           ((state_i2c_task & STATE_SETTINGS_EEPROM_GOOD) == 0) ||
-           ((state_i2c_task & STATE_TRG_FUNC_EEPROM_GOOD) == 0)
+           ((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)  ) == 0) ||
+           ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) == 0) ||
+           ((state_i2c_task & MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_GOOD_BIT)) == 0)
           )   
     {
       error_reading_with_eeprom();
@@ -423,8 +462,9 @@ int main(void)
 
     //Дозволяєм роботу таймера вимірювальної системи
     TIM_Cmd(TIM5, ENABLE);
-    //Дозволяєм роботу таймера системи захистів
+    //Дозволяєм роботу таймерів системи логіки
     TIM_Cmd(TIM2, ENABLE);
+    TIM_Cmd(TIM3, ENABLE);
   }
   changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
 

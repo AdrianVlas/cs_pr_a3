@@ -1,3 +1,6 @@
+#ifndef __EXTERNAL_VARIABLES_H
+#define __EXTERNAL_VARIABLES_H
+
 extern unsigned int semaphore_adc_irq;
 extern unsigned int adc_DATA_VAL_read;
 extern unsigned int adc_TEST_VAL_read;
@@ -53,7 +56,6 @@ extern const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2];
 extern const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2];
 extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 extern unsigned char crc_trg_func, crc_trg_func_ctrl;
-extern unsigned int pressed_buttons;
 extern unsigned int activation_function_from_interface;
 extern unsigned int reset_trigger_function_from_interface;
 extern unsigned int diagnostyka_before[2];
@@ -82,12 +84,16 @@ extern void *p_menu_param_1, *p_menu_param_2;
 extern const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS];
 extern const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS];
 extern const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS];
+extern const uint8_t * const array_p_name_out[NUMBER_ALL_BLOCKS];
+
 
 extern unsigned int periodical_tasks_TEST_CONFIG;
 extern unsigned int periodical_tasks_TEST_SETTINGS;
 extern unsigned int periodical_tasks_TEST_USTUVANNJA;
 extern unsigned int periodical_tasks_TEST_TRG_FUNC;
 extern unsigned int periodical_tasks_TEST_TRG_FUNC_LOCK;
+extern unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_LOG;
+extern unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_LOG_LOCK;
 extern unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR;
 extern unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK;
 extern unsigned int periodical_tasks_TEST_FLASH_MEMORY;
@@ -151,7 +157,7 @@ extern unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
 //DataFlash
 extern uint8_t RxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
 extern uint8_t TxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
-extern uint32_t number_chip_dataflsh_exchange;
+extern uint32_t number_chip_dataflash_exchange;
 extern uint32_t state_execution_spi_df[NUMBER_DATAFLASH_CHIP];
 extern uint32_t status_register_df[NUMBER_DATAFLASH_CHIP];
 extern uint32_t address_read_write[NUMBER_DATAFLASH_CHIP];
@@ -162,11 +168,27 @@ extern const uint32_t number_page_serial_dataflash[NUMBER_DATAFLASH_CHIP];
 extern uint32_t control_spi_df_tasks[NUMBER_DATAFLASH_CHIP];
 extern volatile uint32_t control_tasks_dataflash;
 
-extern uint8_t buffer_for_menu_read_record[SIZE_ONE_RECORD_PR_ERR];
+extern uint8_t buffer_for_menu_read_record[SIZE_MAX_ONE_RECORD];
+extern uint8_t buffer_for_USB_read_record_log[SIZE_ONE_RECORD_LOG];
+extern uint8_t buffer_for_RS485_read_record_log[SIZE_ONE_RECORD_LOG];
 extern uint8_t buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 extern uint8_t buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 
 extern unsigned int what_we_are_reading_from_dataflash_2;
+
+//Журнал подій
+extern uint8_t crc_info_rejestrator_log;
+extern __INFO_REJESTRATOR info_rejestrator_log;
+extern uint8_t crc_info_rejestrator_log_ctrl;
+extern __INFO_REJESTRATOR info_rejestrator_log_ctrl;
+extern uint8_t buffer_log_records[SIZE_BUFFER_FOR_LOG];
+extern volatile uint32_t head_fifo_buffer_log_records;
+extern volatile uint32_t tail_fifo_buffer_log_records;
+extern uint32_t log_record_check_ok;
+extern uint8_t log_into_menu_time_label[7];
+extern uint32_t number_record_of_log_into_menu;
+extern uint32_t number_record_of_log_into_USB;
+extern uint32_t number_record_of_log_into_RS485;
 
 //Реєстратор програмних помилок
 extern unsigned char crc_info_rejestrator_pr_err;
@@ -184,7 +206,7 @@ extern uint32_t number_record_of_pr_err_into_USB;
 extern uint32_t number_record_of_pr_err_into_RS485;
 
 //Очистка інформації по реєстраторах
-extern unsigned int clean_rejestrators;
+extern uint32_t clean_rejestrators;
 
 extern const uint8_t letters[MAX_NYMBER_EXTENDED_ASCII_SYMBOLS][2];
 extern const uint8_t extra_letters[MAX_NYMBER_EXTRA_EXTENDED_ASCII_SYMBOLS][1 + MAX_NAMBER_LANGUAGE];
@@ -274,3 +296,6 @@ extern unsigned int __ICFEDIT_region_RAM1_size__;
 
 
 #endif
+
+#endif
+

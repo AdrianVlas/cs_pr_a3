@@ -203,8 +203,9 @@ unsigned int max_number_digit_in_number(int);
 void move_into_ekran_input_or_output(unsigned int, int);
 void make_ekran_list_registrators(void);
 void move_into_ekran_event_registraqtors(unsigned int, int);
+void make_ekran_list_event_log(void);
 void make_ekran_list_event_pr_err(void);
-void make_ekran_data_pr_err(void);
+void make_ekran_data_reg(void);
 
 __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *, __CONFIG *);
 __result_dym_mem_select action_after_changing_of_configuration(void);
@@ -223,12 +224,12 @@ void USART_RS485_Configure(void);
 void restart_monitoring_RS485(void);
 void start_transmint_data_via_RS_485(unsigned int);
 unsigned short int  AddCRC(unsigned char, unsigned short int);
+uint32_t bit_adr_to_reg_adr(uint32_t, uint32_t*, uint32_t*);
 void modbus_rountines(unsigned int);
 void Error_modbus(unsigned char, unsigned char, unsigned char, unsigned char *);
-unsigned int Get_data(unsigned char *, unsigned int, unsigned int);
-unsigned int Set_data(unsigned short int, unsigned int, unsigned int, /*unsigned int,*/ unsigned int);
+unsigned int Get_data(unsigned char *, unsigned int, unsigned int, __getting_data, __bit_byte);
+unsigned int Set_data(unsigned short int, unsigned int, __settings_data, /*unsigned int,*/ unsigned int);
 //unsigned int Get_data_file(unsigned char*, unsigned char*, unsigned int*, unsigned int);
-void set_previous_ranguvannja(void);
 
 ErrorStatus check_errors_i2c(void);
 unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);
@@ -245,6 +246,8 @@ unsigned int sqrt_32(unsigned int);
 unsigned int sqrt_64(unsigned long long);
 unsigned int get_order(int);
 
+uint32_t event_log_handler(void);
+
 void start_checking_dataflash(void);
 void start_exchange_via_spi_df(uint32_t, uint32_t);
 void main_routines_for_spi_df(uint32_t);
@@ -253,7 +256,7 @@ void control_config(unsigned int);
 void control_settings(unsigned int);
 void control_ustuvannja(void);
 void control_trg_func(void);
-unsigned int control_info_rejestrator(__INFO_REJESTRATOR*, unsigned char);
+unsigned int control_info_rejestrator(__INFO_REJESTRATOR*, uint8_t);
 
 void test_external_SRAM(void);
 
@@ -261,6 +264,10 @@ void watchdog_routine(void);
 void total_error_sw_fixed(unsigned int);
 
 int str_to_int_DATE_Mmm(void);
+
+#ifdef TEST_MODE
+void empty_settings(void);
+#endif
 
 #endif
 

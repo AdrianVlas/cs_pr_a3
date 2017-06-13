@@ -21,27 +21,6 @@ const uint8_t * const array_p_name_in[NUMBER_ALL_BLOCKS] =
   NULL
 };
 
-const uint8_t * const array_p_name_out[NUMBER_ALL_BLOCKS] = 
-{
-  (const uint8_t*)name_fix_block_out_signals, 
-  (const uint8_t*)name_input_out_signals, 
-  (const uint8_t*)name_output_led_out_signals, 
-  (const uint8_t*)name_output_led_out_signals, 
-  (const uint8_t*)name_button_out_signals, 
-  (const uint8_t*)name_alarm_out_signals, 
-  (const uint8_t*)name_group_alarm_out_signals, 
-  (const uint8_t*)name_standard_logic_out_signals, 
-  (const uint8_t*)name_standard_logic_out_signals, 
-  (const uint8_t*)name_standard_logic_out_signals, 
-  (const uint8_t*)name_standard_logic_out_signals, 
-  (const uint8_t*)name_timer_out_signals, 
-  (const uint8_t*)name_trigger_out_signals, 
-  (const uint8_t*)name_meander_out_signals,
-  (const uint8_t*)name_tu_out_signals,
-  (const uint8_t*)name_ts_out_signals,
-  (const uint8_t*)name_event_log_out_signals
-};
-    
 const enum _menu2_levels levels_tmp[__NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL - __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL] =
 {
   EDITOR_LIST_INPUTS_FOR_OUTPUT_MENU2_LEVEL,
@@ -1982,8 +1961,8 @@ void change_set_signal(unsigned int action)
           for (size_t index_1 = 0; index_1 < n_similar_input_signals; index_1++)
           {
             uint32_t param_1;
-            do
-            {
+//            do
+//            {
               param_1 = p_param[index_1] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS));
               for (size_t index_2 = (index_1 + 1); index_2 < n_similar_input_signals; index_2++)
               {
@@ -1998,11 +1977,12 @@ void change_set_signal(unsigned int action)
                 {
                   p_param[index_1] = param_2;
                   p_param[index_2] = param_1;
-                  break;
+                  param_1 = param_2;/*v2*/
+//                  break;
                 }
               }
-            }
-            while (param_1 != (p_param[index_1] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))));
+//            }
+//            while (param_1 != (p_param[index_1] & (uint32_t)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS))));
           }
         }
         else

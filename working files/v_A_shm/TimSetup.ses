@@ -1,0 +1,34 @@
+<NotepadPlus>
+    <Session activeView="1">
+        <mainView activeIndex="0">
+            <File firstVisibleLine="27" xOffset="0" scrollWidth="8400" startPos="2657" endPos="2657" selMode="0" lang="C" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\Tim3.c" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="840" startPos="538" endPos="538" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\Tim3.h" />
+            <File firstVisibleLine="160" xOffset="0" scrollWidth="1060" startPos="6745" endPos="6745" selMode="0" lang="C" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\hw_config.c" />
+            <File firstVisibleLine="931" xOffset="0" scrollWidth="8400" startPos="36447" endPos="36447" selMode="0" lang="C" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\start_settings.c">
+                <Mark line="934" />
+                <Mark line="1201" />
+                <Mark line="1232" />
+            </File>
+            <File firstVisibleLine="9" xOffset="0" scrollWidth="430" startPos="289" endPos="301" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\I_Shm.h" />
+        </mainView>
+        <subView activeIndex="6">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="840" startPos="237" endPos="237" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\Tim3.h" />
+            <File firstVisibleLine="663" xOffset="0" scrollWidth="990" startPos="26381" endPos="26381" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LULss.cpp" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="4790" startPos="9180" endPos="9180" selMode="0" lang="C" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\project files\StackDepth.suc" />
+            <File firstVisibleLine="1193" xOffset="0" scrollWidth="5630" startPos="47570" endPos="47579" selMode="0" lang="C" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\start_settings.c">
+                <Mark line="934" />
+                <Mark line="1201" />
+                <Mark line="1232" />
+            </File>
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1440" startPos="318" endPos="318" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\inc\const_global.h" />
+            <File firstVisibleLine="403" xOffset="0" scrollWidth="1440" startPos="16405" endPos="16405" selMode="0" lang="C" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\src\main.c">
+                <Mark line="397" />
+            </File>
+            <File firstVisibleLine="365" xOffset="0" scrollWidth="980" startPos="16140" endPos="16143" selMode="0" lang="C" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\Libraries\STM32F2xx_StdPeriph_Driver\src\stm32f2xx_tim.c">
+                <Mark line="597" />
+            </File>
+            <File firstVisibleLine="203" xOffset="0" scrollWidth="1450" startPos="11324" endPos="11328" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\Libraries\STM32F2xx_StdPeriph_Driver\inc\stm32f2xx_tim.h" />
+            <File firstVisibleLine="1109" xOffset="0" scrollWidth="1170" startPos="66298" endPos="66302" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\Libraries\CMSIS\Device\ST\STM32F2xx\Include\stm32f2xx.h" />
+        </subView>
+    </Session>
+</NotepadPlus>

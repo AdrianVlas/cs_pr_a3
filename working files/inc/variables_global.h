@@ -74,7 +74,6 @@ const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2] = {0, 2};
 const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2] = {{0, 8}};
 uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 unsigned char crc_trg_func, crc_trg_func_ctrl;
-unsigned int pressed_buttons = 0;
 unsigned int activation_function_from_interface = 0;
 unsigned int reset_trigger_function_from_interface = 0;
 unsigned int diagnostyka_before[2] = {0, 0};
@@ -139,6 +138,27 @@ const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   EVENT_LOG_SIGNALS_OUT
 };
 
+const uint8_t * const array_p_name_out[NUMBER_ALL_BLOCKS] = 
+{
+  (const uint8_t*)name_fix_block_out_signals, 
+  (const uint8_t*)name_input_out_signals, 
+  (const uint8_t*)name_output_led_out_signals, 
+  (const uint8_t*)name_output_led_out_signals, 
+  (const uint8_t*)name_button_out_signals, 
+  (const uint8_t*)name_alarm_out_signals, 
+  (const uint8_t*)name_group_alarm_out_signals, 
+  (const uint8_t*)name_standard_logic_out_signals, 
+  (const uint8_t*)name_standard_logic_out_signals, 
+  (const uint8_t*)name_standard_logic_out_signals, 
+  (const uint8_t*)name_standard_logic_out_signals, 
+  (const uint8_t*)name_timer_out_signals, 
+  (const uint8_t*)name_trigger_out_signals, 
+  (const uint8_t*)name_meander_out_signals,
+  (const uint8_t*)name_tu_out_signals,
+  (const uint8_t*)name_ts_out_signals,
+  (const uint8_t*)name_event_log_out_signals
+};
+
 
 const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
 {
@@ -166,6 +186,8 @@ unsigned int periodical_tasks_TEST_SETTINGS = false;
 unsigned int periodical_tasks_TEST_USTUVANNJA = false;
 unsigned int periodical_tasks_TEST_TRG_FUNC = false;
 unsigned int periodical_tasks_TEST_TRG_FUNC_LOCK = false;
+unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_LOG = false;
+unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_LOG_LOCK = false;
 unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR = false;
 unsigned int periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK = false;
 unsigned int periodical_tasks_TEST_FLASH_MEMORY = false;
@@ -230,13 +252,13 @@ SRAM1 uint16_t low_speed_i2c/* = 0*/;
 SRAM1 __DRIVER_I2C driver_i2c;
 uint32_t control_i2c_taskes[2]  = {0,0};
 SRAM1 uint16_t comparison_writing/* = 0*/; /*очищений біт означає, що іде зчитування у робочий об'єкт, встановлений біт означає що іде порівняння записаної інформації після операції запису*/
-uint32_t state_i2c_task = STATE_FIRST_READING_RTC;
+uint32_t state_i2c_task = MASKA_FOR_BIT(STATE_FIRST_READING_RTC_BIT);
 SRAM1 unsigned char read_write_i2c_buffer[SIZE_BUFFER_FOR_EEPROM_EXCHNGE];
 
 //DataFlash
 uint8_t RxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
 uint8_t TxBuffer_SPI_DF[SIZE_BUFFER_SERIAL_DATAFLASH_DMA];
-uint32_t number_chip_dataflsh_exchange = INDEX_DATAFLASH_1;
+uint32_t number_chip_dataflash_exchange = INDEX_DATAFLASH_1;
 uint32_t state_execution_spi_df[NUMBER_DATAFLASH_CHIP] = {TRANSACTION_EXECUTING_NONE, TRANSACTION_EXECUTING_NONE};
 uint32_t status_register_df[NUMBER_DATAFLASH_CHIP];
 uint32_t address_read_write[NUMBER_DATAFLASH_CHIP];
@@ -247,19 +269,35 @@ const uint32_t number_page_serial_dataflash[NUMBER_DATAFLASH_CHIP] = {NUMBER_PAG
 uint32_t control_spi_df_tasks[NUMBER_DATAFLASH_CHIP] = {0, 0};
 volatile uint32_t control_tasks_dataflash = 0;
 
-SRAM1 uint8_t buffer_for_menu_read_record[SIZE_ONE_RECORD_PR_ERR];
+SRAM1 uint8_t buffer_for_menu_read_record[SIZE_MAX_ONE_RECORD];
+SRAM1 uint8_t buffer_for_USB_read_record_log[SIZE_ONE_RECORD_LOG];
+SRAM1 uint8_t buffer_for_RS485_read_record_log[SIZE_ONE_RECORD_LOG];
 SRAM1 uint8_t buffer_for_USB_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 SRAM1 uint8_t buffer_for_RS485_read_record_pr_err[SIZE_ONE_RECORD_PR_ERR];
 
+//Журнал подій
+uint8_t crc_info_rejestrator_log;
+__INFO_REJESTRATOR info_rejestrator_log;
+uint8_t crc_info_rejestrator_log_ctrl;
+__INFO_REJESTRATOR info_rejestrator_log_ctrl;
+uint8_t buffer_log_records[SIZE_BUFFER_FOR_LOG];
+volatile uint32_t head_fifo_buffer_log_records = 0;
+volatile uint32_t tail_fifo_buffer_log_records = 0;
+uint32_t log_record_check_ok;
+uint8_t log_into_menu_time_label[7];
+uint32_t number_record_of_log_into_menu = 0xffffffff;
+uint32_t number_record_of_log_into_USB = 0xffffffff;
+uint32_t number_record_of_log_into_RS485 = 0xffffffff;
+
 //Реєстратор програмних помилок
-unsigned char crc_info_rejestrator_pr_err;
+uint8_t crc_info_rejestrator_pr_err;
 __INFO_REJESTRATOR info_rejestrator_pr_err;
-unsigned char crc_info_rejestrator_pr_err_ctrl;
+uint8_t crc_info_rejestrator_pr_err_ctrl;
 __INFO_REJESTRATOR info_rejestrator_pr_err_ctrl;
 uint8_t buffer_pr_err_records[SIZE_BUFFER_FOR_PR_ERR];
 volatile uint32_t head_fifo_buffer_pr_err_records = 0;
 volatile uint32_t tail_fifo_buffer_pr_err_records = 0;
-unsigned int temporary_block_writing_records_pr_err_into_DataFlash = 0;
+uint32_t temporary_block_writing_records_pr_err_into_DataFlash = 0;
 uint32_t pr_err_record_check_ok;
 uint8_t pr_err_into_menu_time_label[7];
 uint32_t number_record_of_pr_err_into_menu = 0xffffffff;
@@ -267,7 +305,7 @@ uint32_t number_record_of_pr_err_into_USB = 0xffffffff;
 uint32_t number_record_of_pr_err_into_RS485 = 0xffffffff;
 
 //Очистка інформації по реєстраторах
-unsigned int clean_rejestrators = 0;
+uint32_t clean_rejestrators = 0;
 
 //RS-485
 SRAM1 unsigned char TxBuffer_RS485[BUFFER_RS485];

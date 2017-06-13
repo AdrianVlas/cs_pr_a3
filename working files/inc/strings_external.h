@@ -1,3 +1,8 @@
+#ifndef __STRINGS_EXTERNAL_H
+#define __STRINGS_EXTERNAL_H
+
+extern const uint8_t name_string_ask[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
+
 extern const uint8_t information_no_edition[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint8_t information_out_of_limits[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
@@ -159,3 +164,5 @@ extern const uint8_t name_ts_in_signals[MAX_NAMBER_LANGUAGE][TU_SIGNALS_IN][MAX_
 extern const uint8_t name_ts_out_signals[MAX_NAMBER_LANGUAGE][TU_SIGNALS_OUT][MAX_COL_LCD + 1];
 extern const uint8_t name_ts[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint32_t first_index_number_ts[MAX_NAMBER_LANGUAGE];
+
+#endif

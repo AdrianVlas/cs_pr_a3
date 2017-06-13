@@ -188,6 +188,8 @@ void main_routines_for_i2c(void)
   static size_t shift_from_start_address_trg_func_in_eeprom;
   //Статична змінна, яка вказує скільки байт триґерних функцій підготовлено для запису у EEPROM
   static size_t size_trg_func;
+  //Статична змінна, яка вказує який блок інформації по Журналу подій треба записувати у EEPROM
+  static uint32_t number_block_info_rejestrator_log_write_to_eeprom;
   //Статична змінна, яка вказує який блок інформації по реєстраторі програмних подій треба записувати у EEPROM
   static unsigned int number_block_info_rejestrator_pr_err_write_to_eeprom;
   
@@ -196,7 +198,7 @@ void main_routines_for_i2c(void)
   //Статичні змінні для контролю коректності запису
   static __CONFIG current_config_comp;
   static unsigned int ustuvannja_comp[NUMBER_ANALOG_CANALES], serial_number_dev_comp;
-//  static unsigned int trigger_active_functions_comp[N_BIG];
+  static __INFO_REJESTRATOR info_rejestrator_log_comp;
   static __INFO_REJESTRATOR info_rejestrator_pr_err_comp;
   
   if (driver_i2c.state_execution < 0)
@@ -311,7 +313,7 @@ void main_routines_for_i2c(void)
         //Весь масив конфігурації вже записаний
         
         //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
-        comparison_writing |= COMPARISON_WRITING_CONFIG;
+        comparison_writing |= MASKA_FOR_BIT(COMPARISON_WRITING_CONFIG_BIT);
         _SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT);
         _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
         
@@ -392,7 +394,7 @@ void main_routines_for_i2c(void)
         //Весь масив юстування вже записаний
 
         //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
-        comparison_writing |= COMPARISON_WRITING_USTUVANNJA;
+        comparison_writing |= MASKA_FOR_BIT(COMPARISON_WRITING_USTUVANNJA_BIT);
         _SET_BIT(control_i2c_taskes, TASK_START_READ_USTUVANNJA_EEPROM_BIT);
         _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
         
@@ -436,6 +438,50 @@ void main_routines_for_i2c(void)
         _CLEAR_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT);
       }
     }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_LOG_EEPROM_BIT) !=0)
+    {
+      //Стоїть умова запису блоку інформації Журналу подій у EEPROM
+
+      int32_t size_to_end;
+      uint32_t rez, offset_from_start;
+      
+      //Визначаємо з якого місця треба почати записувати
+      offset_from_start = number_block_info_rejestrator_log_write_to_eeprom*SIZE_PAGE_EEPROM;
+
+      //Кількість байт до кінця буферу 
+      size_to_end = (sizeof(info_rejestrator_log) + 1) - offset_from_start; 
+      
+      if (size_to_end > 0)
+      {
+        if (size_to_end < SIZE_PAGE_EEPROM)
+          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_INFO_REJESTRATORS_LOG + offset_from_start), (read_write_i2c_buffer + offset_from_start), size_to_end);
+        else
+          rez = start_write_buffer_via_I2C(EEPROM_ADDRESS, (START_ADDRESS_INFO_REJESTRATORS_LOG + offset_from_start), (read_write_i2c_buffer + offset_from_start), SIZE_PAGE_EEPROM);
+        
+        //Аналізуємо успішність запуску нового запису
+        if (rez > 1)
+        {
+          error_start_i2c();          
+          
+          //Покищо просто очищаємо змінну, яка конкретизуєм помилку, у майбутньому її можна буде конкретизувати
+          type_error_of_exchanging_via_i2c = 0;
+        }
+        else if (rez == 0) _SET_BIT(clear_diagnostyka, ERROR_START_VIA_I2C_BIT);
+      }
+      else
+      {
+        //Весь масив вже записаний
+       
+        //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
+        comparison_writing |= MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_LOG_BIT);
+        _SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+        _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
+
+        //Cкидаємо умову запису інформації у EEPROM
+        _CLEAR_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+      }
+      
+    }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) !=0)
     {
       //Стоїть умова запису блоку інформації реєстратора програмних подій у EEPROM
@@ -471,7 +517,7 @@ void main_routines_for_i2c(void)
         //Весь масив вже записаний
        
         //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
-        comparison_writing |= COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR;
+        comparison_writing |= MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR_BIT);
         _SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
         _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
 
@@ -679,7 +725,7 @@ void main_routines_for_i2c(void)
         size_settings = 0;
 
         //Знімаємо можливу сигналізацію, що виконувалося порівнняння
-        comparison_writing &= (unsigned int)(~COMPARISON_WRITING_SETTINGS);
+        comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_SETTINGS_BIT));
         //Скидаємо біт команди читання налаштувань
         _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
       }
@@ -817,9 +863,34 @@ void main_routines_for_i2c(void)
         size_trg_func = 0;
 
         //Знімаємо можливу сигналізацію, що виконувалося порівнняння
-        comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);
+        comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_TRG_FUNC_BIT));
         //Скидаємо біт команди читання триґерних функцій
         _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
+      }
+    }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_LOG_EEPROM_BIT) !=0)
+    {
+      unsigned int rez;
+
+      //Запускаємо процес читання
+      rez = start_read_buffer_via_I2C(EEPROM_ADDRESS, START_ADDRESS_INFO_REJESTRATORS_LOG, read_write_i2c_buffer, (sizeof(info_rejestrator_log) + 1));
+      
+      //Аналізуємо успішність запуску нового запису
+      if (rez > 1)
+      {
+        error_start_i2c();
+        
+        //Покищо просто очищаємо змінну, яка конкретизуєм помилку, у майбутньому її можна буде конкретизувати
+        type_error_of_exchanging_via_i2c = 0;
+      }
+      else if (rez == 0)
+      {
+        _SET_BIT(clear_diagnostyka, ERROR_START_VIA_I2C_BIT);
+
+        //При успішнопу запуску читання скидаємо біт запуску читання і виставляємо біт процесу читання
+        _SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+        _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
+        _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_LOG_EEPROM_BIT);
       }
     }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) !=0)
@@ -1064,7 +1135,7 @@ void main_routines_for_i2c(void)
         size_settings = 0;
 
         //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
-        comparison_writing |= COMPARISON_WRITING_SETTINGS;
+        comparison_writing |= MASKA_FOR_BIT(COMPARISON_WRITING_SETTINGS_BIT);
         _SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT);
         _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
 
@@ -1281,7 +1352,7 @@ void main_routines_for_i2c(void)
         size_trg_func = 0;
         
         //Виставляємо команду контрольного читання для перевідрки достовірності записаної інформації
-        comparison_writing |= COMPARISON_WRITING_TRG_FUNC;
+        comparison_writing |= MASKA_FOR_BIT(COMPARISON_WRITING_TRG_FUNC_BIT);
         _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
         _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
 
@@ -1370,7 +1441,7 @@ void main_routines_for_i2c(void)
           _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
 
           /*Ця операція зараз недоцільна*/
-          comparison_writing &= (unsigned int)(~COMPARISON_WRITING_TRG_FUNC);
+          comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_TRG_FUNC_BIT));
           _CLEAR_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
         }
         /***/
@@ -1387,6 +1458,37 @@ void main_routines_for_i2c(void)
         //Виставляємо скільки байт підготовлено до запису
         size_trg_func = index;
       }
+    }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT) !=0)
+    {
+      //Стоїть умова початку нового запису у EEPROM по інформації Журналу подій
+      
+      //Скидаємо біт запуску нового запису і виставляємо біт запису блоків у EEPROM з блокуванням, щоб запуск почався з синхронізацією
+      _SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+      _SET_BIT(control_i2c_taskes, TASK_BLK_WRITING_EEPROM_BIT);
+      _CLEAR_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+      
+      //Робимо копію записуваної інформації для контролю
+
+      //Готуємо буфер для запису у EEPROM разом з контрольною сумою
+      uint8_t crc_eeprom_info_rejestrator_log = 0, temp_value;
+      uint8_t *point_1 = (unsigned char*)(&info_rejestrator_log); 
+      uint8_t *point_2 = (unsigned char*)(&info_rejestrator_log_comp); 
+      for (size_t i = 0; i < sizeof(__INFO_REJESTRATOR); i++)
+      {
+        temp_value = *(point_1);
+        *(point_2) = temp_value;
+        point_1++;
+        point_2++;
+        read_write_i2c_buffer[i] = temp_value;
+        crc_eeprom_info_rejestrator_log += temp_value;
+      }
+
+      //Добавляємо інвертовану контрольну суму у кінець масиву
+      read_write_i2c_buffer[sizeof(info_rejestrator_log)] = (uint8_t)((~(uint32_t)crc_eeprom_info_rejestrator_log) & 0xff);
+      
+      //Виставляємо перший блок запису у EEPROM
+      number_block_info_rejestrator_log_write_to_eeprom = 0;
     }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) !=0)
     {
@@ -1501,6 +1603,7 @@ void main_routines_for_i2c(void)
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT               ) != 0) || 
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_USTUVANNJA_EEPROM_BIT             ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT               ) != 0) ||
+        (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_LOG_EEPROM_BIT   ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) != 0)
        )
     {
@@ -1525,6 +1628,11 @@ void main_routines_for_i2c(void)
       {
         //Виставляємо наступний блок триґерної інформаціїзапису у EEPROM
         number_block_trg_func_write_to_eeprom++;
+      }
+      else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_LOG_EEPROM_BIT) != 0)
+      {
+        //Виставляємо наступний блок інформації по реєстраторах запису у EEPROM
+        number_block_info_rejestrator_log_write_to_eeprom++;
       }
       else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) != 0)
       {
@@ -1557,7 +1665,7 @@ void main_routines_for_i2c(void)
       if(empty_block == 0)
       {
         //Помічаємо, що блок конфігурації не є пустим
-        state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_EMPTY);
+        state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_CONFIG_EEPROM_EMPTY_BIT));
         //Скидаємо повідомлення у слові діагностики
         _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_EMPTY_BIT);
         
@@ -1581,8 +1689,8 @@ void main_routines_for_i2c(void)
           if (current_config_tmp.device_id == VERSIA_PZ)
           {
             //Таблиця конфігурації відповідає типу даного приладу
-            state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_FAIL);
-            state_i2c_task |= STATE_CONFIG_EEPROM_GOOD;
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_CONFIG_EEPROM_FAIL_BIT));
+            state_i2c_task |= MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT);
           
             //Скидаємо повідомлення у слові діагностики
             _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
@@ -1590,7 +1698,7 @@ void main_routines_for_i2c(void)
             //Зберігаємо контрольну суму (не інвертовану)
             crc_config = crc_eeprom_config;
 
-            if ((comparison_writing & COMPARISON_WRITING_CONFIG) == 0)
+            if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_CONFIG_BIT)) == 0)
             {
               //Виконувалося зчитування конфігурації у таблицю конфігурації
             
@@ -1615,15 +1723,15 @@ void main_routines_for_i2c(void)
               
               if (result == DYN_MEM_SELECT_OK) 
               {
-                state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_NO_FREE_MEMORY);
+                state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_CONFIG_EEPROM_NO_FREE_MEMORY_BIT));
 
                 //Скидаємо повідомлення у слові діагностики
                 _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
               }
               else
               {
-                state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_GOOD);
-                state_i2c_task |= STATE_CONFIG_EEPROM_NO_FREE_MEMORY;
+                state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT));
+                state_i2c_task |= MASKA_FOR_BIT(STATE_CONFIG_EEPROM_NO_FREE_MEMORY_BIT);
 
                 //Виствляємо повідомлення у слові діагностики
                 _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
@@ -1677,9 +1785,9 @@ void main_routines_for_i2c(void)
             //Таблиця конфігурації не відповідає типу даного приладу
 
             //Помічаємо, що прочитаний блок конфігурації є пустим
-            state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_FAIL);
-            state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_GOOD);
-            state_i2c_task |= STATE_CONFIG_EEPROM_EMPTY; /*Не відповідність типу настройок це то саме що їх немає взагалі*/
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_CONFIG_EEPROM_FAIL_BIT));
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT));
+            state_i2c_task |= MASKA_FOR_BIT(STATE_CONFIG_EEPROM_EMPTY_BIT); /*Не відповідність типу настройок це то саме що їх немає взагалі*/
         
             //Виствляємо повідомлення у слові діагностики
             _SET_BIT(set_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
@@ -1688,8 +1796,8 @@ void main_routines_for_i2c(void)
         else
         {
           //Контрольна сума не сходиться
-          state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_GOOD);
-          state_i2c_task |= STATE_CONFIG_EEPROM_FAIL;
+          state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT));
+          state_i2c_task |= MASKA_FOR_BIT(STATE_CONFIG_EEPROM_FAIL_BIT);
           
           //Виствляємо повідомлення у слові діагностики
           _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT);
@@ -1699,9 +1807,9 @@ void main_routines_for_i2c(void)
       else
       {
         //Помічаємо, що прочитаний блок конфігурації є пустим
-        state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_FAIL);
-        state_i2c_task &= (unsigned int)(~STATE_CONFIG_EEPROM_GOOD);
-        state_i2c_task |= STATE_CONFIG_EEPROM_EMPTY;
+        state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_CONFIG_EEPROM_FAIL_BIT));
+        state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT));
+        state_i2c_task |= MASKA_FOR_BIT(STATE_CONFIG_EEPROM_EMPTY_BIT);
         
         //Виствляємо повідомлення у слові діагностики
         _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_BIT);
@@ -1710,7 +1818,7 @@ void main_routines_for_i2c(void)
       }
             
       //Знімаємо можливу сигналізацію, що виконувалося порівнняння
-      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_CONFIG);
+      comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_CONFIG_BIT));
       //Скидаємо повідомлення про читання даних
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_CONFIG_EEPROM_BIT);
     }
@@ -1866,7 +1974,7 @@ void main_routines_for_i2c(void)
             crc_eeprom_settings += temp_value;
             if (p != NULL) 
             {
-              if ((comparison_writing & COMPARISON_WRITING_SETTINGS) == 0) 
+              if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_SETTINGS_BIT)) == 0) 
               {
                 //Виконувалося зчитування настройок у таблиці настройок
                 *(p + shift) = temp_value;
@@ -1911,7 +2019,7 @@ void main_routines_for_i2c(void)
           if(empty_block == 0)
           {
             //Помічаємо, що блок настроювання не є пустим
-            state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_EMPTY);
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_EMPTY_BIT));
             //Скидаємо повідомлення у слові діагностики
             _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_EMPTY_BIT);
         
@@ -1926,7 +2034,7 @@ void main_routines_for_i2c(void)
               //Зберігаємо контрольну суму (не інвертовану)
               crc_settings = crc_eeprom_settings;
 
-              if ((comparison_writing & COMPARISON_WRITING_SETTINGS) == 0)
+              if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_SETTINGS_BIT)) == 0)
               {
                 //Виконувалося зчитування настройок у таблицю настройок
             
@@ -1970,8 +2078,8 @@ void main_routines_for_i2c(void)
                 }
               }
 
-              state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_FAIL);
-              state_i2c_task |= STATE_SETTINGS_EEPROM_GOOD;
+              state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_FAIL_BIT));
+              state_i2c_task |= MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT);
             }
             else
             {
@@ -1982,8 +2090,8 @@ void main_routines_for_i2c(void)
               copy_settings(&current_config, &settings_fix_edit, &settings_fix, sca_of_p_edit, sca_of_p);
               /***/
 
-              state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_GOOD);
-              state_i2c_task |= STATE_SETTINGS_EEPROM_FAIL;
+              state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT));
+              state_i2c_task |= MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_FAIL_BIT);
           
               //Виствляємо повідомлення у слові діагностики
               _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
@@ -1999,9 +2107,9 @@ void main_routines_for_i2c(void)
             /***/
             
             //Помічаємо, що прочитаний блок настройок є пустим
-            state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_FAIL);
-            state_i2c_task &= (unsigned int)(~STATE_SETTINGS_EEPROM_GOOD);
-            state_i2c_task |= STATE_SETTINGS_EEPROM_EMPTY;
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_FAIL_BIT));
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT));
+            state_i2c_task |= MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_EMPTY_BIT);
         
             //Виствляємо повідомлення у слові діагностики
             _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
@@ -2035,7 +2143,7 @@ void main_routines_for_i2c(void)
       if(empty_block == 0)
       {
         //Помічаємо, що блок настроювання не є пустим
-        state_i2c_task &= (unsigned int)(~STATE_USTUVANNJA_EEPROM_EMPTY);
+        state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_EMPTY_BIT));
         //Скидаємо повідомлення у слові діагностики
         _SET_BIT(clear_diagnostyka, ERROR_USTUVANNJA_EEPROM_EMPTY_BIT);
         
@@ -2088,7 +2196,7 @@ void main_routines_for_i2c(void)
             //Зберігаємо контрольну суму (не інвертовану)
             crc_ustuvannja = crc_eeprom_ustuvannja;
           
-            if ((comparison_writing & COMPARISON_WRITING_USTUVANNJA) == 0)
+            if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_USTUVANNJA_BIT)) == 0)
             {
               //Виконувалося зчитування юстування у масив юстування
             
@@ -2146,8 +2254,8 @@ void main_routines_for_i2c(void)
               }
             }
 
-            state_i2c_task &= (unsigned int)(~STATE_USTUVANNJA_EEPROM_FAIL);
-            state_i2c_task |= STATE_USTUVANNJA_EEPROM_GOOD;
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_FAIL_BIT));
+            state_i2c_task |= MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_GOOD_BIT);
           
             //Скидаємо повідомлення у слові діагностики
             _SET_BIT(clear_diagnostyka, ERROR_USTUVANNJA_EEPROM_ADJUSTMENT_ID_FAIL_BIT);
@@ -2157,9 +2265,9 @@ void main_routines_for_i2c(void)
             //Тип набору юстуючих коефіцієнтів не відповідає даному програмному забезпеченню
 
             //Помічаємо, що прочитаний блок юстування є пустим
-            state_i2c_task &= (unsigned int)(~STATE_USTUVANNJA_EEPROM_FAIL);
-            state_i2c_task &= (unsigned int)(~STATE_USTUVANNJA_EEPROM_GOOD);
-            state_i2c_task |= STATE_USTUVANNJA_EEPROM_EMPTY;/*Не відповідність типу юстуючих коефіцієнтів -  це то саме що їх немає взагалі*/
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_FAIL_BIT));
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_GOOD_BIT));
+            state_i2c_task |= MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_EMPTY_BIT);/*Не відповідність типу юстуючих коефіцієнтів -  це то саме що їх немає взагалі*/
         
             //Виствляємо повідомлення у слові діагностики
             _SET_BIT(set_diagnostyka, ERROR_USTUVANNJA_EEPROM_ADJUSTMENT_ID_FAIL_BIT);
@@ -2168,8 +2276,8 @@ void main_routines_for_i2c(void)
         else
         {
           //Контрольна сума не сходиться
-          state_i2c_task &= (unsigned int)(~STATE_USTUVANNJA_EEPROM_GOOD);
-          state_i2c_task |= STATE_USTUVANNJA_EEPROM_FAIL;
+          state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_GOOD_BIT));
+          state_i2c_task |= MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_FAIL_BIT);
           
           //Виствляємо повідомлення у слові діагностики
           _SET_BIT(clear_diagnostyka, ERROR_USTUVANNJA_EEPROM_ADJUSTMENT_ID_FAIL_BIT);
@@ -2179,9 +2287,9 @@ void main_routines_for_i2c(void)
       else
       {
         //Помічаємо, що прочитаний блок юстування є пустим
-        state_i2c_task &= (unsigned int)(~STATE_USTUVANNJA_EEPROM_FAIL);
-        state_i2c_task &= (unsigned int)(~STATE_USTUVANNJA_EEPROM_GOOD);
-        state_i2c_task |= STATE_USTUVANNJA_EEPROM_EMPTY;
+        state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_FAIL_BIT));
+        state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_GOOD_BIT));
+        state_i2c_task |= MASKA_FOR_BIT(STATE_USTUVANNJA_EEPROM_EMPTY_BIT);
         
         //Виствляємо повідомлення у слові діагностики
         _SET_BIT(clear_diagnostyka, ERROR_USTUVANNJA_EEPROM_BIT);
@@ -2190,7 +2298,7 @@ void main_routines_for_i2c(void)
       }
             
       //Знімаємо можливу сигналізацію, що виконувалося порівнняння
-      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_USTUVANNJA);
+      comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_USTUVANNJA_BIT));
       //Скидаємо повідомлення про читання даних
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_USTUVANNJA_EEPROM_BIT);
     }
@@ -2304,7 +2412,7 @@ void main_routines_for_i2c(void)
             
             if (p != NULL) 
             {
-              if ((comparison_writing & COMPARISON_WRITING_TRG_FUNC) == 0) 
+              if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_TRG_FUNC_BIT)) == 0) 
               {
                 //Виконувалося зчитування триґерних функцій
                 *p = temp_value;
@@ -2349,7 +2457,7 @@ void main_routines_for_i2c(void)
           if(empty_block == 0)
           {
             //Помічаємо, що блок не є пустим
-            state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_EMPTY);
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_EMPTY_BIT));
             //Скидаємо повідомлення у слові діагностики
             _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_EMPTY_BIT);
         
@@ -2364,7 +2472,7 @@ void main_routines_for_i2c(void)
               //Зберігаємо контрольну суму (не інвертовану)
               crc_trg_func = crc_eeprom_trg_func;
 
-              if ((comparison_writing & COMPARISON_WRITING_TRG_FUNC) == 0)
+              if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_TRG_FUNC_BIT)) == 0)
               {
                 //Виконувалося зчитування триґерних функцій
             
@@ -2444,15 +2552,15 @@ void main_routines_for_i2c(void)
                 }
               }
 
-              state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_FAIL);
-              state_i2c_task |= STATE_TRG_FUNC_EEPROM_GOOD;
+              state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_FAIL_BIT));
+              state_i2c_task |= MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_GOOD_BIT);
             }
             else
             {
               //Контрольна сума не сходиться
 
-              state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_GOOD);
-              state_i2c_task |= STATE_TRG_FUNC_EEPROM_FAIL;
+              state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_GOOD_BIT));
+              state_i2c_task |= MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_FAIL_BIT);
           
               //Виствляємо повідомлення у слові діагностики
               _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
@@ -2463,9 +2571,9 @@ void main_routines_for_i2c(void)
             //Зчитаний блок виявився пустим
             
             //Помічаємо, що прочитаний блок є пустим
-            state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_FAIL);
-            state_i2c_task &= (unsigned int)(~STATE_TRG_FUNC_EEPROM_GOOD);
-            state_i2c_task |= STATE_TRG_FUNC_EEPROM_EMPTY;
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_FAIL_BIT));
+            state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_GOOD_BIT));
+            state_i2c_task |= MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_EMPTY_BIT);
         
             //Виствляємо повідомлення у слові діагностики
             _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
@@ -2483,6 +2591,272 @@ void main_routines_for_i2c(void)
       //Скидаємо повідомлення про читання даних
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
     }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_LOG_EEPROM_BIT) !=0)
+    {
+      //Аналізуємо прочитані дані
+      //Спочатку аналізуємо, чи прояитаний блок є пустим, чи вже попередньо записаним
+      unsigned int empty_block = 1, i = 0; 
+      __INFO_REJESTRATOR info_rejestrator_log_tmp;
+      
+      while ((empty_block != 0) && ( i < (sizeof(__INFO_REJESTRATOR) + 1)))
+      {
+        if (read_write_i2c_buffer[i] != 0xff) empty_block = 0;
+        i++;
+      }
+      
+      if(empty_block == 0)
+      {
+        //Помічаємо, що блок не є пустим
+        state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_EMPTY_BIT));
+        //Скидаємо повідомлення у слові діагностики
+        _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_EEPROM_EMPTY_BIT);
+        
+        //Перевіряємо контрольну суму і переписуємо прочитані дані у структуру
+        uint8_t crc_eeprom_info_rejestrator_log = 0, temp_value;
+        unsigned char  *point = (unsigned char*)(&info_rejestrator_log_tmp); 
+        for (i =0; i < sizeof(__INFO_REJESTRATOR); i++)
+        {
+          temp_value = read_write_i2c_buffer[i];
+          *(point) = temp_value;
+          crc_eeprom_info_rejestrator_log += temp_value;
+          point++;
+        }
+        if (read_write_i2c_buffer[sizeof(__INFO_REJESTRATOR)]  == ((unsigned char)((~(unsigned int)crc_eeprom_info_rejestrator_log) & 0xff)))
+        {
+          //Контролдьна сума сходиться
+          
+          //Зберігаємо контрольну суму (не інвертовану)
+          crc_info_rejestrator_log = crc_eeprom_info_rejestrator_log;
+
+          state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_FAIL_BIT));
+          state_i2c_task |= MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_GOOD_BIT);
+          
+          //Скидаємо повідомлення у слові діагностики
+          _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+
+          if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_LOG_BIT)) == 0)
+          {
+            //Виконувалося зчитування інформації по Журналу подій у робочу структуру
+            
+            //Перекидаємо інформації по Журналу подій з тимчасової структури у робочу структуру
+            info_rejestrator_log = info_rejestrator_log_tmp;
+
+            //Перевіряємо чи всі поляу у своїх допустимих межах
+            if(
+#if (MIN_ADDRESS_LOG_AREA != 0)
+               (info_rejestrator_log.next_address     >= MIN_ADDRESS_LOG_AREA       ) && 
+#endif
+               (info_rejestrator_log.next_address     <= MAX_ADDRESS_LOG_AREA_WORK  ) &&
+#if (MIN_ADDRESS_LOG_AREA != 0)
+               (info_rejestrator_log.previous_address >= MIN_ADDRESS_LOG_AREA       ) && 
+#endif
+               (info_rejestrator_log.previous_address <= MAX_ADDRESS_LOG_AREA_WORK  ) &&
+               (info_rejestrator_log.number_records   <= MAX_NUMBER_RECORDS_INTO_LOG)  
+              )
+            {
+              //Всі величину мають допустимі значення
+
+              //Перевіряємо, чи у процесі запису останньої аварії не відбувся перезапуск/запуск приладу.
+              //Тоді останій запис може бути пошкодженим, якщо вже свя флешка є заповнена
+              //Тоді помічаємо, що у нашій флешці на один запис є менше
+              //Перевіряємо, чи у процесі запису програмної події не відбувся перезапуск/запуск приладу.
+              //Тоді записи у сторінці, яку записували може бути пошкодженими
+              if (info_rejestrator_log.next_address != info_rejestrator_log.previous_address)
+              {
+                //Виставляємо повідомлення про цю подію
+                _SET_BIT(set_diagnostyka, ERROR_LOG_LOSS_INFORMATION_BIT);
+
+                //Виставляємо команду запису цієї структури у EEPROM
+                /*
+                Команду виставляємо скоріше, а потім робимо зміни у полях, які треба змінити,
+                бо по вимозі проконтролювати достовірність даних інформації по реєстратору
+                програмних подій відбувається копіювання з переривання обслуговування DataFlash структури
+                info_rejestrator_log у резервну копію. Це копіювання блокується у випадку 
+                "читання з"/"запису в" EEPROM цієї інформації. Тому виставлення спочатку команди
+                запису заблокує копіювання.
+                З другої сторони не можливо, щоб почався запис до модифікації, 
+                бо запис ініціюється функцією main_routines_for_i2c - в якій ми зараз знаходимося.
+                Тобто спочатку треба з цієї функції вийти і при наступних входженнях у цю функцію
+                можливе виконання команди, яку ми виставили перед зміною даних, яку 
+                ми зараз гарантовано зробимо (до виходу з цієї функції)
+                */
+                _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+
+                uint32_t next_address = info_rejestrator_log.next_address, previous_address = info_rejestrator_log.previous_address;
+                int32_t diff_address = next_address - previous_address;
+                while (diff_address < 0) diff_address += SIZE_LOG_AREA - (SIZE_LOG_AREA % SIZE_ONE_RECORD_LOG);
+                uint32_t lost_records = diff_address/SIZE_ONE_RECORD_LOG;
+                if (
+                    (lost_records > info_rejestrator_log.number_records) ||
+                    (lost_records*SIZE_ONE_RECORD_LOG != diff_address)  
+                   )
+                {
+                  //Теоретично, таких ситуацій не мало б бути
+                  info_rejestrator_log.next_address = info_rejestrator_log.previous_address = MIN_ADDRESS_LOG_AREA;
+                  info_rejestrator_log.number_records = 0;
+                }
+                
+                info_rejestrator_log.next_address = info_rejestrator_log.previous_address;
+                info_rejestrator_log.number_records -= lost_records;
+              }   
+            }
+            else
+            {
+              //Виствляємо повідомлення у слові діагностики
+              _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+          
+              //Виставляємо команду запису цієї структури у EEPROM
+              /*
+              Команду виставляємо скоріше, а потім робимо зміни у полях, які треба змінити,
+              бо по вимозі проконтролювати достовірність даних інформації по реєстратору
+              програмних подій відбувається копіювання з переривання обслуговування DataFlash структури
+              info_rejestrator_log у резервну копію. Це копіювання блокується у випадку 
+              "читання з"/"запису в" EEPROM цієї інформації. Тому виставлення спочатку команди
+              запису заблокує копіювання.
+              З другої сторони не можливо, щоб почався запис до модифікації, 
+              бо запис ініціюється функцією main_routines_for_i2c - в якій ми зараз знаходимося.
+              Тобто спочатку треба з цієї функції вийти і при наступних входженнях у цю функцію
+              можливе виконання команди, яку ми виставили перед зміною даних, яку 
+              ми зараз гарантовано зробимо (до виходу з цієї функції)
+              */
+              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+
+              //Очищаємо структуру інформації по реєстраторі програмних подій
+              info_rejestrator_log.next_address = info_rejestrator_log.previous_address = MIN_ADDRESS_LOG_AREA;
+              info_rejestrator_log.number_records = 0;
+            }
+          }
+          else
+          {
+            //Виконувалося контроль достовірності записаної інформації у EEPROM з записуваною
+            
+            unsigned char  *point_to_read  = (unsigned char*)(&info_rejestrator_log_tmp );
+            unsigned char  *point_to_write = (unsigned char*)(&info_rejestrator_log_comp);
+            unsigned int difference = 0;
+
+            i = 0;
+            while ((difference == 0) && ( i < sizeof(__INFO_REJESTRATOR)))
+            {
+              if (*point_to_write != *point_to_read) difference = 0xff;
+              else
+              {
+                point_to_write++;
+                point_to_read++;
+                i++;
+              }
+            }
+            if (difference == 0)
+            {
+              //Контроль порівнняння пройшов успішно
+
+              //Скидаємо повідомлення у слові діагностики
+              _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_COMPARISON_BIT);
+            }
+            else
+            {
+              //Контроль порівнняння зафіксував розбіжності між записаною і записуваною інформацією
+
+              //Виствляємо повідомлення у слові діагностики
+              _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_COMPARISON_BIT);
+            }
+          }
+        }
+        else
+        {
+          //Контрольна сума не сходиться
+          state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_GOOD_BIT));
+          state_i2c_task |= MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_FAIL_BIT);
+          
+          //Виствляємо повідомлення у слові діагностики
+          _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+          
+          /*
+          Виставляємо повідомлення про те, що в EEPROM треба записати нові значення
+          структури тільки тоді, коли ми зчитуємо збережені дані для відновлення 
+          їх у оперативній пам'яті, а не коли ми проводимо контроль запису.
+          Бо для контролю запису нам важливо знати чи успішно записалися дані, які є у 
+          оперативній пам'яті і при цьому, навіть, якщо запис відбувся невдало, то,
+          оскільки ми працюємо зі змінними з оперативної пам'яті,  які є у нас достовірні,
+          бо ми їх якраз і записували, то на роботу до перезавантаження програмного забезперечння 
+          збій запису у EEPROM не мав би вплинути
+          */
+          if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_LOG_BIT)) == 0)
+          {
+            //Виконувалося зчитування інформації по дискретному реєстратору у робочу структуру
+
+            //Виставляємо команду запису цієї структури у EEPROM
+            /*
+            Команду виставляємо скоріше, а потім робимо зміни у полях, які треба змінити,
+            бо по вимозі проконтролювати достовірність даних інформації по реєстратору
+            програмних подій відбувається копіювання з переривання обслуговування DataFlash структури
+            info_rejestrator_log у резервну копію. Це копіювання блокується у випадку 
+            "читання з"/"запису в" EEPROM цієї інформації. Тому виставлення спочатку команди
+            запису заблокує копіювання.
+            З другої сторони не можливо, щоб почався запис до модифікації, 
+            бо запис ініціюється функцією main_routines_for_i2c - в якій ми зараз знаходимося.
+            Тобто спочатку треба з цієї функції вийти і при наступних входженнях у цю функцію
+            можливе виконання команди, яку ми виставили перед зміною даних, яку 
+            ми зараз гарантовано зробимо (до виходу з цієї функції)
+            */
+            _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+
+            //Очищаємо структуру інформації по реєстраторі програмних подій
+            info_rejestrator_log.next_address = info_rejestrator_log.previous_address = MIN_ADDRESS_LOG_AREA;
+            info_rejestrator_log.number_records = 0;
+          }
+        }
+      }
+      else
+      {
+        //Помічаємо, що прочитаний блок є пустим
+        state_i2c_task &= (uint32_t)(~(MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_FAIL_BIT) | MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_GOOD_BIT)));
+        state_i2c_task |= MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_LOG_EEPROM_EMPTY_BIT);
+        
+        //Виствляємо повідомлення у слові діагностики
+        _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+        _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_EEPROM_EMPTY_BIT);
+
+        /*
+        Виставляємо повідомлення про те, що в EEPROM треба записати нові значення
+        структури тільки тоді, коли ми зчитуємо збережені дані для відновлення 
+        їх у оперативній пам'яті, а не коли ми проводимо контроль запису.
+        Бо для контролю запису нам важливо знати чи успішно записалися дані, які є у 
+        оперативній пам'яті і при цьому, навіть, якщо запис відбувся невдало, то,
+        оскільки ми працюємо зі змінними з оперативної пам'яті,  які є у нас достовірні,
+        бо ми їх якраз і записували, то на роботу до перезавантаження програмного забезперечння 
+        збій запису у EEPROM не мав би вплинути
+        */
+        if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_LOG_BIT)) == 0)
+        {
+          //Виконувалося зчитування інформації по дискретному реєстратору у робочу структуру
+
+          //Виставляємо команду запису цієї структури у EEPROM
+          /*
+          Команду виставляємо скоріше, а потім робимо зміни у полях, які треба змінити,
+          бо по вимозі проконтролювати достовірність даних інформації по реєстратору
+          програмних подій відбувається копіювання з переривання обслуговування DataFlash структури
+          info_rejestrator_log у резервну копію. Це копіювання блокується у випадку 
+          "читання з"/"запису в" EEPROM цієї інформації. Тому виставлення спочатку команди
+          запису заблокує копіювання.
+          З другої сторони не можливо, щоб почався запис до модифікації, 
+          бо запис ініціюється функцією main_routines_for_i2c - в якій ми зараз знаходимося.
+          Тобто спочатку треба з цієї функції вийти і при наступних входженнях у цю функцію
+          можливе виконання команди, яку ми виставили перед зміною даних, яку 
+          ми зараз гарантовано зробимо (до виходу з цієї функції)
+          */
+          _SET_BIT(control_i2c_taskes, TASK_START_WRITE_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+
+          //Очищаємо структуру інформації по реєстраторі програмних подій
+          info_rejestrator_log.next_address = info_rejestrator_log.previous_address = MIN_ADDRESS_LOG_AREA;
+          info_rejestrator_log.number_records = 0;
+        }
+      }
+
+      //Знімаємо можливу сигналізацію, що виконувалося порівнняння
+      comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_LOG_BIT));
+      //Скидаємо повідомлення про читання даних
+      _CLEAR_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+    }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) !=0)
     {
       //Аналізуємо прочитані дані
@@ -2499,12 +2873,12 @@ void main_routines_for_i2c(void)
       if(empty_block == 0)
       {
         //Помічаємо, що блок не є пустим
-        state_i2c_task &= (unsigned int)(~STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY);
+        state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT));
         //Скидаємо повідомлення у слові діагностики
         _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT);
         
         //Перевіряємо контрольну суму і переписуємо прочитані дані у структуру
-        unsigned char crc_eeprom_info_rejestrator_pr_err = 0, temp_value;
+        uint8_t crc_eeprom_info_rejestrator_pr_err = 0, temp_value;
         unsigned char  *point = (unsigned char*)(&info_rejestrator_pr_err_tmp); 
         for (i =0; i < sizeof(__INFO_REJESTRATOR); i++)
         {
@@ -2520,13 +2894,13 @@ void main_routines_for_i2c(void)
           //Зберігаємо контрольну суму (не інвертовану)
           crc_info_rejestrator_pr_err = crc_eeprom_info_rejestrator_pr_err;
 
-          state_i2c_task &= (unsigned int)(~STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL);
-          state_i2c_task |= STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD;
+          state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL_BIT));
+          state_i2c_task |= MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT);
           
           //Скидаємо повідомлення у слові діагностики
           _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
 
-          if ((comparison_writing & COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR) == 0)
+          if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR_BIT)) == 0)
           {
             //Виконувалося зчитування інформації по реєстратору програмних подій у робочу структуру
             
@@ -2652,8 +3026,8 @@ void main_routines_for_i2c(void)
         else
         {
           //Контрольна сума не сходиться
-          state_i2c_task &= (unsigned int)(~STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD);
-          state_i2c_task |= STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL;
+          state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT));
+          state_i2c_task |= MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL_BIT);
           
           //Виствляємо повідомлення у слові діагностики
           _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
@@ -2668,7 +3042,7 @@ void main_routines_for_i2c(void)
           бо ми їх якраз і записували, то на роботу до перезавантаження програмного забезперечння 
           збій запису у EEPROM не мав би вплинути
           */
-          if ((comparison_writing & COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR) == 0)
+          if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR_BIT)) == 0)
           {
             //Виконувалося зчитування інформації по дискретному реєстратору у робочу структуру
 
@@ -2697,8 +3071,8 @@ void main_routines_for_i2c(void)
       else
       {
         //Помічаємо, що прочитаний блок є пустим
-        state_i2c_task &= (unsigned int)(~(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL | STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD));
-        state_i2c_task |= STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY;
+        state_i2c_task &= (uint32_t)(~(MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_FAIL_BIT) | MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_GOOD_BIT)));
+        state_i2c_task |= MASKA_FOR_BIT(STATE_INFO_REJESTRATOR_PR_ERR_EEPROM_EMPTY_BIT);
         
         //Виствляємо повідомлення у слові діагностики
         _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
@@ -2714,7 +3088,7 @@ void main_routines_for_i2c(void)
         бо ми їх якраз і записували, то на роботу до перезавантаження програмного забезперечння 
         збій запису у EEPROM не мав би вплинути
         */
-        if ((comparison_writing & COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR) == 0)
+        if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR_BIT)) == 0)
         {
           //Виконувалося зчитування інформації по дискретному реєстратору у робочу структуру
 
@@ -2741,7 +3115,7 @@ void main_routines_for_i2c(void)
       }
 
       //Знімаємо можливу сигналізацію, що виконувалося порівнняння
-      comparison_writing &= (unsigned int)(~COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR);
+      comparison_writing &= (uint16_t)(~MASKA_FOR_BIT(COMPARISON_WRITING_INFO_REJESTRATOR_PR_ERR_BIT));
       //Скидаємо повідомлення про читання даних
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
     }
@@ -2759,7 +3133,7 @@ void main_routines_for_i2c(void)
         temp_register_rtc[1] = read_write_i2c_buffer[0xA ] | (1<< 6);
 
         //Повідомлення про цю несправність виставляємо, коли не йде тільки-но перше зчитування
-        if((state_i2c_task & STATE_FIRST_READING_RTC) == 0 ) _SET_BIT(set_diagnostyka, RTC_WORK_FIELD_NOT_SET_BIT);
+        if((state_i2c_task & MASKA_FOR_BIT(STATE_FIRST_READING_RTC_BIT)) == 0 ) _SET_BIT(set_diagnostyka, RTC_WORK_FIELD_NOT_SET_BIT);
         else _SET_BIT(clear_diagnostyka, RTC_WORK_FIELD_NOT_SET_BIT);
         
         etap_settings_test_frequency = 0;
@@ -2777,7 +3151,7 @@ void main_routines_for_i2c(void)
       {
         _SET_BIT(set_diagnostyka, RTC_OSCILLATOR_FAIL_BIT);
         //Треба ST-біт виставити в 1 і негайно скинути його в 0. Почекати через 5 секунд він має скинутися
-        if((state_i2c_task & STATE_FIRST_READING_RTC) == 0 )
+        if((state_i2c_task & MASKA_FOR_BIT(STATE_FIRST_READING_RTC_BIT)) == 0 )
         {
           etap_reset_of_bit = ETAP_CLEAR_OF_ST_STOP;
           _SET_BIT(control_i2c_taskes, TASK_RESET_OF_RTC_BIT);
@@ -2795,7 +3169,7 @@ void main_routines_for_i2c(void)
       if ((read_write_i2c_buffer[0xC] & (1<< 6)) != 0)
       {
         //Повідомлення про цю несправність виставляємо, коли не йде тільки-но перше зчитування
-        if((state_i2c_task & STATE_FIRST_READING_RTC) == 0 )_SET_BIT(set_diagnostyka, RTC_UPDATING_HALTED_BIT);
+        if((state_i2c_task & MASKA_FOR_BIT(STATE_FIRST_READING_RTC_BIT)) == 0 )_SET_BIT(set_diagnostyka, RTC_UPDATING_HALTED_BIT);
         else _SET_BIT(clear_diagnostyka, RTC_UPDATING_HALTED_BIT);
       }
       else _SET_BIT(clear_diagnostyka, RTC_UPDATING_HALTED_BIT);
@@ -2805,10 +3179,10 @@ void main_routines_for_i2c(void)
       else _SET_BIT(clear_diagnostyka, RTC_BATTERY_LOW_BIT);
       if ((read_write_i2c_buffer[0xF] &  (1<< 2)) == 0) _SET_BIT(clear_diagnostyka, RTC_OSCILLATOR_FAIL_BIT);
       
-      if((state_i2c_task & STATE_FIRST_READING_RTC) !=0)
+      if((state_i2c_task & MASKA_FOR_BIT(STATE_FIRST_READING_RTC_BIT)) !=0)
       {
         //Зараз відбувається перше зчитування даних з RTC - скидаємо біт першого читання
-        state_i2c_task &= (unsigned int)(~STATE_FIRST_READING_RTC);
+        state_i2c_task &= (uint32_t)(~MASKA_FOR_BIT(STATE_FIRST_READING_RTC_BIT));
       }
 
       //Обновлюємо час
@@ -3019,6 +3393,7 @@ void main_routines_for_i2c(void)
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT               ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_USTUVANNJA_EEPROM_BIT             ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_TRG_FUNC_EEPROM_BIT               ) != 0) ||
+        (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_LOG_EEPROM_BIT   ) != 0) ||
         (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) != 0)
        )
     {
@@ -3062,6 +3437,15 @@ void main_routines_for_i2c(void)
       _SET_BIT(control_i2c_taskes, TASK_START_READ_TRG_FUNC_EEPROM_BIT);
       _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
       _CLEAR_BIT(control_i2c_taskes, TASK_READING_TRG_FUNC_EEPROM_BIT);
+    }
+    else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_LOG_EEPROM_BIT) !=0)
+    {
+      //Стоїть умова читання блоку у EEPROM по Журналу подій
+      
+      //Повторно запускаємо процес читання
+      _SET_BIT(control_i2c_taskes, TASK_START_READ_INFO_REJESTRATOR_LOG_EEPROM_BIT);
+      _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);        
+      _CLEAR_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_LOG_EEPROM_BIT);
     }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT) !=0)
     {

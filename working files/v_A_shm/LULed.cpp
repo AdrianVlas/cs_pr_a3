@@ -8,7 +8,7 @@
 #include "stm32f2xx_it.h"
 #include "Ereg.h"
 #include "prtTmr.h"
-
+#include "IStng.h"
 /*
 void PUT_Op_1_0_    (void *pObj)
 {
@@ -109,10 +109,10 @@ return;
 //static char chGLB_QTrg = 0;static char chGLB_InC = 0;
 void CLULed::CalcLedSchematic(void){
 register long rl_Val,i;
-
+const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
 #pragma data_alignment=4
 char arChIntermediaResult[(TOTAL_LU_CALC_POINT)];
-const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
+volatile bool boolchQTrg06 = m_chQTrg06;
 
 arChIntermediaResult[OFFSET_OUT_IN_MNU_NORMAL_SELECTOR        ] = 0;//Now Default
 arChIntermediaResult[OFFSET_OUT_IN_MNU_TRIGGER_SELECTOR       ] = 0;//Now Default
@@ -416,9 +416,11 @@ pLUShcemasDscRec =m_pArLedShcemasDscRecords[shCounterProcessedRec - LED_NOT_01__
   
     } while (shCounterProcessedRec < m_shAmountProcessedRec);//LED_OR_17__3_1
     //while (shCounterProcessedRec < m_shAmountProcessedRec);
-    
-    this->arrOut[(LED_OUT_NAME__LED_STATE_OUTPUT-1)] = arChIntermediaResult[OFFSET_OUT_LED_OR_17__3_1];
     bool bbState = false;
+    //this->arrOut[(LED_OUT_NAME__LED_STATE_OUTPUT-1)] = arChIntermediaResult[OFFSET_OUT_LED_OR_17__3_1];
+    j = arChIntermediaResult[LED_OR_07__2_1];
+    this->arrOut[(LED_OUT_NAME__LED_STATE_OUTPUT-1)] = j;
+    
     bbState = arChIntermediaResult[OFFSET_OUT_LED_OR_17__3_1]; //
     char *pCh1,*pCh2;
     pCh1 = (this->arrPchIn[(LED_IN_NAME__TEST_M - 1)]);
@@ -437,5 +439,14 @@ pLUShcemasDscRec =m_pArLedShcemasDscRecords[shCounterProcessedRec - LED_NOT_01__
     } else {
         LedStateUI32Bit.ul_val &= ~((1) << i); //Phis write to Led
     }
+    
+    register __LN_OUTPUT_LED *pLN_OUTPUT = static_cast<__LN_OUTPUT_LED*>(pvCfgLN);
+    
+    pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] = j<<OUTPUT_LED_OUT;
+    if(boolchQTrg06 != static_cast<bool>(m_chQTrg06) ){
+    pLN_OUTPUT->d_trigger_state[OUTPUT_LED_D_TRIGGER_1/8] = (static_cast<bool>(m_chQTrg06))<<OUTPUT_LED_D_TRIGGER_1;
+    chGlb_ActivatorWREeprom++;
+    }
+    
 }
 

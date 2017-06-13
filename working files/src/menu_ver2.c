@@ -56,17 +56,10 @@ const uint8_t name_string_continue[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] =
   "Продолжить:Enter"
 };
 
-const uint8_t name_string_ask[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
-{
-  "Да-Enter/Нет-Esc",
-  "Так-Enter/Ні-Esc",
-  "Yes-Enter/No-Esc",
-  "Да-Enter/Нет-Esc"
-};
-
 const enum _menu2_levels next_for_main_menu2[MAX_ROW_MAIN_M2] = {TIME_MANU2_LEVEL, MEASUREMENT_MENU2_LEVEL, INPUTS_OUTPUTS_MENU2_LEVEL, REGISTRATORS_MENU2_LEVEL, LIST_SETTINGS_MENU2_LEVEL, DIAGNOSTICS_MENU2_LEVEL, LABELS_MENU2_LEVEL, INFO_MENU2_LEVEL};
 const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = {ANALOG_INPUTS_MENU2_LEVEL, INPUTS_MENU2_LEVEL, OUTPUTS_MENU2_LEVEL};
-const enum _menu2_levels next_for_registrators_menu2[MAX_ROW_LIST_REGISTRATORS_M2] = {REGISTRATORS_MENU2_LEVEL, PR_ERR_LIST_MENU2_LEVEL};
+const enum _menu2_levels next_for_registrators_menu2[MAX_ROW_LIST_REGISTRATORS_M2] = {LOG_LIST_MENU2_LEVEL, PR_ERR_LIST_MENU2_LEVEL};
+const enum _menu2_levels next_for_log_list_menu2[2] = {LOG_LIST_MENU2_LEVEL, LOG_DATA_MENU2_LEVEL};
 const enum _menu2_levels next_for_prr_err_list_menu2[2] = {PR_ERR_LIST_MENU2_LEVEL, PR_ERR_DATA_MENU2_LEVEL};
 const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
 const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
@@ -138,13 +131,14 @@ void main_manu_function_ver2(void)
     if (
         (max_row == 0) &&
         (
+         (current_state_menu2.current_level != LOG_LIST_MENU2_LEVEL) &&
          (current_state_menu2.current_level != PR_ERR_LIST_MENU2_LEVEL)  
         )   
        )   
     {
       /*
       Якщо при певних одбставинвах (на приклад зміна конфігурації з верхнього рівня) 
-      кількість рядків вибраному меню стала ріна 0, то попертаємо у попереднє меню 
+      кількість рядків вибраному меню стала ріна 0, то повертаємо у попереднє меню 
       (немов би натиснута конпка ESC) і до того часу, поки ми не увійдемо у таке меню, 
       де можна відобразити його вміст
       */
@@ -257,7 +251,17 @@ void main_manu_function_ver2(void)
               {
                 if (
                     (current_state_menu2.current_level == TIME_MANU2_LEVEL) ||
-                    (config_settings_modified == 0)
+                    (
+                     (config_settings_modified == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT  ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT      ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT   ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_CONFIG_EEPROM_BIT      ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT    ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT ) == 0) &&
+                     (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT    ) == 0)
+                    )   
                    )   
                 {
                   current_state_menu2.edition = ED_EDITION;
@@ -585,6 +589,8 @@ void main_manu_function_ver2(void)
     case INPUTS_MENU2_LEVEL:
     case OUTPUTS_MENU2_LEVEL:
     case REGISTRATORS_MENU2_LEVEL:
+    case LOG_LIST_MENU2_LEVEL:
+    case LOG_DATA_MENU2_LEVEL:
     case PR_ERR_LIST_MENU2_LEVEL:
     case PR_ERR_DATA_MENU2_LEVEL:
     case LIST_SETTINGS_MENU2_LEVEL:
@@ -829,7 +835,13 @@ void main_manu_function_ver2(void)
                 {
                   p = &next_for_registrators_menu2[current_state_menu2.index_position];
                   
-                  position_in_current_level_menu2[PR_ERR_LIST_MENU2_LEVEL] = 0;
+                  if (p != NULL) position_in_current_level_menu2[*p] = 0;
+                  
+                  break;
+                }
+              case LOG_LIST_MENU2_LEVEL:
+                {
+                  p = &next_for_log_list_menu2[log_record_check_ok];
                   
                   break;
                 }
@@ -1997,7 +2009,6 @@ void new_level_menu(void)
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = change_time;
       current_state_menu2.binary_data = false;
-      current_state_menu2.edition = ED_VIEWING;
       break;
     }
   case MEASUREMENT_MENU2_LEVEL:
@@ -2060,12 +2071,21 @@ void new_level_menu(void)
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
+  case LOG_LIST_MENU2_LEVEL:
   case PR_ERR_LIST_MENU2_LEVEL:
     {
-      current_state_menu2.p_max_row = (int*)(&info_rejestrator_pr_err.number_records);
+      if (current_state_menu2.current_level == LOG_LIST_MENU2_LEVEL) 
+      {
+        current_state_menu2.p_max_row = (int*)(&info_rejestrator_log.number_records);
+        current_state_menu2.func_show = make_ekran_list_event_log;
+      }
+      else 
+      {
+        current_state_menu2.p_max_row = (int*)(&info_rejestrator_pr_err.number_records);
+        current_state_menu2.func_show = make_ekran_list_event_pr_err;
+      }
       current_state_menu2.max_row = 0;
       current_state_menu2.func_move = move_into_ekran_event_registraqtors;
-      current_state_menu2.func_show = make_ekran_list_event_pr_err;
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
@@ -2073,12 +2093,13 @@ void new_level_menu(void)
       current_state_menu2.edition = ED_VIEWING;
       break;
     }
+  case LOG_DATA_MENU2_LEVEL:
   case PR_ERR_DATA_MENU2_LEVEL:
     {
       current_state_menu2.p_max_row = 0;
       current_state_menu2.max_row = 1;
       current_state_menu2.func_move = move_into_ekran_simple;
-      current_state_menu2.func_show = make_ekran_data_pr_err;
+      current_state_menu2.func_show = make_ekran_data_reg;
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
