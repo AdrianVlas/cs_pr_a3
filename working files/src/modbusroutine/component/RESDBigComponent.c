@@ -46,6 +46,12 @@ void constructorRESDBigComponent(COMPONENT_OBJ *resdbigcomp)
 void loadRESDBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  Читання/запис здійснється у 
+  settings_fix_prt/settings_fix/settings_fix_edit.param[вхід]
+  
+  відповідність номерів входів визначено у enum _FIX_BLOCK_input_signals
+  */
 }//loadActualData() 
 
 int getRESDBigModbusRegister(int adrReg)

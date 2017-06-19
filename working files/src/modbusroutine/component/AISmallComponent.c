@@ -48,6 +48,16 @@ void constructorAISmallComponent(COMPONENT_OBJ *aismallcomp)
 void loadAISmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  1) Всі вимірювання у unsigned int measurement[NUMBER_ANALOG_CANALES] Всі вимірювання приведені у мілі-величини
+  2) відповідність індексів до їх реальних каналів:
+#define IM_I1         0
+#define IM_I2         1
+#define IM_I3         2
+#define IM_I4         3
+#define IM_U          4
+
+  */
 }//loadActualData() 
 
 int getAISmallModbusRegister(int adrReg)

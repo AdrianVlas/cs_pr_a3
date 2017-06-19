@@ -46,6 +46,101 @@ void constructorIUSmallComponent(COMPONENT_OBJ *iucomp)
 void loadIUSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i+22;
+  /*
+  if(address_data <= M_ADDRESS_LAST_RO_BLOCK_1)
+  {
+    //Ідентифікація пристою
+    switch (address_data)
+    {
+    case MA_SERIAL_NUMBER:
+      {
+        temp_value = serial_number_dev;
+        break;
+      }
+    case MA_NAME_CHAR_1_2:
+      {
+        temp_value = ('i' << 8) + 'K';
+        break;
+      }
+    case MA_NAME_CHAR_3_4:
+      {
+        temp_value = ('v' << 8) + 'e';
+        break;
+      }
+    case MA_NAME_CHAR_5_6:
+      {
+        temp_value = ('r' << 8) + 'p';
+        break;
+      }
+    case MA_NAME_CHAR_7_8:
+      {
+        temp_value = ('b' << 8) + 'i';
+        break;
+      }
+    case MA_NAME_CHAR_9_10:
+      {
+        temp_value = ('r' << 8) + 'o';
+        break;
+      }
+    case MA_NAME_CHAR_11_12:
+      {
+        temp_value = ('R' << 8) + 'M';
+        break;
+      }
+    case MA_NAME_CHAR_13_14:
+      {
+        temp_value = ('S' << 8) + 'Z';
+        break;
+      }
+    case MA_NAME_CHAR_15_16:
+      {
+        temp_value = ('5' << 8) + '0';
+        break;
+      }
+    case MA_NAME_CHAR_17_18:
+      {
+        temp_value = ('_' << 8) + 'L';
+        break;
+      }
+    case MA_VERSION_SW:
+      {
+        temp_value = (VERSIA_PZ << 8) + MODYFIKACIA_VERSII_PZ;
+        break;
+      }
+    case MA_DATA_COMP_1:
+      {
+        temp_value = (YEAR_VER << 8) + MONTH_VER;
+        break;
+      }
+    case MA_DATA_COMP_2:
+      {
+        temp_value = (DAY_VER << 8);
+        break;
+      }
+    case MA_TIME_COMP:
+      {
+        temp_value = (HOUR_VER << 8) + MINUTE_VER;
+        break;
+      }
+    case MA_VERSION_GMM:
+      {
+        temp_value = (VERSIA_GMM << 8) + MODYFIKACIA_VERSII_GMM;
+        break;
+      }
+    case MA_ZBIRKA_SW:
+      {
+        temp_value = ZBIRKA_VERSII_PZ;
+        break;
+      }
+    default:
+      {
+        //На поля які у даній конфігурації немає відповідаємо нулями
+        temp_value = 0;
+        break;
+      }
+    }
+  }
+  */
 //  tempReadArray[0] = 22;
 }//loadActualData() 
 

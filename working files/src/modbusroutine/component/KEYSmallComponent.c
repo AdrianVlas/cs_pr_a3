@@ -51,6 +51,15 @@ void constructorKEYSmallComponent(COMPONENT_OBJ *keysmallcomp)
 void loadKEYSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  Підхід аналогічний до ТС
+  +
+  Індекси кнопок визначені enum _fix_button:
+  - спрчатку ідуть кнопки з фіксованою функціональностю
+  - NUMBER_FIX_BUTTONS - це індекс першої вільнопрограмованої кнопки
+  - NUMBER_GENERAL_BUTTONS - це кількість вільнопрограмованих кнопок
+  
+  */
 }//loadActualData() 
 
 int getKEYSmallModbusRegister(int adrReg)

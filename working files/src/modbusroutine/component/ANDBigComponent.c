@@ -49,6 +49,9 @@ void constructorANDBigComponent(COMPONENT_OBJ *andbigcomp)
 void loadANDBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  Для тих компонетів, де є не один однотипний вхід а декілька (ст. логіка і Журнал подій) після запису треба відсортувати щоб 0-і були вкінці, а числа(id;n; out) іншли в сторону зростання
+  */
 }//loadActualData() 
 
 int getANDBigModbusRegister(int adrReg)

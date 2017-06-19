@@ -46,6 +46,27 @@ void constructorCGSBigComponent(COMPONENT_OBJ *cgsbigcomp)
 void loadCGSBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  ...
+  
+  параметрування вхідного аналового каналу
+  1) поле analog_input_control розбите на сегменти
+  2) кожен сегмент маж початковий біт і кількість бітів, які для ШГС визначено у 
+  
+const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2] = {{0, 8}};  
+  
+  Пояснення
+  у даному вупадку цей масвив складається з єдиного елемету(сегменту) і значення для цього єдиного сегменту треба взяти з 0-ого біту analog_input_control і брати 8 біт. Тобто [0-7]
+  Це значення вищначає номер струмового каналу:
+  0 - не заведено жодного струмового каналу (тільки читається - записати 0 не можна)
+  1 - I1
+  2 - I2
+  3 - i3
+  4 - I4
+  
+  Максимальне число: (NUMBER_ANALOG_CANALES - 1) - бо останній канал - це напруга.
+  
+  */
 }//loadActualData() 
 
 int getCGSBigModbusRegister(int adrReg)

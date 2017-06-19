@@ -45,6 +45,43 @@ void constructorConfigBigComponent(COMPONENT_OBJ *configbigcomp)
 void loadConfigBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+unsigned int config_settings_modified  
+  
+#define BIT_CHANGED_CONFIGURATION       0 - відбулася зміна конфгурації (інформація, що треба буде акутивовувати)
+#define MASKA_CHANGED_CONFIGURATION     (1 << BIT_CHANGED_CONFIGURATION)
+#define BIT_CHANGED_SETTINGS            1 - відбулася зміна налаштувань встановлюється або окремо, або разом з конфігурацією (інформація, що треба буде акутивовувати)
+#define MASKA_CHANGED_SETTINGS          (1 << BIT_CHANGED_SETTINGS)
+#define BIT_MENU_LOCKS                  2 - меню захопило "монополію" на зміну налаштувань (встановлюється або перевіряється)
+#define MASKA_MENU_LOCKS                (1 << BIT_MENU_LOCKS)
+#define BIT_USB_LOCKS                   3 - USB-інтерфейс захопив "монополію" на зміну налаштувань (встановлюється або перевіряється)
+#define MASKA_USB_LOCKS                 (1 << BIT_USB_LOCKS)
+#define BIT_RS485_LOCKS                 4 RS485-інтерфейс захопив "монополію" на зміну налаштувань (встановлюється або перевіряється)
+#define MASKA_RS485_LOCKS               (1 << BIT_RS485_LOCKS)
+  
+  
+2
+  current_config_prt (логіка)
+  current_config (контейнер)
+  current_config_edit (для редагування)
+  
+3. Для того, щоб виконати зміну конфігурації треба
+3.1 внести зміни у current_config_edit
+3.2 якщо зміни допустимі. то виконати фунцію __result_dym_mem_select action_after_changing_of_configuration(void), яка вже сама внесе зміни у  current_config і виділить/аивільнить пам'ять у current_config і current_config_edit
+3.3 Можливі результати виконання цієї функції у 
+typedef enum _result_dyn_mem_select
+{
+  DYN_MEM_TOTAL_ERROR = 0, для відновлення роботи треба перезапкус
+  PRT_MEM_ERROR, для відновлення роботи треба перезапкус
+  DYN_MEM_NO_ENOUGH_MEM, перезапуску не потрібно
+  DYN_MEM_SELECT_OK успішне викуонання
+    
+} __result_dym_mem_select;
+
+3.4 якщо функція не змогла виконатися успішно, то у current_config_edit буде відновлено стан з  current_config  
+  
+  
+  */
 }//loadActualData() 
 
 int getConfigBigModbusRegister(int adrReg)

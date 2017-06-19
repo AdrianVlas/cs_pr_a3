@@ -49,6 +49,30 @@ void constructorDVBigComponent(COMPONENT_OBJ *dvbigcomp)
 void loadDVBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  1. Адресу потрібного елементу вибраного функціонального блоку визначаємо як і для Small
+  2. Якщо працюємо з структурою ***_prt, то тип береться __LN_XXX у всіх інших випадках тип береться __settings_for_ххх
+  __LN_XXX включає у себе _settings_for_ххх
+  
+  3. 
+  enum _XXX__output_signals - перечислення номерів виходів (починається з 0 але для параметрування зв'язків треба, щоб номер починався з 1, тобто додати 1 при встановлкенні зв'язку або відняти одиницію для розшифровки встановленого зв'язку)
+  enum _XXX_d_trigger  - тільки для логіки
+  enum _XXX_input_signal - перечислення номерів входів
+  enum _settings_delay_of_XXX - перечислення всіх витримок
+  enum __index_ctrl_xxx - перечислення всіх "ключів" управління
+  enum _settings_pickup_of_XXX перечислення всіх уставок
+  
+  4. Поля налаштуванння
+  uint32_t param[XXX_SIGNALS_IN] - адреса виходу, який заводиться на даний вхід. Кодується (id; N; out) id - з enum _id_fb; N і out починаються з 1-ці
+  
+  int32_t pickup[GROUP_ALARM_PICKUPS] - уставки (з точністю до мілі-величин)
+  int32_t set_delay[XXX_SET_DELAYS] - витримки (з точністю до мс)
+  uint32_t control - управліннгя
+  uint32_t analog_input_control - для ШГС вибір аналогових каналів
+  
+  */
+  
+  
 }//loadActualData() 
 
 int getDVBigModbusRegister(int adrReg)

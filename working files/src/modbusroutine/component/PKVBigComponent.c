@@ -47,6 +47,52 @@ void constructorPKVBigComponent(COMPONENT_OBJ *pkvbigcomp)
 void loadPKVBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  Читання/запис здійснється з полів (коментарі додані у файлі type_definition.h для структури типу __CONFIG)
+  settings_fix_prt/settings_fix/settings_fix_edit
+  
+  14200 - timeout_deactivation_password_interface_USB/timeout_deactivation_password_interface_RS485
+  14201 - password_interface_USB/password_interface_RS485 (тільки запис. див. опис у ТЗ моєму)
+  14202 - timeout_idle_new_settings (одиниці, як у карті пам'яті)
+  14203 - language
+  
+  14205 - baud_RS485
+  14206 - number_stop_bit_RS485
+  14207 - pare_bit_RS485
+  14208 - time_out_1_RS485
+  
+  14213 - address
+  
+  14216-14223 - name_of_cell
+  
+  14224-14225
+  ------------
+  uint8_t *label_to_time_array;
+  if (copying_time == 0) label_to_time_array = time;
+  else label_to_time_array = time_copy;
+  Формат BCD
+  0 - десяті і соті секунди (на запис тільки 0) (0x0-0x99)
+  1 - секунди (0x0-0x59)
+  2 - хвилини (0x0-0x59)
+  3 - година (0x0-0x23)
+  4 - день місяця (0x1-0x31)
+  5 - місяць (0x1-0x12)
+  6 - рік (0x0-0x99)
+  
+   При записі по адресі 0 (присторою) є широкосмуговий запис дати і часу. Прийняти і обробити паакет без відповіді
+  
+  Для запису записати записувані значення у time_edit і виконати такий код
+            if (check_data_for_data_time_menu() == 1)
+            {
+              //Дані достовірні
+              //Виставляємо повідомлення запису часу в RTC
+              //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
+              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+              _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+            }
+            else error = ERROR_ILLEGAL_DATA_VALUE;  
+  ------------
+  */
 }//loadActualData() 
 
 int getPKVBigModbusRegister(int adrReg)

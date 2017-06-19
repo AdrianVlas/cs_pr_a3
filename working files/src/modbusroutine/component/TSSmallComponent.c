@@ -52,6 +52,24 @@ void constructorTSSmallComponent(COMPONENT_OBJ *tssmallcomp)
 void loadTSSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  Загальну кількість завжди треба брати з конфігурації current_config_prt типу __CONFIG (для читання поточного стану) і/або current_config/current_config_edit (для редагування)
+  
+  1) spca_of_p_prt (масив вказівників на динамічну пам'ять, де знаходяться актуальні дані - для читання стану)
+  2) Індекс функц.блоку береться з enum _id_fb (const_settings.h) - _ID_FB_FIRST_VAR. Наприклад, для ТС spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]
+   - це вказівник на першу адресу всіх ТС-ів
+  3) У цій пам'яті знаходиться масив типу __LN_XXX (Наприклад для ТС __LN_TS)
+  4) Вкзівник треба перемістити на потрібний елемент. Наприклад: (((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]) + item), де item  - це номер ТС-у, який нас цікавить
+    Всі типи описані у файлі type_definition.h.
+  __settings_for_XXX - це вкорочена структура тільки налаштувань (працює з масивом вказівників sca_of_p і sca_of_p_edit)
+  __LN_XXX - це hjpibhtyf структура налаштувань, станів і службової інформації (працює тільки з масивом spca_of_p_prt)
+  5) Стан зчитуєтться з поля active_state відповідної струтури
+  6) Номера бітів визначвені enum _XXX_output_signals (для ТС - це enum _TS_output_signals const_settings.h).
+  
+  Наприклад зитування стану виходу дисткртного входу за номером _n
+  __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+  value = arr[_n].active_state[INPUT_OUT >> 3] & (1 << (INPUT_OUT & ((1 << 3) - 1)));
+  */
 }//loadActualData() 
 
 int getTSSmallModbusRegister(int adrReg)

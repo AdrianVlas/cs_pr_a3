@@ -47,6 +47,11 @@ void constructorDOUTBigComponent(COMPONENT_OBJ *doutcomp)
 void loadDOUTBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  ...
+  
+  на входи "Генератор C1" і "Генератор C2" можна встановити тільки генеротори, тобто id мусить дорівнювати ID_FB_MEANDER, n не може перевищувати кількість генераторів у конфігурації, out мусить дорівнювати 1, бо у генератора є єдиний вихід
+  */
 }//loadActualData() 
 
 int getDOUTBigModbusRegister(int adrReg)

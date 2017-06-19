@@ -50,6 +50,10 @@ void constructorCommonSmallComponent(COMPONENT_OBJ *commonsmallcomp)
 void loadCommonSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  1) Стан знаходяться у масиві uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
+  2) Співвідношення між номерами бітів і їх назвами є у enum _FIX_BLOCK_output_signals
+  */
 }//loadActualData() 
 
 int getCommonSmallModbusRegister(int adrReg)

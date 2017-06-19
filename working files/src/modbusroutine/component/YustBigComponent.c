@@ -47,6 +47,35 @@ void constructorYustBigComponent(COMPONENT_OBJ *yustbigcomp)
 void loadYustBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  масиви юстування знаходиться у 
+  ustuvannja_meas - працює вимірювальна система (не рухати!)
+  ustuvannja - контейнер
+  edit_ustuvannja - для редагування
+  
+  Алгоритм запису
+  У changed_ustuvannja записати CHANGED_ETAP_EXECUTION (це блокує перевірку на достовірність ustuvannja_meas і ustuvannja)
+  У кіцевому результати зробити зміни у ustuvannja (можна використовувати edit_ustuvannja як масив для редагування з можливістю відновлення з ustuvannja)
+  
+  Для відміни внесення юстування у changed_ustuvannja записати CHANGED_ETAP_NONE але тоді ustuvannja_meas мусить дорівнювати ustuvannja бо інакше самодіагностика буде сваритися
+  Для активації змін у changed_ustuvannja записати CHANGED_ETAP_ENDED. Дальше все зробить вимірювальна система
+  
+  бажано запис юстування робити по спеціальному секретному паролю
+  я для цього використловував password_ustuvannja. Спочатку записував туди 0x1978 і цим дозволяв запис юстування. запис іншого числа  блокував запис юстування.
+
+  else if (address_data == MA_POSSIBILITY_USTUVANNJA)
+  {
+    Повідомлення про те, чи можна проводити операцю юстування
+     0 - операція юстування є забороненою
+     1 - операція юстування є дозволеною
+    if (password_ustuvannja == 0x1978) temp_value = 1;
+    else temp_value = 0;
+  }
+  else if ((address_data >= MA_ADDRESS_FIRST_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_USTUVANNJA))
+  {
+    temp_value = ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA ];
+  }
+  */
 }//loadActualData() 
 
 int getYustBigModbusRegister(int adrReg)

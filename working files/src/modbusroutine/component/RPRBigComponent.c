@@ -50,6 +50,10 @@ void loadRPRBigActualData(void)
 {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
+  /*
+  Читання/запис здійснється у 
+  settings_fix_prt/settings_fix/settings_fix_edit.user_register[номер регістру]
+*/
 }//loadActualData()
 
 int getRPRBigModbusRegister(int adrReg)
