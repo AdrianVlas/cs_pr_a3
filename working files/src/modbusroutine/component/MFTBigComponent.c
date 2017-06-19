@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 5966
@@ -15,11 +15,11 @@ int setMFTBigModbusRegister(int, int);//получить содержимое регистра
 int setMFTBigModbusBit(int, int);//получить содержимое бита
 
 void setMFTBigCountObject(int);//записать к-во обектов
-void preMFTBigReadAction();//action до чтения
-void postMFTBigReadAction();//action после чтения
-void preMFTBigWriteAction();//action до записи
-void postMFTBigWriteAction();//action после записи
-void loadMFTBigActualData();
+void preMFTBigReadAction(void);//action до чтения
+void postMFTBigReadAction(void);//action после чтения
+void preMFTBigWriteAction(void);//action до записи
+void postMFTBigWriteAction(void);//action после записи
+void loadMFTBigActualData(void);
 
 COMPONENT_OBJ *mftbigcomponent;
 
@@ -46,7 +46,7 @@ void constructorMFTBigComponent(COMPONENT_OBJ *mftbigcomp)
   mftbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadMFTBigActualData() {
+void loadMFTBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -99,8 +99,9 @@ int setMFTBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setMFTBigModbusBit(int adrBit, int )
+int setMFTBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(mftbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -112,23 +113,23 @@ void setMFTBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   mftbigcomponent->countObject = cntObj;
 }//
-void preMFTBigReadAction() {
+void preMFTBigReadAction(void) {
 //action до чтения
   mftbigcomponent->operativMarker[0] = -1;
   mftbigcomponent->operativMarker[1] = -1;//оперативный маркер
   mftbigcomponent->isActiveActualData = 1;
 }//
-void postMFTBigReadAction() {
+void postMFTBigReadAction(void) {
 //action после чтения
   if(mftbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preMFTBigWriteAction() {
+void preMFTBigWriteAction(void) {
 //action до записи
   mftbigcomponent->operativMarker[0] = -1;
   mftbigcomponent->operativMarker[1] = -1;//оперативный маркер
   mftbigcomponent->isActiveActualData = 1;
 }//
-void postMFTBigWriteAction() {
+void postMFTBigWriteAction(void) {
 //action после записи
   if(mftbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

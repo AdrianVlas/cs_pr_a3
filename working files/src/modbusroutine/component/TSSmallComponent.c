@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 500
@@ -18,11 +18,11 @@ int setTSSmallModbusRegister(int, int);//получить содержимое регистра
 int setTSSmallModbusBit(int, int);//получить содержимое бита
 
 void setTSSmallCountObject(int);//записать к-во обектов
-void preTSSmallReadAction();//action до чтения
-void postTSSmallReadAction();//action после чтения
-void preTSSmallWriteAction();//action до записи
-void postTSSmallWriteAction();//action после записи
-void loadTSSmallActualData();
+void preTSSmallReadAction(void);//action до чтения
+void postTSSmallReadAction(void);//action после чтения
+void preTSSmallWriteAction(void);//action до записи
+void postTSSmallWriteAction(void);//action после записи
+void loadTSSmallActualData(void);
 
 COMPONENT_OBJ *tssmallcomponent;
 
@@ -49,7 +49,7 @@ void constructorTSSmallComponent(COMPONENT_OBJ *tssmallcomp)
   tssmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadTSSmallActualData() {
+void loadTSSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -83,14 +83,16 @@ int getTSSmallModbusBit(int adrBit)
   if(tmp&maska) return 1;
   return 0;
 }//getDVModbusRegister(int adrReg)
-int setTSSmallModbusRegister(int adrReg, int)
+int setTSSmallModbusRegister(int adrReg, int x)
 {
+  UNUSED(x);
   //записать содержимое регистра
   superSetOperativMarker(tssmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
-int setTSSmallModbusBit(int adrBit, int )
+int setTSSmallModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //записать содержимое bit
   superSetOperativMarker(tssmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -102,23 +104,23 @@ void setTSSmallCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   tssmallcomponent->countObject = cntObj;
 }//
-void preTSSmallReadAction() {
+void preTSSmallReadAction(void) {
 //action до чтения
   tssmallcomponent->operativMarker[0] = -1;
   tssmallcomponent->operativMarker[1] = -1;//оперативный маркер
   tssmallcomponent->isActiveActualData = 1;
 }//
-void postTSSmallReadAction() {
+void postTSSmallReadAction(void) {
 //action после чтения
   if(tssmallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preTSSmallWriteAction() {
+void preTSSmallWriteAction(void) {
 //action до записи
   tssmallcomponent->operativMarker[0] = -1;
   tssmallcomponent->operativMarker[1] = -1;//оперативный маркер
   tssmallcomponent->isActiveActualData = 1;
 }//
-void postTSSmallWriteAction() {
+void postTSSmallWriteAction(void) {
 //action после записи
 }//
 

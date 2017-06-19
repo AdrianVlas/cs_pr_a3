@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 1156
@@ -14,11 +14,11 @@ int setDOUTBigModbusRegister(int, int);// регистра
 int setDOUTBigModbusBit(int, int);// бита
 
 void setDOUTBigCountObject(int);//записать к-во обектов
-void preDOUTBigReadAction();//action до чтения
-void postDOUTBigReadAction();//action после чтения
-void preDOUTBigWriteAction();//action до записи
-void postDOUTBigWriteAction();//action после записи
-void loadDOUTBigActualData();
+void preDOUTBigReadAction(void);//action до чтения
+void postDOUTBigReadAction(void);//action после чтения
+void preDOUTBigWriteAction(void);//action до записи
+void postDOUTBigWriteAction(void);//action после записи
+void loadDOUTBigActualData(void);
 
 COMPONENT_OBJ *doutbigcomponent;
 
@@ -44,7 +44,7 @@ void constructorDOUTBigComponent(COMPONENT_OBJ *doutcomp)
   doutbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadDOUTBigActualData() {
+void loadDOUTBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -108,8 +108,9 @@ int setDOUTBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setDOUTBigModbusBit(int adrReg, int )
+int setDOUTBigModbusBit(int adrReg, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(doutbigcomponent, adrReg);
   return MARKER_OUTPERIMETR;
@@ -121,23 +122,23 @@ void setDOUTBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   doutbigcomponent->countObject = cntObj;
 }//
-void preDOUTBigReadAction() {
+void preDOUTBigReadAction(void) {
 //action до чтения
   doutbigcomponent->operativMarker[0] = -1;
   doutbigcomponent->operativMarker[1] = -1;//оперативный маркер
   doutbigcomponent->isActiveActualData = 1;
 }//
-void postDOUTBigReadAction() {
+void postDOUTBigReadAction(void) {
 //action после чтения
   if(doutbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preDOUTBigWriteAction() {
+void preDOUTBigWriteAction(void) {
 //action до записи
   doutbigcomponent->operativMarker[0] = -1;
   doutbigcomponent->operativMarker[1] = -1;//оперативный маркер
   doutbigcomponent->isActiveActualData = 1;
 }//
-void postDOUTBigWriteAction() {
+void postDOUTBigWriteAction(void) {
 //action после записи
   if(doutbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

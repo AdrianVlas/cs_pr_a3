@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 4674
@@ -15,11 +15,11 @@ int setSZSBigModbusRegister(int, int);//получить содержимое регистра
 int setSZSBigModbusBit(int, int);//получить содержимое бита
 
 void setSZSBigCountObject(int);//записать к-во обектов
-void preSZSBigReadAction();//action до чтения
-void postSZSBigReadAction();//action после чтения
-void preSZSBigWriteAction();//action до записи
-void postSZSBigWriteAction();//action после записи
-void loadSZSBigActualData();
+void preSZSBigReadAction(void);//action до чтения
+void postSZSBigReadAction(void);//action после чтения
+void preSZSBigWriteAction(void);//action до записи
+void postSZSBigWriteAction(void);//action после записи
+void loadSZSBigActualData(void);
 
 COMPONENT_OBJ *szsbigcomponent;
 
@@ -46,7 +46,7 @@ void constructorSZSBigComponent(COMPONENT_OBJ *szsbigcomp)
   szsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadSZSBigActualData() {
+void loadSZSBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -110,8 +110,9 @@ int setSZSBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setSZSBigModbusBit(int adrBit, int )
+int setSZSBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(szsbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -123,23 +124,23 @@ void setSZSBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   szsbigcomponent->countObject = cntObj;
 }//
-void preSZSBigReadAction() {
+void preSZSBigReadAction(void) {
 //action до чтения
   szsbigcomponent->operativMarker[0] = -1;
   szsbigcomponent->operativMarker[1] = -1;//оперативный маркер
   szsbigcomponent->isActiveActualData = 1;
 }//
-void postSZSBigReadAction() {
+void postSZSBigReadAction(void) {
 //action после чтения
   if(szsbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preSZSBigWriteAction() {
+void preSZSBigWriteAction(void) {
 //action до записи
   szsbigcomponent->operativMarker[0] = -1;
   szsbigcomponent->operativMarker[1] = -1;//оперативный маркер
   szsbigcomponent->isActiveActualData = 1;
 }//
-void postSZSBigWriteAction() {
+void postSZSBigWriteAction(void) {
 //action после записи
   if(szsbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

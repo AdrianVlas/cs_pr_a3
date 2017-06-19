@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 308
@@ -17,11 +17,11 @@ int setKEYSmallModbusRegister(int, int);//получить содержимое регистра
 int setKEYSmallModbusBit(int, int);//получить содержимое бита
 
 void setKEYSmallCountObject(int);//записать к-во обектов
-void preKEYSmallReadAction();//action до чтения
-void postKEYSmallReadAction();//action после чтения
-void preKEYSmallWriteAction();//action до записи
-void postKEYSmallWriteAction();//action после записи
-void loadKEYSmallActualData();
+void preKEYSmallReadAction(void);//action до чтения
+void postKEYSmallReadAction(void);//action после чтения
+void preKEYSmallWriteAction(void);//action до записи
+void postKEYSmallWriteAction(void);//action после записи
+void loadKEYSmallActualData(void);
 
 COMPONENT_OBJ *keysmallcomponent;
 
@@ -48,7 +48,7 @@ void constructorKEYSmallComponent(COMPONENT_OBJ *keysmallcomp)
   keysmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadKEYSmallActualData() {
+void loadKEYSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -80,39 +80,42 @@ int getKEYSmallModbusBit(int adrBit)
   if(tmp&maska) return 1;
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setKEYSmallModbusRegister(int adrReg, int)
+int setKEYSmallModbusRegister(int adrReg, int x)
 {
+  UNUSED(x);
   //записать содержимое регистра
   superSetOperativMarker(keysmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setKEYSmallModbusBit(int adrBit, int )
+int setKEYSmallModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(keysmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setKEYSmallCountObject(int) {
+void setKEYSmallCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preKEYSmallReadAction() {
+void preKEYSmallReadAction(void) {
 //action до чтения
   keysmallcomponent->operativMarker[0] = -1;
   keysmallcomponent->operativMarker[1] = -1;//оперативный маркер
   keysmallcomponent->isActiveActualData = 1;
 }//
-void postKEYSmallReadAction() {
+void postKEYSmallReadAction(void) {
 //action после чтения
   if(keysmallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preKEYSmallWriteAction() {
+void preKEYSmallWriteAction(void) {
 //action до записи
   keysmallcomponent->operativMarker[0] = -1;
   keysmallcomponent->operativMarker[1] = -1;//оперативный маркер
   keysmallcomponent->isActiveActualData = 1;
 }//
-void postKEYSmallWriteAction() {
+void postKEYSmallWriteAction(void) {
 //action после записи
 }//
 

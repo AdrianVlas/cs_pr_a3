@@ -26,20 +26,20 @@ inline unsigned short int  AddCRC(unsigned char inpbyte, unsigned short int oldC
 /***********************************************************************************/
 //Функція відповіді по протоколу Modbus-RTU на помилку
 /***********************************************************************************/
-inline void Error_modbus(unsigned int address, unsigned int function, unsigned int error, unsigned char *output_data)
-  {
-   unsigned short CRC_sum;
-
-   *output_data       = address & 0xff;
-   *(output_data + 1) = 0x80 | (function & 0xff);
-   *(output_data + 2) = error & 0xff;
-
-   CRC_sum = 0xffff;
-   for (int index = 0; index < 3; index++) CRC_sum = AddCRC((*(output_data + index)) ,CRC_sum);
-   *(output_data + 3)  = CRC_sum & 0xff;
-   *(output_data + 4)  = CRC_sum >> 8;
-   
-  }
+//inline void Error_modbus(unsigned int address, unsigned int function, unsigned int error, unsigned char *output_data)
+//  {
+//   unsigned short CRC_sum;
+//
+//   *output_data       = address & 0xff;
+//   *(output_data + 1) = 0x80 | (function & 0xff);
+//   *(output_data + 2) = error & 0xff;
+//
+//   CRC_sum = 0xffff;
+//   for (int index = 0; index < 3; index++) CRC_sum = AddCRC((*(output_data + index)) ,CRC_sum);
+//   *(output_data + 3)  = CRC_sum & 0xff;
+//   *(output_data + 4)  = CRC_sum >> 8;
+//   
+//  }
 /***********************************************************************************/
 
 /***********************************************************************************/
@@ -2554,1482 +2554,230 @@ uint32_t bit_adr_to_reg_adr(uint32_t bit_adr, uint32_t *p_reg_adr, uint32_t *p_o
 /***********************************************************************************/
 //Програма обробки запиту по протоколу MODBUS-RTU
 /***********************************************************************************/
-void modbus_rountines(unsigned int type_interface)
-{
- unsigned char *received_buffer, *transmited_buffer;
- int *received_count;
- int *transmited_count;
- unsigned int error = 0;
-  
-  if(type_interface == USB_RECUEST)
-  {
-    received_buffer = usb_received;
-    transmited_buffer = usb_transmiting;
-    received_count = &usb_received_count;
-    transmited_count = &usb_transmiting_count;
-  }
-  else if (type_interface == RS485_RECUEST)
-  {
-    received_buffer = RxBuffer_RS485;
-    transmited_buffer = TxBuffer_RS485;
-    received_count = &RxBuffer_RS485_count;
-    transmited_count = &TxBuffer_RS485_count;
-  }
-  else
-  {
-    //Теоретично цього ніколи не мало б бути
-    total_error_sw_fixed(45);
-  }
-   
-  //Перевірка адреси запитуваного приладу
-  unsigned int global_requect;
-  if(
-     (*received_count >= 3)  
-     &&
-     (
-      ((global_requect = (*received_buffer == BROADCAST_ADDRESS_MODBUS_RTU)) != 0) ||
-      (*received_buffer == settings_fix.address)
-     )
-    )   
-  {
-    unsigned short int CRC_sum;
-    
-    //Перевірка контрольної суми
-    CRC_sum = 0xffff;
-    for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(received_buffer + index),CRC_sum);
-
-    unsigned int func_modbus = *(received_buffer+1);
-    if (
-        ((CRC_sum & 0xff) == *(received_buffer+*received_count-2)) &&
-        ((CRC_sum >> 8  ) == *(received_buffer+*received_count-1)) &&
-        (
-         (global_requect == 0) ||
-         (func_modbus == 6 ) ||
-         (func_modbus == 16)
-        )
-       )
-    {
-      //Подаємо команду на скинення лічильника очікування нового запиту з вказаного інтерфейсу
-      restart_timeout_interface |= (1 << type_interface);
-      
-      //Обробка даних
-      switch (func_modbus)
-      {
-      case 1:
-      case 2:
-        {
-          unsigned int add_data, number;
-          unsigned int number_byte_transmit, number_word_transmit, number_word_read;
-          unsigned int offset;
-
-          add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
-          number   = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
-          
-          number_byte_transmit = number >> 3;
-          if((number_byte_transmit<<3) < number) number_byte_transmit++; //Оскільки нам треба заокруглювати до більшого числа при діленні на 8 (зсув на три розряди вліво)
-
-          //Визначаємо кількість інформаційних слів (2 байти) у відповіді
-          if ((number_byte_transmit & 0x1) == 0)
-          {
-            //Парна кількість байт, а значить ділення на 2 дасть точну кількість слів
-            number_word_transmit = number_byte_transmit >> 1;
-          }
-          else
-          {
-            //Непарна кількість байт, а значить перед діленням на 2 треба ще додати один байт, щоб отримати кількість слів для зчитування
-            number_word_transmit = (number_byte_transmit + 1) >> 1;
-          }
-                   
-          unsigned int first_address_of_word_for_function_3_or_4;
-          if(
-             (number != 0   ) &&
-             (number <= 2000) &&
-             (bit_adr_to_reg_adr(add_data, &first_address_of_word_for_function_3_or_4, &offset))  
-            )
-          {
-            //Формуємо початок відповіді
-            *transmited_buffer = *(received_buffer);
-            *(transmited_buffer + 1) = *(received_buffer + 1);
-            *(transmited_buffer + 2) = number_byte_transmit;
-
-            //Визначаємо, з якого слова треба розпочати зчитування цілими словами
-            first_address_of_word_for_function_3_or_4 += (offset >> 4);
-            //Визначаємо ще остачу від ділення
-            offset &= 0xf;
-            
-            number_word_read = number_word_transmit;
-            /*
-            Визначаємо скільки слів треба прочитати (підрахунок ведемо по кількості біт 
-            і з перший біт приймаємо начперший біт слова, яке буде прочитане функцією Get_data
-            і  додаємо зміщення, бо може перший біт не буде потрібний а будуть потрібні біти наступної величини)
-            Тут ми визначаємо скільки слів треба буде прочитати функцією Get_data щоб отримати дані для передачі
-            */
-            if ((offset + number) > (number_word_transmit << 4)) number_word_read++; //Бо буде захоплене ще наступне слово за рахунок зміщення
-            
-            //Зчитуємо спочатку цілі слова
-            unsigned int i=0;
-            while((i < number_word_read) && ((error = Get_data((transmited_buffer + 3 + 2*i), (first_address_of_word_for_function_3_or_4 + i), type_interface, GET_DATA_IMMEDITATE, BIT_REQUEST))==0)) i++;
-          }
-          else
-          {
-            if ((number == 0) || (number > 2000)) error = ERROR_ILLEGAL_DATA_VALUE;
-            else error = ERROR_ILLEGAL_DATA_ADDRESS;
-          }
-          
-          //Формуємо байти відповіді і саму відповідь у протоколі MODBUS-RTU
-          if (error == 0)
-          {
-            unsigned short int temp_value_for_offset, current_word, next_word;
-            unsigned int maska = 0, max_bit_in_high_byte = (number & 0x7);
-            
-            for(unsigned int i = 0; i < number_word_transmit; i++)
-            {
-              //Функція Get_data помістила байти в порядку MSB-LSB і т.д
-              current_word = (*(transmited_buffer + 3 + 2*i) << 8) | (*(transmited_buffer + 3 + 2*i + 1));
-              if ((i + 1) < number_word_read) next_word = (*(transmited_buffer + 3 + 2*(i + 1)) << 8) | (*(transmited_buffer + 3 + 2*(i + 1) + 1));
-              else next_word = 0;
-              
-              //Визначаємо , які біти з наступного слова треба перемістити в дане слово і зміщуємо їх у старші розряди
-              temp_value_for_offset = next_word << (16 - offset);
-              
-              //Формуємо слово із врахуванням зміщення
-              temp_value_for_offset |= (current_word >> offset);
-             
-              if((2*i    ) < number_byte_transmit)
-                *(transmited_buffer + 3 + 2*i    ) = temp_value_for_offset        & 0xff;
-              if((2*i + 1) < number_byte_transmit)
-                *(transmited_buffer + 3 + 2*i + 1) = (temp_value_for_offset >> 8) & 0xff;
-            }
-            
-            //В останньому байті треба зайві біти змаскувати
-            if (max_bit_in_high_byte != 0)
-            {
-              for(unsigned int i = 0; i < max_bit_in_high_byte; i++) maska = (maska << 1) + 0x1;
-              *(transmited_buffer + 3 + number_byte_transmit - 1 ) &= maska;
-            }
-              
-            CRC_sum = 0xffff;
-            for (int index = 0; index < ((int)(number_byte_transmit + 3)); index++) CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
-            *(transmited_buffer + 3 + number_byte_transmit + 0) = CRC_sum & 0xff;
-            *(transmited_buffer + 3 + number_byte_transmit + 1) = CRC_sum >> 8;
-
-            *transmited_count = number_byte_transmit + 5;
-            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-          }
-          else
-          {
-            //Відповідаємо про помилку
-            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
-            *transmited_count = 5;
-            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-          }
-          
-          break;
-        }//Кінець для обробки функцій 1 і 2
-      case 3:
-      case 4:
-        {
-          unsigned int add_data, number;
-          number   = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
-          
-          if ((number == 0) || (number > ((255-5)>>1)))
-          {
-            //Помилка запиту кількості регістрів
-            error = ERROR_ILLEGAL_DATA_VALUE;
-          }
-          else
-          {
-            *transmited_buffer = *(received_buffer);
-            *(transmited_buffer + 1) = *(received_buffer + 1) ;
-            *(transmited_buffer + 2) = number*2;
-
-            add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
-
-            if (
-                ((add_data >= M_ADDRESS_FIRST_MEASUREMENTS_1 ) && (add_data <= M_ADDRESS_LAST_MEASUREMENTS_1)) ||
-                ((add_data >= M_ADDRESS_FIRST_TMP_MEASURMENTS) && (add_data <  M_ADDRESS_LAST_TMP_MEASURMENTS))  
-               )
-            {
-              //Копіюємо вимірювання
-              semaphore_measure_values_low1 = 1;
-              for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++ ) 
-              {
-                measurement_low[i] = measurement_middle[i];
-              }
-              semaphore_measure_values_low1 = 0;
-            }
-
-            unsigned int i=0;
-            while((i<number) && ((error = Get_data((transmited_buffer+3+2*i),(add_data+i), type_interface, GET_DATA_IMMEDITATE, BYTE_REQUEST))==0))i++;
-          }
-
-          if (error == 0)
-          {
-            CRC_sum = 0xffff;
-            for (int index = 0; index < ((int)(3+2*number)); index++) CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
-            *(transmited_buffer+3+2*number) = CRC_sum & 0xff;
-            *(transmited_buffer+4+2*number) = CRC_sum >> 8;
-
-            *transmited_count = 5+2*number;
-            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-          }
-          else
-          {
-            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
-            *transmited_count = 5;
-            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-          }
-
-          break;
-        }//Кінець для обробки функцій 3 і 4
-      case 5:
-        {
-          unsigned int add_data;
-          unsigned short int value, temp_value = 0;
-          unsigned int offset;
-          
-          add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
-          value    = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
-
-          unsigned int first_address_of_word_for_function_3_or_4;
-           
-          if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
-          {
-            //Теоретично такого бути не мало б ніколи
-            error = ERROR_SLAVE_DEVICE_FAILURE;
-          }
-          else if (bit_adr_to_reg_adr(add_data, &first_address_of_word_for_function_3_or_4, &offset))
-          {
-            //Виконуємо дію
-            if (first_address_of_word_for_function_3_or_4 == M_ADDRESS_CONTROL_BASE)
-            {
-              //Іде намагання змінити настройку захисту
-              
-              ///Перевіряємо, чи пароль доступу знятий і чи система меню не є у стані редагування
-              if (
-                  (
-                   ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
-                   ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
-                  )
-                  &&  
-                  (current_state_menu2.edition == ED_VIEWING)
-                 )
-              {
-                //Запис проводимо тільки тоді, коли пароль знятий і система меню не у режимі редагування, або іде команда управління
-            
-                //Визначаємо, з якого слова треба розпочати зчитування цілими словами
-                first_address_of_word_for_function_3_or_4 += (offset >> 4);
-
-                //Визначаємо ще скільки розрядів залишається у наступному слові
-                offset &= 0xf;
-            
-                //Зчитуємо спочатку ціле слово
-                unsigned char temp_value_in_char[2];
-                error = Get_data(temp_value_in_char, first_address_of_word_for_function_3_or_4, type_interface, GET_DATA_IMMEDITATE, BIT_REQUEST);
-                temp_value = temp_value_in_char[1];
-                temp_value |= temp_value_in_char[0] << 8;
-
-                if (error == 0)
-                {
-                  //Якщо регістр прочитався вдало, то формуємо байт, який треба записати 
-                  if (value == 0xff00) temp_value |=   (1 << offset); //Встановити
-                  else if (value == 0x0)temp_value &= ~(1 << offset); //Зняти
-                  else error = ERROR_ILLEGAL_DATA_VALUE;              //Невизначена ситуація, яка теоретично ніколи не мала настати бо попередньо ми цю умову вже провіряли і цю ситуацію відкинули як недопустиму
-
-                  if (error == 0)
-                  {
-                    error = Set_data(temp_value,first_address_of_word_for_function_3_or_4, SET_DATA_IMMEDITATE, /*false,*/ type_interface);
-                    if (error == 0)
-                    {
-                      //Дійсно відбулася зміна настройки
-//                      _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
-                      restart_timeout_idle_new_settings = true;
-                      type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
-                    }
-                  }
-                }
-              }
-              else
-              {
-                if (current_state_menu2.edition != ED_VIEWING) error = ERROR_SLAVE_DEVICE_BUSY;
-                else error = ERROR_ILLEGAL_DATA_ADDRESS;
-              }
-            }
-            else if (
-                     (
-                      (first_address_of_word_for_function_3_or_4 == M_ADDRESS_COMMAND_BASE)
-                      &&
-                      (
-                       (add_data != BIT_MA_NEW_SETTINGS_SET) ||
-                       ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
-                       ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
-                      )   
-                     )   
-                    )
-            {
-              //Іде подача активації команди
-              
-              /*
-              Тут ми використовуємо каонстанти активації функцій з допомогою ф-кнопок, бо механізм обробки однаковий що активацшя
-              функції з ф-кнопкт, що активація функції з інтерейсу
-              */
-              /*     if  (add_data == BIT_MA_RESET_LEDS                       ) activation_function_from_interface |= 1 << RANG_TU_RESET_LEDS;
-              else if  (add_data == BIT_MA_RESET_RELES                      ) activation_function_from_interface |= 1 << RANG_TU_RESET_RELES;
-              else*/ if  (add_data == BIT_MA_RESET_GENERAL_AF) 
-              {
-                //Скидання загальних функцій 
-                reset_trigger_function_from_interface |= (1 << type_interface);
-              }
-              else if  (add_data == BIT_MA_NEW_SETTINGS_SET) 
-              {
-                /*Команда активації внесених змін у налаштування приладу через інтерфейс*/ 
-                if (value == 0xff00)
-                {
-                  //Активація внесекних змін
-                  unsigned int source = MENU_PARAMS_FIX_CHANGES;
-                  if(type_interface == USB_RECUEST) source = USB_PARAMS_FIX_CHANGES;
-                  else if(type_interface ==  RS485_RECUEST) source = RS485_PARAMS_FIX_CHANGES;
-
-                  unsigned int result = set_config_and_settings(1, source);
-                  if (result != 0)
-                  {
-                    error = ERROR_SLAVE_DEVICE_FAILURE;
-                    if (result == 2)
-                    {
-                      //Повідомляємо про критичну помилку
-                      current_state_menu2.edition = ED_ERROR;
-                    }
-                  }
-                }
-                else
-                {
-                  //Відміна внесекних змін
-                  unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
-                  if (result != 0)
-                  {
-                    //Повідомляємо про критичну помилку
-                    current_state_menu2.edition = ED_ERROR;
-                  }
-                }
-                config_settings_modified = 0;
-                type_of_settings_changed_from_interface = 0;
-//                _CLEAR_BIT(active_functions, RANG_SETTINGS_CHANGED);
-              }
-            }
-            else
-            {
-              //Теоретично сюди програма ніколи не малаб зайти
-              
-              error = ERROR_ILLEGAL_DATA_ADDRESS;
-            }
-          }
-          else
-          {
-            if (
-                ((value != 0x0) && (value != 0xff00)) ||
-                (
-                 (value == 0x0) 
-                 &&
-                 (add_data != BIT_MA_NEW_SETTINGS_SET) /*Команда активації внесених змін у налаштування приладу через інтерфейс*/
-                 &&
-                 (  
-                  (add_data == BIT_MA_RESET_GENERAL_AF) /*Скидання загальних функцій*/
-                  ||
-                  (  
-                   ((add_data >= BIT_MA_INPUT_DF1) && (add_data <= BIT_MA_INPUT_DF8)) || /*Входи Определяємих функцій*/
-                   ((add_data >= BIT_MA_DT1_SET ) && (add_data <= BIT_MA_DT4_RESET ))/* ||*/ /*Оприд. триґери*/
-//                   ( add_data == BIT_MA_RESET_LEDS                                  ) || /*Очищення індикації*/
-//                   ( add_data == BIT_MA_RESET_RELES                                 )    /*Скидання реле*/
-                  )
-                 )   
-                )
-               ) error = ERROR_ILLEGAL_DATA_VALUE;
-            else error = ERROR_ILLEGAL_DATA_ADDRESS;
-          }
-          
-          if (error == 0)
-          {
-            for (int index = 0; index < 8; index++) *(transmited_buffer + index ) = *(received_buffer + index );
-            *transmited_count = 8;
-            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-          }
-          else
-          {
-            //Відповідаємо про помилку
-            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
-            *transmited_count = 5;
-            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-          }
-          break;
-        }//Кінець для обробки функції 5        
-      case 6:
-        {
-          unsigned int add_data;
-          unsigned short int data;
-          unsigned int changing_ustuvannja = 0;
-
-          add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
-          data     = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
-
-          if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
-          {
-            //Теоретично такого бути не мало б ніколи
-            error = ERROR_SLAVE_DEVICE_FAILURE;
-          }
-          else if (
-                   (global_requect != 0) && /*запит по адресі BROADCAST_ADDRESS_MODBUS_RTU протоколу Modbus-RTU*/
-                   (
-                    !(
-                      ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA))
-                     )
-                   )     
-                  )
-          {
-            /*
-            По глобалній адресі можна змінювати тільки час і дату
-            */
-            error = ERROR_BROADCAST_ADDRESS;
-          }
-          else if (
-                   (current_state_menu2.edition == ED_VIEWING                     ) ||
-                   (add_data                    == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
-                  )
-          {
-            /*****/
-            //Перевірка на необхідність паролю доступу для запису
-            /*****/
-            if (
-                (
-                 ((type_interface == USB_RECUEST  ) && (password_set_USB   != 0)) ||
-                 ((type_interface == RS485_RECUEST) && (password_set_RS485 != 0))
-                )
-                &&
-                (
-                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_PART1                 ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_PART1                 )                                       ) || /*уставки і витримки*/
-                 ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1))                                       ) || /*уставки і витримки першої групи*/
-//                 ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))                                       ) || /*уставки і витримки другої групи*/
-//                 ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))                                       ) || /*уставки і витримки третьої групи*/
-//                 ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4))                                       ) || /*уставки і витримки четвертої групи*/
-                 ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )                                       ) || /*налаштування захистів*/
-                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              ) && (add_data != MA_PASSWORD_INTERFACE)) || /*уставки і витримки (продовження) крім паролю доступу*/
-                 ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA                   ) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA                   )                                       ) || /*час*/
-                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )                                       ) || /*ранжування*/
-                  (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR                   )                                                                                                          || /*очищення реєстратора програмних подій*/        
-                  (add_data == MA_DEFAULT_SETTINGS                             )                                                                                                          || /*встановлення мінімальної конфігурації*/        
-                  (add_data == MA_TEST_WATCHDOGS                               )                                                                                                        /*||*//*тестування внутрішнього і зовнішнього watchdog*/        
-//                  (add_data == MA_NUMBER_ITERATION_EL                          )                                                                                                             /*встановленнямаксимальної кількості ітераційдля розширеної логіки*/        
-                )   
-               )
-            {
-              //Не можна зараз записати цей регістр, бо треба спочатку зняти пароль доступу
-              error = ERROR_ILLEGAL_DATA_ADDRESS;
-            }
-            else
-            {
-              unsigned int changed_ustuvannja_tmp; /*буде проініціалізована пізніше*/
-              
-              if ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA))
-              {
-                if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT) == 0)
-                {  
-                  //Іде намагання встановити новий час-дату, тому робимо копію часу
-                  unsigned char *label_to_time_array, *label_calibration;
-                  if (copying_time == 0)
-                  {
-                    label_to_time_array = time;
-                    label_calibration = &calibration;
-                  }
-                  else
-                  {
-                    label_to_time_array = time_copy;
-                    label_calibration = &calibration_copy;
-                  }
-                  for(unsigned int index = 0; index < 7; index++) time_edit[index] = *(label_to_time_array + index);
-                  calibration_edit = *label_calibration;
-                }
-                else
-                {
-                  /*
-                  Ще виконалася попередня команда запису часу, а нова може змінити 
-                  попередньо введені дані при копіюванні текучого часу (щоб мати цілісний масив часу)
-                  Тому ця операція є тимчасово недоступною
-                  */
-                  error = ERROR_SLAVE_DEVICE_BUSY;
-                }
-              }
-              else if(
-                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   )) /*ранжування*/
-                     ) 
-              {
-                //Враховуючи той факт, що зараз буде відбуватися ранжування, то скидаємо вказівник на редагуюче поле в 0
-                point_to_edited_rang = NULL;
-//                for (unsigned int i = 0; i < N_BIG; i++)
-//                {
-//                  clear_array_rang[i] = 0;
-//                  set_array_rang[i]   = 0;
-//                }
-              }
-              else if((add_data >= MA_ADDRESS_FIRST_USTUVANNJA) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA))/*амплітудні і фазні юстуючі коефіцієнти*/ 
-              {
-                //Помічаємо ненульовим значенням, що йде намагання змінити юстуючі коефіцієнти
-                changing_ustuvannja = 0xff;
-                
-                /*
-                Робимо копію змінної changed_ustuvannja, щоб при неуспішній спробі
-                зміни коефіцієнтів юстування відновити попереднє значення. Оскільки з верхнбого рівня
-                можлива зміна CHANGED_ETAP_ENDED -> CHANGED_ETAP_NONE,
-                то я думаю нічого "надзвичайного" не станеться, якщо ми попередній 
-                стан зафіксуємо CHANGED_ETAP_ENDED, потім більш пріоритетна задача
-                вимірювальної системи зкопіює коефіцієнти юстування і скине змінну в 
-                CHANGED_ETAP_NONE, а потім відбудеться неуспішна спроба
-                ввести нову зміну у в масив юстування, що приведе до того, що ми з цієї фунціїї
-                відновимо попереднє значення (до зміни вимірювальною системою) CHANGED_ETAP_ENDED.
-                Як я думаю, наслідком цього може бути тільки повторне копіювання масиву юстування.
-                */
-                changed_ustuvannja_tmp = changed_ustuvannja;
-
-                //Помічаємо, що зараз, можоиво, елемент юстування буде змінений
-                changed_ustuvannja = CHANGED_ETAP_EXECUTION;
-              }
-
-              if (error == 0)
-              {
-                error = Set_data(data,add_data, SET_DATA_IMMEDITATE, /*false,*/ type_interface);
-                if (error != 0)
-                {
-                  if (changing_ustuvannja != 0)
-                  {
-                    /*
-                    Зміна коефіцієнітів юстування не відбулася, тому відновлюємо попереднє значення
-                    змінної changed_ustuvannja, яке було до її встановлення у значення
-                    CHANGED_ETAP_EXECUTION
-                    */
-                    changed_ustuvannja = changed_ustuvannja_tmp;
-                  }
-                }
-              }
-            }
-          }
-          else error = ERROR_SLAVE_DEVICE_BUSY;
-             
-          /*****/
-          //Якщо є спроба встановити час, то робимо його найперше, бо тут ще буде перевірка на достовірні дані
-          /*****/
-          if ((error == 0) && (add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA))
-          {
-            //Встановлення нового часу-дати
-
-            //Перевіряємо достовірність даних
-            if (check_data_for_data_time_menu() == 1)
-            {
-              //Дані достовірні
-              //Виставляємо повідомлення запису часу в RTC
-              //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
-              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-              _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
-            }
-            else error = ERROR_ILLEGAL_DATA_VALUE;
-          }
-          /*****/
-           
-          if(error == 0)
-          {
-            if  (global_requect == 0)
-            {
-              for (int index = 0; index < 8; index++) *(transmited_buffer + index ) = *(received_buffer + index );
-              *transmited_count = 8;
-              if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-              else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-            }
-            else
-            {
-              if(type_interface == RS485_RECUEST)
-              {
-                //Перезапускаємо моніторинг лінії RS-485
-                restart_monitoring_RS485();
-              }
-            }
-            
-            /*****/
-            //При необхідності записуємо інформацію у EEPROM
-            /*****/
-            if (
-                ((add_data >= M_ADDRESS_FIRST_SETPOINTS_PART1                 ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_PART1                 )) ||
-                ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1))) ||
-//                ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))) ||
-//                ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))) ||
-//                ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4))) ||
-                ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) ||
-                ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) ||
-                ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  ))/*||*/
-//                (add_data == MA_NUMBER_ITERATION_EL)
-               )
-            {
-              //Записуємо інформацю, яка відноситься до настройок
-              
-              if (
-                  ((add_data == MA_PASSWORD_INTERFACE) && (password_changed == true))
-                  ||  
-                  ( add_data != MA_PASSWORD_INTERFACE) /*встановлення всіх інших настрройок чи ранжування (за виключенням паролю доступу)*/ 
-                 )   
-              {
-                //Виключаємо той випадок, коли робилося зняття паролю доступу
-                   
-                //Дійсно відбулася зміна настройки
-//                _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
-                restart_timeout_idle_new_settings = true;
-                    
-                if (
-                    ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   ))
-                   )
-                {
-                  if  ( !((add_data >= M_ADDRESS_FIRST_USER_REGISTER   ) && (add_data <= M_ADDRESS_LAST_USER_REGISTER)) )
-                  {
-                    //Не іде ранжування регістрів користувача
-                    
-                    //Записуємо інформацю по ранжуванню
-                    type_of_settings_changed_from_interface |= (1 << RANGUVANNJA_DATA_CHANGED_BIT);
-                  }
-                  else
-                  {
-                    //Іде ранжування регістрів користувача
-                    type_of_settings_changed_from_interface |= (1 << USER_REGISTRY_CHANGED_BIT);
-                  }
-                }
-                else
-                {
-                  if (add_data == MA_PASSWORD_INTERFACE) 
-                  {
-                    //Записуємо значення нового парголю доступу
-                    type_of_settings_changed_from_interface |= (1 << NEW_PASSWORD_SET_BIT);
-                  }
-                  else
-                  {
-                    //Записуємо інформацю настройках (крім ранжування)
-                    type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
-                  }
-                }
-              }
-            }
-            else if (
-                     ((add_data >= MA_ADDRESS_FIRST_USTUVANNJA) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA)) ||
-                     ( add_data == MA_SET_SERIAL_NUMBER)  
-                    )
-            {
-              if (
-                  ((add_data >= MA_ADDRESS_FIRST_USTUVANNJA) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA))
-                 )   
-              {
-                //Помічаємо, що вимірювальною системою треба забрати нові коефіцієнти юстування
-                changed_ustuvannja = CHANGED_ETAP_ENDED;
-              }
-              //Запис юстуючик коефіцієнтів
-              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT);
-            }
-            else if (add_data == MA_DEFAULT_SETTINGS)
-            {
-                   
-              //Дійсно відбулася зміна настройки
-//              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
-              restart_timeout_idle_new_settings = true;
-              
-              //Відбулася успішна команда скидання у мінімальну конфігурацію
-              type_of_settings_changed_from_interface = (1 << DEFAULT_SETTINGS_SET_BIT);
-            }
-            /*****/
-          }
-          else 
-          {
-            if (global_requect == 0)
-            {
-              Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
-              *transmited_count = 5;
-              if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-              else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-            }
-            else
-            {
-              if(type_interface == RS485_RECUEST)
-              {
-                //Перезапускаємо моніторинг лінії RS-485
-                restart_monitoring_RS485();
-              }
-            }
-          }
-          break;
-        }//Кінець для обробки функції 6
-      case 15:
-        {
-          unsigned int add_data, number, reinit_settings = 0;       
-        
-          add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
-          number   = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
-
-          unsigned int number_bytes = number >> 3;
-          if ((number_bytes << 3) != number) number_bytes++;
-        
-          if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
-          {
-            //Теоретично такого бути не мало б ніколи
-            error = ERROR_SLAVE_DEVICE_FAILURE;
-          }
-          else if ((number < 1) || (number > 0x7B0) || (number_bytes != *(received_buffer + 6)))
-              error= ERROR_ILLEGAL_DATA_VALUE;
-          else if (
-                   ((add_data >= BIT_MA_CONTROL_BASE) && ((add_data + number - 1) <= BIT_MA_CONTROL_LAST))
-                   ||
-                   ((add_data >= BIT_MA_RESET_GENERAL_AF) && ((add_data + number - 1) <= BIT_MA_RESET_GENERAL_AF))
-                   ||
-                   ((add_data >= BIT_MA_NEW_SETTINGS_SET) && ((add_data + number - 1) <= BIT_MA_NEW_SETTINGS_SET))
-                   ||
-                   (
-                    ((add_data >= BIT_MA_INPUT_DF1          ) && ((add_data + number - 1) <= BIT_MA_INPUT_DF8             )) || 
-                    ((add_data >= BIT_MA_DT1_SET            ) && ((add_data + number - 1) <= BIT_MA_DT4_RESET             ))/* ||
-                    ((add_data >= BIT_MA_RESET_LEDS         ) && ((add_data + number - 1) <= BIT_MA_RESET_GENERAL_AF      ))*/
-                   ) 
-                  )
-          {
-            unsigned int first_address_of_word_for_function_3_or_4;
-            unsigned int offset;
-
-            if((add_data >= BIT_MA_CONTROL_BASE) && (add_data <= BIT_MA_CONTROL_LAST))
-            {
-              //Стан функцій захистів
-              offset = add_data - BIT_MA_CONTROL_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_CONTROL_BASE;
-            }
-            else if((add_data >= BIT_MA_INPUT_DF1) && (add_data <= BIT_MA_INPUT_DF8)) /*Определяємі функції*/
-            {
-              offset = add_data - BIT_MA_DF_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_DF;
-            }
-            else if((add_data >= BIT_MA_DT1_SET) && (add_data <= BIT_MA_DT4_RESET)) /*Опред. триґери*/
-            {
-              offset = add_data - BIT_MA_DT_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_DT;
-            }
-            else if(
-                    /*((add_data >= BIT_MA_RESET_LEDS                       ) && (add_data <= BIT_MA_RESET_GENERAL_AF      ))*/(add_data == BIT_MA_RESET_GENERAL_AF) ||
-                    ( add_data == BIT_MA_NEW_SETTINGS_SET                 )
-                   )
-            {
-              //Команди загальні
-              offset = add_data - BIT_MA_COMMAND_BASE;
-              first_address_of_word_for_function_3_or_4 = M_ADDRESS_COMMAND_BASE;
-            }
-
-            if (
-                (first_address_of_word_for_function_3_or_4 >= M_ADDRESS_CONTROL_BASE) &&
-                (first_address_of_word_for_function_3_or_4 <= M_ADDRESS_CONTROL_LAST)
-               )
-            {
-              //Іде намагання запису інформації, яка відноситься до настройок
-              
-              //Перевіряємо чи можемо ми ці операції зараз виконати
-              if (
-                  (
-                   ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
-                   ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
-                  )   
-                  &&
-                  (current_state_menu2.edition == ED_VIEWING)
-                 )
-              {
-                //Операція запису є доступною
-
-                //Робимо копію таблиці настройок
-//                edition_settings = current_settings_interfaces;
-
-                //Визначаємо початкову адресу читання/запису цілими словами
-                first_address_of_word_for_function_3_or_4 += (offset >> 4);
-                //Визначаємо зміщення у наступному слові
-                offset &= 0xf;
-                
-                //Зчитуємо спочатку ціле слово
-                unsigned short int temp_value;
-                unsigned char temp_value_in_char[2];
-                error = Get_data(temp_value_in_char,first_address_of_word_for_function_3_or_4, type_interface, GET_DATA_FOR_EDITING, BIT_REQUEST);
-                temp_value = temp_value_in_char[1];
-                temp_value |= temp_value_in_char[0] << 8;
-
-                unsigned int index_byte = 0, index_bit, index_of_bit_in_target_word;
-                unsigned char temp_data;
-                unsigned int i = 0;
-                index_of_bit_in_target_word = offset;//початковий номер біту
-                while ((i < number) && (error == 0))
-                {
-                  //Оскільки сама інформація які значення встановлювати, а які скинути упаковано побайтно, то і нам треба рухатися по-байтно
-                  index_bit  = i &  0x7; //Виділення трьох молодших біт аналогічне виділенню остачі при діленні цього числа на 8 - тобто це визначення номеру біту з вхідного "масиву" значень
-            
-                  //Новий байт зчитуємо тільки коли номер біту є 0, бо інакше байт вже є зчитаним
-                  if (index_bit == 0)
-                  {
-                    index_byte = i >> 3  ; //Зміщення на три розряди вправо аналогічне виділенню цілої частини при діленні цього числа на 8 - тобто це визначення номеру байту з вхідного "масиву" значень
-                    temp_data = *(received_buffer + 7 + index_byte);
-                  }
-            
-                  //Виділяємо значення біту, яке треба встановити
-                  unsigned int value_of_bit;
-                  value_of_bit = ((temp_data << (7 - index_bit)) >> 7) & 0x1;
-            
-                  //У слові, яке змінюємо спочатку скидаємо у нуль біт, який ми змінюємо
-                  //Це робимо тільки для тих сигналів, які можна скидати - для всіх інших цю операцію не виконуємо!!!
-                  temp_value &= (unsigned short)(~(1 << index_of_bit_in_target_word));
-
-                  //Тепер виставляємо потрібний біт
-                  temp_value |=  (value_of_bit << index_of_bit_in_target_word);
-  
-                  //Збільшуємо номер біту
-                  i++;
-                  //Вираховуємо номер наступного біту, який треба змінити
-                  index_of_bit_in_target_word = ((offset + i) & 0xf);//Виділення чотиох молодших біт аналогічне виділенню остачі при діленні цього числа на 16 - тобто це визначення номеру біту з вихідному слові
-            
-                  /*
-                  У разі, якщо індекс наступного цілового біту є нуль або якщо ми записали останній біт,
-                  то значить треба спочатку записати модернізоване слово і якщо є ще біти для запису, то зчитати нове слово
-                  */
-                  if ((index_of_bit_in_target_word == 0) || (i == number))
-                  {
-                    //Записуємо відповідне нове значення
-                    error = Set_data(temp_value, first_address_of_word_for_function_3_or_4, SET_DATA_INTO_EDIT_TABLE, /*(i < number),*/ type_interface); /*тут і вже збільшений на одиницю, тому перевірка здійснюється (i) з (number)*/
-                    if (error == 0)
-                    {
-                      if (reinit_settings == 0) reinit_settings = 1; //Помічаємо, що треба буде виконати запис нових настройок у EEPROM
-
-                      //Якщо є ще біти для запису, то зчитати нове слово
-                      if (i < number)
-                      {
-                        //Збільшуємо адресу слова у якому мають проводитися зміни
-                        first_address_of_word_for_function_3_or_4++;
-  
-                        //Зчитуємо ціле слово
-                        error = Get_data(temp_value_in_char,first_address_of_word_for_function_3_or_4, type_interface, GET_DATA_FOR_EDITING, BIT_REQUEST);
-                        temp_value = temp_value_in_char[1];
-                        temp_value |= temp_value_in_char[0] << 8;
-                      }
-                    }
-                  }
-                }
-              }
-              else
-              {
-                if (current_state_menu2.edition != ED_VIEWING) error = ERROR_SLAVE_DEVICE_BUSY;
-                else error = ERROR_ILLEGAL_DATA_ADDRESS;
-              }
-            }
-            else if (
-                     (
-                      (
-                       (first_address_of_word_for_function_3_or_4 == M_ADDRESS_DF) || 
-                       (first_address_of_word_for_function_3_or_4 == M_ADDRESS_DT)
-                      )
-                      &&
-                      (
-                       ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
-                       ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
-                      ) 
-                     )
-                     ||  
-                     (
-                      (first_address_of_word_for_function_3_or_4 == M_ADDRESS_COMMAND_BASE)
-                      &&
-                      (
-                       (!((add_data >= BIT_MA_NEW_SETTINGS_SET) && ((add_data + number - 1) <= BIT_MA_NEW_SETTINGS_SET))) ||
-                       ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
-                       ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
-                      )   
-                     )   
-                    )
-            {
-              //Іде подача активації команд телеуправління
-              
-              /*
-              Тут ми використовуємо константи активації функцій з допомогою ф-кнопок, бо механізм обробки однаковий що активацшя
-              функції з ф-кнопкт, що активація функції з інтерейсу
-              */
-              
-              unsigned int index_byte = 0, index_bit, number_activated_function;
-              unsigned char temp_data;
-              unsigned int i = 0;
-              unsigned int activation_function_from_interface_tmp = 0, reset_trigger_functions = 0;
-              int set_new_settings = -1;
-              while ((i < number) && (error == 0))
-              {
-                //Оскільки сама інформація які значення встановлювати упакована побайтно, то і нам треба рухатися по-байтно
-                index_bit  = i &  0x7; //Виділення трьох молодших біт аналогічне виділенню остачі при діленні цього числа на 8 - тобто це визначення номеру біту з вхідного "масиву" значень
-            
-                //Новий байт зчитуємо тільки коли номер біту є 0, бо інакше байт вже є зчитаним
-                if (index_bit == 0)
-                {
-                  index_byte = i >> 3  ; //Зміщення на три розряди вправо аналогічне виділенню цілої частини при діленні цього числа на 8 - тобто це визначення номеру байту з вхідного "масиву" значень
-                  temp_data = *(received_buffer + 7 + index_byte);
-                }
-            
-                //Виділяємо значення біту, яке треба встановити
-                unsigned int value_of_bit;
-                value_of_bit = ((temp_data << (7 - index_bit)) >> 7) & 0x1;
-                
-                number_activated_function = add_data + i;
-                if (value_of_bit != 0)
-                {
-                  /*     if  (number_activated_function == BIT_MA_RESET_LEDS                       )
-                    activation_function_from_interface_tmp |= 1 << RANG_TU_RESET_LEDS;
-                  else if  (number_activated_function == BIT_MA_RESET_RELES                      )
-                    activation_function_from_interface_tmp |= 1 << RANG_TU_RESET_RELES;
-                  else*/ if  (number_activated_function == BIT_MA_RESET_GENERAL_AF                 ) 
-                  {
-                    //Скидання загальних функцій 
-                    reset_trigger_functions = 0xff; /*ненульове значення означає, що треба скинути тригерні функції*/
-                  }
-                  else if  (number_activated_function == BIT_MA_NEW_SETTINGS_SET) 
-                  {
-                    /*Команда активації внесених змін у налаштування приладу через інтерфейс*/ 
-                    set_new_settings = true;
-                  }
-                  else 
-                  {
-                    //Теоретично сюди програма ніколи не малаб зайти
-                    error = ERROR_ILLEGAL_DATA_ADDRESS;
-                  }
-                }
-                else
-                {
-                  if  (number_activated_function == BIT_MA_NEW_SETTINGS_SET) 
-                  {
-                    /*Команда деактивації внесених змін у налаштування приладу через інтерфейс*/ 
-                    set_new_settings = false;
-                  }
-                }
-                
-                i++;
-              }
-
-              if (error == 0)
-              {
-                if (activation_function_from_interface_tmp != 0)
-                {
-                  activation_function_from_interface |= activation_function_from_interface_tmp;
-                }
-                if (reset_trigger_functions != 0)
-                {
-                  reset_trigger_function_from_interface |= (1 << type_interface);
-                }
-                if (set_new_settings != -1)
-                {
-                  if (set_new_settings == true)
-                  {
-                    //Активація внесекних змін
-                    unsigned int source = MENU_PARAMS_FIX_CHANGES;
-                    if(type_interface == USB_RECUEST) source = USB_PARAMS_FIX_CHANGES;
-                    else if(type_interface ==  RS485_RECUEST) source = RS485_PARAMS_FIX_CHANGES;
-
-                    unsigned int result = set_config_and_settings(1, source);
-                    if (result != 0)
-                    {
-                      error = ERROR_SLAVE_DEVICE_FAILURE;
-                      if (result == 2)
-                      {
-                        //Повідомляємо про критичну помилку
-                        current_state_menu2.edition = ED_ERROR;
-                      }
-                    }
-                  }
-                  else
-                  {
-                    //Відміна внесекних змін
-                    unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
-                    if (result != 0)
-                    {
-                      //Повідомляємо про критичну помилку
-                      current_state_menu2.edition = ED_ERROR;
-                    }
-                  }
-                  config_settings_modified = 0;
-                  type_of_settings_changed_from_interface = 0;
-//                  _CLEAR_BIT(active_functions, RANG_SETTINGS_CHANGED);
-                }
-              }
-            }
-            else
-            {
-              //Теоретично сюди програма ніколи не малаб зайти
-              error = ERROR_ILLEGAL_DATA_ADDRESS;
-            }
-          }
-          else
-            error = ERROR_ILLEGAL_DATA_ADDRESS;
-
-          if (error == 0)
-          {
-            CRC_sum = 0xffff;
-            for (int index = 0; index < 6; index++)
-            {
-              *(transmited_buffer + index ) = *(received_buffer + index );
-              CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
-            }
-            *(transmited_buffer + 6) = CRC_sum & 0xff;
-            *(transmited_buffer + 7) = CRC_sum >> 8;
-
-            *transmited_count = 8;
-            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-          
-            if (reinit_settings != 0)
-            {
-              //Копіюємо введені зміни у робочу структуру
-//              current_settings_interfaces = edition_settings;
-
-              //Відбулася зміна настройки
-//              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
-              restart_timeout_idle_new_settings = true;
-              type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
-            }
-          }
-          else
-          {
-            //Відповідаємо про помилку
-            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
-            *transmited_count = 5;
-            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-          }
-          break;
-        }//Кінець для обробки функції 15        
-      case 16:
-        {
-          unsigned int add_data, number;
-          unsigned int reinit_ustuvannja = 0, reinit_settings = 0, set_new_password = 0, reinit_ranguvannja = 0, set_min_param = 0;
-          unsigned int reinit_user_register = 0;
-          unsigned int setting_new_rtc = 0;
-            
-          add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
-          number   = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
-
-          //Робимо встановлений/невстановлений пароль доступу
-          unsigned int before_password_set;
-          if (type_interface == USB_RECUEST) before_password_set = password_set_USB;
-          else if (type_interface == RS485_RECUEST) before_password_set = password_set_RS485;
-          else error= ERROR_SLAVE_DEVICE_FAILURE;
-
-          if ((number < 1) || (number > 0x7B) || ((*(received_buffer + 6)) != ( number <<1)))
-            error= ERROR_ILLEGAL_DATA_VALUE;
-          else if (
-                   (global_requect != 0) && /*запит по адресі BROADCAST_ADDRESS_MODBUS_RTU протоколу Modbus-RTU*/
-                   (
-                    !(
-                      ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && ((add_data + number - 1) <= M_ADDRESS_LAST_TIME_AND_DATA))
-                     )
-                   )     
-                  )
-          {
-            /*
-            По глобалній адресі можна змінювати тільки час і дату
-            */
-            error = ERROR_BROADCAST_ADDRESS;
-          }
-
-          //Починаємо вводити прийняті дані
-          unsigned int i = 0;
-          while((i < number) && (error == 0 ))
-          {
-            unsigned short int data = (*(received_buffer+7+2*i))<<8 | (*(received_buffer+8+2*i));
-
-            if (
-                (current_state_menu2.edition == ED_VIEWING                     ) ||
-                (add_data                    == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
-               )
-            {
-              /*****/
-              //Перевірка на необхідність паролю доступу для запису
-              /*****/
-              if (
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_PART1                 ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_PART1                 )) || /*уставки і витримки*/
-                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1))) || /*уставки і витримки першої групи*/
-//                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))) || /*уставки і витримки другої групи*/
-//                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))) || /*уставки і витримки третьої групи*/
-//                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4))) || /*уставки і витримки четвертої групи*/
-                  ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) || /*налаштування захистів*/
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) || /*уставки і витримки (продовження) крім паролю доступу*/
-                  ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA                   ) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA                   )) || /*час*/
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) || /*ранжування*/
-                   (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR                   )                                                                   || /*очищення реєстратора програмних подій*/
-                   (add_data == MA_DEFAULT_SETTINGS                             )                                                                   || /*встановлення мінімальної конфігурації*/        
-                   (add_data == MA_TEST_WATCHDOGS                               )                                                                 /*||*/ /*тестування внутрішнього і зовнішнього watchdog*/        
-//                   (add_data == MA_NUMBER_ITERATION_EL                          )                                                                      /*встановленнямаксимальної кількості ітераційдля розширеної логіки*/        
-                 )
-              {
-                if (
-                    (add_data != MA_PASSWORD_INTERFACE) &&
-                    (
-                     ((type_interface == USB_RECUEST  ) && (password_set_USB != 0  )) ||
-                     ((type_interface == RS485_RECUEST) && (password_set_RS485 != 0))
-                    )   
-                   )
-                {
-                  //Не можна зараз записати цей регістр, бо треба спочатку зняти пароль доступу
-                  error = ERROR_ILLEGAL_DATA_ADDRESS;
-                }
-                else if (
-                         (number != 1)
-                         &&
-                         (  
-                          (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR) || /*очищення реєстратора програмних подій*/
-                          (add_data == MA_DEFAULT_SETTINGS          ) || /*встановлення мінімальної конфігурації*/        
-                          (add_data == MA_TEST_WATCHDOGS            )    /*тестування внутрішнього і зовнішнього watchdog*/        
-                         )   
-                        )
-                {
-                  //Ці команди можуть подаватися одночано тільки на один регістр - інакше повідомляємо про помилку
-                  error = ERROR_ILLEGAL_DATA_ADDRESS;
-                }
-                else
-                {
-                  //Можна записувати нові дані для настройок
-                
-                  //Якщо у даній трансакції ми перший раз вводим нове значення по натройках (крім часу) то робимо копію структури настройок
-                  if (
-                      (
-                       (reinit_settings      == 0) && 
-                       (reinit_ranguvannja   == 0) &&
-                       (reinit_user_register == 0)
-                      )/*ще не проводився запис настройкок, тому ще не зроблена копія таблиці настройок*/ 
-                      &&  
-                      ( 
-                       !(
-                         (add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && 
-                         (add_data <= M_ADDRESS_LAST_TIME_AND_DATA ) 
-                        )/*копію таблиці настройок не треба робити коли ми встановлюємо час*/
-                      )    
-                     )
-                  {
-                    //Робимо копію таблиці настройок
-//                    edition_settings  = current_settings_interfaces;
-
-                    //Враховуючи той факт, що може зараз відбуватися ранжування, то скидаємо вказівник на редагуюче поле в 0
-                    point_to_edited_rang = NULL;
-//                    for (unsigned int j = 0; j < N_BIG; j++)
-//                    {
-//                      clear_array_rang[j] = 0;
-//                      set_array_rang[j]   = 0;
-//                    }
-                  }
-
-                  if (
-                      (add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) &&
-                      (add_data <= M_ADDRESS_LAST_TIME_AND_DATA ) &&
-                      (setting_new_rtc == 0                     )
-                     )
-                  {
-                    if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT) == 0)
-                    {  
-                      //Помічаємо, що треба ввести новий системний час
-                      setting_new_rtc = 1;
-
-                      //Робимо копію часу, дати і калібровки на яку ми накладемо зміни, перевіримо їх на достовірність і потім, якщо провірка пройде вдало, то запишемо їх у мікросхему RTC
-                      unsigned char *label_to_time_array, *label_calibration;
-                      if (copying_time == 0)
-                      {
-                        label_to_time_array = time;
-                        label_calibration = &calibration;
-                      }
-                      else
-                      {
-                        label_to_time_array = time_copy;
-                        label_calibration = &calibration_copy;
-                      }
-                      for(unsigned int index = 0; index < 7; index++) time_edit[index] = *(label_to_time_array + index);
-                      calibration_edit = *label_calibration;
-                    }
-                    else
-                    {
-                      /*
-                      Ще виконалася попередня команда запису часу, а нова може змінити 
-                      попередньо введені дані при копіюванні текучого часу (щоб мати цілісний масив часу)
-                      Тому ця операція є тимчасово недоступною
-                      */
-                      error = ERROR_SLAVE_DEVICE_BUSY;
-                    }
-                  }
-                
-                  if (error == 0)
-                  {
-                    //Вводимо нові значення через тимчасову структуру
-                    error = Set_data(data, add_data, SET_DATA_INTO_EDIT_TABLE, /*((i + 1) < number),*/ type_interface); /*тут і ще не збільшений на одиницю, тому перевірка здійснюється(i + 1) з (number)*/
-                  }
-                }
-              }
-              else
-              {
-                //Ці дані не потребують перевірки на пароль
-              
-                if (
-                    (add_data >= MA_ADDRESS_FIRST_USTUVANNJA) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA) || /*юстуючі амплітудні і фазові коефіцієнти*/
-                    (add_data == MA_SET_SERIAL_NUMBER                                                       )    /*серійний номер*/  
-                   )
-                {
-                  //Вводяться нові дані для юстування або серійний номер
-              
-                  //Якщо у даній трансакції ми перший раз вводим нове значення по юстуванню то робимо копію масиву юстування
-                  if (reinit_ustuvannja == 0)
-                  {
-                    for(unsigned int k = 0; k < NUMBER_ANALOG_CANALES; k++) 
-                    {
-                      edit_ustuvannja[k] = ustuvannja[k];
-                    }
-                    edit_serial_number_dev = serial_number_dev;
-                  }
-                }
-                //Вводимо нові значення через тимчасовий масив (хоч настравді він використовується тільки для юстування, а для всіх інших регістрів все одно який другий параметра викликаємої функції)
-                error = Set_data(data, add_data, SET_DATA_INTO_EDIT_TABLE, /*((i + 1) < number),*/ type_interface); /*тут і ще не збільшений на одиницю, тому перевірка здійснюється(i + 1) з (number)*/
-              }
-            }
-            else error = ERROR_SLAVE_DEVICE_BUSY;
-              
-            if (error == 0)
-            {
-              if (
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_PART1                 ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_PART1                 )) ||
-                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1))) ||
-//                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))) ||
-//                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))) ||
-//                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4))) ||
-                  ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) ||  
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) ||
-                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  ))/* ||*/
-//                  (add_data == MA_NUMBER_ITERATION_EL)
-                 )
-              {
-                //Записуємо інформацю, яка відноситься до настройок
-                
-                if (
-                    ((add_data == MA_PASSWORD_INTERFACE) && (password_changed == true))
-                    ||  
-                    ( add_data != MA_PASSWORD_INTERFACE) /*встановлення всіх інших настрройок чи ранжування (за виключенням паролю доступу)*/ 
-                   )   
-                {
-                  //Виключаємо той випадок, коли робилося зняття паролю доступу
-                  //Записуємо настройки
-                  if (
-                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   ))
-                     )
-                  {
-                    if  ( !((add_data >= M_ADDRESS_FIRST_USER_REGISTER) && (add_data <= M_ADDRESS_LAST_USER_REGISTER)) )
-                    {
-                      //Не іде ранжування регістрів користувача
-                      
-                      //Помічаємо, що треба записати інформацю по ранжуванню
-                      reinit_ranguvannja = 1;
-                    }
-                    else
-                    {
-                      //Іде ранжування регістрів користувача
-                      reinit_user_register = 1;
-                    }
-                  }
-                  else
-                  {
-                    //Помічаємо, що треба записати інформацю по настройках (крім ранжування)
-                    if (add_data == MA_PASSWORD_INTERFACE)
-                    {
-                      set_new_password = 1;
-                    }
-                    else
-                    {
-                      reinit_settings = 1;
-                    }
-                  }
-                }
-              }
-              else if (
-                       ((add_data >= MA_ADDRESS_FIRST_USTUVANNJA ) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA)) ||
-                       ( add_data == MA_SET_SERIAL_NUMBER)  
-                      )
-              {
-                //Помічаємо, що треба записати юстуючі коефіцієнти
-                reinit_ustuvannja = 1;
-              }
-              else if (add_data == MA_DEFAULT_SETTINGS)
-              {
-                //Скидання у мінімальну конфігурацію
-                set_min_param = 1;
-              }
-            }
-            add_data++;
-            i++;
-          } 
-
-          /*****/
-          //Якщо була спроба встановити час-дату, то виконуємо запис у мікросхему RTC, бо тут ще буде перевірка на достовірні дані
-          /*****/
-          if ((error == 0) && (setting_new_rtc != 0))
-          {
-            //Встановлення нового часу-дати
-
-            //Перевіряємо достовірність даних
-            if (check_data_for_data_time_menu() == 1)
-            {
-              //Дані достовірні
-              //Виставляємо повідомлення запису часу в RTC
-              //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
-              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-              _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
-            }
-            else error = ERROR_ILLEGAL_DATA_VALUE;
-          }
-          /*****/
-
-          if (error == 0)
-          {
-            if  (global_requect == 0)
-            {
-              CRC_sum = 0xffff;
-              for (int index = 0; index < 6; index++)
-              {
-                *(transmited_buffer + index ) = *(received_buffer + index );
-                CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
-              }
-              *(transmited_buffer +6 ) = CRC_sum & 0xff;
-              *(transmited_buffer +7 ) = CRC_sum >> 8;
-
-              *transmited_count = 8;
-              if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-              else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-            }
-            else
-            {
-              if(type_interface == RS485_RECUEST)
-              {
-                //Перезапускаємо моніторинг лінії RS-485
-                restart_monitoring_RS485();
-              }
-            }
-
-            /*****/
-            //При необхідності записуємо інформацію у EEPROM
-            /*****/
-            if (reinit_ustuvannja != 0)
-            {
-              //Попередньо вводимо нові значення у дію
-              //Помічаємо, що елементи масиву юстування зараз будуть змінені
-              changed_ustuvannja = CHANGED_ETAP_EXECUTION;
-              for(unsigned int k = 0; k < NUMBER_ANALOG_CANALES; k++) 
-              {
-                ustuvannja[k] = edit_ustuvannja[k];
-              }
-              //Помічаємо, що елементи масиву юстування змінені і готові для передавання у вимірювальну систему
-              changed_ustuvannja = CHANGED_ETAP_ENDED;
-              serial_number_dev = edit_serial_number_dev;
-
-              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT);
-            }
-            if (
-                (reinit_settings      != 0) ||
-                (set_new_password     != 0) ||  
-                (reinit_ranguvannja   != 0) ||
-                (set_min_param        != 0) ||
-                (reinit_user_register != 0)  
-               )
-            {
-              //Копіюємо введені зміни у робочу структуру
-//              current_settings_interfaces = edition_settings;
-
-              //Відбулася зміна настройки
-//              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
-              restart_timeout_idle_new_settings = true;
-              
-              if (set_min_param != 0)
-              {
-                type_of_settings_changed_from_interface = (1 << DEFAULT_SETTINGS_SET_BIT);
-              }
-              
-              if (reinit_settings != 0)
-              {
-                type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
-              }
-
-              if (set_new_password != 0)
-              {
-                type_of_settings_changed_from_interface |= (1 << NEW_PASSWORD_SET_BIT);
-              }
-
-              if (reinit_ranguvannja != 0)
-              {
-                type_of_settings_changed_from_interface |= (1 << RANGUVANNJA_DATA_CHANGED_BIT);
-              }
-
-              if (reinit_user_register != 0)
-              {
-                type_of_settings_changed_from_interface |= (1 << USER_REGISTRY_CHANGED_BIT);
-              }
-            }
-            /*****/
-          }
-          else 
-          {
-            //Встановлюємо попередній стан доступу по поралю
-            if (type_interface == USB_RECUEST) password_set_USB = before_password_set;
-            else if (type_interface == RS485_RECUEST) password_set_RS485 = before_password_set;
-
-            if  (global_requect == 0)
-            {
-              Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
-              *transmited_count = 5;
-              if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-              else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-            }
-            else
-            {
-              if(type_interface == RS485_RECUEST)
-              {
-                //Перезапускаємо моніторинг лінії RS-485
-                restart_monitoring_RS485();
-              }
-            }
-          }
-
-          break;
-        }//Кінець для обробки функції 16
-//      case 20:
+//void modbus_rountines(unsigned int type_interface)
+//{
+// unsigned char *received_buffer, *transmited_buffer;
+// int *received_count;
+// int *transmited_count;
+// unsigned int error = 0;
+//  
+//  if(type_interface == USB_RECUEST)
+//  {
+//    received_buffer = usb_received;
+//    transmited_buffer = usb_transmiting;
+//    received_count = &usb_received_count;
+//    transmited_count = &usb_transmiting_count;
+//  }
+//  else if (type_interface == RS485_RECUEST)
+//  {
+//    received_buffer = RxBuffer_RS485;
+//    transmited_buffer = TxBuffer_RS485;
+//    received_count = &RxBuffer_RS485_count;
+//    transmited_count = &TxBuffer_RS485_count;
+//  }
+//  else
+//  {
+//    //Теоретично цього ніколи не мало б бути
+//    total_error_sw_fixed(45);
+//  }
+//   
+//  //Перевірка адреси запитуваного приладу
+//  unsigned int global_requect;
+//  if(
+//     (*received_count >= 3)  
+//     &&
+//     (
+//      ((global_requect = (*received_buffer == BROADCAST_ADDRESS_MODBUS_RTU)) != 0) ||
+//      (*received_buffer == settings_fix.address)
+//     )
+//    )   
+//  {
+//    unsigned short int CRC_sum;
+//    
+//    //Перевірка контрольної суми
+//    CRC_sum = 0xffff;
+//    for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(received_buffer + index),CRC_sum);
+//
+//    unsigned int func_modbus = *(received_buffer+1);
+//    if (
+//        ((CRC_sum & 0xff) == *(received_buffer+*received_count-2)) &&
+//        ((CRC_sum >> 8  ) == *(received_buffer+*received_count-1)) &&
+//        (
+//         (global_requect == 0) ||
+//         (func_modbus == 6 ) ||
+//         (func_modbus == 16)
+//        )
+//       )
+//    {
+//      //Подаємо команду на скинення лічильника очікування нового запиту з вказаного інтерфейсу
+//      restart_timeout_interface |= (1 << type_interface);
+//      
+//      //Обробка даних
+//      switch (func_modbus)
+//      {
+//      case 1:
+//      case 2:
 //        {
-//          *transmited_buffer = *(received_buffer);
-//          *(transmited_buffer + 1) = *(received_buffer + 1) ;
+//          unsigned int add_data, number;
+//          unsigned int number_byte_transmit, number_word_transmit, number_word_read;
+//          unsigned int offset;
 //
-//          unsigned int number_requests = *(received_buffer + 2);
-//          unsigned int total_number_answer = 0;
+//          add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
+//          number   = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
+//          
+//          number_byte_transmit = number >> 3;
+//          if((number_byte_transmit<<3) < number) number_byte_transmit++; //Оскільки нам треба заокруглювати до більшого числа при діленні на 8 (зсув на три розряди вліво)
 //
-//          if ((number_requests >= 0x7) && (number_requests <= 0xF5))
+//          //Визначаємо кількість інформаційних слів (2 байти) у відповіді
+//          if ((number_byte_transmit & 0x1) == 0)
 //          {
-//            unsigned int i = 0; 
-//            while ((i < number_requests) && ((error = Get_data_file((received_buffer + 3 + i), (transmited_buffer + 3 + total_number_answer), &total_number_answer, type_interface)) == 0))
-//            {
-//              i += 7;
-//            }
-//         
+//            //Парна кількість байт, а значить ділення на 2 дасть точну кількість слів
+//            number_word_transmit = number_byte_transmit >> 1;
 //          }
-//          else error = ERROR_ILLEGAL_DATA_VALUE;
-//        
+//          else
+//          {
+//            //Непарна кількість байт, а значить перед діленням на 2 треба ще додати один байт, щоб отримати кількість слів для зчитування
+//            number_word_transmit = (number_byte_transmit + 1) >> 1;
+//          }
+//                   
+//          unsigned int first_address_of_word_for_function_3_or_4;
+//          if(
+//             (number != 0   ) &&
+//             (number <= 2000) &&
+//             (bit_adr_to_reg_adr(add_data, &first_address_of_word_for_function_3_or_4, &offset))  
+//            )
+//          {
+//            //Формуємо початок відповіді
+//            *transmited_buffer = *(received_buffer);
+//            *(transmited_buffer + 1) = *(received_buffer + 1);
+//            *(transmited_buffer + 2) = number_byte_transmit;
+//
+//            //Визначаємо, з якого слова треба розпочати зчитування цілими словами
+//            first_address_of_word_for_function_3_or_4 += (offset >> 4);
+//            //Визначаємо ще остачу від ділення
+//            offset &= 0xf;
+//            
+//            number_word_read = number_word_transmit;
+//            /*
+//            Визначаємо скільки слів треба прочитати (підрахунок ведемо по кількості біт 
+//            і з перший біт приймаємо начперший біт слова, яке буде прочитане функцією Get_data
+//            і  додаємо зміщення, бо може перший біт не буде потрібний а будуть потрібні біти наступної величини)
+//            Тут ми визначаємо скільки слів треба буде прочитати функцією Get_data щоб отримати дані для передачі
+//            */
+//            if ((offset + number) > (number_word_transmit << 4)) number_word_read++; //Бо буде захоплене ще наступне слово за рахунок зміщення
+//            
+//            //Зчитуємо спочатку цілі слова
+//            unsigned int i=0;
+//            while((i < number_word_read) && ((error = Get_data((transmited_buffer + 3 + 2*i), (first_address_of_word_for_function_3_or_4 + i), type_interface, GET_DATA_IMMEDITATE, BIT_REQUEST))==0)) i++;
+//          }
+//          else
+//          {
+//            if ((number == 0) || (number > 2000)) error = ERROR_ILLEGAL_DATA_VALUE;
+//            else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//          }
+//          
+//          //Формуємо байти відповіді і саму відповідь у протоколі MODBUS-RTU
 //          if (error == 0)
 //          {
-//            *(transmited_buffer + 2) = total_number_answer ;
-//
-//            CRC_sum = 0xffff;
-//            for (int index = 0; index < ((int)(total_number_answer + 3)); index++) CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
-//            *(transmited_buffer+3+total_number_answer) = CRC_sum & 0xff;
-//            *(transmited_buffer+4+total_number_answer) = CRC_sum >> 8;
+//            unsigned short int temp_value_for_offset, current_word, next_word;
+//            unsigned int maska = 0, max_bit_in_high_byte = (number & 0x7);
 //            
-//            *transmited_count = 5+total_number_answer;
+//            for(unsigned int i = 0; i < number_word_transmit; i++)
+//            {
+//              //Функція Get_data помістила байти в порядку MSB-LSB і т.д
+//              current_word = (*(transmited_buffer + 3 + 2*i) << 8) | (*(transmited_buffer + 3 + 2*i + 1));
+//              if ((i + 1) < number_word_read) next_word = (*(transmited_buffer + 3 + 2*(i + 1)) << 8) | (*(transmited_buffer + 3 + 2*(i + 1) + 1));
+//              else next_word = 0;
+//              
+//              //Визначаємо , які біти з наступного слова треба перемістити в дане слово і зміщуємо їх у старші розряди
+//              temp_value_for_offset = next_word << (16 - offset);
+//              
+//              //Формуємо слово із врахуванням зміщення
+//              temp_value_for_offset |= (current_word >> offset);
+//             
+//              if((2*i    ) < number_byte_transmit)
+//                *(transmited_buffer + 3 + 2*i    ) = temp_value_for_offset        & 0xff;
+//              if((2*i + 1) < number_byte_transmit)
+//                *(transmited_buffer + 3 + 2*i + 1) = (temp_value_for_offset >> 8) & 0xff;
+//            }
+//            
+//            //В останньому байті треба зайві біти змаскувати
+//            if (max_bit_in_high_byte != 0)
+//            {
+//              for(unsigned int i = 0; i < max_bit_in_high_byte; i++) maska = (maska << 1) + 0x1;
+//              *(transmited_buffer + 3 + number_byte_transmit - 1 ) &= maska;
+//            }
+//              
+//            CRC_sum = 0xffff;
+//            for (int index = 0; index < ((int)(number_byte_transmit + 3)); index++) CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
+//            *(transmited_buffer + 3 + number_byte_transmit + 0) = CRC_sum & 0xff;
+//            *(transmited_buffer + 3 + number_byte_transmit + 1) = CRC_sum >> 8;
+//
+//            *transmited_count = number_byte_transmit + 5;
 //            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
 //            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
 //          }
 //          else
 //          {
-//            
+//            //Відповідаємо про помилку
+//            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
+//            *transmited_count = 5;
+//            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//          }
+//          
+//          break;
+//        }//Кінець для обробки функцій 1 і 2
+//      case 3:
+//      case 4:
+//        {
+//          unsigned int add_data, number;
+//          number   = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
+//          
+//          if ((number == 0) || (number > ((255-5)>>1)))
+//          {
+//            //Помилка запиту кількості регістрів
+//            error = ERROR_ILLEGAL_DATA_VALUE;
+//          }
+//          else
+//          {
+//            *transmited_buffer = *(received_buffer);
+//            *(transmited_buffer + 1) = *(received_buffer + 1) ;
+//            *(transmited_buffer + 2) = number*2;
+//
+//            add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
+//
+//            if (
+//                ((add_data >= M_ADDRESS_FIRST_MEASUREMENTS_1 ) && (add_data <= M_ADDRESS_LAST_MEASUREMENTS_1)) ||
+//                ((add_data >= M_ADDRESS_FIRST_TMP_MEASURMENTS) && (add_data <  M_ADDRESS_LAST_TMP_MEASURMENTS))  
+//               )
+//            {
+//              //Копіюємо вимірювання
+//              semaphore_measure_values_low1 = 1;
+//              for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++ ) 
+//              {
+//                measurement_low[i] = measurement_middle[i];
+//              }
+//              semaphore_measure_values_low1 = 0;
+//            }
+//
+//            unsigned int i=0;
+//            while((i<number) && ((error = Get_data((transmited_buffer+3+2*i),(add_data+i), type_interface, GET_DATA_IMMEDITATE, BYTE_REQUEST))==0))i++;
+//          }
+//
+//          if (error == 0)
+//          {
+//            CRC_sum = 0xffff;
+//            for (int index = 0; index < ((int)(3+2*number)); index++) CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
+//            *(transmited_buffer+3+2*number) = CRC_sum & 0xff;
+//            *(transmited_buffer+4+2*number) = CRC_sum >> 8;
+//
+//            *transmited_count = 5+2*number;
+//            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//          }
+//          else
+//          {
 //            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
 //            *transmited_count = 5;
 //            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
@@ -4037,33 +2785,1285 @@ void modbus_rountines(unsigned int type_interface)
 //          }
 //
 //          break;
-//        }//Кінець для обробки функції 20        
-      default:
-        {
-          Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), ERROR_ILLEGAL_FUNCTION, transmited_buffer);
-          *transmited_count = 5;
-          if(type_interface == USB_RECUEST) data_usb_transmiting = true;
-          else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
-        }
-      }
-    }
-    else
-    {
-      if(type_interface == RS485_RECUEST)
-      {
-        //Перезапускаємо моніторинг лінії RS-485
-        restart_monitoring_RS485();
-      }
-    }
-  }
-  else
-  {
-    if(type_interface == RS485_RECUEST)
-    {
-      //Перезапускаємо моніторинг лінії RS-485
-      restart_monitoring_RS485();
-    }
-  }
-  *received_count = 0;
-}
+//        }//Кінець для обробки функцій 3 і 4
+//      case 5:
+//        {
+//          unsigned int add_data;
+//          unsigned short int value, temp_value = 0;
+//          unsigned int offset;
+//          
+//          add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
+//          value    = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
+//
+//          unsigned int first_address_of_word_for_function_3_or_4;
+//           
+//          if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
+//          {
+//            //Теоретично такого бути не мало б ніколи
+//            error = ERROR_SLAVE_DEVICE_FAILURE;
+//          }
+//          else if (bit_adr_to_reg_adr(add_data, &first_address_of_word_for_function_3_or_4, &offset))
+//          {
+//            //Виконуємо дію
+//            if (first_address_of_word_for_function_3_or_4 == M_ADDRESS_CONTROL_BASE)
+//            {
+//              //Іде намагання змінити настройку захисту
+//              
+//              ///Перевіряємо, чи пароль доступу знятий і чи система меню не є у стані редагування
+//              if (
+//                  (
+//                   ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
+//                   ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
+//                  )
+//                  &&  
+//                  (current_state_menu2.edition == ED_VIEWING)
+//                 )
+//              {
+//                //Запис проводимо тільки тоді, коли пароль знятий і система меню не у режимі редагування, або іде команда управління
+//            
+//                //Визначаємо, з якого слова треба розпочати зчитування цілими словами
+//                first_address_of_word_for_function_3_or_4 += (offset >> 4);
+//
+//                //Визначаємо ще скільки розрядів залишається у наступному слові
+//                offset &= 0xf;
+//            
+//                //Зчитуємо спочатку ціле слово
+//                unsigned char temp_value_in_char[2];
+//                error = Get_data(temp_value_in_char, first_address_of_word_for_function_3_or_4, type_interface, GET_DATA_IMMEDITATE, BIT_REQUEST);
+//                temp_value = temp_value_in_char[1];
+//                temp_value |= temp_value_in_char[0] << 8;
+//
+//                if (error == 0)
+//                {
+//                  //Якщо регістр прочитався вдало, то формуємо байт, який треба записати 
+//                  if (value == 0xff00) temp_value |=   (1 << offset); //Встановити
+//                  else if (value == 0x0)temp_value &= ~(1 << offset); //Зняти
+//                  else error = ERROR_ILLEGAL_DATA_VALUE;              //Невизначена ситуація, яка теоретично ніколи не мала настати бо попередньо ми цю умову вже провіряли і цю ситуацію відкинули як недопустиму
+//
+//                  if (error == 0)
+//                  {
+//                    error = Set_data(temp_value,first_address_of_word_for_function_3_or_4, SET_DATA_IMMEDITATE, /*false,*/ type_interface);
+//                    if (error == 0)
+//                    {
+//                      //Дійсно відбулася зміна настройки
+////                      _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//                      restart_timeout_idle_new_settings = true;
+//                      type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
+//                    }
+//                  }
+//                }
+//              }
+//              else
+//              {
+//                if (current_state_menu2.edition != ED_VIEWING) error = ERROR_SLAVE_DEVICE_BUSY;
+//                else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//              }
+//            }
+//            else if (
+//                     (
+//                      (first_address_of_word_for_function_3_or_4 == M_ADDRESS_COMMAND_BASE)
+//                      &&
+//                      (
+//                       (add_data != BIT_MA_NEW_SETTINGS_SET) ||
+//                       ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
+//                       ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
+//                      )   
+//                     )   
+//                    )
+//            {
+//              //Іде подача активації команди
+//              
+//              /*
+//              Тут ми використовуємо каонстанти активації функцій з допомогою ф-кнопок, бо механізм обробки однаковий що активацшя
+//              функції з ф-кнопкт, що активація функції з інтерейсу
+//              */
+//              /*     if  (add_data == BIT_MA_RESET_LEDS                       ) activation_function_from_interface |= 1 << RANG_TU_RESET_LEDS;
+//              else if  (add_data == BIT_MA_RESET_RELES                      ) activation_function_from_interface |= 1 << RANG_TU_RESET_RELES;
+//              else*/ if  (add_data == BIT_MA_RESET_GENERAL_AF) 
+//              {
+//                //Скидання загальних функцій 
+//                reset_trigger_function_from_interface |= (1 << type_interface);
+//              }
+//              else if  (add_data == BIT_MA_NEW_SETTINGS_SET) 
+//              {
+//                /*Команда активації внесених змін у налаштування приладу через інтерфейс*/ 
+//                if (value == 0xff00)
+//                {
+//                  //Активація внесекних змін
+//                  unsigned int source = MENU_PARAMS_FIX_CHANGES;
+//                  if(type_interface == USB_RECUEST) source = USB_PARAMS_FIX_CHANGES;
+//                  else if(type_interface ==  RS485_RECUEST) source = RS485_PARAMS_FIX_CHANGES;
+//
+//                  unsigned int result = set_config_and_settings(1, source);
+//                  if (result != 0)
+//                  {
+//                    error = ERROR_SLAVE_DEVICE_FAILURE;
+//                    if (result == 2)
+//                    {
+//                      //Повідомляємо про критичну помилку
+//                      current_state_menu2.edition = ED_ERROR;
+//                    }
+//                  }
+//                }
+//                else
+//                {
+//                  //Відміна внесекних змін
+//                  unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
+//                  if (result != 0)
+//                  {
+//                    //Повідомляємо про критичну помилку
+//                    current_state_menu2.edition = ED_ERROR;
+//                  }
+//                }
+//                config_settings_modified = 0;
+//                type_of_settings_changed_from_interface = 0;
+////                _CLEAR_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//              }
+//            }
+//            else
+//            {
+//              //Теоретично сюди програма ніколи не малаб зайти
+//              
+//              error = ERROR_ILLEGAL_DATA_ADDRESS;
+//            }
+//          }
+//          else
+//          {
+//            if (
+//                ((value != 0x0) && (value != 0xff00)) ||
+//                (
+//                 (value == 0x0) 
+//                 &&
+//                 (add_data != BIT_MA_NEW_SETTINGS_SET) /*Команда активації внесених змін у налаштування приладу через інтерфейс*/
+//                 &&
+//                 (  
+//                  (add_data == BIT_MA_RESET_GENERAL_AF) /*Скидання загальних функцій*/
+//                  ||
+//                  (  
+//                   ((add_data >= BIT_MA_INPUT_DF1) && (add_data <= BIT_MA_INPUT_DF8)) || /*Входи Определяємих функцій*/
+//                   ((add_data >= BIT_MA_DT1_SET ) && (add_data <= BIT_MA_DT4_RESET ))/* ||*/ /*Оприд. триґери*/
+////                   ( add_data == BIT_MA_RESET_LEDS                                  ) || /*Очищення індикації*/
+////                   ( add_data == BIT_MA_RESET_RELES                                 )    /*Скидання реле*/
+//                  )
+//                 )   
+//                )
+//               ) error = ERROR_ILLEGAL_DATA_VALUE;
+//            else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//          }
+//          
+//          if (error == 0)
+//          {
+//            for (int index = 0; index < 8; index++) *(transmited_buffer + index ) = *(received_buffer + index );
+//            *transmited_count = 8;
+//            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//          }
+//          else
+//          {
+//            //Відповідаємо про помилку
+//            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
+//            *transmited_count = 5;
+//            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//          }
+//          break;
+//        }//Кінець для обробки функції 5        
+//      case 6:
+//        {
+//          unsigned int add_data;
+//          unsigned short int data;
+//          unsigned int changing_ustuvannja = 0;
+//
+//          add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
+//          data     = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
+//
+//          if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
+//          {
+//            //Теоретично такого бути не мало б ніколи
+//            error = ERROR_SLAVE_DEVICE_FAILURE;
+//          }
+//          else if (
+//                   (global_requect != 0) && /*запит по адресі BROADCAST_ADDRESS_MODBUS_RTU протоколу Modbus-RTU*/
+//                   (
+//                    !(
+//                      ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA))
+//                     )
+//                   )     
+//                  )
+//          {
+//            /*
+//            По глобалній адресі можна змінювати тільки час і дату
+//            */
+//            error = ERROR_BROADCAST_ADDRESS;
+//          }
+//          else if (
+//                   (current_state_menu2.edition == ED_VIEWING                     ) ||
+//                   (add_data                    == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
+//                  )
+//          {
+//            /*****/
+//            //Перевірка на необхідність паролю доступу для запису
+//            /*****/
+//            if (
+//                (
+//                 ((type_interface == USB_RECUEST  ) && (password_set_USB   != 0)) ||
+//                 ((type_interface == RS485_RECUEST) && (password_set_RS485 != 0))
+//                )
+//                &&
+//                (
+//                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_PART1                 ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_PART1                 )                                       ) || /*уставки і витримки*/
+//                 ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1))                                       ) || /*уставки і витримки першої групи*/
+////                 ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))                                       ) || /*уставки і витримки другої групи*/
+////                 ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))                                       ) || /*уставки і витримки третьої групи*/
+////                 ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4))                                       ) || /*уставки і витримки четвертої групи*/
+//                 ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )                                       ) || /*налаштування захистів*/
+//                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              ) && (add_data != MA_PASSWORD_INTERFACE)) || /*уставки і витримки (продовження) крім паролю доступу*/
+//                 ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA                   ) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA                   )                                       ) || /*час*/
+//                 ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )                                       ) || /*ранжування*/
+//                  (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR                   )                                                                                                          || /*очищення реєстратора програмних подій*/        
+//                  (add_data == MA_DEFAULT_SETTINGS                             )                                                                                                          || /*встановлення мінімальної конфігурації*/        
+//                  (add_data == MA_TEST_WATCHDOGS                               )                                                                                                        /*||*//*тестування внутрішнього і зовнішнього watchdog*/        
+////                  (add_data == MA_NUMBER_ITERATION_EL                          )                                                                                                             /*встановленнямаксимальної кількості ітераційдля розширеної логіки*/        
+//                )   
+//               )
+//            {
+//              //Не можна зараз записати цей регістр, бо треба спочатку зняти пароль доступу
+//              error = ERROR_ILLEGAL_DATA_ADDRESS;
+//            }
+//            else
+//            {
+//              unsigned int changed_ustuvannja_tmp; /*буде проініціалізована пізніше*/
+//              
+//              if ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA))
+//              {
+//                if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT) == 0)
+//                {  
+//                  //Іде намагання встановити новий час-дату, тому робимо копію часу
+//                  unsigned char *label_to_time_array, *label_calibration;
+//                  if (copying_time == 0)
+//                  {
+//                    label_to_time_array = time;
+//                    label_calibration = &calibration;
+//                  }
+//                  else
+//                  {
+//                    label_to_time_array = time_copy;
+//                    label_calibration = &calibration_copy;
+//                  }
+//                  for(unsigned int index = 0; index < 7; index++) time_edit[index] = *(label_to_time_array + index);
+//                  calibration_edit = *label_calibration;
+//                }
+//                else
+//                {
+//                  /*
+//                  Ще виконалася попередня команда запису часу, а нова може змінити 
+//                  попередньо введені дані при копіюванні текучого часу (щоб мати цілісний масив часу)
+//                  Тому ця операція є тимчасово недоступною
+//                  */
+//                  error = ERROR_SLAVE_DEVICE_BUSY;
+//                }
+//              }
+//              else if(
+//                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   )) /*ранжування*/
+//                     ) 
+//              {
+//                //Враховуючи той факт, що зараз буде відбуватися ранжування, то скидаємо вказівник на редагуюче поле в 0
+//                point_to_edited_rang = NULL;
+////                for (unsigned int i = 0; i < N_BIG; i++)
+////                {
+////                  clear_array_rang[i] = 0;
+////                  set_array_rang[i]   = 0;
+////                }
+//              }
+//              else if((add_data >= MA_ADDRESS_FIRST_USTUVANNJA) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA))/*амплітудні і фазні юстуючі коефіцієнти*/ 
+//              {
+//                //Помічаємо ненульовим значенням, що йде намагання змінити юстуючі коефіцієнти
+//                changing_ustuvannja = 0xff;
+//                
+//                /*
+//                Робимо копію змінної changed_ustuvannja, щоб при неуспішній спробі
+//                зміни коефіцієнтів юстування відновити попереднє значення. Оскільки з верхнбого рівня
+//                можлива зміна CHANGED_ETAP_ENDED -> CHANGED_ETAP_NONE,
+//                то я думаю нічого "надзвичайного" не станеться, якщо ми попередній 
+//                стан зафіксуємо CHANGED_ETAP_ENDED, потім більш пріоритетна задача
+//                вимірювальної системи зкопіює коефіцієнти юстування і скине змінну в 
+//                CHANGED_ETAP_NONE, а потім відбудеться неуспішна спроба
+//                ввести нову зміну у в масив юстування, що приведе до того, що ми з цієї фунціїї
+//                відновимо попереднє значення (до зміни вимірювальною системою) CHANGED_ETAP_ENDED.
+//                Як я думаю, наслідком цього може бути тільки повторне копіювання масиву юстування.
+//                */
+//                changed_ustuvannja_tmp = changed_ustuvannja;
+//
+//                //Помічаємо, що зараз, можоиво, елемент юстування буде змінений
+//                changed_ustuvannja = CHANGED_ETAP_EXECUTION;
+//              }
+//
+//              if (error == 0)
+//              {
+//                error = Set_data(data,add_data, SET_DATA_IMMEDITATE, /*false,*/ type_interface);
+//                if (error != 0)
+//                {
+//                  if (changing_ustuvannja != 0)
+//                  {
+//                    /*
+//                    Зміна коефіцієнітів юстування не відбулася, тому відновлюємо попереднє значення
+//                    змінної changed_ustuvannja, яке було до її встановлення у значення
+//                    CHANGED_ETAP_EXECUTION
+//                    */
+//                    changed_ustuvannja = changed_ustuvannja_tmp;
+//                  }
+//                }
+//              }
+//            }
+//          }
+//          else error = ERROR_SLAVE_DEVICE_BUSY;
+//             
+//          /*****/
+//          //Якщо є спроба встановити час, то робимо його найперше, бо тут ще буде перевірка на достовірні дані
+//          /*****/
+//          if ((error == 0) && (add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA))
+//          {
+//            //Встановлення нового часу-дати
+//
+//            //Перевіряємо достовірність даних
+//            if (check_data_for_data_time_menu() == 1)
+//            {
+//              //Дані достовірні
+//              //Виставляємо повідомлення запису часу в RTC
+//              //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
+//              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+//              _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+//            }
+//            else error = ERROR_ILLEGAL_DATA_VALUE;
+//          }
+//          /*****/
+//           
+//          if(error == 0)
+//          {
+//            if  (global_requect == 0)
+//            {
+//              for (int index = 0; index < 8; index++) *(transmited_buffer + index ) = *(received_buffer + index );
+//              *transmited_count = 8;
+//              if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//              else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//            }
+//            else
+//            {
+//              if(type_interface == RS485_RECUEST)
+//              {
+//                //Перезапускаємо моніторинг лінії RS-485
+//                restart_monitoring_RS485();
+//              }
+//            }
+//            
+//            /*****/
+//            //При необхідності записуємо інформацію у EEPROM
+//            /*****/
+//            if (
+//                ((add_data >= M_ADDRESS_FIRST_SETPOINTS_PART1                 ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_PART1                 )) ||
+//                ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1))) ||
+////                ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))) ||
+////                ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))) ||
+////                ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4))) ||
+//                ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) ||
+//                ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) ||
+//                ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  ))/*||*/
+////                (add_data == MA_NUMBER_ITERATION_EL)
+//               )
+//            {
+//              //Записуємо інформацю, яка відноситься до настройок
+//              
+//              if (
+//                  ((add_data == MA_PASSWORD_INTERFACE) && (password_changed == true))
+//                  ||  
+//                  ( add_data != MA_PASSWORD_INTERFACE) /*встановлення всіх інших настрройок чи ранжування (за виключенням паролю доступу)*/ 
+//                 )   
+//              {
+//                //Виключаємо той випадок, коли робилося зняття паролю доступу
+//                   
+//                //Дійсно відбулася зміна настройки
+////                _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//                restart_timeout_idle_new_settings = true;
+//                    
+//                if (
+//                    ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   ))
+//                   )
+//                {
+//                  if  ( !((add_data >= M_ADDRESS_FIRST_USER_REGISTER   ) && (add_data <= M_ADDRESS_LAST_USER_REGISTER)) )
+//                  {
+//                    //Не іде ранжування регістрів користувача
+//                    
+//                    //Записуємо інформацю по ранжуванню
+//                    type_of_settings_changed_from_interface |= (1 << RANGUVANNJA_DATA_CHANGED_BIT);
+//                  }
+//                  else
+//                  {
+//                    //Іде ранжування регістрів користувача
+//                    type_of_settings_changed_from_interface |= (1 << USER_REGISTRY_CHANGED_BIT);
+//                  }
+//                }
+//                else
+//                {
+//                  if (add_data == MA_PASSWORD_INTERFACE) 
+//                  {
+//                    //Записуємо значення нового парголю доступу
+//                    type_of_settings_changed_from_interface |= (1 << NEW_PASSWORD_SET_BIT);
+//                  }
+//                  else
+//                  {
+//                    //Записуємо інформацю настройках (крім ранжування)
+//                    type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
+//                  }
+//                }
+//              }
+//            }
+//            else if (
+//                     ((add_data >= MA_ADDRESS_FIRST_USTUVANNJA) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA)) ||
+//                     ( add_data == MA_SET_SERIAL_NUMBER)  
+//                    )
+//            {
+//              if (
+//                  ((add_data >= MA_ADDRESS_FIRST_USTUVANNJA) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA))
+//                 )   
+//              {
+//                //Помічаємо, що вимірювальною системою треба забрати нові коефіцієнти юстування
+//                changed_ustuvannja = CHANGED_ETAP_ENDED;
+//              }
+//              //Запис юстуючик коефіцієнтів
+//              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT);
+//            }
+//            else if (add_data == MA_DEFAULT_SETTINGS)
+//            {
+//                   
+//              //Дійсно відбулася зміна настройки
+////              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//              restart_timeout_idle_new_settings = true;
+//              
+//              //Відбулася успішна команда скидання у мінімальну конфігурацію
+//              type_of_settings_changed_from_interface = (1 << DEFAULT_SETTINGS_SET_BIT);
+//            }
+//            /*****/
+//          }
+//          else 
+//          {
+//            if (global_requect == 0)
+//            {
+//              Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
+//              *transmited_count = 5;
+//              if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//              else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//            }
+//            else
+//            {
+//              if(type_interface == RS485_RECUEST)
+//              {
+//                //Перезапускаємо моніторинг лінії RS-485
+//                restart_monitoring_RS485();
+//              }
+//            }
+//          }
+//          break;
+//        }//Кінець для обробки функції 6
+//      case 15:
+//        {
+//          unsigned int add_data, number, reinit_settings = 0;       
+//        
+//          add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
+//          number   = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
+//
+//          unsigned int number_bytes = number >> 3;
+//          if ((number_bytes << 3) != number) number_bytes++;
+//        
+//          if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
+//          {
+//            //Теоретично такого бути не мало б ніколи
+//            error = ERROR_SLAVE_DEVICE_FAILURE;
+//          }
+//          else if ((number < 1) || (number > 0x7B0) || (number_bytes != *(received_buffer + 6)))
+//              error= ERROR_ILLEGAL_DATA_VALUE;
+//          else if (
+//                   ((add_data >= BIT_MA_CONTROL_BASE) && ((add_data + number - 1) <= BIT_MA_CONTROL_LAST))
+//                   ||
+//                   ((add_data >= BIT_MA_RESET_GENERAL_AF) && ((add_data + number - 1) <= BIT_MA_RESET_GENERAL_AF))
+//                   ||
+//                   ((add_data >= BIT_MA_NEW_SETTINGS_SET) && ((add_data + number - 1) <= BIT_MA_NEW_SETTINGS_SET))
+//                   ||
+//                   (
+//                    ((add_data >= BIT_MA_INPUT_DF1          ) && ((add_data + number - 1) <= BIT_MA_INPUT_DF8             )) || 
+//                    ((add_data >= BIT_MA_DT1_SET            ) && ((add_data + number - 1) <= BIT_MA_DT4_RESET             ))/* ||
+//                    ((add_data >= BIT_MA_RESET_LEDS         ) && ((add_data + number - 1) <= BIT_MA_RESET_GENERAL_AF      ))*/
+//                   ) 
+//                  )
+//          {
+//            unsigned int first_address_of_word_for_function_3_or_4;
+//            unsigned int offset;
+//
+//            if((add_data >= BIT_MA_CONTROL_BASE) && (add_data <= BIT_MA_CONTROL_LAST))
+//            {
+//              //Стан функцій захистів
+//              offset = add_data - BIT_MA_CONTROL_BASE;
+//              first_address_of_word_for_function_3_or_4 = M_ADDRESS_CONTROL_BASE;
+//            }
+//            else if((add_data >= BIT_MA_INPUT_DF1) && (add_data <= BIT_MA_INPUT_DF8)) /*Определяємі функції*/
+//            {
+//              offset = add_data - BIT_MA_DF_BASE;
+//              first_address_of_word_for_function_3_or_4 = M_ADDRESS_DF;
+//            }
+//            else if((add_data >= BIT_MA_DT1_SET) && (add_data <= BIT_MA_DT4_RESET)) /*Опред. триґери*/
+//            {
+//              offset = add_data - BIT_MA_DT_BASE;
+//              first_address_of_word_for_function_3_or_4 = M_ADDRESS_DT;
+//            }
+//            else if(
+//                    /*((add_data >= BIT_MA_RESET_LEDS                       ) && (add_data <= BIT_MA_RESET_GENERAL_AF      ))*/(add_data == BIT_MA_RESET_GENERAL_AF) ||
+//                    ( add_data == BIT_MA_NEW_SETTINGS_SET                 )
+//                   )
+//            {
+//              //Команди загальні
+//              offset = add_data - BIT_MA_COMMAND_BASE;
+//              first_address_of_word_for_function_3_or_4 = M_ADDRESS_COMMAND_BASE;
+//            }
+//
+//            if (
+//                (first_address_of_word_for_function_3_or_4 >= M_ADDRESS_CONTROL_BASE) &&
+//                (first_address_of_word_for_function_3_or_4 <= M_ADDRESS_CONTROL_LAST)
+//               )
+//            {
+//              //Іде намагання запису інформації, яка відноситься до настройок
+//              
+//              //Перевіряємо чи можемо ми ці операції зараз виконати
+//              if (
+//                  (
+//                   ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
+//                   ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
+//                  )   
+//                  &&
+//                  (current_state_menu2.edition == ED_VIEWING)
+//                 )
+//              {
+//                //Операція запису є доступною
+//
+//                //Робимо копію таблиці настройок
+////                edition_settings = current_settings_interfaces;
+//
+//                //Визначаємо початкову адресу читання/запису цілими словами
+//                first_address_of_word_for_function_3_or_4 += (offset >> 4);
+//                //Визначаємо зміщення у наступному слові
+//                offset &= 0xf;
+//                
+//                //Зчитуємо спочатку ціле слово
+//                unsigned short int temp_value;
+//                unsigned char temp_value_in_char[2];
+//                error = Get_data(temp_value_in_char,first_address_of_word_for_function_3_or_4, type_interface, GET_DATA_FOR_EDITING, BIT_REQUEST);
+//                temp_value = temp_value_in_char[1];
+//                temp_value |= temp_value_in_char[0] << 8;
+//
+//                unsigned int index_byte = 0, index_bit, index_of_bit_in_target_word;
+//                unsigned char temp_data;
+//                unsigned int i = 0;
+//                index_of_bit_in_target_word = offset;//початковий номер біту
+//                while ((i < number) && (error == 0))
+//                {
+//                  //Оскільки сама інформація які значення встановлювати, а які скинути упаковано побайтно, то і нам треба рухатися по-байтно
+//                  index_bit  = i &  0x7; //Виділення трьох молодших біт аналогічне виділенню остачі при діленні цього числа на 8 - тобто це визначення номеру біту з вхідного "масиву" значень
+//            
+//                  //Новий байт зчитуємо тільки коли номер біту є 0, бо інакше байт вже є зчитаним
+//                  if (index_bit == 0)
+//                  {
+//                    index_byte = i >> 3  ; //Зміщення на три розряди вправо аналогічне виділенню цілої частини при діленні цього числа на 8 - тобто це визначення номеру байту з вхідного "масиву" значень
+//                    temp_data = *(received_buffer + 7 + index_byte);
+//                  }
+//            
+//                  //Виділяємо значення біту, яке треба встановити
+//                  unsigned int value_of_bit;
+//                  value_of_bit = ((temp_data << (7 - index_bit)) >> 7) & 0x1;
+//            
+//                  //У слові, яке змінюємо спочатку скидаємо у нуль біт, який ми змінюємо
+//                  //Це робимо тільки для тих сигналів, які можна скидати - для всіх інших цю операцію не виконуємо!!!
+//                  temp_value &= (unsigned short)(~(1 << index_of_bit_in_target_word));
+//
+//                  //Тепер виставляємо потрібний біт
+//                  temp_value |=  (value_of_bit << index_of_bit_in_target_word);
+//  
+//                  //Збільшуємо номер біту
+//                  i++;
+//                  //Вираховуємо номер наступного біту, який треба змінити
+//                  index_of_bit_in_target_word = ((offset + i) & 0xf);//Виділення чотиох молодших біт аналогічне виділенню остачі при діленні цього числа на 16 - тобто це визначення номеру біту з вихідному слові
+//            
+//                  /*
+//                  У разі, якщо індекс наступного цілового біту є нуль або якщо ми записали останній біт,
+//                  то значить треба спочатку записати модернізоване слово і якщо є ще біти для запису, то зчитати нове слово
+//                  */
+//                  if ((index_of_bit_in_target_word == 0) || (i == number))
+//                  {
+//                    //Записуємо відповідне нове значення
+//                    error = Set_data(temp_value, first_address_of_word_for_function_3_or_4, SET_DATA_INTO_EDIT_TABLE, /*(i < number),*/ type_interface); /*тут і вже збільшений на одиницю, тому перевірка здійснюється (i) з (number)*/
+//                    if (error == 0)
+//                    {
+//                      if (reinit_settings == 0) reinit_settings = 1; //Помічаємо, що треба буде виконати запис нових настройок у EEPROM
+//
+//                      //Якщо є ще біти для запису, то зчитати нове слово
+//                      if (i < number)
+//                      {
+//                        //Збільшуємо адресу слова у якому мають проводитися зміни
+//                        first_address_of_word_for_function_3_or_4++;
+//  
+//                        //Зчитуємо ціле слово
+//                        error = Get_data(temp_value_in_char,first_address_of_word_for_function_3_or_4, type_interface, GET_DATA_FOR_EDITING, BIT_REQUEST);
+//                        temp_value = temp_value_in_char[1];
+//                        temp_value |= temp_value_in_char[0] << 8;
+//                      }
+//                    }
+//                  }
+//                }
+//              }
+//              else
+//              {
+//                if (current_state_menu2.edition != ED_VIEWING) error = ERROR_SLAVE_DEVICE_BUSY;
+//                else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//              }
+//            }
+//            else if (
+//                     (
+//                      (
+//                       (first_address_of_word_for_function_3_or_4 == M_ADDRESS_DF) || 
+//                       (first_address_of_word_for_function_3_or_4 == M_ADDRESS_DT)
+//                      )
+//                      &&
+//                      (
+//                       ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
+//                       ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
+//                      ) 
+//                     )
+//                     ||  
+//                     (
+//                      (first_address_of_word_for_function_3_or_4 == M_ADDRESS_COMMAND_BASE)
+//                      &&
+//                      (
+//                       (!((add_data >= BIT_MA_NEW_SETTINGS_SET) && ((add_data + number - 1) <= BIT_MA_NEW_SETTINGS_SET))) ||
+//                       ((type_interface == USB_RECUEST  ) && (password_set_USB   == 0)) ||
+//                       ((type_interface == RS485_RECUEST) && (password_set_RS485 == 0))
+//                      )   
+//                     )   
+//                    )
+//            {
+//              //Іде подача активації команд телеуправління
+//              
+//              /*
+//              Тут ми використовуємо константи активації функцій з допомогою ф-кнопок, бо механізм обробки однаковий що активацшя
+//              функції з ф-кнопкт, що активація функції з інтерейсу
+//              */
+//              
+//              unsigned int index_byte = 0, index_bit, number_activated_function;
+//              unsigned char temp_data;
+//              unsigned int i = 0;
+//              unsigned int activation_function_from_interface_tmp = 0, reset_trigger_functions = 0;
+//              int set_new_settings = -1;
+//              while ((i < number) && (error == 0))
+//              {
+//                //Оскільки сама інформація які значення встановлювати упакована побайтно, то і нам треба рухатися по-байтно
+//                index_bit  = i &  0x7; //Виділення трьох молодших біт аналогічне виділенню остачі при діленні цього числа на 8 - тобто це визначення номеру біту з вхідного "масиву" значень
+//            
+//                //Новий байт зчитуємо тільки коли номер біту є 0, бо інакше байт вже є зчитаним
+//                if (index_bit == 0)
+//                {
+//                  index_byte = i >> 3  ; //Зміщення на три розряди вправо аналогічне виділенню цілої частини при діленні цього числа на 8 - тобто це визначення номеру байту з вхідного "масиву" значень
+//                  temp_data = *(received_buffer + 7 + index_byte);
+//                }
+//            
+//                //Виділяємо значення біту, яке треба встановити
+//                unsigned int value_of_bit;
+//                value_of_bit = ((temp_data << (7 - index_bit)) >> 7) & 0x1;
+//                
+//                number_activated_function = add_data + i;
+//                if (value_of_bit != 0)
+//                {
+//                  /*     if  (number_activated_function == BIT_MA_RESET_LEDS                       )
+//                    activation_function_from_interface_tmp |= 1 << RANG_TU_RESET_LEDS;
+//                  else if  (number_activated_function == BIT_MA_RESET_RELES                      )
+//                    activation_function_from_interface_tmp |= 1 << RANG_TU_RESET_RELES;
+//                  else*/ if  (number_activated_function == BIT_MA_RESET_GENERAL_AF                 ) 
+//                  {
+//                    //Скидання загальних функцій 
+//                    reset_trigger_functions = 0xff; /*ненульове значення означає, що треба скинути тригерні функції*/
+//                  }
+//                  else if  (number_activated_function == BIT_MA_NEW_SETTINGS_SET) 
+//                  {
+//                    /*Команда активації внесених змін у налаштування приладу через інтерфейс*/ 
+//                    set_new_settings = true;
+//                  }
+//                  else 
+//                  {
+//                    //Теоретично сюди програма ніколи не малаб зайти
+//                    error = ERROR_ILLEGAL_DATA_ADDRESS;
+//                  }
+//                }
+//                else
+//                {
+//                  if  (number_activated_function == BIT_MA_NEW_SETTINGS_SET) 
+//                  {
+//                    /*Команда деактивації внесених змін у налаштування приладу через інтерфейс*/ 
+//                    set_new_settings = false;
+//                  }
+//                }
+//                
+//                i++;
+//              }
+//
+//              if (error == 0)
+//              {
+//                if (activation_function_from_interface_tmp != 0)
+//                {
+//                  activation_function_from_interface |= activation_function_from_interface_tmp;
+//                }
+//                if (reset_trigger_functions != 0)
+//                {
+//                  reset_trigger_function_from_interface |= (1 << type_interface);
+//                }
+//                if (set_new_settings != -1)
+//                {
+//                  if (set_new_settings == true)
+//                  {
+//                    //Активація внесекних змін
+//                    unsigned int source = MENU_PARAMS_FIX_CHANGES;
+//                    if(type_interface == USB_RECUEST) source = USB_PARAMS_FIX_CHANGES;
+//                    else if(type_interface ==  RS485_RECUEST) source = RS485_PARAMS_FIX_CHANGES;
+//
+//                    unsigned int result = set_config_and_settings(1, source);
+//                    if (result != 0)
+//                    {
+//                      error = ERROR_SLAVE_DEVICE_FAILURE;
+//                      if (result == 2)
+//                      {
+//                        //Повідомляємо про критичну помилку
+//                        current_state_menu2.edition = ED_ERROR;
+//                      }
+//                    }
+//                  }
+//                  else
+//                  {
+//                    //Відміна внесекних змін
+//                    unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
+//                    if (result != 0)
+//                    {
+//                      //Повідомляємо про критичну помилку
+//                      current_state_menu2.edition = ED_ERROR;
+//                    }
+//                  }
+//                  config_settings_modified = 0;
+//                  type_of_settings_changed_from_interface = 0;
+////                  _CLEAR_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//                }
+//              }
+//            }
+//            else
+//            {
+//              //Теоретично сюди програма ніколи не малаб зайти
+//              error = ERROR_ILLEGAL_DATA_ADDRESS;
+//            }
+//          }
+//          else
+//            error = ERROR_ILLEGAL_DATA_ADDRESS;
+//
+//          if (error == 0)
+//          {
+//            CRC_sum = 0xffff;
+//            for (int index = 0; index < 6; index++)
+//            {
+//              *(transmited_buffer + index ) = *(received_buffer + index );
+//              CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
+//            }
+//            *(transmited_buffer + 6) = CRC_sum & 0xff;
+//            *(transmited_buffer + 7) = CRC_sum >> 8;
+//
+//            *transmited_count = 8;
+//            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//          
+//            if (reinit_settings != 0)
+//            {
+//              //Копіюємо введені зміни у робочу структуру
+////              current_settings_interfaces = edition_settings;
+//
+//              //Відбулася зміна настройки
+////              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//              restart_timeout_idle_new_settings = true;
+//              type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
+//            }
+//          }
+//          else
+//          {
+//            //Відповідаємо про помилку
+//            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
+//            *transmited_count = 5;
+//            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//          }
+//          break;
+//        }//Кінець для обробки функції 15        
+//      case 16:
+//        {
+//          unsigned int add_data, number;
+//          unsigned int reinit_ustuvannja = 0, reinit_settings = 0, set_new_password = 0, reinit_ranguvannja = 0, set_min_param = 0;
+//          unsigned int reinit_user_register = 0;
+//          unsigned int setting_new_rtc = 0;
+//            
+//          add_data = (*(received_buffer + 2))<<8 | (*(received_buffer + 3));
+//          number   = (*(received_buffer + 4))<<8 | (*(received_buffer + 5));
+//
+//          //Робимо встановлений/невстановлений пароль доступу
+//          unsigned int before_password_set;
+//          if (type_interface == USB_RECUEST) before_password_set = password_set_USB;
+//          else if (type_interface == RS485_RECUEST) before_password_set = password_set_RS485;
+//          else error= ERROR_SLAVE_DEVICE_FAILURE;
+//
+//          if ((number < 1) || (number > 0x7B) || ((*(received_buffer + 6)) != ( number <<1)))
+//            error= ERROR_ILLEGAL_DATA_VALUE;
+//          else if (
+//                   (global_requect != 0) && /*запит по адресі BROADCAST_ADDRESS_MODBUS_RTU протоколу Modbus-RTU*/
+//                   (
+//                    !(
+//                      ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && ((add_data + number - 1) <= M_ADDRESS_LAST_TIME_AND_DATA))
+//                     )
+//                   )     
+//                  )
+//          {
+//            /*
+//            По глобалній адресі можна змінювати тільки час і дату
+//            */
+//            error = ERROR_BROADCAST_ADDRESS;
+//          }
+//
+//          //Починаємо вводити прийняті дані
+//          unsigned int i = 0;
+//          while((i < number) && (error == 0 ))
+//          {
+//            unsigned short int data = (*(received_buffer+7+2*i))<<8 | (*(received_buffer+8+2*i));
+//
+//            if (
+//                (current_state_menu2.edition == ED_VIEWING                     ) ||
+//                (add_data                    == MA_CURRENT_NUMBER_RECORD_PR_ERR)  
+//               )
+//            {
+//              /*****/
+//              //Перевірка на необхідність паролю доступу для запису
+//              /*****/
+//              if (
+//                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_PART1                 ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_PART1                 )) || /*уставки і витримки*/
+//                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1))) || /*уставки і витримки першої групи*/
+////                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))) || /*уставки і витримки другої групи*/
+////                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))) || /*уставки і витримки третьої групи*/
+////                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4))) || /*уставки і витримки четвертої групи*/
+//                  ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) || /*налаштування захистів*/
+//                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) || /*уставки і витримки (продовження) крім паролю доступу*/
+//                  ((add_data >= M_ADDRESS_FIRST_TIME_AND_DATA                   ) && (add_data <= M_ADDRESS_LAST_TIME_AND_DATA                   )) || /*час*/
+//                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  )) || /*ранжування*/
+//                   (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR                   )                                                                   || /*очищення реєстратора програмних подій*/
+//                   (add_data == MA_DEFAULT_SETTINGS                             )                                                                   || /*встановлення мінімальної конфігурації*/        
+//                   (add_data == MA_TEST_WATCHDOGS                               )                                                                 /*||*/ /*тестування внутрішнього і зовнішнього watchdog*/        
+////                   (add_data == MA_NUMBER_ITERATION_EL                          )                                                                      /*встановленнямаксимальної кількості ітераційдля розширеної логіки*/        
+//                 )
+//              {
+//                if (
+//                    (add_data != MA_PASSWORD_INTERFACE) &&
+//                    (
+//                     ((type_interface == USB_RECUEST  ) && (password_set_USB != 0  )) ||
+//                     ((type_interface == RS485_RECUEST) && (password_set_RS485 != 0))
+//                    )   
+//                   )
+//                {
+//                  //Не можна зараз записати цей регістр, бо треба спочатку зняти пароль доступу
+//                  error = ERROR_ILLEGAL_DATA_ADDRESS;
+//                }
+//                else if (
+//                         (number != 1)
+//                         &&
+//                         (  
+//                          (add_data == MA_CLEAR_NUMBER_RECORD_PR_ERR) || /*очищення реєстратора програмних подій*/
+//                          (add_data == MA_DEFAULT_SETTINGS          ) || /*встановлення мінімальної конфігурації*/        
+//                          (add_data == MA_TEST_WATCHDOGS            )    /*тестування внутрішнього і зовнішнього watchdog*/        
+//                         )   
+//                        )
+//                {
+//                  //Ці команди можуть подаватися одночано тільки на один регістр - інакше повідомляємо про помилку
+//                  error = ERROR_ILLEGAL_DATA_ADDRESS;
+//                }
+//                else
+//                {
+//                  //Можна записувати нові дані для настройок
+//                
+//                  //Якщо у даній трансакції ми перший раз вводим нове значення по натройках (крім часу) то робимо копію структури настройок
+//                  if (
+//                      (
+//                       (reinit_settings      == 0) && 
+//                       (reinit_ranguvannja   == 0) &&
+//                       (reinit_user_register == 0)
+//                      )/*ще не проводився запис настройкок, тому ще не зроблена копія таблиці настройок*/ 
+//                      &&  
+//                      ( 
+//                       !(
+//                         (add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && 
+//                         (add_data <= M_ADDRESS_LAST_TIME_AND_DATA ) 
+//                        )/*копію таблиці настройок не треба робити коли ми встановлюємо час*/
+//                      )    
+//                     )
+//                  {
+//                    //Робимо копію таблиці настройок
+////                    edition_settings  = current_settings_interfaces;
+//
+//                    //Враховуючи той факт, що може зараз відбуватися ранжування, то скидаємо вказівник на редагуюче поле в 0
+//                    point_to_edited_rang = NULL;
+////                    for (unsigned int j = 0; j < N_BIG; j++)
+////                    {
+////                      clear_array_rang[j] = 0;
+////                      set_array_rang[j]   = 0;
+////                    }
+//                  }
+//
+//                  if (
+//                      (add_data >= M_ADDRESS_FIRST_TIME_AND_DATA) &&
+//                      (add_data <= M_ADDRESS_LAST_TIME_AND_DATA ) &&
+//                      (setting_new_rtc == 0                     )
+//                     )
+//                  {
+//                    if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT) == 0)
+//                    {  
+//                      //Помічаємо, що треба ввести новий системний час
+//                      setting_new_rtc = 1;
+//
+//                      //Робимо копію часу, дати і калібровки на яку ми накладемо зміни, перевіримо їх на достовірність і потім, якщо провірка пройде вдало, то запишемо їх у мікросхему RTC
+//                      unsigned char *label_to_time_array, *label_calibration;
+//                      if (copying_time == 0)
+//                      {
+//                        label_to_time_array = time;
+//                        label_calibration = &calibration;
+//                      }
+//                      else
+//                      {
+//                        label_to_time_array = time_copy;
+//                        label_calibration = &calibration_copy;
+//                      }
+//                      for(unsigned int index = 0; index < 7; index++) time_edit[index] = *(label_to_time_array + index);
+//                      calibration_edit = *label_calibration;
+//                    }
+//                    else
+//                    {
+//                      /*
+//                      Ще виконалася попередня команда запису часу, а нова може змінити 
+//                      попередньо введені дані при копіюванні текучого часу (щоб мати цілісний масив часу)
+//                      Тому ця операція є тимчасово недоступною
+//                      */
+//                      error = ERROR_SLAVE_DEVICE_BUSY;
+//                    }
+//                  }
+//                
+//                  if (error == 0)
+//                  {
+//                    //Вводимо нові значення через тимчасову структуру
+//                    error = Set_data(data, add_data, SET_DATA_INTO_EDIT_TABLE, /*((i + 1) < number),*/ type_interface); /*тут і ще не збільшений на одиницю, тому перевірка здійснюється(i + 1) з (number)*/
+//                  }
+//                }
+//              }
+//              else
+//              {
+//                //Ці дані не потребують перевірки на пароль
+//              
+//                if (
+//                    (add_data >= MA_ADDRESS_FIRST_USTUVANNJA) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA) || /*юстуючі амплітудні і фазові коефіцієнти*/
+//                    (add_data == MA_SET_SERIAL_NUMBER                                                       )    /*серійний номер*/  
+//                   )
+//                {
+//                  //Вводяться нові дані для юстування або серійний номер
+//              
+//                  //Якщо у даній трансакції ми перший раз вводим нове значення по юстуванню то робимо копію масиву юстування
+//                  if (reinit_ustuvannja == 0)
+//                  {
+//                    for(unsigned int k = 0; k < NUMBER_ANALOG_CANALES; k++) 
+//                    {
+//                      edit_ustuvannja[k] = ustuvannja[k];
+//                    }
+//                    edit_serial_number_dev = serial_number_dev;
+//                  }
+//                }
+//                //Вводимо нові значення через тимчасовий масив (хоч настравді він використовується тільки для юстування, а для всіх інших регістрів все одно який другий параметра викликаємої функції)
+//                error = Set_data(data, add_data, SET_DATA_INTO_EDIT_TABLE, /*((i + 1) < number),*/ type_interface); /*тут і ще не збільшений на одиницю, тому перевірка здійснюється(i + 1) з (number)*/
+//              }
+//            }
+//            else error = ERROR_SLAVE_DEVICE_BUSY;
+//              
+//            if (error == 0)
+//            {
+//              if (
+//                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_PART1                 ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_PART1                 )) ||
+//                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1))) ||
+////                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))) ||
+////                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))) ||
+////                  ((add_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (add_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4))) ||
+//                  ((add_data >= M_ADDRESS_CONTROL_BASE                          ) && (add_data <= M_ADDRESS_CONTROL_LAST                         )) ||  
+//                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE              ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE              )) ||
+//                  ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG                  ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG                  ))/* ||*/
+////                  (add_data == MA_NUMBER_ITERATION_EL)
+//                 )
+//              {
+//                //Записуємо інформацю, яка відноситься до настройок
+//                
+//                if (
+//                    ((add_data == MA_PASSWORD_INTERFACE) && (password_changed == true))
+//                    ||  
+//                    ( add_data != MA_PASSWORD_INTERFACE) /*встановлення всіх інших настрройок чи ранжування (за виключенням паролю доступу)*/ 
+//                   )   
+//                {
+//                  //Виключаємо той випадок, коли робилося зняття паролю доступу
+//                  //Записуємо настройки
+//                  if (
+//                      ((add_data >= M_ADDRESS_FIRST_SETPOINTS_RANG   ) && (add_data <= M_ADDRESS_LAST_SETPOINTS_RANG   ))
+//                     )
+//                  {
+//                    if  ( !((add_data >= M_ADDRESS_FIRST_USER_REGISTER) && (add_data <= M_ADDRESS_LAST_USER_REGISTER)) )
+//                    {
+//                      //Не іде ранжування регістрів користувача
+//                      
+//                      //Помічаємо, що треба записати інформацю по ранжуванню
+//                      reinit_ranguvannja = 1;
+//                    }
+//                    else
+//                    {
+//                      //Іде ранжування регістрів користувача
+//                      reinit_user_register = 1;
+//                    }
+//                  }
+//                  else
+//                  {
+//                    //Помічаємо, що треба записати інформацю по настройках (крім ранжування)
+//                    if (add_data == MA_PASSWORD_INTERFACE)
+//                    {
+//                      set_new_password = 1;
+//                    }
+//                    else
+//                    {
+//                      reinit_settings = 1;
+//                    }
+//                  }
+//                }
+//              }
+//              else if (
+//                       ((add_data >= MA_ADDRESS_FIRST_USTUVANNJA ) && (add_data <= MA_ADDRESS_LAST_USTUVANNJA)) ||
+//                       ( add_data == MA_SET_SERIAL_NUMBER)  
+//                      )
+//              {
+//                //Помічаємо, що треба записати юстуючі коефіцієнти
+//                reinit_ustuvannja = 1;
+//              }
+//              else if (add_data == MA_DEFAULT_SETTINGS)
+//              {
+//                //Скидання у мінімальну конфігурацію
+//                set_min_param = 1;
+//              }
+//            }
+//            add_data++;
+//            i++;
+//          } 
+//
+//          /*****/
+//          //Якщо була спроба встановити час-дату, то виконуємо запис у мікросхему RTC, бо тут ще буде перевірка на достовірні дані
+//          /*****/
+//          if ((error == 0) && (setting_new_rtc != 0))
+//          {
+//            //Встановлення нового часу-дати
+//
+//            //Перевіряємо достовірність даних
+//            if (check_data_for_data_time_menu() == 1)
+//            {
+//              //Дані достовірні
+//              //Виставляємо повідомлення запису часу в RTC
+//              //При цьому виставляємо біт блокування негайного запуску операції, щоб засинхронізуватися з роботою вимірювальної системи
+//              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+//              _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+//            }
+//            else error = ERROR_ILLEGAL_DATA_VALUE;
+//          }
+//          /*****/
+//
+//          if (error == 0)
+//          {
+//            if  (global_requect == 0)
+//            {
+//              CRC_sum = 0xffff;
+//              for (int index = 0; index < 6; index++)
+//              {
+//                *(transmited_buffer + index ) = *(received_buffer + index );
+//                CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
+//              }
+//              *(transmited_buffer +6 ) = CRC_sum & 0xff;
+//              *(transmited_buffer +7 ) = CRC_sum >> 8;
+//
+//              *transmited_count = 8;
+//              if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//              else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//            }
+//            else
+//            {
+//              if(type_interface == RS485_RECUEST)
+//              {
+//                //Перезапускаємо моніторинг лінії RS-485
+//                restart_monitoring_RS485();
+//              }
+//            }
+//
+//            /*****/
+//            //При необхідності записуємо інформацію у EEPROM
+//            /*****/
+//            if (reinit_ustuvannja != 0)
+//            {
+//              //Попередньо вводимо нові значення у дію
+//              //Помічаємо, що елементи масиву юстування зараз будуть змінені
+//              changed_ustuvannja = CHANGED_ETAP_EXECUTION;
+//              for(unsigned int k = 0; k < NUMBER_ANALOG_CANALES; k++) 
+//              {
+//                ustuvannja[k] = edit_ustuvannja[k];
+//              }
+//              //Помічаємо, що елементи масиву юстування змінені і готові для передавання у вимірювальну систему
+//              changed_ustuvannja = CHANGED_ETAP_ENDED;
+//              serial_number_dev = edit_serial_number_dev;
+//
+//              _SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT);
+//            }
+//            if (
+//                (reinit_settings      != 0) ||
+//                (set_new_password     != 0) ||  
+//                (reinit_ranguvannja   != 0) ||
+//                (set_min_param        != 0) ||
+//                (reinit_user_register != 0)  
+//               )
+//            {
+//              //Копіюємо введені зміни у робочу структуру
+////              current_settings_interfaces = edition_settings;
+//
+//              //Відбулася зміна настройки
+////              _SET_BIT(active_functions, RANG_SETTINGS_CHANGED);
+//              restart_timeout_idle_new_settings = true;
+//              
+//              if (set_min_param != 0)
+//              {
+//                type_of_settings_changed_from_interface = (1 << DEFAULT_SETTINGS_SET_BIT);
+//              }
+//              
+//              if (reinit_settings != 0)
+//              {
+//                type_of_settings_changed_from_interface |= (1 << SETTINGS_DATA_CHANGED_BIT);
+//              }
+//
+//              if (set_new_password != 0)
+//              {
+//                type_of_settings_changed_from_interface |= (1 << NEW_PASSWORD_SET_BIT);
+//              }
+//
+//              if (reinit_ranguvannja != 0)
+//              {
+//                type_of_settings_changed_from_interface |= (1 << RANGUVANNJA_DATA_CHANGED_BIT);
+//              }
+//
+//              if (reinit_user_register != 0)
+//              {
+//                type_of_settings_changed_from_interface |= (1 << USER_REGISTRY_CHANGED_BIT);
+//              }
+//            }
+//            /*****/
+//          }
+//          else 
+//          {
+//            //Встановлюємо попередній стан доступу по поралю
+//            if (type_interface == USB_RECUEST) password_set_USB = before_password_set;
+//            else if (type_interface == RS485_RECUEST) password_set_RS485 = before_password_set;
+//
+//            if  (global_requect == 0)
+//            {
+//              Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
+//              *transmited_count = 5;
+//              if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//              else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//            }
+//            else
+//            {
+//              if(type_interface == RS485_RECUEST)
+//              {
+//                //Перезапускаємо моніторинг лінії RS-485
+//                restart_monitoring_RS485();
+//              }
+//            }
+//          }
+//
+//          break;
+//        }//Кінець для обробки функції 16
+////      case 20:
+////        {
+////          *transmited_buffer = *(received_buffer);
+////          *(transmited_buffer + 1) = *(received_buffer + 1) ;
+////
+////          unsigned int number_requests = *(received_buffer + 2);
+////          unsigned int total_number_answer = 0;
+////
+////          if ((number_requests >= 0x7) && (number_requests <= 0xF5))
+////          {
+////            unsigned int i = 0; 
+////            while ((i < number_requests) && ((error = Get_data_file((received_buffer + 3 + i), (transmited_buffer + 3 + total_number_answer), &total_number_answer, type_interface)) == 0))
+////            {
+////              i += 7;
+////            }
+////         
+////          }
+////          else error = ERROR_ILLEGAL_DATA_VALUE;
+////        
+////          if (error == 0)
+////          {
+////            *(transmited_buffer + 2) = total_number_answer ;
+////
+////            CRC_sum = 0xffff;
+////            for (int index = 0; index < ((int)(total_number_answer + 3)); index++) CRC_sum = AddCRC(*(transmited_buffer + index),CRC_sum);
+////            *(transmited_buffer+3+total_number_answer) = CRC_sum & 0xff;
+////            *(transmited_buffer+4+total_number_answer) = CRC_sum >> 8;
+////            
+////            *transmited_count = 5+total_number_answer;
+////            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+////            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+////          }
+////          else
+////          {
+////            
+////            Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), error, transmited_buffer);
+////            *transmited_count = 5;
+////            if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+////            else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+////          }
+////
+////          break;
+////        }//Кінець для обробки функції 20        
+//      default:
+//        {
+//          Error_modbus((unsigned char)settings_fix.address, *(received_buffer+1), ERROR_ILLEGAL_FUNCTION, transmited_buffer);
+//          *transmited_count = 5;
+//          if(type_interface == USB_RECUEST) data_usb_transmiting = true;
+//          else if(type_interface ==  RS485_RECUEST) start_transmint_data_via_RS_485(*transmited_count);
+//        }
+//      }
+//    }
+//    else
+//    {
+//      if(type_interface == RS485_RECUEST)
+//      {
+//        //Перезапускаємо моніторинг лінії RS-485
+//        restart_monitoring_RS485();
+//      }
+//    }
+//  }
+//  else
+//  {
+//    if(type_interface == RS485_RECUEST)
+//    {
+//      //Перезапускаємо моніторинг лінії RS-485
+//      restart_monitoring_RS485();
+//    }
+//  }
+//  *received_count = 0;
+//}
 /***********************************************************************************/

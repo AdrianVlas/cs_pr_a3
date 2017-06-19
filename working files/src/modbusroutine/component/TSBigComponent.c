@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 7753
@@ -15,11 +15,11 @@ int setTSBigModbusRegister(int, int);//получить содержимое регистра
 int setTSBigModbusBit(int, int);//получить содержимое бита
 
 void setTSBigCountObject(int);//записать к-во обектов
-void preTSBigReadAction();//action до чтения
-void postTSBigReadAction();//action после чтения
-void preTSBigWriteAction();//action до записи
-void postTSBigWriteAction();//action после записи
-void loadTSBigActualData();
+void preTSBigReadAction(void);//action до чтения
+void postTSBigReadAction(void);//action после чтения
+void preTSBigWriteAction(void);//action до записи
+void postTSBigWriteAction(void);//action после записи
+void loadTSBigActualData(void);
 
 COMPONENT_OBJ *tsbigcomponent;
 
@@ -46,7 +46,7 @@ void constructorTSBigComponent(COMPONENT_OBJ *tsbigcomp)
   tsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadTSBigActualData() {
+void loadTSBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -93,8 +93,9 @@ int setTSBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setTSBigModbusBit(int adrBit, int )
+int setTSBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(tsbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -106,23 +107,23 @@ void setTSBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   tsbigcomponent->countObject = cntObj;
 }//
-void preTSBigReadAction() {
+void preTSBigReadAction(void) {
 //action до чтения
   tsbigcomponent->operativMarker[0] = -1;
   tsbigcomponent->operativMarker[1] = -1;//оперативный маркер
   tsbigcomponent->isActiveActualData = 1;
 }//
-void postTSBigReadAction() {
+void postTSBigReadAction(void) {
 //action после чтения
   if(tsbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preTSBigWriteAction() {
+void preTSBigWriteAction(void) {
 //action до записи
   tsbigcomponent->operativMarker[0] = -1;
   tsbigcomponent->operativMarker[1] = -1;//оперативный маркер
   tsbigcomponent->isActiveActualData = 1;
 }//
-void postTSBigWriteAction() {
+void postTSBigWriteAction(void) {
 //action после записи
   if(tsbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

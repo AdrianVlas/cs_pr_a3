@@ -1,5 +1,4 @@
-//#include <QtWidgets>
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 900
@@ -16,11 +15,11 @@ int setDVBigModbusRegister(int, int);// регистра
 int setDVBigModbusBit(int, int);// бита
 
 void setDVBigCountObject(int);//записать к-во обектов
-void preDVBigReadAction();//action до чтения
-void postDVBigReadAction();//action после чтения
-void preDVBigWriteAction();//action до записи
-void postDVBigWriteAction();//action после записи
-void loadDVBigActualData();
+void preDVBigReadAction(void);//action до чтения
+void postDVBigReadAction(void);//action после чтения
+void preDVBigWriteAction(void);//action до записи
+void postDVBigWriteAction(void);//action после записи
+void loadDVBigActualData(void);
 
 COMPONENT_OBJ *dvbigcomponent;
 
@@ -47,7 +46,7 @@ void constructorDVBigComponent(COMPONENT_OBJ *dvbigcomp)
   dvbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadDVBigActualData() {
+void loadDVBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -89,8 +88,9 @@ int setDVBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setDVBigModbusBit(int adrBit, int )
+int setDVBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(dvbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -102,33 +102,29 @@ void setDVBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   dvbigcomponent->countObject = cntObj;
 }//
-void preDVBigReadAction() {
+void preDVBigReadAction(void) {
 //action до чтения
   dvbigcomponent->operativMarker[0] = -1;
   dvbigcomponent->operativMarker[1] = -1;//оперативный маркер
   dvbigcomponent->isActiveActualData = 1;
 }//
-void postDVBigReadAction() {
+void postDVBigReadAction(void) {
 //action после чтения
   if(dvbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preDVBigWriteAction() {
+void preDVBigWriteAction(void) {
 //action до записи
   dvbigcomponent->operativMarker[0] = -1;
   dvbigcomponent->operativMarker[1] = -1;//оперативный маркер
   dvbigcomponent->isActiveActualData = 1;
 }//
-void postDVBigWriteAction() {
+void postDVBigWriteAction(void) {
 //action после записи
   if(dvbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = dvbigcomponent->operativMarker[1]-dvbigcomponent->operativMarker[0]+1;
   if(dvbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-        qDebug()<<"offset= "<<offset;
-
-        qDebug()<<"operativMarker[0]= "<<dvbigcomponent->operativMarker[0];
-        qDebug()<<"operativMarker[1]= "<<dvbigcomponent->operativMarker[1];
 
 }//
 

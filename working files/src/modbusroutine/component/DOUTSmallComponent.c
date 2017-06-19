@@ -1,5 +1,5 @@
 
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 200
@@ -19,11 +19,11 @@ int setDOUTSmallModbusRegister(int, int);//записать регистр
 int setDOUTSmallModbusBit(int, int);//записать бит
 
 void setDOUTSmallCountObject(int);//записать к-во обектов
-void preDOUTSmallReadAction();//action до чтения
-void postDOUTSmallReadAction();//action после чтения
-void preDOUTSmallWriteAction();//action до записи
-void postDOUTSmallWriteAction();//action после записи
-void loadDOUTSmallActualData();
+void preDOUTSmallReadAction(void);//action до чтения
+void postDOUTSmallReadAction(void);//action после чтения
+void preDOUTSmallWriteAction(void);//action до записи
+void postDOUTSmallWriteAction(void);//action после записи
+void loadDOUTSmallActualData(void);
 
 COMPONENT_OBJ *doutsmallcomponent;
 
@@ -49,7 +49,7 @@ void constructorDOUTSmallComponent(COMPONENT_OBJ *doutcomp)
   doutsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadDOUTSmallActualData() {
+void loadDOUTSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
   tempReadArray[0] = 55;//0xf2f2;
@@ -83,12 +83,14 @@ int getDOUTSmallModbusBit(int adrBit) {
   if(tmp&maska) return 1;
   return 0;
 }//getDOUTModbusBit(int adrReg)
-int setDOUTSmallModbusRegister(int adrReg, int) {
+int setDOUTSmallModbusRegister(int adrReg, int x) {
+  UNUSED(x);
   //записать содержимое регистра
   superSetOperativMarker(doutsmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDOUTModbusRegister(int adrReg)
-int setDOUTSmallModbusBit(int adrBit, int ) {
+int setDOUTSmallModbusBit(int adrBit, int x) {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(doutsmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -100,23 +102,23 @@ void setDOUTSmallCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   doutsmallcomponent->countObject = cntObj;
 }//
-void preDOUTSmallReadAction() {
+void preDOUTSmallReadAction(void) {
 //action до чтения
   doutsmallcomponent->operativMarker[0] = -1;
   doutsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   doutsmallcomponent->isActiveActualData = 1;
 }//
-void postDOUTSmallReadAction() {
+void postDOUTSmallReadAction(void) {
 //action после чтения
   if(doutsmallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preDOUTSmallWriteAction() {
+void preDOUTSmallWriteAction(void) {
 //action до записи
   doutsmallcomponent->operativMarker[0] = -1;
   doutsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   doutsmallcomponent->isActiveActualData = 1;
 }//
-void postDOUTSmallWriteAction() {
+void postDOUTSmallWriteAction(void) {
 //action после записи
 }//
 

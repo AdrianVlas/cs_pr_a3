@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 3000
@@ -15,11 +15,11 @@ int setSDIBigModbusRegister(int, int);//получить содержимое регистра
 int setSDIBigModbusBit(int, int);//получить содержимое бита
 
 void setSDIBigCountObject(int);//записать к-во обектов
-void preSDIBigReadAction();//action до чтения
-void postSDIBigReadAction();//action после чтения
-void preSDIBigWriteAction();//action до записи
-void postSDIBigWriteAction();//action после записи
-void loadSDIBigActualData();
+void preSDIBigReadAction(void);//action до чтения
+void postSDIBigReadAction(void);//action после чтения
+void preSDIBigWriteAction(void);//action до записи
+void postSDIBigWriteAction(void);//action после записи
+void loadSDIBigActualData(void);
 
 COMPONENT_OBJ *sdibigcomponent;
 
@@ -46,7 +46,7 @@ void constructorSDIBigComponent(COMPONENT_OBJ *sdibigcomp)
   sdibigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadSDIBigActualData() {
+void loadSDIBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -110,8 +110,9 @@ int setSDIBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setSDIBigModbusBit(int adrBit, int )
+int setSDIBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(sdibigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -123,23 +124,23 @@ void setSDIBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   sdibigcomponent->countObject = cntObj;
 }//
-void preSDIBigReadAction() {
+void preSDIBigReadAction(void) {
 //action до чтения
   sdibigcomponent->operativMarker[0] = -1;
   sdibigcomponent->operativMarker[1] = -1;//оперативный маркер
   sdibigcomponent->isActiveActualData = 1;
 }//
-void postSDIBigReadAction() {
+void postSDIBigReadAction(void) {
 //action после чтения
   if(sdibigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preSDIBigWriteAction() {
+void preSDIBigWriteAction(void) {
 //action до записи
   sdibigcomponent->operativMarker[0] = -1;
   sdibigcomponent->operativMarker[1] = -1;//оперативный маркер
   sdibigcomponent->isActiveActualData = 1;
 }//
-void postSDIBigWriteAction() {
+void postSDIBigWriteAction(void) {
 //action после записи
   if(sdibigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

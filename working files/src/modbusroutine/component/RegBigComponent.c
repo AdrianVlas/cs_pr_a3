@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 12000
@@ -13,11 +13,11 @@ int setRegBigModbusRegister(int, int);//получить содержимое регистра
 int setRegBigModbusBit(int, int);//получить содержимое бита
 
 void setRegBigCountObject(int);//записать к-во обектов
-void preRegBigReadAction();//action до чтения
-void postRegBigReadAction();//action после чтения
-void preRegBigWriteAction();//action до записи
-void postRegBigWriteAction();//action после записи
-void loadRegBigActualData();
+void preRegBigReadAction(void);//action до чтения
+void postRegBigReadAction(void);//action после чтения
+void preRegBigWriteAction(void);//action до записи
+void postRegBigWriteAction(void);//action после записи
+void loadRegBigActualData(void);
 
 COMPONENT_OBJ *regbigcomponent;
 
@@ -44,7 +44,7 @@ void constructorRegBigComponent(COMPONENT_OBJ *regbigcomp)
   regbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadRegBigActualData() {
+void loadRegBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -93,33 +93,35 @@ int setRegBigModbusRegister(int adrReg, int dataReg)
 
   return dataReg;
 }//getDOUTBigModbusRegister(int adrReg)
-int setRegBigModbusBit(int adrBit, int )
+int setRegBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(regbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setRegBigCountObject(int) {
+void setRegBigCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preRegBigReadAction() {
+void preRegBigReadAction(void) {
 //action до чтения
   regbigcomponent->operativMarker[0] = -1;
   regbigcomponent->operativMarker[1] = -1;//оперативный маркер
   regbigcomponent->isActiveActualData = 1;
 }//
-void postRegBigReadAction() {
+void postRegBigReadAction(void) {
 //action после чтения
   if(regbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preRegBigWriteAction() {
+void preRegBigWriteAction(void) {
 //action до записи
   regbigcomponent->operativMarker[0] = -1;
   regbigcomponent->operativMarker[1] = -1;//оперативный маркер
   regbigcomponent->isActiveActualData = 1;
 }//
-void postRegBigWriteAction() {
+void postRegBigWriteAction(void) {
 //action после записи
   if(regbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

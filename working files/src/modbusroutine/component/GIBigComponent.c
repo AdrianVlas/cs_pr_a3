@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 4418
@@ -15,11 +15,11 @@ int setGIBigModbusRegister(int, int);//получить содержимое регистра
 int setGIBigModbusBit(int, int);//получить содержимое бита
 
 void setGIBigCountObject(int);//записать к-во обектов
-void preGIBigReadAction();//action до чтения
-void postGIBigReadAction();//action после чтения
-void preGIBigWriteAction();//action до записи
-void postGIBigWriteAction();//action после записи
-void loadGIBigActualData();
+void preGIBigReadAction(void);//action до чтения
+void postGIBigReadAction(void);//action после чтения
+void preGIBigWriteAction(void);//action до записи
+void postGIBigWriteAction(void);//action после записи
+void loadGIBigActualData(void);
 
 COMPONENT_OBJ *gibigcomponent;
 
@@ -46,7 +46,7 @@ void constructorGIBigComponent(COMPONENT_OBJ *gibigcomp)
   gibigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadGIBigActualData() {
+void loadGIBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -89,8 +89,9 @@ int setGIBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setGIBigModbusBit(int adrBit, int )
+int setGIBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(gibigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -102,23 +103,23 @@ void setGIBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   gibigcomponent->countObject = cntObj;
 }//
-void preGIBigReadAction() {
+void preGIBigReadAction(void) {
 //action до чтения
   gibigcomponent->operativMarker[0] = -1;
   gibigcomponent->operativMarker[1] = -1;//оперативный маркер
   gibigcomponent->isActiveActualData = 1;
 }//
-void postGIBigReadAction() {
+void postGIBigReadAction(void) {
 //action после чтения
   if(gibigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preGIBigWriteAction() {
+void preGIBigWriteAction(void) {
 //action до записи
   gibigcomponent->operativMarker[0] = -1;
   gibigcomponent->operativMarker[1] = -1;//оперативный маркер
   gibigcomponent->isActiveActualData = 1;
 }//
-void postGIBigWriteAction() {
+void postGIBigWriteAction(void) {
 //action после записи
   if(gibigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

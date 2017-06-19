@@ -15,9 +15,9 @@ int setAISmallModbusBit(int, int);//получить содержимое бита
 
 void setAISmallCountObject(int);//записать к-во обектов
 void preAISmallReadAction(void);//action до чтения
-void postAISmallReadAction();//action после чтения
-void preAISmallWriteAction();//action до записи
-void postAISmallWriteAction();//action после записи
+void postAISmallReadAction(void);//action после чтения
+void preAISmallWriteAction(void);//action до записи
+void postAISmallWriteAction(void);//action после записи
 void loadAISmallActualData(void);
 
 COMPONENT_OBJ *aismallcomponent;
@@ -94,17 +94,17 @@ void preAISmallReadAction(void) {
   aismallcomponent->operativMarker[1] = -1;//оперативный маркер
   aismallcomponent->isActiveActualData = 1;
 }//
-void postAISmallReadAction() {
+void postAISmallReadAction(void) {
 //action после чтения
   if(aismallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preAISmallWriteAction() {
+void preAISmallWriteAction(void) {
 //action до записи
   aismallcomponent->operativMarker[0] = -1;
   aismallcomponent->operativMarker[1] = -1;//оперативный маркер
   aismallcomponent->isActiveActualData = 1;
 }//
-void postAISmallWriteAction() {
+void postAISmallWriteAction(void) {
 //action после записи
 }//
 

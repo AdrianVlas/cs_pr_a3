@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 400
@@ -18,11 +18,11 @@ int setSDISmallModbusRegister(int, int);//получить содержимое регистра
 int setSDISmallModbusBit(int, int);//получить содержимое бита
 
 void setSDISmallCountObject(int);//записать к-во обектов
-void preSDISmallReadAction();//action до чтения
-void postSDISmallReadAction();//action после чтения
-void preSDISmallWriteAction();//action до записи
-void postSDISmallWriteAction();//action после записи
-void loadSDISmallActualData();
+void preSDISmallReadAction(void);//action до чтения
+void postSDISmallReadAction(void);//action после чтения
+void preSDISmallWriteAction(void);//action до записи
+void postSDISmallWriteAction(void);//action после записи
+void loadSDISmallActualData(void);
 
 COMPONENT_OBJ *sdismallcomponent;
 
@@ -49,7 +49,7 @@ void constructorSDISmallComponent(COMPONENT_OBJ *sdismallcomp)
   sdismallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadSDISmallActualData() {
+void loadSDISmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -83,14 +83,16 @@ int getSDISmallModbusBit(int adrBit)
   if(tmp&maska) return 1;
   return 0;
 }//getDVModbusBit(int adrReg)
-int setSDISmallModbusRegister(int adrReg, int)
+int setSDISmallModbusRegister(int adrReg, int x)
 {
+  UNUSED(x);
   //записать содержимое регистра
   superSetOperativMarker(sdismallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
-int setSDISmallModbusBit(int adrBit, int )
+int setSDISmallModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(sdismallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -102,23 +104,23 @@ void setSDISmallCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   sdismallcomponent->countObject = cntObj;
 }//
-void preSDISmallReadAction() {
+void preSDISmallReadAction(void) {
 //action до чтения
   sdismallcomponent->operativMarker[0] = -1;
   sdismallcomponent->operativMarker[1] = -1;//оперативный маркер
   sdismallcomponent->isActiveActualData = 1;
 }//
-void postSDISmallReadAction() {
+void postSDISmallReadAction(void) {
 //action после чтения
   if(sdismallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preSDISmallWriteAction() {
+void preSDISmallWriteAction(void) {
 //action до записи
   sdismallcomponent->operativMarker[0] = -1;
   sdismallcomponent->operativMarker[1] = -1;//оперативный маркер
   sdismallcomponent->isActiveActualData = 1;
 }//
-void postSDISmallWriteAction() {
+void postSDISmallWriteAction(void) {
 //action после записи
 }//
 

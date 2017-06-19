@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 10331
@@ -15,11 +15,11 @@ int setXORBigModbusRegister(int, int);//получить содержимое регистра
 int setXORBigModbusBit(int, int);//получить содержимое бита
 
 void setXORBigCountObject(int);//записать к-во обектов
-void preXORBigReadAction();//action до чтения
-void postXORBigReadAction();//action после чтения
-void preXORBigWriteAction();//action до записи
-void postXORBigWriteAction();//action после записи
-void loadXORBigActualData();
+void preXORBigReadAction(void);//action до чтения
+void postXORBigReadAction(void);//action после чтения
+void preXORBigWriteAction(void);//action до записи
+void postXORBigWriteAction(void);//action после записи
+void loadXORBigActualData(void);
 
 COMPONENT_OBJ *xorbigcomponent;
 
@@ -46,7 +46,7 @@ void constructorXORBigComponent(COMPONENT_OBJ *xorbigcomp)
   xorbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadXORBigActualData() {
+void loadXORBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -93,8 +93,9 @@ int setXORBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setXORBigModbusBit(int adrBit, int )
+int setXORBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //записать содержимое bit
   superSetOperativMarker(xorbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -106,23 +107,23 @@ void setXORBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   xorbigcomponent->countObject = cntObj;
 }//
-void preXORBigReadAction() {
+void preXORBigReadAction(void) {
 //action до чтения
   xorbigcomponent->operativMarker[0] = -1;
   xorbigcomponent->operativMarker[1] = -1;//оперативный маркер
   xorbigcomponent->isActiveActualData = 1;
 }//
-void postXORBigReadAction() {
+void postXORBigReadAction(void) {
 //action после чтения
   if(xorbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preXORBigWriteAction() {
+void preXORBigWriteAction(void) {
 //action до записи
   xorbigcomponent->operativMarker[0] = -1;
   xorbigcomponent->operativMarker[1] = -1;//оперативный маркер
   xorbigcomponent->isActiveActualData = 1;
 }//
-void postXORBigWriteAction() {
+void postXORBigWriteAction(void) {
 //action после записи
   if(xorbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

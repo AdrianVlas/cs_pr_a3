@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 408
@@ -16,11 +16,11 @@ int setSDI2ColorSmallModbusRegister(int, int);//получить содержимое регистра
 int setSDI2ColorSmallModbusBit(int, int);//получить содержимое бита
 
 void setSDI2ColorSmallCountObject(int);//записать к-во обектов
-void preSDI2ColorSmallReadAction();//action до чтения
-void postSDI2ColorSmallReadAction();//action после чтения
-void preSDI2ColorSmallWriteAction();//action до записи
-void postSDI2ColorSmallWriteAction();//action после записи
-void loadSDI2ColorSmallActualData();
+void preSDI2ColorSmallReadAction(void);//action до чтения
+void postSDI2ColorSmallReadAction(void);//action после чтения
+void preSDI2ColorSmallWriteAction(void);//action до записи
+void postSDI2ColorSmallWriteAction(void);//action после записи
+void loadSDI2ColorSmallActualData(void);
 
 COMPONENT_OBJ *sdi2colorsmallcomponent;
 
@@ -47,7 +47,7 @@ void constructorSDI2ColorSmallComponent(COMPONENT_OBJ *sdi2colorsmallcomp)
   sdi2colorsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadSDI2ColorSmallActualData() {
+void loadSDI2ColorSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -79,39 +79,42 @@ int getSDI2ColorSmallModbusBit(int adrBit)
   if(tmp&maska) return 1;
   return 0;
 }//getDVModbusRegister(int adrReg)
-int setSDI2ColorSmallModbusRegister(int adrReg, int)
+int setSDI2ColorSmallModbusRegister(int adrReg, int x)
 {
+  UNUSED(x);
   //записать содержимое регистра
   superSetOperativMarker(sdi2colorsmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
-int setSDI2ColorSmallModbusBit(int adrBit, int )
+int setSDI2ColorSmallModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(sdi2colorsmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 
-void setSDI2ColorSmallCountObject(int) {
+void setSDI2ColorSmallCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preSDI2ColorSmallReadAction() {
+void preSDI2ColorSmallReadAction(void) {
 //action до чтения
   sdi2colorsmallcomponent->operativMarker[0] = -1;
   sdi2colorsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   sdi2colorsmallcomponent->isActiveActualData = 1;
 }//
-void postSDI2ColorSmallReadAction() {
+void postSDI2ColorSmallReadAction(void) {
 //action после чтения
   if(sdi2colorsmallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preSDI2ColorSmallWriteAction() {
+void preSDI2ColorSmallWriteAction(void) {
 //action до записи
   sdi2colorsmallcomponent->operativMarker[0] = -1;
   sdi2colorsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   sdi2colorsmallcomponent->isActiveActualData = 1;
 }//
-void postSDI2ColorSmallWriteAction() {
+void postSDI2ColorSmallWriteAction(void) {
 //action после записи
 }//
 

@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 498
@@ -16,11 +16,11 @@ int setSDI3ColorSmallModbusRegister(int, int);//получить содержимое регистра
 int setSDI3ColorSmallModbusBit(int, int);//получить содержимое бита
 
 void setSDI3ColorSmallCountObject(int);//записать к-во обектов
-void preSDI3ColorSmallReadAction();//action до чтения
-void postSDI3ColorSmallReadAction();//action после чтения
-void preSDI3ColorSmallWriteAction();//action до записи
-void postSDI3ColorSmallWriteAction();//action после записи
-void loadSDI3ColorSmallActualData();
+void preSDI3ColorSmallReadAction(void);//action до чтения
+void postSDI3ColorSmallReadAction(void);//action после чтения
+void preSDI3ColorSmallWriteAction(void);//action до записи
+void postSDI3ColorSmallWriteAction(void);//action после записи
+void loadSDI3ColorSmallActualData(void);
 
 COMPONENT_OBJ *sdi3colorsmallcomponent;
 
@@ -47,7 +47,7 @@ void constructorSDI3ColorSmallComponent(COMPONENT_OBJ *sdi3colorsmallcomp)
   sdi3colorsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadSDI3ColorSmallActualData() {
+void loadSDI3ColorSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -79,39 +79,42 @@ int getSDI3ColorSmallModbusBit(int adrBit)
   if(tmp&maska) return 1;
   return 0;
 }//getDVModbusRegister(int adrReg)
-int setSDI3ColorSmallModbusRegister(int adrReg, int)
+int setSDI3ColorSmallModbusRegister(int adrReg, int x)
 {
+  UNUSED(x);
   //записать содержимое регистра
   superSetOperativMarker(sdi3colorsmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
-int setSDI3ColorSmallModbusBit(int adrBit, int )
+int setSDI3ColorSmallModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(sdi3colorsmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 
-void setSDI3ColorSmallCountObject(int) {
+void setSDI3ColorSmallCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preSDI3ColorSmallReadAction() {
+void preSDI3ColorSmallReadAction(void) {
 //action до чтения
   sdi3colorsmallcomponent->operativMarker[0] = -1;
   sdi3colorsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   sdi3colorsmallcomponent->isActiveActualData = 1;
 }//
-void postSDI3ColorSmallReadAction() {
+void postSDI3ColorSmallReadAction(void) {
 //action после чтения
   if(sdi3colorsmallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preSDI3ColorSmallWriteAction() {
+void preSDI3ColorSmallWriteAction(void) {
 //action до записи
   sdi3colorsmallcomponent->operativMarker[0] = -1;
   sdi3colorsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   sdi3colorsmallcomponent->isActiveActualData = 1;
 }//
-void postSDI3ColorSmallWriteAction() {
+void postSDI3ColorSmallWriteAction(void) {
 //action после записи
 }//
 

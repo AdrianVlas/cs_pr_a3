@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 61949
@@ -13,11 +13,11 @@ int setRPOBigModbusRegister(int, int);//получить содержимое регистра
 int setRPOBigModbusBit(int, int);//получить содержимое бита
 
 void setRPOBigCountObject(int);//записать к-во обектов
-void preRPOBigReadAction();//action до чтения
-void postRPOBigReadAction();//action после чтения
-void preRPOBigWriteAction();//action до записи
-void postRPOBigWriteAction();//action после записи
-void loadRPOBigActualData();
+void preRPOBigReadAction(void);//action до чтения
+void postRPOBigReadAction(void);//action после чтения
+void preRPOBigWriteAction(void);//action до записи
+void postRPOBigWriteAction(void);//action после записи
+void loadRPOBigActualData(void);
 
 COMPONENT_OBJ *rpobigcomponent;
 
@@ -44,7 +44,7 @@ void constructorRPOBigComponent(COMPONENT_OBJ *rpobigcomp)
   rpobigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadRPOBigActualData() {
+void loadRPOBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -77,33 +77,35 @@ int setRPOBigModbusRegister(int adrReg, int dataReg)
 
   return dataReg;
 }//getDOUTBigModbusRegister(int adrReg)
-int setRPOBigModbusBit(int adrBit, int )
+int setRPOBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(rpobigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setRPOBigCountObject(int ) {
+void setRPOBigCountObject(int x) {
 //записать к-во обектов
+  UNUSED(x);
 }//
-void preRPOBigReadAction() {
+void preRPOBigReadAction(void) {
 //action до чтения
   rpobigcomponent->operativMarker[0] = -1;
   rpobigcomponent->operativMarker[1] = -1;//оперативный маркер
   rpobigcomponent->isActiveActualData = 1;
 }//
-void postRPOBigReadAction() {
+void postRPOBigReadAction(void) {
 //action после чтения
   if(rpobigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preRPOBigWriteAction() {
+void preRPOBigWriteAction(void) {
 //action до записи
   rpobigcomponent->operativMarker[0] = -1;
   rpobigcomponent->operativMarker[1] = -1;//оперативный маркер
   rpobigcomponent->isActiveActualData = 1;
 }//
-void postRPOBigWriteAction() {
+void postRPOBigWriteAction(void) {
 //action после записи
   if(rpobigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 14000
@@ -13,11 +13,11 @@ int setPKVBigModbusRegister(int, int);//получить содержимое регистра
 int setPKVBigModbusBit(int, int);//получить содержимое бита
 
 void setPKVBigCountObject(int);//записать к-во обектов
-void prePKVBigReadAction();//action до чтения
-void postPKVBigReadAction();//action после чтения
-void prePKVBigWriteAction();//action до записи
-void postPKVBigWriteAction();//action после записи
-void loadPKVBigActualData();
+void prePKVBigReadAction(void);//action до чтения
+void postPKVBigReadAction(void);//action после чтения
+void prePKVBigWriteAction(void);//action до записи
+void postPKVBigWriteAction(void);//action после записи
+void loadPKVBigActualData(void);
 
 COMPONENT_OBJ *pkvbigcomponent;
 
@@ -44,7 +44,7 @@ void constructorPKVBigComponent(COMPONENT_OBJ *pkvbigcomp)
   pkvbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadPKVBigActualData() {
+void loadPKVBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -206,33 +206,35 @@ int setPKVBigModbusRegister(int adrReg, int dataReg)
 
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setPKVBigModbusBit(int adrBit, int )
+int setPKVBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(pkvbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setPKVBigCountObject(int) {
+void setPKVBigCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void prePKVBigReadAction() {
+void prePKVBigReadAction(void) {
 //action до чтения
   pkvbigcomponent->operativMarker[0] = -1;
   pkvbigcomponent->operativMarker[1] = -1;//оперативный маркер
   pkvbigcomponent->isActiveActualData = 1;
 }//
-void postPKVBigReadAction() {
+void postPKVBigReadAction(void) {
 //action после чтения
   if(pkvbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void prePKVBigWriteAction() {
+void prePKVBigWriteAction(void) {
 //action до записи
   pkvbigcomponent->operativMarker[0] = -1;
   pkvbigcomponent->operativMarker[1] = -1;//оперативный маркер
   pkvbigcomponent->isActiveActualData = 1;
 }//
-void postPKVBigWriteAction() {
+void postPKVBigWriteAction(void) {
 //action после записи
   if(pkvbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

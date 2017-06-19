@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 9299
@@ -15,11 +15,11 @@ int setORBigModbusRegister(int, int);//получить содержимое регистра
 int setORBigModbusBit(int, int);//получить содержимое бита
 
 void setORBigCountObject(int);//записать к-во обектов
-void preORBigReadAction();//action до чтения
-void postORBigReadAction();//action после чтения
-void preORBigWriteAction();//action до записи
-void postORBigWriteAction();//action после записи
-void loadORBigActualData();
+void preORBigReadAction(void);//action до чтения
+void postORBigReadAction(void);//action после чтения
+void preORBigWriteAction(void);//action до записи
+void postORBigWriteAction(void);//action после записи
+void loadORBigActualData(void);
 
 COMPONENT_OBJ *orbigcomponent;
 
@@ -46,7 +46,7 @@ void constructorORBigComponent(COMPONENT_OBJ *orbigcomp)
   orbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadORBigActualData() {
+void loadORBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -123,8 +123,9 @@ int setORBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setORBigModbusBit(int adrBit, int )
+int setORBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(orbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -136,23 +137,23 @@ void setORBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   orbigcomponent->countObject = cntObj;
 }//
-void preORBigReadAction() {
+void preORBigReadAction(void) {
 //action до чтения
   orbigcomponent->operativMarker[0] = -1;
   orbigcomponent->operativMarker[1] = -1;//оперативный маркер
   orbigcomponent->isActiveActualData = 1;
 }//
-void postORBigReadAction() {
+void postORBigReadAction(void) {
 //action после чтения
   if(orbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preORBigWriteAction() {
+void preORBigWriteAction(void) {
 //action до записи
   orbigcomponent->operativMarker[0] = -1;
   orbigcomponent->operativMarker[1] = -1;//оперативный маркер
   orbigcomponent->isActiveActualData = 1;
 }//
-void postORBigWriteAction() {
+void postORBigWriteAction(void) {
 //action после записи
   if(orbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 4413
@@ -11,11 +11,11 @@ int setBASDBigModbusBit(int, int);// Бита
 int privateBASDBigGetReg2(int adrReg);
 
 void setBASDBigCountObject(int);//записать к-во обектов
-void preBASDBigReadAction();//action до чтения
-void postBASDBigReadAction();//action после чтения
-void preBASDBigWriteAction();//action до записи
-void postBASDBigWriteAction();//action после записи
-void loadBASDBigActualData();
+void preBASDBigReadAction(void);//action до чтения
+void postBASDBigReadAction(void);//action после чтения
+void preBASDBigWriteAction(void);//action до записи
+void postBASDBigWriteAction(void);//action после записи
+void loadBASDBigActualData(void);
 
 COMPONENT_OBJ *basdbigcomponent;
 /**************************************/
@@ -42,7 +42,7 @@ void constructorBASDBigComponent(COMPONENT_OBJ *basdbigcomp)
 
 }//prepareDVinConfig
 
-void loadBASDBigActualData() {
+void loadBASDBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -89,34 +89,36 @@ int setBASDBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//setDVModbusRegister(int adrReg)
-int setBASDBigModbusBit(int adrBit, int )
+int setBASDBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(basdbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getBASDBigModbusBit(int adrReg)
 
-void setBASDBigCountObject(int) {
+void setBASDBigCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
 
-void preBASDBigReadAction() {
+void preBASDBigReadAction(void) {
 //action до чтения
   basdbigcomponent->operativMarker[0] = -1;
   basdbigcomponent->operativMarker[1] = -1;//оперативный маркер
   basdbigcomponent->isActiveActualData = 1;
 }//
-void postBASDBigReadAction() {
+void postBASDBigReadAction(void) {
 //action после чтения
   if(basdbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preBASDBigWriteAction() {
+void preBASDBigWriteAction(void) {
 //action до записи
   basdbigcomponent->operativMarker[0] = -1;
   basdbigcomponent->operativMarker[1] = -1;//оперативный маркер
   basdbigcomponent->isActiveActualData = 1;
 }//
-void postBASDBigWriteAction() {
+void postBASDBigWriteAction(void) {
 //action после записи
   if(basdbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

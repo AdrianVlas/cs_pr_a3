@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 11000
@@ -13,11 +13,11 @@ int setMEBigModbusRegister(int, int);//получить содержимое регистра
 int setMEBigModbusBit(int, int);//получить содержимое бита
 
 void setMEBigCountObject(int);//записать к-во обектов
-void preMEBigReadAction();//action до чтения
-void postMEBigReadAction();//action после чтения
-void preMEBigWriteAction();//action до записи
-void postMEBigWriteAction();//action после записи
-void loadMEBigActualData();
+void preMEBigReadAction(void);//action до чтения
+void postMEBigReadAction(void);//action после чтения
+void preMEBigWriteAction(void);//action до записи
+void postMEBigWriteAction(void);//action после записи
+void loadMEBigActualData(void);
 
 COMPONENT_OBJ *mebigcomponent;
 
@@ -44,7 +44,7 @@ void constructorMEBigComponent(COMPONENT_OBJ *mebigcomp)
   mebigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadMEBigActualData() {
+void loadMEBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -77,33 +77,35 @@ int setMEBigModbusRegister(int adrReg, int dataReg)
 
   return dataReg;
 }//getDOUTBigModbusRegister(int adrReg)
-int setMEBigModbusBit(int adrBit, int )
+int setMEBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(mebigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setMEBigCountObject(int) {
+void setMEBigCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preMEBigReadAction() {
+void preMEBigReadAction(void) {
 //action до чтения
   mebigcomponent->operativMarker[0] = -1;
   mebigcomponent->operativMarker[1] = -1;//оперативный маркер
   mebigcomponent->isActiveActualData = 1;
 }//
-void postMEBigReadAction() {
+void postMEBigReadAction(void) {
 //action после чтения
   if(mebigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preMEBigWriteAction() {
+void preMEBigWriteAction(void) {
 //action до записи
   mebigcomponent->operativMarker[0] = -1;
   mebigcomponent->operativMarker[1] = -1;//оперативный маркер
   mebigcomponent->isActiveActualData = 1;
 }//
-void postMEBigWriteAction() {
+void postMEBigWriteAction(void) {
 //action после записи
   if(mebigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

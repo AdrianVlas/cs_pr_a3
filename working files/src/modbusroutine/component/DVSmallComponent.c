@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 300
@@ -18,11 +18,11 @@ int setDVSmallModbusRegister(int, int);//получить содержимое регистра
 int setDVSmallModbusBit(int, int);//получить содержимое бита
 
 void setDVSmallCountObject(int);//записать к-во обектов
-void preDVSmallReadAction();//action до чтения
-void postDVSmallReadAction();//action после чтения
-void preDVSmallWriteAction();//action до записи
-void postDVSmallWriteAction();//action после записи
-void loadDVSmallActualData();
+void preDVSmallReadAction(void);//action до чтения
+void postDVSmallReadAction(void);//action после чтения
+void preDVSmallWriteAction(void);//action до записи
+void postDVSmallWriteAction(void);//action после записи
+void loadDVSmallActualData(void);
 
 COMPONENT_OBJ *dvsmallcomponent;
 
@@ -49,7 +49,7 @@ void constructorDVSmallComponent(COMPONENT_OBJ *dvsmallcomp)
   dvsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadDVSmallActualData() {
+void loadDVSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -83,14 +83,16 @@ int getDVSmallModbusBit(int adrBit)
   if(tmp&maska) return 1;
   return 0;
 }//getDVModbusBit(int adrReg)
-int setDVSmallModbusRegister(int adrReg, int )
+int setDVSmallModbusRegister(int adrReg, int x)
 {
+  UNUSED(x);
   //записать содержимое регистра
   superSetOperativMarker(dvsmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
-int setDVSmallModbusBit(int adrBit, int )
+int setDVSmallModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(dvsmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -102,23 +104,23 @@ void setDVSmallCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   dvsmallcomponent->countObject = cntObj;
 }//
-void preDVSmallReadAction() {
+void preDVSmallReadAction(void) {
 //action до чтения
   dvsmallcomponent->operativMarker[0] = -1;
   dvsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   dvsmallcomponent->isActiveActualData = 1;
 }//
-void postDVSmallReadAction() {
+void postDVSmallReadAction(void) {
 //action после чтения
   if(dvsmallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preDVSmallWriteAction() {
+void preDVSmallWriteAction(void) {
 //action до записи
   dvsmallcomponent->operativMarker[0] = -1;
   dvsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   dvsmallcomponent->isActiveActualData = 1;
 }//
-void postDVSmallWriteAction() {
+void postDVSmallWriteAction(void) {
 //action после записи
 }//
 

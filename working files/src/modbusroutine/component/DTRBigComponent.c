@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 6734
@@ -15,11 +15,11 @@ int setDTRBigModbusRegister(int, int);// регистра
 int setDTRBigModbusBit(int, int);// бита
 
 void setDTRBigCountObject(int);//записать к-во обектов
-void preDTRBigReadAction();//action до чтения
-void postDTRBigReadAction();//action после чтения
-void preDTRBigWriteAction();//action до записи
-void postDTRBigWriteAction();//action после записи
-void loadDTRBigActualData();
+void preDTRBigReadAction(void);//action до чтения
+void postDTRBigReadAction(void);//action после чтения
+void preDTRBigWriteAction(void);//action до записи
+void postDTRBigWriteAction(void);//action после записи
+void loadDTRBigActualData(void);
 
 COMPONENT_OBJ *dtrbigcomponent;
 
@@ -46,7 +46,7 @@ void constructorDTRBigComponent(COMPONENT_OBJ *dtrbigcomp)
   dtrbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadDTRBigActualData() {
+void loadDTRBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -103,8 +103,9 @@ int setDTRBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setDTRBigModbusBit(int adrBit, int )
+int setDTRBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(dtrbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -116,23 +117,23 @@ void setDTRBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   dtrbigcomponent->countObject = cntObj;
 }//
-void preDTRBigReadAction() {
+void preDTRBigReadAction(void) {
 //action до чтения
   dtrbigcomponent->operativMarker[0] = -1;
   dtrbigcomponent->operativMarker[1] = -1;//оперативный маркер
   dtrbigcomponent->isActiveActualData = 1;
 }//
-void postDTRBigReadAction() {
+void postDTRBigReadAction(void) {
 //action после чтения
   if(dtrbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preDTRBigWriteAction() {
+void preDTRBigWriteAction(void) {
 //action до записи
   dtrbigcomponent->operativMarker[0] = -1;
   dtrbigcomponent->operativMarker[1] = -1;//оперативный маркер
   dtrbigcomponent->isActiveActualData = 1;
 }//
-void postDTRBigWriteAction() {
+void postDTRBigWriteAction(void) {
 //action после записи
   if(dtrbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

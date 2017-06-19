@@ -1,9 +1,10 @@
 //#include <QtWidgets>
 //#include "loghandler.h"
 
-#include "variables_external_m.h"
+//#include "variables_external_m.h"
+#include "header.h"
 
-void inputPacketParser();
+void inputPacketParser(void);
 unsigned short int  AddCRC(unsigned char inpbyte, unsigned short int oldCRC);
 int Error_modbus(unsigned int address, unsigned int function, unsigned int error, unsigned char *output_data);
 int outputFunc16PacketEncoder(int adrUnit, int adrReg, int cntReg);
@@ -40,13 +41,15 @@ rprAdresRegister[6] = 6;
                               //0-adr 1-func   2-MadrBit    3-LadrBit   4-Mcnt    5-Lcnt  6-cntByte  7-data1  
 //  unsigned char inputPacket[] {0x1,      15,     0x56,         0x00,       0x0,       2,      1,         2     };
                                //0-adr 1-func   2-MadrReg    3-LadrReg   4-Mcnt    5-Lcnt  6-cntByte  7-Mdata1  8-Ldata1   9-Mdata2  10-Ldata2   11-Mdata3  12-Ldata3   11-Mdata4  12-Ldata4   11-Mdata5  12-Ldata5   11-Mdata6  12-Ldata6   11-Mdata7  12-Ldata7   11-Mdata8  12-Ldata8
-  unsigned char inputPacket[] {0x1,      16,     0x3,         0xa3,       0x0,       8,      16,         0,       11,          0,       12,         0,        13,         0,        14,         0,        15,         0,        16,         0,        17,         0,        18};
+//  unsigned char inputPacket[] = {0x1,      16,     0x3,         0xa3,       0x0,       8,      16,         0,       11,          0,       12,         0,        13,         0,        14,         0,        15,         0,        16,         0,        17,         0,        18};
+    unsigned char *inputPacket = usb_received;
+    int *received_count = &usb_received_count;
   //Перевірка контрольної суми
-//    unsigned short CRC_sum;
-  //  CRC_sum = 0xffff;
-//   for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(received_buffer + index),CRC_sum);
-//   if((CRC_sum & 0xff)  != *(received_buffer+*received_count-2)) return;
-  //  if ((CRC_sum >> 8  ) != *(received_buffer+*received_count-1)) return;
+  unsigned short CRC_sum;
+  CRC_sum = 0xffff;
+  for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
+  if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2)) return;
+  if ((CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) return;
   int adrUnit = inputPacket[0];
   int numFunc = inputPacket[1];
   int sizeOutputPacket = 0;
@@ -59,7 +62,7 @@ rprAdresRegister[6] = 6;
       int adrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int cntBit  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
 //      if(cntBit>125) return;//слишком длинный пакет
-      qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit<<" cntBit="<<cntBit;
+//      qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit<<" cntBit="<<cntBit;
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc1PacketEncoder(adrUnit, adrBit, cntBit);
     }
@@ -70,7 +73,7 @@ rprAdresRegister[6] = 6;
       int adrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int cntReg  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       if(cntReg>125) return;//слишком длинный пакет
-      qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrReg="<<adrReg<<" cntReg="<<cntReg;
+  //    qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrReg="<<adrReg<<" cntReg="<<cntReg;
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc3PacketEncoder(adrUnit, adrReg, cntReg);
     }
@@ -81,7 +84,7 @@ rprAdresRegister[6] = 6;
       int dataBit = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       if(dataBit!=0xFF00) return;
 //      if(cntReg>125) return;//слишком длинный пакет
-      qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit;//<<" dataReg="<<dataReg;
+    //  qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit;//<<" dataReg="<<dataReg;
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc5PacketEncoder(adrUnit, adrBit);//, dataReg);
     }
@@ -91,7 +94,7 @@ rprAdresRegister[6] = 6;
       int adrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int dataReg = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
 //      if(cntReg>125) return;//слишком длинный пакет
-      qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrReg="<<adrReg<<" dataReg="<<dataReg;
+    //  qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrReg="<<adrReg<<" dataReg="<<dataReg;
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc6PacketEncoder(adrUnit, adrReg, dataReg);
     }
@@ -102,7 +105,7 @@ rprAdresRegister[6] = 6;
       int cntBit  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       int cntByte = (unsigned int)inputPacket[6];
 //      if(cntBit>125) return;//слишком длинный пакет
-      qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit<<" cntBit="<<cntBit;
+  //    qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit<<" cntBit="<<cntBit;
       for(int i=0; i<cntByte; i++) 
               tempReadArray[i] = (unsigned short)(inputPacket[7+i]);
       outputPacket[1] = (unsigned char)numFunc;
@@ -114,7 +117,7 @@ rprAdresRegister[6] = 6;
       int adrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int cntReg  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       if(cntReg>125) return;//слишком длинный пакет
-      qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrReg="<<adrReg<<" cntReg="<<cntReg;
+  //    qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrReg="<<adrReg<<" cntReg="<<cntReg;
       for(int i=0; i<cntReg; i++) 
               tempReadArray[i] = (unsigned short)(inputPacket[7+1+(i*2)]) +256*(unsigned short)(inputPacket[7+(i*2)]);
       outputPacket[1] = (unsigned char)numFunc;
@@ -124,20 +127,24 @@ rprAdresRegister[6] = 6;
     default: return;
     }//switch
 
-  unsigned short CRC_sum;
+//  unsigned short CRC_sum;
   CRC_sum = 0xffff;
   for (int index = 0; index < sizeOutputPacket; index++) CRC_sum = AddCRC((*(outputPacket + index)) ,CRC_sum);
   *(outputPacket + sizeOutputPacket)  = CRC_sum & 0xff;
   *(outputPacket + sizeOutputPacket+1)  = CRC_sum >> 8;
   sizeOutputPacket += 2;
+  
+  usb_transmiting_count = sizeOutputPacket;
+  for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
+  data_usb_transmiting = true;
 
-  qDebug()<<" "<<outputPacket[0]<<" "<<outputPacket[1]<<" "<<outputPacket[2]<<" "<<outputPacket[3]<<
-          " "<<outputPacket[4]<<" "<<outputPacket[5]<<" "<<outputPacket[6]<<" "<<outputPacket[7]<<
-          " "<<outputPacket[8]<<" "<<outputPacket[9]<<" "<<outputPacket[10]<<" "<<outputPacket[11]<<
-          " "<<outputPacket[12]<<" "<<outputPacket[13]<<" "<<outputPacket[14]<<" "<<outputPacket[15]<<
-          " "<<outputPacket[16]<<" "<<outputPacket[17]<<" "<<outputPacket[18]<<" "<<outputPacket[19]<<
-          " "<<outputPacket[20]<<" "<<outputPacket[21]<<" "<<outputPacket[22]<<" "<<outputPacket[23]<<
-          " "<<outputPacket[24];
+//  qDebug()<<" "<<outputPacket[0]<<" "<<outputPacket[1]<<" "<<outputPacket[2]<<" "<<outputPacket[3]<<
+//          " "<<outputPacket[4]<<" "<<outputPacket[5]<<" "<<outputPacket[6]<<" "<<outputPacket[7]<<
+//          " "<<outputPacket[8]<<" "<<outputPacket[9]<<" "<<outputPacket[10]<<" "<<outputPacket[11]<<
+//          " "<<outputPacket[12]<<" "<<outputPacket[13]<<" "<<outputPacket[14]<<" "<<outputPacket[15]<<
+//          " "<<outputPacket[16]<<" "<<outputPacket[17]<<" "<<outputPacket[18]<<" "<<outputPacket[19]<<
+//          " "<<outputPacket[20]<<" "<<outputPacket[21]<<" "<<outputPacket[22]<<" "<<outputPacket[23]<<
+//          " "<<outputPacket[24];
 }//inputPacketParser
 
 int outputFunc16PacketEncoder(int adrUnit, int adrReg, int cntReg)
@@ -175,7 +182,7 @@ int outputFunc16PacketEncoder(int adrUnit, int adrReg, int cntReg)
           flag = 0;
         }
         }//switch
-      qDebug()<<"result= "<<result;
+//      qDebug()<<"result= "<<result;
     }//for
   if(flag)//незначащие пакеты недопустимы
     return Error_modbus(adrUnit, // address,
@@ -243,7 +250,7 @@ int outputFunc15PacketEncoder(int adrUnit, int adrBit, int cntBit)
           flag = 0;
         }
         }//switch
-      qDebug()<<"result= "<<result;
+//      qDebug()<<"result= "<<result;
     }//for
   if(flag)//незначащие пакеты недопустимы
     return Error_modbus(adrUnit, // address,
@@ -303,7 +310,7 @@ int outputFunc6PacketEncoder(int adrUnit, int adrReg, int dataReg)
                               10,//error,
                               outputPacket);//output_data
     }//switch
-  qDebug()<<"result= "<<result;
+  //qDebug()<<"result= "<<result;
 
   superPostWriteAction();//action после записи
 
@@ -357,7 +364,7 @@ int outputFunc5PacketEncoder(int adrUnit, int adrBit)
                               10,//error,
                               outputPacket);//output_data
     }//switch
-  qDebug()<<"result= "<<result;
+//  qDebug()<<"result= "<<result;
 
   superPostWriteAction();//action после записи
 
@@ -411,7 +418,7 @@ int outputFunc3PacketEncoder(int adrUnit, int adrReg, int cntReg)
           flag = 0;
         }
         }//switch
-      qDebug()<<"result= "<<dataRegister[idxDataRegister];
+  //    qDebug()<<"result= "<<dataRegister[idxDataRegister];
     }//for
   if(flag)//незначащие пакеты недопустимы
     return Error_modbus(adrUnit, // address,
@@ -474,7 +481,7 @@ int outputFunc1PacketEncoder(int adrUnit, int adrBit, int cntBit)
         flag = 0;
            }
         }//switch
-      qDebug()<<"result= "<<dataRegister[idxReg];
+    //  qDebug()<<"result= "<<dataRegister[idxReg];
     }//for
   if(flag)//незначащие пакеты недопустимы
     return Error_modbus(adrUnit, // address,
@@ -523,7 +530,7 @@ int outputFunc1PacketEncoder(int adrUnit, int adrBit, int cntBit)
 /**************************************/
 //action до чтения
 /**************************************/
-void superPreReadAction()
+void superPreReadAction(void)
 {
   int i=0;
   for(; i<TOTAL_COMPONENT; i++)
@@ -534,7 +541,7 @@ void superPreReadAction()
 /**************************************/
 //action после чтения
 /**************************************/
-void superPostReadAction()
+void superPostReadAction(void)
 {
   int i=0;
   for(; i<TOTAL_COMPONENT; i++)
@@ -546,7 +553,7 @@ void superPostReadAction()
 /**************************************/
 //action до записи
 /**************************************/
-void superPreWriteAction()
+void superPreWriteAction(void)
 {
   int i=0;
   for(; i<TOTAL_COMPONENT; i++)
@@ -557,7 +564,7 @@ void superPreWriteAction()
 /**************************************/
 //action после записи
 /**************************************/
-void superPostWriteAction()
+void superPostWriteAction(void)
 {
   int i=0;
   for(; i<TOTAL_COMPONENT; i++)
@@ -580,7 +587,7 @@ int superReaderRegister(int adrReg)
       if(result==MARKER_ERRORPERIMETR) break;
     }//for
   if(i==TOTAL_COMPONENT) result = MARKER_OUTPERIMETR;
-  qDebug()<<"("<<i<<")";
+//  qDebug()<<"("<<i<<")";
   return result;
 }//superReaderRegister()
 
@@ -599,7 +606,7 @@ int superWriterRegister(int adrReg, int dataReg)
       if(result==MARKER_ERRORDIAPAZON) break;
     }//for
   if(i==TOTAL_COMPONENT) result = MARKER_OUTPERIMETR;
-  qDebug()<<"("<<i<<")";
+//  qDebug()<<"("<<i<<")";
   return result;
 }//superWriterRegister(int adrReg, int dataReg)
 
@@ -617,7 +624,7 @@ int superReaderBit(int adrBit)
       if(result==MARKER_ERRORPERIMETR) break;
     }//for
   if(i==TOTAL_COMPONENT) result = MARKER_OUTPERIMETR;
-  qDebug()<<"("<<i<<")";
+//  qDebug()<<"("<<i<<")";
   return result;
 }//superReaderBit()
 
@@ -636,7 +643,7 @@ int superWriterBit(int adrBit, int dataBit)
       if(result==MARKER_ERRORDIAPAZON) break;
     }//for
   if(i==TOTAL_COMPONENT) result = MARKER_OUTPERIMETR;
-  qDebug()<<"("<<i<<")";
+//  qDebug()<<"("<<i<<")";
   return result;
 }//superReaderRegister()
 

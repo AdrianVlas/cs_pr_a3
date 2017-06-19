@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 8010
@@ -15,11 +15,11 @@ int setTUBigModbusRegister(int, int);//получить содержимое регистра
 int setTUBigModbusBit(int, int);//получить содержимое бита
 
 void setTUBigCountObject(int);//записать к-во обектов
-void preTUBigReadAction();//action до чтения
-void postTUBigReadAction();//action после чтения
-void preTUBigWriteAction();//action до записи
-void postTUBigWriteAction();//action после записи
-void loadTUBigActualData();
+void preTUBigReadAction(void);//action до чтения
+void postTUBigReadAction(void);//action после чтения
+void preTUBigWriteAction(void);//action до записи
+void postTUBigWriteAction(void);//action после записи
+void loadTUBigActualData(void);
 
 COMPONENT_OBJ *tubigcomponent;
 
@@ -46,7 +46,7 @@ void constructorTUBigComponent(COMPONENT_OBJ *tubigcomp)
   tubigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadTUBigActualData() {
+void loadTUBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -93,8 +93,9 @@ int setTUBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setTUBigModbusBit(int adrBit, int )
+int setTUBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(tubigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -106,23 +107,23 @@ void setTUBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   tubigcomponent->countObject = cntObj;
 }//
-void preTUBigReadAction() {
+void preTUBigReadAction(void) {
 //action до чтения
   tubigcomponent->operativMarker[0] = -1;
   tubigcomponent->operativMarker[1] = -1;//оперативный маркер
   tubigcomponent->isActiveActualData = 1;
 }//
-void postTUBigReadAction() {
+void postTUBigReadAction(void) {
 //action после чтения
   if(tubigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preTUBigWriteAction() {
+void preTUBigWriteAction(void) {
 //action до записи
   tubigcomponent->operativMarker[0] = -1;
   tubigcomponent->operativMarker[1] = -1;//оперативный маркер
   tubigcomponent->isActiveActualData = 1;
 }//
-void postTUBigWriteAction() {
+void postTUBigWriteAction(void) {
 //action после записи
   if(tubigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

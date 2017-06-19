@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 61968
@@ -13,11 +13,11 @@ int setYustBigModbusRegister(int, int);//получить содержимое регистра
 int setYustBigModbusBit(int, int);//получить содержимое бита
 
 void setYustBigCountObject(int);//записать к-во обектов
-void preYustBigReadAction();//action до чтения
-void postYustBigReadAction();//action после чтения
-void preYustBigWriteAction();//action до записи
-void postYustBigWriteAction();//action после записи
-void loadYustBigActualData();
+void preYustBigReadAction(void);//action до чтения
+void postYustBigReadAction(void);//action после чтения
+void preYustBigWriteAction(void);//action до записи
+void postYustBigWriteAction(void);//action после записи
+void loadYustBigActualData(void);
 
 COMPONENT_OBJ *yustbigcomponent;
 
@@ -44,7 +44,7 @@ void constructorYustBigComponent(COMPONENT_OBJ *yustbigcomp)
   yustbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadYustBigActualData() {
+void loadYustBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -77,33 +77,35 @@ int setYustBigModbusRegister(int adrReg, int dataReg)
 
   return dataReg;
 }//getDOUTBigModbusRegister(int adrReg)
-int setYustBigModbusBit(int adrBit, int )
+int setYustBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //записать содержимое bit
   superSetOperativMarker(yustbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setYustBigCountObject(int ) {
+void setYustBigCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preYustBigReadAction() {
+void preYustBigReadAction(void) {
 //action до чтения
   yustbigcomponent->operativMarker[0] = -1;
   yustbigcomponent->operativMarker[1] = -1;//оперативный маркер
   yustbigcomponent->isActiveActualData = 1;
 }//
-void postYustBigReadAction() {
+void postYustBigReadAction(void) {
 //action после чтения
   if(yustbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preYustBigWriteAction() {
+void preYustBigWriteAction(void) {
 //action до записи
   yustbigcomponent->operativMarker[0] = -1;
   yustbigcomponent->operativMarker[1] = -1;//оперативный маркер
   yustbigcomponent->isActiveActualData = 1;
 }//
-void postYustBigWriteAction() {
+void postYustBigWriteAction(void) {
 //action после записи
   if(yustbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

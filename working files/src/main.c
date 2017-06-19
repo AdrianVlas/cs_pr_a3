@@ -152,7 +152,7 @@ inline void periodical_operations(void)
     watchdog_routine();
 
     //Обробляємо запит
-    modbus_rountines(RS485_RECUEST);
+//    modbus_rountines(RS485_RECUEST);
   }
   else if (make_reconfiguration_RS_485 != 0)
   {

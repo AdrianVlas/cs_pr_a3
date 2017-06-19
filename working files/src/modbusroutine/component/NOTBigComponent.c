@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 10589
@@ -15,11 +15,11 @@ int setNOTBigModbusRegister(int, int);//получить содержимое регистра
 int setNOTBigModbusBit(int, int);//получить содержимое бита
 
 void setNOTBigCountObject(int);//записать к-во обектов
-void preNOTBigReadAction();//action до чтения
-void postNOTBigReadAction();//action после чтения
-void preNOTBigWriteAction();//action до записи
-void postNOTBigWriteAction();//action после записи
-void loadNOTBigActualData();
+void preNOTBigReadAction(void);//action до чтения
+void postNOTBigReadAction(void);//action после чтения
+void preNOTBigWriteAction(void);//action до записи
+void postNOTBigWriteAction(void);//action после записи
+void loadNOTBigActualData(void);
 
 COMPONENT_OBJ *notbigcomponent;
 
@@ -46,7 +46,7 @@ void constructorNOTBigComponent(COMPONENT_OBJ *notbigcomp)
   notbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadNOTBigActualData() {
+void loadNOTBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -88,8 +88,9 @@ int setNOTBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setNOTBigModbusBit(int adrBit, int )
+int setNOTBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(notbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -101,23 +102,23 @@ void setNOTBigCountObject(int cntObj) {
   if(cntObj>=TOTAL_OBJ) return;
   notbigcomponent->countObject = cntObj;
 }//
-void preNOTBigReadAction() {
+void preNOTBigReadAction(void) {
 //action до чтения
   notbigcomponent->operativMarker[0] = -1;
   notbigcomponent->operativMarker[1] = -1;//оперативный маркер
   notbigcomponent->isActiveActualData = 1;
 }//
-void postNOTBigReadAction() {
+void postNOTBigReadAction(void) {
 //action после чтения
   if(notbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preNOTBigWriteAction() {
+void preNOTBigWriteAction(void) {
 //action до записи
   notbigcomponent->operativMarker[0] = -1;
   notbigcomponent->operativMarker[1] = -1;//оперативный маркер
   notbigcomponent->isActiveActualData = 1;
 }//
-void postNOTBigWriteAction() {
+void postNOTBigWriteAction(void) {
 //action после записи
   if(notbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

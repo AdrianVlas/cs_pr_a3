@@ -1,6 +1,5 @@
 
-//#include <QtWidgets>
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 13000
@@ -15,12 +14,12 @@ int setRPRBigModbusRegister(int, int);//получить содержимое регистра
 int setRPRBigModbusBit(int, int);//получить содержимое бита
 
 void setRPRBigCountObject(int);//записать к-во обектов
-void preRPRBigReadAction();//action до чтения
-void postRPRBigReadAction();//action после чтения
-void preRPRBigWriteAction();//action до записи
-void postRPRBigWriteAction();//action после записи
-void loadRPRBigActualData();
-int getRPRSmallModbusBeginAdrRegister();
+void preRPRBigReadAction(void);//action до чтения
+void postRPRBigReadAction(void);//action после чтения
+void preRPRBigWriteAction(void);//action до записи
+void postRPRBigWriteAction(void);//action после записи
+void loadRPRBigActualData(void);
+int getRPRSmallModbusBeginAdrRegister(void);
 
 COMPONENT_OBJ *rprbigcomponent;
 
@@ -47,7 +46,7 @@ void constructorRPRBigComponent(COMPONENT_OBJ *rprbigcomp)
   rprbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadRPRBigActualData()
+void loadRPRBigActualData(void)
 {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
@@ -84,37 +83,39 @@ int setRPRBigModbusRegister(int adrReg, int dataReg)
 
   return dataReg;
 }//getDOUTBigModbusRegister(int adrReg)
-int setRPRBigModbusBit(int adrBit, int )
+int setRPRBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(rprbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setRPRBigCountObject(int)
+void setRPRBigCountObject(int x)
 {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preRPRBigReadAction()
+void preRPRBigReadAction(void)
 {
 //action до чтения
   rprbigcomponent->operativMarker[0] = -1;
   rprbigcomponent->operativMarker[1] = -1;//оперативный маркер
   rprbigcomponent->isActiveActualData = 1;
 }//
-void postRPRBigReadAction()
+void postRPRBigReadAction(void)
 {
 //action после чтения
   if(rprbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preRPRBigWriteAction()
+void preRPRBigWriteAction(void)
 {
 //action до записи
   rprbigcomponent->operativMarker[0] = -1;
   rprbigcomponent->operativMarker[1] = -1;//оперативный маркер
   rprbigcomponent->isActiveActualData = 1;
 }//
-void postRPRBigWriteAction()
+void postRPRBigWriteAction(void)
 {
 //action после записи
   if(rprbigcomponent->operativMarker[0]<0) return;//не было записи

@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 8267
@@ -15,11 +15,11 @@ int setANDBigModbusRegister(int, int);// регистр
 int setANDBigModbusBit(int, int);// бит
 
 void setANDBigCountObject(int);//записать к-во обектов
-void preANDBigReadAction();//action до чтения
-void postANDBigReadAction();//action после чтения
-void preANDBigWriteAction();//action до записи
-void postANDBigWriteAction();//action после записи
-void loadANDBigActualData();
+void preANDBigReadAction(void);//action до чтения
+void postANDBigReadAction(void);//action после чтения
+void preANDBigWriteAction(void);//action до записи
+void postANDBigWriteAction(void);//action после записи
+void loadANDBigActualData(void);
 
 COMPONENT_OBJ *andbigcomponent;
 
@@ -46,7 +46,7 @@ void constructorANDBigComponent(COMPONENT_OBJ *andbigcomp)
   andbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadANDBigActualData() {
+void loadANDBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -123,8 +123,9 @@ int setANDBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//setDOUTBigModbusRegister(int adrReg)
-int setANDBigModbusBit(int adrBit, int)
+int setANDBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое бита
   superSetOperativMarker(andbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
@@ -137,26 +138,26 @@ void setANDBigCountObject(int cntObj) {
   andbigcomponent->countObject = cntObj;
 }//setANDBigCountObject(int cnt) 
 
-void preANDBigReadAction() {
+void preANDBigReadAction(void) {
 //action до чтения
   andbigcomponent->operativMarker[0] = -1;
   andbigcomponent->operativMarker[1] = -1;//оперативный маркер
   andbigcomponent->isActiveActualData = 1;
 }//preANDBigReadAction() 
 
-void postANDBigReadAction() {
+void postANDBigReadAction(void) {
 //action после чтения
   if(andbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//postANDBigReadAction() 
 
-void preANDBigWriteAction() {
+void preANDBigWriteAction(void) {
 //action до записи
   andbigcomponent->operativMarker[0] = -1;
   andbigcomponent->operativMarker[1] = -1;//оперативный маркер
   andbigcomponent->isActiveActualData = 1;
 }//preANDBigWriteAction() 
 
-void postANDBigWriteAction() {
+void postANDBigWriteAction(void) {
 //action после записи
   if(andbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

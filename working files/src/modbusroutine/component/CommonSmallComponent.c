@@ -1,6 +1,4 @@
-//#include <QtWidgets>
-
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 600
@@ -18,11 +16,11 @@ int setCommonSmallModbusRegister(int, int);// регистра
 int setCommonSmallModbusBit(int, int);// бита
 
 void setCommonSmallCountObject(int);//записать к-во обектов
-void preCommonSmallReadAction();//action до чтения
-void postCommonSmallReadAction();//action после чтения
-void preCommonSmallWriteAction();//action до записи
-void postCommonSmallWriteAction();//action после записи
-void loadCommonSmallActualData();
+void preCommonSmallReadAction(void);//action до чтения
+void postCommonSmallReadAction(void);//action после чтения
+void preCommonSmallWriteAction(void);//action до записи
+void postCommonSmallWriteAction(void);//action после записи
+void loadCommonSmallActualData(void);
 
 COMPONENT_OBJ *commonsmallcomponent;
 
@@ -49,7 +47,7 @@ void constructorCommonSmallComponent(COMPONENT_OBJ *commonsmallcomp)
   commonsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadCommonSmallActualData() {
+void loadCommonSmallActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -115,26 +113,27 @@ int setCommonSmallModbusBit(int adrBit, int dataBit)
   return MARKER_ERRORPERIMETR;
 }//setCommonSmallModbusBit(int adrBit, int adrData)
 
-void setCommonSmallCountObject(int) {
+void setCommonSmallCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preCommonSmallReadAction() {
+void preCommonSmallReadAction(void) {
 //action до чтения
   commonsmallcomponent->operativMarker[0] = -1;
   commonsmallcomponent->operativMarker[1] = -1;
   commonsmallcomponent->isActiveActualData = 1;//оперативный маркер
 }//
-void postCommonSmallReadAction() {
+void postCommonSmallReadAction(void) {
 //action после чтения
   if(commonsmallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preCommonSmallWriteAction() {
+void preCommonSmallWriteAction(void) {
 //action до записи
   commonsmallcomponent->operativMarker[0] = -1;
   commonsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   commonsmallcomponent->isActiveActualData = 1;
 }//
-void postCommonSmallWriteAction() {
+void postCommonSmallWriteAction(void) {
 //action после записи
 }//
 

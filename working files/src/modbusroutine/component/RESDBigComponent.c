@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 4408
@@ -10,11 +10,11 @@ int setRESDBigModbusRegister(int, int);//получить содержимое регистра
 int setRESDBigModbusBit(int, int);//получить содержимое бита
 
 void setRESDBigCountObject(int);//записать к-во обектов
-void preRESDBigReadAction();//action до чтения
-void postRESDBigReadAction();//action после чтения
-void preRESDBigWriteAction();//action до записи
-void postRESDBigWriteAction();//action после записи
-void loadRESDBigActualData();
+void preRESDBigReadAction(void);//action до чтения
+void postRESDBigReadAction(void);//action после чтения
+void preRESDBigWriteAction(void);//action до записи
+void postRESDBigWriteAction(void);//action после записи
+void loadRESDBigActualData(void);
 
 int privateRESDBigGetReg2(int adrReg);
 
@@ -43,7 +43,7 @@ void constructorRESDBigComponent(COMPONENT_OBJ *resdbigcomp)
   resdbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadRESDBigActualData() {
+void loadRESDBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -93,33 +93,35 @@ int setRESDBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
-int setRESDBigModbusBit(int adrBit, int )
+int setRESDBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(resdbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 
-void setRESDBigCountObject(int) {
+void setRESDBigCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preRESDBigReadAction() {
+void preRESDBigReadAction(void) {
 //action до чтения
   resdbigcomponent->operativMarker[0] = -1;
   resdbigcomponent->operativMarker[1] = -1;//оперативный маркер
   resdbigcomponent->isActiveActualData = 1;
 }//
-void postRESDBigReadAction() {
+void postRESDBigReadAction(void) {
 //action после чтения
   if(resdbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preRESDBigWriteAction() {
+void preRESDBigWriteAction(void) {
 //action до записи
   resdbigcomponent->operativMarker[0] = -1;
   resdbigcomponent->operativMarker[1] = -1;//оперативный маркер
   resdbigcomponent->isActiveActualData = 1;
 }//
-void postRESDBigWriteAction() {
+void postRESDBigWriteAction(void) {
 //action после записи
   if(resdbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

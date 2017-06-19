@@ -1,5 +1,4 @@
-//#include <QtWidgets>
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 16
@@ -19,16 +18,16 @@ int setRPRSmallModbusRegister(int, int);//получить содержимое регистра
 int setRPRSmallModbusBit(int, int);//получить содержимое бита
 
 void setRPRSmallCountObject(int);//записать к-во обектов
-void preRPRSmallReadAction();//action до чтения
-void postRPRSmallReadAction();//action после чтения
-void preRPRSmallWriteAction();//action до записи
-void postRPRSmallWriteAction();//action после записи
-void loadRPRSmallActualData();
-int getRPRSmallModbusBeginAdrRegister();
+void preRPRSmallReadAction(void);//action до чтения
+void postRPRSmallReadAction(void);//action после чтения
+void preRPRSmallWriteAction(void);//action до записи
+void postRPRSmallWriteAction(void);//action после записи
+void loadRPRSmallActualData(void);
+int getRPRSmallModbusBeginAdrRegister(void);
 
 COMPONENT_OBJ *rprsmallcomponent;
 
-int getRPRSmallModbusBeginAdrRegister()
+int getRPRSmallModbusBeginAdrRegister(void)
 {
   //получить адрес нач регистра
  return BEGIN_ADR_REGISTER;
@@ -57,7 +56,7 @@ void constructorRPRSmallComponent(COMPONENT_OBJ *rprsmallcomp)
   rprsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadRPRSmallActualData() {
+void loadRPRSmallActualData(void) {
   //ActualData
 //      qDebug()<<"loadRPRSmallActualData=";//<<result;
   for(int i=0; i<rprsmallcomponent->countObject; i++) {
@@ -101,39 +100,42 @@ int getRPRSmallModbusBit(int adrBit)
   if(tmp&maska) return 1;
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setRPRSmallModbusRegister(int adrReg, int)
+int setRPRSmallModbusRegister(int adrReg, int x)
 {
+  UNUSED(x);
   //записать содержимое регистра
   superSetOperativMarker(rprsmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setRPRSmallModbusBit(int adrBit, int )
+int setRPRSmallModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //записать содержимое bit
   superSetOperativMarker(rprsmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setRPRSmallCountObject(int) {
+void setRPRSmallCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preRPRSmallReadAction() {
+void preRPRSmallReadAction(void) {
 //action до чтения
   rprsmallcomponent->operativMarker[0] = -1;
   rprsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   rprsmallcomponent->isActiveActualData = 1;
 }//
-void postRPRSmallReadAction() {
+void postRPRSmallReadAction(void) {
 //action после чтения
   if(rprsmallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preRPRSmallWriteAction() {
+void preRPRSmallWriteAction(void) {
 //action до записи
   rprsmallcomponent->operativMarker[0] = -1;
   rprsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   rprsmallcomponent->isActiveActualData = 1;
 }//
-void postRPRSmallWriteAction() {
+void postRPRSmallWriteAction(void) {
 //action после записи
 }//
 

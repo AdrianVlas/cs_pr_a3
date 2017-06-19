@@ -1,4 +1,4 @@
-#include "variables_external_m.h"
+#include "header.h"
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 5954
@@ -13,11 +13,11 @@ int setCGSBigModbusRegister(int, int);// регистра
 int setCGSBigModbusBit(int, int);// бита
 
 void setCGSBigCountObject(int);//записать к-во обектов
-void preCGSBigReadAction();//action до чтения
-void postCGSBigReadAction();//action после чтения
-void preCGSBigWriteAction();//action до записи
-void postCGSBigWriteAction();//action после записи
-void loadCGSBigActualData();
+void preCGSBigReadAction(void);//action до чтения
+void postCGSBigReadAction(void);//action после чтения
+void preCGSBigWriteAction(void);//action до записи
+void postCGSBigWriteAction(void);//action после записи
+void loadCGSBigActualData(void);
 
 COMPONENT_OBJ *cgsbigcomponent;
 /**************************************/
@@ -43,7 +43,7 @@ void constructorCGSBigComponent(COMPONENT_OBJ *cgsbigcomp)
   cgsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadCGSBigActualData() {
+void loadCGSBigActualData(void) {
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
@@ -87,33 +87,35 @@ int setCGSBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setCGSBigModbusBit(int adrBit, int )
+int setCGSBigModbusBit(int adrBit, int x)
 {
+  UNUSED(x);
   //получить содержимое регистра
   superSetOperativMarker(cgsbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setCGSBigCountObject(int) {
+void setCGSBigCountObject(int x) {
+  UNUSED(x);
 //записать к-во обектов
 }//
-void preCGSBigReadAction() {
+void preCGSBigReadAction(void) {
 //action до чтения
   cgsbigcomponent->operativMarker[0] = -1;
   cgsbigcomponent->operativMarker[1] = -1;//оперативный маркер
   cgsbigcomponent->isActiveActualData = 1;
 }//
-void postCGSBigReadAction() {
+void postCGSBigReadAction(void) {
 //action после чтения
   if(cgsbigcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preCGSBigWriteAction() {
+void preCGSBigWriteAction(void) {
 //action до записи
   cgsbigcomponent->operativMarker[0] = -1;
   cgsbigcomponent->operativMarker[1] = -1;//оперативный маркер
   cgsbigcomponent->isActiveActualData = 1;
 }//
-void postCGSBigWriteAction() {
+void postCGSBigWriteAction(void) {
 //action после записи
   if(cgsbigcomponent->operativMarker[0]<0) return;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
