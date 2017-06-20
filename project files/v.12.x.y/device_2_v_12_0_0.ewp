@@ -6459,7 +6459,9 @@
                 <state>USE_STDPERIPH_DRIVER</state>
                 <state>STM32F2XX</state>
                 <state>USE_USB_OTG_FS</state>
+                <state>KEYBOARD_VER_1</state>
                 <state>SYSTEM_VIEWER_ENABLE</state>
+                <state>TEST_MODE</state>
               </option>
               <option>
                 <name>CCPreprocFile</name>
@@ -6487,11 +6489,11 @@
               </option>
               <option>
                 <name>CCListAssFile</name>
-                <state>1</state>
+                <state>0</state>
               </option>
               <option>
                 <name>CCListAssSource</name>
-                <state>1</state>
+                <state>0</state>
               </option>
               <option>
                 <name>CCEnableRemarks</name>
@@ -6589,6 +6591,7 @@
               <option>
                 <name>CCIncludePath2</name>
                 <state>$PROJ_DIR$\..\..\working files\inc</state>
+                <state>$PROJ_DIR$\..\..\working files\src\modbusroutine\inc</state>
                 <state>$PROJ_DIR$\..\..\working files\usb</state>
                 <state>$PROJ_DIR$\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include</state>
                 <state>$PROJ_DIR$\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc</state>
@@ -7078,7 +7081,9 @@
               <state>USE_STDPERIPH_DRIVER</state>
               <state>STM32F2XX</state>
               <state>USE_USB_OTG_FS</state>
+              <state>KEYBOARD_VER_1</state>
               <state>SYSTEM_VIEWER_ENABLE</state>
+              <state>TEST_MODE</state>
             </option>
             <option>
               <name>CCPreprocFile</name>
@@ -7106,11 +7111,11 @@
             </option>
             <option>
               <name>CCListAssFile</name>
-              <state>1</state>
+              <state>0</state>
             </option>
             <option>
               <name>CCListAssSource</name>
-              <state>1</state>
+              <state>0</state>
             </option>
             <option>
               <name>CCEnableRemarks</name>
