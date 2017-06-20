@@ -265,5 +265,9 @@ void total_error_sw_fixed(unsigned int);
 
 int str_to_int_DATE_Mmm(void);
 
+#ifdef TEST_MODE
+void empty_settings(void);
+#endif
+
 #endif
 

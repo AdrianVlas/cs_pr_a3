@@ -1,6 +1,14 @@
 #ifndef __STRINGS_GLOBAL_H
 #define __STRINGS_GLOBAL_H
 
+const uint8_t name_string_ask[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+{
+  "Да-Enter/Нет-Esc",
+  "Так-Enter/Ні-Esc",
+  "Yes-Enter/No-Esc",
+  "Да-Enter/Нет-Esc"
+};
+
 const uint8_t information_no_edition[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
 {
   "Ред.не разрешено",

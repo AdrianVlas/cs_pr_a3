@@ -2,6 +2,7 @@
 #include "StdAfx.h"
 #endif
 #include "LUAnd_8_1.h"
+#include "IStng.h"
 
 void AND_Op_8_1(void *pObj) {
     register long i, j;
@@ -15,6 +16,10 @@ void AND_Op_8_1(void *pObj) {
         }
     }
     (reinterpret_cast<CLUAnd_8_1 *> (pObj))->arrOut[0] = static_cast<char> (j);
+     register __LN_AND *pLN_AND; 
+        pLN_AND = static_cast<__LN_AND*>((reinterpret_cast<CLUAnd_8_1 *> (pObj))->pvCfgLN);
+    pLN_AND->active_state[( STANDARD_LOGIC_OUT/8) ] = j<< STANDARD_LOGIC_OUT;
+    
 }
 void AND_Opp_8_1(void *pObj) {
     register long i, j;

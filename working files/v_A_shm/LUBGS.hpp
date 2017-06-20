@@ -5,9 +5,11 @@ const short shCLUBGSig_x_y_AmtIn  = 0;
 const long lU_NOM = 220000;
 #include "prtTmr.hpp"
 #include "BgsAux.h"
+#include <stdint.h>
+#include "../inc/const_measurement.h"
 
 extern volatile unsigned long measurement_DBG[10];
-
+extern unsigned int measurement[];
 typedef struct BgsSuit_tag{
 char chStateGS;
 char chCheckBgs;
@@ -25,6 +27,7 @@ public:
     ~CBGSig(void);
     //CBGSig(CBGSig&);
     CBGSig(char chM, char chI);
+    void CalcBusGrSigSchematicDbg(void);
     void CalcBusGrSigSchematic(void);
     long lTWait(long lActivKey);
     long lTReset(long lActivKey);
@@ -52,6 +55,7 @@ static char m_chCounterCall;
     void UpdateCBGSig(void);
     //long Ibus, long lTinterval
     long EvalDeltaIbus(void); //Ibus- Current for check lTinterval - IntervalTime
+    long EvalDeltaIbusDbg(void); //Ibus- Current for check lTinterval - IntervalTime
     //long StoreIfixTimeFix(long lTime, long lIbus, long lActive);
     long EvalDeltaIbusFix(long Ibus, long Ifix, long lActive);
     long EvalIptp(long lI, long lT, long lActive);

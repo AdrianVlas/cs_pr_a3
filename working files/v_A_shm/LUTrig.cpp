@@ -1,10 +1,13 @@
 
 #include "LUTrig.hpp"
+#include "IStng.h"
+
 char chGBL_BP_StopLUTrig = 0;
 void DTRG_Op_4_2(void *pObj) {
-    CLUTrig& refCLUDTrg = *(static_cast<CLUTrig *> (pObj));
-    long k, j, l; //
+register    CLUTrig& refCLUDTrg = *(static_cast<CLUTrig *> (pObj));
+register    long k, j, l; //
     //char *pCh;
+    bool bbl = refCLUDTrg.chQ;
     k = 0;
     if(chGBL_BP_StopLUTrig == refCLUDTrg.shShemasOrdNumStng)
     asm(
@@ -54,8 +57,17 @@ void DTRG_Op_4_2(void *pObj) {
         
     }
 refCLUDTrg.chIn_C = *(refCLUDTrg.arrPchIn[DTRG__4_2_IN_NAME__C_SLASH - 1]);
-refCLUDTrg.arrOut[DTRG__4_2_OUT_NAME_Q - 1] = refCLUDTrg.chQ ;
-refCLUDTrg.arrOut[DTRG__4_2_OUT_NAME_Q_INV - 1] = !refCLUDTrg.chQ ;
+l = refCLUDTrg.chQ ;
+refCLUDTrg.arrOut[DTRG__4_2_OUT_NAME_Q - 1] = l;
+refCLUDTrg.arrOut[DTRG__4_2_OUT_NAME_Q_INV - 1] = !l;//refCLUDTrg.chQ ;
+
+__LN_TRIGGER *pLN_TRIGGER = reinterpret_cast<__LN_TRIGGER *>(refCLUDTrg.pvCfgLN);
+pLN_TRIGGER->active_state   [(TRIGGER_OUT/8) ] = (static_cast<bool>(l))<<(TRIGGER_OUT%8);
+if(bbl != static_cast<bool>(l) ){
+    pLN_TRIGGER->d_trigger_state[TRIGGER_D_TRIGGER_1/8] = (static_cast<bool>(l))<<(TRIGGER_D_TRIGGER_1%8);
+    chGlb_ActivatorWREeprom++;
+}
+
 }
 
 CLUTrig::CLUTrig(void) {

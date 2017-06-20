@@ -1,9 +1,9 @@
 /*********************************************************************
-*               SEGGER MICROCONTROLLER GmbH & Co. KG                 *
-*       Solutions for real time microcontroller applications         *
+*                SEGGER Microcontroller GmbH & Co. KG                *
+*                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 2015  SEGGER Microcontroller GmbH & Co. KG               *
+*       (c) 2015 - 2017  SEGGER Microcontroller GmbH & Co. KG        *
 *                                                                    *
 *       www.segger.com     Support: support@segger.com               *
 *                                                                    *
@@ -15,36 +15,51 @@
 *                                                                    *
 * All rights reserved.                                               *
 *                                                                    *
-* * This software may in its unmodified form be freely redistributed *
-*   in source form.                                                  *
-* * The source code may be modified, provided the source code        *
-*   retains the above copyright notice, this list of conditions and  *
-*   the following disclaimer.                                        *
-* * Modified versions of this software in source or linkable form    *
-*   may not be distributed without prior consent of SEGGER.          *
+* SEGGER strongly recommends to not make any changes                 *
+* to or modify the source code of this software in order to stay     *
+* compatible with the RTT protocol and J-Link.                       *
 *                                                                    *
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS "AS IS" AND     *
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,  *
-* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A        *
-* PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL               *
-* SEGGER Microcontroller BE LIABLE FOR ANY DIRECT, INDIRECT,         *
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES           *
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS    *
-* OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS            *
-* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,       *
-* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING          *
-* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS *
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.       *
+* Redistribution and use in source and binary forms, with or         *
+* without modification, are permitted provided that the following    *
+* conditions are met:                                                *
+*                                                                    *
+* o Redistributions of source code must retain the above copyright   *
+*   notice, this list of conditions and the following disclaimer.    *
+*                                                                    *
+* o Redistributions in binary form must reproduce the above          *
+*   copyright notice, this list of conditions and the following      *
+*   disclaimer in the documentation and/or other materials provided  *
+*   with the distribution.                                           *
+*                                                                    *
+* o Neither the name of SEGGER Microcontroller GmbH & Co. KG         *
+*   nor the names of its contributors may be used to endorse or      *
+*   promote products derived from this software without specific     *
+*   prior written permission.                                        *
+*                                                                    *
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND             *
+* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,        *
+* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF           *
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE           *
+* DISCLAIMED. IN NO EVENT SHALL SEGGER Microcontroller BE LIABLE FOR *
+* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR           *
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT  *
+* OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;    *
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF      *
+* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT          *
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE  *
+* USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH   *
+* DAMAGE.                                                            *
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       SystemView version: V2.24                                    *
+*       SystemView version: V2.50                                    *
 *                                                                    *
 **********************************************************************
 -------------------------- END-OF-HEADER -----------------------------
 
-File        : SEGGER_SYSVIEW_Config_NoOS.c
-Purpose     : Sample setup configuration of SystemView without an OS.
+File    : SEGGER_SYSVIEW_Config_NoOS.c
+Purpose : Sample setup configuration of SystemView without an OS.
+Revision: $Rev: 3734 $
 */
 #include "SEGGER_SYSVIEW.h"
 
@@ -59,13 +74,13 @@ extern unsigned int SystemCoreClock;
 **********************************************************************
 */
 // The application name to be displayed in SystemViewer
-#define SYSVIEW_APP_NAME        "MRZS-05L-12.1"
+#define SYSVIEW_APP_NAME        "MRZS-05L-CS"
 
 // The target device name
 #define SYSVIEW_DEVICE_NAME     "Cortex-M3"
 
 // Frequency of the timestamp. Must match SEGGER_SYSVIEW_Conf.h
-#define SYSVIEW_TIMESTAMP_FREQ  (SystemCoreClock >> 4)
+#define SYSVIEW_TIMESTAMP_FREQ  (SystemCoreClock)
 
 // System Frequency. SystemcoreClock is used in most CMSIS compatible projects.
 #define SYSVIEW_CPU_FREQ        (SystemCoreClock)
@@ -87,7 +102,8 @@ static void _cbSendSystemDesc(void) {
   SEGGER_SYSVIEW_SendSysDesc("I#22=EXITI_POWER");
   SEGGER_SYSVIEW_SendSysDesc("I#27=DMA_I2C_Rx");
   SEGGER_SYSVIEW_SendSysDesc("I#33=DMA_USART_Tx");
-  SEGGER_SYSVIEW_SendSysDesc("I#44=Protect.");
+  SEGGER_SYSVIEW_SendSysDesc("I#44=Protect.(TIM2)");
+  SEGGER_SYSVIEW_SendSysDesc("I#45=Protect.(TIM3)");
   SEGGER_SYSVIEW_SendSysDesc("I#46=IF_KB_D");
   SEGGER_SYSVIEW_SendSysDesc("I#47=I2C_EV");
   SEGGER_SYSVIEW_SendSysDesc("I#48=I2C_ER");
