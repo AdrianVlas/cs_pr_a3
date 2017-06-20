@@ -1,5 +1,6 @@
 
 #include "LUBGS.hpp"
+#include "../inc/constants.h"
 
 #include <stdbool.h>
 #include <math.h>
@@ -9,7 +10,6 @@
 #include "stm32f2xx.h"
 #include "hw_config.h"
 #include "../inc/macroses.h"
-#include "../inc/constants.h"
 #include "../inc/type_definition.h"
 #include "../inc/variables_external.h"//
 
@@ -264,8 +264,15 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         arrOut[BGS_OUT_NAME_CE - 1] = 1;
     if (measurement_DBG[m_chNumberAnalogChanell] > 5000)
     arrOut[BGS_OUT_NAME_OC  - 1] = 1;
+    register __LN_GROUP_ALARM *pLN_GROUP_ALARM = static_cast<__LN_GROUP_ALARM *>(pvCfgLN);
     
-
+    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_NNP/8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_CC  -1])<<( GROUP_ALARM_OUT_NNP%8);
+    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_NNM/8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_OC  -1])<<( GROUP_ALARM_OUT_NNM%8);
+    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_CC /8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_CE  -1])<<( GROUP_ALARM_OUT_CC %8);
+    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_CE /8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_NNP -1])<<( GROUP_ALARM_OUT_CE %8);
+    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_OC /8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_NNM -1])<<( GROUP_ALARM_OUT_OC %8);
+    pLN_GROUP_ALARM->NNC = arrOut[BGS_OUT_NAME_NNC_INF-1];
+    
 }
 //long Ibus, long lTinterval
 // UCV - від 54 до 253 В.
@@ -275,11 +282,11 @@ long CBGSig::EvalDeltaIbus(void) {
     register long i, j,Iti;
     //Kc = Ucurr_power/Unom_power
     //Num Analog Chanel
-    //Iti = measurement[m_chNumberAnalogChanell];
+    Iti = measurement[m_chNumberAnalogChanell];
 	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm(
 	            "bkpt 1"
 	            );
-    Iti = measurement_DBG[m_chNumberAnalogChanell];
+//    Iti = measurement_DBG[m_chNumberAnalogChanell];
     if (Iti > m_lMeasIti_mn_1) {
         j = Iti - m_lMeasIti_mn_1;
     } else {

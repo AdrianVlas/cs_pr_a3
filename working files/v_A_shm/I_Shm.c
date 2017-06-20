@@ -23,6 +23,8 @@
 extern __CONFIG current_config_prt; 
  __CONFIG ccfg;
 */
+char chGlb_ActivatorWREeprom = 0;
+
 char chGlbAmountRegisteredElem = 0;
 long lGlbRegisteredElemField = 0;
 const char chAmtSchematicElement = 15;//
@@ -49,7 +51,7 @@ fnPvrL arrChangeCfgFnptr[16] = {
 long ChangeCfg(void* pv){
     register long i, lRes, lCtrElem;
 
-    lRes = InitSchematic();
+	lRes = InitSchematic();
     lRes = i = 0;
     lCtrElem = chGlbAmountRegisteredElem;
     if (lCtrElem)

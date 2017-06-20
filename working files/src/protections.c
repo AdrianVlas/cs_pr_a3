@@ -374,12 +374,17 @@ inline void main_protection(void)
   //Розрахунок вимірювань
   /***********************************************************/
   calc_measurement();
-  RdHrdIn((void*)&DiHrdStateUI32Bit);
+  //RdHrdIn((void*)&DiHrdStateUI32Bit);
   
-  SetHrdOut((void*)&DoStateUI32Bit);
-  SetHrdLed((void*)&LedStateUI32Bit);
+  
   //TmrCalls();
   DoCalcWrp();
+  if(chGlb_ActivatorWREeprom>0){
+    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+    chGlb_ActivatorWREeprom = 0;
+  }
+  SetHrdOut((void*)&DoStateUI32Bit);
+  SetHrdLed((void*)&LedStateUI32Bit);
   //Копіюємо вимірювання для низькопріоритетних і високопріоритетних завдань
   unsigned int bank_measurement_high_tmp = (bank_measurement_high ^ 0x1) & 0x1;
   if(semaphore_measure_values_low1 == 0)
@@ -546,7 +551,8 @@ void TIM3_IRQHandler(void)
     /***********************************************************************************************/
     TIM3->SR = (uint16_t)((~(uint32_t)TIM_IT_CC1) & 0xffff);
     uint16_t current_tick = TIM3->CCR1;
-  
+    RdHrdIn((void*)&DiHrdStateUI32Bit);
+    UpdateStateDI(); 
     /***********************************************************/
     //Встановлюємо "значення лічильника для наступного переривання"
     /***********************************************************/

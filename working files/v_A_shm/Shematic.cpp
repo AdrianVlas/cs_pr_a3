@@ -151,10 +151,15 @@ shSum8Elem =  ((static_cast<__CONFIG* >(p_current_config_prt))->n_alarm       )
 +((static_cast<__CONFIG* >(p_current_config_prt))->n_timer       )
 +((static_cast<__CONFIG* >(p_current_config_prt))->n_trigger); 
 //Max Amount sequently linked Elem [1]-[2]-[3]-[4]-[5]-[6]-[7]-[8]-[9]
-chIteration = 1;
+chIteration = 2;
 ClrTmrVars();
 if(chInitTerminated != 1)
 Init2();
+TIM3InitInfo sInitT3Info = {
+0xffff,(2000-1),1
+};
+//TIM3ReInit(static_cast<void*>(&sInitT3Info));
+
 chInitTerminated = 1;
 }
 
@@ -187,12 +192,16 @@ void Shematic::DoCalc(void) {
     else
         CBGSig::m_chCounterCall = ++j;
     i = 0;    
-    UpdateStateDI();    
+//    UpdateStateDI();    
     if(chStateOptimisation == 0){    
         DoCalcLUSources();
+//        j = (static_cast<__CONFIG* >(p_current_config_prt))-> n_group_alarm;
+//        i = arIdxLUAreaListElem[LU_BGS-1];
+//        LUIterator(j,i); 
         lDwnCtr = chIteration;
         do{
             //Startovyi Iterator
+            //i = arIdxLUAreaListElem[LU_LSS-1];
             i = arIdxLUAreaListElem[LU_LSS-1];
             j = shSum8Elem;//kolichestvo elementov
             LUIterator(j,i);    
@@ -203,6 +212,7 @@ void Shematic::DoCalc(void) {
             LUIterator(j,i);//
         //Predpolagaemyi uroven` vlozenosti
         }while(--lDwnCtr);
+        
 /*        while (sLV.shAmountCalcLU--) {
             pv = reinterpret_cast<void*>( &sLV.arrLUAreaListElem[i]);
             sLV.pCLUBase = reinterpret_cast<CLUBase*>( (reinterpret_cast<LUAreaListElem*> (pv))->pvLU);//(CLUBase*)
@@ -1683,6 +1693,8 @@ void Shematic::SetupCLUDout_1_0StngParam(void *pv){
         locPCLUDout_1_0->m_ReleyCfgSuit.chSel2 = bbSel;
         bbSel = j&(1<< INDEX_CTRL_OUTPUT_LED_SI_EI);
         locPCLUDout_1_0->m_ReleyCfgSuit.chSel3 = bbSel;
+        bbSel = pLN_OUTPUT[shRelativeIndexLU].d_trigger_state[OUTPUT_LED_D_TRIGGER_1/8];
+        locPCLUDout_1_0->m_chQTrg06 = bbSel;
     }while(bbVar);
     locPCLUDout_1_0->UpdateCLUDout_1_0();
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
@@ -1740,6 +1752,9 @@ shRelativeIndexLU -= 1;
         locRef_CLULed.m_LedCfgSuit.chSel1 = bbSel1;
         locRef_CLULed.m_LedCfgSuit.chSel2 = bbSel2;
         locRef_CLULed.m_LedCfgSuit.chSel3 = bbSel3;
+        bbSel1 = pLN_OUTPUT_LED[shRelativeIndexLU].d_trigger_state[OUTPUT_LED_D_TRIGGER_1/8];
+        locRef_CLULed.m_chQTrg06 = bbSel1;
+        
     }while(bbVar);
     
     //-LUCfgInfo sLcLUCfgInfo;
@@ -2018,8 +2033,9 @@ void Shematic::SetupCLULssStngParam(void *pv){
         locRef_CLULss.pvCfgLN = static_cast<void*> (p__LN_ALARM+shRelativeIndexLU);
         j = p__LN_ALARM[shRelativeIndexLU].settings.control;
         locRef_CLULss.m_LssCfgSuit.chSel = j;
-        locRef_CLULss.m_LssCfgSuit.lTCs =
-                p__LN_ALARM[shRelativeIndexLU].settings.set_delay[0];
+        i = p__LN_ALARM[shRelativeIndexLU].settings.set_delay[0];
+        locRef_CLULss.m_LssCfgSuit.lTCs = i >> 2;
+                
     }while(bbVar);
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
@@ -2072,8 +2088,9 @@ void Shematic::SetupCBGSigStngParam(void *pv){
     j = pLN_GROUP_ALARM[shRelativeIndexLU].settings.control;
     locRef_CBGSig.m_BGSigSuit.chCheckBgs =  j&(1<< INDEX_CTRL_GROUP_ALARM_CTRL_STATE);      
     locRef_CBGSig.m_BGSigSuit.chStateGS  =  j&(1<< INDEX_CTRL_GROUP_ALARM_STATE);     
-    locRef_CBGSig.m_BGSigSuit.lIust  = pLN_GROUP_ALARM[shRelativeIndexLU].settings.pickup[0];     
-    locRef_CBGSig.m_BGSigSuit.lTWait = pLN_GROUP_ALARM[shRelativeIndexLU].settings.set_delay[0];
+    locRef_CBGSig.m_BGSigSuit.lIust  = pLN_GROUP_ALARM[shRelativeIndexLU].settings.pickup[0];  
+    j = pLN_GROUP_ALARM[shRelativeIndexLU].settings.set_delay[0];
+    locRef_CBGSig.m_BGSigSuit.lTWait = j >> 2;
     i = pLN_GROUP_ALARM[shRelativeIndexLU].settings.analog_input_control;
     if (i > 0)
         locRef_CBGSig.m_chNumberAnalogChanell = i - 1;
@@ -2127,9 +2144,14 @@ void Shematic::SetupCLUMft_2_1StngParam(void *pv){
             shRelativeIndexLU = rCMft.shLUBieldOrdNum - j;
             shRelativeIndexLU -= 1;
             rCMft.pvCfgLN = static_cast<void*>(pLN_TIMER + shRelativeIndexLU);
-            rCMft.m_MftSuit.lTpause = pLN_TIMER[shRelativeIndexLU].settings.set_delay[TIMER_SET_DELAY_PAUSE];
-            rCMft.m_MftSuit.lTWork  = pLN_TIMER[shRelativeIndexLU].settings.set_delay[TIMER_SET_DELAY_WORK ];
-    
+            long lT1,lT2;
+            lT1 = pLN_TIMER[shRelativeIndexLU].settings.set_delay[TIMER_SET_DELAY_PAUSE];
+            lT2 = pLN_TIMER[shRelativeIndexLU].settings.set_delay[TIMER_SET_DELAY_WORK ];
+            //rCMft.m_MftSuit.lTpause 
+            //rCMft.m_MftSuit.lTWork  
+            rCMft.m_MftSuit.lTpause = lT1 >> 2;
+            rCMft.m_MftSuit.lTWork  = lT2 >> 2;
+            rCMft.m_MftSuit.lTdelay = lT2 >> 2;
         }while(bbVar);
        
     }
@@ -2710,7 +2732,7 @@ volatile CLUBase* plcCLUBase;
 union {
 //__LN_INPUT        *pLN_INPUT      ;
 __LN_OUTPUT_LED   *pLN_OUTPUT_LED ;
-//__LN_BUTTON     *pLN_BUTTON_TU  ;
+//__LN_BUTTON_TU    *pLN_BUTTON_TU  ;
 __LN_ALARM        *pLN_ALARM      ;
 __LN_GROUP_ALARM  *pLN_GROUP_ALARM;
 __LN_AND          *pLN_AND        ;
@@ -2745,7 +2767,7 @@ shRelativeIndexLU = plcCLUBase->shLUBieldOrdNum - i-1;
             
             break;
 //        case TARAS_ALAS_STNG_LU_KEY:
-//            UN_LN.pLN_INPUT = reinterpret_cast<__LN_BUTTON*>( spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+//            UN_LN.pLN_INPUT = reinterpret_cast<__LN_BUTTON_TU*>( spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
 //            break;
         case TARAS_ALAS_STNG_LU_ALARMS:
             UN_LN.pLN_ALARM = reinterpret_cast<__LN_ALARM*>( spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
