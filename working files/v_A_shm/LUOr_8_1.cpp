@@ -3,6 +3,7 @@
 #endif
 #include "LUOr_8_1.h"
 #include <string.h>
+#include "IStng.h"
 
 void OR_Op_8_1(void *pObj) {
     //CLUOr_8_1 *pCLUOr_8_1 = (CLUOr_8_1*)pObj;
@@ -17,6 +18,10 @@ void OR_Op_8_1(void *pObj) {
     }
 
     (reinterpret_cast<CLUOr_8_1 *> (pObj))->arrOut[0] = static_cast<char> (j);
+    
+    register __LN_OR *pLN_OR =  static_cast<__LN_OR*>((reinterpret_cast<CLUOr_8_1 *> (pObj))->pvCfgLN);
+    pLN_OR->active_state[( STANDARD_LOGIC_OUT/8) ] = j<< STANDARD_LOGIC_OUT;
+    
 }
 void OR_Opp_8_1(void *pObj) {
     //CLUOr_8_1 *pCLUOr_8_1 = (CLUOr_8_1*)pObj;

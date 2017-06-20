@@ -992,9 +992,6 @@
   <group>
     <name>Linker</name>
     <file>
-      <name>$PROJ_DIR$\..\StackDepth.suc</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\stm32f2xx_flash.icf</name>
     </file>
     <file>
@@ -6284,6 +6281,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\v_A_shm\Tim3.c</name>
         </file>
         <configuration>
           <name>Flash-Debug</name>

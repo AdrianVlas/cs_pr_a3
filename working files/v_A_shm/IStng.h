@@ -33,7 +33,7 @@ TARAS_ALAS_STNG_LU_TS = ID_FB_TS,
 
 TARAS_ALAS_STNG_LU_UPPER_BOUND = _ID_FB_LAST_ALL
 };
-
+extern char chGlb_ActivatorWREeprom;
 
 
 

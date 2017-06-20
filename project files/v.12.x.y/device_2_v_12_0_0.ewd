@@ -795,7 +795,7 @@
         </option>
         <option>
           <name>CCJLinkTCPIP</name>
-          <state>10.10.10.99</state>
+          <state>176.36.1.5</state>
         </option>
         <option>
           <name>CCJLinkSpeedRadioV2</name>
@@ -910,15 +910,15 @@
         <option>
           <name>CCTcpIpAlt</name>
           <version>0</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCJLinkTcpIpSerialNo</name>
-          <state>164103890</state>
+          <state></state>
         </option>
         <option>
           <name>CCCpuClockEdit</name>
-          <state>120.0</state>
+          <state>72.0</state>
         </option>
         <option>
           <name>CCSwoClockAuto</name>
