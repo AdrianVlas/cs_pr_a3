@@ -264,8 +264,8 @@ const LedShcemasDscRecord* const arPDOShcemasPulseC1SimpleDscRecords[] = {
 &Or_09__2_1DscRec,
 &And12__2_1DscRec,
 &Or_13__2_1DscRec,
-&And10__2_1DscRec,
-&Not15__1_1DscRec,
+//&And10__2_1DscRec,<<= Should be Zero in Simple Mode
+//&Not15__1_1DscRec,<<= Should be 1 in Simple Mode
 &And16__3_1DscRec,
 &Or18__3_1DscRec 
 }; 
@@ -283,8 +283,8 @@ const LedShcemasDscRecord* const arPDOShcemasPulseC1TrigDscRecords[] = {
 
 &And12__2_1DscRec,
 &Or_13__2_1DscRec,
-&And10__2_1DscRec,
-&Not15__1_1DscRec,
+//&And10__2_1DscRec,<<= Should be Zero in Simple Mode
+//&Not15__1_1DscRec,<<= Should be 1 in Simple Mode
 &And16__3_1DscRec,
 &Or18__3_1DscRec 
 }; 

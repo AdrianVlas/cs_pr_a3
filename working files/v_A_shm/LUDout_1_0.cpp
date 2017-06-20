@@ -117,7 +117,7 @@ void CLUDout_1_0::UpdateCLUDout_1_0(void){
     }
 }
 
-
+short shBkptIdDO = 0;
 void CLUDout_1_0::CalcReleySchematic(void){
 register long rl_Val,i;
 const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
@@ -127,6 +127,10 @@ volatile bool boolchQTrg06 = m_chQTrg06;
 
 for (i = OFFSET_OUT_RELE_Not01__1_1; i < OFFSET_OUT_IN_RELE_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
     arChIntermediaResult[i] = 0xcc;
+    if(shBkptIdDO == shShemasOrdNumStng)
+   asm(
+       "bkpt 1"
+       );
     
 arChIntermediaResult[OFFSET_OUT_IN_RELE_TRIGGER_SELECTOR         ] = 0;//
 arChIntermediaResult[OFFSET_OUT_IN_RELE_STABLE_SELECTOR          ] = 0;//
@@ -157,6 +161,7 @@ i = 0;
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_RELE_TRIGGER_SELECTOR] = 1;
+arChIntermediaResult[OFFSET_OUT_IN_RELE_NORMAL_SELECTOR] =  0;
  i = 1;
 
 //    arChIntermediaResult[OFFSET_OUT_RELE_D_TRG_06__2_2] =  0;
@@ -175,6 +180,10 @@ else{
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SELECTOR] = 1;
 rl_Val = 1;
     arChIntermediaResult[OFFSET_OUT_RELE_And11__2_1] =  0;
+    pCh = (this->arrPchIn[(RELEY_IN_NAME__C1 - 1)]);
+    arChIntermediaResult[OFFSET_OUT_IN_RELE_C1] =  pCh[0];
+    arChIntermediaResult[OFFSET_OUT_IN_RELE_C2] =  0;
+    
 }
 if(this->m_ReleyCfgSuit.chSel3 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SIMPLE_SELECTOR] = 1;
@@ -184,7 +193,11 @@ arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SIMPLE_SELECTOR] = 1;
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_EXTANDED_SELECTOR] = 1;
-//arChIntermediaResult[OFFSET_OUT_RELE_And16__3_1] =  0;
+pCh = (this->arrPchIn[(RELEY_IN_NAME__C2 - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_RELE_C2] =  pCh[0];
+arChIntermediaResult[OFFSET_OUT_RELE_Or_07__2_1] =  
+arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_EXTANDED_SELECTOR]
+| arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SIMPLE_SELECTOR];
 
 }
 
@@ -202,6 +215,10 @@ short shCounterProcessedRec = m_shStartRecord;//RELE_Not01__1_1;
   do {
     //pLUShcemasDscRec = arPReleShcemasDscRecords[shCounterProcessedRec - RELE_Not01__1_1];
 pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
+    if(shBkptIdDO == shShemasOrdNumStng)
+   asm(
+       "bkpt 1"
+       );
     i = pLUShcemasDscRec->chTypeOperation;
     switch (i) {
         case LU_GEN_OP_AND:
@@ -375,11 +392,11 @@ pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
     bbState = arChIntermediaResult[OFFSET_OUT_RELE_Or_18__3_1];
     i = this->shShemasOrdNumStng;
     i--;
-    if (bbState) {
+/*      if (bbState) {
         DoStateUI32Bit.ul_val |= (1) << i;
     } else {
         DoStateUI32Bit.ul_val &= ~((1) << i); //Phis write to Led
-    }
+    }  */
     register __LN_OUTPUT_LED *pLN_OUTPUT = static_cast<__LN_OUTPUT_LED*>(pvCfgLN);
     
     pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] = j<<OUTPUT_LED_OUT;

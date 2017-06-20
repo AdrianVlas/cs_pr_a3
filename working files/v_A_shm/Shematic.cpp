@@ -163,7 +163,7 @@ TIM3InitInfo sInitT3Info = {
 chInitTerminated = 1;
 }
 
-char chStateOptimisation = 1;
+char chStateOptimisation = 0;
 
 void Shematic::DoCalc(void) {
 
