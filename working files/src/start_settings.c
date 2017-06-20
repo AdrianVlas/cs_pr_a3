@@ -2348,8 +2348,13 @@ void empty_settings()
     for (__id_fb index_1 = _ID_FB_FIRST_VAR; index_1 < _ID_FB_LAST_VAR; index_1++)
     {
       free(sca_of_p_edit[index_1 - _ID_FB_FIRST_VAR]);
+      sca_of_p_edit[index_1 - _ID_FB_FIRST_VAR] = NULL;
+      
       free(sca_of_p[index_1 - _ID_FB_FIRST_VAR]);
+      sca_of_p[index_1 - _ID_FB_FIRST_VAR] = NULL;
+      
       free(spca_of_p_prt[index_1 - _ID_FB_FIRST_VAR]);
+      spca_of_p_prt[index_1 - _ID_FB_FIRST_VAR] = NULL;
     }
     
     __CONFIG current_config_tmp;
@@ -2448,8 +2453,13 @@ void empty_settings()
       for (__id_fb index_1 = _ID_FB_FIRST_VAR; index_1 < _ID_FB_LAST_VAR; index_1++)
       {
         free(sca_of_p_edit[index_1 - _ID_FB_FIRST_VAR]);
+        sca_of_p_edit[index_1 - _ID_FB_FIRST_VAR] = NULL;
+        
         free(sca_of_p[index_1 - _ID_FB_FIRST_VAR]);
+        sca_of_p[index_1 - _ID_FB_FIRST_VAR] = NULL;
+        
         free(spca_of_p_prt[index_1 - _ID_FB_FIRST_VAR]);
+        spca_of_p_prt[index_1 - _ID_FB_FIRST_VAR] = NULL;
       }
     }
   }

@@ -89,7 +89,7 @@ void TIM3_NVIC_Init(void)
 //= {
 //=      TIM3->SR = (uint16_t)((~(uint32_t)TIM_IT_CC1) & 0xffff);
 //= 	if(TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET ) /*Check the TIM3 update interrupt occurs or not*/
-//=     {
+//=     
 //=         TIM_ClearITPendingBit(TIM3, TIM_IT_Update); /*Remove TIMx update interrupt flag */
 //=         //LED0 = !LED0;
 //=     }

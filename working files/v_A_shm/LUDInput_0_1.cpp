@@ -30,7 +30,7 @@ void READ_DI_Op(void *pObj) {
     else{
         j = 0;
         }
-    pCLUDInput_0_1->arrOut[0] = j;    
+    //pCLUDInput_0_1->arrOut[0] = j;    
     //Set State    
     pLN_INPUT = static_cast<__LN_INPUT*>(pCLUDInput_0_1->pvCfgLN);
     pLN_INPUT->active_state[(INPUT_OUT/8) ] = j<<INPUT_OUT;

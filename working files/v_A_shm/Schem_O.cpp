@@ -342,11 +342,16 @@ CLUTrig& refCLUDTrg = *(static_cast<CLUTrig *> (pObj));
     }
 refCLUDTrg.chIn_C = *(refCLUDTrg.arrPchIn[DTRG__4_2_IN_NAME__C_SLASH - 1]);    
 }
+short shBkptIdAlt;
 void AltOp(void *pObj){
     register long i, j;
 
     CPulseAlternator& rPulseAlt = *(static_cast<CPulseAlternator*> (pObj));
     j = rPulseAlt.arrOut[0];
+        if(shBkptIdAlt == rPulseAlt.shShemasOrdNumStng)
+   asm(
+       "bkpt 1"
+       );
     i = rPulseAlt.TAlt(j);
 	
 rPulseAlt.arrOut[0] = static_cast<char>(i);

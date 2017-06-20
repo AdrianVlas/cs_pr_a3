@@ -4,9 +4,10 @@
 
 char chGBL_BP_StopLUTrig = 0;
 void DTRG_Op_4_2(void *pObj) {
-    CLUTrig& refCLUDTrg = *(static_cast<CLUTrig *> (pObj));
-    long k, j, l; //
+register    CLUTrig& refCLUDTrg = *(static_cast<CLUTrig *> (pObj));
+register    long k, j, l; //
     //char *pCh;
+    bool bbl = refCLUDTrg.chQ;
     k = 0;
     if(chGBL_BP_StopLUTrig == refCLUDTrg.shShemasOrdNumStng)
     asm(
@@ -62,9 +63,10 @@ refCLUDTrg.arrOut[DTRG__4_2_OUT_NAME_Q_INV - 1] = !l;//refCLUDTrg.chQ ;
 
 __LN_TRIGGER *pLN_TRIGGER = reinterpret_cast<__LN_TRIGGER *>(refCLUDTrg.pvCfgLN);
 pLN_TRIGGER->active_state   [(TRIGGER_OUT/8) ] = (static_cast<bool>(l))<<(TRIGGER_OUT%8);
-pLN_TRIGGER->d_trigger_state[TRIGGER_D_TRIGGER_1/8] = (static_cast<bool>(l))<<(TRIGGER_D_TRIGGER_1%8);
+if(bbl != static_cast<bool>(l) ){
+    pLN_TRIGGER->d_trigger_state[TRIGGER_D_TRIGGER_1/8] = (static_cast<bool>(l))<<(TRIGGER_D_TRIGGER_1%8);
     chGlb_ActivatorWREeprom++;
-
+}
 
 }
 

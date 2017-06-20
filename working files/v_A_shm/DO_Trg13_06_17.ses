@@ -1,0 +1,19 @@
+<NotepadPlus>
+    <Session activeView="1">
+        <mainView activeIndex="5">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="840" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LssAuxDsc.h" />
+            <File firstVisibleLine="104" xOffset="0" scrollWidth="1010" startPos="4839" endPos="4839" selMode="0" lang="Normal Text" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\gitNames.txt" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\DOAuxDsc.h" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUDout_1_0.cpp" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUDout_1_0.h" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="580" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\Rele_p1.cpp" />
+        </mainView>
+        <subView activeIndex="4">
+            <File firstVisibleLine="279" xOffset="0" scrollWidth="970" startPos="7060" endPos="7060" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\Mft.cpp" />
+            <File firstVisibleLine="668" xOffset="0" scrollWidth="1110" startPos="27942" endPos="27942" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LULss.cpp" />
+            <File firstVisibleLine="415" xOffset="0" scrollWidth="1160" startPos="18018" endPos="18018" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LULed.cpp" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="490" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUTrig.hpp" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="700" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\LUTrig.cpp" />
+        </subView>
+    </Session>
+</NotepadPlus>
