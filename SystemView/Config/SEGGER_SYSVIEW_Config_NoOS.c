@@ -102,7 +102,8 @@ static void _cbSendSystemDesc(void) {
   SEGGER_SYSVIEW_SendSysDesc("I#22=EXITI_POWER");
   SEGGER_SYSVIEW_SendSysDesc("I#27=DMA_I2C_Rx");
   SEGGER_SYSVIEW_SendSysDesc("I#33=DMA_USART_Tx");
-  SEGGER_SYSVIEW_SendSysDesc("I#44=Protect.");
+  SEGGER_SYSVIEW_SendSysDesc("I#44=Protect.(TIM2)");
+  SEGGER_SYSVIEW_SendSysDesc("I#45=Protect.(TIM3)");
   SEGGER_SYSVIEW_SendSysDesc("I#46=IF_KB_D");
   SEGGER_SYSVIEW_SendSysDesc("I#47=I2C_EV");
   SEGGER_SYSVIEW_SendSysDesc("I#48=I2C_ER");

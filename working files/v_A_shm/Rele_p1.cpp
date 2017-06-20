@@ -9,6 +9,7 @@ OFFSET_OUT_RELE_And03__2_1,
 OFFSET_OUT_RELE_And04__2_1, 
 OFFSET_OUT_RELE_Or_05__2_1, 
 OFFSET_OUT_RELE_D_TRG_06__2_2,
+OFFSET_OUT_RELE_Or_07__2_1,
 OFFSET_OUT_RELE_And08__2_1, 
 OFFSET_OUT_RELE_Or_09__2_1, 
 OFFSET_OUT_RELE_And10__2_1, 
@@ -263,8 +264,8 @@ const LedShcemasDscRecord* const arPDOShcemasPulseC1SimpleDscRecords[] = {
 &Or_09__2_1DscRec,
 &And12__2_1DscRec,
 &Or_13__2_1DscRec,
-&And10__2_1DscRec,
-&Not15__1_1DscRec,
+//&And10__2_1DscRec,<<= Should be Zero in Simple Mode
+//&Not15__1_1DscRec,<<= Should be 1 in Simple Mode
 &And16__3_1DscRec,
 &Or18__3_1DscRec 
 }; 
@@ -282,8 +283,8 @@ const LedShcemasDscRecord* const arPDOShcemasPulseC1TrigDscRecords[] = {
 
 &And12__2_1DscRec,
 &Or_13__2_1DscRec,
-&And10__2_1DscRec,
-&Not15__1_1DscRec,
+//&And10__2_1DscRec,<<= Should be Zero in Simple Mode
+//&Not15__1_1DscRec,<<= Should be 1 in Simple Mode
 &And16__3_1DscRec,
 &Or18__3_1DscRec 
 }; 
@@ -300,9 +301,12 @@ const LedShcemasDscRecord* const arPDOShcemasPulseC2TrigDscRecords[] = {
 &And08__2_1DscRec,
 
 &And12__2_1DscRec,
+&Or_13__2_1DscRec,
 &Or_14__2_1DscRec,
 &And10__2_1DscRec,
+&Not15__1_1DscRec,
 
+&And16__3_1DscRec,
 &And17__3_1DscRec,
 &Or18__3_1DscRec 
 }; 
@@ -314,9 +318,12 @@ const LedShcemasDscRecord* const arPDOShcemasPulseC2SimpleDscRecords[] = {
 &And08__2_1DscRec,
 &Or_09__2_1DscRec,
 &And12__2_1DscRec,
+&Or_13__2_1DscRec,
 &Or_14__2_1DscRec,
 &And10__2_1DscRec,
+&Not15__1_1DscRec,
 
+&And16__3_1DscRec,
 &And17__3_1DscRec,
 &Or18__3_1DscRec 
 }; 

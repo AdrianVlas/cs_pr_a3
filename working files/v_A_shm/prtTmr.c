@@ -165,13 +165,13 @@ long DecreaseTmrList(TmrNode *pNode,long lPos){
 */
 #include "Ereg.h"
 char chGbl__DIN1_DIN5__RD_VAL;
-char chGbl__DIN6_DIN12__RD_VAL;
+short shGbl__DIN6_DIN12__RD_VAL;
 char chGbl__LedColumns__RW_VAL;
 char chGbl_REL_1_6__ROWS_A_D__RW_VAL;
-char chGbl__REL_1_6__RD_VAL;
+short shGbl__REL_1_6__RD_VAL;
 char chGbl__REL7_REL14__RW_VAL;
-char chGbl__REL7_REL14__RD_VAL;
-
+short shGbl__REL7_REL14__RD_VAL;
+short shGblDOCheckIn;
 
 
 
@@ -202,6 +202,7 @@ void RdHrdIn(void *pv){
     ((UI32Bit*) pv)->ar_uch[0] = (char)i;
     pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO__REL_1_6<<1));
     i = *((short*)pvRlc);//9-15 bits
+	shGbl__REL_1_6__RD_VAL = i;
 	i &= 0xfe00;
     j = i & 0xe00;
     j >>= 4; 
@@ -209,22 +210,27 @@ void RdHrdIn(void *pv){
     ((UI32Bit*) pv)->ar_uch[1] = (i >> 12);//8-12        <-Set 4 bita 9-12
     pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_READ_DIN06__12<<1));
     i = *((char*)pvRlc);//13-17 5bit
+	shGbl__DIN6_DIN12__RD_VAL = i;
     j = i & 0x1f;
     ((UI32Bit*) pv)->ar_uch[1] |= (j<<4);
     ((UI32Bit*) pv)->ar_uch[2] = j>>4;//Only 1 bit
     pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO_REL7_REL14<<1));
-    i = *((short*)pvRlc);
+    i = *((unsigned short*)pvRlc);
+	shGbl__REL7_REL14__RD_VAL = i;
 	//i &=
-    j = i>>14;
+    j = i>>12;
+	j &=3;
     ((UI32Bit*) pv)->ar_uch[2] |= (j<<1);//Add 2 bit
 /*
 sLV.pLAdr4 = reinterpret_cast<char*>( NOR_PSRAM_BANK2);
 sLV.pLAdr4 += ADR_READ_DIN06__12<<1;
 sLV.chVal = *(sLV.pLAdr3);
 */
-
-
-   
+shGblDOCheckIn = (shGbl__REL_1_6__RD_VAL&0x100)>>4;
+j = i&0xf00;
+shGblDOCheckIn |= j>>8;
+j = i >>14;
+shGblDOCheckIn |= j<<6;   
 }
 UI32Bit DoStateUI32Bit;
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -245,15 +251,30 @@ extern void SetHrdOut(void*pv);
 void SetHrdOut(void*pv){
     register long i,j;
     register void *pvRlc;
+//
     i = ((UI32Bit*) pv)->ar_uch[0]; 
-    j = i&1;
-    
+    j = i&0x10;//Find 5 bit
+    if(j){
+		j = 1;//Set 5bit
+		chGbl_REL_1_6__ROWS_A_D__RW_VAL |= j;
+		}
+	else{
+		j = chGbl_REL_1_6__ROWS_A_D__RW_VAL;
+		j >>= 1;
+		j <<= 1;
+		chGbl_REL_1_6__ROWS_A_D__RW_VAL = j;
+		}
     pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_WRITE_RDO__REL_1_6__ROWS_A__D<<1));
     *((char*)pvRlc) = j;//???
     pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO_REL7_REL14<<1));
     i = ((UI32Bit*) pv)->ar_uch[0]; 
-    j = i>>1;
-    j &= 0x3f;
+    //j = i>>1;
+    //j &= 0x3f;
+	j = i;
+    //j &= 0x6f;
+    j &= 0xf;
+    j |= (i&0x30)<<2;
+	
     *((char*)pvRlc) = j;
 
     
@@ -366,7 +387,7 @@ void UpdateStateDI (void){
     pDICfgSuit = &sDiCfg;
     sDiCfg.pDITmr = arTimerDi;
     pDICfgSuit->DiHrdStateUI32Bit.ul_val = DiHrdStateUI32Bit.ul_val;
-    for (i = CH_AMOUNT_DI+10; i < CH_AMOUNT_DI; i++){
+    for (i = 0; i < CH_AMOUNT_DI; i++){//--CH_AMOUNT_DI+10
 	if(i == chCmpVal){
             asm(
             "bkpt 1"

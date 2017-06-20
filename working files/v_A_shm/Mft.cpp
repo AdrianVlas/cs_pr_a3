@@ -1,6 +1,6 @@
 #include <string.h>
 #include "Mft.h"
-
+#include "IStng.h"
 
 
 
@@ -295,7 +295,18 @@ void Mft_Op(void *pObj){
     rCMft.TDelayMftDir(i,j);
     rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_INV_OUT-1] = 
     rCMft.TWorkMftInv(i,k);
+   
+register __LN_TIMER *pLN_TIMER = reinterpret_cast<__LN_TIMER*>(rCMft.pvCfgLN);
+    i = rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_DIR_OUT-1];
+    j = rCMft.arrOut[MFT_OUT_NAME__MFT_DEL_OUT-1]    ;
+    k = rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_INV_OUT-1];
+    
+    pLN_TIMER->active_state[(TIMER_OUT_RISE_IMPULSE /8) ] = i<< ( TIMER_OUT_RISE_IMPULSE %8);
+    pLN_TIMER->active_state[(TIMER_OUT_RISE_DELAY /8)   ] = j<< ( TIMER_OUT_RISE_DELAY   %8)  ;
+    pLN_TIMER->active_state[(TIMER_OUT_FALL_IMPULSE /8) ] = k<< ( TIMER_OUT_FALL_IMPULSE %8);    
+   
 
+    
 }
 
 long MftEvalTpauseTmr(long lActivKey,TmrDsc *pTmrDsc) {

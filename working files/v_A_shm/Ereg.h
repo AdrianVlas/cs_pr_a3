@@ -30,7 +30,7 @@ NOR_PSRAM_BANK4 = 0x6C000000
 // 0xXX400000
 // Читання
 // */
-extern char chGbl__DIN6_DIN12__RD_VAL;
+extern short shGbl__DIN6_DIN12__RD_VAL;
 // /*
 // Регістр дискретних входів DIN6–DIN12
 // MC74LCX245DTG
@@ -59,7 +59,7 @@ extern char chGbl_REL_1_6__ROWS_A_D__RW_VAL;
 // 0xXXC00000
 // Запис
 // */
-extern char chGbl__REL_1_6__RD_VAL;
+extern short shGbl__REL_1_6__RD_VAL;
 // /*
 // Регістр контролю ДВ REL1-REL6 та DIN17
 // MC74LCX245DTG
@@ -75,14 +75,14 @@ extern char chGbl__REL7_REL14__RW_VAL;
 // -
 // 0xXXE00000
 // Запис */
-extern char chGbl__REL7_REL14__RD_VAL;
+extern short shGbl__REL7_REL14__RD_VAL;
 // /* Регістр контролю ДВ REL7-REL14
 // MC74LCX245DTG
 // 8
 // -
 // 0xXXE00000
 // Читання*/
-
+extern short shGblDOCheckIn;
 
 
 #endif
