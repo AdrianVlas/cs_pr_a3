@@ -150,8 +150,14 @@ void operate_test_ADCs(void)
     gnd_adc_averange_sum[i] -= gnd_adc_moment_value[i][index_array_of_one_value];
     gnd_adc_moment_value[i][index_array_of_one_value] = temp;
     gnd_tmp += gnd_adc_averange[i] = gnd_adc_averange_sum[i] >> VAGA_NUMBER_POINT;
-    if (temp > 0xA1) _SET_BIT(set_diagnostyka, ERROR_GND_ADC_TEST_COARSE_BIT);
-    else _SET_BIT(clear_diagnostyka, ERROR_GND_ADC_TEST_COARSE_BIT);
+    if (temp > 0xA1) 
+    {
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_GND_ADC_TEST_COARSE_BIT);
+    }
+    else 
+    {
+      if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_GND_ADC_TEST_COARSE_BIT);
+    }
   }
   gnd_adc = gnd_tmp / NUMBER_GND_ADC;
   
@@ -161,8 +167,14 @@ void operate_test_ADCs(void)
   vref_adc_averange_sum -= vref_adc_moment_value[index_array_of_one_value];
   vref_adc_moment_value[index_array_of_one_value] = temp;
   vref_adc = vref_adc_averange_sum >> VAGA_NUMBER_POINT;
-  if ((temp < 0x614) || (temp > 0x9EB)) _SET_BIT(set_diagnostyka, ERROR_VREF_ADC_TEST_COARSE_BIT);
-  else _SET_BIT(clear_diagnostyka, ERROR_VREF_ADC_TEST_COARSE_BIT);
+  if ((temp < 0x614) || (temp > 0x9EB)) 
+  {
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_VREF_ADC_TEST_COARSE_BIT);
+  }
+  else 
+  {
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_VREF_ADC_TEST_COARSE_BIT);
+  }
   
   //VDD для АЦП
   temp = output_adc[C_VDD_ADC].value; 
@@ -170,8 +182,14 @@ void operate_test_ADCs(void)
   vdd_adc_averange_sum -= vdd_adc_moment_value[index_array_of_one_value];
   vdd_adc_moment_value[index_array_of_one_value] = temp;
   vdd_adc = vdd_adc_averange_sum >> VAGA_NUMBER_POINT;
-  if ((temp <0x6F2) || (temp > 0xD48)) _SET_BIT(set_diagnostyka, ERROR_VDD_ADC_TEST_COARSE_BIT);
-  else _SET_BIT(clear_diagnostyka, ERROR_VDD_ADC_TEST_COARSE_BIT);
+  if ((temp <0x6F2) || (temp > 0xD48)) 
+  {
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_VDD_ADC_TEST_COARSE_BIT);
+  }
+  else 
+  {
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_VDD_ADC_TEST_COARSE_BIT);
+  }
 
   //Всі масиви одної величини ми вже опрацювали  
   if((++index_array_of_one_value) == NUMBER_POINT)

@@ -514,7 +514,7 @@ void make_ekran_list_event_pr_err(void)
             if (buffer_for_menu_read_record[0] == LABEL_START_RECORD_PR_ERR)
             {
               event_number = buffer_for_menu_read_record[8] | ((buffer_for_menu_read_record[9] & 0x7f) << 8);
-              if ((event_number >= 1) && (event_number <= _NUMBER_ERRORS))
+              if ((event_number >= 1) && (event_number <= NUMBER_ERRORS))
               {
                 event_state = (buffer_for_menu_read_record[9] >> 7) & 0x1;
                 record_check_ok = true;

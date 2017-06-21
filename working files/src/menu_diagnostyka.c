@@ -38,11 +38,40 @@ const uint8_t name_string_diagnostyka[MAX_NAMBER_LANGUAGE][NUMBER_ROW_FOR_NO_ERR
 /*****************************************************/
 void move_into_diagnostics(unsigned int action, int max_row)
 {
-  unsigned int diagnostyka_tmp[2] = {diagnostyka[0], diagnostyka[1]};
-  if (
-      (diagnostyka_tmp[0] == 0) &&
-      (diagnostyka_tmp[1] == 0)
-     ) 
+  size_t n_diagn_states = 0;
+  
+  switch (diagnostyka_arrays_located)
+  {
+  case DIAGN_ARRAYS_ALL:
+    {
+      n_diagn_states = NUMBER_ERRORS;
+      break;
+    }
+  case DIAGN_ARRAYS_SHORT:
+  case DIAGN_ARRAYS_ERROR:
+    {
+      n_diagn_states = _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS;
+      break;
+    }
+  default:
+    {
+      break;
+    }
+  }
+  size_t _n = DIV_TO_HIGHER(n_diagn_states, 32);
+  
+  uint32_t present_diagnostyka = false;
+  for (size_t i = 0; ((present_diagnostyka == false) && (i < _n)); i++)
+  {
+    if (diagnostyka[i] != 0) present_diagnostyka = true;
+  }
+  
+//  unsigned int diagnostyka_tmp[2] = {diagnostyka[0], diagnostyka[1]};
+//  if (
+//      (diagnostyka_tmp[0] == 0) &&
+//      (diagnostyka_tmp[1] == 0)
+//     ) 
+  if (present_diagnostyka == false)
   {
     current_state_menu2.index_position = 0;
   }
@@ -54,7 +83,7 @@ void move_into_diagnostics(unsigned int action, int max_row)
       do
       {
         if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
-        while (_CHECK_SET_BIT(diagnostyka_tmp, current_state_menu2.index_position) == 0)
+        while (_CHECK_SET_BIT(diagnostyka/*diagnostyka_tmp*/, current_state_menu2.index_position) == 0)
         {
           if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
         }
@@ -67,7 +96,7 @@ void move_into_diagnostics(unsigned int action, int max_row)
       do
       {
         if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
-        while (_CHECK_SET_BIT(diagnostyka_tmp, current_state_menu2.index_position) == 0)
+        while (_CHECK_SET_BIT(diagnostyka/*diagnostyka_tmp*/, current_state_menu2.index_position) == 0)
         {
           if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
         }
@@ -87,10 +116,39 @@ void make_ekran_diagnostics(void)
   unsigned int position_temp = current_state_menu2.index_position;
   int index_language = index_language_in_array(settings_fix_prt.language);
     
-  if (
-      (diagnostyka[0] == 0) &&
-      (diagnostyka[1] == 0)
-     )
+  size_t n_diagn_states = 0;
+  
+  switch (diagnostyka_arrays_located)
+  {
+  case DIAGN_ARRAYS_ALL:
+    {
+      n_diagn_states = NUMBER_ERRORS;
+      break;
+    }
+  case DIAGN_ARRAYS_SHORT:
+  case DIAGN_ARRAYS_ERROR:
+    {
+      n_diagn_states = _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS;
+      break;
+    }
+  default:
+    {
+      break;
+    }
+  }
+  size_t _n = DIV_TO_HIGHER(n_diagn_states, 32);
+  
+  uint32_t present_diagnostyka = false;
+  for (size_t i = 0; ((present_diagnostyka == false) && (i < _n)); i++)
+  {
+    if (diagnostyka[i] != 0) present_diagnostyka = true;
+  }
+  
+//  if (
+//      (diagnostyka[0] == 0) &&
+//      (diagnostyka[1] == 0)
+//     )
+  if (present_diagnostyka == false)  
   {
     //Це означає, що ніякої помилки не зафіксовано
      

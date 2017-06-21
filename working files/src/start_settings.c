@@ -129,7 +129,7 @@ inline void test_external_SRAM(void)
       
       error = 0xff;
       //Виставляємо повідомлення про помилку тесту зовнішьої оперативної пам'яті
-      _SET_BIT(set_diagnostyka, ERROR_EXTERNAL_SRAM_BIT);
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_EXTERNAL_SRAM_BIT);
       *point = temp_data;
     }
   }
@@ -757,7 +757,7 @@ void start_settings_peripherals(void)
   GPIO_Init(POWER_CTRL, &GPIO_InitStructure);
   if ((POWER_CTRL->IDR & POWER_CTRL_PIN) == (uint32_t)Bit_RESET)
   {
-    _SET_BIT(set_diagnostyka, EVENT_DROP_POWER_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_DROP_POWER_BIT);
   }
   /**************/
 
@@ -1203,15 +1203,15 @@ void start_settings_peripherals(void)
     state_i2c_task &= (uint32_t)(~(MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_FAIL_BIT) | MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)));
     state_i2c_task |= MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_EMPTY_BIT);
     //Виствляємо повідомлення у слові діагностики
-    _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
-    _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_EMPTY_BIT);
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_EMPTY_BIT);
 
     //Помічаємо, що прочитаний блок є пустим
     state_i2c_task &= (uint32_t)(~(MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_FAIL_BIT) | MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_GOOD_BIT)));
     state_i2c_task |= MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_EMPTY_BIT);
     //Виствляємо повідомлення у слові діагностики
-    _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
-    _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_EMPTY_BIT);
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_EMPTY_BIT);
   }
 
   /**********************/
@@ -2447,7 +2447,7 @@ void empty_settings()
       state_i2c_task |= MASKA_FOR_BIT(STATE_CONFIG_EEPROM_NO_FREE_MEMORY_BIT);
 
       //Виствляємо повідомлення у слові діагностики
-      _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
       
       //Звільняємо всю пам'ять
       for (__id_fb index_1 = _ID_FB_FIRST_VAR; index_1 < _ID_FB_LAST_VAR; index_1++)

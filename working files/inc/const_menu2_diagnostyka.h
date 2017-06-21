@@ -1,6 +1,8 @@
 #ifndef __CONST_DIAGNOSTYKA_MENU2__
 #define __CONST_DIAGNOSTYKA_MENU2__
 
+#define N_DIAGN_ARRAYS  8
+
 #define MAX_ROW_FOR_DIAGNOSTYKA              (8*(4 + 4))
 
 enum _error_id 
@@ -48,8 +50,6 @@ ERROR_GND_ADC_TEST_COARSE_BIT,
 ERROR_VREF_ADC_TEST_COARSE_BIT,
 ERROR_VDD_ADC_TEST_COARSE_BIT,
 
-ERROR_DIGITAL_OUTPUTS_BIT,
-
 ERROR_LOG_OVERLOAD_BIT,
 ERROR_LOG_LOSS_INFORMATION_BIT,
 ERROR_PR_ERR_OVERLOAD_BIT,
@@ -68,10 +68,14 @@ ERROR_SPI_DF_BIT,
 ERROR_EXTERNAL_SRAM_BIT,
 ERROR_INTERNAL_FLASH_BIT,
 
-_NUMBER_ERRORS
+ERROR_DIGITAL_OUTPUTS_BIT,
+
+_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
 
 
 };
+
+#define NUMBER_ERRORS (_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS + current_config_prt.n_output)
 
 #define MASKA_AVAR_ERROR_0        (unsigned int)(               \
     (1 << (ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT))             \
@@ -103,7 +107,6 @@ _NUMBER_ERRORS
   | (1 << (ERROR_GND_ADC_TEST_COARSE_BIT - 32))                 \
   | (1 << (ERROR_VREF_ADC_TEST_COARSE_BIT - 32))                \
   | (1 << (ERROR_VDD_ADC_TEST_COARSE_BIT - 32))                 \
-  | (1 << (ERROR_DIGITAL_OUTPUTS_BIT + 0 - 32))                 \
   | (1 << (ERROR_INTERNAL_FLASH_BIT - 32))                      \
 )
 
@@ -151,7 +154,6 @@ _NUMBER_ERRORS
   "Тест GND АЦП гр.",   \
   "Тест VREF АЦП гр",   \
   "Тест VDD АЦП гр.",   \
-  " Ош.вых.реле    ",   \
   "Переп.буф.ж.соб.",   \
   " Потеря д.ж.соб.",   \
   "Переп.буф.пр.ош.",   \
@@ -167,6 +169,7 @@ _NUMBER_ERRORS
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
+  " Ош.вых.реле    ",   \
   " Ошибка 57      ",   \
   " Ошибка 58      ",   \
   " Ошибка 59      ",   \
@@ -217,7 +220,6 @@ _NUMBER_ERRORS
   "Тест GND АЦП гр.",   \
   "Тест VREF АЦП гр",   \
   "Тест VDD АЦП гр.",   \
-  " Пом.вих.реле   ",   \
   " Переп.буф.ж.п. ",   \
   " Втрата д.ж.п.  ",   \
   "Переп.буф.р.пр.п",   \
@@ -233,6 +235,7 @@ _NUMBER_ERRORS
   " Пом.SPI_DF     ",   \
   " Пом.зовн.SRAM  ",   \
   " Пом.внутр.FLASH",   \
+  " Пом.вих.реле   ",   \
   " Помилка 57     ",   \
   " Помилка 58     ",   \
   " Помилка 59     ",   \
@@ -283,7 +286,6 @@ _NUMBER_ERRORS
   " ADC:GND Test R.",   \
   " ADC:VREF Test R",   \
   " ADC:VDD Test R.",   \
-  " DO Ctrl.Err.   ",   \
   "OVF of Ev.Log.b.",   \
   "Ev.Log.Data lost",   \
   "OVF of PER buff.",   \
@@ -299,6 +301,7 @@ _NUMBER_ERRORS
   " DF SPI Err.    ",   \
   " Ext.SRAM Err.  ",   \
   " Int.FLASH Err. ",   \
+  " DO Ctrl.Err.   ",   \
   " Error 57       ",   \
   " Error 58       ",   \
   " Error 59       ",   \
@@ -349,7 +352,6 @@ _NUMBER_ERRORS
   "Тест GND АЦП гр.",   \
   "Тест VREF АЦП гр",   \
   "Тест VDD АЦП гр.",   \
-  " Ош.вых.реле    ",   \
   "Переп.буф.ж.соб.",   \
   " Потеря д.ж.соб.",   \
   "Переп.буф.пр.ош.",   \
@@ -365,6 +367,7 @@ _NUMBER_ERRORS
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
+  " Ош.вых.реле    ",   \
   " Ошибка 57      ",   \
   " Ошибка 58      ",   \
   " Ошибка 59      ",   \
