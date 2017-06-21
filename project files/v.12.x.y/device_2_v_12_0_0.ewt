@@ -1698,15 +1698,15 @@
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\inc\prototyps.h</name>
             </file>
             <file>
-              <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\start_settings_m.c</name>
-            </file>
-            <file>
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\inc\variables_external_m.h</name>
             </file>
             <file>
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\inc\variables_global_m.h</name>
             </file>
           </group>
+          <file>
+            <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\start_settings_m.c</name>
+          </file>
           <file>
             <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\supervisor.c</name>
           </file>

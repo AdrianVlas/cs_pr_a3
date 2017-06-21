@@ -188,9 +188,7 @@
           <state>USE_STDPERIPH_DRIVER</state>
           <state>STM32F2XX</state>
           <state>USE_USB_OTG_FS</state>
-          <state>KEYBOARD_VER_1</state>
           <state>SYSTEM_VIEWER_ENABLE</state>
-          <state>TEST_MODE</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -4967,15 +4965,15 @@
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\inc\prototyps.h</name>
             </file>
             <file>
-              <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\start_settings_m.c</name>
-            </file>
-            <file>
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\inc\variables_external_m.h</name>
             </file>
             <file>
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\inc\variables_global_m.h</name>
             </file>
           </group>
+          <file>
+            <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\start_settings_m.c</name>
+          </file>
           <file>
             <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\supervisor.c</name>
           </file>
