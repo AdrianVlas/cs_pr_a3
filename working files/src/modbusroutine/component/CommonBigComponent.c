@@ -12,7 +12,6 @@ int getCommonBigModbusBit(int);//получить содержимое бита
 int setCommonBigModbusRegister(int, int);// регистра
 int setCommonBigModbusBit(int, int);// бита
 
-void setCommonBigCountObject(int);//записать к-во обектов
 void preCommonBigReadAction(void);//action до чтения
 void postCommonBigReadAction(void);//action после чтения
 void preCommonBigWriteAction(void);//action до записи
@@ -35,7 +34,6 @@ void constructorCommonBigComponent(COMPONENT_OBJ *commonbigcomp)
   commonbigcomponent->setModbusRegister = setCommonBigModbusRegister;//регистра
   commonbigcomponent->setModbusBit      = setCommonBigModbusBit;// бита
 
-  commonbigcomponent->setCountObject  = setCommonBigCountObject;//записать к-во обектов
   commonbigcomponent->preReadAction   = preCommonBigReadAction;//action до чтения
   commonbigcomponent->postReadAction  = postCommonBigReadAction;//action после чтения
   commonbigcomponent->preWriteAction  = preCommonBigWriteAction;//action до записи
@@ -107,10 +105,6 @@ int setCommonBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setCommonBigCountObject(int x) {
-//записать к-во обектов
-  UNUSED(x);
-}//
 void preCommonBigReadAction(void) {
 //action до чтения
   commonbigcomponent->operativMarker[0] = -1;
@@ -130,9 +124,9 @@ void preCommonBigWriteAction(void) {
 void postCommonBigWriteAction(void) {
 //action после записи
   if(commonbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = commonbigcomponent->operativMarker[1]-commonbigcomponent->operativMarker[0]+1;
-  if(commonbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = commonbigcomponent->operativMarker[1]-commonbigcomponent->operativMarker[0]+1;
+//  if(commonbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateCommonBigGetReg2(int adrReg)

@@ -1,3 +1,4 @@
+//#include <QtWidgets>
 #include "header.h"
 
 //начальный регистр в карте памяти
@@ -17,7 +18,7 @@ int getRPRSmallModbusBit(int);//получить содержимое бита
 int setRPRSmallModbusRegister(int, int);//получить содержимое регистра
 int setRPRSmallModbusBit(int, int);//получить содержимое бита
 
-void setRPRSmallCountObject(int);//записать к-во обектов
+void setRPRSmallCountObject(void);//записать к-во обектов
 void preRPRSmallReadAction(void);//action до чтения
 void postRPRSmallReadAction(void);//action после чтения
 void preRPRSmallWriteAction(void);//action до записи
@@ -47,7 +48,6 @@ void constructorRPRSmallComponent(COMPONENT_OBJ *rprsmallcomp)
   rprsmallcomponent->setModbusRegister = setRPRSmallModbusRegister;//получить содержимое регистра
   rprsmallcomponent->setModbusBit      = setRPRSmallModbusBit;//получить содержимое бита
 
-  rprsmallcomponent->setCountObject  = setRPRSmallCountObject;//записать к-во обектов
   rprsmallcomponent->preReadAction   = preRPRSmallReadAction;//action до чтения
   rprsmallcomponent->postReadAction  = postRPRSmallReadAction;//action после чтения
   rprsmallcomponent->preWriteAction  = preRPRSmallWriteAction;//action до записи
@@ -115,8 +115,7 @@ int setRPRSmallModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setRPRSmallCountObject(int x) {
-  UNUSED(x);
+void setRPRSmallCountObject(void) {
 //записать к-во обектов
 }//
 void preRPRSmallReadAction(void) {

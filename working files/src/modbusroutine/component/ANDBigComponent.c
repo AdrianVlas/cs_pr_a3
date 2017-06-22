@@ -14,7 +14,7 @@ int getANDBigModbusBit(int);//получить содержимое бита
 int setANDBigModbusRegister(int, int);// регистр
 int setANDBigModbusBit(int, int);// бит
 
-void setANDBigCountObject(int);//записать к-во обектов
+void setANDBigCountObject(void);
 void preANDBigReadAction(void);//action до чтения
 void postANDBigReadAction(void);//action после чтения
 void preANDBigWriteAction(void);//action до записи
@@ -37,7 +37,6 @@ void constructorANDBigComponent(COMPONENT_OBJ *andbigcomp)
   andbigcomponent->setModbusRegister = setANDBigModbusRegister;//записать регистр
   andbigcomponent->setModbusBit      = setANDBigModbusBit;//записать бит
 
-  andbigcomponent->setCountObject  = setANDBigCountObject;//записать к-во обектов
   andbigcomponent->preReadAction   = preANDBigReadAction;//action до чтения
   andbigcomponent->postReadAction  = postANDBigReadAction;//action после чтения
   andbigcomponent->preWriteAction  = preANDBigWriteAction;//action до записи
@@ -134,12 +133,9 @@ int setANDBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//setDOUTBigModbusRegister(int adrReg)
 
-void setANDBigCountObject(int cntObj) {
+void setANDBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  andbigcomponent->countObject = cntObj;
-}//setANDBigCountObject(int cnt) 
+}//
 
 void preANDBigReadAction(void) {
 //action до чтения
@@ -163,9 +159,9 @@ void preANDBigWriteAction(void) {
 void postANDBigWriteAction(void) {
 //action после записи
   if(andbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = andbigcomponent->operativMarker[1]-andbigcomponent->operativMarker[0]+1;
-  if(andbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  //int countRegister = andbigcomponent->operativMarker[1]-andbigcomponent->operativMarker[0]+1;
+//  if(andbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//postANDBigWriteAction() 
 
 int privateANDBigGetReg1(int adrReg)

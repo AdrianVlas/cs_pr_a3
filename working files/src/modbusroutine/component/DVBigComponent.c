@@ -1,3 +1,4 @@
+//#include <QtWidgets>
 #include "header.h"
 
 //начальный регистр в карте памяти
@@ -14,7 +15,7 @@ int getDVBigModbusBit(int);//получить содержимое бита
 int setDVBigModbusRegister(int, int);// регистра
 int setDVBigModbusBit(int, int);// бита
 
-void setDVBigCountObject(int);//записать к-во обектов
+void setDVBigCountObject(void);//записать к-во обектов
 void preDVBigReadAction(void);//action до чтения
 void postDVBigReadAction(void);//action после чтения
 void preDVBigWriteAction(void);//action до записи
@@ -30,14 +31,13 @@ void constructorDVBigComponent(COMPONENT_OBJ *dvbigcomp)
 {
   dvbigcomponent = dvbigcomp;
 
-  dvbigcomponent->countObject = 0;//к-во обектов
+  dvbigcomponent->countObject = 14;//к-во обектов
 
   dvbigcomponent->getModbusRegister = getDVBigModbusRegister;//получить содержимое регистра
   dvbigcomponent->getModbusBit      = getDVBigModbusBit;//получить содержимое бита
   dvbigcomponent->setModbusRegister = setDVBigModbusRegister;// регистра
   dvbigcomponent->setModbusBit      = setDVBigModbusBit;// бита
 
-  dvbigcomponent->setCountObject  = setDVBigCountObject;//записать к-во обектов
   dvbigcomponent->preReadAction   = preDVBigReadAction;//action до чтения
   dvbigcomponent->postReadAction  = postDVBigReadAction;//action после чтения
   dvbigcomponent->preWriteAction  = preDVBigWriteAction;//action до записи
@@ -71,15 +71,13 @@ void loadDVBigActualData(void) {
   uint32_t analog_input_control - для ШГС вибір аналогових каналів
   
   */
-  
-  
 }//loadActualData() 
 
 int getDVBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateDVBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
+//  if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   if(dvbigcomponent->isActiveActualData) loadDVBigActualData(); //ActualData
   dvbigcomponent->isActiveActualData = 0;
@@ -98,7 +96,7 @@ int setDVBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateDVBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
+//  if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(dvbigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
@@ -120,11 +118,11 @@ int setDVBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setDVBigCountObject(int cntObj) {
+void setDVBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  dvbigcomponent->countObject = cntObj;
+//  if(cntObj<0) return;
+//  if(cntObj>TOTAL_OBJ) return;
+//  dvbigcomponent->countObject = cntObj;
 }//
 void preDVBigReadAction(void) {
 //action до чтения
@@ -145,24 +143,29 @@ void preDVBigWriteAction(void) {
 void postDVBigWriteAction(void) {
 //action после записи
   if(dvbigcomponent->operativMarker[0]<0) return;//не было записи
+/*
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = dvbigcomponent->operativMarker[1]-dvbigcomponent->operativMarker[0]+1;
   if(dvbigcomponent->operativMarker[1]<0) countRegister = 1;
 
+        qDebug()<<"offsetDV= "<<offset;
 
+        qDebug()<<"operativMarkerDV[0]= "<<dvbigcomponent->operativMarker[0];
+        qDebug()<<"operativMarkerDV[1]= "<<dvbigcomponent->operativMarker[1];
+*/
 }//
 
-int privateDVBigGetReg1(int adrReg)
+int privateDVBigGetReg2(int adrReg)
 {
   //проверить внутренний периметр
   int count_register = dvbigcomponent->countObject*REGISTER_FOR_OBJ;
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg1(int adrReg)
-int privateDVBigGetReg2(int adrReg)
-{
+//int privateDVBigGetReg2(int adrReg)
+//{
   //проверить внешний периметр
-  int count_register = TOTAL_OBJ*REGISTER_FOR_OBJ;
-  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
-  return MARKER_OUTPERIMETR;
-}//privateGetReg2(int adrReg)
+//  int count_register = TOTAL_OBJ*REGISTER_FOR_OBJ;
+//  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
+//  return MARKER_OUTPERIMETR;
+//}//privateGetReg2(int adrReg)

@@ -15,7 +15,7 @@ int getSDI3ColorSmallModbusBit(int);//получить содержимое бита
 int setSDI3ColorSmallModbusRegister(int, int);//получить содержимое регистра
 int setSDI3ColorSmallModbusBit(int, int);//получить содержимое бита
 
-void setSDI3ColorSmallCountObject(int);//записать к-во обектов
+void setSDI3ColorSmallCountObject(void);//записать к-во обектов
 void preSDI3ColorSmallReadAction(void);//action до чтения
 void postSDI3ColorSmallReadAction(void);//action после чтения
 void preSDI3ColorSmallWriteAction(void);//action до записи
@@ -38,7 +38,6 @@ void constructorSDI3ColorSmallComponent(COMPONENT_OBJ *sdi3colorsmallcomp)
   sdi3colorsmallcomponent->setModbusRegister = setSDI3ColorSmallModbusRegister;//получить содержимое регистра
   sdi3colorsmallcomponent->setModbusBit      = setSDI3ColorSmallModbusBit;//получить содержимое бита
 
-  sdi3colorsmallcomponent->setCountObject  = setSDI3ColorSmallCountObject;//записать к-во обектов
   sdi3colorsmallcomponent->preReadAction   = preSDI3ColorSmallReadAction;//action до чтения
   sdi3colorsmallcomponent->postReadAction  = postSDI3ColorSmallReadAction;//action после чтения
   sdi3colorsmallcomponent->preWriteAction  = preSDI3ColorSmallWriteAction;//action до записи
@@ -94,8 +93,7 @@ int setSDI3ColorSmallModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 
-void setSDI3ColorSmallCountObject(int x) {
-  UNUSED(x);
+void setSDI3ColorSmallCountObject(void) {
 //записать к-во обектов
 }//
 void preSDI3ColorSmallReadAction(void) {

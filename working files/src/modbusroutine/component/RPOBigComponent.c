@@ -12,7 +12,6 @@ int getRPOBigModbusBit(int);//получить содержимое бита
 int setRPOBigModbusRegister(int, int);//получить содержимое регистра
 int setRPOBigModbusBit(int, int);//получить содержимое бита
 
-void setRPOBigCountObject(int);//записать к-во обектов
 void preRPOBigReadAction(void);//action до чтения
 void postRPOBigReadAction(void);//action после чтения
 void preRPOBigWriteAction(void);//action до записи
@@ -35,7 +34,6 @@ void constructorRPOBigComponent(COMPONENT_OBJ *rpobigcomp)
   rpobigcomponent->setModbusRegister = setRPOBigModbusRegister;//получить содержимое регистра
   rpobigcomponent->setModbusBit      = setRPOBigModbusBit;//получить содержимое бита
 
-  rpobigcomponent->setCountObject  = setRPOBigCountObject;//записать к-во обектов
   rpobigcomponent->preReadAction   = preRPOBigReadAction;//action до чтения
   rpobigcomponent->postReadAction  = postRPOBigReadAction;//action после чтения
   rpobigcomponent->preWriteAction  = preRPOBigWriteAction;//action до записи
@@ -85,10 +83,6 @@ int setRPOBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setRPOBigCountObject(int x) {
-//записать к-во обектов
-  UNUSED(x);
-}//
 void preRPOBigReadAction(void) {
 //action до чтения
   rpobigcomponent->operativMarker[0] = -1;
@@ -108,9 +102,9 @@ void preRPOBigWriteAction(void) {
 void postRPOBigWriteAction(void) {
 //action после записи
   if(rpobigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = rpobigcomponent->operativMarker[1]-rpobigcomponent->operativMarker[0]+1;
-  if(rpobigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = rpobigcomponent->operativMarker[1]-rpobigcomponent->operativMarker[0]+1;
+//  if(rpobigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateRPOBigGetReg2(int adrReg)

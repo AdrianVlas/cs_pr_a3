@@ -14,7 +14,7 @@ int getGIBigModbusBit(int);//получить содержимое бита
 int setGIBigModbusRegister(int, int);//получить содержимое регистра
 int setGIBigModbusBit(int, int);//получить содержимое бита
 
-void setGIBigCountObject(int);//записать к-во обектов
+void setGIBigCountObject(void);//записать к-во обектов
 void preGIBigReadAction(void);//action до чтения
 void postGIBigReadAction(void);//action после чтения
 void preGIBigWriteAction(void);//action до записи
@@ -37,7 +37,6 @@ void constructorGIBigComponent(COMPONENT_OBJ *gibigcomp)
   gibigcomponent->setModbusRegister = setGIBigModbusRegister;//получить содержимое регистра
   gibigcomponent->setModbusBit      = setGIBigModbusBit;//получить содержимое бита
 
-  gibigcomponent->setCountObject  = setGIBigCountObject;//записать к-во обектов
   gibigcomponent->preReadAction   = preGIBigReadAction;//action до чтения
   gibigcomponent->postReadAction  = postGIBigReadAction;//action после чтения
   gibigcomponent->preWriteAction  = preGIBigWriteAction;//action до записи
@@ -97,11 +96,8 @@ int setGIBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setGIBigCountObject(int cntObj) {
+void setGIBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  gibigcomponent->countObject = cntObj;
 }//
 void preGIBigReadAction(void) {
 //action до чтения
@@ -122,9 +118,9 @@ void preGIBigWriteAction(void) {
 void postGIBigWriteAction(void) {
 //action после записи
   if(gibigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = gibigcomponent->operativMarker[1]-gibigcomponent->operativMarker[0]+1;
-  if(gibigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = gibigcomponent->operativMarker[1]-gibigcomponent->operativMarker[0]+1;
+//  if(gibigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateGIBigGetReg1(int adrReg)

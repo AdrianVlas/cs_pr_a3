@@ -14,7 +14,7 @@ int getXORBigModbusBit(int);//получить содержимое бита
 int setXORBigModbusRegister(int, int);//получить содержимое регистра
 int setXORBigModbusBit(int, int);//получить содержимое бита
 
-void setXORBigCountObject(int);//записать к-во обектов
+void setXORBigCountObject(void);//записать к-во обектов
 void preXORBigReadAction(void);//action до чтения
 void postXORBigReadAction(void);//action после чтения
 void preXORBigWriteAction(void);//action до записи
@@ -37,7 +37,6 @@ void constructorXORBigComponent(COMPONENT_OBJ *xorbigcomp)
   xorbigcomponent->setModbusRegister = setXORBigModbusRegister;//получить содержимое регистра
   xorbigcomponent->setModbusBit      = setXORBigModbusBit;//получить содержимое бита
 
-  xorbigcomponent->setCountObject  = setXORBigCountObject;//записать к-во обектов
   xorbigcomponent->preReadAction   = preXORBigReadAction;//action до чтения
   xorbigcomponent->postReadAction  = postXORBigReadAction;//action после чтения
   xorbigcomponent->preWriteAction  = preXORBigWriteAction;//action до записи
@@ -101,11 +100,8 @@ int setXORBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setXORBigCountObject(int cntObj) {
+void setXORBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  xorbigcomponent->countObject = cntObj;
 }//
 void preXORBigReadAction(void) {
 //action до чтения
@@ -126,9 +122,9 @@ void preXORBigWriteAction(void) {
 void postXORBigWriteAction(void) {
 //action после записи
   if(xorbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = xorbigcomponent->operativMarker[1]-xorbigcomponent->operativMarker[0]+1;
-  if(xorbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = xorbigcomponent->operativMarker[1]-xorbigcomponent->operativMarker[0]+1;
+//  if(xorbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateXORBigGetReg1(int adrReg)

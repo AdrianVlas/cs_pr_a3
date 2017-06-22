@@ -1,5 +1,5 @@
-#ifndef __GLOBAL_EXTERNAL_H
-#define __GLOBAL_EXTERNAL_H
+#ifndef __GLOBAL_EXTERNAL_M_H
+#define __GLOBAL_EXTERNAL_M_H
 
 #include "componentdef.h"
 #include "componentenum.h"

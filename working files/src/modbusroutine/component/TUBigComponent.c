@@ -14,7 +14,7 @@ int getTUBigModbusBit(int);//получить содержимое бита
 int setTUBigModbusRegister(int, int);//получить содержимое регистра
 int setTUBigModbusBit(int, int);//получить содержимое бита
 
-void setTUBigCountObject(int);//записать к-во обектов
+void setTUBigCountObject(void);//записать к-во обектов
 void preTUBigReadAction(void);//action до чтения
 void postTUBigReadAction(void);//action после чтения
 void preTUBigWriteAction(void);//action до записи
@@ -37,7 +37,6 @@ void constructorTUBigComponent(COMPONENT_OBJ *tubigcomp)
   tubigcomponent->setModbusRegister = setTUBigModbusRegister;//получить содержимое регистра
   tubigcomponent->setModbusBit      = setTUBigModbusBit;//получить содержимое бита
 
-  tubigcomponent->setCountObject  = setTUBigCountObject;//записать к-во обектов
   tubigcomponent->preReadAction   = preTUBigReadAction;//action до чтения
   tubigcomponent->postReadAction  = postTUBigReadAction;//action после чтения
   tubigcomponent->preWriteAction  = preTUBigWriteAction;//action до записи
@@ -101,11 +100,8 @@ int setTUBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setTUBigCountObject(int cntObj) {
+void setTUBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  tubigcomponent->countObject = cntObj;
 }//
 void preTUBigReadAction(void) {
 //action до чтения
@@ -126,9 +122,9 @@ void preTUBigWriteAction(void) {
 void postTUBigWriteAction(void) {
 //action после записи
   if(tubigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = tubigcomponent->operativMarker[1]-tubigcomponent->operativMarker[0]+1;
-  if(tubigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = tubigcomponent->operativMarker[1]-tubigcomponent->operativMarker[0]+1;
+//  if(tubigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateTUBigGetReg1(int adrReg)

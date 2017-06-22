@@ -2,7 +2,7 @@
 #define __PROTOTYPS_H
 
 void global_component_installation(void);
-void global_component_prepared(void);
+//void global_component_prepared(void);
 int  superReaderRegister(int);
 int  superWriterRegister(int, int);
 int  superReaderBit(int);

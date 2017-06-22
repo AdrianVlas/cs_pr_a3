@@ -14,7 +14,7 @@ int getNOTBigModbusBit(int);//получить содержимое бита
 int setNOTBigModbusRegister(int, int);//получить содержимое регистра
 int setNOTBigModbusBit(int, int);//получить содержимое бита
 
-void setNOTBigCountObject(int);//записать к-во обектов
+void setNOTBigCountObject(void);//записать к-во обектов
 void preNOTBigReadAction(void);//action до чтения
 void postNOTBigReadAction(void);//action после чтения
 void preNOTBigWriteAction(void);//action до записи
@@ -37,7 +37,6 @@ void constructorNOTBigComponent(COMPONENT_OBJ *notbigcomp)
   notbigcomponent->setModbusRegister = setNOTBigModbusRegister;//получить содержимое регистра
   notbigcomponent->setModbusBit      = setNOTBigModbusBit;//получить содержимое бита
 
-  notbigcomponent->setCountObject  = setNOTBigCountObject;//записать к-во обектов
   notbigcomponent->preReadAction   = preNOTBigReadAction;//action до чтения
   notbigcomponent->postReadAction  = postNOTBigReadAction;//action после чтения
   notbigcomponent->preWriteAction  = preNOTBigWriteAction;//action до записи
@@ -96,11 +95,8 @@ int setNOTBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setNOTBigCountObject(int cntObj) {
+void setNOTBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  notbigcomponent->countObject = cntObj;
 }//
 void preNOTBigReadAction(void) {
 //action до чтения
@@ -121,9 +117,9 @@ void preNOTBigWriteAction(void) {
 void postNOTBigWriteAction(void) {
 //action после записи
   if(notbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = notbigcomponent->operativMarker[1]-notbigcomponent->operativMarker[0]+1;
-  if(notbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = notbigcomponent->operativMarker[1]-notbigcomponent->operativMarker[0]+1;
+//  if(notbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateNOTBigGetReg1(int adrReg)

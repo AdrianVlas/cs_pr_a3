@@ -14,7 +14,7 @@ int getMFTBigModbusBit(int);//получить содержимое бита
 int setMFTBigModbusRegister(int, int);//получить содержимое регистра
 int setMFTBigModbusBit(int, int);//получить содержимое бита
 
-void setMFTBigCountObject(int);//записать к-во обектов
+void setMFTBigCountObject(void);//записать к-во обектов
 void preMFTBigReadAction(void);//action до чтения
 void postMFTBigReadAction(void);//action после чтения
 void preMFTBigWriteAction(void);//action до записи
@@ -37,7 +37,6 @@ void constructorMFTBigComponent(COMPONENT_OBJ *mftbigcomp)
   mftbigcomponent->setModbusRegister = setMFTBigModbusRegister;//получить содержимое регистра
   mftbigcomponent->setModbusBit      = setMFTBigModbusBit;//получить содержимое бита
 
-  mftbigcomponent->setCountObject  = setMFTBigCountObject;//записать к-во обектов
   mftbigcomponent->preReadAction   = preMFTBigReadAction;//action до чтения
   mftbigcomponent->postReadAction  = postMFTBigReadAction;//action после чтения
   mftbigcomponent->preWriteAction  = preMFTBigWriteAction;//action до записи
@@ -107,11 +106,8 @@ int setMFTBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setMFTBigCountObject(int cntObj) {
+void setMFTBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  mftbigcomponent->countObject = cntObj;
 }//
 void preMFTBigReadAction(void) {
 //action до чтения
@@ -132,9 +128,9 @@ void preMFTBigWriteAction(void) {
 void postMFTBigWriteAction(void) {
 //action после записи
   if(mftbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = mftbigcomponent->operativMarker[1]-mftbigcomponent->operativMarker[0]+1;
-  if(mftbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = mftbigcomponent->operativMarker[1]-mftbigcomponent->operativMarker[0]+1;
+//  if(mftbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateMFTBigGetReg1(int adrReg)

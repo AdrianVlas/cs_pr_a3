@@ -17,7 +17,7 @@ int getTSSmallModbusBit(int);//получить содержимое бита
 int setTSSmallModbusRegister(int, int);//получить содержимое регистра
 int setTSSmallModbusBit(int, int);//получить содержимое бита
 
-void setTSSmallCountObject(int);//записать к-во обектов
+void setTSSmallCountObject(void);//записать к-во обектов
 void preTSSmallReadAction(void);//action до чтения
 void postTSSmallReadAction(void);//action после чтения
 void preTSSmallWriteAction(void);//action до записи
@@ -40,7 +40,6 @@ void constructorTSSmallComponent(COMPONENT_OBJ *tssmallcomp)
   tssmallcomponent->setModbusRegister = setTSSmallModbusRegister;//получить содержимое регистра
   tssmallcomponent->setModbusBit      = setTSSmallModbusBit;//получить содержимое бита
 
-  tssmallcomponent->setCountObject  = setTSSmallCountObject;//записать к-во обектов
   tssmallcomponent->preReadAction   = preTSSmallReadAction;//action до чтения
   tssmallcomponent->postReadAction  = postTSSmallReadAction;//action после чтения
   tssmallcomponent->preWriteAction  = preTSSmallWriteAction;//action до записи
@@ -51,7 +50,22 @@ void constructorTSSmallComponent(COMPONENT_OBJ *tssmallcomp)
 
 void loadTSSmallActualData(void) {
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  setTSSmallCountObject(); //записать к-во обектов
+
+  int cnt_treg = tssmallcomponent->countObject/16;
+  if(tssmallcomponent->countObject%16) cnt_treg++;
+  for(int ii=0; ii<cnt_treg; ii++) tempReadArray[ii] = 0;
+  for(int item=0; item<tssmallcomponent->countObject; item++) {
+   int ireg = item/16;
+
+   __LN_TS *arr = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+   int value = arr[item].active_state[TU_OUT  >> 3] & (1 << (TU_OUT  & ((1 << 3) - 1)));
+   
+   int tsdata = 0;
+   if(value) tsdata=1;
+   tempReadArray[ireg] |= (tsdata&0x1)<<(item%16);
+  }//for
+
   /*
   Загальну кількість завжди треба брати з конфігурації current_config_prt типу __CONFIG (для читання поточного стану) і/або current_config/current_config_edit (для редагування)
   
@@ -116,10 +130,11 @@ int setTSSmallModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 
-void setTSSmallCountObject(int cntObj) {
+void setTSSmallCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_alarm;    //Кількість блоків сигналізацій
   if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
+  if(cntObj>TOTAL_OBJ) return;
   tssmallcomponent->countObject = cntObj;
 }//
 void preTSSmallReadAction(void) {

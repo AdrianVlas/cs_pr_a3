@@ -14,7 +14,7 @@ int getDTRBigModbusBit(int);//получить содержимое бита
 int setDTRBigModbusRegister(int, int);// регистра
 int setDTRBigModbusBit(int, int);// бита
 
-void setDTRBigCountObject(int);//записать к-во обектов
+void setDTRBigCountObject(void);//записать к-во обектов
 void preDTRBigReadAction(void);//action до чтения
 void postDTRBigReadAction(void);//action после чтения
 void preDTRBigWriteAction(void);//action до записи
@@ -37,7 +37,6 @@ void constructorDTRBigComponent(COMPONENT_OBJ *dtrbigcomp)
   dtrbigcomponent->setModbusRegister = setDTRBigModbusRegister;// регистра
   dtrbigcomponent->setModbusBit      = setDTRBigModbusBit;// бита
 
-  dtrbigcomponent->setCountObject  = setDTRBigCountObject;//записать к-во обектов
   dtrbigcomponent->preReadAction   = preDTRBigReadAction;//action до чтения
   dtrbigcomponent->postReadAction  = postDTRBigReadAction;//action после чтения
   dtrbigcomponent->preWriteAction  = preDTRBigWriteAction;//action до записи
@@ -111,11 +110,8 @@ int setDTRBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setDTRBigCountObject(int cntObj) {
+void setDTRBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  dtrbigcomponent->countObject = cntObj;
 }//
 void preDTRBigReadAction(void) {
 //action до чтения
@@ -136,9 +132,9 @@ void preDTRBigWriteAction(void) {
 void postDTRBigWriteAction(void) {
 //action после записи
   if(dtrbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = dtrbigcomponent->operativMarker[1]-dtrbigcomponent->operativMarker[0]+1;
-  if(dtrbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = dtrbigcomponent->operativMarker[1]-dtrbigcomponent->operativMarker[0]+1;
+//  if(dtrbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateDTRBigGetReg1(int adrReg)

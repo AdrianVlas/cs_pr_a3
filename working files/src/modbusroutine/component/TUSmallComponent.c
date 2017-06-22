@@ -17,7 +17,7 @@ int getTUSmallModbusBit(int);//получить содержимое бита
 int setTUSmallModbusRegister(int, int);//получить содержимое регистра
 int setTUSmallModbusBit(int, int);//получить содержимое бита
 
-void setTUSmallCountObject(int);//записать к-во обектов
+void setTUSmallCountObject(void);//записать к-во обектов
 void preTUSmallReadAction(void);//action до чтения
 void postTUSmallReadAction(void);//action после чтения
 void preTUSmallWriteAction(void);//action до записи
@@ -40,7 +40,6 @@ void constructorTUSmallComponent(COMPONENT_OBJ *tusmallcomp)
   tusmallcomponent->setModbusRegister = setTUSmallModbusRegister;//получить содержимое регистра
   tusmallcomponent->setModbusBit      = setTUSmallModbusBit;//получить содержимое бита
 
-  tusmallcomponent->setCountObject  = setTUSmallCountObject;//записать к-во обектов
   tusmallcomponent->preReadAction   = preTUSmallReadAction;//action до чтения
   tusmallcomponent->postReadAction  = postTUSmallReadAction;//action после чтения
   tusmallcomponent->preWriteAction  = preTUSmallWriteAction;//action до записи
@@ -98,11 +97,8 @@ int setTUSmallModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 
-void setTUSmallCountObject(int cntObj) {
+void setTUSmallCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  tusmallcomponent->countObject = cntObj;
 }//
 void preTUSmallReadAction(void) {
 //action до чтения

@@ -14,7 +14,7 @@ int getORBigModbusBit(int);//получить содержимое бита
 int setORBigModbusRegister(int, int);//получить содержимое регистра
 int setORBigModbusBit(int, int);//получить содержимое бита
 
-void setORBigCountObject(int);//записать к-во обектов
+void setORBigCountObject(void);//записать к-во обектов
 void preORBigReadAction(void);//action до чтения
 void postORBigReadAction(void);//action после чтения
 void preORBigWriteAction(void);//action до записи
@@ -37,7 +37,6 @@ void constructorORBigComponent(COMPONENT_OBJ *orbigcomp)
   orbigcomponent->setModbusRegister = setORBigModbusRegister;//получить содержимое регистра
   orbigcomponent->setModbusBit      = setORBigModbusBit;//получить содержимое бита
 
-  orbigcomponent->setCountObject  = setORBigCountObject;//записать к-во обектов
   orbigcomponent->preReadAction   = preORBigReadAction;//action до чтения
   orbigcomponent->postReadAction  = postORBigReadAction;//action после чтения
   orbigcomponent->preWriteAction  = preORBigWriteAction;//action до записи
@@ -131,11 +130,8 @@ int setORBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setORBigCountObject(int cntObj) {
+void setORBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  orbigcomponent->countObject = cntObj;
 }//
 void preORBigReadAction(void) {
 //action до чтения
@@ -156,9 +152,9 @@ void preORBigWriteAction(void) {
 void postORBigWriteAction(void) {
 //action после записи
   if(orbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = orbigcomponent->operativMarker[1]-orbigcomponent->operativMarker[0]+1;
-  if(orbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = orbigcomponent->operativMarker[1]-orbigcomponent->operativMarker[0]+1;
+//  if(orbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateORBigGetReg1(int adrReg)

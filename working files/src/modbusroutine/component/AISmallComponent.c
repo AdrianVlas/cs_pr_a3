@@ -1,4 +1,3 @@
-//#include "variables_external_m.h"
 #include "header.h"
 
 //начальный регистр в карте памяти
@@ -13,7 +12,6 @@ int getAISmallModbusBit(int);//получить содержимое бита
 int setAISmallModbusRegister(int, int);//получить содержимое регистра
 int setAISmallModbusBit(int, int);//получить содержимое бита
 
-void setAISmallCountObject(int);//записать к-во обектов
 void preAISmallReadAction(void);//action до чтения
 void postAISmallReadAction(void);//action после чтения
 void preAISmallWriteAction(void);//action до записи
@@ -23,7 +21,7 @@ void loadAISmallActualData(void);
 COMPONENT_OBJ *aismallcomponent;
 
 /**************************************/
-//подготовка компонента ранжирование пользовательских регистров
+//подготовка компонента аналог входа
 /**************************************/
 void constructorAISmallComponent(COMPONENT_OBJ *aismallcomp)
 {
@@ -36,7 +34,6 @@ void constructorAISmallComponent(COMPONENT_OBJ *aismallcomp)
   aismallcomponent->setModbusRegister = setAISmallModbusRegister;//получить содержимое регистра
   aismallcomponent->setModbusBit      = setAISmallModbusBit;//получить содержимое бита
 
-  aismallcomponent->setCountObject  = setAISmallCountObject;//записать к-во обектов
   aismallcomponent->preReadAction   = preAISmallReadAction;//action до чтения
   aismallcomponent->postReadAction  = postAISmallReadAction;//action после чтения
   aismallcomponent->preWriteAction  = preAISmallWriteAction;//action до записи
@@ -47,7 +44,25 @@ void constructorAISmallComponent(COMPONENT_OBJ *aismallcomp)
 
 void loadAISmallActualData(void) {
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  for(int i=0; i<5; i++) 
+  switch(i) {
+   case 0://Напряжение Ucv
+    tempReadArray[i] = (short) measurement[IM_U];
+   break;
+   case 1://Ток Iin1
+    tempReadArray[i] = (short) measurement[IM_I1];
+   break;
+   case 2://Ток Iin2
+    tempReadArray[i] = (short) measurement[IM_I2];
+   break;
+   case 3://Ток Iin3
+    tempReadArray[i] = (short) measurement[IM_I3];
+   break;
+   case 4://Ток Iin4
+    tempReadArray[i] = (short) measurement[IM_I4];
+   break;
+  }//switch
+
   /*
   1) Всі вимірювання у unsigned int measurement[NUMBER_ANALOG_CANALES] Всі вимірювання приведені у мілі-величини
   2) відповідність індексів до їх реальних каналів:
@@ -94,10 +109,6 @@ int setAISmallModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setAISmallCountObject(int x) {
-//записать к-во обектов
-  UNUSED(x);
-}//
 void preAISmallReadAction(void) {
 //action до чтения
   aismallcomponent->operativMarker[0] = -1;

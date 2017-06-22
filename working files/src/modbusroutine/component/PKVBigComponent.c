@@ -12,7 +12,6 @@ int getPKVBigModbusBit(int);//получить содержимое бита
 int setPKVBigModbusRegister(int, int);//получить содержимое регистра
 int setPKVBigModbusBit(int, int);//получить содержимое бита
 
-void setPKVBigCountObject(int);//записать к-во обектов
 void prePKVBigReadAction(void);//action до чтения
 void postPKVBigReadAction(void);//action после чтения
 void prePKVBigWriteAction(void);//action до записи
@@ -35,7 +34,6 @@ void constructorPKVBigComponent(COMPONENT_OBJ *pkvbigcomp)
   pkvbigcomponent->setModbusRegister = setPKVBigModbusRegister;//получить содержимое регистра
   pkvbigcomponent->setModbusBit      = setPKVBigModbusBit;//получить содержимое бита
 
-  pkvbigcomponent->setCountObject  = setPKVBigCountObject;//записать к-во обектов
   pkvbigcomponent->preReadAction   = prePKVBigReadAction;//action до чтения
   pkvbigcomponent->postReadAction  = postPKVBigReadAction;//action после чтения
   pkvbigcomponent->preWriteAction  = prePKVBigWriteAction;//action до записи
@@ -260,10 +258,6 @@ int setPKVBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setPKVBigCountObject(int x) {
-  UNUSED(x);
-//записать к-во обектов
-}//
 void prePKVBigReadAction(void) {
 //action до чтения
   pkvbigcomponent->operativMarker[0] = -1;
@@ -283,9 +277,9 @@ void prePKVBigWriteAction(void) {
 void postPKVBigWriteAction(void) {
 //action после записи
   if(pkvbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = pkvbigcomponent->operativMarker[1]-pkvbigcomponent->operativMarker[0]+1;
-  if(pkvbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = pkvbigcomponent->operativMarker[1]-pkvbigcomponent->operativMarker[0]+1;
+//  if(pkvbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privatePKVBigGetReg2(int adrReg)

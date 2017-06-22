@@ -14,7 +14,7 @@ int getSDIBigModbusBit(int);//получить содержимое бита
 int setSDIBigModbusRegister(int, int);//получить содержимое регистра
 int setSDIBigModbusBit(int, int);//получить содержимое бита
 
-void setSDIBigCountObject(int);//записать к-во обектов
+void setSDIBigCountObject(void);//записать к-во обектов
 void preSDIBigReadAction(void);//action до чтения
 void postSDIBigReadAction(void);//action после чтения
 void preSDIBigWriteAction(void);//action до записи
@@ -30,14 +30,13 @@ void constructorSDIBigComponent(COMPONENT_OBJ *sdibigcomp)
 {
   sdibigcomponent = sdibigcomp;
 
-  sdibigcomponent->countObject = 0;//к-во обектов
+  sdibigcomponent->countObject = 14;//к-во обектов
 
   sdibigcomponent->getModbusRegister = getSDIBigModbusRegister;//получить содержимое регистра
   sdibigcomponent->getModbusBit      = getSDIBigModbusBit;//получить содержимое бита
   sdibigcomponent->setModbusRegister = setSDIBigModbusRegister;//получить содержимое регистра
   sdibigcomponent->setModbusBit      = setSDIBigModbusBit;//получить содержимое бита
 
-  sdibigcomponent->setCountObject  = setSDIBigCountObject;//записать к-во обектов
   sdibigcomponent->preReadAction   = preSDIBigReadAction;//action до чтения
   sdibigcomponent->postReadAction  = postSDIBigReadAction;//action после чтения
   sdibigcomponent->preWriteAction  = preSDIBigWriteAction;//action до записи
@@ -55,7 +54,7 @@ int getSDIBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateSDIBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateSDIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
+//  if(privateSDIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   if(sdibigcomponent->isActiveActualData) loadSDIBigActualData(); //ActualData
   sdibigcomponent->isActiveActualData = 0;
@@ -74,7 +73,7 @@ int setSDIBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateSDIBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateSDIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
+//  if(privateSDIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(sdibigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
@@ -118,11 +117,11 @@ int setSDIBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setSDIBigCountObject(int cntObj) {
+void setSDIBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  sdibigcomponent->countObject = cntObj;
+//  if(cntObj<0) return;
+//  if(cntObj>TOTAL_OBJ) return;
+//  sdibigcomponent->countObject = cntObj;
 }//
 void preSDIBigReadAction(void) {
 //action до чтения
@@ -143,22 +142,22 @@ void preSDIBigWriteAction(void) {
 void postSDIBigWriteAction(void) {
 //action после записи
   if(sdibigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = sdibigcomponent->operativMarker[1]-sdibigcomponent->operativMarker[0]+1;
-  if(sdibigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = sdibigcomponent->operativMarker[1]-sdibigcomponent->operativMarker[0]+1;
+//  if(sdibigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
-int privateSDIBigGetReg1(int adrReg)
+int privateSDIBigGetReg2(int adrReg)
 {
   //проверить внутренний периметр
   int count_register = sdibigcomponent->countObject*REGISTER_FOR_OBJ;
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg1(int adrReg)
-int privateSDIBigGetReg2(int adrReg)
-{
+//int privateSDIBigGetReg2(int adrReg)
+//{
   //проверить внешний периметр
-  int count_register = TOTAL_OBJ*REGISTER_FOR_OBJ;
-  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
-  return MARKER_OUTPERIMETR;
-}//privateGetReg2(int adrReg)
+//  int count_register = TOTAL_OBJ*REGISTER_FOR_OBJ;
+//  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
+//  return MARKER_OUTPERIMETR;
+//}//privateGetReg2(int adrReg)

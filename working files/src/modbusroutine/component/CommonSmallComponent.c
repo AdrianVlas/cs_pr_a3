@@ -1,3 +1,5 @@
+//#include <QtWidgets>
+
 #include "header.h"
 
 //начальный регистр в карте памяти
@@ -15,7 +17,6 @@ int getCommonSmallModbusBit(int);//получить содержимое бита
 int setCommonSmallModbusRegister(int, int);// регистра
 int setCommonSmallModbusBit(int, int);// бита
 
-void setCommonSmallCountObject(int);//записать к-во обектов
 void preCommonSmallReadAction(void);//action до чтения
 void postCommonSmallReadAction(void);//action после чтения
 void preCommonSmallWriteAction(void);//action до записи
@@ -38,7 +39,6 @@ void constructorCommonSmallComponent(COMPONENT_OBJ *commonsmallcomp)
   commonsmallcomponent->setModbusRegister = setCommonSmallModbusRegister;// регистра
   commonsmallcomponent->setModbusBit      = setCommonSmallModbusBit;// бита
 
-  commonsmallcomponent->setCountObject  = setCommonSmallCountObject;//записать к-во обектов
   commonsmallcomponent->preReadAction   = preCommonSmallReadAction;//action до чтения
   commonsmallcomponent->postReadAction  = postCommonSmallReadAction;//action после чтения
   commonsmallcomponent->preWriteAction  = preCommonSmallWriteAction;//action до записи
@@ -47,14 +47,87 @@ void constructorCommonSmallComponent(COMPONENT_OBJ *commonsmallcomp)
   commonsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadCommonSmallActualData(void) {
+void loadCommonSmallActualData(void)
+{
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  for(int i=0; i<2; i++) tempReadArray[i] = 0;
+  for(int bit=0; bit<18; bit++)
+    {
+
+      switch(bit)
+        {
+        case 0://Неисправность общая
+          if(fix_block_active_state[FIX_BLOCK_DEFECT >> 3] & (1 << (FIX_BLOCK_DEFECT & ((1 << 3) - 1)))) 
+                              tempReadArray[0] |= (1<<bit);
+          break;
+        case 1://Неисправность аварийная
+          if(fix_block_active_state[FIX_BLOCK_AVAR_DEFECT >> 3] & (1 << (FIX_BLOCK_AVAR_DEFECT & ((1 << 3) - 1))))
+                              tempReadArray[0] |= (1<<bit);
+          break;
+        case 2://Изменение конфигурации
+          if(fix_block_active_state[FIX_BLOCK_SETTINGS_CHANGED >> 8] & (1 << (FIX_BLOCK_SETTINGS_CHANGED & ((1 << 3) - 1))))
+                              tempReadArray[0] |= (1<<bit);
+          break;
+        case 3://Ошибка работы лог схемы
+          if(fix_block_active_state[FIX_BLOCK_SCHEME_INCORRECT >> 3 ] & (1 << (FIX_BLOCK_SCHEME_INCORRECT & ((1 << 3) - 1))))
+                              tempReadArray[0] |= (1<<bit);
+          break;
+        case 4://Пароль установлен - ти маєш це поле зробити
+          if(fix_block_active_state[0] & 0x1)
+                              tempReadArray[0] |= (1<<bit);
+          break;
+        case 5://Время синхронизировано -немає
+          if(fix_block_active_state[0] & 0x1)
+                              tempReadArray[0] |= (1<<bit);
+          break;
+        case 6://Запуск журнала
+          {
+          
+          __LOG_INPUT *arr = (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+          int value = arr[0] & (1 << (EVENT_LOG_WORK & ((1 << 5) - 1)));
+          
+          if (value)
+//          if(fix_block_active_state[0] & 0x1)
+                              tempReadArray[0] |= (1<<bit);
+          break;
+          }
+        case 7://Запуск регистратора - немає
+          if(fix_block_active_state[0] & 0x1)
+                              tempReadArray[0] |= (1<<bit);
+          break;
+        case 8://Пропуск
+          tempReadArray[0] |= 0;
+          break;
+        case 9://Ключ управления местное\дистанционное -немає
+          if(fix_block_active_state[0] & 0x1)
+                              tempReadArray[0] |= (1<<bit);
+          break;
+        case 10://Пропуск
+        case 11://Пропуск
+        case 12://Пропуск
+        case 13://Пропуск
+        case 14://Пропуск
+        case 15://Пропуск
+          tempReadArray[0] |= 0;
+          break;
+        case 16://Активация конфигурации (команда)
+          if(fix_block_active_state[0] & 0x1)
+                              tempReadArray[1] |= (1<<(bit-16));
+          break;
+        case 17://Сброс общий - покищо немає, якщо буде також буде командою
+          if(fix_block_active_state[0] & 0x1)
+                              tempReadArray[1] |= (1<<(bit-16));
+          break;
+        default:
+          ;
+        }//switch
+
+    }//for
   /*
   1) Стан знаходяться у масиві uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
   2) Співвідношення між номерами бітів і їх назвами є у enum _FIX_BLOCK_output_signals
   */
-}//loadActualData() 
+}//loadActualData()
 
 int getCommonSmallModbusRegister(int adrReg)
 {
@@ -89,14 +162,15 @@ int setCommonSmallModbusRegister(int adrReg, int dataReg)
   if(privateCommonSmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
 
   superSetOperativMarker(commonsmallcomponent, adrReg);
-  superSetTempWriteArray(dataReg);//записать в буфер
+  superSetTempWriteArray(dataReg&0x3);//записать в буфер
 
-  switch(adrReg-BEGIN_ADR_REGISTER) {
-   case 0:
-   return MARKER_ERRORPERIMETR;
-   case 1:
-   return dataReg;
-  }//switch
+  switch(adrReg-BEGIN_ADR_REGISTER)
+    {
+    case 0:
+      return MARKER_ERRORPERIMETR;
+    case 1:
+      return dataReg;
+    }//switch
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 int setCommonSmallModbusBit(int adrBit, int dataBit)
@@ -105,40 +179,98 @@ int setCommonSmallModbusBit(int adrBit, int dataBit)
   if(privateCommonSmallGetBit2(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
 
   superSetOperativMarker(commonsmallcomponent, adrBit);
+  superSetTempWriteArray(dataBit);//записать в буфер
 
-  switch(adrBit-BEGIN_ADR_BIT) {
-   case 16: 
-  //    qDebug()<<"16="<<dataBit;
-   return dataBit;
-   case 17:
+  switch(adrBit-BEGIN_ADR_BIT)
+    {
+    case 16:
+      //    qDebug()<<"16="<<dataBit;
+      return dataBit;
+    case 17:
 //      qDebug()<<"17="<<dataBit;
-   return dataBit;
-  }//switch
+      return dataBit;
+    }//switch
   return MARKER_ERRORPERIMETR;
 }//setCommonSmallModbusBit(int adrBit, int adrData)
 
-void setCommonSmallCountObject(int x) {
-  UNUSED(x);
-//записать к-во обектов
-}//
-void preCommonSmallReadAction(void) {
+void preCommonSmallReadAction(void)
+{
 //action до чтения
   commonsmallcomponent->operativMarker[0] = -1;
   commonsmallcomponent->operativMarker[1] = -1;
   commonsmallcomponent->isActiveActualData = 1;//оперативный маркер
 }//
-void postCommonSmallReadAction(void) {
+void postCommonSmallReadAction(void)
+{
 //action после чтения
   if(commonsmallcomponent->operativMarker[0]<0) return;//не было чтения
 }//
-void preCommonSmallWriteAction(void) {
+void preCommonSmallWriteAction(void)
+{
 //action до записи
   commonsmallcomponent->operativMarker[0] = -1;
   commonsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   commonsmallcomponent->isActiveActualData = 1;
 }//
-void postCommonSmallWriteAction(void) {
+void postCommonSmallWriteAction(void)
+{
 //action после записи
+  if(commonsmallcomponent->operativMarker[0]<0) return;//не было записи
+  switch(commonsmallcomponent->operativMarker[0])
+    {
+    case (BEGIN_ADR_REGISTER+1):
+    {
+      //запись второго регистра
+      switch(tempWriteArray[0]&3)
+        {
+        case 1://Активация конфигурации
+          //qDebug()<<"1111111111111111111111";
+          fix_block_active_state[0] &= ~0x1;//Прорубить окно
+          fix_block_active_state[0] |= tempWriteArray[0]&1;
+          break;
+        case 2://Общий сброс
+          //qDebug()<<"2222222222222222222222222";
+          fix_block_active_state[0] &= ~0x2;//Прорубить окно
+          fix_block_active_state[0] |= tempWriteArray[0]&2;
+          break;
+        case 3://Активация конфигурации
+          //Общий сброс
+          //qDebug()<<"333333333333333333333333333333";
+          fix_block_active_state[0] &= ~0x3;//Прорубить окно
+          fix_block_active_state[0] |= tempWriteArray[0]&3;
+          break;
+        }//switch
+    }//case (BEGIN_ADR_REGISTER+1):
+    break;
+    case (BEGIN_ADR_BIT+16):
+    {
+    //      qDebug()<<"111111111111111111111111";
+      //Активация конфигурации
+      fix_block_active_state[0] &= ~0x2;//Прорубить окно
+      fix_block_active_state[0] |= tempWriteArray[0]&1;
+    }//case (BEGIN_ADR_REGISTER+1):
+    break;
+    case (BEGIN_ADR_BIT+17):
+    {
+  //        qDebug()<<"222222222222222222222222";
+      //Общий сброс
+      fix_block_active_state[0] &= ~0x2;//Прорубить окно
+      fix_block_active_state[0] |= tempWriteArray[1]&1;
+    }//case (BEGIN_ADR_REGISTER+1):
+    break;
+    }//switch
+  if(commonsmallcomponent->operativMarker[1]<0) return;//не было записи
+  switch(commonsmallcomponent->operativMarker[1])
+    {
+    case (BEGIN_ADR_BIT+17):
+    {
+//          qDebug()<<"333333333333333333333333";
+      //Общий сброс
+      fix_block_active_state[0] &= ~0x2;//Прорубить окно
+      fix_block_active_state[0] |= tempWriteArray[1]&1;
+    }//case (BEGIN_ADR_REGISTER+1):
+    break;
+    }//switch
 }//
 
 int privateCommonSmallGetReg2(int adrReg)

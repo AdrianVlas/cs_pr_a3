@@ -12,7 +12,6 @@ int getRegBigModbusBit(int);//получить содержимое бита
 int setRegBigModbusRegister(int, int);//получить содержимое регистра
 int setRegBigModbusBit(int, int);//получить содержимое бита
 
-void setRegBigCountObject(int);//записать к-во обектов
 void preRegBigReadAction(void);//action до чтения
 void postRegBigReadAction(void);//action после чтения
 void preRegBigWriteAction(void);//action до записи
@@ -35,7 +34,6 @@ void constructorRegBigComponent(COMPONENT_OBJ *regbigcomp)
   regbigcomponent->setModbusRegister = setRegBigModbusRegister;//получить содержимое регистра
   regbigcomponent->setModbusBit      = setRegBigModbusBit;//получить содержимое бита
 
-  regbigcomponent->setCountObject  = setRegBigCountObject;//записать к-во обектов
   regbigcomponent->preReadAction   = preRegBigReadAction;//action до чтения
   regbigcomponent->postReadAction  = postRegBigReadAction;//action после чтения
   regbigcomponent->preWriteAction  = preRegBigWriteAction;//action до записи
@@ -101,10 +99,6 @@ int setRegBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setRegBigCountObject(int x) {
-  UNUSED(x);
-//записать к-во обектов
-}//
 void preRegBigReadAction(void) {
 //action до чтения
   regbigcomponent->operativMarker[0] = -1;
@@ -124,9 +118,9 @@ void preRegBigWriteAction(void) {
 void postRegBigWriteAction(void) {
 //action после записи
   if(regbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = regbigcomponent->operativMarker[1]-regbigcomponent->operativMarker[0]+1;
-  if(regbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = regbigcomponent->operativMarker[1]-regbigcomponent->operativMarker[0]+1;
+//  if(regbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateRegBigGetReg2(int adrReg)

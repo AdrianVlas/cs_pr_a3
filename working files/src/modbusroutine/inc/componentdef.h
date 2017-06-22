@@ -13,8 +13,6 @@ typedef struct
   int (*setModbusRegister)(int, int);//записать регистр
   int (*setModbusBit)(int, int);//записать бит
 
-  void (*setCountObject)(int);//записать к-во обектов
-
   void (*preReadAction)(void);//action до чтения
   void (*postReadAction)(void);//action после чтения
   void (*preWriteAction)(void);//action до записи

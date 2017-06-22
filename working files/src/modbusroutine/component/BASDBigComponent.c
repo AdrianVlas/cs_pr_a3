@@ -10,7 +10,7 @@ int setBASDBigModbusRegister(int, int);//регистра
 int setBASDBigModbusBit(int, int);// Бита
 int privateBASDBigGetReg2(int adrReg);
 
-void setBASDBigCountObject(int);//записать к-во обектов
+void setBASDBigCountObject(void);
 void preBASDBigReadAction(void);//action до чтения
 void postBASDBigReadAction(void);//action после чтения
 void preBASDBigWriteAction(void);//action до записи
@@ -32,7 +32,6 @@ void constructorBASDBigComponent(COMPONENT_OBJ *basdbigcomp)
   basdbigcomponent->setModbusRegister = setBASDBigModbusRegister;// регистра
   basdbigcomponent->setModbusBit      = setBASDBigModbusBit;//бита
 
-  basdbigcomponent->setCountObject  = setBASDBigCountObject;//записать к-во обектов
   basdbigcomponent->preReadAction   = preBASDBigReadAction;//action до чтения
   basdbigcomponent->postReadAction  = postBASDBigReadAction;//action после чтения
   basdbigcomponent->preWriteAction  = preBASDBigWriteAction;//action до записи
@@ -97,8 +96,7 @@ int setBASDBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getBASDBigModbusBit(int adrReg)
 
-void setBASDBigCountObject(int x) {
-  UNUSED(x);
+void setBASDBigCountObject(void) {
 //записать к-во обектов
 }//
 
@@ -121,9 +119,9 @@ void preBASDBigWriteAction(void) {
 void postBASDBigWriteAction(void) {
 //action после записи
   if(basdbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = basdbigcomponent->operativMarker[1]-basdbigcomponent->operativMarker[0]+1;
-  if(basdbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = basdbigcomponent->operativMarker[1]-basdbigcomponent->operativMarker[0]+1;
+//  if(basdbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateBASDBigGetReg2(int adrReg)

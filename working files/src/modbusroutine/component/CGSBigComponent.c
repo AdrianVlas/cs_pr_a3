@@ -12,7 +12,7 @@ int getCGSBigModbusBit(int);//получить содержимое бита
 int setCGSBigModbusRegister(int, int);// регистра
 int setCGSBigModbusBit(int, int);// бита
 
-void setCGSBigCountObject(int);//записать к-во обектов
+void setCGSBigCountObject(void);//записать к-во обектов
 void preCGSBigReadAction(void);//action до чтения
 void postCGSBigReadAction(void);//action после чтения
 void preCGSBigWriteAction(void);//action до записи
@@ -34,7 +34,6 @@ void constructorCGSBigComponent(COMPONENT_OBJ *cgsbigcomp)
   cgsbigcomponent->setModbusRegister = setCGSBigModbusRegister;//регистра
   cgsbigcomponent->setModbusBit      = setCGSBigModbusBit;// бита
 
-  cgsbigcomponent->setCountObject  = setCGSBigCountObject;//записать к-во обектов
   cgsbigcomponent->preReadAction   = preCGSBigReadAction;//action до чтения
   cgsbigcomponent->postReadAction  = postCGSBigReadAction;//action после чтения
   cgsbigcomponent->preWriteAction  = preCGSBigWriteAction;//action до записи
@@ -116,8 +115,7 @@ int setCGSBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setCGSBigCountObject(int x) {
-  UNUSED(x);
+void setCGSBigCountObject(void) {
 //записать к-во обектов
 }//
 void preCGSBigReadAction(void) {
@@ -139,9 +137,9 @@ void preCGSBigWriteAction(void) {
 void postCGSBigWriteAction(void) {
 //action после записи
   if(cgsbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = cgsbigcomponent->operativMarker[1]-cgsbigcomponent->operativMarker[0]+1;
-  if(cgsbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = cgsbigcomponent->operativMarker[1]-cgsbigcomponent->operativMarker[0]+1;
+//  if(cgsbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateCGSBigGetReg2(int adrReg)

@@ -14,7 +14,7 @@ int getTSBigModbusBit(int);//получить содержимое бита
 int setTSBigModbusRegister(int, int);//получить содержимое регистра
 int setTSBigModbusBit(int, int);//получить содержимое бита
 
-void setTSBigCountObject(int);//записать к-во обектов
+void setTSBigCountObject(void);//записать к-во обектов
 void preTSBigReadAction(void);//action до чтения
 void postTSBigReadAction(void);//action после чтения
 void preTSBigWriteAction(void);//action до записи
@@ -37,7 +37,6 @@ void constructorTSBigComponent(COMPONENT_OBJ *tsbigcomp)
   tsbigcomponent->setModbusRegister = setTSBigModbusRegister;//получить содержимое регистра
   tsbigcomponent->setModbusBit      = setTSBigModbusBit;//получить содержимое бита
 
-  tsbigcomponent->setCountObject  = setTSBigCountObject;//записать к-во обектов
   tsbigcomponent->preReadAction   = preTSBigReadAction;//action до чтения
   tsbigcomponent->postReadAction  = postTSBigReadAction;//action после чтения
   tsbigcomponent->preWriteAction  = preTSBigWriteAction;//action до записи
@@ -101,11 +100,8 @@ int setTSBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setTSBigCountObject(int cntObj) {
+void setTSBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  tsbigcomponent->countObject = cntObj;
 }//
 void preTSBigReadAction(void) {
 //action до чтения
@@ -126,9 +122,9 @@ void preTSBigWriteAction(void) {
 void postTSBigWriteAction(void) {
 //action после записи
   if(tsbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = tsbigcomponent->operativMarker[1]-tsbigcomponent->operativMarker[0]+1;
-  if(tsbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = tsbigcomponent->operativMarker[1]-tsbigcomponent->operativMarker[0]+1;
+//  if(tsbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateTSBigGetReg1(int adrReg)

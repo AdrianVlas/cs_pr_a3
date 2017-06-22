@@ -5,8 +5,7 @@
 //начальный bit в карте пам€ти
 #define BEGIN_ADR_BIT 19128
 //макс к-во обектов
-#define REGISTER_FOR_OBJ 1
-#define BIT_FOR_OBJ 3
+#define BIT_FOR_OBJ 1
 
 int privateKEYSmallGetReg2(int adrReg);
 int privateKEYSmallGetBit2(int adrReg);
@@ -16,7 +15,7 @@ int getKEYSmallModbusBit(int);//получить содержимое бита
 int setKEYSmallModbusRegister(int, int);//получить содержимое регистра
 int setKEYSmallModbusBit(int, int);//получить содержимое бита
 
-void setKEYSmallCountObject(int);//записать к-во обектов
+void setKEYSmallCountObject(void);//записать к-во обектов
 void preKEYSmallReadAction(void);//action до чтени€
 void postKEYSmallReadAction(void);//action после чтени€
 void preKEYSmallWriteAction(void);//action до записи
@@ -32,14 +31,13 @@ void constructorKEYSmallComponent(COMPONENT_OBJ *keysmallcomp)
 {
   keysmallcomponent = keysmallcomp;
 
-  keysmallcomponent->countObject = 1;//к-во обектов
+  keysmallcomponent->countObject = 0;//к-во обектов
 
   keysmallcomponent->getModbusRegister = getKEYSmallModbusRegister;//получить содержимое регистра
   keysmallcomponent->getModbusBit      = getKEYSmallModbusBit;//получить содержимое бита
   keysmallcomponent->setModbusRegister = setKEYSmallModbusRegister;//получить содержимое регистра
   keysmallcomponent->setModbusBit      = setKEYSmallModbusBit;//получить содержимое бита
 
-  keysmallcomponent->setCountObject  = setKEYSmallCountObject;//записать к-во обектов
   keysmallcomponent->preReadAction   = preKEYSmallReadAction;//action до чтени€
   keysmallcomponent->postReadAction  = postKEYSmallReadAction;//action после чтени€
   keysmallcomponent->preWriteAction  = preKEYSmallWriteAction;//action до записи
@@ -50,7 +48,18 @@ void constructorKEYSmallComponent(COMPONENT_OBJ *keysmallcomp)
 
 void loadKEYSmallActualData(void) {
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  setKEYSmallCountObject(); //записать к-во обектов
+
+  int cnt_treg = keysmallcomponent->countObject/16;
+  if(keysmallcomponent->countObject%16) cnt_treg++;
+  for(int ii=0; ii<cnt_treg; ii++) tempReadArray[ii] = 0;
+  for(int item=0; item<keysmallcomponent->countObject; item++) {
+   __LN_BUTTON *arr = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+   int value = arr[item].active_state[BUTTON_OUT >> 3] & (1 << (BUTTON_OUT & ((1 << 3) - 1)));
+   int keydata = 0;
+   if(value) keydata=1;
+//   tempReadArray[ireg] |= (keydata&0x1)<<(item%16);
+  }//for
   /*
   ѕ≥дх≥д аналог≥чний до “—
   +
@@ -104,9 +113,12 @@ int setKEYSmallModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setKEYSmallCountObject(int x) {
-  UNUSED(x);
+void setKEYSmallCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_button;   // ≥льк≥сть ‘ 
+  if(cntObj<0) return;
+//  if(cntObj>TOTAL_OBJ) return;
+  keysmallcomponent->countObject = cntObj;
 }//
 void preKEYSmallReadAction(void) {
 //action до чтени€
@@ -130,16 +142,17 @@ void postKEYSmallWriteAction(void) {
 
 int privateKEYSmallGetReg2(int adrReg)
 {
-  //проверить внешний периметр
-  int count_register = REGISTER_FOR_OBJ;
+  //проверить внутренний периметр
+  int count_register = keysmallcomponent->countObject/16;
+  if(keysmallcomponent->countObject%16) count_register++;
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
-}//privateKEYSmallGetReg2(int adrReg)
+}//privateDOUTSmallGetReg2(int adrReg)
 
 int privateKEYSmallGetBit2(int adrBit)
 {
-  //проверить внешний периметр
-  int count_bit = BIT_FOR_OBJ;
+  //проверить внутренний периметр
+  int count_bit = BIT_FOR_OBJ*keysmallcomponent->countObject;
   if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
   return MARKER_OUTPERIMETR;
-}//privateKEYSmallGetReg2(int adrReg)
+}//privateDOUTSmallGetBit2(int adrBit)

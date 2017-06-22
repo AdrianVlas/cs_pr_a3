@@ -1,4 +1,5 @@
 
+//#include <QtWidgets>
 #include "header.h"
 
 //начальный регистр в карте памяти
@@ -13,7 +14,7 @@ int getRPRBigModbusBit(int);//получить содержимое бита
 int setRPRBigModbusRegister(int, int);//получить содержимое регистра
 int setRPRBigModbusBit(int, int);//получить содержимое бита
 
-void setRPRBigCountObject(int);//записать к-во обектов
+void setRPRBigCountObject(void);//записать к-во обектов
 void preRPRBigReadAction(void);//action до чтения
 void postRPRBigReadAction(void);//action после чтения
 void preRPRBigWriteAction(void);//action до записи
@@ -37,7 +38,6 @@ void constructorRPRBigComponent(COMPONENT_OBJ *rprbigcomp)
   rprbigcomponent->setModbusRegister = setRPRBigModbusRegister;//получить содержимое регистра
   rprbigcomponent->setModbusBit      = setRPRBigModbusBit;//получить содержимое бита
 
-  rprbigcomponent->setCountObject  = setRPRBigCountObject;//записать к-во обектов
   rprbigcomponent->preReadAction   = preRPRBigReadAction;//action до чтения
   rprbigcomponent->postReadAction  = postRPRBigReadAction;//action после чтения
   rprbigcomponent->preWriteAction  = preRPRBigWriteAction;//action до записи
@@ -95,9 +95,8 @@ int setRPRBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setRPRBigCountObject(int x)
+void setRPRBigCountObject(void)
 {
-  UNUSED(x);
 //записать к-во обектов
 }//
 void preRPRBigReadAction(void)

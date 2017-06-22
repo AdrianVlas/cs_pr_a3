@@ -9,7 +9,6 @@ int getIUModbusBit(int);//получить содержимое бита
 int setIUModbusRegister(int, int);//получить содержимое регистра
 int setIUModbusBit(int, int);//получить содержимое бита
 
-void setIUSmallCountObject(int);//записать к-во обектов
 void preIUSmallReadAction(void);//action до чтения
 void postIUSmallReadAction(void);//action после чтения
 void preIUSmallWriteAction(void);//action до записи
@@ -34,7 +33,6 @@ void constructorIUSmallComponent(COMPONENT_OBJ *iucomp)
   iucomponent->setModbusRegister = setIUModbusRegister;//получить содержимое регистра
   iucomponent->setModbusBit      = setIUModbusBit;//получить содержимое бита
 
-  iucomponent->setCountObject  = setIUSmallCountObject;//записать к-во обектов
   iucomponent->preReadAction   = preIUSmallReadAction;//action до чтения
   iucomponent->postReadAction  = postIUSmallReadAction;//action после чтения
   iucomponent->preWriteAction  = preIUSmallWriteAction;//action до записи
@@ -45,103 +43,98 @@ void constructorIUSmallComponent(COMPONENT_OBJ *iucomp)
 
 void loadIUSmallActualData(void) {
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i+22;
-  /*
-  if(address_data <= M_ADDRESS_LAST_RO_BLOCK_1)
-  {
-    //Ідентифікація пристою
-    switch (address_data)
+//  for(int i=0; i<100; i++) tempReadArray[i] = i+22;
+  for(int ii=0; ii<16; ii++)
+    switch (ii)
     {
-    case MA_SERIAL_NUMBER:
+    case 0://MA_SERIAL_NUMBER:
       {
-        temp_value = serial_number_dev;
+        tempReadArray[ii] = serial_number_dev;//serial_number_dev;
         break;
       }
-    case MA_NAME_CHAR_1_2:
+
+    case 1://MA_NAME_CHAR_1_2:
       {
-        temp_value = ('i' << 8) + 'K';
+        tempReadArray[ii] = ('i' << 8) + 'K';
         break;
       }
-    case MA_NAME_CHAR_3_4:
+    case 2://MA_NAME_CHAR_3_4:
       {
-        temp_value = ('v' << 8) + 'e';
+        tempReadArray[ii] = ('v' << 8) + 'e';
         break;
       }
-    case MA_NAME_CHAR_5_6:
+    case 3://MA_NAME_CHAR_5_6:
       {
-        temp_value = ('r' << 8) + 'p';
+        tempReadArray[ii] = ('r' << 8) + 'p';
         break;
       }
-    case MA_NAME_CHAR_7_8:
+    case 4://MA_NAME_CHAR_7_8:
       {
-        temp_value = ('b' << 8) + 'i';
+        tempReadArray[ii] = ('b' << 8) + 'i';
         break;
       }
-    case MA_NAME_CHAR_9_10:
+    case 5://MA_NAME_CHAR_9_10:
       {
-        temp_value = ('r' << 8) + 'o';
+        tempReadArray[ii] = ('r' << 8) + 'o';
         break;
       }
-    case MA_NAME_CHAR_11_12:
+    case 6://MA_NAME_CHAR_11_12:
       {
-        temp_value = ('R' << 8) + 'M';
+        tempReadArray[ii] = ('R' << 8) + 'M';
         break;
       }
-    case MA_NAME_CHAR_13_14:
+    case 7://MA_NAME_CHAR_13_14:
       {
-        temp_value = ('S' << 8) + 'Z';
+        tempReadArray[ii] = ('S' << 8) + 'Z';
         break;
       }
-    case MA_NAME_CHAR_15_16:
+    case 8://MA_NAME_CHAR_15_16:
       {
-        temp_value = ('5' << 8) + '0';
+        tempReadArray[ii] = ('5' << 8) + '0';
         break;
       }
-    case MA_NAME_CHAR_17_18:
+    case 9://MA_NAME_CHAR_17_18:
       {
-        temp_value = ('_' << 8) + 'L';
+        tempReadArray[ii] = ('_' << 8) + 'L';
         break;
       }
-    case MA_VERSION_SW:
+    case 10://MA_VERSION_SW:
       {
-        temp_value = (VERSIA_PZ << 8) + MODYFIKACIA_VERSII_PZ;
+        tempReadArray[ii] = (VERSIA_PZ << 8) + MODYFIKACIA_VERSII_PZ;
         break;
       }
-    case MA_DATA_COMP_1:
+    case 11://MA_DATA_COMP_1:
       {
-        temp_value = (YEAR_VER << 8) + MONTH_VER;
+        tempReadArray[ii] = (YEAR_VER << 8) + MONTH_VER;
         break;
       }
-    case MA_DATA_COMP_2:
+    case 12://MA_DATA_COMP_2:
       {
-        temp_value = (DAY_VER << 8);
+        tempReadArray[ii] = (DAY_VER << 8);
         break;
       }
-    case MA_TIME_COMP:
+    case 13://MA_TIME_COMP:
       {
-        temp_value = (HOUR_VER << 8) + MINUTE_VER;
+        tempReadArray[ii] = (HOUR_VER << 8) + MINUTE_VER;
         break;
       }
-    case MA_VERSION_GMM:
+    case 14://MA_VERSION_GMM:
       {
-        temp_value = (VERSIA_GMM << 8) + MODYFIKACIA_VERSII_GMM;
+        tempReadArray[ii] = (VERSIA_GMM << 8) + MODYFIKACIA_VERSII_GMM;
         break;
       }
-    case MA_ZBIRKA_SW:
+    case 15://MA_ZBIRKA_SW:
       {
-        temp_value = ZBIRKA_VERSII_PZ;
+        tempReadArray[ii] = ZBIRKA_VERSII_PZ;
         break;
       }
     default:
       {
         //На поля які у даній конфігурації немає відповідаємо нулями
-        temp_value = 0;
+        tempReadArray[ii] = 0;
         break;
       }
-    }
-  }
-  */
-//  tempReadArray[0] = 22;
+    }//switch
 }//loadActualData() 
 
 int getIUModbusRegister(int adrReg)
@@ -174,10 +167,6 @@ int setIUModbusBit(int adrBit, int x) {
   return MARKER_OUTPERIMETR;
 }//setIUModbusBit(int, int )
 
-void setIUSmallCountObject(int x) {
-  UNUSED(x);
-//записать к-во обектов
-}//
 void preIUSmallReadAction(void) {
 //action до чтения
   iucomponent->operativMarker[0] = -1;

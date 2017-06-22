@@ -48,15 +48,16 @@ void global_component_installation(void) {
 /**************************************/
 //Подготовка компонентов после конфигурации
 /**************************************/
+/*
 void global_component_prepared(void) {
-  config_array[DVBIGCOMPONENT].setCountObject(128);//подготовка компонента ДВ
-  config_array[DVSMALLCOMPONENT].setCountObject(128);//подготовка компонента ДВ
+//  config_array[DVBIGCOMPONENT].setCountObject(128);//подготовка компонента ДВ
+//  config_array[DVSMALLCOMPONENT].setCountObject(128);//подготовка компонента ДВ
 
-  config_array[DOUTBIGCOMPONENT].setCountObject(100);//подготовка компонента rele
-  config_array[DOUTSMALLCOMPONENT].setCountObject(100);//подготовка компонента rele
+//  config_array[DOUTBIGCOMPONENT].setCountObject(100);//подготовка компонента rele
+//  config_array[DOUTSMALLCOMPONENT].setCountObject(100);//подготовка компонента rele
 
-  config_array[SDIBIGCOMPONENT].setCountObject(21);//подготовка компонента sdi
-  config_array[SDISMALLCOMPONENT].setCountObject(21);//подготовка компонента sdi
+//  config_array[SDIBIGCOMPONENT].setCountObject(21);//подготовка компонента sdi
+//  config_array[SDISMALLCOMPONENT].setCountObject(21);//подготовка компонента sdi
 
   config_array[TSBIGCOMPONENT].setCountObject(22);//подготовка компонента ts
   config_array[TSSMALLCOMPONENT].setCountObject(22);//подготовка компонента ts
@@ -77,3 +78,4 @@ void global_component_prepared(void) {
   config_array[XORBIGCOMPONENT].setCountObject(30);//подготовка компонента xor
   config_array[NOTBIGCOMPONENT].setCountObject(31);//подготовка компонента not
 }//global_vareiables_installation_bo(void)
+*/

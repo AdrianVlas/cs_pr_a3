@@ -14,7 +14,7 @@ int getSZSBigModbusBit(int);//получить содержимое бита
 int setSZSBigModbusRegister(int, int);//получить содержимое регистра
 int setSZSBigModbusBit(int, int);//получить содержимое бита
 
-void setSZSBigCountObject(int);//записать к-во обектов
+void setSZSBigCountObject(void);//записать к-во обектов
 void preSZSBigReadAction(void);//action до чтения
 void postSZSBigReadAction(void);//action после чтения
 void preSZSBigWriteAction(void);//action до записи
@@ -37,7 +37,6 @@ void constructorSZSBigComponent(COMPONENT_OBJ *szsbigcomp)
   szsbigcomponent->setModbusRegister = setSZSBigModbusRegister;//получить содержимое регистра
   szsbigcomponent->setModbusBit      = setSZSBigModbusBit;//получить содержимое бита
 
-  szsbigcomponent->setCountObject  = setSZSBigCountObject;//записать к-во обектов
   szsbigcomponent->preReadAction   = preSZSBigReadAction;//action до чтения
   szsbigcomponent->postReadAction  = postSZSBigReadAction;//action после чтения
   szsbigcomponent->preWriteAction  = preSZSBigWriteAction;//action до записи
@@ -118,11 +117,8 @@ int setSZSBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setSZSBigCountObject(int cntObj) {
+void setSZSBigCountObject(void) {
 //записать к-во обектов
-  if(cntObj<0) return;
-  if(cntObj>=TOTAL_OBJ) return;
-  szsbigcomponent->countObject = cntObj;
 }//
 void preSZSBigReadAction(void) {
 //action до чтения
@@ -143,9 +139,9 @@ void preSZSBigWriteAction(void) {
 void postSZSBigWriteAction(void) {
 //action после записи
   if(szsbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = szsbigcomponent->operativMarker[1]-szsbigcomponent->operativMarker[0]+1;
-  if(szsbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = szsbigcomponent->operativMarker[1]-szsbigcomponent->operativMarker[0]+1;
+//  if(szsbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateSZSBigGetReg1(int adrReg)

@@ -12,7 +12,6 @@ int getYustBigModbusBit(int);//получить содержимое бита
 int setYustBigModbusRegister(int, int);//получить содержимое регистра
 int setYustBigModbusBit(int, int);//получить содержимое бита
 
-void setYustBigCountObject(int);//записать к-во обектов
 void preYustBigReadAction(void);//action до чтения
 void postYustBigReadAction(void);//action после чтения
 void preYustBigWriteAction(void);//action до записи
@@ -35,7 +34,6 @@ void constructorYustBigComponent(COMPONENT_OBJ *yustbigcomp)
   yustbigcomponent->setModbusRegister = setYustBigModbusRegister;//получить содержимое регистра
   yustbigcomponent->setModbusBit      = setYustBigModbusBit;//получить содержимое бита
 
-  yustbigcomponent->setCountObject  = setYustBigCountObject;//записать к-во обектов
   yustbigcomponent->preReadAction   = preYustBigReadAction;//action до чтения
   yustbigcomponent->postReadAction  = postYustBigReadAction;//action после чтения
   yustbigcomponent->preWriteAction  = preYustBigWriteAction;//action до записи
@@ -114,10 +112,6 @@ int setYustBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setYustBigCountObject(int x) {
-  UNUSED(x);
-//записать к-во обектов
-}//
 void preYustBigReadAction(void) {
 //action до чтения
   yustbigcomponent->operativMarker[0] = -1;
@@ -137,9 +131,9 @@ void preYustBigWriteAction(void) {
 void postYustBigWriteAction(void) {
 //action после записи
   if(yustbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = yustbigcomponent->operativMarker[1]-yustbigcomponent->operativMarker[0]+1;
-  if(yustbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = yustbigcomponent->operativMarker[1]-yustbigcomponent->operativMarker[0]+1;
+//  if(yustbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateYustBigGetReg2(int adrReg)

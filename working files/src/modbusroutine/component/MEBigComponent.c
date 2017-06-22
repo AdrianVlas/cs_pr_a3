@@ -12,7 +12,6 @@ int getMEBigModbusBit(int);//получить содержимое бита
 int setMEBigModbusRegister(int, int);//получить содержимое регистра
 int setMEBigModbusBit(int, int);//получить содержимое бита
 
-void setMEBigCountObject(int);//записать к-во обектов
 void preMEBigReadAction(void);//action до чтения
 void postMEBigReadAction(void);//action после чтения
 void preMEBigWriteAction(void);//action до записи
@@ -35,7 +34,6 @@ void constructorMEBigComponent(COMPONENT_OBJ *mebigcomp)
   mebigcomponent->setModbusRegister = setMEBigModbusRegister;//получить содержимое регистра
   mebigcomponent->setModbusBit      = setMEBigModbusBit;//получить содержимое регистра
 
-  mebigcomponent->setCountObject  = setMEBigCountObject;//записать к-во обектов
   mebigcomponent->preReadAction   = preMEBigReadAction;//action до чтения
   mebigcomponent->postReadAction  = postMEBigReadAction;//action после чтения
   mebigcomponent->preWriteAction  = preMEBigWriteAction;//action до записи
@@ -85,10 +83,6 @@ int setMEBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
-void setMEBigCountObject(int x) {
-  UNUSED(x);
-//записать к-во обектов
-}//
 void preMEBigReadAction(void) {
 //action до чтения
   mebigcomponent->operativMarker[0] = -1;
@@ -108,9 +102,9 @@ void preMEBigWriteAction(void) {
 void postMEBigWriteAction(void) {
 //action после записи
   if(mebigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = mebigcomponent->operativMarker[1]-mebigcomponent->operativMarker[0]+1;
-  if(mebigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = mebigcomponent->operativMarker[1]-mebigcomponent->operativMarker[0]+1;
+//  if(mebigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateMEBigGetReg2(int adrReg)

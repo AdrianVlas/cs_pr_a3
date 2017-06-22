@@ -9,7 +9,7 @@ int getRESDBigModbusBit(int);//получить содержимое бита
 int setRESDBigModbusRegister(int, int);//получить содержимое регистра
 int setRESDBigModbusBit(int, int);//получить содержимое бита
 
-void setRESDBigCountObject(int);//записать к-во обектов
+void setRESDBigCountObject(void);//записать к-во обектов
 void preRESDBigReadAction(void);//action до чтения
 void postRESDBigReadAction(void);//action после чтения
 void preRESDBigWriteAction(void);//action до записи
@@ -34,7 +34,6 @@ void constructorRESDBigComponent(COMPONENT_OBJ *resdbigcomp)
   resdbigcomponent->setModbusRegister = setRESDBigModbusRegister;//получить содержимое регистра
   resdbigcomponent->setModbusBit      = setRESDBigModbusBit;//получить содержимое бита
 
-  resdbigcomponent->setCountObject  = setRESDBigCountObject;//записать к-во обектов
   resdbigcomponent->preReadAction   = preRESDBigReadAction;//action до чтения
   resdbigcomponent->postReadAction  = postRESDBigReadAction;//action после чтения
   resdbigcomponent->preWriteAction  = preRESDBigWriteAction;//action до записи
@@ -107,8 +106,7 @@ int setRESDBigModbusBit(int adrBit, int x)
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 
-void setRESDBigCountObject(int x) {
-  UNUSED(x);
+void setRESDBigCountObject(void) {
 //записать к-во обектов
 }//
 void preRESDBigReadAction(void) {
@@ -130,9 +128,9 @@ void preRESDBigWriteAction(void) {
 void postRESDBigWriteAction(void) {
 //action после записи
   if(resdbigcomponent->operativMarker[0]<0) return;//не было записи
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  int countRegister = resdbigcomponent->operativMarker[1]-resdbigcomponent->operativMarker[0]+1;
-  if(resdbigcomponent->operativMarker[1]<0) countRegister = 1;
+//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+//  int countRegister = resdbigcomponent->operativMarker[1]-resdbigcomponent->operativMarker[0]+1;
+//  if(resdbigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
 int privateRESDBigGetReg2(int adrReg)
