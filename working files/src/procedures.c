@@ -1043,6 +1043,10 @@ __result_dym_mem_select allocate_dynamic_memory_for_diagnostyka(__action_dym_mem
       else diagnostyka_arrays_located = DIAGN_ARRAYS_ERROR;
     }
   }
+  else
+  {
+    if (diagnostyka_arrays_located == DIAGN_ARRAYS_SHORT) diagnostyka_arrays_located = DIAGN_ARRAYS_ALL;
+  }
   
   return result;
 }
