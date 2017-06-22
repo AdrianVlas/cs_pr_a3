@@ -705,6 +705,12 @@ void press_esc_in_editor_list_logical_node(void)
           p_param_edit = &(((__settings_for_TIMER*)sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
+       case ID_FB_TRIGGER:
+        {
+          p_param_cont = &(((__settings_for_TRIGGER*)sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_TRIGGER*)sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          break;
+        }
       case ID_FB_TU:
         {
           p_param_cont = &(((__settings_for_TU*)sca_of_p[ID_FB_TU - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
