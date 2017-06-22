@@ -230,9 +230,9 @@ shGblDOCheckIn = (shGbl__REL_1_6__RD_VAL&0x100)>>4;
 j = i&0xf00;
 shGblDOCheckIn |= j>>8;
 j = i >>14;
-shGblDOCheckIn |= j<<6;   
+shGblDOCheckIn |= j<<5;   
 }
-UI32Bit DoStateUI32Bit;
+UI32Bit DoStateUI32Bit,DoCheckUI32Bit;
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //---
 extern void SetHrdOut(void*pv);
@@ -251,7 +251,14 @@ extern void SetHrdOut(void*pv);
 void SetHrdOut(void*pv){
     register long i,j;
     register void *pvRlc;
-//
+	
+//	i = DoStateUI32Bit.ar_uch[0];
+	j = shGblDOCheckIn;
+	i = ~j;
+	j = i&0x7f;
+	
+	DoCheckUI32Bit.ar_uch[0] = DoStateUI32Bit.ar_uch[0]^j;
+
     i = ((UI32Bit*) pv)->ar_uch[0]; 
     j = i&0x10;//Find 5 bit
     if(j){
@@ -273,7 +280,7 @@ void SetHrdOut(void*pv){
 	j = i;
     //j &= 0x6f;
     j &= 0xf;
-    j |= (i&0x30)<<2;
+    j |= (i&0x60)<<1;
 	
     *((char*)pvRlc) = j;
 

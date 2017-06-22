@@ -392,14 +392,19 @@ pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
     bbState = arChIntermediaResult[OFFSET_OUT_RELE_Or_18__3_1];
     i = this->shShemasOrdNumStng;
     i--;
-/*      if (bbState) {
+    if (bbState) {
         DoStateUI32Bit.ul_val |= (1) << i;
     } else {
         DoStateUI32Bit.ul_val &= ~((1) << i); //Phis write to Led
-    }  */
+    }  
     register __LN_OUTPUT_LED *pLN_OUTPUT = static_cast<__LN_OUTPUT_LED*>(pvCfgLN);
     
-    pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] = j<<OUTPUT_LED_OUT;
+    pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] &= ~(1<<OUTPUT_LED_OUT);//Clr
+    pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] |= j<<OUTPUT_LED_OUT;
+    if(DoCheckUI32Bit.ul_val &((1) << i) ){
+        pLN_OUTPUT->active_state[(OUTPUT_LED_ERROR/8) ] |= 1<<OUTPUT_LED_ERROR;
+        
+    }
     if(boolchQTrg06 != static_cast<bool>(m_chQTrg06) ){
     pLN_OUTPUT->d_trigger_state[OUTPUT_LED_D_TRIGGER_1/8] = m_chQTrg06<<OUTPUT_LED_D_TRIGGER_1;
     chGlb_ActivatorWREeprom++;//_SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
