@@ -446,6 +446,7 @@ inline void main_protection(void)
     }
 
     _CLEAR_BIT(diagnostyka_tmp_high, EVENT_START_SYSTEM_BIT);
+    _CLEAR_BIT(diagnostyka_tmp_high, EVENT_SOFT_RESTART_SYSTEM_BIT);
     _CLEAR_BIT(diagnostyka_tmp_high, EVENT_DROP_POWER_BIT);
 
     uint32_t present_diagnostyka = false;

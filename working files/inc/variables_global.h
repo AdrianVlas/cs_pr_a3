@@ -84,6 +84,7 @@ uint32_t *set_diagnostyka_tmp = NULL;
 uint32_t *clear_diagnostyka_tmp = NULL;
 uint32_t *value_changes_diagnostyka = NULL;
 uint32_t *diagnostyka_tmp_high = NULL;
+uint32_t *diagnostyka_tmp_low = NULL;
 uint32_t ** const diagnostika_arrays[N_DIAGN_ARRAYS] = {
                                                         &diagnostyka_before, 
                                                         &diagnostyka,
@@ -92,7 +93,8 @@ uint32_t ** const diagnostika_arrays[N_DIAGN_ARRAYS] = {
                                                         &set_diagnostyka_tmp,
                                                         &clear_diagnostyka_tmp,
                                                         &value_changes_diagnostyka,
-                                                        &diagnostyka_tmp_high
+                                                        &diagnostyka_tmp_high,
+                                                        &diagnostyka_tmp_low,
                                                        };
 __diagnostyka_arrays_located diagnostyka_arrays_located = DIAGN_ARRAYS_NONE;
 

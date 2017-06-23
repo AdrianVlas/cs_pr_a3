@@ -66,6 +66,7 @@ extern uint32_t *set_diagnostyka_tmp;
 extern uint32_t *clear_diagnostyka_tmp;
 extern uint32_t *value_changes_diagnostyka;
 extern uint32_t *diagnostyka_tmp_high;
+extern uint32_t *diagnostyka_tmp_low;
 extern uint32_t ** const diagnostika_arrays[N_DIAGN_ARRAYS];
 extern __diagnostyka_arrays_located diagnostyka_arrays_located;
 

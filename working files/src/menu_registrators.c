@@ -533,7 +533,34 @@ void make_ekran_list_event_pr_err(void)
             
             if (record_check_ok == true)
             {
-              for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_pr_err[index_language][event_number - 1][j];
+              if (event_number <= _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS)
+              {
+                for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_pr_err[index_language][event_number - 1][j];
+              }
+              else
+              {
+                uint32_t first_index = first_index_array_name_error_rele[index_language];
+
+                uint32_t number = event_number - _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS;
+                uint32_t number_digit = max_number_digit_in_number(number);
+              
+                for (unsigned int j = 0; j < MAX_COL_LCD; j++) 
+                {
+                  if (j < first_index) working_ekran[i][j] = name_string_pr_err[index_language][_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS][j];
+                  else if ((j - first_index) < number_digit)
+                  {
+                    /*
+                    Заповнюємо значення зправа  на ліво
+                    індекс = first_index + number_digit - 1 - (j - first_index) =
+                    = first_index + number_digit - 1 - j + first_index =
+                    = 2first_index + number_digit - 1 - j =
+                    */
+                    working_ekran[i][2*first_index + number_digit - 1 - j] = (number % 10) + 0x30;
+                    number /= 10;
+                  }
+                  else working_ekran[i][j] = name_string_pr_err[index_language][_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS][j - number_digit];
+                }
+              }
             }
             else
             {

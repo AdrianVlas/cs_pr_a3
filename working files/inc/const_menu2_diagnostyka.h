@@ -1,9 +1,7 @@
 #ifndef __CONST_DIAGNOSTYKA_MENU2__
 #define __CONST_DIAGNOSTYKA_MENU2__
 
-#define N_DIAGN_ARRAYS  8
-
-#define MAX_ROW_FOR_DIAGNOSTYKA              (8*(4 + 4))
+#define N_DIAGN_ARRAYS  9
 
 enum _error_id 
 {
@@ -71,9 +69,10 @@ ERROR_INTERNAL_FLASH_BIT,
 ERROR_DIGITAL_OUTPUTS_BIT,
 
 _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
-
-
 };
+
+#define MAX_ROW_FOR_DIAGNOSTYKA              (_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS + 1)
+
 
 #define NUMBER_ERRORS (_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS + current_config_prt.n_output)
 
@@ -169,15 +168,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
-  " Ош.вых.реле    ",   \
-  " Ошибка 57      ",   \
-  " Ошибка 58      ",   \
-  " Ошибка 59      ",   \
-  " Ошибка 60      ",   \
-  " Ошибка 61      ",   \
-  " Ошибка 62      ",   \
-  " Ошибка 63      ",   \
-  " Ошибка 64      "
+  " Ош.вых.реле    "
 
 # define NAME_DIAGN_UA  \
   " Пом.I2C        ",   \
@@ -235,15 +226,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " Пом.SPI_DF     ",   \
   " Пом.зовн.SRAM  ",   \
   " Пом.внутр.FLASH",   \
-  " Пом.вих.реле   ",   \
-  " Помилка 57     ",   \
-  " Помилка 58     ",   \
-  " Помилка 59     ",   \
-  " Помилка 60     ",   \
-  " Помилка 61     ",   \
-  " Помилка 62     ",   \
-  " Помилка 63     ",   \
-  " Помилка 64     "
+  " Пом.вих.реле   "
 
 # define NAME_DIAGN_EN  \
   " I2C Err.       ",   \
@@ -301,15 +284,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " DF SPI Err.    ",   \
   " Ext.SRAM Err.  ",   \
   " Int.FLASH Err. ",   \
-  " DO Ctrl.Err.   ",   \
-  " Error 57       ",   \
-  " Error 58       ",   \
-  " Error 59       ",   \
-  " Error 60       ",   \
-  " Error 61       ",   \
-  " Error 62       ",   \
-  " Error 63       ",   \
-  " Error 64       "
+  " DO Ctrl.Err.   "
 
 # define NAME_DIAGN_KZ  \
   " Ош.I2C         ",   \
@@ -367,15 +342,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
-  " Ош.вых.реле    ",   \
-  " Ошибка 57      ",   \
-  " Ошибка 58      ",   \
-  " Ошибка 59      ",   \
-  " Ошибка 60      ",   \
-  " Ошибка 61      ",   \
-  " Ошибка 62      ",   \
-  " Ошибка 63      ",   \
-  " Ошибка 64      "
+  " Ош.вых.реле    "
 
 
 #endif

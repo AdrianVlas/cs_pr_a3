@@ -61,9 +61,10 @@ void move_into_diagnostics(unsigned int action, int max_row)
   size_t _n = DIV_TO_HIGHER(n_diagn_states, 32);
   
   uint32_t present_diagnostyka = false;
-  for (size_t i = 0; ((present_diagnostyka == false) && (i < _n)); i++)
+  for (size_t i = 0; i < _n; i++)
   {
-    if (diagnostyka[i] != 0) present_diagnostyka = true;
+    diagnostyka_tmp_low[i] = diagnostyka[i];
+    if (diagnostyka_tmp_low[i] != 0) present_diagnostyka = true;
   }
   
 //  unsigned int diagnostyka_tmp[2] = {diagnostyka[0], diagnostyka[1]};
@@ -83,7 +84,7 @@ void move_into_diagnostics(unsigned int action, int max_row)
       do
       {
         if(current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
-        while (_CHECK_SET_BIT(diagnostyka/*diagnostyka_tmp*/, current_state_menu2.index_position) == 0)
+        while (_CHECK_SET_BIT(diagnostyka_tmp_low/*diagnostyka_tmp*/, current_state_menu2.index_position) == 0)
         {
           if(++current_state_menu2.index_position >= max_row) current_state_menu2.index_position = 0;
         }
@@ -96,7 +97,7 @@ void move_into_diagnostics(unsigned int action, int max_row)
       do
       {
         if(current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
-        while (_CHECK_SET_BIT(diagnostyka/*diagnostyka_tmp*/, current_state_menu2.index_position) == 0)
+        while (_CHECK_SET_BIT(diagnostyka_tmp_low/*diagnostyka_tmp*/, current_state_menu2.index_position) == 0)
         {
           if(--current_state_menu2.index_position < 0) current_state_menu2.index_position = max_row - 1;
         }
@@ -141,7 +142,7 @@ void make_ekran_diagnostics(void)
   uint32_t present_diagnostyka = false;
   for (size_t i = 0; ((present_diagnostyka == false) && (i < _n)); i++)
   {
-    if (diagnostyka[i] != 0) present_diagnostyka = true;
+    if (diagnostyka_tmp_low[i] != 0) present_diagnostyka = true;
   }
   
 //  if (
@@ -171,36 +172,135 @@ void make_ekran_diagnostics(void)
     //Формуємо список із помилок які реально присутні
     /************************************************************/
     uint8_t name_string_tmp[MAX_ROW_FOR_DIAGNOSTYKA][MAX_COL_LCD + 1];
+    int32_t index_first_rele_error = -1;
+    int32_t index_last_before_rele_error = -1;
 
-    int offset = 0;
+    int32_t offset = 0, offset_extra = 0;
     for(intptr_t index_1 = 0; index_1 < (MAX_ROW_FOR_DIAGNOSTYKA - offset); index_1++)
     {
       while (
-             (index_1 < (MAX_ROW_FOR_DIAGNOSTYKA - offset)) &&
-             (_CHECK_SET_BIT(diagnostyka, (index_1 + offset)) == 0)
+             (index_1 < (_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS - offset)) &&
+             (_CHECK_SET_BIT(diagnostyka_tmp_low, (index_1 + offset)) == 0)
             )   
       {
-        if (_CHECK_SET_BIT(diagnostyka, (index_1 + offset)) == 0)
-        {
-           if (current_state_menu2.index_position >= ((int)(index_1 + offset))) position_temp--;
-          offset++;
-        }
+        if (current_state_menu2.index_position >= ((int)(index_1 + offset))) position_temp--;
+        offset++;
+      }
+      if (
+          (index_1 < (_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS - offset)) &&
+          (_CHECK_SET_BIT(diagnostyka_tmp_low, (index_1 + offset)) != 0)
+         )   
+      {
+        index_last_before_rele_error = index_1;
       }
       
-      if (index_1 < (MAX_ROW_FOR_DIAGNOSTYKA - offset))
+      if (index_1 == (_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS - offset))
+      {
+        if (diagnostyka_arrays_located == DIAGN_ARRAYS_ALL)
+        {
+          for (size_t index_2 = index_1; index_2 < (NUMBER_ERRORS - offset - offset_extra); index_2++ )
+          {
+            while (
+                   (index_2 < (NUMBER_ERRORS - offset - offset_extra)) &&
+                   (_CHECK_SET_BIT(diagnostyka_tmp_low, (index_2 + offset + offset_extra)) == 0)
+                  )   
+            {
+              if (current_state_menu2.index_position >= ((int)(index_2 + offset + offset_extra))) position_temp--;
+              offset_extra++;
+            }
+
+            if (
+                (index_first_rele_error < 0) &&
+                (index_2 < (NUMBER_ERRORS - offset - offset_extra)) &&
+                (_CHECK_SET_BIT(diagnostyka_tmp_low, (index_2 + offset + offset_extra)) != 0)
+                    )   
+            {
+              index_first_rele_error = index_1;
+            }
+          }
+        }
+        else offset++;
+      }
+      
+      if (index_1 < (MAX_ROW_FOR_DIAGNOSTYKA - offset - (offset_extra == current_config_prt.n_output)))
       {
         for(size_t index_2 = 0; index_2 < (MAX_COL_LCD + 1); index_2++)
           name_string_tmp[index_1][index_2] = name_string_diagnostyka[index_language][NUMBER_ROW_FOR_NO_ERRORS + index_1 + offset][index_2];
       }
+      else
+      {
+        size_t index_2;
+        for(index_2 = 0; index_2 < MAX_COL_LCD; index_2++) name_string_tmp[index_1][index_2] = ' ';
+        name_string_tmp[index_1][index_2] = '\0';
+      }
     }
     /************************************************************/
     
-    int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+    int32_t index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
     //Копіюємо  рядки у робочий екран
+    int32_t index_1 = 0;
+    uint32_t index_2 = 0;
     for (size_t i = 0; i< MAX_ROW_LCD; i++)
     {
-      //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-      for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = (index_in_ekran < (MAX_ROW_FOR_DIAGNOSTYKA - offset)) ? name_string_tmp[index_in_ekran][j] : ' ';
+      if (index_in_ekran < ((int32_t)n_diagn_states - offset - offset_extra))
+      {
+        if (index_in_ekran <= index_last_before_rele_error)
+        {
+          for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = name_string_tmp[index_in_ekran][j];
+        }
+        else
+        {
+          if (index_first_rele_error >= 0)
+          {
+            while (
+                   (index_1 < (index_in_ekran - index_first_rele_error + 1)) &&
+                   (index_2 < current_config_prt.n_output)  
+                  )   
+            {
+              if (_CHECK_SET_BIT(diagnostyka_tmp_low, (_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS + index_2)) != 0) index_1++;
+               
+              index_2++;
+            }
+           
+            if (index_2 <= current_config_prt.n_output)
+            {
+              uint32_t first_index = first_index_array_name_error_rele[index_language];
+
+              uint32_t number = index_2;
+              uint32_t number_digit = max_number_digit_in_number(number);
+              
+              for (unsigned int j = 0; j < MAX_COL_LCD; j++) 
+              {
+                if (j < first_index) working_ekran[i][j] = name_string_tmp[index_first_rele_error][j];
+                else if ((j - first_index) < number_digit)
+                {
+                  /*
+                  Заповнюємо значення зправа  на ліво
+                  індекс = first_index + number_digit - 1 - (j - first_index) =
+                  = first_index + number_digit - 1 - j + first_index =
+                  = 2first_index + number_digit - 1 - j =
+                  */
+                  working_ekran[i][2*first_index + number_digit - 1 - j] = (number % 10) + 0x30;
+                  number /= 10;
+                }
+                else working_ekran[i][j] = name_string_tmp[index_first_rele_error][j - number_digit];
+              }
+            }
+            else
+            {
+              for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
+            }
+          }
+          else
+          {
+            for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information_error[index_language][j];
+          }
+        }
+      }
+      else
+      {
+        for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] =  ' ';
+      }
 
       index_in_ekran++;
     }
