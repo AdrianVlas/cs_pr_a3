@@ -1541,12 +1541,17 @@ void min_settings(__SETTINGS_FIX *target_label)
   
   target_label->language = LANGUAGE_EN;
   
+  target_label->schematic = 0; /*признак м≥н≥мальних налаштувань*/
+
   uint8_t *label_to_time_array;
   if (copying_time == 0) label_to_time_array = time;
   else label_to_time_array = time_copy;
      
-  for (size_t i = 0; i < 7; i++) target_label->time_setpoints[i] = *(label_to_time_array + i);
-  target_label->time_setpoints[7] = DEFAULT_PARAMS_FIX_CHANGES;
+  for (size_t i = 0; i < 7; i++) 
+  {
+    target_label->time_schematic[i] = target_label->time_setpoints[i] = *(label_to_time_array + i);
+  }
+  target_label->time_schematic[7] = target_label->time_setpoints[7] = DEFAULT_PARAMS_FIX_CHANGES;
 }
 /**************************************/
 
@@ -1910,12 +1915,17 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
     n += target_config->n_group_alarm*GROUP_ALARM_SIGNALS_OUT;
     /***/
     
+    target_fix_settings->schematic = 2 << 8; /*признак —хеми 2*/
+    
     uint8_t *label_to_time_array;
     if (copying_time == 0) label_to_time_array = time;
     else label_to_time_array = time_copy;
      
-    for (size_t i = 0; i < 7; i++) target_fix_settings->time_setpoints[i] = *(label_to_time_array + i);
-    target_fix_settings->time_setpoints[7] = DEFAULT_PARAMS_FIX_CHANGES;
+    for (size_t i = 0; i < 7; i++) 
+    {
+      target_fix_settings->time_schematic[i] = target_fix_settings->time_setpoints[i] = *(label_to_time_array + i);
+    }
+    target_fix_settings->time_schematic[7] = target_fix_settings->time_setpoints[7] = DEFAULT_PARAMS_FIX_CHANGES;
   }
   else
   {

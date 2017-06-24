@@ -61,7 +61,7 @@ const enum _menu2_levels next_for_input_output_menu2[MAX_ROW_INPUT_OUTPUT_M2] = 
 const enum _menu2_levels next_for_registrators_menu2[MAX_ROW_LIST_REGISTRATORS_M2] = {LOG_LIST_MENU2_LEVEL, PR_ERR_LIST_MENU2_LEVEL};
 const enum _menu2_levels next_for_log_list_menu2[2] = {LOG_LIST_MENU2_LEVEL, LOG_DATA_MENU2_LEVEL};
 const enum _menu2_levels next_for_prr_err_list_menu2[2] = {PR_ERR_LIST_MENU2_LEVEL, PR_ERR_DATA_MENU2_LEVEL};
-const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL};
+const enum _menu2_levels next_for_labels_menu2[MAX_ROW_LABELS_M2] = {CONFIG_LABEL_MENU2_LEVEL, SETTINGS_LABEL_MENU2_LEVEL, SCHEMATIC_LABEL_MENU2_LEVEL};
 const enum _menu2_levels next_for_info_menu2[MAX_ROW_INFO_M2] = {DATE_TIME_INFO_MENU2_LEVEL, INFO_MENU2_LEVEL};
 const enum _menu2_levels next_for_list_settings_menu2[MAX_ROW_LIST_SETTINGS_M2] = {CONFIGURATION_MENU2_LEVEL, LIST_SETTINGS_PARAM_MENU2_LEVEL, EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL, LANGUAGE_MENU2_LEVEL, LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL, LIST_PASSWORDS_MENU2_LEVEL};
 const enum _menu2_levels next_for_list_settings_param_menu2[MAX_ROW_LIST_SETTINGS_PARAM_M2] = {LIST_INPUTS_MENU2_LEVEL, LIST_OUTPUTS_MENU2_LEVEL, LIST_LEDS_MENU2_LEVEL, LIST_ALARMS_MENU2_LEVEL, LIST_GROUP_ALARMS_MENU2_LEVEL, LIST_TIMERS_MENU2_LEVEL, LIST_MEANDERS_MENU2_LEVEL};
@@ -268,7 +268,7 @@ void main_manu_function_ver2(void)
                   if (current_state_menu2.current_level != TIME_MANU2_LEVEL) 
                   {
                     //Фіксуємо, що система меню захопила "монополію" на зміну конфігурації і налаштувань
-                    config_settings_modified = MASKA_MENU_LOCKS;
+                    config_settings_modified = MASKA_FOR_BIT(BIT_MENU_LOCKS);
                     
                     if (current_state_menu2.current_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
                     {
@@ -308,7 +308,7 @@ void main_manu_function_ver2(void)
               
               current_state_menu2.edition = /*prev_edit*/ED_VIEWING;
               
-              if ((config_settings_modified & MASKA_MENU_LOCKS) != 0 ) 
+              if ((config_settings_modified & MASKA_FOR_BIT(BIT_MENU_LOCKS)) != 0 ) 
               {
                 /*
                 Хоч, теоретично, цього випадку тут би ніколи не мало б бути, бо, 
@@ -398,7 +398,7 @@ void main_manu_function_ver2(void)
             if (*p_password_edit != *p_password_cont)
             {
               *p_password_cont = *p_password_edit;
-              config_settings_modified |= MASKA_CHANGED_SETTINGS;
+              config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
             }
           }
           else
@@ -651,6 +651,7 @@ void main_manu_function_ver2(void)
     case LABELS_MENU2_LEVEL:
     case CONFIG_LABEL_MENU2_LEVEL:
     case SETTINGS_LABEL_MENU2_LEVEL:
+    case SCHEMATIC_LABEL_MENU2_LEVEL:
     case INFO_MENU2_LEVEL:
     case DATE_TIME_INFO_MENU2_LEVEL:
       {
@@ -691,12 +692,14 @@ void main_manu_function_ver2(void)
             //Формуємо екран відображення
             unsigned int menu_param_1;
             if (
-                (current_state_menu2.current_level == CONFIG_LABEL_MENU2_LEVEL) ||
-                (current_state_menu2.current_level == SETTINGS_LABEL_MENU2_LEVEL)
+                (current_state_menu2.current_level == CONFIG_LABEL_MENU2_LEVEL   )||
+                (current_state_menu2.current_level == SETTINGS_LABEL_MENU2_LEVEL )|| 
+                (current_state_menu2.current_level == SCHEMATIC_LABEL_MENU2_LEVEL) 
                )
             {
               if (current_state_menu2.current_level == CONFIG_LABEL_MENU2_LEVEL) menu_param_1 = 0;
-              else menu_param_1 = 1;
+              else if (current_state_menu2.current_level == SETTINGS_LABEL_MENU2_LEVEL) menu_param_1 = 1;
+              else menu_param_1 = 2;
               p_menu_param_1 = &menu_param_1; 
             }
             
@@ -1508,7 +1511,7 @@ void main_manu_function_ver2(void)
                 current_state_menu2.edition = ED_EDITION;
 
                 //Фіксуємо, що система меню захопила "монополію" на зміну конфігурації і налаштувань
-                config_settings_modified = MASKA_MENU_LOCKS;
+                config_settings_modified = MASKA_FOR_BIT(BIT_MENU_LOCKS);
               }
               else
               {
@@ -3035,6 +3038,7 @@ void new_level_menu(void)
     }
   case CONFIG_LABEL_MENU2_LEVEL:
   case SETTINGS_LABEL_MENU2_LEVEL:
+  case SCHEMATIC_LABEL_MENU2_LEVEL:
     {
       current_state_menu2.p_max_row = NULL;
       current_state_menu2.max_row = MAX_ROW_TIME_CONFIG_OR_SETTINGS;

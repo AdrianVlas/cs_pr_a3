@@ -578,7 +578,7 @@ enum _result_pressed_enter_during_edition press_enter_in_editor_list_logical_nod
       }
    
       for (size_t i = 0; i < n_similar_input_signals; i++) p_param_cont[i] = p_param_edit[i];
-      config_settings_modified |= MASKA_CHANGED_SETTINGS;
+      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
     }
     else error = true;
   }

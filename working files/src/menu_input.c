@@ -108,7 +108,7 @@ enum _result_pressed_enter_during_edition press_enter_in_control_input(void)
           }
           
           p_settings_cont->control = p_settings_edit->control;
-          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
           result = RPEDE_DATA_CHANGED_OK;
         }
         else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
@@ -323,7 +323,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_input(void)
             if (check_data_setpoint(p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK], min_porig, KOEF_DOPUSK_DV_MAX) == 1)
             {
               p_settings_for_input_cont->set_delay[INPUT_SET_DELAY_DOPUSK] = p_settings_for_input_edit->set_delay[INPUT_SET_DELAY_DOPUSK];
-              config_settings_modified |= MASKA_CHANGED_SETTINGS;
+              config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
               result = RPEDE_DATA_CHANGED_OK;
             }
             else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;

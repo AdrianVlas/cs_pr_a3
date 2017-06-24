@@ -116,7 +116,7 @@ inline void periodical_operations(void)
     type_of_settings_changed_from_interface = 0;
   }
   //Фіксація сигналу про те що налаштуванння/конфігурація змінені чи ні
-  if ((config_settings_modified & (MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS)) != 0) 
+  if ((config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION) | MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC))) != 0) 
   {
     _SET_BIT(fix_block_active_state, FIX_BLOCK_SETTINGS_CHANGED);
   }
