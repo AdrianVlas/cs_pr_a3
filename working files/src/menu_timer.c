@@ -185,7 +185,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_timer(void)
             if (check_data_setpoint(p_settings_for_timer_edit->set_delay[TIMER_SET_DELAY_PAUSE], TIMEOUT_TIMER_PAUSE_MIN, TIMEOUT_TIMER_PAUSE_MAX) == 1)
             {
               p_settings_for_timer_cont->set_delay[TIMER_SET_DELAY_PAUSE] = p_settings_for_timer_edit->set_delay[TIMER_SET_DELAY_PAUSE];
-              config_settings_modified |= MASKA_CHANGED_SETTINGS;
+              config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
               result = RPEDE_DATA_CHANGED_OK;
             }
             else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
@@ -200,7 +200,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_timer(void)
             if (check_data_setpoint(p_settings_for_timer_edit->set_delay[TIMER_SET_DELAY_WORK], TIMEOUT_TIMER_WORK_MIN, TIMEOUT_TIMER_WORK_MAX) == 1)
             {
               p_settings_for_timer_cont->set_delay[TIMER_SET_DELAY_WORK] = p_settings_for_timer_edit->set_delay[TIMER_SET_DELAY_WORK];
-              config_settings_modified |= MASKA_CHANGED_SETTINGS;
+              config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
               result = RPEDE_DATA_CHANGED_OK;
             }
             else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
