@@ -813,19 +813,23 @@ const uint8_t name_string_labels[MAX_NAMBER_LANGUAGE][MAX_ROW_LABELS_M2][MAX_COL
 {
   {
     " Метка конфиг.  ",
-    " Метка настроек "
+    " Метка настроек ",
+    " Метка схемы    "
   },
   {
     " Мітка конфіг.  ",
-    " Мітка налашт.  "
+    " Мітка налашт.  ",
+    " Метка схеми    "
   },
   {
     " Configur.Mark  ",
-    " Settings Mark  "
+    " Settings Mark  ",
+    " Scheme Mark    ",
   },
   {
     " Метка конфиг.  ",
-    " Метка настроек "
+    " Метка настроек ",
+    " Метка схемы    "
   }
 };
 

@@ -704,7 +704,7 @@ void TIM4_IRQHandler(void)
       if (
           (restart_timeout_idle_new_settings != 0) ||
           (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_SETTINGS_CHANGED) == 0) ||
-          ((config_settings_modified & MASKA_MENU_LOCKS) != 0) 
+          ((config_settings_modified & MASKA_FOR_BIT(BIT_MENU_LOCKS)) != 0) 
          )
       {
         timeout_idle_new_settings  = 0;
