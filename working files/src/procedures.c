@@ -450,7 +450,7 @@ void control_config(unsigned int modified)
     crc_config_tmp += temp_value;
 
     //Контроль конфігурації для захистів з конфігурацією-контейнером
-    if ((modified & MASKA_CHANGED_CONFIGURATION) == 0)
+    if ((modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION)) == 0)
     {
       if (temp_value != *(point_2++)) difference = 0xff;
     }
@@ -2783,7 +2783,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
 
     __result_dym_mem_select result = DYN_MEM_SELECT_OK;
     //Активація внесених змін
-    if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+    if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
     {
       __CONFIG current_config_tmp = current_config_prt;
       //Зупиняємо систему логіки
@@ -2799,7 +2799,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
 
     if (result == DYN_MEM_SELECT_OK)
     {
-      if (config_settings_modified & MASKA_CHANGED_SETTINGS)
+      if (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
       {
         //Відбувалися зміни у налаштуваннях
         //Зупиняємо систему логіки
@@ -2878,13 +2878,13 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
       }
       
-      if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+      uint8_t *label_to_time_array;
+      if (copying_time == 0) label_to_time_array = time;
+      else label_to_time_array = time_copy;
+
+      if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
       {
         //Записуємо час останньої зміни конфігурації
-        uint8_t *label_to_time_array;
-        if (copying_time == 0) label_to_time_array = time;
-        else label_to_time_array = time_copy;
-        
         for (size_t i = 0; i < 7; i++) current_config_prt.time_config[i] = current_config.time_config[i] = current_config_edit.time_config[i] = *(label_to_time_array + i);
         current_config_prt.time_config[7] = current_config.time_config[7] = current_config_edit.time_config[7] = (uint8_t)(source & 0xff);
         
@@ -2896,15 +2896,26 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         periodical_tasks_TEST_TRG_FUNC_LOCK = false;
       }
       
-      //Записуємо час останньої зміни конфігурації
-      uint8_t *label_to_time_array;
-      if (copying_time == 0) label_to_time_array = time;
-      else label_to_time_array = time_copy;
+      if (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
+      {
+        if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_SETTINGS))
+        {
+          //Записуємо час останньої зміни налаштувань
         
-      for (size_t i = 0; i < 7; i++) settings_fix_prt.time_setpoints[i] = settings_fix.time_setpoints[i] = settings_fix_edit.time_setpoints[i] = *(label_to_time_array + i);
-      settings_fix_prt.time_setpoints[7] = settings_fix.time_setpoints[7] = settings_fix_edit.time_setpoints[7] = (uint8_t)(source & 0xff);
+          for (size_t i = 0; i < 7; i++) settings_fix_prt.time_setpoints[i] = settings_fix.time_setpoints[i] = settings_fix_edit.time_setpoints[i] = *(label_to_time_array + i);
+          settings_fix_prt.time_setpoints[7] = settings_fix.time_setpoints[7] = settings_fix_edit.time_setpoints[7] = (uint8_t)(source & 0xff);
+        }
+        if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC))
+        {
+          //Записуємо час останньої зміни зв'язків
+           settings_fix_prt.schematic =  settings_fix.schematic = settings_fix_edit.schematic = (settings_fix.schematic & 0xff00) | 0x1; /*фіксуємо що типова схема змінена*/
+        
+          for (size_t i = 0; i < 7; i++) settings_fix_prt.time_schematic[i] = settings_fix.time_schematic[i] = settings_fix_edit.time_schematic[i] = *(label_to_time_array + i);
+          settings_fix_prt.time_schematic[7] = settings_fix.time_schematic[7] = settings_fix_edit.time_schematic[7] = (uint8_t)(source & 0xff);
+        }
       
-      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+      }
       
       /***
       Очікуємо, поки процес запису у EEPROM повністю завершиться
@@ -2983,7 +2994,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     //Повернення до стану до редагування
     if (
         (error == 1) ||
-        (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+        (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
        )   
     {
       //Відбувалися зміни у конфігурації
@@ -3005,7 +3016,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     
     if (
         (error == 1) ||
-        (config_settings_modified & MASKA_CHANGED_SETTINGS)
+        (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
        )   
     {
       //Відновлюємо зміни у налаштуваннях

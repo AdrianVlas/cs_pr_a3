@@ -91,7 +91,7 @@ enum _result_pressed_enter_during_edition press_enter_in_control_alarm(void)
         {
           p_settings_cont->control = p_settings_edit->control;
           
-          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
           result = RPEDE_DATA_CHANGED_OK;
         }
         else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
@@ -313,7 +313,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_alarm(void)
             if (check_data_setpoint(p_set_delay_edit[ALARM_SET_DELAY_PERIOD], TIMEOUT_ALARM_PERIOD_MIN, TIMEOUT_ALARM_PERIOD_MAX) == 1)
             {
               p_set_delay_cont[ALARM_SET_DELAY_PERIOD] = p_set_delay_edit[ALARM_SET_DELAY_PERIOD];
-              config_settings_modified |= MASKA_CHANGED_SETTINGS;
+              config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
               result = RPEDE_DATA_CHANGED_OK;
             }
             else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
