@@ -2986,10 +2986,31 @@ void new_level_menu(void)
     }
   case DIAGNOSTICS_MENU2_LEVEL:
     {
+      size_t n_diagn_states = 0;
+  
+      switch (diagnostyka_arrays_located)
+      {
+      case DIAGN_ARRAYS_ALL:
+        {
+          n_diagn_states = NUMBER_ERRORS;
+          break;
+        }
+      case DIAGN_ARRAYS_SHORT:
+      case DIAGN_ARRAYS_ERROR:
+        {
+          n_diagn_states = _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS;
+          break;
+        }
+      default:
+        {
+          break;
+        }
+      }
+      
       time_rewrite = 0;
       
       current_state_menu2.p_max_row = NULL;
-      current_state_menu2.max_row = MAX_ROW_FOR_DIAGNOSTYKA;
+      current_state_menu2.max_row = n_diagn_states;
       current_state_menu2.func_move = move_into_diagnostics;
       current_state_menu2.func_show = make_ekran_diagnostics;
       current_state_menu2.func_press_enter = NULL;

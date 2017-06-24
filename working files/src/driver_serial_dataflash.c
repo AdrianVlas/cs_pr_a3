@@ -53,8 +53,8 @@ void start_exchange_via_spi_df(uint32_t index_chip, uint32_t number)
 void main_routines_for_spi_df(uint32_t index_chip)
 {
   //Тимчасові статичні змінні, які потрібні для виконання операцій читанння/запису мікросхеми DataFlash
-  static uint32_t address_read_write_tmp[SIZE_ONE_RECORD_PR_ERR], number_bytes_read_write_tmp[SIZE_ONE_RECORD_PR_ERR];
-  static int32_t etap_writing_df[SIZE_ONE_RECORD_PR_ERR];
+  static uint32_t address_read_write_tmp[NUMBER_DATAFLASH_CHIP], number_bytes_read_write_tmp[NUMBER_DATAFLASH_CHIP];
+  static int32_t etap_writing_df[NUMBER_DATAFLASH_CHIP];
   
   if (state_execution_spi_df[index_chip] == TRANSACTION_EXECUTING_NONE)
   {
