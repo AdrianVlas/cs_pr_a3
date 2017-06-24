@@ -76,10 +76,27 @@ uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 unsigned char crc_trg_func, crc_trg_func_ctrl;
 unsigned int activation_function_from_interface = 0;
 unsigned int reset_trigger_function_from_interface = 0;
-unsigned int diagnostyka_before[2] = {0, 0};
-unsigned int diagnostyka[2] = {0, 0};
-unsigned int set_diagnostyka[2] = {0, 0};
-unsigned int clear_diagnostyka[2] = {0, 0};
+uint32_t *diagnostyka_before = NULL;
+uint32_t *diagnostyka = NULL;
+uint32_t *set_diagnostyka = NULL;
+uint32_t *clear_diagnostyka = NULL;
+uint32_t *set_diagnostyka_tmp = NULL;
+uint32_t *clear_diagnostyka_tmp = NULL;
+uint32_t *value_changes_diagnostyka = NULL;
+uint32_t *diagnostyka_tmp_high = NULL;
+uint32_t *diagnostyka_tmp_low = NULL;
+uint32_t ** const diagnostika_arrays[N_DIAGN_ARRAYS] = {
+                                                        &diagnostyka_before, 
+                                                        &diagnostyka,
+                                                        &set_diagnostyka,
+                                                        &clear_diagnostyka,
+                                                        &set_diagnostyka_tmp,
+                                                        &clear_diagnostyka_tmp,
+                                                        &value_changes_diagnostyka,
+                                                        &diagnostyka_tmp_high,
+                                                        &diagnostyka_tmp_low,
+                                                       };
+__diagnostyka_arrays_located diagnostyka_arrays_located = DIAGN_ARRAYS_NONE;
 
 //SRAM1 int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
 

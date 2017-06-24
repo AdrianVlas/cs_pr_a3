@@ -459,6 +459,17 @@ typedef enum _result_dyn_mem_select
     
 } __result_dym_mem_select;
 
+typedef enum _diagnostyka_arrays_located
+{
+  DIAGN_ARRAYS_NONE = 0,
+  DIAGN_ARRAYS_CHANGING,
+  DIAGN_ARRAYS_ERROR,
+  DIAGN_ARRAYS_SHORT,
+  DIAGN_ARRAYS_ALL
+
+} __diagnostyka_arrays_located;
+
+
 typedef struct
 {
   //Стан обміну

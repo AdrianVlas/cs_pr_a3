@@ -1235,6 +1235,8 @@ void TIM4_IRQHandler(void)
                   /***
                   Перший раз вже зчитаний час з моменту перезапуску
                   ***/
+                  (diagnostyka     != NULL) &&
+                  (set_diagnostyka != NULL) &&
                   (_CHECK_SET_BIT(    diagnostyka, EVENT_START_SYSTEM_BIT       ) == 0) &&
                   (_CHECK_SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT       ) == 0) &&
                   (_CHECK_SET_BIT(    diagnostyka, EVENT_RESTART_SYSTEM_BIT     ) == 0) &&
@@ -1666,7 +1668,7 @@ void SPI_DF_IRQHandler(void)
   }
   
   /*Виставляємо повідомлення про помилку обміну через SPI_DF*/
-  _SET_BIT(set_diagnostyka, ERROR_SPI_DF_BIT);
+  if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_SPI_DF_BIT);
 
   //Дозволяємо переривання від помилок на SPI_DF
   SPI_I2S_ITConfig(SPI_DF, SPI_I2S_IT_ERR, ENABLE);
@@ -1718,7 +1720,7 @@ void DMA_StreamSPI_DF_Rx_IRQHandler(void)
   }
       
   //Обмін відбувся вдало - скидаємо повідомлення про попередньо можливу помилку обміну через SPI_DF
-  _SET_BIT(clear_diagnostyka, ERROR_SPI_DF_BIT);
+  if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_SPI_DF_BIT);
   
 #ifdef SYSTEM_VIEWER_ENABLE
   SEGGER_SYSVIEW_RecordExitISR();
@@ -1846,14 +1848,14 @@ void EXITI_POWER_IRQHandler(void)
       //Живлення появилося на вході блоку живлення
 
       //Виставляємо повідомлення про цю подію
-      _SET_BIT(clear_diagnostyka, EVENT_DROP_POWER_BIT);
+      if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, EVENT_DROP_POWER_BIT);
     }
     else
     {
       //Живлення пропало на вході блоку живлення
 
       //Виставляємо повідомлення про цю подію
-      _SET_BIT(set_diagnostyka, EVENT_DROP_POWER_BIT);
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_DROP_POWER_BIT);
     }
   }
   
