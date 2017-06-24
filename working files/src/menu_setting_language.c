@@ -91,7 +91,7 @@ enum _result_pressed_enter_during_edition press_enter_in_setting_language(void)
         {
           *p_language_cont = *p_language_edit;
           
-          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
           result = RPEDE_DATA_CHANGED_OK;
         }
         else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;

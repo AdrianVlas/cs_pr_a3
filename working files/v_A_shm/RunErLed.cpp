@@ -9,7 +9,7 @@
 #include "IStng.h"
 //#include "../inc/macroses.h"
 #include "../inc/const_global.h"
-extern unsigned int diagnostyka[2];
+extern /*unsigned int diagnostyka[2]*/uint32_t *diagnostyka;
 //#include "../inc/variables_external.h"
 #include "../inc/const_menu2_diagnostyka.h"
 const unsigned long long  NON_FATAL_BIT_MASK  =  static_cast<unsigned long long>( 

@@ -58,7 +58,8 @@ void make_ekran_time_config_or_settings(void)
   uint8_t *point_to_target;
 
   if (*((unsigned int*)p_menu_param_1) == 0) point_to_target = (&current_config_prt)->time_config;
-  else point_to_target = (&settings_fix_prt)->time_setpoints;
+  else if (*((unsigned int*)p_menu_param_1) == 1) point_to_target = (&settings_fix_prt)->time_setpoints;
+  else point_to_target = (&settings_fix_prt)->time_schematic;
   
   /******************************************/
   //Заповнюємо поля відповідними цифрами

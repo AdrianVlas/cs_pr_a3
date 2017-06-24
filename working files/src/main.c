@@ -116,7 +116,7 @@ inline void periodical_operations(void)
     type_of_settings_changed_from_interface = 0;
   }
   //Фіксація сигналу про те що налаштуванння/конфігурація змінені чи ні
-  if ((config_settings_modified & (MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS)) != 0) 
+  if ((config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION) | MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC))) != 0) 
   {
     _SET_BIT(fix_block_active_state, FIX_BLOCK_SETTINGS_CHANGED);
   }
@@ -285,14 +285,14 @@ inline void periodical_operations(void)
       //Контроль достовірності реєстратора пройшов успішно
     
       //Скидаємо повідомлення у слові діагностики
-      _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT);
+      if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT);
     }
     else
     {
       //Контроль достовірності реєстратора не пройшов
 
       //Виствляємо повідомлення у слові діагностики
-      _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT);
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT);
     }
 
     //Скидаємо активну задачу самоконтролю по резервній копії для Журналу подій
@@ -310,14 +310,14 @@ inline void periodical_operations(void)
       //Контроль достовірності реєстратора пройшов успішно
     
       //Скидаємо повідомлення у слові діагностики
-      _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
+      if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
     }
     else
     {
       //Контроль достовірності реєстратора не пройшов
 
       //Виствляємо повідомлення у слові діагностики
-      _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
     }
 
     //Скидаємо активну задачу самоконтролю по резервній копії для реєстратора програмних подій
@@ -383,26 +383,29 @@ int main(void)
 #ifdef SYSTEM_VIEWER_ENABLE
   SEGGER_SYSVIEW_Conf();            /* Configure and initialize SystemView  */
 #endif
+
+  //Намагаємося виділити пам'ять під незалежні від конфігурації стани діагностики
+  allocate_dynamic_memory_for_diagnostyka(MAKE_DYN_MEM, 0, 0);
   
   //Виставляємо подію про зупинку пристрою у попередньому сеансі роботи, а час встановиться пізніше, RTC запм'ятовує час пропадання живлення
-  _SET_BIT(set_diagnostyka, EVENT_STOP_SYSTEM_BIT);
+  if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_STOP_SYSTEM_BIT);
   changing_diagnostyka_state();//Підготовлюємо новий запис для реєстратора програмних подій
   
   //Перевіряємо, що відбулося: запуск приладу, програмний перезапуск чи перезапуск (перезапуск роботи приладу без зняття оперативного живлення) 
   if (RCC_GetFlagStatus(RCC_FLAG_SFTRST) == SET)
   {
     //Виставляємо подію про програмний перезапуск пристрою
-    _SET_BIT(set_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT);
   }
   else if (RCC_GetFlagStatus(RCC_FLAG_PORRST) != SET)
   {
     //Виставляємо подію про перезапуск пристрою (бо не зафіксовано подію Power-on/Power-down)
-    _SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT);
   }
   else
   {
     //Виставляємо подію про запуск пристрою 
-    _SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT);
   }
   //Очищаємо прапорці
   RCC->CSR |= RCC_CSR_RMVF;
@@ -533,8 +536,14 @@ int main(void)
         sum += *point++;
         periodical_operations();
       }
-      if (sum != (unsigned short)__checksum) _SET_BIT(set_diagnostyka, ERROR_INTERNAL_FLASH_BIT);
-      else _SET_BIT(clear_diagnostyka, ERROR_INTERNAL_FLASH_BIT);
+      if (sum != (unsigned short)__checksum) 
+      {
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_INTERNAL_FLASH_BIT);
+      }
+      else 
+      {
+        if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_INTERNAL_FLASH_BIT);
+      }
       /************************************************************/
 
       periodical_tasks_TEST_FLASH_MEMORY = false;

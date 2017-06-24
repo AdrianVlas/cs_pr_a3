@@ -189,7 +189,6 @@
           <state>STM32F2XX</state>
           <state>USE_USB_OTG_FS</state>
           <state>KEYBOARD_VER_1</state>
-          <state>TEST_MODE</state>
         </option>
         <option>
           <name>CCPreprocFile</name>

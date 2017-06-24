@@ -813,19 +813,23 @@ const uint8_t name_string_labels[MAX_NAMBER_LANGUAGE][MAX_ROW_LABELS_M2][MAX_COL
 {
   {
     " Метка конфиг.  ",
-    " Метка настроек "
+    " Метка настроек ",
+    " Метка схемы    "
   },
   {
     " Мітка конфіг.  ",
-    " Мітка налашт.  "
+    " Мітка налашт.  ",
+    " Метка схеми    "
   },
   {
     " Configur.Mark  ",
-    " Settings Mark  "
+    " Settings Mark  ",
+    " Scheme Mark    ",
   },
   {
     " Метка конфиг.  ",
-    " Метка настроек "
+    " Метка настроек ",
+    " Метка схемы    "
   }
 };
 
@@ -1227,6 +1231,7 @@ const uint8_t name_string_pr_err[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_DIAGNOSTYKA][M
     NAME_DIAGN_KZ
   }
 };
+const uint32_t first_index_array_name_error_rele[MAX_NAMBER_LANGUAGE] = {12, 13, 3, 12};
 
 const uint8_t passive_active[MAX_NAMBER_LANGUAGE][2][5 + 1] = 
 {

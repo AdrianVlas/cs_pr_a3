@@ -201,7 +201,7 @@ enum _result_pressed_enter_during_edition press_enter_in_address(void)
         {
           *p_value_cont = *p_value_edit;
               
-          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
           result = RPEDE_DATA_CHANGED_OK;
         }
         else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
@@ -404,7 +404,7 @@ enum _result_pressed_enter_during_edition press_enter_in_baud_RS485(void)
         {
           *p_value_cont = *p_value_edit;
           
-          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
           result = RPEDE_DATA_CHANGED_OK;
         }
         else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
@@ -561,7 +561,7 @@ enum _result_pressed_enter_during_edition press_enter_in_pare_RS485(void)
         {
           *p_value_cont = *p_value_edit;
           
-          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
           result = RPEDE_DATA_CHANGED_OK;
         }
         else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
@@ -719,7 +719,7 @@ enum _result_pressed_enter_during_edition press_enter_in_stopbits_RS485(void)
         {
           *p_value_cont = *p_value_edit;
           
-          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
           result = RPEDE_DATA_CHANGED_OK;
         }
         else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
@@ -908,7 +908,7 @@ enum _result_pressed_enter_during_edition press_enter_in_timeout_RS485(void)
         if (check_data_setpoint(*p_value_edit, VALUE_TIME_OUT_1_RS485_MIN, VALUE_TIME_OUT_1_RS485_MAX) == 1)
         {
           *p_value_cont = *p_value_edit;
-          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
           result = RPEDE_DATA_CHANGED_OK;
         }
         else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;
