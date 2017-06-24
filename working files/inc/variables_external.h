@@ -58,10 +58,17 @@ extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 extern unsigned char crc_trg_func, crc_trg_func_ctrl;
 extern unsigned int activation_function_from_interface;
 extern unsigned int reset_trigger_function_from_interface;
-extern unsigned int diagnostyka_before[2];
-extern unsigned int diagnostyka[2];
-extern unsigned int set_diagnostyka[2];
-extern unsigned int clear_diagnostyka[2];
+extern uint32_t *diagnostyka_before;
+extern uint32_t *diagnostyka;
+extern uint32_t *set_diagnostyka;
+extern uint32_t *clear_diagnostyka;
+extern uint32_t *set_diagnostyka_tmp;
+extern uint32_t *clear_diagnostyka_tmp;
+extern uint32_t *value_changes_diagnostyka;
+extern uint32_t *diagnostyka_tmp_high;
+extern uint32_t *diagnostyka_tmp_low;
+extern uint32_t ** const diagnostika_arrays[N_DIAGN_ARRAYS];
+extern __diagnostyka_arrays_located diagnostyka_arrays_located;
 
 //extern int global_timers[MAX_NUMBER_GLOBAL_TIMERS];
 

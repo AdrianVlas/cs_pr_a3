@@ -60,7 +60,7 @@ inline unsigned int wait_lcd_ready(void)
       error_LCD = 1; //Пройшов час більше 10,01 мс з а який LCD не підтвердив операцію
 
       //Виставляємо повідомлення про цю подію
-      _SET_BIT(set_diagnostyka, ERROR_LCD_BIT);
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_LCD_BIT);
     }
     
     if ((temp_data & (1<<BF_BIT)) != 0) count = 0;
@@ -399,8 +399,12 @@ void view_whole_ekran(void)
   if (current_state_menu2.current_action != ACTION_WITH_CARRENT_EKRANE_NONE)
   {
     if (
-        (_CHECK_SET_BIT(    diagnostyka, ERROR_LCD_BIT) == 0) ||
-        (_CHECK_SET_BIT(set_diagnostyka, ERROR_LCD_BIT) == 0)
+        (diagnostyka     == NULL) ||
+        (set_diagnostyka == NULL) ||
+        (
+         (_CHECK_SET_BIT(    diagnostyka, ERROR_LCD_BIT) == 0) &&
+         (_CHECK_SET_BIT(set_diagnostyka, ERROR_LCD_BIT) == 0)
+        )   
        )   
     {
       unsigned int error_LCD = 0;
