@@ -141,6 +141,8 @@ inline void test_external_SRAM(void)
 /**************************************/
 void global_vareiables_installation(void)
 {
+  low_speed_i2c = 0;
+  
   /**************************/
   //Вимірювальна система
   /**************************/
