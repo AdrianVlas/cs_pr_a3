@@ -141,6 +141,8 @@ inline void test_external_SRAM(void)
 /**************************************/
 void global_vareiables_installation(void)
 {
+  low_speed_i2c = 0;
+  
   /**************************/
   //Вимірювальна система
   /**************************/
@@ -1512,6 +1514,7 @@ void scheme2_config(__CONFIG *target_label)
 /**************************************/
 void min_settings(__SETTINGS_FIX *target_label)
 {
+  target_label->n_iteration = NUMBER_ITERATION_EL_MAX;
   for (size_t i = 0; i < FIX_BLOCK_SIGNALS_IN; i++) target_label->param[i] = 0;
 
   target_label->password_1 = 0;
@@ -2056,7 +2059,7 @@ void error_reading_with_eeprom()
     else if (information_type == 2)
     {
       //Записуємо мінімальну конфігурацію
-      min_settings(&settings_fix); /*Для фіксованого блоку немає додатковихособливих налаштувань у переустановлених кнфігураціях*/
+      min_settings(&settings_fix); /*Для фіксованого блоку немає додаткових особливих налаштувань у переустановлених кнфігураціях*/
       if (index_action == 2) scheme2_settings(&current_config, &settings_fix, sca_of_p);
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
       
