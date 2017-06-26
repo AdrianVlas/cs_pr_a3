@@ -3,7 +3,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 13000
+#define BEGIN_ADR_REGISTER 14000
 //макс к-во обектов
 #define REGISTER_FOR_OBJ 1
 
@@ -85,7 +85,7 @@ int setRPRBigModbusRegister(int adrReg, int dataReg)
   if(adrReg>=getRPRSmallModbusBeginAdrRegister() &&
       (adrReg<rprbigcomponent->countObject*getRPRSmallModbusBeginAdrRegister())) return MARKER_ERRORDIAPAZON;
 
-  return dataReg;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setRPRBigModbusBit(int adrBit, int x)
 {

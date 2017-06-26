@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 14000
+#define BEGIN_ADR_REGISTER 14200
 //макс к-во обектов
 #define REGISTER_FOR_OBJ 43
 
@@ -44,7 +44,142 @@ void constructorPKVBigComponent(COMPONENT_OBJ *pkvbigcomp)
 
 void loadPKVBigActualData(void) {
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  for(int i=0; i<REGISTER_FOR_OBJ; i++) {
+   switch(i) {
+    case 0://Время активации пароля после простоя
+    tempReadArray[i] = settings_fix.timeout_deactivation_password_interface_USB;
+    break;
+    case 1://Проверка/установка пароля
+    tempReadArray[i] = settings_fix.password_interface_USB;
+    break;
+    case 2://Тайм-аут применения изменений
+    tempReadArray[i] = settings_fix.timeout_idle_new_settings;
+    break;
+    case 3://Язык пользовательского интерфейса
+    tempReadArray[i] = settings_fix.language;
+    break;
+    case 4://
+    tempReadArray[i] = 0;
+    break;
+    case 5://Скорость порта связи
+    tempReadArray[i] = settings_fix.baud_RS485;
+    break;
+    case 6://Количество стоп-бит
+    tempReadArray[i] = settings_fix.number_stop_bit_RS485;
+    break;
+    case 7://Паритет
+    tempReadArray[i] = settings_fix.pare_bit_RS485;
+    break;
+    case 8://Задержка приёма
+    tempReadArray[i] = settings_fix.time_out_1_RS485;
+    break;
+    case 9://Скорость порта связи 2
+    tempReadArray[i] = settings_fix.baud_RS485;
+    break;
+    case 10://Количество стоп-бит 2
+    tempReadArray[i] = settings_fix.number_stop_bit_RS485;
+    break;
+    case 11://Паритет 2
+    tempReadArray[i] = settings_fix.pare_bit_RS485;
+    break;
+    case 12://Задержка приёма 2
+    tempReadArray[i] = settings_fix.time_out_1_RS485;
+    break;
+
+    case 13://Адрес устройства в сети
+    tempReadArray[i] = settings_fix.address;
+    break;
+    case 14://Таймаут конца фрейма
+    tempReadArray[i] = settings_fix.time_out_1_RS485;
+    break;
+    case 15://
+    tempReadArray[i] = 0;
+    break;
+    case 16://Символ 1 и 2
+    tempReadArray[i] = settings_fix.name_of_cell[0] + ((settings_fix.name_of_cell[1]<<8)&0xFF00);
+    break;
+    case 17://Символ 3 и 4
+    tempReadArray[i] = settings_fix.name_of_cell[2] + ((settings_fix.name_of_cell[3]<<8)&0xFF00);
+    break;
+    case 18://Символ 5 и 6
+    tempReadArray[i] = settings_fix.name_of_cell[4] + ((settings_fix.name_of_cell[5]<<8)&0xFF00);
+    break;
+    case 19://Символ 7 и 8
+    tempReadArray[i] = settings_fix.name_of_cell[6] + ((settings_fix.name_of_cell[7]<<8)&0xFF00);
+    break;
+    case 20://Символ 9 и 10
+    tempReadArray[i] = settings_fix.name_of_cell[8] + ((settings_fix.name_of_cell[9]<<8)&0xFF00);
+    break;
+    case 21://Символ 11 и 12
+    tempReadArray[i] = settings_fix.name_of_cell[10] + ((settings_fix.name_of_cell[11]<<8)&0xFF00);
+    break;
+    case 22://Символ 13 и 14
+    tempReadArray[i] = settings_fix.name_of_cell[12] + ((settings_fix.name_of_cell[13]<<8)&0xFF00);
+    break;
+    case 23://Символ 15 и 16
+    tempReadArray[i] = settings_fix.name_of_cell[14] + ((settings_fix.name_of_cell[15]<<8)&0xFF00);
+    break;
+
+    case 24://Год
+    tempReadArray[i] = 0;
+    break;
+    case 25://Месяц
+    tempReadArray[i] = 0;
+    break;
+    case 26://День
+    tempReadArray[i] = 0;
+    break;
+    case 27://Час
+    tempReadArray[i] = 0;
+    break;
+    case 28://Минуты
+    tempReadArray[i] = 0;
+    break;
+    case 29://Секунды
+    tempReadArray[i] = 0;
+    break;
+    case 30://Сотые секунды
+    tempReadArray[i] = 0;
+    break;
+
+    case 31://Часовой пояс
+    tempReadArray[i] = 0;
+    break;
+    case 32://Переход на Зимнее/Летнее время
+    tempReadArray[i] = 0;
+    break;
+    case 33://Месяц перехода на Летнее время
+    tempReadArray[i] = 0;
+    break;
+    case 34://Неделя месяца перехода на Летнее время
+    tempReadArray[i] = 0;
+    break;
+    case 35://День недели перехода на Летнее время
+    tempReadArray[i] = 0;
+    break;
+    case 36://Час недели перехода на Летнее время
+    tempReadArray[i] = 0;
+    break;
+    case 37://Месяц перехода на Зимнее время
+    tempReadArray[i] = 0;
+    break;
+    case 38://Неделя месяца перехода на Зимнее время
+    tempReadArray[i] = 0;
+    break;
+    case 39://День недели перехода на Зимнее время
+    tempReadArray[i] = 0;
+    break;
+    case 40://Час недели перехода на Зимнее время
+    tempReadArray[i] = 0;
+    break;
+    case 41://Синхронизация времени
+    tempReadArray[i] = 0;
+    break;
+    case 42://Время утраты синхронизации
+    tempReadArray[i] = 0;
+    break;
+   }//switch
+  }//for
   /*
   Читання/запис здійснється з полів (коментарі додані у файлі type_definition.h для структури типу __CONFIG)
   settings_fix_prt/settings_fix/settings_fix_edit
@@ -124,54 +259,54 @@ int setPKVBigModbusRegister(int adrReg, int dataReg)
    case 0: //14000
     if(dataReg>3600) return MARKER_ERRORDIAPAZON;
     if(dataReg<30) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 1: //14001
-    return dataReg;
+   break; 
    case 2: //14002
     if(dataReg>3600) return MARKER_ERRORDIAPAZON;
     if(dataReg<60) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 3: //14003
     if(dataReg>5) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 4: //14004
-    return dataReg;
+   break; 
    case 5: //14005
     if(dataReg>6) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 6: //14006
     if(dataReg>2) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 7: //14007
     if(dataReg>2) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 8: //14008
     if(dataReg>1500) return MARKER_ERRORDIAPAZON;
     if(dataReg<15) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 9: //14009
     if(dataReg>6) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 10: //14010
     if(dataReg>2) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 11: //14011
     if(dataReg>2) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 12: //14012
     if(dataReg>1500) return MARKER_ERRORDIAPAZON;
     if(dataReg<15) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 13: //14013
     if(dataReg>247) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 14: //14014
     if(dataReg<3) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 15: //14015
    case 16: //14015
    case 17: //14015
@@ -181,74 +316,75 @@ int setPKVBigModbusRegister(int adrReg, int dataReg)
    case 21: //14015
    case 22: //14015
    case 23: //14015
-    return dataReg;
+   break; 
    case 24: //14024
     if(dataReg>99) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 25: //14025
     if(dataReg>12) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 26: //14026
     if(dataReg>31) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 27: //14027
     if(dataReg>23) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 28: //14028
    case 29: //14029
     if(dataReg>59) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 30: //14030
     if(dataReg>99) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 31: //14031
     if(dataReg>32767) dataReg -=32768;
     if(dataReg>720) return MARKER_ERRORDIAPAZON;
     if(dataReg<-720) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 32: //14032
     if(dataReg>1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 33: //14033
     if(dataReg>12) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 34: //14034
     if(dataReg>5) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 35: //14035
     if(dataReg>7) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 36: //14036
     if(dataReg>23) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 37: //14037
     if(dataReg>12) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 38: //14038
     if(dataReg>5) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 39: //14039
     if(dataReg>7) return MARKER_ERRORDIAPAZON;
     if(dataReg<1) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 40: //14040
     if(dataReg>23) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 41: //14041
     if(dataReg>2) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 42: //14042
-    return dataReg;
+   break; 
+  default: return MARKER_OUTPERIMETR;
   }//switch
 
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setPKVBigModbusBit(int adrBit, int x)
 {

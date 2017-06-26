@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 8267
+#define BEGIN_ADR_REGISTER 8917
 //макс к-во обектов
 #define TOTAL_OBJ 128
 #define REGISTER_FOR_OBJ 16
@@ -46,8 +46,68 @@ void constructorANDBigComponent(COMPONENT_OBJ *andbigcomp)
 }//prepareDVinConfig
 
 void loadANDBigActualData(void) {
+ setANDBigCountObject(); //записать к-во обектов
+
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+   __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<andbigcomponent->countObject; item++) {
+   //AND item.1 0
+   int value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+   //AND item.1 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+
+   //AND item.2 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+   //AND item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
+
+   //AND item.2 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
+   //AND item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
+
+   //AND item.2 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
+   //AND item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
+
+   //AND item.2 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
+   //AND item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
+
+   //AND item.2 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+10] = value;
+   //AND item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+11] = value;
+
+   //AND item.2 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
+   //AND item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+13] = value;
+
+   //AND item.2 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+14] = value;
+   //AND item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+15] = value;
+
+  }//for
   /*
   Для тих компонетів, де є не один однотипний вхід а декілька (ст. логіка і Журнал подій) після запису треба відсортувати щоб 0-і були вкінці, а числа(id;n; out) іншли в сторону зростання
   */
@@ -57,10 +117,9 @@ int getANDBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateANDBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateANDBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(andbigcomponent->isActiveActualData) loadANDBigActualData(); //ActualData
   andbigcomponent->isActiveActualData = 0;
+  if(privateANDBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(andbigcomponent, adrReg);
 
@@ -84,46 +143,47 @@ int setANDBigModbusRegister(int adrReg, int dataReg)
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 1:
-   return dataReg;
+   break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 3:
-   return dataReg;
+   break; 
    case 4:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 5:
-   return dataReg;
+   break; 
    case 6:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 7:
-   return dataReg;
+   break; 
    case 8:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 9:
-   return dataReg;
+   break; 
    case 10:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 11:
-   return dataReg;
+   break; 
    case 12:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 13:
-   return dataReg;
+   break; 
    case 14:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 15:
-   return dataReg;
+   break; 
+   default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//setDOUTBigModbusRegister(int adrReg)
 int setANDBigModbusBit(int adrBit, int x)
 {
@@ -135,6 +195,10 @@ int setANDBigModbusBit(int adrBit, int x)
 
 void setANDBigCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_and;                       //Кількість елементів "І"
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  andbigcomponent->countObject = cntObj;
 }//
 
 void preANDBigReadAction(void) {

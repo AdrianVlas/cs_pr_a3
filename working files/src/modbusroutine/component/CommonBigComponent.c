@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 10718
+#define BEGIN_ADR_REGISTER 13781
 //макс к-во обектов
 #define REGISTER_FOR_OBJ 10
 
@@ -44,7 +44,43 @@ void constructorCommonBigComponent(COMPONENT_OBJ *commonbigcomp)
 
 void loadCommonBigActualData(void) {
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+//   __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<commonbigcomponent->countObject; item++) {
+   //Тревога 0
+   int value = 0;//arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+   //Тревога 1
+   value = 0;//arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+
+   //Тишина 0
+   value = 0;//arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+   //Тишина 1
+   value = 0;//arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
+
+   //Блок. 0
+   value = 0;//arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
+   //Блок. 1
+   value = 0;//arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
+
+   //Тест.Вход. 0
+   value = 0;//arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
+   //Тест.Вход. 1
+   value = 0;//arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
+
+   //Тест.Сброс. 0
+   value = 0;//arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
+   //Тест.Сброс. 1
+   value = 0;//arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
+  }//for
 }//loadActualData() 
 
 int getCommonBigModbusRegister(int adrReg)
@@ -75,27 +111,28 @@ int setCommonBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
-   return dataReg;
+   break; 
    case 1:
-   return dataReg;
+   break; 
    case 2:
-   return dataReg;
+   break; 
    case 3:
-   return dataReg;
+   break; 
    case 4:
-   return dataReg;
+   break; 
    case 5:
-   return dataReg;
+   break; 
    case 6:
-   return dataReg;
+   break; 
    case 7:
-   return dataReg;
+   break; 
    case 8:
-   return dataReg;
+   break; 
    case 9:
-   return dataReg;
+   break; 
+   default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setCommonBigModbusBit(int adrBit, int x)
 {

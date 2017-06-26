@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 9299
+#define BEGIN_ADR_REGISTER 10965
 //макс к-во обектов
 #define TOTAL_OBJ 128
 #define REGISTER_FOR_OBJ 16
@@ -46,18 +46,76 @@ void constructorORBigComponent(COMPONENT_OBJ *orbigcomp)
 }//prepareDVinConfig
 
 void loadORBigActualData(void) {
+ setORBigCountObject(); //записать к-во обектов
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+   __LN_OR *arr = (__LN_OR*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<orbigcomponent->countObject; item++) {
+   //OR item.1 0
+   int value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+   //OR item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+
+   //OR item.1 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+   //OR item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
+
+   //OR item.1 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
+   //OR item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
+
+   //OR item.1 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
+   //OR item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
+
+   //OR item.1 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
+   //OR item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
+
+   //OR item.1 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+10] = value;
+   //OR item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+11] = value;
+
+   //OR item.1 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
+   //OR item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+13] = value;
+
+   //OR item.1 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+14] = value;
+   //OR item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+15] = value;
+
+   }//for
 }//loadActualData() 
 
 int getORBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateORBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateORBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(orbigcomponent->isActiveActualData) loadORBigActualData(); //ActualData
   orbigcomponent->isActiveActualData = 0;
+  if(privateORBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(orbigcomponent, adrReg);
 
@@ -81,46 +139,47 @@ int setORBigModbusRegister(int adrReg, int dataReg)
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 1:
-   return dataReg;
+   break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 3:
-   return dataReg;
+   break; 
    case 4:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 5:
-   return dataReg;
+   break; 
    case 6:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 7:
-   return dataReg;
+   break; 
    case 8:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 9:
-   return dataReg;
+   break; 
    case 10:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 11:
-   return dataReg;
+   break; 
    case 12:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 13:
-   return dataReg;
+   break; 
    case 14:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 15:
-   return dataReg;
+   break; 
+  default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setORBigModbusBit(int adrBit, int x)
 {
@@ -132,6 +191,10 @@ int setORBigModbusBit(int adrBit, int x)
 
 void setORBigCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_or;    //Кількість елементів "АБО"
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  orbigcomponent->countObject = cntObj;
 }//
 void preORBigReadAction(void) {
 //action до чтения

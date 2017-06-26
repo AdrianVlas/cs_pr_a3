@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 10589
+#define BEGIN_ADR_REGISTER 13525
 //макс к-во обектов
 #define TOTAL_OBJ 128
 #define REGISTER_FOR_OBJ 2
@@ -46,18 +46,26 @@ void constructorNOTBigComponent(COMPONENT_OBJ *notbigcomp)
 }//prepareDVinConfig
 
 void loadNOTBigActualData(void) {
+ setNOTBigCountObject(); //записать к-во обектов
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+   __LN_NOT *arr = (__LN_NOT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<notbigcomponent->countObject; item++) {
+   //NOT item.1 0
+   int value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+   //NOT item.1 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+   }//for
 }//loadActualData() 
 
 int getNOTBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateNOTBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateNOTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(notbigcomponent->isActiveActualData) loadNOTBigActualData(); //ActualData
   notbigcomponent->isActiveActualData = 0;
+  if(privateNOTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(notbigcomponent, adrReg);
 
@@ -81,11 +89,12 @@ int setNOTBigModbusRegister(int adrReg, int dataReg)
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 1:
-   return dataReg;
+   break; 
+  default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setNOTBigModbusBit(int adrBit, int x)
 {
@@ -97,6 +106,10 @@ int setNOTBigModbusBit(int adrBit, int x)
 
 void setNOTBigCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_not;   //Кількість елементів "НЕ"
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  notbigcomponent->countObject = cntObj;
 }//
 void preNOTBigReadAction(void) {
 //action до чтения

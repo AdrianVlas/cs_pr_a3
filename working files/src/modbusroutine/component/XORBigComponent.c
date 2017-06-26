@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 10331
+#define BEGIN_ADR_REGISTER 13013
 //макс к-во обектов
 #define TOTAL_OBJ 128
 #define REGISTER_FOR_OBJ 4
@@ -46,18 +46,34 @@ void constructorXORBigComponent(COMPONENT_OBJ *xorbigcomp)
 }//prepareDVinConfig
 
 void loadXORBigActualData(void) {
+ setXORBigCountObject(); //записать к-во обектов
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+   __LN_XOR *arr = (__LN_XOR*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<xorbigcomponent->countObject; item++) {
+   //XOR item.1 0
+   int value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+   //XOR item.1 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+
+   //XOR item.2 0
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+   //XOR item.2 1
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
+
+   }//for
 }//loadActualData() 
 
 int getXORBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateXORBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateXORBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(xorbigcomponent->isActiveActualData) loadXORBigActualData(); //ActualData
   xorbigcomponent->isActiveActualData = 0;
+  if(privateXORBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(xorbigcomponent, adrReg);
 
@@ -81,16 +97,17 @@ int setXORBigModbusRegister(int adrReg, int dataReg)
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 1:
-   return dataReg;
+   break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 3:
-   return dataReg;
+   break; 
+  default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setXORBigModbusBit(int adrBit, int x)
 {
@@ -102,6 +119,10 @@ int setXORBigModbusBit(int adrBit, int x)
 
 void setXORBigCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_xor;  //Кількість елементів "Викл.АБО"
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  xorbigcomponent->countObject = cntObj;
 }//
 void preXORBigReadAction(void) {
 //action до чтения

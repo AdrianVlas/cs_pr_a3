@@ -92,15 +92,15 @@ void loadCommonSmallActualData(void)
           break;
           }
         case 7://Запуск регистратора - немає
-          if(fix_block_active_state[0] & 0x1)
-                              tempReadArray[0] |= (1<<bit);
+//          if(fix_block_active_state[0] & 0x1)
+                              tempReadArray[0] |= 0;//(1<<bit);
           break;
         case 8://Пропуск
           tempReadArray[0] |= 0;
           break;
         case 9://Ключ управления местное\дистанционное -немає
-          if(fix_block_active_state[0] & 0x1)
-                              tempReadArray[0] |= (1<<bit);
+//          if(fix_block_active_state[0] & 0x1)
+                              tempReadArray[0] |= 0;//(1<<bit);
           break;
         case 10://Пропуск
         case 11://Пропуск
@@ -169,9 +169,10 @@ int setCommonSmallModbusRegister(int adrReg, int dataReg)
     case 0:
       return MARKER_ERRORPERIMETR;
     case 1:
-      return dataReg;
+   break; 
+   default: return MARKER_OUTPERIMETR;
     }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDVModbusRegister(int adrReg)
 int setCommonSmallModbusBit(int adrBit, int dataBit)
 {

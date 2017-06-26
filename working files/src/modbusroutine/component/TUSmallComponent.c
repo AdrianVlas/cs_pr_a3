@@ -1,9 +1,9 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 508
+#define BEGIN_ADR_REGISTER 208
 //начальный bit в карте памяти
-#define BEGIN_ADR_BIT 21128
+#define BEGIN_ADR_BIT 18128
 #define BIT_FOR_OBJ 1
 //макс к-во обектов
 #define TOTAL_OBJ 128
@@ -49,18 +49,31 @@ void constructorTUSmallComponent(COMPONENT_OBJ *tusmallcomp)
 }//prepareDVinConfig
 
 void loadTUSmallActualData(void) {
+ setTUSmallCountObject(); //записать к-во обектов
+
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  int cnt_treg = tusmallcomponent->countObject/16;
+  if(tusmallcomponent->countObject%16) cnt_treg++;
+  for(int ii=0; ii<cnt_treg; ii++) tempReadArray[ii] = 0;
+   __LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
+  for(int item=0; item<tusmallcomponent->countObject; item++) {
+   int ireg = item/16;
+
+   int value = arr[item].active_state[TU_OUT  >> 3] & (1 << (TU_OUT  & ((1 << 3) - 1)));
+   
+   int tudata = 0;
+   if(value) tudata=1;
+   tempReadArray[ireg] |= (tudata&0x1)<<(item%16);
+  }//for
 }//loadActualData() 
 
 int getTUSmallModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateTUSmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateTUSmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(tusmallcomponent->isActiveActualData) loadTUSmallActualData(); //ActualData
   tusmallcomponent->isActiveActualData = 0;
+  if(privateTUSmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tusmallcomponent, adrReg);
 
@@ -70,10 +83,9 @@ int getTUSmallModbusBit(int adrBit)
 {
   //получить содержимое bit
   if(privateTUSmallGetBit2(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateTUSmallGetBit1(adrBit)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(tusmallcomponent->isActiveActualData) loadTUSmallActualData();
   tusmallcomponent->isActiveActualData = 0;
+  if(privateTUSmallGetBit1(adrBit)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tusmallcomponent, adrBit);
 
@@ -99,6 +111,10 @@ int setTUSmallModbusBit(int adrBit, int x)
 
 void setTUSmallCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_tu;    //Кількість блоків сигналізацій
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  tusmallcomponent->countObject = 16;//cntObj;
 }//
 void preTUSmallReadAction(void) {
 //action до чтения

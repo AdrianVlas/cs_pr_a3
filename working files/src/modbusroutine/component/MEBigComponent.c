@@ -1,10 +1,13 @@
 #include "header.h"
 
 //начальный регистр в карте пам€ти
-#define BEGIN_ADR_REGISTER 11000
+#define BEGIN_ADR_REGISTER 15000
 //макс к-во обектов
-#define REGISTER_FOR_OBJ 132
+#define REGISTER_FOR_OBJ 2
+//макс к-во обектов
+#define TOTAL_OBJ 128
 
+int privateMEBigGetReg1(int adrReg);
 int privateMEBigGetReg2(int adrReg);
 
 int getMEBigModbusRegister(int);//получить содержимое регистра
@@ -12,6 +15,7 @@ int getMEBigModbusBit(int);//получить содержимое бита
 int setMEBigModbusRegister(int, int);//получить содержимое регистра
 int setMEBigModbusBit(int, int);//получить содержимое бита
 
+void setMEBigCountObject(void);
 void preMEBigReadAction(void);//action до чтени€
 void postMEBigReadAction(void);//action после чтени€
 void preMEBigWriteAction(void);//action до записи
@@ -27,7 +31,7 @@ void constructorMEBigComponent(COMPONENT_OBJ *mebigcomp)
 {
   mebigcomponent = mebigcomp;
 
-  mebigcomponent->countObject = 1;//к-во обектов
+  mebigcomponent->countObject = 0;//к-во обектов
 
   mebigcomponent->getModbusRegister = getMEBigModbusRegister;//получить содержимое регистра
   mebigcomponent->getModbusBit      = getMEBigModbusBit;//получить содержимое регистра
@@ -43,17 +47,33 @@ void constructorMEBigComponent(COMPONENT_OBJ *mebigcomp)
 }//prepareDVinConfig
 
 void loadMEBigActualData(void) {
+ setMEBigCountObject(); //записать к-во обектов
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+//   __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   //ќчистить журнал 0
+   int value = 0;//arr[item].settings.param[0];
+   tempReadArray[0] = value;
+   //ќчистить журнал 1
+   value = 0;//arr[item].settings.param[1];
+   tempReadArray[1] = value;
+
+   for(int item=0; item<mebigcomponent->countObject; item++) {
+   //¬ход item 0
+   value = 0;//arr[item].settings.param[0];
+   tempReadArray[2+item*REGISTER_FOR_OBJ+0] = value;
+   //¬ход item 1
+   value = 0;//arr[item].settings.param[1];
+   tempReadArray[2+item*REGISTER_FOR_OBJ+1] = value;
+  }//for
 }//loadActualData() 
 
 int getMEBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateMEBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-
   if(mebigcomponent->isActiveActualData) loadMEBigActualData(); //ActualData
   mebigcomponent->isActiveActualData = 0;
+  if(privateMEBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(mebigcomponent, adrReg);
 
@@ -65,6 +85,14 @@ int getMEBigModbusBit(int adrBit)
   superSetOperativMarker(mebigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
+
+void setMEBigCountObject(void) {
+//записать к-во обектов
+  int cntObj = current_config.n_log;    // ≥льк≥сть субмодул≥в ∆урналу под≥й
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  mebigcomponent->countObject = cntObj;
+}//
 int setMEBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
@@ -73,7 +101,7 @@ int setMEBigModbusRegister(int adrReg, int dataReg)
   superSetOperativMarker(mebigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
 
-  return dataReg;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setMEBigModbusBit(int adrBit, int x)
 {
@@ -107,10 +135,17 @@ void postMEBigWriteAction(void) {
 //  if(mebigcomponent->operativMarker[1]<0) countRegister = 1;
 }//
 
+int privateMEBigGetReg1(int adrReg)
+{
+  //проверить внутренний периметр
+  int count_register = 2+mebigcomponent->countObject*REGISTER_FOR_OBJ;
+  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
+  return MARKER_OUTPERIMETR;
+}//privateGetReg2(int adrReg)
 int privateMEBigGetReg2(int adrReg)
 {
   //проверить внешний периметр
-  int count_register = REGISTER_FOR_OBJ;
+  int count_register = 2+TOTAL_OBJ*REGISTER_FOR_OBJ;
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)

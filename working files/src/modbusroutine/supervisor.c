@@ -105,7 +105,7 @@ rprAdresRegister[6] = 6;
       int adrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int cntBit  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       int cntByte = (unsigned int)inputPacket[6];
-      if(cntBit>125) return;//слишком длинный пакет
+      if(cntBit>125*16) return;//слишком длинный пакет
       //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit<<" cntBit="<<cntBit;
       for(int i=0; i<cntByte; i++) 
               tempReadArray[i] = (unsigned short)(inputPacket[7+i]);

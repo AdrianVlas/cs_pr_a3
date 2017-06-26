@@ -47,8 +47,17 @@ void constructorDVBigComponent(COMPONENT_OBJ *dvbigcomp)
 }//prepareDVinConfig
 
 void loadDVBigActualData(void) {
+ setDVBigCountObject(); //записать к-во обектов
+
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+   __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<dvbigcomponent->countObject; item++) {
+   int value = (((arr[item].settings.control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) !=0) << 0) | (1 << 1) | ((V110_V220 != 0) << 2);
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+   value = arr[item].settings.set_delay[INPUT_SET_DELAY_DOPUSK];
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+  }//for
+
   /*
   1. Адресу потрібного елементу вибраного функціонального блоку визначаємо як і для Small
   2. Якщо працюємо з структурою ***_prt, то тип береться __LN_XXX у всіх інших випадках тип береться __settings_for_ххх
@@ -77,10 +86,9 @@ int getDVBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateDVBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-//  if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(dvbigcomponent->isActiveActualData) loadDVBigActualData(); //ActualData
   dvbigcomponent->isActiveActualData = 0;
+  if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(dvbigcomponent, adrReg);
 
@@ -103,12 +111,13 @@ int setDVBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
-   return dataReg;
+   break; 
    case 1:
     if(dataReg>60) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
+  default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setDVBigModbusBit(int adrBit, int x)
 {
@@ -120,9 +129,10 @@ int setDVBigModbusBit(int adrBit, int x)
 
 void setDVBigCountObject(void) {
 //записать к-во обектов
-//  if(cntObj<0) return;
-//  if(cntObj>TOTAL_OBJ) return;
-//  dvbigcomponent->countObject = cntObj;
+  int cntObj = current_config.n_input; //Кількість дискретних входів
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  dvbigcomponent->countObject = cntObj;
 }//
 void preDVBigReadAction(void) {
 //action до чтения
@@ -155,17 +165,17 @@ void postDVBigWriteAction(void) {
 */
 }//
 
-int privateDVBigGetReg2(int adrReg)
+int privateDVBigGetReg1(int adrReg)
 {
   //проверить внутренний периметр
   int count_register = dvbigcomponent->countObject*REGISTER_FOR_OBJ;
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg1(int adrReg)
-//int privateDVBigGetReg2(int adrReg)
-//{
+int privateDVBigGetReg2(int adrReg)
+{
   //проверить внешний периметр
-//  int count_register = TOTAL_OBJ*REGISTER_FOR_OBJ;
-//  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
-//  return MARKER_OUTPERIMETR;
-//}//privateGetReg2(int adrReg)
+  int count_register = TOTAL_OBJ*REGISTER_FOR_OBJ;
+  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
+  return MARKER_OUTPERIMETR;
+}//privateGetReg2(int adrReg)

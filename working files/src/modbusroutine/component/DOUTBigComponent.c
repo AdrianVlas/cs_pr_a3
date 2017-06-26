@@ -29,7 +29,7 @@ COMPONENT_OBJ *doutbigcomponent;
 void constructorDOUTBigComponent(COMPONENT_OBJ *doutcomp)
 {
   doutbigcomponent = doutcomp;
-  doutbigcomponent->countObject = 8;//к-во обектов
+  doutbigcomponent->countObject = 0;//к-во обектов
 
   doutbigcomponent->getModbusRegister = getDOUTBigModbusRegister;//получить содержимое регистра
   doutbigcomponent->getModbusBit      = getDOUTBigModbusBit;//получить содержимое бита
@@ -45,8 +45,39 @@ void constructorDOUTBigComponent(COMPONENT_OBJ *doutcomp)
 }//prepareDVinConfig
 
 void loadDOUTBigActualData(void) {
+ setDOUTBigCountObject(); //записать к-во обектов
+
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  __LN_OUTPUT_LED *arr = (__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<doutbigcomponent->countObject; item++) {
+   int value = arr[item].settings.control;//Параметры ДВых. item
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+
+   value = arr[item].settings.param[OUTPUT_LED_LOGIC_INPUT] & 0xffff;//RIN0 ДВых. item
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+   value = (arr[item].settings.param[OUTPUT_LED_LOGIC_INPUT] >> 16) & 0x7fff;//RIN1 ДВых. item
+   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+
+   value = arr[item].settings.param[OUTPUT_LED_RESET] & 0xffff;//Reset0 ДВых. item
+   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
+   value = (arr[item].settings.param[OUTPUT_LED_RESET] >> 16) & 0x7fff;//Reset1 ДВых. item
+   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
+
+   value = arr[item].settings.param[OUTPUT_LED_BL_IMP] & 0xffff;//BL-IMP0 ДВых. item
+   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
+   value = (arr[item].settings.param[OUTPUT_LED_BL_IMP] >> 16) & 0x7fff;//BL-IMP1 ДВых. item
+   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
+
+   value = arr[item].settings.param[OUTPUT_LED_MEANDER1] & 0xffff;//C1/C2 0 ДВых. item
+   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
+   value = (arr[item].settings.param[OUTPUT_LED_MEANDER1] >> 16) & 0x7fff;//C1/C2 1 ДВых item
+   tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
+
+   value = arr[item].settings.param[OUTPUT_LED_MEANDER2] & 0xffff;//Генератор С1 0 Имп.ДВых item
+   tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
+   value = (arr[item].settings.param[OUTPUT_LED_MEANDER2] >> 16) & 0x7fff;//Генератор С1 1 Имп.ДВых. item
+   tempReadArray[item*REGISTER_FOR_OBJ+10] = value;
+  }//for
   /*
   ...
   
@@ -58,10 +89,9 @@ int getDOUTBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateDOUTBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-//  if(privateDOUTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(doutbigcomponent->isActiveActualData) loadDOUTBigActualData(); //ActualData
   doutbigcomponent->isActiveActualData = 0;
+  if(privateDOUTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(doutbigcomponent, adrReg);
 
@@ -84,34 +114,35 @@ int setDOUTBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
-   return dataReg;
+   break; 
    case 1:
 //    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 2:
-   return dataReg;
+   break; 
    case 3:
 //    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 4:
-   return dataReg;
+   break; 
    case 5:
 //    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 6:
-   return dataReg;
+   break; 
    case 7:
 //    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 8:
-   return dataReg;
+   break; 
    case 9:
 //    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 10:
-   return dataReg;
+   break; 
+  default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setDOUTBigModbusBit(int adrReg, int x)
 {
@@ -123,9 +154,10 @@ int setDOUTBigModbusBit(int adrReg, int x)
 
 void setDOUTBigCountObject(void) {
 //записать к-во обектов
-//  if(cntObj<0) return;
-//  if(cntObj>TOTAL_OBJ) return;
-//  doutbigcomponent->countObject = cntObj;
+  int cntObj = current_config.n_output; //Кількість дискретних виходів
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  doutbigcomponent->countObject = cntObj;
 }//
 void preDOUTBigReadAction(void) {
 //action до чтения
@@ -158,17 +190,17 @@ void postDOUTBigWriteAction(void) {
 */
 }//
 
-int privateDOUTBigGetReg2(int adrReg)
+int privateDOUTBigGetReg1(int adrReg)
 {
   //проверить внутренний периметр
   int count_register = doutbigcomponent->countObject*REGISTER_FOR_OBJ;
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg1(int adrReg)
-//int privateDOUTBigGetReg2(int adrReg)
-//{
+int privateDOUTBigGetReg2(int adrReg)
+{
   //проверить внешний периметр
-//  int count_register = TOTAL_OBJ*REGISTER_FOR_OBJ;
-//  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
-//  return MARKER_OUTPERIMETR;
-//}//privateGetReg2(int adrReg)
+  int count_register = TOTAL_OBJ*REGISTER_FOR_OBJ;
+  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
+  return MARKER_OUTPERIMETR;
+}//privateGetReg2(int adrReg)

@@ -2,7 +2,7 @@
 
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 800
-#define REGISTER_FOR_OBJ 15
+#define REGISTER_FOR_OBJ 16
 
 int getConfigBigModbusRegister(int);//получить содержимое регистра
 int getConfigBigModbusBit(int);//получить содержимое бита
@@ -42,7 +42,61 @@ void constructorConfigBigComponent(COMPONENT_OBJ *configbigcomp)
 
 void loadConfigBigActualData(void) {
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+//  if (
+//      (config_settings_modified &
+//     )
+  for(int i=0; i<REGISTER_FOR_OBJ; i++) {
+   switch(i) {
+   case 0: //AND
+    tempReadArray[i] = current_config.n_and;
+   break;
+   case 1: //OR
+    tempReadArray[i] = current_config.n_or;
+   break;
+   case 2: //XOR
+    tempReadArray[i] = current_config.n_xor;
+   break;
+   case 3: //NOT
+    tempReadArray[i] = current_config.n_not;
+   break;
+   case 4: //D-trg
+    tempReadArray[i] = current_config.n_trigger;
+   break;
+   case 5: //GI
+    tempReadArray[i] = current_config.n_meander;
+   break;
+   case 6: //MFT
+    tempReadArray[i] = current_config.n_timer;
+   break;
+   case 7: //SZS
+    tempReadArray[i] = current_config.n_alarm;
+   break;
+   case 8: //ШГС
+    tempReadArray[i] = current_config.n_group_alarm;
+   break;
+   case 9: //TS
+    tempReadArray[i] = current_config.n_ts;
+   break;
+   case 10: //TU
+    tempReadArray[i] = current_config.n_tu;
+   break;
+   case 11: //субмодули журнала
+    tempReadArray[i] = current_config.n_log;
+   break;
+   case 12: //GOOSE in
+    tempReadArray[i] = 0;
+   break;
+   case 13: //GOOSE out
+    tempReadArray[i] = 0;
+   break;
+   case 14: //MMS in
+    tempReadArray[i] = 0;
+   break;
+   case 15: //MMS out
+    tempReadArray[i] = 0;
+   break;
+   }//switch
+  }//for
   /*
 unsigned int config_settings_modified  
   
@@ -108,7 +162,7 @@ int setConfigBigModbusRegister(int adrReg, int dataReg)
   superSetOperativMarker(configbigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
   if(dataReg>128) return MARKER_ERRORDIAPAZON;
-  return dataReg;
+  return 0;
 }//getDVModbusRegister(int adrReg)
 int setConfigBigModbusBit(int adrBit, int x)
 {

@@ -1,9 +1,9 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 500
+#define BEGIN_ADR_REGISTER 200
 //начальный bit в карте памяти
-#define BEGIN_ADR_BIT 21000
+#define BEGIN_ADR_BIT 18000
 #define BIT_FOR_OBJ 1
 //макс к-во обектов
 #define TOTAL_OBJ 128
@@ -55,10 +55,10 @@ void loadTSSmallActualData(void) {
   int cnt_treg = tssmallcomponent->countObject/16;
   if(tssmallcomponent->countObject%16) cnt_treg++;
   for(int ii=0; ii<cnt_treg; ii++) tempReadArray[ii] = 0;
+   __LN_TS *arr = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
   for(int item=0; item<tssmallcomponent->countObject; item++) {
    int ireg = item/16;
 
-   __LN_TS *arr = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
    int value = arr[item].active_state[TU_OUT  >> 3] & (1 << (TU_OUT  & ((1 << 3) - 1)));
    
    int tsdata = 0;
@@ -90,10 +90,9 @@ int getTSSmallModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateTSSmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateTSSmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(tssmallcomponent->isActiveActualData) loadTSSmallActualData(); //ActualData
   tssmallcomponent->isActiveActualData = 0;
+  if(privateTSSmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tssmallcomponent, adrReg);
 
@@ -103,10 +102,9 @@ int getTSSmallModbusBit(int adrBit)
 {
   //получить содержимое bit
   if(privateTSSmallGetBit2(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateTSSmallGetBit1(adrBit)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(tssmallcomponent->isActiveActualData) loadTSSmallActualData();
   tssmallcomponent->isActiveActualData = 0;
+  if(privateTSSmallGetBit1(adrBit)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tssmallcomponent, adrBit);
 
@@ -132,10 +130,10 @@ int setTSSmallModbusBit(int adrBit, int x)
 
 void setTSSmallCountObject(void) {
 //записать к-во обектов
-  int cntObj = current_config.n_alarm;    //Кількість блоків сигналізацій
+  int cntObj = current_config.n_ts;    //Кількість блоків сигналізацій
   if(cntObj<0) return;
   if(cntObj>TOTAL_OBJ) return;
-  tssmallcomponent->countObject = cntObj;
+  tssmallcomponent->countObject = 16;//cntObj;
 }//
 void preTSSmallReadAction(void) {
 //action до чтения

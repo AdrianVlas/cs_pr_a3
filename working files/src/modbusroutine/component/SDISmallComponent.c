@@ -1,9 +1,9 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 400
+#define BEGIN_ADR_REGISTER 500
 //начальный bit в карте памяти
-#define BEGIN_ADR_BIT 20000
+#define BEGIN_ADR_BIT 21000
 #define BIT_FOR_OBJ 1
 //макс к-во обектов
 #define TOTAL_OBJ 128
@@ -55,9 +55,9 @@ void loadSDISmallActualData(void) {
    int cnt_treg = sdismallcomponent->countObject/16;
    if(sdismallcomponent->countObject%16) cnt_treg++;
    for(int ii=0; ii<cnt_treg; ii++) tempReadArray[ii] = 0;
+  __LN_OUTPUT_LED *arr = (__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
    for(int item=0; item<sdismallcomponent->countObject; item++) {
    int ireg = item/16;
-  __LN_OUTPUT_LED *arr = (__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
    int value = arr[item].active_state[OUTPUT_LED_OUT >> 3] & (1 << (OUTPUT_LED_OUT & ((1 << 3) - 1)));
    int sdidata = 0;
    if(value) sdidata=1;
@@ -69,10 +69,9 @@ int getSDISmallModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateSDISmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-//  if(privateSDISmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(sdismallcomponent->isActiveActualData) loadSDISmallActualData(); //ActualData
   sdismallcomponent->isActiveActualData = 0;
+  if(privateSDISmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(sdismallcomponent, adrReg);
 
@@ -82,10 +81,9 @@ int getSDISmallModbusBit(int adrBit)
 {
   //получить содержимое регистра
   if(privateSDISmallGetBit2(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-//  if(privateSDISmallGetBit1(adrBit)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(sdismallcomponent->isActiveActualData) loadSDISmallActualData();
   sdismallcomponent->isActiveActualData = 0;
+  if(privateSDISmallGetBit1(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(sdismallcomponent, adrBit);
 
@@ -136,7 +134,7 @@ void postSDISmallWriteAction(void) {
 //action после записи
 }//
 
-int privateSDISmallGetReg2(int adrReg)
+int privateSDISmallGetReg1(int adrReg)
 {
   //проверить внутренний периметр
   int count_register = sdismallcomponent->countObject/16;
@@ -145,16 +143,16 @@ int privateSDISmallGetReg2(int adrReg)
   return MARKER_OUTPERIMETR;
 }//privateGetReg1(int adrReg)
 
-//int privateSDISmallGetReg2(int adrReg)
-//{
+int privateSDISmallGetReg2(int adrReg)
+{
   //проверить внешний периметр
-//  int count_register = TOTAL_OBJ/16;
-//  if(TOTAL_OBJ%16) count_register++;
-//  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
-//  return MARKER_OUTPERIMETR;
-//}//privateGetReg2(int adrReg)
+  int count_register = TOTAL_OBJ/16;
+  if(TOTAL_OBJ%16) count_register++;
+  if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
+  return MARKER_OUTPERIMETR;
+}//privateGetReg2(int adrReg)
 
-int privateSDISmallGetBit2(int adrBit)
+int privateSDISmallGetBit1(int adrBit)
 {
   //проверить внутренний периметр
   int count_bit = BIT_FOR_OBJ*sdismallcomponent->countObject;
@@ -162,10 +160,10 @@ int privateSDISmallGetBit2(int adrBit)
   return MARKER_OUTPERIMETR;
 }//privateGetReg1(int adrReg)
 
-//int privateSDISmallGetBit2(int adrBit)
-//{
+int privateSDISmallGetBit2(int adrBit)
+{
   //проверить внешний периметр
-//  int count_bit = BIT_FOR_OBJ*TOTAL_OBJ;
-//  if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
-//  return MARKER_OUTPERIMETR;
-//}//privateGetReg2(int adrReg)
+  int count_bit = BIT_FOR_OBJ*TOTAL_OBJ;
+  if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
+  return MARKER_OUTPERIMETR;
+}//privateGetReg2(int adrReg)

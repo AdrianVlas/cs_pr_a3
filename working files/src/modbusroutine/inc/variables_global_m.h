@@ -6,7 +6,7 @@
 #include "prototyps.h"
 
  COMPONENT_OBJ config_array[TOTAL_COMPONENT];
- short tempReadArray[1600];
+ short tempReadArray[2050];
  short tempWriteArray[MAXIMUMTW];
  int   indexTW;//индекс буфера записи
  short rprAdresRegister[130];//хранилище адресов пользовательских регистров

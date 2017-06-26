@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 4408
+#define BEGIN_ADR_REGISTER 4664
 #define REGISTER_FOR_OBJ 6
 
 int getRESDBigModbusRegister(int);//получить содержимое регистра
@@ -82,21 +82,22 @@ int setRESDBigModbusRegister(int adrReg, int dataReg)
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 1:
-   return dataReg;
+   break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 3:
-   return dataReg;
+   break; 
    case 4:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 5:
-   return dataReg;
+   break; 
+  default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDVModbusRegister(int adrReg)
 int setRESDBigModbusBit(int adrBit, int x)
 {

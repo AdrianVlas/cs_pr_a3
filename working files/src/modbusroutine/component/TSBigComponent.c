@@ -1,10 +1,10 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 7753
+#define BEGIN_ADR_REGISTER 7894
 //макс к-во обектов
 #define TOTAL_OBJ 128
-#define REGISTER_FOR_OBJ 4
+#define REGISTER_FOR_OBJ 5
 
 int privateTSBigGetReg1(int adrReg);
 int privateTSBigGetReg2(int adrReg);
@@ -46,18 +46,40 @@ void constructorTSBigComponent(COMPONENT_OBJ *tsbigcomp)
 }//prepareDVinConfig
 
 void loadTSBigActualData(void) {
+ setTSBigCountObject(); //записать к-во обектов
+
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+   __LN_TS *arr = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<tsbigcomponent->countObject; item++) {
+
+   //In TC 0  item
+   int value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+   //In TC 0  item
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+
+   //Block TC 0  item
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+   //Block TC 1  item
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
+
+   //Адрес ТС 0  item
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
+
+   }//for
 }//loadActualData() 
 
 int getTSBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateTSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateTSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(tsbigcomponent->isActiveActualData) loadTSBigActualData(); //ActualData
   tsbigcomponent->isActiveActualData = 0;
+  if(privateTSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tsbigcomponent, adrReg);
 
@@ -81,16 +103,17 @@ int setTSBigModbusRegister(int adrReg, int dataReg)
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 1:
-   return dataReg;
+   break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 3:
-   return dataReg;
+   break; 
+  default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setTSBigModbusBit(int adrBit, int x)
 {
@@ -102,6 +125,10 @@ int setTSBigModbusBit(int adrBit, int x)
 
 void setTSBigCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_ts;    //Кількість блоків сигналізацій
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  tsbigcomponent->countObject = cntObj;
 }//
 void preTSBigReadAction(void) {
 //action до чтения

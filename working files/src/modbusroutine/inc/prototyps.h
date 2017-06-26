@@ -23,7 +23,7 @@ void constructorDOUTSmallComponent(COMPONENT_OBJ *);
 void constructorDOUTBigComponent(COMPONENT_OBJ *);
 void constructorSDISmallComponent(COMPONENT_OBJ *);
 void constructorSDIBigComponent(COMPONENT_OBJ *);
-void constructorSDI2ColorSmallComponent(COMPONENT_OBJ *);
+void constructorRMTKeySmallComponent(COMPONENT_OBJ *);
 void constructorSDI3ColorSmallComponent(COMPONENT_OBJ *);
 void constructorConfigBigComponent(COMPONENT_OBJ *);
 void constructorRESDBigComponent(COMPONENT_OBJ *);

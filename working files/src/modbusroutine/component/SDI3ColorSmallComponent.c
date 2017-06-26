@@ -1,9 +1,9 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 498
+#define BEGIN_ADR_REGISTER 598
 //начальный bit в карте памяти
-#define BEGIN_ADR_BIT 20968
+#define BEGIN_ADR_BIT 21968
 #define REGISTER_FOR_OBJ 1
 #define BIT_FOR_OBJ 3
 

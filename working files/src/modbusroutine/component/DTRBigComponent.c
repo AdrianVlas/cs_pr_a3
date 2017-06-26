@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте пам€ти
-#define BEGIN_ADR_REGISTER 6734
+#define BEGIN_ADR_REGISTER 6875
 //макс к-во обектов
 #define TOTAL_OBJ 128
 #define REGISTER_FOR_OBJ 8
@@ -30,7 +30,7 @@ void constructorDTRBigComponent(COMPONENT_OBJ *dtrbigcomp)
 {
   dtrbigcomponent = dtrbigcomp;
 
-  dtrbigcomponent->countObject = 128;//к-во обектов
+  dtrbigcomponent->countObject = 0;//к-во обектов
 
   dtrbigcomponent->getModbusRegister = getDTRBigModbusRegister;//получить содержимое регистра
   dtrbigcomponent->getModbusBit      = getDTRBigModbusBit;//получить содержимое бита
@@ -46,18 +46,49 @@ void constructorDTRBigComponent(COMPONENT_OBJ *dtrbigcomp)
 }//prepareDVinConfig
 
 void loadDTRBigActualData(void) {
+ setDTRBigCountObject(); //записать к-во обектов
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+   __LN_TRIGGER *arr = (__LN_TRIGGER*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<dtrbigcomponent->countObject; item++) {
+
+   //Set D-T 0  item
+   int value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+   //Set D-T 1  item
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+
+   //CLR D-T 0  item
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+   //CLR D-T 1  item
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
+
+   //D D-T 0  item
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
+   //D D-T 1  item
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
+
+   //C D-T 0  item
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
+   //C D-T 1  item
+   value = arr[item].settings.param[1];
+   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
+
+   }//for
 }//loadActualData() 
 
 int getDTRBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateDTRBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateDTRBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(dtrbigcomponent->isActiveActualData) loadDTRBigActualData(); //ActualData
   dtrbigcomponent->isActiveActualData = 0;
+  if(privateDTRBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(dtrbigcomponent, adrReg);
 
@@ -81,26 +112,27 @@ int setDTRBigModbusRegister(int adrReg, int dataReg)
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 1:
-   return dataReg;
+   break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 3:
-   return dataReg;
+   break; 
    case 4:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 5:
-   return dataReg;
+   break; 
    case 6:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 7:
-   return dataReg;
+   break; 
+   default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setDTRBigModbusBit(int adrBit, int x)
 {
@@ -112,6 +144,10 @@ int setDTRBigModbusBit(int adrBit, int x)
 
 void setDTRBigCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_trigger;    // ≥льк≥сть триіер≥в
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  dtrbigcomponent->countObject = cntObj;
 }//
 void preDTRBigReadAction(void) {
 //action до чтени€

@@ -73,7 +73,7 @@ int setRPOBigModbusRegister(int adrReg, int dataReg)
   superSetOperativMarker(rpobigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
 
-  return dataReg;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setRPOBigModbusBit(int adrBit, int x)
 {

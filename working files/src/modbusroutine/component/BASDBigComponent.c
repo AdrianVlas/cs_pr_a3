@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 4413
+#define BEGIN_ADR_REGISTER 4670
 #define REGISTER_FOR_OBJ 6
 
 int getBASDBigModbusRegister(int);//получить содержимое регистра
@@ -43,7 +43,24 @@ void constructorBASDBigComponent(COMPONENT_OBJ *basdbigcomp)
 
 void loadBASDBigActualData(void) {
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  __SETTINGS_FIX *arr = &settings_fix_prt;
+
+  int value;
+  value = arr->param[FIX_BLOCK_BLOCK] & 0xffff;//RIN0 ДВых. item
+//  tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+  value = (arr->param[FIX_BLOCK_BLOCK] >> 16) & 0x7fff;//RIN1 ДВых. item
+//  tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+
+  value = arr->param[FIX_BLOCK_ALARM] & 0xffff;//RIN0 ДВых. item
+//  tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+  value = (arr->param[FIX_BLOCK_ALARM] >> 16) & 0x7fff;//RIN1 ДВых. item
+//  tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+
+  value = arr->param[FIX_BLOCK_MUTE] & 0xffff;//RIN0 ДВых. item
+//  tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+  value = (arr->param[FIX_BLOCK_MUTE] >> 16) & 0x7fff;//RIN1 ДВых. item
+//  tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+  //  for(int i=0; i<100; i++) tempReadArray[i] = i;
 }//loadActualData() 
 
 int getBASDBigModbusRegister(int adrReg)
@@ -74,19 +91,20 @@ int setBASDBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
-   return dataReg;
+   break; 
    case 1:
-   return dataReg;
+   break; 
    case 2:
-   return dataReg;
+   break; 
    case 3:
-   return dataReg;
+   break; 
    case 4:
-   return dataReg;
+   break; 
    case 5:
-   return dataReg;
+   break; 
+   default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//setDVModbusRegister(int adrReg)
 int setBASDBigModbusBit(int adrBit, int x)
 {

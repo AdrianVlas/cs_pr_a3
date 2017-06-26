@@ -44,7 +44,7 @@ void constructorYustBigComponent(COMPONENT_OBJ *yustbigcomp)
 
 void loadYustBigActualData(void) {
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  for(int i=0; i<REGISTER_FOR_OBJ; i++) tempReadArray[i] = ustuvannja[i];
   /*
   масиви юстування знаходиться у 
   ustuvannja_meas - працює вимірювальна система (не рухати!)
@@ -102,7 +102,7 @@ int setYustBigModbusRegister(int adrReg, int dataReg)
   superSetOperativMarker(yustbigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
 
-  return dataReg;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setYustBigModbusBit(int adrBit, int x)
 {

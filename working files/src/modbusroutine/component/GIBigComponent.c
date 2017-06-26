@@ -1,10 +1,10 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 4418
+#define BEGIN_ADR_REGISTER 4676
 //макс к-во обектов
 #define TOTAL_OBJ 128
-#define REGISTER_FOR_OBJ 2
+#define REGISTER_FOR_OBJ 1
 
 int privateGIBigGetReg1(int adrReg);
 int privateGIBigGetReg2(int adrReg);
@@ -46,18 +46,24 @@ void constructorGIBigComponent(COMPONENT_OBJ *gibigcomp)
 }//prepareDVinConfig
 
 void loadGIBigActualData(void) {
+ setGIBigCountObject(); //записать к-во обектов
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+   __LN_MEANDER *arr = (__LN_MEANDER*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<gibigcomponent->countObject; item++) {
+
+   int value = arr[item].settings.set_delay[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+   }//for
+
 }//loadActualData() 
 
 int getGIBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateGIBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateGIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(gibigcomponent->isActiveActualData) loadGIBigActualData(); //ActualData
   gibigcomponent->isActiveActualData = 0;
+  if(privateGIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(gibigcomponent, adrReg);
 
@@ -80,13 +86,14 @@ int setGIBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
-   return dataReg;
+   break; 
    case 1:
     if(dataReg>100) return MARKER_ERRORDIAPAZON;
     if(dataReg<5) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
+  default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setGIBigModbusBit(int adrBit, int x)
 {
@@ -98,6 +105,10 @@ int setGIBigModbusBit(int adrBit, int x)
 
 void setGIBigCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_meander;  //Кількість генераторів меандру
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  gibigcomponent->countObject = cntObj;
 }//
 void preGIBigReadAction(void) {
 //action до чтения

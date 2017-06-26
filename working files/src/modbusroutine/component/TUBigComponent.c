@@ -1,10 +1,10 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 8010
+#define BEGIN_ADR_REGISTER 8533
 //макс к-во обектов
 #define TOTAL_OBJ 128
-#define REGISTER_FOR_OBJ 4
+#define REGISTER_FOR_OBJ 3
 
 int privateTUBigGetReg1(int adrReg);
 int privateTUBigGetReg2(int adrReg);
@@ -46,18 +46,32 @@ void constructorTUBigComponent(COMPONENT_OBJ *tubigcomp)
 }//prepareDVinConfig
 
 void loadTUBigActualData(void) {
+ setTUBigCountObject(); //записать к-во обектов
+
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+   __LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
+   for(int item=0; item<tubigcomponent->countObject; item++) {
+
+   //Block ТУ 0  item
+   int value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+   //Block ТУ 0  item
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+
+   //Адрес ТУ 0  item
+   value = arr[item].settings.param[0];
+   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+   }//for
 }//loadActualData() 
 
 int getTUBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateTUBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateTUBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
   if(tubigcomponent->isActiveActualData) loadTUBigActualData(); //ActualData
   tubigcomponent->isActiveActualData = 0;
+  if(privateTUBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tubigcomponent, adrReg);
 
@@ -81,16 +95,17 @@ int setTUBigModbusRegister(int adrReg, int dataReg)
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 1:
-   return dataReg;
+   break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-    return dataReg;
+   break; 
    case 3:
-   return dataReg;
+   break; 
+  default: return MARKER_OUTPERIMETR;
   }//switch
-  return MARKER_OUTPERIMETR;
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setTUBigModbusBit(int adrBit, int x)
 {
@@ -102,6 +117,10 @@ int setTUBigModbusBit(int adrBit, int x)
 
 void setTUBigCountObject(void) {
 //записать к-во обектов
+  int cntObj = current_config.n_tu;    //Кількість блоків сигналізацій
+  if(cntObj<0) return;
+  if(cntObj>TOTAL_OBJ) return;
+  tubigcomponent->countObject = cntObj;
 }//
 void preTUBigReadAction(void) {
 //action до чтения
