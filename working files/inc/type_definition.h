@@ -88,6 +88,7 @@ typedef struct
 **********/
 typedef struct
 {
+  uint32_t n_iteration;                                         //Кількість ітерацій для пошуку стаціонарного стану
   uint32_t param[FIX_BLOCK_SIGNALS_IN];                         //Сигнали на входах
   
   uint32_t password_1;                                          //Пароль для проглядання з меню
