@@ -34,7 +34,7 @@
 
     
 #define NAME_ALARM_OUT_SIGNALS_RU       \
-  "Тривога         ",                   \
+  "Тревога         ",                   \
   "Тишина          "
 
 #define NAME_ALARM_OUT_SIGNALS_UA       \
@@ -46,7 +46,7 @@
   "Mute            "
 
 #define NAME_ALARM_OUT_SIGNALS_KZ       \
-  "Тривога         ",                   \
+  "Тревога         ",                   \
   "Тишина          "
 
 #endif 
