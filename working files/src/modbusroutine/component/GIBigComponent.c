@@ -48,7 +48,7 @@ void constructorGIBigComponent(COMPONENT_OBJ *gibigcomp)
 void loadGIBigActualData(void) {
  setGIBigCountObject(); //записать к-во обектов
   //ActualData
-   __LN_MEANDER *arr = (__LN_MEANDER*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   __LN_MEANDER *arr = (__LN_MEANDER*)(spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
    for(int item=0; item<gibigcomponent->countObject; item++) {
 
    int value = arr[item].settings.set_delay[0];

@@ -49,7 +49,8 @@ void constructorMEBigComponent(COMPONENT_OBJ *mebigcomp)
 void loadMEBigActualData(void) {
  setMEBigCountObject(); //записать к-во обектов
   //ActualData
-//   __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+ //!!!!!!!!!!
+   __LOG_INPUT *arr = (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
    //Очистить журнал 0
    int value = 0;//arr[item].settings.param[0];
    tempReadArray[0] = value;
@@ -59,11 +60,15 @@ void loadMEBigActualData(void) {
 
    for(int item=0; item<mebigcomponent->countObject; item++) {
    //Вход item 0
-   value = 0;//arr[item].settings.param[0];
-   tempReadArray[2+item*REGISTER_FOR_OBJ+0] = value;
-   //Вход item 1
-   value = 0;//arr[item].settings.param[1];
-   tempReadArray[2+item*REGISTER_FOR_OBJ+1] = value;
+        value = arr[item] & 0xffff;//LEDIN 0 СД item
+        tempReadArray[item*REGISTER_FOR_OBJ+2*item+0] = value;
+        value = (arr[item] >> 16) & 0x7fff;//LEDIN 1 СД item
+        tempReadArray[item*REGISTER_FOR_OBJ+2*item+1] = value;
+//   value = 0;//arr[item].settings.param[0];
+//   tempReadArray[2+item*REGISTER_FOR_OBJ+0] = value;
+//   //Вход item 1
+//   value = 0;//arr[item].settings.param[1];
+//   tempReadArray[2+item*REGISTER_FOR_OBJ+1] = value;
   }//for
 }//loadActualData() 
 
@@ -88,7 +93,8 @@ int getMEBigModbusBit(int adrBit)
 
 void setMEBigCountObject(void) {
 //записать к-во обектов
-  int cntObj = current_config.n_log;    //Кількість субмодулів Журналу подій
+  int cntObj = current_config.n_log*LOG_SIGNALS_IN;    //Кількість субмодулів Журналу подій
+  if (cntObj > 128) cntObj = 128;
   if(cntObj<0) return;
   if(cntObj>TOTAL_OBJ) return;
   mebigcomponent->countObject = cntObj;

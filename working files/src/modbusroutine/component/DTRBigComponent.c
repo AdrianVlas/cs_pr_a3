@@ -48,35 +48,31 @@ void constructorDTRBigComponent(COMPONENT_OBJ *dtrbigcomp)
 void loadDTRBigActualData(void) {
  setDTRBigCountObject(); //записать к-во обектов
   //ActualData
-   __LN_TRIGGER *arr = (__LN_TRIGGER*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   __LN_TRIGGER *arr = (__LN_TRIGGER*)(spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
    for(int item=0; item<dtrbigcomponent->countObject; item++) {
 
    //Set D-T 0  item
-   int value = arr[item].settings.param[0];
+   int value = arr[item].settings.param[INPUT_TRIGGER_SET] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   //Set D-T 1  item
-   value = arr[item].settings.param[1];
+   value = (arr[item].settings.param[INPUT_TRIGGER_SET] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
 
    //CLR D-T 0  item
-   value = arr[item].settings.param[1];
+   value = arr[item].settings.param[INPUT_TRIGGER_RESET] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   //CLR D-T 1  item
-   value = arr[item].settings.param[1];
+   value = (arr[item].settings.param[INPUT_TRIGGER_RESET] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
 
    //D D-T 0  item
-   value = arr[item].settings.param[1];
+   value = arr[item].settings.param[INPUT_TRIGGER_D] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-   //D D-T 1  item
-   value = arr[item].settings.param[1];
+   value = (arr[item].settings.param[INPUT_TRIGGER_D] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
 
    //C D-T 0  item
-   value = arr[item].settings.param[1];
+   value = arr[item].settings.param[INPUT_TRIGGER_C] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
-   //C D-T 1  item
-   value = arr[item].settings.param[1];
+   value = (arr[item].settings.param[INPUT_TRIGGER_C] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
 
    }//for

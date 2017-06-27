@@ -44,13 +44,17 @@ void constructorPKVBigComponent(COMPONENT_OBJ *pkvbigcomp)
 
 void loadPKVBigActualData(void) {
   //ActualData
+    unsigned char *label_to_time_array;
+    if (copying_time == 0) label_to_time_array = time;
+    else label_to_time_array = time_copy;
+    
   for(int i=0; i<REGISTER_FOR_OBJ; i++) {
    switch(i) {
     case 0://Время активации пароля после простоя
     tempReadArray[i] = settings_fix.timeout_deactivation_password_interface_USB;
     break;
     case 1://Проверка/установка пароля
-    tempReadArray[i] = settings_fix.password_interface_USB;
+//    tempReadArray[i] = settings_fix.password_interface_USB;
     break;
     case 2://Тайм-аут применения изменений
     tempReadArray[i] = settings_fix.timeout_idle_new_settings;
@@ -70,27 +74,27 @@ void loadPKVBigActualData(void) {
     case 7://Паритет
     tempReadArray[i] = settings_fix.pare_bit_RS485;
     break;
-    case 8://Задержка приёма
-    tempReadArray[i] = settings_fix.time_out_1_RS485;
-    break;
-    case 9://Скорость порта связи 2
-    tempReadArray[i] = settings_fix.baud_RS485;
-    break;
-    case 10://Количество стоп-бит 2
-    tempReadArray[i] = settings_fix.number_stop_bit_RS485;
-    break;
-    case 11://Паритет 2
-    tempReadArray[i] = settings_fix.pare_bit_RS485;
-    break;
-    case 12://Задержка приёма 2
-    tempReadArray[i] = settings_fix.time_out_1_RS485;
+//    case 8://Задержка приёма
+//    tempReadArray[i] = settings_fix.time_out_1_RS485;
+//    break;
+//    case 9://Скорость порта связи 2
+//    tempReadArray[i] = settings_fix.baud_RS485;
+//    break;
+//    case 10://Количество стоп-бит 2
+//    tempReadArray[i] = settings_fix.number_stop_bit_RS485;
+//    break;
+//    case 11://Паритет 2
+//    tempReadArray[i] = settings_fix.pare_bit_RS485;
+//    break;
+//    case 12://Задержка приёма 2
+//    tempReadArray[i] = settings_fix.time_out_1_RS485;
     break;
 
     case 13://Адрес устройства в сети
     tempReadArray[i] = settings_fix.address;
     break;
     case 14://Таймаут конца фрейма
-    tempReadArray[i] = settings_fix.time_out_1_RS485;
+//    tempReadArray[i] = settings_fix.time_out_1_RS485;
     break;
     case 15://
     tempReadArray[i] = 0;
@@ -121,25 +125,25 @@ void loadPKVBigActualData(void) {
     break;
 
     case 24://Год
-    tempReadArray[i] = 0;
+    tempReadArray[i] = *(label_to_time_array + 6);
     break;
     case 25://Месяц
-    tempReadArray[i] = 0;
+    tempReadArray[i] = *(label_to_time_array + 5);
     break;
     case 26://День
-    tempReadArray[i] = 0;
+    tempReadArray[i] = *(label_to_time_array + 4);
     break;
     case 27://Час
-    tempReadArray[i] = 0;
+    tempReadArray[i] = *(label_to_time_array + 3);
     break;
     case 28://Минуты
-    tempReadArray[i] = 0;
+    tempReadArray[i] = *(label_to_time_array + 2);
     break;
     case 29://Секунды
-    tempReadArray[i] = 0;
+    tempReadArray[i] = *(label_to_time_array + 1);
     break;
     case 30://Сотые секунды
-    tempReadArray[i] = 0;
+    tempReadArray[i] = *(label_to_time_array + 0);
     break;
 
     case 31://Часовой пояс

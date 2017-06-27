@@ -48,41 +48,38 @@ void constructorSZSBigComponent(COMPONENT_OBJ *szsbigcomp)
 void loadSZSBigActualData(void) {
  setSZSBigCountObject(); //записать к-во обектов
   //ActualData
+   __LN_ALARM *arr = (__LN_ALARM*)(spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
    for(int item=0; item<szsbigcomponent->countObject; item++) {
    //Режим работы СЗС item
-   int value = 1;//arr[item].settings.set_delay[0];
+   int value = arr[item].settings.control & 0x3;
    tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
 
    //Таймер СЗС  item
-   value = 2;//arr[item].settings.set_delay[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+   value = arr[item].settings.set_delay[ALARM_SET_DELAY_PERIOD];
+   tempReadArray[item*REGISTER_FOR_OBJ+1] = value / 100;
 
    //LSSIN1 0 СЗС  item
-   value = 3;//arr[item].settings.set_delay[0];
+   value = arr[item].settings.param[ALARM_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   //LSSIN1 1 СЗС  item
-   value = 4;//arr[item].settings.set_delay[0];
+   value = (arr[item].settings.param[ALARM_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
 
    //Mute-I 0 СЗС   item
-   value = 5;//arr[item].settings.set_delay[0];
+   value = arr[item].settings.param[ALARM_IN_MUTE] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-   //Mute-I 1 СЗС   item
-   value = 6;//arr[item].settings.set_delay[0];
+   value = (arr[item].settings.param[ALARM_IN_MUTE] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
 
    //Block-I 0 СЗС    item
-   value = 7;//arr[item].settings.set_delay[0];
+   value = arr[item].settings.param[ALARM_IN_BLOCK] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
-   //Block-I 1 СЗС    item
-   value = 8;//arr[item].settings.set_delay[0];
+   value = (arr[item].settings.param[ALARM_IN_BLOCK] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
 
    //Reset-I 0 СЗС   item
-   value = 9;//arr[item].settings.set_delay[0];
+   value = arr[item].settings.param[ALARM_RESET] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
-   //Reset-I 1 СЗС   item
-   value = 10;//arr[item].settings.set_delay[0];
+   value = (arr[item].settings.param[ALARM_RESET] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
    }//for
 }//loadActualData() 
@@ -91,11 +88,11 @@ int getSZSBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateSZSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(privateSZSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   if(szsbigcomponent->isActiveActualData) loadSZSBigActualData(); //ActualData
   szsbigcomponent->isActiveActualData = 0;
 
+  if(privateSZSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
   superSetOperativMarker(szsbigcomponent, adrReg);
 
   return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
@@ -157,7 +154,7 @@ int setSZSBigModbusBit(int adrBit, int x)
 
 void setSZSBigCountObject(void) {
 //записать к-во обектов
-  int cntObj = current_config.n_meander;  //Кількість генераторів меандру
+  int cntObj = current_config.n_alarm;  //Кількість генераторів меандру
   if(cntObj<0) return;
   if(cntObj>TOTAL_OBJ) return;
   szsbigcomponent->countObject = cntObj;

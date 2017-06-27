@@ -53,21 +53,20 @@ void loadTSBigActualData(void) {
    for(int item=0; item<tsbigcomponent->countObject; item++) {
 
    //In TC 0  item
-   int value = arr[item].settings.param[0];
+   int value = arr[item].settings.param[TS_LOGIC_INPUT] & 0xffff;//LEDIN 0 ÑÄ item
    tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   //In TC 0  item
-   value = arr[item].settings.param[0];
+   value = (arr[item].settings.param[TS_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 ÑÄ item
    tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
 
    //Block TC 0  item
-   value = arr[item].settings.param[0];
+   value = arr[item].settings.param[TS_BLOCK] & 0xffff;//LEDIN 0 ÑÄ item
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   //Block TC 1  item
-   value = arr[item].settings.param[0];
+   value = (arr[item].settings.param[TS_BLOCK] >> 16) & 0x7fff;//LEDIN 1 ÑÄ item
    tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
 
    //Àäðåñ ÒÑ 0  item
-   value = arr[item].settings.param[0];
+//   value = arr[item].settings.param[0];
+   value = 18000 + item;
    tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
 
    }//for

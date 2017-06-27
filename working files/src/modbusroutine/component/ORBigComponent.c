@@ -48,63 +48,72 @@ void constructorORBigComponent(COMPONENT_OBJ *orbigcomp)
 void loadORBigActualData(void) {
  setORBigCountObject(); //записать к-во обектов
   //ActualData
-   __LN_OR *arr = (__LN_OR*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   __LN_OR *arr = (__LN_OR*)(spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]);
    for(int item=0; item<orbigcomponent->countObject; item++) {
-   //OR item.1 0
-   int value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   //OR item.2 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
 
-   //OR item.1 0
-   value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   //OR item.2 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
-
-   //OR item.1 0
-   value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-   //OR item.2 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
-
-   //OR item.1 0
-   value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
-   //OR item.2 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
-
-   //OR item.1 0
-   value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
-   //OR item.2 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
-
-   //OR item.1 0
-   value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+10] = value;
-   //OR item.2 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+11] = value;
-
-   //OR item.1 0
-   value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
-   //OR item.2 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+13] = value;
-
-   //OR item.1 0
-   value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+14] = value;
-   //OR item.2 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+15] = value;
+     for (int i = 0; i < OR_SIGNALS_IN; i ++)
+     {
+        int value = arr[item].settings.param[i] & 0xffff;//LEDIN 0 СД item
+        tempReadArray[item*REGISTER_FOR_OBJ+2*i+0] = value;
+        value = (arr[item].settings.param[i] >> 16) & 0x7fff;//LEDIN 1 СД item
+        tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
+     }
+     
+//     //OR item.1 0
+//   int value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+//   //OR item.2 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+//
+//   //OR item.1 0
+//   value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+//   //OR item.2 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
+//
+//   //OR item.1 0
+//   value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
+//   //OR item.2 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
+//
+//   //OR item.1 0
+//   value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
+//   //OR item.2 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
+//
+//   //OR item.1 0
+//   value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
+//   //OR item.2 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
+//
+//   //OR item.1 0
+//   value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+10] = value;
+//   //OR item.2 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+11] = value;
+//
+//   //OR item.1 0
+//   value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
+//   //OR item.2 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+13] = value;
+//
+//   //OR item.1 0
+//   value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+14] = value;
+//   //OR item.2 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+15] = value;
 
    }//for
 }//loadActualData() 

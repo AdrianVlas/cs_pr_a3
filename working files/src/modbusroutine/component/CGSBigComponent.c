@@ -45,24 +45,24 @@ void constructorCGSBigComponent(COMPONENT_OBJ *cgsbigcomp)
 void loadCGSBigActualData(void) {
  setCGSBigCountObject(); //записать к-во обектов
   //ActualData
-   __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
    for(int item=0; item<cgsbigcomponent->countObject; item++) {
 
    //Параметры ГС item
-   int value = arr[item].settings.control;
+   int value = arr[item].settings.control &0x3;
    tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
 
    //Входной ток ГС item
-   value = arr[item].settings.analog_input_control;
+   value = (arr[item].settings.analog_input_control >> group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
    tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
 
    //Приращение тока ГС item
-   value = arr[item].settings.pickup[0];
+   value = arr[item].settings.pickup[GROUP_ALARM_PICKUP_DELTA_I];
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
 
    //Время tуст ГС item
-   value = arr[item].settings.set_delay[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
+   value = arr[item].settings.set_delay[GROUP_ALARM_SET_DELAY_DELAY];
+   tempReadArray[item*REGISTER_FOR_OBJ+3] = value / 100;
    }//for
 
   /*

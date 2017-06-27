@@ -5,7 +5,7 @@
 #define BEGIN_ADR_REGISTER 1156
 //макс к-во обектов
 #define TOTAL_OBJ 128
-#define REGISTER_FOR_OBJ 11
+#define REGISTER_FOR_OBJ 13
 int privateDOUTBigGetReg1(int adrReg);
 int privateDOUTBigGetReg2(int adrReg);
 
@@ -68,15 +68,20 @@ void loadDOUTBigActualData(void) {
    value = (arr[item].settings.param[OUTPUT_LED_BL_IMP] >> 16) & 0x7fff;//BL-IMP1 ДВых. item
    tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
 
-   value = arr[item].settings.param[OUTPUT_LED_MEANDER1] & 0xffff;//C1/C2 0 ДВых. item
+   value = arr[item].settings.param[OUTPUT_LED_MEANDER1_MEANDER2] & 0xffff;//C1/C2 0 ДВых. item
    tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
-   value = (arr[item].settings.param[OUTPUT_LED_MEANDER1] >> 16) & 0x7fff;//C1/C2 1 ДВых item
+   value = (arr[item].settings.param[OUTPUT_LED_MEANDER1_MEANDER2] >> 16) & 0x7fff;//C1/C2 1 ДВых item
    tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
 
-   value = arr[item].settings.param[OUTPUT_LED_MEANDER2] & 0xffff;//Генератор С1 0 Имп.ДВых item
+   value = arr[item].settings.param[OUTPUT_LED_MEANDER1] & 0xffff;//Генератор С1 0 Имп.ДВых item
    tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
-   value = (arr[item].settings.param[OUTPUT_LED_MEANDER2] >> 16) & 0x7fff;//Генератор С1 1 Имп.ДВых. item
+   value = (arr[item].settings.param[OUTPUT_LED_MEANDER1] >> 16) & 0x7fff;//Генератор С1 1 Имп.ДВых item
    tempReadArray[item*REGISTER_FOR_OBJ+10] = value;
+
+   value = arr[item].settings.param[OUTPUT_LED_MEANDER2] & 0xffff;//Генератор С2 0 Имп.ДВых item
+   tempReadArray[item*REGISTER_FOR_OBJ+11] = value;
+   value = (arr[item].settings.param[OUTPUT_LED_MEANDER2] >> 16) & 0x7fff;//Генератор С2 1 Имп.ДВых. item
+   tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
   }//for
   /*
   ...

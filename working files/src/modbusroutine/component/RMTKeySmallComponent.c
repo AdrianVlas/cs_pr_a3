@@ -50,10 +50,28 @@ void loadRMTKeySmallActualData(void) {
   //ActualData
   setRMTKeySmallCountObject(); //записать к-во обектов
 
-  int cnt_treg = rmtkeysmallcomponent->countObject/16;
-  if(rmtkeysmallcomponent->countObject%16) cnt_treg++;
-  for(int ii=0; ii<cnt_treg; ii++) tempReadArray[ii] = 0;
+//  int cnt_treg = rmtkeysmallcomponent->countObject/16;
+//  if(rmtkeysmallcomponent->countObject%16) cnt_treg++;
+  //for(int ii=0; ii<cnt_treg; ii++) 
+   tempReadArray[0] = 0;
    __LN_BUTTON *arr = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+
+   int value = arr[FIX_BUTTON_RESET].active_state[BUTTON_OUT >> 3] & (1 << (BUTTON_OUT & ((1 << 3) - 1)));
+   int keydata = 0;
+   if(value) keydata=1;
+   tempReadArray[0] |= (keydata&0x1)<<(0);
+
+   value = arr[FIX_BUTTON_MUTE].active_state[BUTTON_OUT >> 3] & (1 << (BUTTON_OUT & ((1 << 3) - 1)));
+   keydata = 0;
+   if(value) keydata=1;
+   tempReadArray[0] |= (keydata&0x1)<<(1);
+
+   value = arr[FIX_BUTTON_TEST].active_state[BUTTON_OUT >> 3] & (1 << (BUTTON_OUT & ((1 << 3) - 1)));
+   keydata = 0;
+   if(value) keydata=1;
+   tempReadArray[0] |= (keydata&0x1)<<(2);
+
+/*
    const int array_1[NUMBER_FIX_BUTTONS] = {FIX_BUTTON_MUTE , FIX_BUTTON_RESET, FIX_BUTTON_TEST};
   for(int item=0; item<rmtkeysmallcomponent->countObject; item++) {
    int ireg = item/16;
@@ -62,6 +80,7 @@ void loadRMTKeySmallActualData(void) {
    if(value) keydata=1;
    tempReadArray[ireg] |= (keydata&0x1)<<(item%16);
   }//for
+*/
   /*
   Підхід аналогічний до ТС
   +

@@ -54,30 +54,35 @@ void loadSDIBigActualData(void) {
    int value = arr[item].settings.control;//Параметры СД item
    tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
 
-   value = arr[item].settings.param[OUTPUT_LED_LOGIC_INPUT] & 0xffff;//RIN0 ДВых. item
+   value = arr[item].settings.param[OUTPUT_LED_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
-   value = (arr[item].settings.param[OUTPUT_LED_LOGIC_INPUT] >> 16) & 0x7fff;//RIN1 ДВых. item
+   value = (arr[item].settings.param[OUTPUT_LED_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
 
-   value = arr[item].settings.param[OUTPUT_LED_RESET] & 0xffff;//Reset0 ДВых. item
+   value = arr[item].settings.param[OUTPUT_LED_RESET] & 0xffff;//Reset 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
-   value = (arr[item].settings.param[OUTPUT_LED_RESET] >> 16) & 0x7fff;//Reset1 ДВых. item
+   value = (arr[item].settings.param[OUTPUT_LED_RESET] >> 16) & 0x7fff;//Reset 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
 
-   value = arr[item].settings.param[OUTPUT_LED_BL_IMP] & 0xffff;//BL-IMP0 ДВых. item
+   value = arr[item].settings.param[OUTPUT_LED_BL_IMP] & 0xffff;//BL-IMP 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
-   value = (arr[item].settings.param[OUTPUT_LED_BL_IMP] >> 16) & 0x7fff;//BL-IMP1 ДВых. item
+   value = (arr[item].settings.param[OUTPUT_LED_BL_IMP] >> 16) & 0x7fff;//BL-IMP 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
 
-   value = arr[item].settings.param[OUTPUT_LED_MEANDER1] & 0xffff;//C1/C2 0 ДВых. item
+   value = arr[item].settings.param[OUTPUT_LED_MEANDER1_MEANDER2] & 0xffff;//C1/C2 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
-   value = (arr[item].settings.param[OUTPUT_LED_MEANDER1] >> 16) & 0x7fff;//C1/C2 1 ДВых item
+   value = (arr[item].settings.param[OUTPUT_LED_MEANDER1_MEANDER2] >> 16) & 0x7fff;//C1/C2 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
 
-   value = arr[item].settings.param[OUTPUT_LED_MEANDER2] & 0xffff;//Генератор С1 0 Имп.ДВых item
+   value = arr[item].settings.param[OUTPUT_LED_MEANDER1] & 0xffff;//Генератор С1 Имп.0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
-   value = (arr[item].settings.param[OUTPUT_LED_MEANDER2] >> 16) & 0x7fff;//Генератор С1 1 Имп.ДВых. item
+   value = (arr[item].settings.param[OUTPUT_LED_MEANDER1] >> 16) & 0x7fff;//Генератор С1 Имп.1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+10] = value;
+
+   value = arr[item].settings.param[OUTPUT_LED_MEANDER2] & 0xffff;//Генератор С2 Имп.0 СД item
+   tempReadArray[item*REGISTER_FOR_OBJ+11] = value;
+   value = (arr[item].settings.param[OUTPUT_LED_MEANDER2] >> 16) & 0x7fff;//Генератор С2 Имп. 1 СД item
+   tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
   }//for
 }//loadActualData() 
 

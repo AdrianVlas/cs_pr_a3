@@ -48,21 +48,29 @@ void constructorXORBigComponent(COMPONENT_OBJ *xorbigcomp)
 void loadXORBigActualData(void) {
  setXORBigCountObject(); //записать к-во обектов
   //ActualData
-   __LN_XOR *arr = (__LN_XOR*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   __LN_XOR *arr = (__LN_XOR*)(spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR]);
    for(int item=0; item<xorbigcomponent->countObject; item++) {
-   //XOR item.1 0
-   int value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   //XOR item.1 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
 
-   //XOR item.2 0
-   value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   //XOR item.2 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
+     for (int i = 0; i < 2; i ++)
+     {
+        int value = arr[item].settings.param[i] & 0xffff;//LEDIN 0 СД item
+        tempReadArray[item*REGISTER_FOR_OBJ+2*i+0] = value;
+        value = (arr[item].settings.param[i] >> 16) & 0x7fff;//LEDIN 1 СД item
+        tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
+     }
+//        //XOR item.1 0
+//   int value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+//   //XOR item.1 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+//
+//   //XOR item.2 0
+//   value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+//   //XOR item.2 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
 
    }//for
 }//loadActualData() 

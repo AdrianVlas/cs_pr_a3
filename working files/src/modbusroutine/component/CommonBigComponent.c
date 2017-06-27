@@ -44,41 +44,36 @@ void constructorCommonBigComponent(COMPONENT_OBJ *commonbigcomp)
 
 void loadCommonBigActualData(void) {
   //ActualData
-//   __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   __SETTINGS_FIX *arr = &settings_fix;
    for(int item=0; item<commonbigcomponent->countObject; item++) {
    //Тревога 0
-   int value = 0;//arr[item].settings.param[0];
+   int value = arr->param[FIX_BLOCK_ALARM] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   //Тревога 1
-   value = 0;//arr[item].settings.param[1];
+   value = (arr->param[FIX_BLOCK_ALARM] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
 
    //Тишина 0
-   value = 0;//arr[item].settings.param[0];
+   value = arr->param[FIX_BLOCK_MUTE] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   //Тишина 1
-   value = 0;//arr[item].settings.param[1];
+   value = (arr->param[FIX_BLOCK_MUTE] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
 
    //Блок. 0
-   value = 0;//arr[item].settings.param[0];
+   value = arr->param[FIX_BLOCK_BLOCK] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-   //Блок. 1
-   value = 0;//arr[item].settings.param[1];
+   value = (arr->param[FIX_BLOCK_BLOCK] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
 
    //Тест.Вход. 0
-   value = 0;//arr[item].settings.param[0];
+   value = arr->param[FIX_VLOCK_TEST_INPUT] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
-   //Тест.Вход. 1
-   value = 0;//arr[item].settings.param[1];
+   value = (arr->param[FIX_VLOCK_TEST_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
 
    //Тест.Сброс. 0
-   value = 0;//arr[item].settings.param[0];
+   value = arr->param[FIX_VLOCK_TEST_RESET] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
-   //Тест.Сброс. 1
-   value = 0;//arr[item].settings.param[1];
+   value = (arr->param[FIX_VLOCK_TEST_RESET] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
   }//for
 }//loadActualData() 

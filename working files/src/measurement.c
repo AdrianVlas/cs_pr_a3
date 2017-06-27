@@ -473,18 +473,8 @@ void SPI_ADC_IRQHandler(void)
         _y1 = ADCs_data_raw[I_U].value;
         
         _y2 = output_adc[C_U_1].value - gnd_adc_tmp - vref_adc_tmp;
-        if (abs(_y2) > 87)
-        {
-          _x2 = output_adc[C_U_1].tick;
-          _y2 = (int)(_y2*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA - 4);
-        }
-        else
-        {
-          _y2 = output_adc[C_U_16].value - gnd_adc_tmp - vref_adc_tmp;
-
-          _x2 = output_adc[C_U_16].tick;
-          _y2 = (int)((-_y2)*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA);
-        }
+        _x2 = output_adc[C_U_1].tick;
+        _y2 = (int)(_y2*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA);
       
         if (_x2 > _x1) _DX = _x2 - _x1;
         else

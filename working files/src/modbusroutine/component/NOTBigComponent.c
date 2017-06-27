@@ -48,14 +48,22 @@ void constructorNOTBigComponent(COMPONENT_OBJ *notbigcomp)
 void loadNOTBigActualData(void) {
  setNOTBigCountObject(); //записать к-во обектов
   //ActualData
-   __LN_NOT *arr = (__LN_NOT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   __LN_NOT *arr = (__LN_NOT*)(spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]);
    for(int item=0; item<notbigcomponent->countObject; item++) {
-   //NOT item.1 0
-   int value = arr[item].settings.param[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   //NOT item.1 1
-   value = arr[item].settings.param[1];
-   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+
+     for (int i = 0; i < 1; i ++)
+     {
+        int value = arr[item].settings.param[i] & 0xffff;//LEDIN 0 СД item
+        tempReadArray[item*REGISTER_FOR_OBJ+2*i+0] = value;
+        value = (arr[item].settings.param[i] >> 16) & 0x7fff;//LEDIN 1 СД item
+        tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
+     }
+//   //NOT item.1 0
+//   int value = arr[item].settings.param[0];
+//   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
+//   //NOT item.1 1
+//   value = arr[item].settings.param[1];
+//   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
    }//for
 }//loadActualData() 
 

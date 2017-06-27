@@ -53,14 +53,14 @@ void loadTUBigActualData(void) {
    for(int item=0; item<tubigcomponent->countObject; item++) {
 
    //Block ÒÓ 0  item
-   int value = arr[item].settings.param[0];
+   int value = arr[item].settings.param[TU_BLOCK] & 0xffff;//LEDIN 0 ÑÄ item
    tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   //Block ÒÓ 0  item
-   value = arr[item].settings.param[0];
+   value = (arr[item].settings.param[TU_BLOCK] >> 16) & 0x7fff;//LEDIN 1 ÑÄ item
    tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
 
    //Àäðåñ ÒÓ 0  item
-   value = arr[item].settings.param[0];
+//   value = arr[item].settings.param[0];
+   value = 18128 + item;
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
    }//for
 }//loadActualData() 

@@ -48,29 +48,27 @@ void constructorMFTBigComponent(COMPONENT_OBJ *mftbigcomp)
 void loadMFTBigActualData(void) {
  setMFTBigCountObject(); //записать к-во обектов
   //ActualData
-   __LN_TIMER *arr = (__LN_TIMER*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   __LN_TIMER *arr = (__LN_TIMER*)(spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
    for(int item=0; item<mftbigcomponent->countObject; item++) {
 
    //Таймер паузы  item
-   int value = arr[item].settings.set_delay[0];
+   int value = arr[item].settings.set_delay[TIMER_SET_DELAY_PAUSE]/10;
    tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
 
    //Таймер работы   item
-   value = arr[item].settings.set_delay[1];
+   value = arr[item].settings.set_delay[TIMER_SET_DELAY_WORK]/10;
    tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
 
    //MFT-IN 1 0 item
-   value = arr[item].settings.param[0];
+   value = arr[item].settings.param[TIMER_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   //MFT-IN 1 1 item
-   value = arr[item].settings.param[1];
+   value = (arr[item].settings.param[TIMER_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
 
    //Reset-I  0 item
-   value = arr[item].settings.param[0];
+   value = arr[item].settings.param[TIMER_RESET] & 0xffff;//LEDIN 0 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-   //Reset-I  1 item
-   value = arr[item].settings.param[0];
+   value = (arr[item].settings.param[TIMER_RESET] >> 16) & 0x7fff;//LEDIN 1 СД item
    tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
    }//for
 

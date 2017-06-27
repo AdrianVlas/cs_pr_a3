@@ -47,20 +47,19 @@ void loadBASDBigActualData(void) {
 
   int value;
   value = arr->param[FIX_BLOCK_BLOCK] & 0xffff;//RIN0 ДВых. item
-//  tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+  tempReadArray[0] = value;
   value = (arr->param[FIX_BLOCK_BLOCK] >> 16) & 0x7fff;//RIN1 ДВых. item
-//  tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+  tempReadArray[1] = value;
 
   value = arr->param[FIX_BLOCK_ALARM] & 0xffff;//RIN0 ДВых. item
-//  tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+  tempReadArray[2] = value;
   value = (arr->param[FIX_BLOCK_ALARM] >> 16) & 0x7fff;//RIN1 ДВых. item
-//  tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
+  tempReadArray[3] = value;
 
   value = arr->param[FIX_BLOCK_MUTE] & 0xffff;//RIN0 ДВых. item
-//  tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
+  tempReadArray[4] = value;
   value = (arr->param[FIX_BLOCK_MUTE] >> 16) & 0x7fff;//RIN1 ДВых. item
-//  tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-  //  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  tempReadArray[5] = value;
 }//loadActualData() 
 
 int getBASDBigModbusRegister(int adrReg)
