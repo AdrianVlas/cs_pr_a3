@@ -136,17 +136,17 @@ const uint8_t name_string_alarm_control[MAX_NAMBER_LANGUAGE][MAX_INDEX_CTRL_ALAR
 
 const uint8_t information_alarm_control[MAX_NAMBER_LANGUAGE][ALARM_MODES_NUMBER][MAX_COL_LCD + 1] = 
 {
-  {"    опнярни     ", "   рпхццепмши   ", "    гюд.бп.     "},
-  {"    опнярхи     ", "   рпх╔епмхи    ", "    гюд.вюя     "},
-  {"     SIMPLE     ", "    TRIGGER     ", "    гюд.бп.     "},
-  {"    опнярхи     ", "   рпхццепмши   ", "    гюд.бп.     "}
+  {"   мнплюкэмши   ", "   рпхццепмши   ", "    гюд.бп.     "},
+  {"   мнплюкэмхи   ", "   рпх╔епмхи    ", "    гюд.вюя     "},
+  {"     NORMAL     ", "    TRIGGER     ", "    гюд.бп.     "},
+  {"   мнплюкэмхи   ", "   рпхццепмши   ", "    гюд.бп.     "}
 };
 const unsigned int cursor_x_alarm_control[MAX_NAMBER_LANGUAGE][ALARM_MODES_NUMBER] = 
 {
-  {3, 2, 3},
-  {3, 2, 3},
+  {2, 2, 3},
+  {2, 2, 3},
   {4, 3, 3},
-  {3, 2, 3}
+  {2, 2, 3}
 };
 
 const uint8_t name_alarm_in_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_IN][MAX_COL_LCD + 1] =

@@ -679,8 +679,8 @@ void make_ekran_data_reg(void)
   name_string[ROW_R_T_][COL_HT2_R] = (point_into_menu_time_label[3] & 0xf) + 0x30;
 
   //Хвилини
-  name_string[ROW_R_T_][COL_MT1_R] = (pr_err_into_menu_time_label[2] >>  4) + 0x30;
-  name_string[ROW_R_T_][COL_MT2_R] = (pr_err_into_menu_time_label[2] & 0xf) + 0x30;
+  name_string[ROW_R_T_][COL_MT1_R] = (point_into_menu_time_label[2] >>  4) + 0x30;
+  name_string[ROW_R_T_][COL_MT2_R] = (point_into_menu_time_label[2] & 0xf) + 0x30;
 
   //Секунди
   name_string[ROW_R_T_][COL_ST1_R] = (point_into_menu_time_label[1] >>  4) + 0x30;
