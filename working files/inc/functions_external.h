@@ -195,6 +195,8 @@ extern void move_into_ekran_list_inputs_outputs(unsigned int, int);
 extern void make_ekran_list_inputs_outputs(void);
 extern unsigned int max_number_digit_in_number(int);
 extern void make_ekran_state_inputs_or_outputs(void);
+extern void move_into_ekran_state_analog_inputs(unsigned int, int);
+extern void make_ekran_state_analog_inputs(void);
 extern void move_into_ekran_input_or_output(unsigned int, int);
 extern void make_ekran_list_registrators(void);
 extern enum _result_pressed_enter_during_edition press_enter_in_setting_language(void);

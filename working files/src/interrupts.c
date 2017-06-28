@@ -636,9 +636,10 @@ void TIM4_IRQHandler(void)
     /***********************************************************/
     if (
         ((current_state_menu2.current_level == TIME_MANU2_LEVEL) && (current_state_menu2.edition <= ED_CAN_BE_EDITED)) ||
-        (current_state_menu2.current_level == MEASUREMENT_MENU2_LEVEL      ) ||
-        (current_state_menu2.current_level == INPUTS_MENU2_LEVEL)   ||
-        (current_state_menu2.current_level == OUTPUTS_MENU2_LEVEL)   ||
+        (current_state_menu2.current_level == MEASUREMENT_MENU2_LEVEL ) ||
+        (current_state_menu2.current_level == INPUTS_MENU2_LEVEL) ||
+        (current_state_menu2.current_level == OUTPUTS_MENU2_LEVEL) ||
+        (current_state_menu2.current_level == ANALOG_INPUTS_MENU2_LEVEL) ||
         (current_state_menu2.current_level == DIAGNOSTICS_MENU2_LEVEL) 
        )
     {
