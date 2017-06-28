@@ -2043,13 +2043,26 @@ void new_level_menu(void)
       break;
     }
   case ANALOG_INPUTS_MENU2_LEVEL:
+    {
+      time_rewrite = 0;
+      
+      current_state_menu2.p_max_row = (int*)&current_config_prt.n_group_alarm;
+      current_state_menu2.max_row = 0;
+      current_state_menu2.func_move = move_into_ekran_state_analog_inputs;
+      current_state_menu2.func_show = make_ekran_state_analog_inputs;
+      current_state_menu2.func_press_enter = NULL;
+      current_state_menu2.func_press_esc = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
+      current_state_menu2.edition = ED_VIEWING;
+      break;
+    }
   case INPUTS_MENU2_LEVEL:
   case OUTPUTS_MENU2_LEVEL:
     {
       time_rewrite = 0;
       
-      if (current_state_menu2.current_level == ANALOG_INPUTS_MENU2_LEVEL) current_state_menu2.p_max_row = (int*)&current_config_prt.n_group_alarm;
-      else if (current_state_menu2.current_level == INPUTS_MENU2_LEVEL) current_state_menu2.p_max_row = (int*)&current_config_prt.n_input;
+      if (current_state_menu2.current_level == INPUTS_MENU2_LEVEL) current_state_menu2.p_max_row = (int*)&current_config_prt.n_input;
       else current_state_menu2.p_max_row = (int*)&current_config_prt.n_output;
       current_state_menu2.max_row = 0;
       current_state_menu2.func_move = move_into_ekran_input_or_output;

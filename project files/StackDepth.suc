@@ -41,6 +41,7 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          move_into_ekran_simple,
                                          make_ekran_measurement,
                                          move_into_ekran_list_inputs_outputs, make_ekran_list_inputs_outputs,
+                                         move_into_ekran_state_analog_inputs, make_ekran_state_analog_inputs,
                                          move_into_ekran_input_or_output, make_ekran_state_inputs_or_outputs,
                                          make_ekran_list_registrators,
                                          move_into_ekran_event_registraqtors, 
