@@ -218,12 +218,7 @@ void make_ekran_state_inputs_or_outputs(void)
       }
     
       int _n = in_out + i - 1;
-      if (current_state_menu2.current_level == ANALOG_INPUTS_MENU2_LEVEL)
-      {
-        __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
-        value = arr[_n].active_state[GROUP_ALARM_OUT_CC >> 3] & (1 << (GROUP_ALARM_OUT_CC & ((1 << 3) - 1)));
-      }
-      else if (current_state_menu2.current_level == INPUTS_MENU2_LEVEL)
+      if (current_state_menu2.current_level == INPUTS_MENU2_LEVEL)
       {
         __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
         value = arr[_n].active_state[INPUT_OUT >> 3] & (1 << (INPUT_OUT & ((1 << 3) - 1)));
