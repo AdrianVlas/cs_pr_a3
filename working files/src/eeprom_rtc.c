@@ -198,6 +198,7 @@ void main_routines_for_i2c(void)
   //Статичні змінні для контролю коректності запису
   static __CONFIG current_config_comp;
   static unsigned int ustuvannja_comp[NUMBER_ANALOG_CANALES], serial_number_dev_comp;
+  static int32_t ustuvannja_shift_comp[NUMBER_INPUTs_ADCs];
   static __INFO_REJESTRATOR info_rejestrator_log_comp;
   static __INFO_REJESTRATOR info_rejestrator_pr_err_comp;
   
@@ -1221,6 +1222,20 @@ void main_routines_for_i2c(void)
       }
       offset += sizeof(ustuvannja);
 
+      //Додаємо юстуючі зміщення
+      point_1 = (unsigned char*)(&ustuvannja_shift); 
+      point_2 = (unsigned char*)(&ustuvannja_shift_comp);
+      for (unsigned int i = 0; i < sizeof(ustuvannja_shift); i++)
+      {
+        temp_value = *(point_1);
+        *(point_2) = temp_value;
+        point_1++;
+        point_2++;
+        read_write_i2c_buffer[offset + i] = temp_value;
+        crc_eeprom_ustuvannja += temp_value;
+      }
+      offset += sizeof(ustuvannja_shift);
+
       //Додаємо ще серійний номер пристрою
       point_1 = (unsigned char*)(&serial_number_dev); 
       point_2 = (unsigned char*)(&serial_number_dev_comp); 
@@ -2171,6 +2186,7 @@ void main_routines_for_i2c(void)
       //Спочатку аналізуємо, чи прояитаний блок є пустим, чи вже попередньо записаним
       unsigned int empty_block = 1, i = 0; 
       unsigned int adjustment_id_tmp, ustuvannja_tmp[NUMBER_ANALOG_CANALES], serial_number_dev_tmp;
+      int32_t ustuvannja_shift_tmp[NUMBER_INPUTs_ADCs];
 
       while ((empty_block != 0) && ( i < (SIZE_USTUVANNJA + 1)))
       {
@@ -2210,6 +2226,16 @@ void main_routines_for_i2c(void)
         }
         offset +=  sizeof(ustuvannja_tmp);
         
+        point = (unsigned char*)(&ustuvannja_shift_tmp); 
+        for (i =0; i < sizeof(ustuvannja_shift_tmp); i++)
+        {
+          temp_value = read_write_i2c_buffer[offset + i];
+          *(point) = temp_value;
+          crc_eeprom_ustuvannja += temp_value;
+          point++;
+        }
+        offset +=  sizeof(ustuvannja_shift_tmp);
+        
         point = (unsigned char*)(&serial_number_dev_tmp); 
         for (i =0; i < sizeof(serial_number_dev_tmp); i++)
         {
@@ -2245,6 +2271,10 @@ void main_routines_for_i2c(void)
               {
                 ustuvannja[k] = ustuvannja_tmp[k];
               }
+              for(unsigned int k = 0; k < NUMBER_INPUTs_ADCs; k++) 
+              {
+                ustuvannja_shift[k] = ustuvannja_shift_tmp[k];
+              }
               serial_number_dev = serial_number_dev_tmp;
               //Помічаємо, що юстування змінилася і її треба буде з вимірювальної системи зкопіювати у масив з яким працює вимірювальна система
               changed_ustuvannja = CHANGED_ETAP_ENDED;
@@ -2261,6 +2291,20 @@ void main_routines_for_i2c(void)
                 //Перевірка запису юстуючих коефіцієнтів
                 if (
                     (ustuvannja_comp[i] != ustuvannja_tmp[i])
+                   )
+                {
+                  difference = 0xff;
+                }
+                else
+                {
+                  i++;
+                }
+              }
+              while ((difference == 0) && (i < NUMBER_INPUTs_ADCs))
+              {
+                //Перевірка запису юстуючих коефіцієнтів
+                if (
+                    (ustuvannja_shift_comp[i] != ustuvannja_shift_tmp[i])
                    )
                 {
                   difference = 0xff;

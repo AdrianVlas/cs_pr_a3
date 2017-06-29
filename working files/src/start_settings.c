@@ -150,6 +150,8 @@ void global_vareiables_installation(void)
   {
     output_adc[i].tick = 0;
     output_adc[i].value = 0;
+    
+    ustuvannja_shift_work[i] = ustuvannja_shift[i] = ustuvannja_shift_meas[i] = 0;
   }
   
   for (unsigned int i = 0; i < NUMBER_GND_ADC; i++)
