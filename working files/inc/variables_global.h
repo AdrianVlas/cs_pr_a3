@@ -55,6 +55,8 @@ unsigned int index_array_of_current_data_value = 0;
 unsigned int changed_ustuvannja = CHANGED_ETAP_NONE; 
 unsigned char crc_ustuvannja;
 unsigned int ustuvannja_meas[NUMBER_ANALOG_CANALES], ustuvannja[NUMBER_ANALOG_CANALES], edit_ustuvannja[NUMBER_ANALOG_CANALES];
+int32_t ustuvannja_shift_meas[NUMBER_INPUTs_ADCs], ustuvannja_shift[NUMBER_INPUTs_ADCs], ustuvannja_shift_work[NUMBER_INPUTs_ADCs];
+int ustuvannja_measure_shift = -1;
 
 uint32_t sqr_current_data[NUMBER_POINT][NUMBER_ANALOG_CANALES];
 uint32_t index_array_of_sqr_current_data;
