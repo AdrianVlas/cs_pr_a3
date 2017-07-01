@@ -96,7 +96,7 @@ void Interrupts_Config(void)
   4-біт на Subpriority поле: 4 рівні [0-3] Subpriority пріоритету. 0 - найвищий Subpriority пріоритет
   */
   /*******************************/
-  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_3);
   /*******************************/
 
   /*******************************/
@@ -131,13 +131,13 @@ void Interrupts_Config(void)
   /*******************************/
   /* Переривання від TIM5, який запускається кожні 0,625мс для початку зняття даних з АЦП*/
   /*
-  Pre-emption пріоритет = 0 
-  Subpriority пріоритет = 1 
+  Pre-emption пріоритет = 1 
+  Subpriority пріоритет = 0 
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /*******************************/
@@ -145,13 +145,13 @@ void Interrupts_Config(void)
   /*******************************/
   /* Дозволяємо переривання від SPI вимірювальної системи */
   /*
-  Pre-emption пріоритет = 0 
-  Subpriority пріоритет = 2
+  Pre-emption пріоритет = 1 
+  Subpriority пріоритет = 1
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = SPI_ADC_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /*******************************/
@@ -159,12 +159,12 @@ void Interrupts_Config(void)
   /*******************************/
   /* Переривання від TIM3, який запускається кожні 1мс для роботи модулів захистів*/
   /*
-  Pre-emption пріоритет = 1 
+  Pre-emption пріоритет = 2 
   Subpriority пріоритет = 0
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -173,13 +173,13 @@ void Interrupts_Config(void)
   /*******************************/
   /* Переривання від TIM2, який запускається кожні 1мс для роботи модулів захистів*/
   /*
-  Pre-emption пріоритет = 1 
-  Subpriority пріоритет = 1
+  Pre-emption пріоритет = 3 
+  Subpriority пріоритет = 0
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /*******************************/
@@ -187,12 +187,12 @@ void Interrupts_Config(void)
   /*******************************/
   /* Дозволяємо переривання від SPI_DF - читання Dataflash */
   /*
-  Pre-emption пріоритет = 2 
-  Subpriority пріоритет = 0  (найвищий у даній групі)
+  Pre-emption пріоритет = 4 
+  Subpriority пріоритет = 0
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = SPI_DF_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -201,12 +201,12 @@ void Interrupts_Config(void)
   /*******************************/
   /* Дозволяємо переривання від DMA_SPI_DF запису - читання Dataflash */
   /*
-  Pre-emption пріоритет = 2 
+  Pre-emption пріоритет = 4 
   Subpriority пріоритет = 1
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamSPI_DF_Rx_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -215,13 +215,13 @@ void Interrupts_Config(void)
   /*******************************/
   /* Переривання від USART2 для RS-485*/
   /*
-  Pre-emption пріоритет = 2 
-  Subpriority пріоритет = 2
+  Pre-emption пріоритет = 5 
+  Subpriority пріоритет = 0
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = USARTRS485_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /*******************************/
@@ -229,40 +229,26 @@ void Interrupts_Config(void)
   /*******************************/
   /* Переривання від DMA1_ChannelRS485_TX*/
   /*
-  Pre-emption пріоритет = 2 
-  Subpriority пріоритет = 2
+  Pre-emption пріоритет = 5 
+  Subpriority пріоритет = 1
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamRS485_Tx_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /*******************************/
 
   /*******************************/
-  /* Дозволяємо переривання від фронтів сигналу появдення/пропадання живлення на вході джерела живлення */
-  /*
-  Pre-emption пріоритет = 2 
-  Subpriority пріоритет = 3
-  */
-  /*******************************/
-  NVIC_InitStructure.NVIC_IRQChannel = EXITI_POWER_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
-  /*******************************/
-  
-  /*******************************/
   /* Дозволяємо переривання від DMA_StreamI2C_Tx передача даних через I2C */
   /*
-  Pre-emption пріоритет = 3 (найнижчий серед груп)
+  Pre-emption пріоритет = 6
   Subpriority пріоритет = 1 
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamI2C_Tx_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 6;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -271,27 +257,41 @@ void Interrupts_Config(void)
   /*******************************/
   /* Дозволяємо переривання від DMA_ChannelI2C_Rx прийом даних з I2C */
   /*
-  Pre-emption пріоритет = 3 (найнижчий серед груп)
+  Pre-emption пріоритет = 6
   Subpriority пріоритет = 1 
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamI2C_Rx_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 6;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /*******************************/
 
   /*******************************/
+  /* Дозволяємо переривання від фронтів сигналу появдення/пропадання живлення на вході джерела живлення */
+  /*
+  Pre-emption пріоритет = 7 
+  Subpriority пріоритет = 0
+  */
+  /*******************************/
+  NVIC_InitStructure.NVIC_IRQChannel = EXITI_POWER_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+  /*******************************/
+  
+  /*******************************/
   /* Переривання від TIM4, обробка клавіатури і інші низькопріоритетні задачі*/
   /*
-  Pre-emption пріоритет = 3 (найнижчий серед груп)
-  Subpriority пріоритет = 2 
+  Pre-emption пріоритет = 7
+  Subpriority пріоритет = 1 
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /*******************************/
