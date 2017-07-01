@@ -489,7 +489,7 @@ inline void main_protection(void)
         }
         
         if (present_diagnostyka != false) _SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
-        _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+        else _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
       }
       /**************************/
     }
