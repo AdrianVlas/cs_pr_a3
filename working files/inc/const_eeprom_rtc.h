@@ -15,7 +15,7 @@
 #define EEPROM_ADDRESS        0xA2
 #define RTC_ADDRESS           0xD0
 
-#define SIZE_USTUVANNJA         (sizeof(unsigned int) + sizeof(ustuvannja) + sizeof(serial_number_dev))
+#define SIZE_USTUVANNJA         (sizeof(unsigned int) + sizeof(ustuvannja) +  + sizeof(ustuvannja_shift) + sizeof(serial_number_dev))
 #define SIZE_CONFIG              sizeof(__CONFIG)
 #define SIZE_SETTINGS            size_all_settings()
 

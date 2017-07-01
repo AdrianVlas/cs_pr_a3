@@ -1224,6 +1224,9 @@
         <name>$PROJ_DIR$\..\..\SystemView\SEGGER\SEGGER_SYSVIEW_Int.h</name>
       </file>
     </group>
+    <configuration>
+      <name>Flash-Debug</name>
+    </configuration>
   </group>
   <group>
     <name>USB Device</name>
