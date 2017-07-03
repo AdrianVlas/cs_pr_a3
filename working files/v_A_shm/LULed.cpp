@@ -25,6 +25,7 @@ CLULed::CLULed(char chM,char chI){
 
     memset(static_cast<void*> (arrPchIn),    0xcc, sizeof (char*)*TOTAL_LED_VISIO_IN);
     memset(static_cast<void*> (arrPchSchIn), 0xcc, sizeof (char*)*shCLULed_1_0_AmtIn);
+    memset(static_cast<void*> (arrStateIn),  0xcc, sizeof (char*)*TOTAL_LED_VISIO_IN);
 //    memset(static_cast<void*> (arrPchAlternator), 0xcc, sizeof (char*)*2);
     memset(static_cast<void*> (arrOut),        0, sizeof (char)*TOTAL_LED_VISIO_OUTPUT);
     memset(static_cast<void*> (&m_LedCfgSuit), 0, sizeof (LedCfgSuit));
@@ -60,7 +61,57 @@ CLULed::~CLULed(void){
 //void ChangeLedCfgSuit(void *pObj){
 //
 //}
+void CLULed::UpdateCLULed(void){
 
+    if(this->m_LedCfgSuit.chSel2 == 0) {//OFFSET_OUT_IN_RELE_STABLE_SELECTOR
+        if (this->m_LedCfgSuit.chSel1 == 0) {
+            m_shAmountProcessedRec = shAmtLedShcemasSimpleModeDscRecords + LED_NOT_01__1_1;
+            m_shStartRecord = LED_NOT_01__1_1;
+            m_pArLedShcemasDscRecords = const_cast<LedShcemasDscRecord**> (
+                    &arPLedShcemasStableDirectDscRecords[0]);
+        }
+        else {
+
+            m_shAmountProcessedRec = shAmtLedShcemasTriggerModeDscRecords
+                    + LED_NOT_01__1_1;
+            m_shStartRecord = LED_NOT_01__1_1;
+            m_pArLedShcemasDscRecords = const_cast<LedShcemasDscRecord**> (
+                    &arPLedShcemasStableTriggerDscRecords[0]);
+        }
+
+    }
+    else{//OFFSET_OUT_IN_LED_PULSE_SELECTOR
+
+        if(this->m_LedCfgSuit.chSel3 == 0){
+
+            if(m_LedCfgSuit.chSel1 == 0){//OFFSET_OUT_IN_LED_PULSE_SIMPLE_SELECTOR
+                m_shAmountProcessedRec = shAmtLedShcemasPulseC1SimpleModeDscRecords
+                +LED_NOT_01__1_1;
+                m_shStartRecord = LED_NOT_01__1_1; 
+               m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+                &arPLedShcemasPulseC1SimpleDscRecords[0]);
+            }
+            else{
+                m_shAmountProcessedRec = shAmtLedShcemasPulseC1TrigModeDscRecords
+                +LED_NOT_01__1_1;
+                m_shStartRecord = LED_NOT_01__1_1; 
+               m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+                &arPLedShcemasPulseC1TrigDscRecords[0]);
+            }
+
+        
+        }
+        else{//OFFSET_OUT_IN_LED_PULSE_EXTANDED_SELECTOR
+            
+                m_shAmountProcessedRec = shAmtLedShcemasPulseC2TrigModeDscRecords
+                +LED_NOT_01__1_1;
+            m_shStartRecord = LED_NOT_01__1_1; 
+           m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+            &arPLedShcemasPulseC2TrigDscRecords[0]);
+        }
+
+    }   
+}
 char chGLBIn1_5 = 0;
 char chGLBIn6_12 = 0;
 long lGLBInChek_6_12 = 0;
@@ -121,6 +172,7 @@ arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SELECTOR         ] = 0;//Now Defaul
 arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SIMPLE_SELECTOR  ] = 0;//Now Default
 arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_EXTANDED_SELECTOR] = 0;//Now Default
 
+
 char *pCh = (this->arrPchIn[(LED_IN_NAME__LEDIN - 1)]);
 /* if(*pCh != 0 && this->shShemasOrdNumStng == 1)
         asm(
@@ -133,51 +185,149 @@ pCh = (this->arrPchIn[(LED_IN_NAME__BL_IMP - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_02_BL_IMP                  ] = pCh[0];//Now Default
 pCh = (this->arrPchIn[(LED_IN_NAME__C1_C2 - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_03_C1_C2_SELECTOR          ] = pCh[0];//Now Default
+arChIntermediaResult[OFFSET_OUT_IN_04_C1] = *(this->arrPchIn[(LED_IN_NAME__C1 - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_05_C2] = *(this->arrPchIn[(LED_IN_NAME__C2 - 1)]);
+//arChIntermediaResult[OFFSET_OUT_IN_04_C1                      ] = 0;//Now Default
+//arChIntermediaResult[OFFSET_OUT_IN_05_C2                      ] = 0;//Now Default
+//-if(pCh[0] == 0){
+//-//C1
+//-pCh = (this->arrPchIn[(LED_IN_NAME__C1 - 1)]);
+//-arChIntermediaResult[OFFSET_OUT_IN_04_C1] = pCh[0];
+//-
+//-}
+//-else{
+//-//C2
+//-pCh = (this->arrPchIn[(LED_IN_NAME__C2 - 1)]);
+//-arChIntermediaResult[OFFSET_OUT_IN_05_C2] = pCh[0];
+//-}
+//arChIntermediaResult[IN_06_TEST_BL] = !( *(this->arrPchIn[(LED_IN_NAME__TEST_M - 1)]) );
+arChIntermediaResult[IN_07_TIN    ] = *(this->arrPchIn[(LED_IN_NAME__TLEDIN - 1)]);
+i = *(this->arrPchIn[(LED_IN_NAME__TEST_M - 1)]);
+arChIntermediaResult[IN_08_TEST   ] = i;
+arChIntermediaResult[IN_06_TEST_BL] = !i;
 
-arChIntermediaResult[OFFSET_OUT_IN_04_C1                      ] = 0;//Now Default
-arChIntermediaResult[OFFSET_OUT_IN_05_C2                      ] = 0;//Now Default
-if(pCh[0] == 0){
-//C1
-pCh = (this->arrPchIn[(LED_IN_NAME__C1 - 1)]);
-arChIntermediaResult[OFFSET_OUT_IN_04_C1] = pCh[0];
-
+if(CLUBase::m_AuxInfo.ch > 0){
+    i = arChIntermediaResult[OFFSET_OUT_IN_00_LEDIN];
+        rl_Val = arChIntermediaResult[OFFSET_OUT_IN_01_RESET];
+        if((i == arrStateIn[0])&& (rl_Val == arrStateIn[1])){
+            return;
+        }
+    arrStateIn[0] = i;
+    arrStateIn[1] = rl_Val;
 }
 else{
-//C2
-pCh = (this->arrPchIn[(LED_IN_NAME__C2 - 1)]);
-arChIntermediaResult[OFFSET_OUT_IN_05_C2] = pCh[0];
-}
-arChIntermediaResult[IN_06_TEST_BL] = !( *(this->arrPchIn[(LED_IN_NAME__TEST_M - 1)]) );
-arChIntermediaResult[IN_07_TIN    ] = *(this->arrPchIn[(LED_IN_NAME__TLEDIN - 1)]);
-arChIntermediaResult[IN_08_TEST   ] = *(this->arrPchIn[(LED_IN_NAME__TEST_M - 1)]);
-arChIntermediaResult[IN_06_TEST_BL] =  0;
-arChIntermediaResult[IN_07_TIN    ] =  0;
-arChIntermediaResult[IN_08_TEST   ] =  0;
+    rl_Val = 0;
+//    for (i = 0; i < (OFFSET_OUT_IN_06_TEST_BL-OFFSET_OUT_IN_00_LEDIN); i++){
+//        if(arChIntermediaResult[i+OFFSET_OUT_IN_00_LEDIN] != arrStateIn[i])
+//        rl_Val++;//try use memcmp
+//    }
+    rl_Val = memcmp(static_cast<const void*>(arChIntermediaResult),static_cast<void*>(arrStateIn),OFFSET_OUT_IN_06_TEST_BL-OFFSET_OUT_IN_00_LEDIN);
+    if(rl_Val != 0){
+        memcpy(reinterpret_cast<void*>(arrStateIn),
+        reinterpret_cast<void*>(&arChIntermediaResult[OFFSET_OUT_IN_00_LEDIN]), OFFSET_OUT_IN_06_TEST_BL-OFFSET_OUT_IN_00_LEDIN);    
+    }
+    else{
+        if(arChIntermediaResult[OFFSET_OUT_IN_07_TIN] == arrStateIn[LED_IN_NAME__TLEDIN-1])
+            if(arChIntermediaResult[OFFSET_OUT_IN_08_TEST ] == arrStateIn[LED_IN_NAME__TEST_M-1])
+                return;
+    }
+    arrStateIn[LED_IN_NAME__TEST_M -1] = arChIntermediaResult[OFFSET_OUT_IN_08_TEST ];
+    arrStateIn[LED_IN_NAME__TLEDIN -1] = arChIntermediaResult[OFFSET_OUT_IN_07_TIN];
+}    
+/*
+    
+*/
 
 
-for (i = OFFSET_OUT_LED_NOT_01__1_1; i < OFFSET_OUT_IN_MNU_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
-    arChIntermediaResult[i] = 0xcc;
+
+
+//for (i = OFFSET_OUT_LED_NOT_01__1_1; i < OFFSET_OUT_IN_MNU_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
+//    arChIntermediaResult[i] = 0xcc;
    
 
 rl_Val = 0;
 if(this->m_LedCfgSuit.chSel1 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_MNU_NORMAL_SELECTOR] = 1;
-    m_shAmountProcessedRec = shAmtLedShcemasSimpleModeDscRecords + LED_NOT_01__1_1;
-    m_shStartRecord = LED_NOT_01__1_1; 
-   m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
-    &arPLedShcemasStableDirectDscRecords[0]);
-    arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1] =  0;
-    arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1] =  0;
+//-    m_shAmountProcessedRec = shAmtLedShcemasSimpleModeDscRecords + LED_NOT_01__1_1;
+//-    m_shStartRecord = LED_NOT_01__1_1; 
+//-   m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+//-    &arPLedShcemasStableDirectDscRecords[0]);
+//    arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1] =  0;
+//    arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1] =  0;
     arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
 
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_MNU_TRIGGER_SELECTOR] = 1;
-    m_shAmountProcessedRec = shAmtLedShcemasTriggerModeDscRecords
-    +LED_NOT_01__1_1;
-    m_shStartRecord = LED_NOT_01__1_1; 
-   m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
-    &arPLedShcemasStableTriggerDscRecords[0]);
+//    m_shAmountProcessedRec = shAmtLedShcemasTriggerModeDscRecords
+//    +LED_NOT_01__1_1;
+//    m_shStartRecord = LED_NOT_01__1_1; 
+//   m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+//    &arPLedShcemasStableTriggerDscRecords[0]);
+//    arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1]   =  0;
+//    arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1]   =  0;
+//    arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
+//    arChIntermediaResult[OFFSET_OUT_LED_NOT_01__1_1]   =  0;
+//    arChIntermediaResult[OFFSET_OUT_LED_AND_02__2_1]   =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_AND_03__2_1]   =  0;
+//    arChIntermediaResult[OFFSET_OUT_LED_AND_04__2_1]   =  0;
+//    arChIntermediaResult[OFFSET_OUT_LED_Or_05__2_1]    =  0;
+    
+    rl_Val = 1;
+}
+if(this->m_LedCfgSuit.chSel2 == 0){
+arChIntermediaResult[OFFSET_OUT_IN_MNU_STABLE_SELECTOR] = 1;
+
+    arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1]   =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1]   =  0;
+//    arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
+}
+else{
+arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SELECTOR] = 1;
+    arChIntermediaResult[OFFSET_OUT_LED_AND_09__2_1]   =  0;
+//     pCh = (this->arrPchIn[(LED_IN_NAME__C1 - 1)]);
+//    arChIntermediaResult[OFFSET_OUT_IN_04_C1] =  pCh[0];
+//    arChIntermediaResult[OFFSET_OUT_IN_05_C2] =  0;
+    if(this->m_LedCfgSuit.chSel3 == 0){
+        arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SIMPLE_SELECTOR] = 1;
+        arChIntermediaResult[OFFSET_OUT_LED_AND_13__2_1]   =  0;
+        arChIntermediaResult[OFFSET_OUT_LED_NOT_14__1_1]   =  0;
+        arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1]   =  0;
+        if(rl_Val == 0){//Normal
+//            m_shAmountProcessedRec = shAmtLedShcemasPulseC1SimpleModeDscRecords
+//            +LED_NOT_01__1_1;
+//            m_shStartRecord = LED_NOT_01__1_1; 
+//           m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+//            &arPLedShcemasPulseC1SimpleDscRecords[0]);
+            
+
+
+        }
+        else{//Trigger
+//            m_shAmountProcessedRec = shAmtLedShcemasPulseC1TrigModeDscRecords
+//            +LED_NOT_01__1_1;
+//            m_shStartRecord = LED_NOT_01__1_1; 
+//           m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+//            &arPLedShcemasPulseC1TrigDscRecords[0]);
+
+        }
+
+    
+    }
+    else{
+        arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_EXTANDED_SELECTOR] = 1;
+//            m_shAmountProcessedRec = shAmtLedShcemasPulseC2TrigModeDscRecords
+//            +LED_NOT_01__1_1;
+//        m_shStartRecord = LED_NOT_01__1_1; 
+//       m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
+//        &arPLedShcemasPulseC2TrigDscRecords[0]);
+        pCh = (this->arrPchIn[(LED_IN_NAME__C2 - 1)]);
+        arChIntermediaResult[OFFSET_OUT_IN_05_C2 ] =  pCh[0];
+//-arChIntermediaResult[OFFSET_OUT_RELE_Or_07__2_1] =  
+//-arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_EXTANDED_SELECTOR]
+//-| arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SIMPLE_SELECTOR];
+    }
+    /*
     arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1]   =  0;
     arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1]   =  0;
     arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
@@ -186,52 +336,10 @@ arChIntermediaResult[OFFSET_OUT_IN_MNU_TRIGGER_SELECTOR] = 1;
     arChIntermediaResult[OFFSET_OUT_LED_AND_03__2_1]   =  0;
     arChIntermediaResult[OFFSET_OUT_LED_AND_04__2_1]   =  0;
     arChIntermediaResult[OFFSET_OUT_LED_Or_05__2_1]    =  0;
-    
-    rl_Val = 1;
-}
-if(this->m_LedCfgSuit.chSel2 == 0){
-arChIntermediaResult[OFFSET_OUT_IN_MNU_STABLE_SELECTOR] = 1;
-}
-else{
-arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SELECTOR] = 1;
-    if(this->m_LedCfgSuit.chSel3 == 0){
-    arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_SIMPLE_SELECTOR] = 1;
-        if(rl_Val == 0){
-            m_shAmountProcessedRec = shAmtLedShcemasPulseC1SimpleModeDscRecords
-            +LED_NOT_01__1_1;
-            m_shStartRecord = LED_NOT_01__1_1; 
-           m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
-            &arPLedShcemasPulseC1SimpleDscRecords[0]);
-        }
-        else{
-            m_shAmountProcessedRec = shAmtLedShcemasPulseC1TrigModeDscRecords
-            +LED_NOT_01__1_1;
-            m_shStartRecord = LED_NOT_01__1_1; 
-           m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
-            &arPLedShcemasPulseC1TrigDscRecords[0]);
-        }
-
-    
-    }
-    else{
-        arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_EXTANDED_SELECTOR] = 1;
-            m_shAmountProcessedRec = shAmtLedShcemasPulseC2TrigModeDscRecords
-            +LED_NOT_01__1_1;
-        m_shStartRecord = LED_NOT_01__1_1; 
-       m_pArLedShcemasDscRecords = const_cast< LedShcemasDscRecord** >(
-        &arPLedShcemasPulseC2TrigDscRecords[0]);
-    }
-        arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1]   =  0;
-        arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1]   =  0;
-        arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
-        arChIntermediaResult[OFFSET_OUT_LED_NOT_01__1_1]   =  0;
-        arChIntermediaResult[OFFSET_OUT_LED_AND_02__2_1]   =  0;
-        arChIntermediaResult[OFFSET_OUT_LED_AND_03__2_1]   =  0;
-        arChIntermediaResult[OFFSET_OUT_LED_AND_04__2_1]   =  0;
-        arChIntermediaResult[OFFSET_OUT_LED_Or_05__2_1]    =  0;
-        arChIntermediaResult[OFFSET_OUT_LED_AND_10__2_1]   = 0;
-        arChIntermediaResult[OFFSET_OUT_LED_OR_11__2_1 ]   = 0;
-        arChIntermediaResult[OFFSET_OUT_LED_OR_12__2_1 ]   = 0;
+    arChIntermediaResult[OFFSET_OUT_LED_AND_10__2_1]   = 0;
+    arChIntermediaResult[OFFSET_OUT_LED_OR_11__2_1 ]   = 0;
+    arChIntermediaResult[OFFSET_OUT_LED_OR_12__2_1 ]   = 0;
+    */
 }
 
 arChIntermediaResult[OFFSET_OUT_IN_LED_VCC   ] = 1;

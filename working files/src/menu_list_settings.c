@@ -166,9 +166,9 @@ void make_ekran_list_settings(void)
 /*****************************************************/
 void press_esc_in_list_settings(void)
 {
-  if ((config_settings_modified & MASKA_MENU_LOCKS) != 0)
+  if ((config_settings_modified & MASKA_FOR_BIT(BIT_MENU_LOCKS)) != 0)
   {
-    if ((config_settings_modified & (MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS)) != 0)
+    if ((config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION) | MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC))) != 0)
     {
       if (current_state_menu2.edition == ED_CAN_BE_EDITED)
       {

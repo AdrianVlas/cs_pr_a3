@@ -203,7 +203,7 @@ enum _result_pressed_enter_during_edition press_enter_in_control_output_led(void
           p_settings_cont->param[OUTPUT_LED_MEANDER1] = p_settings_edit->param[OUTPUT_LED_MEANDER1];
           p_settings_cont->param[OUTPUT_LED_MEANDER2] = p_settings_edit->param[OUTPUT_LED_MEANDER2];
           
-          config_settings_modified |= MASKA_CHANGED_SETTINGS;
+          config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
           result = RPEDE_DATA_CHANGED_OK;
         }
         else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;

@@ -66,6 +66,13 @@ typedef long(*logicfnptr1)(void*pIn,void *pOut);//-  pointer to a exec function
 //class CLUBase;
 typedef void(*logicfnptr)(void *pObj);//-  pointer to a exec function
 
+typedef  union{
+        char ch;
+        short sh;
+        long l;
+    } UNNCLUBaseAuxInfo;
+
+
 class BaseInPoint;
 class CLUBase
 {
@@ -75,6 +82,8 @@ public:
 	CLUBase(CLUBase&);
 	CLUBase(char chM,char chI,char chNumIn,char chNumOut);
 	CLUBase& operator= (const CLUBase&);
+//    static  char chCBL_II;
+    static UNNCLUBaseAuxInfo m_AuxInfo;
 	void* pIn;//List Addr//BaseInPoint* pIn;//List Addr
 //	struct ch{
 		char chMaxIteratoin;

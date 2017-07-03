@@ -174,7 +174,7 @@ inline void calc_measurement(void)
     */
     
     float mnognyk = (i < (NUMBER_ANALOG_CANALES - 1)) ? MNOGNYK_I_DIJUCHE_FLOAT : MNOGNYK_U_DIJUCHE_FLOAT;
-    float value_float = mnognyk*((float)sqrt_sum_sqr_data_local[i])/(64.0f); /*64 = 4*16. 16 - це підсилення каналів "Analog Input"; 4 - це sqrt(16), а 16 береться з того, що 32 = 16*2 */
+    float value_float = mnognyk*((float)sqrt_sum_sqr_data_local[i])/((i != IM_U) ? 64.0f : 4.0f); /*64 = 4*16. 16 - це підсилення каналів "Analog Input"; 4 - це sqrt(16), а 16 береться з того, що 32 = 16*2 */
     measurement[i] = (unsigned int)value_float; 
     /***/
   }
@@ -407,67 +407,118 @@ inline void main_protection(void)
   /**************************/
   //Сигнал "Несправность Общая"
   /**************************/
-  diagnostyca_adc_execution();
-
-  unsigned int diagnostyka_tmp[2];
-  diagnostyka_tmp[0] = diagnostyka[0];
-  diagnostyka_tmp[1] = diagnostyka[1];
-
-  diagnostyka_tmp[0] &= (unsigned int)(~clear_diagnostyka[0]); 
-  diagnostyka_tmp[0] |= set_diagnostyka[0]; 
-
-  diagnostyka_tmp[1] &= (unsigned int)(~clear_diagnostyka[1]); 
-  diagnostyka_tmp[1] |= set_diagnostyka[1]; 
-
-  _CLEAR_BIT(diagnostyka_tmp, EVENT_START_SYSTEM_BIT);
-  _CLEAR_BIT(diagnostyka_tmp, EVENT_DROP_POWER_BIT);
-  if (
-      (diagnostyka_tmp[0] != 0) ||
-      (diagnostyka_tmp[1] != 0)
-     )   
+  static size_t _n;
+  if (_n == 0)
   {
-    _SET_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
-    /**************************/
-    //Сигнал "Несправность Аварийная"
-    /**************************/
-    if (
-        ((diagnostyka_tmp[0] & MASKA_AVAR_ERROR_0) != 0) ||
-        ((diagnostyka_tmp[1] & MASKA_AVAR_ERROR_1) != 0)
-       )   
+    size_t n_diagn_states = 0;
+    
+    switch (diagnostyka_arrays_located)
     {
-      _SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+    case DIAGN_ARRAYS_ALL:
+      {
+        n_diagn_states = NUMBER_ERRORS;
+        break;
+      }
+    case DIAGN_ARRAYS_SHORT:
+    case DIAGN_ARRAYS_ERROR:
+      {
+        n_diagn_states = _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS;
+        break;
+      }
+    default:
+      {
+        break;
+      }
+    }
+    _n = DIV_TO_HIGHER(n_diagn_states, 32);
+  }
+  
+  if (_n != 0) /*не пишу else, а повтороно пишу if щоб і при першому визначенні кількості сигналів діагностики перевірялася діагностика*/
+  {
+    diagnostyca_adc_execution();
+    
+    for (size_t i = 0; i < _n; i++)
+    {
+      diagnostyka_tmp_high[i] = diagnostyka[i];
+
+      diagnostyka_tmp_high[i] &= (unsigned int)(~clear_diagnostyka[i]); 
+      diagnostyka_tmp_high[i] |= set_diagnostyka[i]; 
+    }
+
+    _CLEAR_BIT(diagnostyka_tmp_high, EVENT_START_SYSTEM_BIT);
+    _CLEAR_BIT(diagnostyka_tmp_high, EVENT_SOFT_RESTART_SYSTEM_BIT);
+    _CLEAR_BIT(diagnostyka_tmp_high, EVENT_DROP_POWER_BIT);
+
+    uint32_t present_diagnostyka = false;
+    for (size_t i = 0; ((present_diagnostyka == false) && (i < _n)); i++)
+    {
+      if (diagnostyka_tmp_high[i] != 0) present_diagnostyka = true;
+    }
+
+    if (present_diagnostyka != false)
+    {
+      _SET_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
+      /**************************/
+      //Сигнал "Несправность Аварийная"
+      /**************************/
+      if (
+          ((diagnostyka_tmp_high[0] & MASKA_AVAR_ERROR_0) != 0) ||
+          ((diagnostyka_tmp_high[1] & MASKA_AVAR_ERROR_1) != 0)
+         )   
+      {
+        _SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+      }
+      else
+      {
+        const uint32_t val1 = ERROR_DIGITAL_OUTPUTS_BIT / 32;
+        const uint32_t maska_val2 = (uint32_t)(~((1 << (ERROR_DIGITAL_OUTPUTS_BIT % 32)) - 1));
+        
+        present_diagnostyka = false;
+        for (size_t i = val1; ((present_diagnostyka == false) && (i < _n)); i++)
+        {
+          if (diagnostyka_tmp_high[i] != 0) 
+          {
+            if (
+                (i != val1) ||
+                ((diagnostyka_tmp_high[val1] & maska_val2) != 0)  
+               )   
+            {
+              present_diagnostyka = true;
+            }
+          }
+        }
+        
+        if (present_diagnostyka != false) _SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+        else _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+      }
+      /**************************/
     }
     else
     {
+      _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
       _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
     }
-    /**************************/
-  }
-  else
-  {
-    _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
-    _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
   }
   /**************************/
 
   
-  //Логічні схеми мають працювати тільки у тому випадку, якщо немє сигналу "Аварийная неисправность"
-  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
-  {
-    //Аварійна ситуація не зафіксована
-
-  }
-  else
-  {
-    //Аварійна ситуація зафіксована
-    
-    //Скидаємо всі активні функції, крім інформативних
-    
-    //Деактивовуємо всі реле
-    
-    //Скидаємо всі таймери, які присутні у лозіці
-    
-  }
+//  //Логічні схеми мають працювати тільки у тому випадку, якщо немє сигналу "Аварийная неисправность"
+//  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
+//  {
+//    //Аварійна ситуація не зафіксована
+//
+//  }
+//  else
+//  {
+//    //Аварійна ситуація зафіксована
+//    
+//    //Скидаємо всі активні функції, крім інформативних
+//    
+//    //Деактивовуємо всі реле
+//    
+//    //Скидаємо всі таймери, які присутні у лозіці
+//    
+//  }
 
   /**************************/
   //Робота з функціями, які мають записуватися у енергонезалежну пам'ять
@@ -489,17 +540,17 @@ inline void main_protection(void)
   //Вивід інформації на виходи
   /**************************/
   
-  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
-  {
-    //Не зафіксовано аварійної ситуації, тому встановлювати реле можна
-    
-  }
-  else
-  {
-    //Зафіксовано аварійнe ситуацію, тому деактивуємо всі реле!!!
-
-    //Деактивовуємо всі реле
-  }
+//  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
+//  {
+//    //Не зафіксовано аварійної ситуації, тому встановлювати реле можна
+//    
+//  }
+//  else
+//  {
+//    //Зафіксовано аварійнe ситуацію, тому деактивуємо всі реле!!!
+//
+//    //Деактивовуємо всі реле
+//  }
   
   //Виводимо інформацію по виходах на піни процесора (у зворотньому порядку)
 //  unsigned int temp_state_outputs = 0;
@@ -912,7 +963,10 @@ uint32_t event_log_handler(void)
   number_empty_cells = (int32_t)(tail - head);
   if (
       (number_empty_cells == 0) &&
-      (_CHECK_SET_BIT(diagnostyka, ERROR_LOG_OVERLOAD_BIT) == 0)
+      (
+       (diagnostyka == NULL) ||
+       (_CHECK_SET_BIT(diagnostyka, ERROR_LOG_OVERLOAD_BIT) == 0)
+      )   
      )
   {
     number_empty_cells = MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
@@ -1293,11 +1347,11 @@ uint32_t event_log_handler(void)
        (param != 0)
       ) 
   {
-    _SET_BIT(set_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
   }
   else
   {
-    _SET_BIT(clear_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
   }
   
   return result;

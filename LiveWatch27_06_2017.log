@@ -1,0 +1,55 @@
+Expression	Value	Location	Type	
+LedStateUI32Bit	<union>	0x200109FC	UI32Bit	
+DiHrdStateUI32Bit	<union>	0x200109EC	UI32Bit	
+DoStateUI32Bit	<union>	0x200109F0	UI32Bit	
+chGLBIn1_5	'\0' (0x00)	0x20010A5D	char	
+GlobalObjectMap	<struct>	0x60000008	struct GlobalObjectMap_tag	
+arPCLUDInput_0_1	<array>	0x60000008	class CLUDInput_0_1 *[19]	
+arPCLUDout_1_0	<array>	0x60000054	class CLUDout_1_0 *[7]	
+[0]	0x2000809C (gLUAreaMem + 32000)	0x60000054	class CLUDout_1_0 *	
+[1]	0x20008048 (gLUAreaMem + 31916)	0x60000058	class CLUDout_1_0 *	
+[2]	0x20007FF4 (gLUAreaMem + 31832)	0x6000005C	class CLUDout_1_0 *	
+[3]	0x20007FA0 (gLUAreaMem + 31748)	0x60000060	class CLUDout_1_0 *	
+[4]	0x20007F4C (gLUAreaMem + 31664)	0x60000064	class CLUDout_1_0 *	
+	<class>	0x20007F4C	class CLUBase	
+arrPchIn	<array>	0x20007F68	char *[6]	
+[0]	0x20010A74 ""	0x20007F68	char *	
+[1]	0x20008398 ""	0x20007F6C	char *	
+[2]	0x20008374 ""	0x20007F70	char *	
+[3]	0x20008350 ""	0x20007F74	char *	
+[4]	0x20010A74 ""	0x20007F78	char *	
+[5]	0x20010A74 ""	0x20007F7C	char *	
+arrPchSchIn	<array>	0x20007F80	char *[1]	
+arrStateIn	<array>""	0x20007F84	char[6]	
+m_chQTrg06	'\0' (0x00)	0x20007F8A	char	
+m_chInC06	'\0' (0x00)	0x20007F8B	char	
+m_chErrorQTrg06	'\0' (0x00)	0x20007F8C	char	
+arrOut	<array>""	0x20007F8D	char[1]	
+m_shAmountProcessedRec	0x0004	0x20007F8E	short	
+m_shStartRecord	0x0000	0x20007F90	short	
+m_pArShcemasDscRecords	arPDOShcemasStableDirectDscRecords (0x8032878)	0x20007F94	LedShcemasDscRecord * *	
+m_ReleyCfgSuit	<struct>	0x20007F98	ReleyCfgSuit	
+[5]	0x20007EF8 (gLUAreaMem + 31580)	0x60000068	class CLUDout_1_0 *	
+[6]	0x20007EA4 (gLUAreaMem + 31496)	0x6000006C	class CLUDout_1_0 *	
+arPCLULed	<array>	0x60000070	class CLULed *[22]	
+arPCLUNot_1_1	<array>	0x600000C8	class CLUNot_1_1 *[60]	
+arPCLUOr_8_1	<array>	0x600001B8	class CLUOr_8_1 *[60]	
+arPCLUAnd_8_1	<array>	0x600002A8	class CLUAnd_8_1 *[60]	
+arPCLUXor_8_1	<array>	0x60000398	class CLUXor_8_1 *[60]	
+arCMft	<array>	0x60000488	class CMft *[60]	
+arPCLUFKey	<array>	0x60000578	class CLUFKey *[5]	
+arPCLULss	<array>	0x6000058C	class CLULss *[32]	
+arPCBGSig	<array>	0x6000060C	class CBGSig *[22]	
+arPCLUTrig	<array>	0x60000664	class CLUTrig *[30]	
+arPCPulseAlternator	<array>	0x600006DC	class CPulseAlternator *[60]	
+arPCLUTu	<array>	0x600007CC	class CLUTu *[20]	
+arPCLUTs	<array>	0x6000081C	class CLUTs *[20]	
+sDiCfg.DiState.ul_val	0x00000000	0x20010554	unsigned long	
+sh.chInitTerminated	'.' (0x01)	0x200104EC	char	
+state_i2c_task	0x00049248	0x2000005C	uint32_t	
+measurement_DBG	Error (col 1): Unknown or ambiguous symbol. measurement_DBG			
+measurement_DBG	Error (col 1): Unknown or ambiguous symbol. measurement_DBG			
+chMftCmpVal	'{' (0x7B)	0x20010A6E	char	
+GlobalObjectMap.arPCLUDout_1_0[4]->arrOut[0]	'\0' (0x00)	0x20007F8D	char	
+shGblDOCheckIn	0x001C	0x20010A4A	short	
+DoCheckUI32Bit	<union>	0x200109F4	UI32Bit	

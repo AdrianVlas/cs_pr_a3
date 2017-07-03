@@ -77,317 +77,340 @@ void calculate_namber_bit_waiting_for_rs_485(void)
 /*****************************************************/
 void changing_diagnostyka_state(void)
 {
-  /*****
-  Визначаємо новий стан діагностики
+  size_t n_diagn_states = 0;
   
-  Алгоритм:
-  - Копіюємо у тимчасові масиви біти, які треба скинути і які треба виставити у 
-    діагностиці
-  - Після цього копіювання більш пріоритетні ситстеми можуть добавляти (не 
-    скидають ніколи!!!) нові біти у глобальні масиви
-  - Біти , які ми будуть скидалися/встановлюватися очищаємо з глобальних масивів
-    (якщо в процесі цього алгоритму більшпріоритетні системи добавили чи 
-    добавлятимуть нові біти, то вони не скинуться, а опрацюються при наступному 
-    виклику цієї функції)
-
-  - Спочатку очищаємо біти а потім встановлюємо, бо фіксація події має більший 
-    пріоритет за очищення
-  *****/
-  unsigned int clear_diagnostyka_tmp[2], set_diagnostyka_tmp[2];
+  switch (diagnostyka_arrays_located)
+  {
+  case DIAGN_ARRAYS_ALL:
+    {
+      n_diagn_states = NUMBER_ERRORS;
+      break;
+    }
+  case DIAGN_ARRAYS_SHORT:
+  case DIAGN_ARRAYS_ERROR:
+    {
+      n_diagn_states = _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS;
+      break;
+    }
+  default:
+    {
+      break;
+    }
+  }
+  if (n_diagn_states != 0)
+  {
+    /*****
+    Визначаємо новий стан діагностики
   
-  clear_diagnostyka_tmp[0] = clear_diagnostyka[0];
-  clear_diagnostyka_tmp[1] = clear_diagnostyka[1];
+    Алгоритм:
+    - Копіюємо у тимчасові масиви біти, які треба скинути і які треба виставити у 
+      діагностиці
+    - Після цього копіювання більш пріоритетні ситстеми можуть добавляти (не 
+      скидають ніколи!!!) нові біти у глобальні масиви
+    - Біти , які ми будуть скидалися/встановлюватися очищаємо з глобальних масивів
+      (якщо в процесі цього алгоритму більшпріоритетні системи добавили чи 
+      добавлятимуть нові біти, то вони не скинуться, а опрацюються при наступному 
+      виклику цієї функції)
 
-  set_diagnostyka_tmp[0] = set_diagnostyka[0];
-  set_diagnostyka_tmp[1] = set_diagnostyka[1];
+    - Спочатку очищаємо біти а потім встановлюємо, бо фіксація події має більший 
+      пріоритет за очищення
+    *****/
+    size_t _n = DIV_TO_HIGHER(n_diagn_states, 32);
+  
+    for (size_t i = 0; i < _n; i++)
+    {
+      clear_diagnostyka_tmp[i] = clear_diagnostyka[i];
     
-  diagnostyka[0] &= (unsigned int)(~clear_diagnostyka_tmp[0]); 
-  diagnostyka[0] |= set_diagnostyka_tmp[0]; 
+      set_diagnostyka_tmp[i] = set_diagnostyka[i];
 
-  diagnostyka[1] &= (unsigned int)(~clear_diagnostyka_tmp[1]); 
-  diagnostyka[1] |= set_diagnostyka_tmp[1]; 
+      diagnostyka[i] &= (unsigned int)(~clear_diagnostyka_tmp[i]); 
+      diagnostyka[i] |= set_diagnostyka_tmp[i]; 
 
-  clear_diagnostyka[0] &= (unsigned int)(~clear_diagnostyka_tmp[0]);
-  clear_diagnostyka[1] &= (unsigned int)(~clear_diagnostyka_tmp[1]);
-  
-  set_diagnostyka[0] &= (unsigned int)(~set_diagnostyka_tmp[0]);
-  set_diagnostyka[1] &= (unsigned int)(~set_diagnostyka_tmp[1]);
-  /*****/
-  
-  //Визначаємо, чи відбулися зміни
-  unsigned int value_changes[2];
-  value_changes[0] = diagnostyka_before[0] ^ diagnostyka[0];
-  value_changes[1] = diagnostyka_before[1] ^ diagnostyka[1];
-  
-  /*
-  У реєстраторі програмних подій має реєструватися тільки перехід з пасивного стану у активний
-  таких подій як "Старт пристр." і "Рестарт пристр."
-  тому перехід з активного у пачсивний ми ігноруємо і крім того затираємо біти, які його "засигналізували"
-  */
-  
-  /*****/
-  //Подія "Старт пристр."
-  /*****/
-  if (_CHECK_SET_BIT(value_changes, EVENT_START_SYSTEM_BIT) != 0)
-  {
-    //Зафіксовано що подія "Старт пристр." змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka, EVENT_START_SYSTEM_BIT) == 0)
-    {
-      /*
-      Новий стан події " Старт пристр." є неактивний стан
-      Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
-      - знімаємо встановлений біт про зміну стану діагностики
-      - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
-      - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
-      */
-      _CLEAR_BIT(value_changes, EVENT_START_SYSTEM_BIT);
-      _CLEAR_BIT(diagnostyka_before, EVENT_START_SYSTEM_BIT);
-    }
-  }
-  /*****/
-  
-  /*****/
-  //Подія "Рестарт пристр."
-  /*****/
-  if (_CHECK_SET_BIT(value_changes, EVENT_RESTART_SYSTEM_BIT) != 0)
-  {
-    //Зафіксовано що подія "Рестарт пристр." змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0)
-    {
-      /*
-      Новий стан події "Рестарт пристр." є неактивний стан
-      Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
-      - знімаємо встановлений біт про зміну стану діагностики
-      - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
-      - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
-      */
-      _CLEAR_BIT(value_changes, EVENT_RESTART_SYSTEM_BIT);
-      _CLEAR_BIT(diagnostyka_before, EVENT_RESTART_SYSTEM_BIT);
-    }
-  }
-  /*****/
-        
-  /*****/
-  //Подія "Пр.Рестарт пр."
-  /*****/
-  if (_CHECK_SET_BIT(value_changes, EVENT_SOFT_RESTART_SYSTEM_BIT) != 0)
-  {
-    //Зафіксовано що подія "Пр.Рестарт пр." змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT) == 0)
-    {
-      /*
-      Новий стан події "Пр.Рестарт пр." є неактивний стан
-      Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
-      - знімаємо встановлений біт про зміну стану діагностики
-      - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
-      - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
-      */
-      _CLEAR_BIT(value_changes, EVENT_SOFT_RESTART_SYSTEM_BIT);
-      _CLEAR_BIT(diagnostyka_before, EVENT_SOFT_RESTART_SYSTEM_BIT);
-    }
-  }
-  /*****/
-        
-  /*****/
-  //Подія "Зм.конфіругації"
-  /*****/
-  if (_CHECK_SET_BIT(value_changes, EVENT_CHANGE_CONFIGURATION_BIT) != 0)
-  {
-    //Зафіксовано що подія "Зм.конфіругації" змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka, EVENT_CHANGE_CONFIGURATION_BIT) == 0)
-    {
-      /*
-      Новий стан події "Зм.конфіругації" є неактивний стан
-      Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
-      - знімаємо встановлений біт про зміну стану діагностики
-      - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
-      - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
-      */
-      _CLEAR_BIT(value_changes, EVENT_CHANGE_CONFIGURATION_BIT);
-      _CLEAR_BIT(diagnostyka_before, EVENT_CHANGE_CONFIGURATION_BIT);
-    }
-  }
-  /*****/
-        
-  /*****/
-  //Подія "Зм.налаштувань"
-  /*****/
-  if (_CHECK_SET_BIT(value_changes, EVENT_CHANGE_SETTINGS_BIT) != 0)
-  {
-    //Зафіксовано що подія "Зм.налаштувань" змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka, EVENT_CHANGE_SETTINGS_BIT) == 0)
-    {
-      /*
-      Новий стан події "Зм.налаштувань" є неактивний стан
-      Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
-      - знімаємо встановлений біт про зміну стану діагностики
-      - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
-      - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
-      */
-      _CLEAR_BIT(value_changes, EVENT_CHANGE_SETTINGS_BIT);
-      _CLEAR_BIT(diagnostyka_before, EVENT_CHANGE_SETTINGS_BIT);
-    }
-  }
-  /*****/
-        
-  /*****/
-  //Подія "Зуп.пристр."
-  /*****/
-  /*
-  У реєстраторі програмних подій має реєструватися тільки перехід з пасивного стану у активний
-  таких події як "Зуп.пристр." і ця подія не має бути активною у текучій діагностиці,
-  бо це, фактично, подія, яка мала місце до останнього включення приладу в роботу.
-  Тобто це подія "попереднього сеансу роботи"
-  тому перехід з пасивного у фіксуємо ми фіксуємо і зразу затираємо цей біт у теперішній діагностіці,
-  яка після цього буде зкопійомана у масив, який відповідає за попередній стан діагностики, так і у масив
-  діагностики, який відповідає за текучий стан подій діагностики
-  */
-  if (_CHECK_SET_BIT(value_changes, EVENT_STOP_SYSTEM_BIT) != 0)
-  {
-    //Зафіксовано що подія "Зуп.пристр." змінила свій стан
-    if (_CHECK_SET_BIT(diagnostyka, EVENT_STOP_SYSTEM_BIT) != 0)
-    {
-      /*
-      Cтан події "Зуп.пристр." встановився
-      Тому робимо такі операції, щоб вона попара у реєстратора програмних подій, але не відображалася у діагностиці
-      - знімаємо встановлений біт у масиві, який зараз буде копіюватися у масив попереднього стану
-      - знімаємо встановлений біт у масиві, який відповідає за текучий стан подій діагностики
-      */
-      _CLEAR_BIT(diagnostyka, EVENT_STOP_SYSTEM_BIT);
-    }
-  }
-  /*****/
-  
-  //Визначаємо кількість доступних комірок у буфері для реєстратора програмних подій
-  int32_t number_empty_cells;
-  uint32_t head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
-  number_empty_cells = (int32_t)(tail - head);
-  if (
-      (number_empty_cells == 0) &&
-      (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) == 0)
-     )
-  {
-    number_empty_cells = MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
-  }
-  while (number_empty_cells < 0) number_empty_cells += MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
+      clear_diagnostyka[i] &= (unsigned int)(~clear_diagnostyka_tmp[i]);
 
-  if (
-      (
-       (value_changes[0] != 0) ||
-       (value_changes[1] != 0)
-      )
-      ||
-      (
-       (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) != 0) &&
-       (number_empty_cells > 1)  
-      )
-     )
-  {
-    /***
-    Час фіксації зміни у діагностиці
-    ***/
-    uint8_t *label_to_time_array;
-    if (copying_time == 0) label_to_time_array = time;
-    else label_to_time_array = time_copy;
-    /***/
-        
-    /***
-    Фіксація самих подій
-    ***/
-    size_t i = 0;
-    while (
-           (
-            (number_empty_cells == 1) &&
-            (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
-           )
-           ||
-           (i < (8*sizeof(value_changes))) 
-           ||
-           (
-            (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) != 0) &&
-            (number_empty_cells > 1)
-           )
-          )
+      set_diagnostyka[i] &= (unsigned int)(~set_diagnostyka_tmp[i]);
+
+      //Визначаємо, чи відбулися зміни
+      value_changes_diagnostyka[i] = diagnostyka_before[i] ^ diagnostyka[i];
+    }
+    /*****/
+  
+    /*
+    У реєстраторі програмних подій має реєструватися тільки перехід з пасивного стану у активний
+    таких подій як "Старт пристр." і "Рестарт пристр."
+    тому перехід з активного у пачсивний ми ігноруємо і крім того затираємо біти, які його "засигналізували"
+    */
+  
+    /*****/
+    //Подія "Старт пристр."
+    /*****/
+    if (_CHECK_SET_BIT(value_changes_diagnostyka, EVENT_START_SYSTEM_BIT) != 0)
     {
-      size_t event_number;
-      uint32_t event_state;
-      uint32_t fix_event = false;
-      
-      if (number_empty_cells <= 0) break;
-      else if (
-               (number_empty_cells == 1) &&
-               (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
-              )
+      //Зафіксовано що подія "Старт пристр." змінила свій стан
+      if (_CHECK_SET_BIT(diagnostyka, EVENT_START_SYSTEM_BIT) == 0)
       {
-        event_number = ERROR_PR_ERR_OVERLOAD_BIT + 1;
-        event_state = true;
-        fix_event = true;
-
-        _SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
-        _SET_BIT(value_changes, ERROR_PR_ERR_OVERLOAD_BIT);
+        /*
+        Новий стан події " Старт пристр." є неактивний стан
+        Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
+        - знімаємо встановлений біт про зміну стану діагностики
+        - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
+        - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
+        */
+        _CLEAR_BIT(value_changes_diagnostyka, EVENT_START_SYSTEM_BIT);
+        _CLEAR_BIT(diagnostyka_before, EVENT_START_SYSTEM_BIT);
       }
-      else if (i < 8*sizeof(value_changes))
+    }
+    /*****/
+  
+    /*****/
+    //Подія "Рестарт пристр."
+    /*****/
+    if (_CHECK_SET_BIT(value_changes_diagnostyka, EVENT_RESTART_SYSTEM_BIT) != 0)
+    {
+      //Зафіксовано що подія "Рестарт пристр." змінила свій стан
+      if (_CHECK_SET_BIT(diagnostyka, EVENT_RESTART_SYSTEM_BIT) == 0)
       {
-        if (_CHECK_SET_BIT(value_changes, i) != 0)
+        /*
+        Новий стан події "Рестарт пристр." є неактивний стан
+        Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
+        - знімаємо встановлений біт про зміну стану діагностики
+        - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
+        - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
+        */
+        _CLEAR_BIT(value_changes_diagnostyka, EVENT_RESTART_SYSTEM_BIT);
+        _CLEAR_BIT(diagnostyka_before, EVENT_RESTART_SYSTEM_BIT);
+      }
+    }
+    /*****/
+        
+    /*****/
+    //Подія "Пр.Рестарт пр."
+    /*****/
+    if (_CHECK_SET_BIT(value_changes_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT) != 0)
+    {
+      //Зафіксовано що подія "Пр.Рестарт пр." змінила свій стан
+      if (_CHECK_SET_BIT(diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT) == 0)
+      {
+        /*
+        Новий стан події "Пр.Рестарт пр." є неактивний стан
+        Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
+        - знімаємо встановлений біт про зміну стану діагностики
+        - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
+        - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
+        */
+        _CLEAR_BIT(value_changes_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT);
+        _CLEAR_BIT(diagnostyka_before, EVENT_SOFT_RESTART_SYSTEM_BIT);
+      }
+    }
+    /*****/
+        
+    /*****/
+    //Подія "Зм.конфіругації"
+    /*****/
+    if (_CHECK_SET_BIT(value_changes_diagnostyka, EVENT_CHANGE_CONFIGURATION_BIT) != 0)
+    {
+      //Зафіксовано що подія "Зм.конфіругації" змінила свій стан
+      if (_CHECK_SET_BIT(diagnostyka, EVENT_CHANGE_CONFIGURATION_BIT) == 0)
+      {
+        /*
+        Новий стан події "Зм.конфіругації" є неактивний стан
+        Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
+        - знімаємо встановлений біт про зміну стану діагностики
+        - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
+        - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
+        */
+        _CLEAR_BIT(value_changes_diagnostyka, EVENT_CHANGE_CONFIGURATION_BIT);
+        _CLEAR_BIT(diagnostyka_before, EVENT_CHANGE_CONFIGURATION_BIT);
+      }
+    }
+    /*****/
+        
+    /*****/
+    //Подія "Зм.налаштувань"
+    /*****/
+    if (_CHECK_SET_BIT(value_changes_diagnostyka, EVENT_CHANGE_SETTINGS_BIT) != 0)
+    {
+      //Зафіксовано що подія "Зм.налаштувань" змінила свій стан
+      if (_CHECK_SET_BIT(diagnostyka, EVENT_CHANGE_SETTINGS_BIT) == 0)
+      {
+        /*
+        Новий стан події "Зм.налаштувань" є неактивний стан
+        Тому робимо так, щоб ця подія не попала у реєстратор програмних подій таким операціями
+        - знімаємо встановлений біт про зміну стану діагностики
+        - знімаємо повідомлення, що у попередньому стані діагностики ця подія була активною
+        - у текучому стані діагностики нічого міняти не треба, бо цей сигнал є неактивним
+        */
+        _CLEAR_BIT(value_changes_diagnostyka, EVENT_CHANGE_SETTINGS_BIT);
+        _CLEAR_BIT(diagnostyka_before, EVENT_CHANGE_SETTINGS_BIT);
+      }
+    }
+    /*****/
+        
+    /*****/
+    //Подія "Зуп.пристр."
+    /*****/
+    /*
+    У реєстраторі програмних подій має реєструватися тільки перехід з пасивного стану у активний
+    таких події як "Зуп.пристр." і ця подія не має бути активною у текучій діагностиці,
+    бо це, фактично, подія, яка мала місце до останнього включення приладу в роботу.
+    Тобто це подія "попереднього сеансу роботи"
+    тому перехід з пасивного у фіксуємо ми фіксуємо і зразу затираємо цей біт у теперішній діагностіці,
+    яка після цього буде зкопійомана у масив, який відповідає за попередній стан діагностики, так і у масив
+    діагностики, який відповідає за текучий стан подій діагностики
+    */
+    if (_CHECK_SET_BIT(value_changes_diagnostyka, EVENT_STOP_SYSTEM_BIT) != 0)
+    {
+      //Зафіксовано що подія "Зуп.пристр." змінила свій стан
+      if (_CHECK_SET_BIT(diagnostyka, EVENT_STOP_SYSTEM_BIT) != 0)
+      {
+        /*
+        Cтан події "Зуп.пристр." встановився
+        Тому робимо такі операції, щоб вона попара у реєстратора програмних подій, але не відображалася у діагностиці
+        - знімаємо встановлений біт у масиві, який зараз буде копіюватися у масив попереднього стану
+        - знімаємо встановлений біт у масиві, який відповідає за текучий стан подій діагностики
+        */
+        _CLEAR_BIT(diagnostyka, EVENT_STOP_SYSTEM_BIT);
+      }
+    }
+    /*****/
+  
+    //Визначаємо кількість доступних комірок у буфері для реєстратора програмних подій
+    int32_t number_empty_cells;
+    uint32_t head = head_fifo_buffer_pr_err_records, tail = tail_fifo_buffer_pr_err_records;
+    number_empty_cells = (int32_t)(tail - head);
+    if (
+        (number_empty_cells == 0) &&
+        (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) == 0)
+       )
+    {
+      number_empty_cells = MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
+    }
+    while (number_empty_cells < 0) number_empty_cells += MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
+
+    //Визначаємо, чи є якісь зміни
+    uint32_t changed_diagnostyka = false;
+    for (size_t i = 0; ((changed_diagnostyka == false) && (i < _n)); i++)
+    {
+      if (value_changes_diagnostyka[i] != 0) changed_diagnostyka = true;
+    }
+    
+    if (
+        (changed_diagnostyka != false)
+        ||
+        (
+         (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) != 0) &&
+         (number_empty_cells > 1)  
+        )
+       )
+    {
+      /***
+      Час фіксації зміни у діагностиці
+      ***/
+      uint8_t *label_to_time_array;
+      if (copying_time == 0) label_to_time_array = time;
+      else label_to_time_array = time_copy;
+      /***/
+        
+      /***
+      Фіксація самих подій
+      ***/
+      size_t i = 0;
+      while (
+             (
+              (number_empty_cells == 1) &&
+              (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
+             )
+             ||
+             (i < n_diagn_states) 
+             ||
+             (
+              (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) != 0) &&
+              (number_empty_cells > 1)
+             )
+            )
+      {
+        size_t event_number;
+        uint32_t event_state;
+        uint32_t fix_event = false;
+      
+        if (number_empty_cells <= 0) break;
+        else if (
+                 (number_empty_cells == 1) &&
+                 (_CHECK_SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT) == 0)  
+                )
         {
-          event_number = i + 1;
-          event_state = (i != EVENT_STOP_SYSTEM_BIT) ? (_CHECK_SET_BIT(diagnostyka, i) != 0) : true;
+          event_number = ERROR_PR_ERR_OVERLOAD_BIT + 1;
+          event_state = true;
           fix_event = true;
-        }
-          
-        i++;
-      }
-      else
-      {     
-        event_number = ERROR_PR_ERR_OVERLOAD_BIT + 1;
-        event_state = false;
-        fix_event = true;
 
-        _CLEAR_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
-        _SET_BIT(value_changes, ERROR_PR_ERR_OVERLOAD_BIT);
-      }  
+          _SET_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
+          _SET_BIT(value_changes_diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
+        }
+        else if (i < n_diagn_states)
+        {
+          if (_CHECK_SET_BIT(value_changes_diagnostyka, i) != 0)
+          {
+            event_number = i + 1;
+            event_state = (i != EVENT_STOP_SYSTEM_BIT) ? (_CHECK_SET_BIT(diagnostyka, i) != 0) : true;
+            fix_event = true;
+          }
+          
+          i++;
+        }
+        else
+        {     
+          event_number = ERROR_PR_ERR_OVERLOAD_BIT + 1;
+          event_state = false;
+          fix_event = true;
+
+          _CLEAR_BIT(diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
+          _SET_BIT(value_changes_diagnostyka, ERROR_PR_ERR_OVERLOAD_BIT);
+        }  
       
-      if (fix_event == true)
-      {
-        /***
-        Визначаємо індекс у масиві буфері програмних помилок з якого треба почати заповнювати дані
-        ***/
-        uint32_t index_into_buffer_pr_err = head*SIZE_ONE_RECORD_PR_ERR;
-        /***/
+        if (fix_event == true)
+        {
+          /***
+          Визначаємо індекс у масиві буфері програмних помилок з якого треба почати заповнювати дані
+          ***/
+          uint32_t index_into_buffer_pr_err = head*SIZE_ONE_RECORD_PR_ERR;
+          /***/
           
-        /***
-        Формуємо сам запис
-        ***/
-        //Помічаємо мітку початку запису
-        buffer_pr_err_records[index_into_buffer_pr_err++] = LABEL_START_RECORD_PR_ERR;
-        //Дата і час події
-        for(size_t j = 0; j < 7; j++) buffer_pr_err_records[index_into_buffer_pr_err++] = *(label_to_time_array + j);
-        //Подія (двобайтна) і її значення
-        buffer_pr_err_records[index_into_buffer_pr_err++] =   event_number       & 0xff; /*Номер починається з "1" */
-        buffer_pr_err_records[index_into_buffer_pr_err++] = ((event_number >> 8) & 0x7f) | (event_state << 7);
-        /***/
+          /***
+          Формуємо сам запис
+          ***/
+          //Помічаємо мітку початку запису
+          buffer_pr_err_records[index_into_buffer_pr_err++] = LABEL_START_RECORD_PR_ERR;
+          //Дата і час події
+          for(size_t j = 0; j < 7; j++) buffer_pr_err_records[index_into_buffer_pr_err++] = *(label_to_time_array + j);
+          //Подія (двобайтна) і її значення
+          buffer_pr_err_records[index_into_buffer_pr_err++] =   event_number       & 0xff; /*Номер починається з "1" */
+          buffer_pr_err_records[index_into_buffer_pr_err++] = ((event_number >> 8) & 0x7f) | (event_state << 7);
+          /***/
           
-        /***
-        Дії по завершенню формування запису
-        ***/
-        //Кількість комірок доступних для запису
-        number_empty_cells--;
+          /***
+          Дії по завершенню формування запису
+          ***/
+          //Кількість комірок доступних для запису
+          number_empty_cells--;
           
-        //Head буферу FIFO
-        head++;
-        while (head >= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER) head -= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
-        /***/
+          //Head буферу FIFO
+          head++;
+          while (head >= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER) head -= MAX_NUMBER_RECORDS_PR_ERR_INTO_BUFFER;
+          /***/
+        }
       }
-    }
-    head_fifo_buffer_pr_err_records = head;
-    /***/
+      head_fifo_buffer_pr_err_records = head;
+      /***/
     
-    /***
-    Фіксуємо попередній стан, який ми вже записали і відносно якого будемо визначати нові зміни
-    ***/
-    diagnostyka_before[0] = diagnostyka[0];
-    diagnostyka_before[1] = diagnostyka[1];
-    /***/
+      /***
+      Фіксуємо попередній стан, який ми вже записали і відносно якого будемо визначати нові зміни
+      ***/
+      for (size_t index = 0; index < _n; index++)
+      {
+        diagnostyka_before[index] = diagnostyka[index];
+      } 
+      /***/
+    }
   }
 }
 /*****************************************************/
@@ -427,7 +450,7 @@ void control_config(unsigned int modified)
     crc_config_tmp += temp_value;
 
     //Контроль конфігурації для захистів з конфігурацією-контейнером
-    if ((modified & MASKA_CHANGED_CONFIGURATION) == 0)
+    if ((modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION)) == 0)
     {
       if (temp_value != *(point_2++)) difference = 0xff;
     }
@@ -440,14 +463,14 @@ void control_config(unsigned int modified)
     //Контроль достовірності конфігурації пройшов успішно
     
     //Скидаємо повідомлення у слові діагностики
-    _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_CONTROL_BIT);
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_CONFIG_EEPROM_CONTROL_BIT);
   }
   else
   {
     //Контроль достовірності конфігурації не пройшов
 
     //Виствляємо повідомлення у слові діагностики
-    _SET_BIT(set_diagnostyka, ERROR_CONFIG_EEPROM_CONTROL_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_CONFIG_EEPROM_CONTROL_BIT);
   }
 }
 /*****************************************************/
@@ -751,14 +774,14 @@ void control_settings(unsigned int modified)
     //Контроль достовірності таблиці настройок пройшов успішно
     
     //Скидаємо повідомлення у слові діагностики
-    _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_CONTROL_BIT);
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_SETTINGS_EEPROM_CONTROL_BIT);
   }
   else
   {
     //Контроль достовірності таблиці настройок не пройшов
 
     //Виствляємо повідомлення у слові діагностики
-    _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_CONTROL_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_SETTINGS_EEPROM_CONTROL_BIT);
   }
 }
 /*****************************************************/
@@ -801,6 +824,20 @@ void control_ustuvannja(void)
     i++;
   }
 
+  point_1 = (unsigned char*)(&ustuvannja_shift); 
+  point_2 = (unsigned char*)(&ustuvannja_shift_meas);
+  i = 0;
+  while ((difference == 0) && (i < sizeof(ustuvannja_shift)))
+  {
+    temp_value_1 = *(point_1);
+    temp_value_2 = *(point_2);
+    crc_ustuvannja_tmp += temp_value_1;
+    if (temp_value_1 != temp_value_2) difference = 0xff;
+    point_1++;
+    point_2++;
+    i++;
+  }
+
   /*
   Не треба контролювати ідентичність серійног номеру, який працює з вимірювально системою,
   чи системою захистів, чи ще якоюсь високопріоритетною і високонадійною від завад системою,
@@ -821,14 +858,14 @@ void control_ustuvannja(void)
     //Контроль достовірності юстування пройшов успішно
     
     //Скидаємо повідомлення у слові діагностики
-    _SET_BIT(clear_diagnostyka, ERROR_USTUVANNJA_EEPROM_CONTROL_BIT);
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_USTUVANNJA_EEPROM_CONTROL_BIT);
   }
   else
   {
     //Контроль достовірності юстування не пройшов
 
     //Виствляємо повідомлення у слові діагностики
-    _SET_BIT(set_diagnostyka, ERROR_USTUVANNJA_EEPROM_CONTROL_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_USTUVANNJA_EEPROM_CONTROL_BIT);
   }
 }
 /*****************************************************/
@@ -883,14 +920,14 @@ void control_trg_func(void)
     //Контроль достовірності юстування пройшов успішно
     
     //Скидаємо повідомлення у слові діагностики
-    _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
   }
   else
   {
     //Контроль достовірності юстування не пройшов
 
     //Виствляємо повідомлення у слові діагностики
-    _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_TRG_FUNC_EEPROM_CONTROL_BIT);
   }
 }
 /*****************************************************/
@@ -957,6 +994,77 @@ int str_to_int_DATE_Mmm(void)
 }
 /*****************************************************/
 
+/*****************************************************/
+//Виділення у динамічній пам'яті масивівс для роботи з діагностикою
+/*****************************************************/
+__result_dym_mem_select allocate_dynamic_memory_for_diagnostyka(__action_dym_mem_select make_remake, uint32_t n_prev, uint32_t n_cur)
+{
+  __result_dym_mem_select result = DYN_MEM_SELECT_OK;
+  
+  size_t size32_prev = DIV_TO_HIGHER((_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS + n_prev), 32);
+  size_t size32_cur  = DIV_TO_HIGHER((_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS + n_cur ), 32);
+  if (
+      (size32_prev != size32_cur)
+      ||
+      (make_remake == MAKE_DYN_MEM)
+     )   
+  {
+    //Помічаємо, що буде відбуватися зміна розташування масивів для діагностики
+    diagnostyka_arrays_located = DIAGN_ARRAYS_CHANGING;
+    
+    //Виконуємо зміну розташування під відповідні розміри
+    size_t index_1 = 0;
+    while (
+           (result == DYN_MEM_SELECT_OK) &&
+           (index_1 < N_DIAGN_ARRAYS)  
+          )   
+    {
+      uint32_t *ptr= (uint32_t*)realloc(*diagnostika_arrays[index_1], 4*size32_cur);
+      if (ptr != NULL) 
+      {
+        *diagnostika_arrays[index_1] = ptr;
+        if (
+            (size32_cur > size32_prev) ||
+            (make_remake == MAKE_DYN_MEM)  
+           )   
+        {
+          for (size_t index_2 = ((make_remake == MAKE_DYN_MEM) ? 0 : size32_prev); index_2 < size32_cur; index_2++ ) ptr[index_2] = 0;
+        }
+      }
+      else result = DYN_MEM_TOTAL_ERROR;
+      
+      index_1++;
+    }
+    
+    //Визначаємо результат
+    if ((result == DYN_MEM_SELECT_OK))
+    {
+      if ((n_prev == 0) && (n_cur  == 0)) diagnostyka_arrays_located = DIAGN_ARRAYS_SHORT;
+      else diagnostyka_arrays_located = DIAGN_ARRAYS_ALL;
+    }
+    else
+    {
+      if (make_remake == MAKE_DYN_MEM)
+      {
+        for (index_1 = 0; index_1 < N_DIAGN_ARRAYS; index_1++)
+        {
+          free(*diagnostika_arrays[index_1]);
+          *diagnostika_arrays[index_1] = NULL;
+        }
+      
+        diagnostyka_arrays_located = DIAGN_ARRAYS_NONE;
+      }
+      else diagnostyka_arrays_located = DIAGN_ARRAYS_ERROR;
+    }
+  }
+  else
+  {
+    if (diagnostyka_arrays_located == DIAGN_ARRAYS_SHORT) diagnostyka_arrays_located = DIAGN_ARRAYS_ALL;
+  }
+  
+  return result;
+}
+/*****************************************************/
 
 /*****************************************************/
 //Зміна конфігурації
@@ -1164,7 +1272,10 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         }
       }
     
-      if ((make_remake_restore == MAKE_DYN_MEM) || (n_cur != n_prev))
+      if (
+          ((make_remake_restore == MAKE_DYN_MEM) || (n_cur != n_prev)) &&
+          (result == DYN_MEM_SELECT_OK)  
+         )   
       {
         if ((mem_for_prt != false) && (n_cur < n_prev)) can_be_restore = false;
         
@@ -1201,6 +1312,15 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
               result = DYN_MEM_NO_ENOUGH_MEM;
             }
           }
+        }
+        
+        if (
+            (index_1 == ID_FB_OUTPUT) &&
+            (mem_for_prt != false) &&
+            (result == DYN_MEM_SELECT_OK)  
+           )
+        {
+          result = allocate_dynamic_memory_for_diagnostyka(((diagnostyka_arrays_located == DIAGN_ARRAYS_NONE) ? MAKE_DYN_MEM : REMAKE_DYN_MEM), n_prev, n_cur);
         }
       }
 
@@ -2677,27 +2797,31 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
 
     __result_dym_mem_select result = DYN_MEM_SELECT_OK;
     //Активація внесених змін
-    if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+    if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
     {
       __CONFIG current_config_tmp = current_config_prt;
-      TIM_Cmd(TIM2, DISABLE); //Зупиняємо систему логіки
+      //Зупиняємо систему логіки
+      TIM_Cmd(TIM3, DISABLE);
+      TIM_Cmd(TIM2, DISABLE);
       result = allocate_dynamic_memory_for_settings(REMAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, &current_config, &current_config_tmp);
       if (result == DYN_MEM_SELECT_OK)
       {
         //Фіксуємо, що відбулася зміна конфігурації
-        _SET_BIT(set_diagnostyka, EVENT_CHANGE_CONFIGURATION_BIT);
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_CHANGE_CONFIGURATION_BIT);
       }
     }
 
     if (result == DYN_MEM_SELECT_OK)
     {
-      if (config_settings_modified & MASKA_CHANGED_SETTINGS)
+      if (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
       {
         //Відбувалися зміни у налаштуваннях
-        TIM_Cmd(TIM2, DISABLE); //Зупиняємо систему логіки
+        //Зупиняємо систему логіки
+        TIM_Cmd(TIM3, DISABLE);
+        TIM_Cmd(TIM2, DISABLE);
         copy_settings(&current_config, &settings_fix_prt, &settings_fix, spca_of_p_prt, sca_of_p);
         //Фіксуємо, що відбулася зміна налаштувань
-        _SET_BIT(set_diagnostyka, EVENT_CHANGE_SETTINGS_BIT);
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_CHANGE_SETTINGS_BIT);
         
         /***
           Зміни у Андрієвій системі
@@ -2762,16 +2886,19 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       if (set_password_RS485 != false) password_set_RS485 = 1;
       /***/
       
-      _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
-      _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      if (clear_diagnostyka != NULL) 
+      {
+        _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+        _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      }
       
-      if (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+      uint8_t *label_to_time_array;
+      if (copying_time == 0) label_to_time_array = time;
+      else label_to_time_array = time_copy;
+
+      if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
       {
         //Записуємо час останньої зміни конфігурації
-        uint8_t *label_to_time_array;
-        if (copying_time == 0) label_to_time_array = time;
-        else label_to_time_array = time_copy;
-        
         for (size_t i = 0; i < 7; i++) current_config_prt.time_config[i] = current_config.time_config[i] = current_config_edit.time_config[i] = *(label_to_time_array + i);
         current_config_prt.time_config[7] = current_config.time_config[7] = current_config_edit.time_config[7] = (uint8_t)(source & 0xff);
         
@@ -2783,15 +2910,26 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         periodical_tasks_TEST_TRG_FUNC_LOCK = false;
       }
       
-      //Записуємо час останньої зміни конфігурації
-      uint8_t *label_to_time_array;
-      if (copying_time == 0) label_to_time_array = time;
-      else label_to_time_array = time_copy;
+      if (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
+      {
+        if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_SETTINGS))
+        {
+          //Записуємо час останньої зміни налаштувань
         
-      for (size_t i = 0; i < 7; i++) settings_fix_prt.time_setpoints[i] = settings_fix.time_setpoints[i] = settings_fix_edit.time_setpoints[i] = *(label_to_time_array + i);
-      settings_fix_prt.time_setpoints[7] = settings_fix.time_setpoints[7] = settings_fix_edit.time_setpoints[7] = (uint8_t)(source & 0xff);
+          for (size_t i = 0; i < 7; i++) settings_fix_prt.time_setpoints[i] = settings_fix.time_setpoints[i] = settings_fix_edit.time_setpoints[i] = *(label_to_time_array + i);
+          settings_fix_prt.time_setpoints[7] = settings_fix.time_setpoints[7] = settings_fix_edit.time_setpoints[7] = (uint8_t)(source & 0xff);
+        }
+        if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC))
+        {
+          //Записуємо час останньої зміни зв'язків
+           settings_fix_prt.schematic =  settings_fix.schematic = settings_fix_edit.schematic = (settings_fix.schematic & 0xff00) | 0x1; /*фіксуємо що типова схема змінена*/
+        
+          for (size_t i = 0; i < 7; i++) settings_fix_prt.time_schematic[i] = settings_fix.time_schematic[i] = settings_fix_edit.time_schematic[i] = *(label_to_time_array + i);
+          settings_fix_prt.time_schematic[7] = settings_fix.time_schematic[7] = settings_fix_edit.time_schematic[7] = (uint8_t)(source & 0xff);
+        }
       
-      _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+      }
       
       /***
       Очікуємо, поки процес запису у EEPROM повністю завершиться
@@ -2840,8 +2978,8 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     }
     else if (result == DYN_MEM_NO_ENOUGH_MEM) 
     {
-      _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
-      _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+      if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
       
       error = 1;
     }
@@ -2849,13 +2987,13 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     {
       if (result == DYN_MEM_TOTAL_ERROR)
       {
-        _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
-        _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+        if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
       }
       else if (result == PRT_MEM_ERROR)
       {
-        _SET_BIT(set_diagnostyka, ERROR_PRT_MEMORY_BIT);
-        _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_PRT_MEMORY_BIT);
+        if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
       }
       
       error = 2;
@@ -2870,7 +3008,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     //Повернення до стану до редагування
     if (
         (error == 1) ||
-        (config_settings_modified & MASKA_CHANGED_CONFIGURATION)
+        (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
        )   
     {
       //Відбувалися зміни у конфігурації
@@ -2881,18 +3019,18 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       
       if (result != DYN_MEM_SELECT_OK) 
       {
-        _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
         error = 2;
       }
       else if (error == 0)
       {
-        _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+        if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
       }
     }
     
     if (
         (error == 1) ||
-        (config_settings_modified & MASKA_CHANGED_SETTINGS)
+        (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
        )   
     {
       //Відновлюємо зміни у налаштуваннях

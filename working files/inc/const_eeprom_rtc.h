@@ -15,7 +15,7 @@
 #define EEPROM_ADDRESS        0xA2
 #define RTC_ADDRESS           0xD0
 
-#define SIZE_USTUVANNJA         (sizeof(unsigned int) + sizeof(ustuvannja) + sizeof(serial_number_dev))
+#define SIZE_USTUVANNJA         (sizeof(unsigned int) + sizeof(ustuvannja) +  + sizeof(ustuvannja_shift) + sizeof(serial_number_dev))
 #define SIZE_CONFIG              sizeof(__CONFIG)
 #define SIZE_SETTINGS            size_all_settings()
 
@@ -24,7 +24,7 @@
 #define START_ADDRESS_INFO_REJESTRATORS_PR_ERR          (((START_ADDRESS_INFO_REJESTRATORS_LOG    + (sizeof(info_rejestrator_log)    + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
 #define START_ADDRESS_CONFIG_IN_EEPROM                  (((START_ADDRESS_INFO_REJESTRATORS_PR_ERR + (sizeof(info_rejestrator_pr_err) + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
 #define START_ADDRESS_SETTINGS_IN_EEPROM                (((START_ADDRESS_CONFIG_IN_EEPROM         + (SIZE_CONFIG                     + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
-#define START_ADDRESS_TRG_FUNC                          (((START_ADDRESS_SETTINGS_IN_EEPROM       + (SIZE_SETTINGS                   + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + 2*SIZE_PAGE_EEPROM)
+#define START_ADDRESS_TRG_FUNC                          (((START_ADDRESS_SETTINGS_IN_EEPROM       + (SIZE_SETTINGS                   + 1)) & (unsigned int)(~(SIZE_PAGE_EEPROM - 1))) + SIZE_PAGE_EEPROM)
 
 #define START_ADDRESS_TIME_REGISTERS              0x0
 #define MAX_NUMBER_REGISTERS_RTC                  20

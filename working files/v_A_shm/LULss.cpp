@@ -235,8 +235,9 @@ const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
 char arChIntermediaResult[(TOTAL_LSS_LU_CALC_POINT)];
 volatile bool boolchQTrg29 = m_chQTrg29,boolchQTrg11 = m_chQTrg11;
 
-for (i = OFFSET_OUT_LSS_NOT_01__1_1; i < OFFSET_OUT_IN_LSS_VCC; i++)//OFFSET_OUT_Or_22__3_1
-    arChIntermediaResult[i] = 0xcc;
+//for (i = OFFSET_OUT_LSS_NOT_01__1_1; i < OFFSET_OUT_IN_LSS_VCC; i++)//OFFSET_OUT_Or_22__3_1
+//    arChIntermediaResult[i] = 0xcc;
+    
 arChIntermediaResult[ OFFSET_OUT_IN_LSS_NORMAL      ] = 0;//
 arChIntermediaResult[ OFFSET_OUT_IN_LSS_TRIGGER     ] = 0;//
 arChIntermediaResult[ OFFSET_OUT_IN_LSS_TIMELIMITED ] = 0;//

@@ -8,6 +8,9 @@
 #include "Ereg.h"
 #include "prtTmr.h"
 #include "IStng.h"
+#include "const_menu2_diagnostyka.h"
+extern uint32_t *set_diagnostyka;
+
 //#include "I_Shm.h"
 void PUT_Op_1_0(void *pObj) {
     CLUDout_1_0& refCLUDout_1_0 = *(static_cast<CLUDout_1_0*> (pObj));
@@ -23,6 +26,7 @@ CLUDout_1_0::CLUDout_1_0(char chM,char chI)//,LUOutDsc* pLUOutDsc)
  //-void *memset(void *s, int c, size_t n);
     memset(static_cast<void*>(arrPchIn),0xcc,sizeof(char*)*TOTAL_RELE_VISIO_IN);
     memset(static_cast<void*>(arrPchSchIn),0xcc,sizeof(char*)*shCLUDout_1_0_AmtIn);
+    memset(static_cast<void*>(arrStateIn),0xcc,sizeof(char*)*TOTAL_RELE_VISIO_IN);
     //memset(static_cast<void*>(arrPchAlternator),0xcc,sizeof(char*)*2);
     memset(static_cast<void*>(arrOut),0,sizeof(char)*TOTAL_RELE_VISIO_OUTPUT);
     memset(static_cast<void*>(&m_ReleyCfgSuit),0,sizeof(ReleyCfgSuit));
@@ -125,8 +129,8 @@ const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
 char arChIntermediaResult[(TOTAL_RELE_LU_CALC_POINT)];
 volatile bool boolchQTrg06 = m_chQTrg06;
 
-for (i = OFFSET_OUT_RELE_Not01__1_1; i < OFFSET_OUT_IN_RELE_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
-    arChIntermediaResult[i] = 0xcc;
+//for (i = OFFSET_OUT_RELE_Not01__1_1; i < OFFSET_OUT_IN_RELE_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
+//    arChIntermediaResult[i] = 0xcc;
     if(shBkptIdDO == shShemasOrdNumStng)
    asm(
        "bkpt 1"
@@ -152,6 +156,33 @@ pCh = (this->arrPchIn[(RELEY_IN_NAME__BL_IMP - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_RELE__BL_IMP] = pCh[0];//
 pCh = (this->arrPchIn[(RELEY_IN_NAME__C1_C2 - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_RELE__C1_C2] = pCh[0];//
+pCh = (this->arrPchIn[(RELEY_IN_NAME__C2 - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_RELE_C2] =  pCh[0];
+pCh = (this->arrPchIn[(RELEY_IN_NAME__C1 - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_RELE_C1] =  pCh[0];
+
+if(CLUBase::m_AuxInfo.ch > 0){
+    i = arChIntermediaResult[OFFSET_OUT_IN_RELE__RIN];
+        rl_Val = arChIntermediaResult[OFFSET_OUT_IN_RELE__RESET];
+        if((i == arrStateIn[0])&& (rl_Val == arrStateIn[1])){
+            return;
+        }
+    arrStateIn[0] = i;
+    arrStateIn[1] = rl_Val;
+}
+else{
+    rl_Val = 0;
+    for (i = 0; i < (OFFSET_OUT_IN_RELE_VCC-OFFSET_OUT_IN_RELE__RIN); i++){
+        if(arChIntermediaResult[i+OFFSET_OUT_IN_RELE__RIN] != arrStateIn[i])
+        rl_Val++;
+    }
+    if(rl_Val == 0)
+        return;
+    memcpy(reinterpret_cast<void*>(arrStateIn),
+    reinterpret_cast<void*>(&arChIntermediaResult[OFFSET_OUT_IN_RELE__RIN]), OFFSET_OUT_IN_RELE_VCC-OFFSET_OUT_IN_RELE__RIN);    
+
+}      
+     
 if(this->m_ReleyCfgSuit.chSel1 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_RELE_NORMAL_SELECTOR] = 1;
 i = 0;
@@ -402,8 +433,13 @@ pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
     pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] &= ~(1<<OUTPUT_LED_OUT);//Clr
     pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] |= j<<OUTPUT_LED_OUT;
     if(DoCheckUI32Bit.ul_val &((1) << i) ){
-        pLN_OUTPUT->active_state[(OUTPUT_LED_ERROR/8) ] |= 1<<OUTPUT_LED_ERROR;
-        
+       // pLN_OUTPUT->active_state[(OUTPUT_LED_ERROR/8) ] |= 1<<OUTPUT_LED_ERROR;
+       //#define _SET_BIT(_array, _number_bit)                                           \
+      //_array[_number_bit >> 5] |= (unsigned int)(1 << (_number_bit & 0x1f)) 
+        if (set_diagnostyka != NULL){
+            set_diagnostyka[(ERROR_DIGITAL_OUTPUTS_BIT+i)>>5] |= 
+            static_cast<unsigned int>(1 << ((ERROR_DIGITAL_OUTPUTS_BIT+i) & 0x1f)); 
+        }
     }
     if(boolchQTrg06 != static_cast<bool>(m_chQTrg06) ){
     pLN_OUTPUT->d_trigger_state[OUTPUT_LED_D_TRIGGER_1/8] = m_chQTrg06<<OUTPUT_LED_D_TRIGGER_1;

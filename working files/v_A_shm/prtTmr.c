@@ -359,13 +359,19 @@ char arTimerDi[19] = {
 DICfgSuit sDiCfg;
 void UpdateDICfgSuit(long lIdxDi, long lTypeSignal, long lDurationDI ){
 register long i;
-sDiCfg.arChDurationDI[lIdxDi] = lDurationDI;
+
 i = sDiCfg.DiTypeSignal.ul_val;
 i&= ~(1<< lIdxDi);
 i|=  lTypeSignal<<lIdxDi;
 sDiCfg.DiTypeSignal.ul_val   = i;
+if(lTypeSignal & (1<< lIdxDi))
+    sDiCfg.arChDurationDI[lIdxDi] = lDurationDI/10;//Alternate
+else
+    sDiCfg.arChDurationDI[lIdxDi] = lDurationDI;//Stable
+
 }
 
+ long arLRaWRead[20];
 static char chCmpVal = 123;
 static long lCtr = 0; //char chTestStateIn = 1;char chOut;
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -402,6 +408,7 @@ void UpdateStateDI (void){
         }
         //Check Type Signal
         if (pDICfgSuit->DiTypeSignal.ul_val & (1 << i)){
+            
             //Alternate Current
             j = pDICfgSuit->DiHrdStateUI32Bit.ul_val & (1 << i);
             if (j == 0)
@@ -410,19 +417,22 @@ void UpdateStateDI (void){
             //pCh[OFF_BYTE_OR] |= pCh[OFF_BYTE_PIN] & (1 << i);
             pDICfgSuit->DiOR.ul_val |= pDICfgSuit->DiHrdStateUI32Bit.ul_val & (1 << i);
             j = lCtr;
+            arLRaWRead[j] = pDICfgSuit->DiHrdStateUI32Bit.ul_val;
             j++;
-            if (j > 12)
+            if (j > 10)//12-Old
             {
                 lCtr = 0; //pCh[OFF_BYTE_DI_timer0+i];
                 //Check 1
                 //j = (pCh[OFF_BYTE_AND] & (1 << i));
                 j = (pDICfgSuit->DiAND.ul_val & (1 << i));
-                if ((j == 0) && (pDICfgSuit->DiOR.ul_val & (1 << i))){//Stable 1
+                if ((j == 0) && (pDICfgSuit->DiOR.ul_val & (1 << i)) ){//Stable 1
                     pDICfgSuit->DiStartUP.ul_val |= (1 << i);//pCh[OFF_BYTE_DI_StartUP] |= (1 << i);
                 }else{
+                    if((j == 0) && (pDICfgSuit->DiOR.ul_val & (1 << i)) == 0
+                    )    
                     pDICfgSuit->DiStartUP.ul_val &= ~(1 << i);
-                    arU32Tst[0] = pDICfgSuit->DiAND.ul_val;//pCh[OFF_BYTE_AND];
-                    arU32Tst[1] = pDICfgSuit->DiOR.ul_val;//pCh[OFF_BYTE_OR];
+                    arU32Tst[0] = pDICfgSuit->DiAND.ul_val;//pCh[OFF_BYTE_AND];<<=Unstable State
+                    arU32Tst[1] = pDICfgSuit->DiOR.ul_val;//pCh[OFF_BYTE_OR];  <<=Unstable State
                 }
                 ulrVal = (pDICfgSuit->DiStartUP.ul_val & (1 << i));
                 j = (pDICfgSuit->DiState.ul_val & (1 << i));
