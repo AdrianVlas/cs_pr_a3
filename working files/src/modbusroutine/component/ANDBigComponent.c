@@ -181,7 +181,7 @@ void postANDBigWriteAction(void) {
   int countRegister = andbigcomponent->operativMarker[1]-andbigcomponent->operativMarker[0]+1;
   if(andbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-   __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]);
+   __settings_for_AND *arr = (__settings_for_AND*)(sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {
   int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -189,10 +189,10 @@ void postANDBigWriteAction(void) {
 
   switch(offset%2) {//индекс регистра входа
   case 0:
-        arr[idxSubObj].settings.param[idx_SIGNALS_IN] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+        arr[idxSubObj].param[idx_SIGNALS_IN] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
   break;
   case 1:
-        arr[idxSubObj].settings.param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+        arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
   break;
  }//switch
   }//for

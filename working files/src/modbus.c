@@ -55,420 +55,707 @@ inline unsigned short int  AddCRC(unsigned char inpbyte, unsigned short int oldC
 /***********************************************************************************/
 //Читання даних
 /***********************************************************************************/
-inline unsigned int Get_data(unsigned char *data, unsigned int address_data, unsigned int type_interface, __getting_data target_task, __bit_byte bit_byte)
-{
-  unsigned int error = 0, temp_value = 0;
-  
-  if(address_data <= M_ADDRESS_LAST_RO_BLOCK_1)
-  {
-    //Ідентифікація пристою
-    switch (address_data)
-    {
-    case MA_SERIAL_NUMBER:
-      {
-        temp_value = serial_number_dev;
-        break;
-      }
-    case MA_NAME_CHAR_1_2:
-      {
-        temp_value = ('i' << 8) + 'K';
-        break;
-      }
-    case MA_NAME_CHAR_3_4:
-      {
-        temp_value = ('v' << 8) + 'e';
-        break;
-      }
-    case MA_NAME_CHAR_5_6:
-      {
-        temp_value = ('r' << 8) + 'p';
-        break;
-      }
-    case MA_NAME_CHAR_7_8:
-      {
-        temp_value = ('b' << 8) + 'i';
-        break;
-      }
-    case MA_NAME_CHAR_9_10:
-      {
-        temp_value = ('r' << 8) + 'o';
-        break;
-      }
-    case MA_NAME_CHAR_11_12:
-      {
-        temp_value = ('R' << 8) + 'M';
-        break;
-      }
-    case MA_NAME_CHAR_13_14:
-      {
-        temp_value = ('S' << 8) + 'Z';
-        break;
-      }
-    case MA_NAME_CHAR_15_16:
-      {
-        temp_value = ('5' << 8) + '0';
-        break;
-      }
-    case MA_NAME_CHAR_17_18:
-      {
-        temp_value = ('_' << 8) + 'L';
-        break;
-      }
-    case MA_VERSION_SW:
-      {
-        temp_value = (VERSIA_PZ << 8) + MODYFIKACIA_VERSII_PZ;
-        break;
-      }
-    case MA_DATA_COMP_1:
-      {
-        temp_value = (YEAR_VER << 8) + MONTH_VER;
-        break;
-      }
-    case MA_DATA_COMP_2:
-      {
-        temp_value = (DAY_VER << 8);
-        break;
-      }
-    case MA_TIME_COMP:
-      {
-        temp_value = (HOUR_VER << 8) + MINUTE_VER;
-        break;
-      }
-    case MA_VERSION_GMM:
-      {
-        temp_value = (VERSIA_GMM << 8) + MODYFIKACIA_VERSII_GMM;
-        break;
-      }
-    case MA_ZBIRKA_SW:
-      {
-        temp_value = ZBIRKA_VERSII_PZ;
-        break;
-      }
-    default:
-      {
-        //На поля які у даній конфігурації немає відповідаємо нулями
-        temp_value = 0;
-        break;
-      }
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_USER_REGISTER_DATA) && (address_data <= M_ADDRESS_LAST_USER_REGISTER_DATA))
-  {
-    unsigned int address_data_tmp = settings_fix_prt.user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER_DATA];
-
-    //Щоб не відбулося зациклювання регістрів користувача на регістри користувача робимо цю перевірку
-    if ( !((address_data_tmp >= M_ADDRESS_FIRST_USER_REGISTER_DATA) && (address_data_tmp <= M_ADDRESS_LAST_USER_REGISTER_DATA)) )
-    {
-      unsigned char local_temp_value[2];
-      unsigned local_error = Get_data(local_temp_value, address_data_tmp, type_interface, target_task, bit_byte);
-
-      if (local_error == 0) temp_value = local_temp_value[1] | (local_temp_value[0] << 8);
-      else error = local_error;
-    }
-    else error = ERROR_SLAVE_DEVICE_FAILURE;
-  }
-  else if (address_data == MA_OUTPUTS)
-  {
-  }
-  else if (address_data == MA_INPUTS)
-  {
-  }
-  else if (address_data == MA_LEDS)
-  {
-  }
-//  else if ((address_data >= M_ADDRESS_FIRST_MEASUREMENTS_1) && (address_data <= M_ADDRESS_LAST_MEASUREMENTS_1))
+//inline unsigned int Get_data(unsigned char *data, unsigned int address_data, unsigned int type_interface, __getting_data target_task, __bit_byte bit_byte)
+//{
+//  unsigned int error = 0, temp_value = 0;
+//  
+//  if(address_data <= M_ADDRESS_LAST_RO_BLOCK_1)
 //  {
-//    //Митєві вимірювання розраховані фетодом перетворення Фур'є
+//    //Ідентифікація пристою
 //    switch (address_data)
 //    {
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UA_1):
+//    case MA_SERIAL_NUMBER:
 //      {
-//        temp_value = measurement_low[IM_UA1] >> 3;
+//        temp_value = serial_number_dev;
+//        break;
+//      }
+//    case MA_NAME_CHAR_1_2:
+//      {
+//        temp_value = ('i' << 8) + 'K';
+//        break;
+//      }
+//    case MA_NAME_CHAR_3_4:
+//      {
+//        temp_value = ('v' << 8) + 'e';
+//        break;
+//      }
+//    case MA_NAME_CHAR_5_6:
+//      {
+//        temp_value = ('r' << 8) + 'p';
+//        break;
+//      }
+//    case MA_NAME_CHAR_7_8:
+//      {
+//        temp_value = ('b' << 8) + 'i';
+//        break;
+//      }
+//    case MA_NAME_CHAR_9_10:
+//      {
+//        temp_value = ('r' << 8) + 'o';
+//        break;
+//      }
+//    case MA_NAME_CHAR_11_12:
+//      {
+//        temp_value = ('R' << 8) + 'M';
+//        break;
+//      }
+//    case MA_NAME_CHAR_13_14:
+//      {
+//        temp_value = ('S' << 8) + 'Z';
+//        break;
+//      }
+//    case MA_NAME_CHAR_15_16:
+//      {
+//        temp_value = ('5' << 8) + '0';
+//        break;
+//      }
+//    case MA_NAME_CHAR_17_18:
+//      {
+//        temp_value = ('_' << 8) + 'L';
+//        break;
+//      }
+//    case MA_VERSION_SW:
+//      {
+//        temp_value = (VERSIA_PZ << 8) + MODYFIKACIA_VERSII_PZ;
+//        break;
+//      }
+//    case MA_DATA_COMP_1:
+//      {
+//        temp_value = (YEAR_VER << 8) + MONTH_VER;
+//        break;
+//      }
+//    case MA_DATA_COMP_2:
+//      {
+//        temp_value = (DAY_VER << 8);
+//        break;
+//      }
+//    case MA_TIME_COMP:
+//      {
+//        temp_value = (HOUR_VER << 8) + MINUTE_VER;
+//        break;
+//      }
+//    case MA_VERSION_GMM:
+//      {
+//        temp_value = (VERSIA_GMM << 8) + MODYFIKACIA_VERSII_GMM;
+//        break;
+//      }
+//    case MA_ZBIRKA_SW:
+//      {
+//        temp_value = ZBIRKA_VERSII_PZ;
+//        break;
+//      }
+//    default:
+//      {
+//        //На поля які у даній конфігурації немає відповідаємо нулями
+//        temp_value = 0;
+//        break;
+//      }
+//    }
+//  }
+//  else if ((address_data >= M_ADDRESS_FIRST_USER_REGISTER_DATA) && (address_data <= M_ADDRESS_LAST_USER_REGISTER_DATA))
+//  {
+//    unsigned int address_data_tmp = settings_fix_prt.user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER_DATA];
 //
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UB_1):
-//      {
-//        temp_value = measurement_low[IM_UB1] >> 3;
+//    //Щоб не відбулося зациклювання регістрів користувача на регістри користувача робимо цю перевірку
+//    if ( !((address_data_tmp >= M_ADDRESS_FIRST_USER_REGISTER_DATA) && (address_data_tmp <= M_ADDRESS_LAST_USER_REGISTER_DATA)) )
+//    {
+//      unsigned char local_temp_value[2];
+//      unsigned local_error = Get_data(local_temp_value, address_data_tmp, type_interface, target_task, bit_byte);
 //
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UC_1):
+//      if (local_error == 0) temp_value = local_temp_value[1] | (local_temp_value[0] << 8);
+//      else error = local_error;
+//    }
+//    else error = ERROR_SLAVE_DEVICE_FAILURE;
+//  }
+//  else if (address_data == MA_OUTPUTS)
+//  {
+//  }
+//  else if (address_data == MA_INPUTS)
+//  {
+//  }
+//  else if (address_data == MA_LEDS)
+//  {
+//  }
+////  else if ((address_data >= M_ADDRESS_FIRST_MEASUREMENTS_1) && (address_data <= M_ADDRESS_LAST_MEASUREMENTS_1))
+////  {
+////    //Митєві вимірювання розраховані фетодом перетворення Фур'є
+////    switch (address_data)
+////    {
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UA_1):
+////      {
+////        temp_value = measurement_low[IM_UA1] >> 3;
+////
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UB_1):
+////      {
+////        temp_value = measurement_low[IM_UB1] >> 3;
+////
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UC_1):
+////      {
+////        temp_value = measurement_low[IM_UC1] >> 3;
+////
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UAB_1):
+////      {
+////        temp_value = measurement_low[IM_UAB1] >> 3;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UBC_1):
+////      {
+////        temp_value = measurement_low[IM_UBC1] >> 3;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UCA_1):
+////      {
+////        temp_value = measurement_low[IM_UCA1] >> 3;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UA_2):
+////      {
+////        temp_value = measurement_low[IM_UA1] >> 3;
+////
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UB_2):
+////      {
+////        temp_value = measurement_low[IM_UB1] >> 3;
+////
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UC_2):
+////      {
+////        temp_value = measurement_low[IM_UC1] >> 3;
+////
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UAB_2):
+////      {
+////        temp_value = measurement_low[IM_UAB2] >> 3;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UBC_2):
+////      {
+////        temp_value = measurement_low[IM_UBC2] >> 3;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UCA_2):
+////      {
+////        temp_value = measurement_low[IM_UCA2] >> 3;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_IA_1):
+////      {
+////        temp_value = measurement_low[IM_IA] >> 2;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_IB_1):
+////      {
+////        temp_value = measurement_low[IM_IB] >> 2;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_IC_1):
+////      {
+////        temp_value = measurement_low[IM_IC] >> 2;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_I1):
+////      {
+////        temp_value = measurement_low[IM_I1] >> 2;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_I2):
+////      {
+////        temp_value = measurement_low[IM_I2] >> 2;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ACTIVE_POWER):
+////      {
+////        temp_value = P/50;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_REACTIVE_POWER):
+////      {
+////        temp_value = Q/50;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_FULL_POWER):
+////      {
+////        temp_value = S/50;
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_COS_PHI):
+////      {
+////        if (S != 0)
+////          temp_value = cos_phi_x1000;
+////        else
+////          temp_value = 0x0;
+////          
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_FREQUENCY_1):
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_FREQUENCY_2):
+////      {
+////        int int_frequency;
+////        if (address_data == (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_FREQUENCY_1))int_frequency = (int)(frequency_val_1*100);
+////        else int_frequency = (int)(frequency_val_2*100);
+////        
+////        if (int_frequency > 0 /*це число означає - частота не визначена*/)
+////          temp_value = int_frequency;
+////        else
+////        {
+////          if (int_frequency == (-1*100))
+////            temp_value = (unsigned int)(-1);
+////          else if (int_frequency == (-2*100))
+////            temp_value = (unsigned int)(-2);
+////          else if (int_frequency == (-3*100))
+////            temp_value = (unsigned int)(-3);
+////          else
+////            temp_value = (unsigned int)(-4);
+////        }
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_BASE_CANAL_FOR_ANGLE):
+////      {
+////        switch (base_index_for_angle)
+////        {
+////        case (-1):
+////          {
+////            temp_value = BASE_CANAL_NONE;
+////            break;
+////          }
+////        case FULL_ORT_Ua1:
+////          {
+////            temp_value = BASE_CANAL_UA_TN1;
+////            break;
+////          }
+////        case FULL_ORT_Ub1:
+////          {
+////            temp_value = BASE_CANAL_UB_TN1;
+////            break;
+////          }
+////        case FULL_ORT_Uc1:
+////          {
+////            temp_value = BASE_CANAL_UC_TN1;
+////            break;
+////          }
+////        case FULL_ORT_Ua2:
+////          {
+////            temp_value = BASE_CANAL_UA_TN2;
+////            break;
+////          }
+////        case FULL_ORT_Ub2:
+////          {
+////            temp_value = BASE_CANAL_UB_TN2;
+////            break;
+////          }
+////        case FULL_ORT_Uc2:
+////          {
+////            temp_value = BASE_CANAL_UC_TN2;
+////            break;
+////          }
+////        case FULL_ORT_Uab1:
+////          {
+////            temp_value = BASE_CANAL_UAB_TN1;
+////            break;
+////          }
+////        case FULL_ORT_Ubc1:
+////          {
+////            temp_value = BASE_CANAL_UBC_TN1;
+////            break;
+////          }
+////        case FULL_ORT_Uca1:
+////          {
+////            temp_value = BASE_CANAL_UCA_TN1;
+////            break;
+////          }
+////        case FULL_ORT_Uab2:
+////          {
+////            temp_value = BASE_CANAL_UAB_TN2;
+////            break;
+////          }
+////        case FULL_ORT_Ubc2:
+////          {
+////            temp_value = BASE_CANAL_UBC_TN2;
+////            break;
+////          }
+////        case FULL_ORT_Uca2:
+////          {
+////            temp_value = BASE_CANAL_UCA_TN2;
+////            break;
+////          }
+////        default:
+////          {
+////            //Теоретично цього ніколи не мало б бути
+////            total_error_sw_fixed(72);
+////          }
+////        }
+////
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UA_1):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Ua1];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UB_1):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Ub1];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UC_1):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Uc1];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UAB_1):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Uab1];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UBC_1):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Ubc1];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UCA_1):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Uca1];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UA_2):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Ua2];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UB_2):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Ub2];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UC_2):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Uc2];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UAB_2):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Uab2];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UBC_2):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Ubc2];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UCA_2):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Uca2];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_IA_1):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Ia];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_IB_1):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Ib];
+////        break;
+////      }
+////    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_IC_1):
+////      {
+////        temp_value = (unsigned int)phi_angle[FULL_ORT_Ic];
+////        break;
+////      }
+////    default:
+////      {
+////        temp_value = 0;
+////        break;
+////      }
+////    }
+////  }
+////  else if ((address_data >= M_ADDRESS_FIRST_MEASUREMENTS_DR) && (address_data <= M_ADDRESS_LAST_MEASUREMENTS_DR))
+////  {
+////    //Вимірювання, які зафіксовані під час роботи дискретного реєстратора
+////    if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
+////    {
+////      //Теоретично такого бути не мало б ніколи
+////      error = ERROR_SLAVE_DEVICE_FAILURE;
+////    }
+////    else if (
+////             ((type_interface == USB_RECUEST  ) && (number_record_of_dr_for_USB   == 0xffff)) ||
+////             ((type_interface == RS485_RECUEST) && (number_record_of_dr_for_RS485 == 0xffff))
+////            )
+////    {
+////      //Не подано попередньокоманди вичитування відповідного запису дискретного реєстратора
+////      error = ERROR_ILLEGAL_DATA_ADDRESS;
+////    }
+////    else if (
+////             ((clean_rejestrators & CLEAN_DR) != 0) ||
+////             (
+////              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB  ) != 0)) ||
+////              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485) != 0))
+////             ) 
+////            )
+////    {
+////      //Зараз іде зчитування для інтерфейсу запису дискретного реєстратора, або очистка його, тому ця операція є тимчасово недоступною
+////      error = ERROR_SLAVE_DEVICE_BUSY;
+////    }
+////    else
+////    {
+////      //Можна читати дані
+////      int number_block, offset;
+////      unsigned char *point_to_buffer;
+////      number_block = (address_data - M_ADDRESS_FIRST_MEASUREMENTS_DR) / MEASUREMENTS_DR_WIDTH;
+////      offset = (address_data - M_ADDRESS_FIRST_MEASUREMENTS_DR) - number_block*MEASUREMENTS_DR_WIDTH;
+////      if (type_interface == USB_RECUEST) point_to_buffer = buffer_for_USB_read_record_dr;
+////      else point_to_buffer = buffer_for_RS485_read_record_dr;
+////      
+////      if (
+////          number_block < (
+////                          (*(point_to_buffer + FIRST_INDEX_NUMBER_MAX_PHASE_DR  )) + 
+////                          (*(point_to_buffer + FIRST_INDEX_NUMBER_MIN_U_DR      )) + 
+////                          (*(point_to_buffer + FIRST_INDEX_NUMBER_MAX_U_DR      )) + 
+////                          (*(point_to_buffer + FIRST_INDEX_NUMBER_MAX_ZOP_DR    ))
+////                         )
+////         )
+////      {  
+////        unsigned int value, index;
+////        
+////        switch (offset)
+////        {
+////        case DR_OFFSET_MEASUREMENT_IA_1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 0)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 2;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_IB_1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 1)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 2;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_IC_1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 2)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 2;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_I1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 4)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 2;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_I2:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 3)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 2;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UAB_1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 11)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UBC_1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 12)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UCA_1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 13)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UA_1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 5)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UB_1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 6)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UC_1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 7)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UAB_2:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 14)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UBC_2:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 15)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UCA_2:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 16)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UA_2:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 8)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UB_2:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 9)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_MEASUREMENT_UC_2:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 10)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value >> 3;
+////            break;
+////          }
+////        case DR_OFFSET_FREQUENCY_1:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 17)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value / 10;
+////            break;
+////          }
+////        case DR_OFFSET_FREQUENCY_2:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 18)*sizeof(unsigned int);
+////            value = *((unsigned int *)(point_to_buffer + index));
+////            
+////            temp_value = value / 10;
+////            break;
+////          }
+////        case DR_OFFSET_LABEL_TIME_LSW:
+////        case DR_OFFSET_LABEL_TIME_MSW:
+////        case DR_OFFSET_LABEL_PROTECT:
+////          {
+////            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 19)*sizeof(unsigned int);
+////            
+////            if (offset == DR_OFFSET_LABEL_TIME_LSW)
+////            {
+////              temp_value = (*(point_to_buffer + index + 0)) | ((*(point_to_buffer + index + 1)) << 8 );
+////            }
+////            else if (offset ==DR_OFFSET_LABEL_TIME_MSW)
+////            {
+////              temp_value =  *(point_to_buffer + index + 2);
+////            }
+////            else
+////            {
+////              value = *(point_to_buffer + index + 3);
+////              switch (value)
+////              {
+////              case IDENTIFIER_BIT_ARRAY_MAX_CURRENT_PHASE:
+////                {
+////                  temp_value = BLOCK_PROTECTION_MTZ;
+////                  break;
+////                }
+////              case IDENTIFIER_BIT_ARRAY_MIN_VOLTAGE:
+////                {
+////                  temp_value = BLOCK_PROTECTION_UMIN;
+////                  break;
+////                }
+////              case IDENTIFIER_BIT_ARRAY_MAX_VOLTAGE:
+////                {
+////                  temp_value = BLOCK_PROTECTION_UMAX;
+////                  break;
+////                }
+////              case IDENTIFIER_BIT_ARRAY_MAX_CURRENT_ZOP:
+////                {
+////                  temp_value = BLOCK_PROTECTION_ZOP;
+////                  break;
+////                }
+////              default:
+////                {
+////                  //Якщо немає помилок, то сюди б програма не мала заходити
+////                  temp_value = 0;
+////                  break;
+////                }
+////                  
+////              }
+////            }
+////            
+////            break;
+////          }
+////        default:
+////          {
+////            temp_value = 0;
+////            break;
+////          }
+////        }
+////      }
+////      else
+////      {
+////        if ((offset == DR_OFFSET_LABEL_TIME_LSW) || (offset == DR_OFFSET_LABEL_TIME_MSW)) temp_value = 0xffff;
+////        else temp_value = 0;
+////      }
+////    }
+////  }
+//  else if ((address_data >= M_ADDRESS_FIRST_USER_REGISTER) && (address_data <= M_ADDRESS_LAST_USER_REGISTER))
+//  {
+//    temp_value = settings_fix_prt.user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER];
+//  }
+//  else if ((address_data >= M_ADDRESS_CONTROL_BASE) && (address_data <= M_ADDRESS_CONTROL_LAST))
+//  {
+//    switch (address_data)
+//    {
+//    case M_ADDRESS_CONTROL_EL:
 //      {
-//        temp_value = measurement_low[IM_UC1] >> 3;
-//
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UAB_1):
-//      {
-//        temp_value = measurement_low[IM_UAB1] >> 3;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UBC_1):
-//      {
-//        temp_value = measurement_low[IM_UBC1] >> 3;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UCA_1):
-//      {
-//        temp_value = measurement_low[IM_UCA1] >> 3;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UA_2):
-//      {
-//        temp_value = measurement_low[IM_UA1] >> 3;
-//
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UB_2):
-//      {
-//        temp_value = measurement_low[IM_UB1] >> 3;
-//
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UC_2):
-//      {
-//        temp_value = measurement_low[IM_UC1] >> 3;
-//
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UAB_2):
-//      {
-//        temp_value = measurement_low[IM_UAB2] >> 3;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UBC_2):
-//      {
-//        temp_value = measurement_low[IM_UBC2] >> 3;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_UCA_2):
-//      {
-//        temp_value = measurement_low[IM_UCA2] >> 3;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_IA_1):
-//      {
-//        temp_value = measurement_low[IM_IA] >> 2;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_IB_1):
-//      {
-//        temp_value = measurement_low[IM_IB] >> 2;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_IC_1):
-//      {
-//        temp_value = measurement_low[IM_IC] >> 2;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_I1):
-//      {
-//        temp_value = measurement_low[IM_I1] >> 2;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_MEASUREMENT_I2):
-//      {
-//        temp_value = measurement_low[IM_I2] >> 2;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ACTIVE_POWER):
-//      {
-//        temp_value = P/50;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_REACTIVE_POWER):
-//      {
-//        temp_value = Q/50;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_FULL_POWER):
-//      {
-//        temp_value = S/50;
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_COS_PHI):
-//      {
-//        if (S != 0)
-//          temp_value = cos_phi_x1000;
-//        else
-//          temp_value = 0x0;
-//          
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_FREQUENCY_1):
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_FREQUENCY_2):
-//      {
-//        int int_frequency;
-//        if (address_data == (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_FREQUENCY_1))int_frequency = (int)(frequency_val_1*100);
-//        else int_frequency = (int)(frequency_val_2*100);
-//        
-//        if (int_frequency > 0 /*це число означає - частота не визначена*/)
-//          temp_value = int_frequency;
-//        else
-//        {
-//          if (int_frequency == (-1*100))
-//            temp_value = (unsigned int)(-1);
-//          else if (int_frequency == (-2*100))
-//            temp_value = (unsigned int)(-2);
-//          else if (int_frequency == (-3*100))
-//            temp_value = (unsigned int)(-3);
-//          else
-//            temp_value = (unsigned int)(-4);
-//        }
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_BASE_CANAL_FOR_ANGLE):
-//      {
-//        switch (base_index_for_angle)
-//        {
-//        case (-1):
-//          {
-//            temp_value = BASE_CANAL_NONE;
-//            break;
-//          }
-//        case FULL_ORT_Ua1:
-//          {
-//            temp_value = BASE_CANAL_UA_TN1;
-//            break;
-//          }
-//        case FULL_ORT_Ub1:
-//          {
-//            temp_value = BASE_CANAL_UB_TN1;
-//            break;
-//          }
-//        case FULL_ORT_Uc1:
-//          {
-//            temp_value = BASE_CANAL_UC_TN1;
-//            break;
-//          }
-//        case FULL_ORT_Ua2:
-//          {
-//            temp_value = BASE_CANAL_UA_TN2;
-//            break;
-//          }
-//        case FULL_ORT_Ub2:
-//          {
-//            temp_value = BASE_CANAL_UB_TN2;
-//            break;
-//          }
-//        case FULL_ORT_Uc2:
-//          {
-//            temp_value = BASE_CANAL_UC_TN2;
-//            break;
-//          }
-//        case FULL_ORT_Uab1:
-//          {
-//            temp_value = BASE_CANAL_UAB_TN1;
-//            break;
-//          }
-//        case FULL_ORT_Ubc1:
-//          {
-//            temp_value = BASE_CANAL_UBC_TN1;
-//            break;
-//          }
-//        case FULL_ORT_Uca1:
-//          {
-//            temp_value = BASE_CANAL_UCA_TN1;
-//            break;
-//          }
-//        case FULL_ORT_Uab2:
-//          {
-//            temp_value = BASE_CANAL_UAB_TN2;
-//            break;
-//          }
-//        case FULL_ORT_Ubc2:
-//          {
-//            temp_value = BASE_CANAL_UBC_TN2;
-//            break;
-//          }
-//        case FULL_ORT_Uca2:
-//          {
-//            temp_value = BASE_CANAL_UCA_TN2;
-//            break;
-//          }
-//        default:
-//          {
-//            //Теоретично цього ніколи не мало б бути
-//            total_error_sw_fixed(72);
-//          }
-//        }
-//
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UA_1):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Ua1];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UB_1):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Ub1];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UC_1):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Uc1];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UAB_1):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Uab1];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UBC_1):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Ubc1];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UCA_1):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Uca1];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UA_2):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Ua2];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UB_2):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Ub2];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UC_2):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Uc2];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UAB_2):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Uab2];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UBC_2):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Ubc2];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_UCA_2):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Uca2];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_IA_1):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Ia];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_IB_1):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Ib];
-//        break;
-//      }
-//    case (M_ADDRESS_FIRST_MEASUREMENTS_1 + OFFSET_ANGLE_IC_1):
-//      {
-//        temp_value = (unsigned int)phi_angle[FULL_ORT_Ic];
+//        temp_value = 1 << (BIT_MA_CONFIGURATION_EL - BIT_MA_CONTROL_EL_BASE);
 //        break;
 //      }
 //    default:
@@ -478,1442 +765,1128 @@ inline unsigned int Get_data(unsigned char *data, unsigned int address_data, uns
 //      }
 //    }
 //  }
-//  else if ((address_data >= M_ADDRESS_FIRST_MEASUREMENTS_DR) && (address_data <= M_ADDRESS_LAST_MEASUREMENTS_DR))
+//  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_PART1) && (address_data <= M_ADDRESS_LAST_SETPOINTS_PART1))
 //  {
-//    //Вимірювання, які зафіксовані під час роботи дискретного реєстратора
+//    switch (address_data)
+//    {
+//    default:
+//      {
+//        temp_value = 0;
+//        break;
+//      }
+//    }
+//  }
+//  else if (
+//           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1)))/* ||
+//           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))) ||
+//           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))) ||
+//           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4)))*/
+//          )
+//  {
+//    //Уставки, витримки, які мають декілька груп уставок
+//     unsigned int /*num_gr, */address_data_tmp = address_data;
+//     if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1)))
+//     {
+////       num_gr = 0;
+//       address_data_tmp -= SHIFT_G1;
+//     }
+////     else if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2)))
+////     {
+////       num_gr = 1;
+////       address_data_tmp -= SHIFT_G2;
+////     }
+////     else if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3)))
+////     {
+////       num_gr = 2;
+////       address_data_tmp -= SHIFT_G3;
+////     }
+////     else
+////     {
+////       num_gr = 3;
+////       address_data_tmp -= SHIFT_G4;
+////     }
+//        
+//    switch (address_data_tmp)
+//    {
+//    default:
+//      {
+//        temp_value = 0;
+//        break;
+//      }
+//    }
+//  }
+//  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE) && (address_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE))
+//  {
+//    //Уставки і витримки (ролдовження), настройки
+//    switch (address_data)
+//    {
+//    case MA_UVV_TYPE_SIGNAL_INPUT:
+//      {
+////        temp_value = current_settings_interfaces.type_of_input_signal & ((1 << NUMBER_INPUTS) - 1);
+//        break;
+//      }
+//    case MA_TYPE_DF:
+//      {
+////        temp_value = current_settings_interfaces.type_df & ((1 << NUMBER_DEFINED_FUNCTIONS) - 1);
+//        break;
+//      }
+//    case MA_DOPUSK_DV_1:
+//    case MA_DOPUSK_DV_2:
+//    case MA_DOPUSK_DV_3:
+//    case MA_DOPUSK_DV_4:
+//    case MA_DOPUSK_DV_5:
+//    case MA_DOPUSK_DV_6:
+//    case MA_DOPUSK_DV_7:
+//    case MA_DOPUSK_DV_8:
+//    case MA_DOPUSK_DV_9:
+//    case MA_DOPUSK_DV_10:
+//      {
+////        temp_value = current_settings_interfaces.dopusk_dv[address_data - MA_DOPUSK_DV_1];
+//        break;
+//      }
+//    case MA_DF_PAUSE_1:
+//    case MA_DF_PAUSE_2:
+//    case MA_DF_PAUSE_3:
+//    case MA_DF_PAUSE_4:
+//    case MA_DF_PAUSE_5:
+//    case MA_DF_PAUSE_6:
+//    case MA_DF_PAUSE_7:
+//    case MA_DF_PAUSE_8:
+//      {
+////        temp_value = current_settings_interfaces.timeout_pause_df[address_data - MA_DF_PAUSE_1]/10;
+//        break;
+//      }
+//    case MA_DF_WORK_1:
+//    case MA_DF_WORK_2:
+//    case MA_DF_WORK_3:
+//    case MA_DF_WORK_4:
+//    case MA_DF_WORK_5:
+//    case MA_DF_WORK_6:
+//    case MA_DF_WORK_7:
+//    case MA_DF_WORK_8:
+//      {
+////        temp_value = current_settings_interfaces.timeout_work_df[address_data - MA_DF_WORK_1]/10;
+//        break;
+//      }
+//    case MA_TO_DEACTIVATION_PASSWORD_INTERFACE:
+//      {
+//          if (type_interface == USB_RECUEST)
+//          {
+//            temp_value = settings_fix_prt.timeout_deactivation_password_interface_USB;
+//          }
+//          else if (type_interface == RS485_RECUEST)
+//          {
+//            temp_value = settings_fix_prt.timeout_deactivation_password_interface_RS485;
+//          }
+//          else error = ERROR_SLAVE_DEVICE_FAILURE;
+//      
+//          break;
+//      }
+//    case MA_TO_IDLE_NEW_SETTINGS:
+//      {
+//          temp_value = settings_fix_prt.timeout_idle_new_settings;
+//      
+//          break;
+//      }
+//    case MA_LANGUAGE_MENU:
+//      {
+//        temp_value = settings_fix_prt.language;
+//        break;
+//      }
+//    case MA_SPEED_RS485_1:
+//      {
+//        temp_value = settings_fix_prt.baud_RS485;
+//        break;
+//      }
+//    case MA_STOP_BITS_RS485_1:
+//      {
+//        temp_value = settings_fix_prt.number_stop_bit_RS485 + 1;
+//        break;
+//      }
+//    case MA_PARE_RS485_1:
+//      {
+//        temp_value = settings_fix_prt.pare_bit_RS485;
+//        break;
+//      }
+//    case MA_TIMEOUT_RS485_1:
+//      {
+//        temp_value = settings_fix_prt.time_out_1_RS485;
+//        break;
+//      }
+//    case MA_LOGICAL_ADDRESS:
+//      {
+//        temp_value = settings_fix_prt.address;
+//        break;
+//      }
+//    case MA_NAME_OF_CELL_CHARS_01_02:
+//    case MA_NAME_OF_CELL_CHARS_03_04:
+//    case MA_NAME_OF_CELL_CHARS_05_06:
+//    case MA_NAME_OF_CELL_CHARS_07_08:
+//    case MA_NAME_OF_CELL_CHARS_09_10:
+//    case MA_NAME_OF_CELL_CHARS_11_12:
+//    case MA_NAME_OF_CELL_CHARS_13_14:
+//    case MA_NAME_OF_CELL_CHARS_15_16:
+//      {
+//        unsigned int two_char_index = (address_data - MA_NAME_OF_CELL_CHARS_01_02) << 1;
+//        temp_value = settings_fix_prt.name_of_cell[two_char_index] | (settings_fix_prt.name_of_cell[two_char_index + 1] << 8);
+//        break;
+//      }
+//    default:
+//      {
+//        temp_value = 0;
+//        break;
+//      }
+//    }
+//  }
+//  else if ((address_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && (address_data <= M_ADDRESS_LAST_TIME_AND_DATA))
+//  {
+//    unsigned char *label_to_time_array;
+//    
+//    if (copying_time == 0) label_to_time_array = time;
+//    else label_to_time_array = time_copy;
+//    
+//    switch (address_data)
+//    {
+//    case MA_YEAR:
+//      {
+//        temp_value = *(label_to_time_array + 6);
+//        break;
+//      }
+//    case MA_MONTH:
+//      {
+//        temp_value = *(label_to_time_array + 5);
+//        break;
+//      }
+//    case MA_DAY:
+//      {
+//        temp_value = *(label_to_time_array + 4);
+//        break;
+//      }
+//    case MA_HOUR:
+//      {
+//        temp_value = *(label_to_time_array + 3);
+//        break;
+//      }
+//    case MA_MINUTE:
+//      {
+//        temp_value = *(label_to_time_array + 2);
+//        break;
+//      }
+//    case MA_SECOND:
+//      {
+//        temp_value = *(label_to_time_array + 1);
+//        break;
+//      }
+//    case MA_MILISECOND:
+//      {
+//        temp_value = *(label_to_time_array + 0);
+//        break;
+//      }
+//    default:
+//      {
+//        temp_value = 0;
+//        break;
+//      }
+//    }
+//  }
+//  else if (address_data == MA_TOTAL_NUMBER_RECORDS_PR_ERR)
+//  {
+//    temp_value = info_rejestrator_pr_err.number_records;
+//  }
+//  else if (address_data == MA_CURRENT_NUMBER_RECORD_PR_ERR)
+//  {
+//    if (type_interface == USB_RECUEST) temp_value = number_record_of_pr_err_into_USB;
+//    else if (type_interface == RS485_RECUEST) temp_value = number_record_of_pr_err_into_RS485;
+//    else
+//    {
+//      //Теоретично такого бути не мало б ніколи
+//      error = ERROR_SLAVE_DEVICE_FAILURE;
+//    }
+//  }
+//  else if ((address_data >= MA_FIRST_ADR_PR_ERR_WINDOW) && (address_data <= MA_LASR_ADR_PR_ERR_WINDOW))
+//  {
 //    if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
 //    {
 //      //Теоретично такого бути не мало б ніколи
 //      error = ERROR_SLAVE_DEVICE_FAILURE;
 //    }
 //    else if (
-//             ((type_interface == USB_RECUEST  ) && (number_record_of_dr_for_USB   == 0xffff)) ||
-//             ((type_interface == RS485_RECUEST) && (number_record_of_dr_for_RS485 == 0xffff))
+//             ((type_interface == USB_RECUEST  ) && (number_record_of_pr_err_into_USB   == 0xffff)) ||
+//             ((type_interface == RS485_RECUEST) && (number_record_of_pr_err_into_RS485 == 0xffff))
 //            )
 //    {
-//      //Не подано попередньокоманди вичитування відповідного запису дискретного реєстратора
+//      //Не подано попередньокоманди вичитування відповідного запису реєстратора програмних подій
 //      error = ERROR_ILLEGAL_DATA_ADDRESS;
 //    }
 //    else if (
-//             ((clean_rejestrators & CLEAN_DR) != 0) ||
+//             ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0) ||
 //             (
-//              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_DR_USB  ) != 0)) ||
-//              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & TASK_MAMORY_READ_DATAFLASH_FOR_DR_RS485) != 0))
+//              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  )) != 0)) ||
+//              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT)) != 0))
 //             ) 
 //            )
 //    {
-//      //Зараз іде зчитування для інтерфейсу запису дискретного реєстратора, або очистка його, тому ця операція є тимчасово недоступною
+//      //Зараз іде зчитування для інтерфейсу запису реєстратора програмних подій, або очистка його, тому ця операція є тимчасово недоступною
 //      error = ERROR_SLAVE_DEVICE_BUSY;
+//    }
+//    else if (
+//             (
+//              (type_interface == USB_RECUEST)
+//              && 
+//              (
+//               (number_record_of_pr_err_into_USB >= info_rejestrator_pr_err.number_records) ||
+//               (number_record_of_pr_err_into_USB >= MAX_NUMBER_RECORDS_INTO_PR_ERR        ) /*Хоч теоретично ця умова має перекриватися завжди першою умовою*/ 
+//              )   
+//             )
+//             ||   
+//             (
+//              (type_interface == RS485_RECUEST)
+//              && 
+//              (
+//               (number_record_of_pr_err_into_RS485 >= info_rejestrator_pr_err.number_records) ||
+//               (number_record_of_pr_err_into_RS485 >= MAX_NUMBER_RECORDS_INTO_PR_ERR        ) /*Хоч теоретично ця умова має перекриватися завжди першою умовою*/ 
+//              )   
+//             )
+//            )    
+//    {
+//      //Зафіксовано невизначену помилку
+//      error = ERROR_SLAVE_DEVICE_FAILURE;
+//      
+//     //Помічаємо, що номер запису не вибраний
+//      if (type_interface == USB_RECUEST) number_record_of_pr_err_into_USB = 0xffff;
+//      else if (type_interface == RS485_RECUEST) number_record_of_pr_err_into_RS485 = 0xffff;
 //    }
 //    else
 //    {
-//      //Можна читати дані
-//      int number_block, offset;
 //      unsigned char *point_to_buffer;
-//      number_block = (address_data - M_ADDRESS_FIRST_MEASUREMENTS_DR) / MEASUREMENTS_DR_WIDTH;
-//      offset = (address_data - M_ADDRESS_FIRST_MEASUREMENTS_DR) - number_block*MEASUREMENTS_DR_WIDTH;
-//      if (type_interface == USB_RECUEST) point_to_buffer = buffer_for_USB_read_record_dr;
-//      else point_to_buffer = buffer_for_RS485_read_record_dr;
-//      
-//      if (
-//          number_block < (
-//                          (*(point_to_buffer + FIRST_INDEX_NUMBER_MAX_PHASE_DR  )) + 
-//                          (*(point_to_buffer + FIRST_INDEX_NUMBER_MIN_U_DR      )) + 
-//                          (*(point_to_buffer + FIRST_INDEX_NUMBER_MAX_U_DR      )) + 
-//                          (*(point_to_buffer + FIRST_INDEX_NUMBER_MAX_ZOP_DR    ))
-//                         )
-//         )
-//      {  
-//        unsigned int value, index;
-//        
-//        switch (offset)
+//      if (type_interface == USB_RECUEST) point_to_buffer = buffer_for_USB_read_record_pr_err;
+//      else point_to_buffer = buffer_for_RS485_read_record_pr_err;
+//
+//      if ( (*(point_to_buffer + 0)) != LABEL_START_RECORD_PR_ERR)
+//      {
+//        //зафіксовано недостовірні дані
+//        error = ERROR_SLAVE_DEVICE_FAILURE;
+//      }
+//      else
+//      {
+//        unsigned int temp_address = address_data - MA_FIRST_ADR_PR_ERR_WINDOW;
+//        switch (temp_address)
 //        {
-//        case DR_OFFSET_MEASUREMENT_IA_1:
+//        case 0:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 0)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 2;
+//            temp_value = ((*(point_to_buffer + 7))  << 8) | (*(point_to_buffer + 6));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_IB_1:
+//        case 1:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 1)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 2;
+//            temp_value =  (*(point_to_buffer + 5))  << 8;
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_IC_1:
+//        case 2:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 2)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 2;
+//            temp_value = ((*(point_to_buffer + 4))  << 8) | (*(point_to_buffer + 3));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_I1:
+//        case 3:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 4)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 2;
+//            temp_value = ((*(point_to_buffer + 2))  << 8) | (*(point_to_buffer + 1));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_I2:
+//        case 4:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 3)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 2;
+//            temp_value = ((*(point_to_buffer + 10))  << 8) | (*(point_to_buffer + 9));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_UAB_1:
+//        case 5:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 11)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
+//            temp_value = ((*(point_to_buffer + 12))  << 8) | (*(point_to_buffer + 11));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_UBC_1:
+//        case 6:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 12)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
+//            temp_value = ((*(point_to_buffer + 14))  << 8) | (*(point_to_buffer + 13));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_UCA_1:
+//        case 7:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 13)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
+//            temp_value = ((*(point_to_buffer + 16))  << 8) | (*(point_to_buffer + 15));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_UA_1:
+//        case 8:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 5)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
+//            temp_value = ((*(point_to_buffer + 18))  << 8) | (*(point_to_buffer + 17));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_UB_1:
+//        case 9:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 6)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
+//            temp_value = ((*(point_to_buffer + 20))  << 8) | (*(point_to_buffer + 19));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_UC_1:
+//        case 10:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 7)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
+//            temp_value = ((*(point_to_buffer + 22))  << 8) | (*(point_to_buffer + 21));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_UAB_2:
+//        case 11:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 14)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
+//            temp_value = ((*(point_to_buffer + 24))  << 8) | (*(point_to_buffer + 23));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_UBC_2:
+//        case 12:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 15)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
+//            temp_value = ((*(point_to_buffer + 26))  << 8) | (*(point_to_buffer + 25));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_UCA_2:
+//        case 13:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 16)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
+//            temp_value = ((*(point_to_buffer + 28))  << 8) | (*(point_to_buffer + 27));
 //            break;
 //          }
-//        case DR_OFFSET_MEASUREMENT_UA_2:
+//        case 14:
 //          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 8)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
-//            break;
-//          }
-//        case DR_OFFSET_MEASUREMENT_UB_2:
-//          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 9)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
-//            break;
-//          }
-//        case DR_OFFSET_MEASUREMENT_UC_2:
-//          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 10)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value >> 3;
-//            break;
-//          }
-//        case DR_OFFSET_FREQUENCY_1:
-//          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 17)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value / 10;
-//            break;
-//          }
-//        case DR_OFFSET_FREQUENCY_2:
-//          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 18)*sizeof(unsigned int);
-//            value = *((unsigned int *)(point_to_buffer + index));
-//            
-//            temp_value = value / 10;
-//            break;
-//          }
-//        case DR_OFFSET_LABEL_TIME_LSW:
-//        case DR_OFFSET_LABEL_TIME_MSW:
-//        case DR_OFFSET_LABEL_PROTECT:
-//          {
-//            index = FIRST_INDEX_FIRST_BLOCK_DR + (number_block*SIZE_ARRAY_FIX_MAX_MEASUREMENTS + 19)*sizeof(unsigned int);
-//            
-//            if (offset == DR_OFFSET_LABEL_TIME_LSW)
-//            {
-//              temp_value = (*(point_to_buffer + index + 0)) | ((*(point_to_buffer + index + 1)) << 8 );
-//            }
-//            else if (offset ==DR_OFFSET_LABEL_TIME_MSW)
-//            {
-//              temp_value =  *(point_to_buffer + index + 2);
-//            }
-//            else
-//            {
-//              value = *(point_to_buffer + index + 3);
-//              switch (value)
-//              {
-//              case IDENTIFIER_BIT_ARRAY_MAX_CURRENT_PHASE:
-//                {
-//                  temp_value = BLOCK_PROTECTION_MTZ;
-//                  break;
-//                }
-//              case IDENTIFIER_BIT_ARRAY_MIN_VOLTAGE:
-//                {
-//                  temp_value = BLOCK_PROTECTION_UMIN;
-//                  break;
-//                }
-//              case IDENTIFIER_BIT_ARRAY_MAX_VOLTAGE:
-//                {
-//                  temp_value = BLOCK_PROTECTION_UMAX;
-//                  break;
-//                }
-//              case IDENTIFIER_BIT_ARRAY_MAX_CURRENT_ZOP:
-//                {
-//                  temp_value = BLOCK_PROTECTION_ZOP;
-//                  break;
-//                }
-//              default:
-//                {
-//                  //Якщо немає помилок, то сюди б програма не мала заходити
-//                  temp_value = 0;
-//                  break;
-//                }
-//                  
-//              }
-//            }
-//            
+//            temp_value = ((*(point_to_buffer + 30))  << 8) | (*(point_to_buffer + 29));
 //            break;
 //          }
 //        default:
 //          {
+//            //Якщо немає помилок, то сюди б програма не мала заходити
 //            temp_value = 0;
 //            break;
 //          }
 //        }
 //      }
+//    }
+//  }
+//  else if (address_data == MA_POSSIBILITY_USTUVANNJA)
+//  {
+//    //Повідомлення про те, чи можна проводити операцю юстування
+//    /*
+//     0 - операція юстування є забороненою
+//     1 - операція юстування є дозволеною
+//    */
+//    if (password_ustuvannja == 0x1978) temp_value = 1;
+//    else temp_value = 0;
+//  }
+//  else if ((address_data >= MA_ADDRESS_FIRST_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_USTUVANNJA))
+//  {
+//    temp_value = ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA ];
+//  }
+////  else if ((address_data >= MA_ADDRESS_FIRST_PHI_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_PHI_USTUVANNJA))
+////  {
+////    temp_value = phi_ustuvannja[address_data - MA_ADDRESS_FIRST_PHI_USTUVANNJA ];
+////  }
+////  else if (address_data == MA_NUMBER_ITERATION_EL)
+////  {
+////    temp_value = settings_fix_prt.number_iteration_el;
+////  }
+//  else if (address_data == MA_LSW_GLOBAL_RESURS_MIN)
+//  {
+//    temp_value = resurs_global_min & 0xffff;
+//  }
+//  else if (address_data == MA_MSW_GLOBAL_RESURS_MIN)
+//  {
+//    temp_value = resurs_global_min >> 16;
+//  }
+//  else if (address_data == MA_LSW_GLOBAL_RESURS_MAX)
+//  {
+//    temp_value = resurs_global_max & 0xffff;
+//  }
+//  else if (address_data == MA_MSW_GLOBAL_RESURS_MAX)
+//  {
+//    temp_value = resurs_global_max >> 16;
+//  }
+//  else if (address_data == MA_LSW_GLOBAL_RESURS)
+//  {
+//    temp_value = resurs_global & 0xffff;
+//  }
+//  else if (address_data == MA_MSW_GLOBAL_RESURS)
+//  {
+//    temp_value = resurs_global >> 16;
+//  }
+//  else if (address_data == MA_LSW_ADR_MEMORY_TO_WRITE)
+//  {
+//    temp_value = registers_address_write & 0xffff;
+//  }
+//  else if (address_data == MA_MSW_ADR_MEMORY_TO_WRITE)
+//  {
+//    temp_value = registers_address_write >> 16;
+//  }
+//  else if (address_data == MA_NB_REG_FROM_MEM_READ)
+//  {
+//    temp_value = number_registers_read;
+//  }
+//  else if (address_data == MA_LSW_ADR_MEMORY_TO_READ)
+//  {
+//    temp_value = registers_address_read & 0xffff;
+//  }
+//  else if (address_data == MA_MSW_ADR_MEMORY_TO_READ)
+//  {
+//    temp_value = registers_address_read >> 16;
+//  }
+//  else if((address_data >= M_ADDRESS_FIRST_READ_DAMP_MEM) && (address_data < M_ADDRESS_LAST_READ_DAMP_MEM))
+//  {
+//    temp_value = registers_values [address_data - M_ADDRESS_FIRST_READ_DAMP_MEM];
+//  }
+//  else if ((address_data >= M_ADDRESS_FIRST_TMP_MEASURMENTS) && (address_data < M_ADDRESS_LAST_TMP_MEASURMENTS))
+//  {
+//    if((address_data & 0x1) == 0)
+//    {
+//      temp_value = measurement_low[(address_data - M_ADDRESS_FIRST_TMP_MEASURMENTS)>>1] >> 16;
+//    }
+//    else
+//    {
+//      temp_value = measurement_low[(address_data - M_ADDRESS_FIRST_TMP_MEASURMENTS)>>1] & 0xffff;
+//    }
+//  }
+//  else if((address_data >= M_ADDRESS_FIRST_DIG_OSCILOGRAPH)&& (address_data < M_ADDRESS_LAST_DIG_OSCILOGRAPH))
+//  {
+//    if(action_is_continued == true) error = ERROR_SLAVE_DEVICE_BUSY;
+//    else
+//    {
+//      int temp_value_32bit = current_data_transmit[(part_transmit_carrent_data<<3) + ((address_data - M_ADDRESS_FIRST_DIG_OSCILOGRAPH) >> 1)];
+//      if ( ((address_data - M_ADDRESS_FIRST_DIG_OSCILOGRAPH) & 0x1)  == 0)
+//      {
+//        //Старше слово
+//        temp_value = (((unsigned int)temp_value_32bit) >> 16) & 0xffff;
+//      }
 //      else
 //      {
-//        if ((offset == DR_OFFSET_LABEL_TIME_LSW) || (offset == DR_OFFSET_LABEL_TIME_MSW)) temp_value = 0xffff;
-//        else temp_value = 0;
+//        //Молодше слово
+//        temp_value = (((unsigned int)temp_value_32bit)      ) & 0xffff;
 //      }
 //    }
 //  }
-  else if ((address_data >= M_ADDRESS_FIRST_USER_REGISTER) && (address_data <= M_ADDRESS_LAST_USER_REGISTER))
-  {
-    temp_value = settings_fix_prt.user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER];
-  }
-  else if ((address_data >= M_ADDRESS_CONTROL_BASE) && (address_data <= M_ADDRESS_CONTROL_LAST))
-  {
-    switch (address_data)
-    {
-    case M_ADDRESS_CONTROL_EL:
-      {
-        temp_value = 1 << (BIT_MA_CONFIGURATION_EL - BIT_MA_CONTROL_EL_BASE);
-        break;
-      }
-    default:
-      {
-        temp_value = 0;
-        break;
-      }
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_PART1) && (address_data <= M_ADDRESS_LAST_SETPOINTS_PART1))
-  {
-    switch (address_data)
-    {
-    default:
-      {
-        temp_value = 0;
-        break;
-      }
-    }
-  }
-  else if (
-           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1)))/* ||
-           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))) ||
-           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))) ||
-           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4)))*/
-          )
-  {
-    //Уставки, витримки, які мають декілька груп уставок
-     unsigned int /*num_gr, */address_data_tmp = address_data;
-     if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1)))
-     {
-//       num_gr = 0;
-       address_data_tmp -= SHIFT_G1;
-     }
-//     else if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2)))
-//     {
-//       num_gr = 1;
-//       address_data_tmp -= SHIFT_G2;
-//     }
-//     else if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3)))
-//     {
-//       num_gr = 2;
-//       address_data_tmp -= SHIFT_G3;
-//     }
-//     else
-//     {
-//       num_gr = 3;
-//       address_data_tmp -= SHIFT_G4;
-//     }
-        
-    switch (address_data_tmp)
-    {
-    default:
-      {
-        temp_value = 0;
-        break;
-      }
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE) && (address_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE))
-  {
-    //Уставки і витримки (ролдовження), настройки
-    switch (address_data)
-    {
-    case MA_UVV_TYPE_SIGNAL_INPUT:
-      {
-//        temp_value = current_settings_interfaces.type_of_input_signal & ((1 << NUMBER_INPUTS) - 1);
-        break;
-      }
-    case MA_TYPE_DF:
-      {
-//        temp_value = current_settings_interfaces.type_df & ((1 << NUMBER_DEFINED_FUNCTIONS) - 1);
-        break;
-      }
-    case MA_DOPUSK_DV_1:
-    case MA_DOPUSK_DV_2:
-    case MA_DOPUSK_DV_3:
-    case MA_DOPUSK_DV_4:
-    case MA_DOPUSK_DV_5:
-    case MA_DOPUSK_DV_6:
-    case MA_DOPUSK_DV_7:
-    case MA_DOPUSK_DV_8:
-    case MA_DOPUSK_DV_9:
-    case MA_DOPUSK_DV_10:
-      {
-//        temp_value = current_settings_interfaces.dopusk_dv[address_data - MA_DOPUSK_DV_1];
-        break;
-      }
-    case MA_DF_PAUSE_1:
-    case MA_DF_PAUSE_2:
-    case MA_DF_PAUSE_3:
-    case MA_DF_PAUSE_4:
-    case MA_DF_PAUSE_5:
-    case MA_DF_PAUSE_6:
-    case MA_DF_PAUSE_7:
-    case MA_DF_PAUSE_8:
-      {
-//        temp_value = current_settings_interfaces.timeout_pause_df[address_data - MA_DF_PAUSE_1]/10;
-        break;
-      }
-    case MA_DF_WORK_1:
-    case MA_DF_WORK_2:
-    case MA_DF_WORK_3:
-    case MA_DF_WORK_4:
-    case MA_DF_WORK_5:
-    case MA_DF_WORK_6:
-    case MA_DF_WORK_7:
-    case MA_DF_WORK_8:
-      {
-//        temp_value = current_settings_interfaces.timeout_work_df[address_data - MA_DF_WORK_1]/10;
-        break;
-      }
-    case MA_TO_DEACTIVATION_PASSWORD_INTERFACE:
-      {
-          if (type_interface == USB_RECUEST)
-          {
-            temp_value = settings_fix_prt.timeout_deactivation_password_interface_USB;
-          }
-          else if (type_interface == RS485_RECUEST)
-          {
-            temp_value = settings_fix_prt.timeout_deactivation_password_interface_RS485;
-          }
-          else error = ERROR_SLAVE_DEVICE_FAILURE;
-      
-          break;
-      }
-    case MA_TO_IDLE_NEW_SETTINGS:
-      {
-          temp_value = settings_fix_prt.timeout_idle_new_settings;
-      
-          break;
-      }
-    case MA_LANGUAGE_MENU:
-      {
-        temp_value = settings_fix_prt.language;
-        break;
-      }
-    case MA_SPEED_RS485_1:
-      {
-        temp_value = settings_fix_prt.baud_RS485;
-        break;
-      }
-    case MA_STOP_BITS_RS485_1:
-      {
-        temp_value = settings_fix_prt.number_stop_bit_RS485 + 1;
-        break;
-      }
-    case MA_PARE_RS485_1:
-      {
-        temp_value = settings_fix_prt.pare_bit_RS485;
-        break;
-      }
-    case MA_TIMEOUT_RS485_1:
-      {
-        temp_value = settings_fix_prt.time_out_1_RS485;
-        break;
-      }
-    case MA_LOGICAL_ADDRESS:
-      {
-        temp_value = settings_fix_prt.address;
-        break;
-      }
-    case MA_NAME_OF_CELL_CHARS_01_02:
-    case MA_NAME_OF_CELL_CHARS_03_04:
-    case MA_NAME_OF_CELL_CHARS_05_06:
-    case MA_NAME_OF_CELL_CHARS_07_08:
-    case MA_NAME_OF_CELL_CHARS_09_10:
-    case MA_NAME_OF_CELL_CHARS_11_12:
-    case MA_NAME_OF_CELL_CHARS_13_14:
-    case MA_NAME_OF_CELL_CHARS_15_16:
-      {
-        unsigned int two_char_index = (address_data - MA_NAME_OF_CELL_CHARS_01_02) << 1;
-        temp_value = settings_fix_prt.name_of_cell[two_char_index] | (settings_fix_prt.name_of_cell[two_char_index + 1] << 8);
-        break;
-      }
-    default:
-      {
-        temp_value = 0;
-        break;
-      }
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && (address_data <= M_ADDRESS_LAST_TIME_AND_DATA))
-  {
-    unsigned char *label_to_time_array;
-    
-    if (copying_time == 0) label_to_time_array = time;
-    else label_to_time_array = time_copy;
-    
-    switch (address_data)
-    {
-    case MA_YEAR:
-      {
-        temp_value = *(label_to_time_array + 6);
-        break;
-      }
-    case MA_MONTH:
-      {
-        temp_value = *(label_to_time_array + 5);
-        break;
-      }
-    case MA_DAY:
-      {
-        temp_value = *(label_to_time_array + 4);
-        break;
-      }
-    case MA_HOUR:
-      {
-        temp_value = *(label_to_time_array + 3);
-        break;
-      }
-    case MA_MINUTE:
-      {
-        temp_value = *(label_to_time_array + 2);
-        break;
-      }
-    case MA_SECOND:
-      {
-        temp_value = *(label_to_time_array + 1);
-        break;
-      }
-    case MA_MILISECOND:
-      {
-        temp_value = *(label_to_time_array + 0);
-        break;
-      }
-    default:
-      {
-        temp_value = 0;
-        break;
-      }
-    }
-  }
-  else if (address_data == MA_TOTAL_NUMBER_RECORDS_PR_ERR)
-  {
-    temp_value = info_rejestrator_pr_err.number_records;
-  }
-  else if (address_data == MA_CURRENT_NUMBER_RECORD_PR_ERR)
-  {
-    if (type_interface == USB_RECUEST) temp_value = number_record_of_pr_err_into_USB;
-    else if (type_interface == RS485_RECUEST) temp_value = number_record_of_pr_err_into_RS485;
-    else
-    {
-      //Теоретично такого бути не мало б ніколи
-      error = ERROR_SLAVE_DEVICE_FAILURE;
-    }
-  }
-  else if ((address_data >= MA_FIRST_ADR_PR_ERR_WINDOW) && (address_data <= MA_LASR_ADR_PR_ERR_WINDOW))
-  {
-    if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
-    {
-      //Теоретично такого бути не мало б ніколи
-      error = ERROR_SLAVE_DEVICE_FAILURE;
-    }
-    else if (
-             ((type_interface == USB_RECUEST  ) && (number_record_of_pr_err_into_USB   == 0xffff)) ||
-             ((type_interface == RS485_RECUEST) && (number_record_of_pr_err_into_RS485 == 0xffff))
-            )
-    {
-      //Не подано попередньокоманди вичитування відповідного запису реєстратора програмних подій
-      error = ERROR_ILLEGAL_DATA_ADDRESS;
-    }
-    else if (
-             ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0) ||
-             (
-              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  )) != 0)) ||
-              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT)) != 0))
-             ) 
-            )
-    {
-      //Зараз іде зчитування для інтерфейсу запису реєстратора програмних подій, або очистка його, тому ця операція є тимчасово недоступною
-      error = ERROR_SLAVE_DEVICE_BUSY;
-    }
-    else if (
-             (
-              (type_interface == USB_RECUEST)
-              && 
-              (
-               (number_record_of_pr_err_into_USB >= info_rejestrator_pr_err.number_records) ||
-               (number_record_of_pr_err_into_USB >= MAX_NUMBER_RECORDS_INTO_PR_ERR        ) /*Хоч теоретично ця умова має перекриватися завжди першою умовою*/ 
-              )   
-             )
-             ||   
-             (
-              (type_interface == RS485_RECUEST)
-              && 
-              (
-               (number_record_of_pr_err_into_RS485 >= info_rejestrator_pr_err.number_records) ||
-               (number_record_of_pr_err_into_RS485 >= MAX_NUMBER_RECORDS_INTO_PR_ERR        ) /*Хоч теоретично ця умова має перекриватися завжди першою умовою*/ 
-              )   
-             )
-            )    
-    {
-      //Зафіксовано невизначену помилку
-      error = ERROR_SLAVE_DEVICE_FAILURE;
-      
-     //Помічаємо, що номер запису не вибраний
-      if (type_interface == USB_RECUEST) number_record_of_pr_err_into_USB = 0xffff;
-      else if (type_interface == RS485_RECUEST) number_record_of_pr_err_into_RS485 = 0xffff;
-    }
-    else
-    {
-      unsigned char *point_to_buffer;
-      if (type_interface == USB_RECUEST) point_to_buffer = buffer_for_USB_read_record_pr_err;
-      else point_to_buffer = buffer_for_RS485_read_record_pr_err;
-
-      if ( (*(point_to_buffer + 0)) != LABEL_START_RECORD_PR_ERR)
-      {
-        //зафіксовано недостовірні дані
-        error = ERROR_SLAVE_DEVICE_FAILURE;
-      }
-      else
-      {
-        unsigned int temp_address = address_data - MA_FIRST_ADR_PR_ERR_WINDOW;
-        switch (temp_address)
-        {
-        case 0:
-          {
-            temp_value = ((*(point_to_buffer + 7))  << 8) | (*(point_to_buffer + 6));
-            break;
-          }
-        case 1:
-          {
-            temp_value =  (*(point_to_buffer + 5))  << 8;
-            break;
-          }
-        case 2:
-          {
-            temp_value = ((*(point_to_buffer + 4))  << 8) | (*(point_to_buffer + 3));
-            break;
-          }
-        case 3:
-          {
-            temp_value = ((*(point_to_buffer + 2))  << 8) | (*(point_to_buffer + 1));
-            break;
-          }
-        case 4:
-          {
-            temp_value = ((*(point_to_buffer + 10))  << 8) | (*(point_to_buffer + 9));
-            break;
-          }
-        case 5:
-          {
-            temp_value = ((*(point_to_buffer + 12))  << 8) | (*(point_to_buffer + 11));
-            break;
-          }
-        case 6:
-          {
-            temp_value = ((*(point_to_buffer + 14))  << 8) | (*(point_to_buffer + 13));
-            break;
-          }
-        case 7:
-          {
-            temp_value = ((*(point_to_buffer + 16))  << 8) | (*(point_to_buffer + 15));
-            break;
-          }
-        case 8:
-          {
-            temp_value = ((*(point_to_buffer + 18))  << 8) | (*(point_to_buffer + 17));
-            break;
-          }
-        case 9:
-          {
-            temp_value = ((*(point_to_buffer + 20))  << 8) | (*(point_to_buffer + 19));
-            break;
-          }
-        case 10:
-          {
-            temp_value = ((*(point_to_buffer + 22))  << 8) | (*(point_to_buffer + 21));
-            break;
-          }
-        case 11:
-          {
-            temp_value = ((*(point_to_buffer + 24))  << 8) | (*(point_to_buffer + 23));
-            break;
-          }
-        case 12:
-          {
-            temp_value = ((*(point_to_buffer + 26))  << 8) | (*(point_to_buffer + 25));
-            break;
-          }
-        case 13:
-          {
-            temp_value = ((*(point_to_buffer + 28))  << 8) | (*(point_to_buffer + 27));
-            break;
-          }
-        case 14:
-          {
-            temp_value = ((*(point_to_buffer + 30))  << 8) | (*(point_to_buffer + 29));
-            break;
-          }
-        default:
-          {
-            //Якщо немає помилок, то сюди б програма не мала заходити
-            temp_value = 0;
-            break;
-          }
-        }
-      }
-    }
-  }
-  else if (address_data == MA_POSSIBILITY_USTUVANNJA)
-  {
-    //Повідомлення про те, чи можна проводити операцю юстування
-    /*
-     0 - операція юстування є забороненою
-     1 - операція юстування є дозволеною
-    */
-    if (password_ustuvannja == 0x1978) temp_value = 1;
-    else temp_value = 0;
-  }
-  else if ((address_data >= MA_ADDRESS_FIRST_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_USTUVANNJA))
-  {
-    temp_value = ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA ];
-  }
-//  else if ((address_data >= MA_ADDRESS_FIRST_PHI_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_PHI_USTUVANNJA))
+//  else
 //  {
-//    temp_value = phi_ustuvannja[address_data - MA_ADDRESS_FIRST_PHI_USTUVANNJA ];
+//    error = ERROR_ILLEGAL_DATA_ADDRESS;
 //  }
-//  else if (address_data == MA_NUMBER_ITERATION_EL)
+//  
+//  //Вставляємо у масив потрібні дані і вертаємо результат виконання функції (тип помилки. якщо вона зафіксована)
+//  if (error == 0)
 //  {
-//    temp_value = settings_fix_prt.number_iteration_el;
+//    *data      = (temp_value >> 8) & 0xff;
+//    *(data +1) =  temp_value       & 0xff;
 //  }
-  else if (address_data == MA_LSW_GLOBAL_RESURS_MIN)
-  {
-    temp_value = resurs_global_min & 0xffff;
-  }
-  else if (address_data == MA_MSW_GLOBAL_RESURS_MIN)
-  {
-    temp_value = resurs_global_min >> 16;
-  }
-  else if (address_data == MA_LSW_GLOBAL_RESURS_MAX)
-  {
-    temp_value = resurs_global_max & 0xffff;
-  }
-  else if (address_data == MA_MSW_GLOBAL_RESURS_MAX)
-  {
-    temp_value = resurs_global_max >> 16;
-  }
-  else if (address_data == MA_LSW_GLOBAL_RESURS)
-  {
-    temp_value = resurs_global & 0xffff;
-  }
-  else if (address_data == MA_MSW_GLOBAL_RESURS)
-  {
-    temp_value = resurs_global >> 16;
-  }
-  else if (address_data == MA_LSW_ADR_MEMORY_TO_WRITE)
-  {
-    temp_value = registers_address_write & 0xffff;
-  }
-  else if (address_data == MA_MSW_ADR_MEMORY_TO_WRITE)
-  {
-    temp_value = registers_address_write >> 16;
-  }
-  else if (address_data == MA_NB_REG_FROM_MEM_READ)
-  {
-    temp_value = number_registers_read;
-  }
-  else if (address_data == MA_LSW_ADR_MEMORY_TO_READ)
-  {
-    temp_value = registers_address_read & 0xffff;
-  }
-  else if (address_data == MA_MSW_ADR_MEMORY_TO_READ)
-  {
-    temp_value = registers_address_read >> 16;
-  }
-  else if((address_data >= M_ADDRESS_FIRST_READ_DAMP_MEM) && (address_data < M_ADDRESS_LAST_READ_DAMP_MEM))
-  {
-    temp_value = registers_values [address_data - M_ADDRESS_FIRST_READ_DAMP_MEM];
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_TMP_MEASURMENTS) && (address_data < M_ADDRESS_LAST_TMP_MEASURMENTS))
-  {
-    if((address_data & 0x1) == 0)
-    {
-      temp_value = measurement_low[(address_data - M_ADDRESS_FIRST_TMP_MEASURMENTS)>>1] >> 16;
-    }
-    else
-    {
-      temp_value = measurement_low[(address_data - M_ADDRESS_FIRST_TMP_MEASURMENTS)>>1] & 0xffff;
-    }
-  }
-  else if((address_data >= M_ADDRESS_FIRST_DIG_OSCILOGRAPH)&& (address_data < M_ADDRESS_LAST_DIG_OSCILOGRAPH))
-  {
-    if(action_is_continued == true) error = ERROR_SLAVE_DEVICE_BUSY;
-    else
-    {
-      int temp_value_32bit = current_data_transmit[(part_transmit_carrent_data<<3) + ((address_data - M_ADDRESS_FIRST_DIG_OSCILOGRAPH) >> 1)];
-      if ( ((address_data - M_ADDRESS_FIRST_DIG_OSCILOGRAPH) & 0x1)  == 0)
-      {
-        //Старше слово
-        temp_value = (((unsigned int)temp_value_32bit) >> 16) & 0xffff;
-      }
-      else
-      {
-        //Молодше слово
-        temp_value = (((unsigned int)temp_value_32bit)      ) & 0xffff;
-      }
-    }
-  }
-  else
-  {
-    error = ERROR_ILLEGAL_DATA_ADDRESS;
-  }
-  
-  //Вставляємо у масив потрібні дані і вертаємо результат виконання функції (тип помилки. якщо вона зафіксована)
-  if (error == 0)
-  {
-    *data      = (temp_value >> 8) & 0xff;
-    *(data +1) =  temp_value       & 0xff;
-  }
-  
-  return error;
-}
+//  
+//  return error;
+//}
 /***********************************************************************************/
 
 /***********************************************************************************/
 //Запис даних
 /***********************************************************************************/
-inline unsigned int Set_data(unsigned short int data, unsigned int address_data, __settings_data method_setting, /*unsigned int to_be_continue, */unsigned int type_interface)
-{
-  unsigned int error = 0, temp_value;
-  
-  __SETTINGS_FIX *target_label;
-  if (method_setting == SET_DATA_IMMEDITATE) target_label = &settings_fix;
-  else target_label = &settings_fix_edit;
-
-  password_changed = false;
-  if (address_data == MA_PASSWORD_INTERFACE)
-  {
-    //Встановлення/зняття паролю доступу
-    if (type_interface == USB_RECUEST)
-    {
-      if (password_set_USB != 0)
-      {
-        if ((data == settings_fix.password_interface_USB) || (data == 0x1978)) password_set_USB = 0;
-        else error = ERROR_ILLEGAL_DATA_VALUE;
-      }
-      else if (password_set_USB == 0)
-      {
-        if ((data != 0) && (data == settings_fix.password_interface_USB)) password_set_USB = 1;
-        else 
-        {
-          target_label->password_interface_USB = data;
-          password_changed = true;
-        }
-      }
-    }
-    else if (type_interface == RS485_RECUEST)
-    {
-      if (password_set_RS485 != 0)
-      {
-        if ((data == settings_fix.password_interface_RS485) || (data == 0x1978)) password_set_RS485 = 0;
-        else error = ERROR_ILLEGAL_DATA_VALUE;
-      }
-      else if (password_set_RS485 == 0)
-      {
-        if ((data != 0) && (data == settings_fix.password_interface_RS485)) password_set_RS485 = 1;
-        else 
-        {
-          target_label->password_interface_RS485 = data;
-          password_changed = true;
-        }
-      }
-    }
-    else error = ERROR_SLAVE_DEVICE_FAILURE;
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_USER_REGISTER) && (address_data <= M_ADDRESS_LAST_USER_REGISTER))
-  {
-    //Ранжування регістрів користувача
-    
-    if ( !((data >= M_ADDRESS_FIRST_USER_REGISTER_DATA) && (data <= M_ADDRESS_LAST_USER_REGISTER_DATA)) )
-    {
-      //Записуємо ранжування регістрів користувача
-      target_label->user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER] = data;
-    }
-    else error = ERROR_ILLEGAL_DATA_VALUE;
-  }
-  else if ((address_data >= M_ADDRESS_CONTROL_BASE) && (address_data <= M_ADDRESS_CONTROL_LAST))
-  {
-    switch (address_data)
-    {
-    case M_ADDRESS_CONTROL_EL:
-      {
-        //Для ЦС розширену логіку не можна вимикати
-        if (((data >> (BIT_MA_CONFIGURATION_EL  - BIT_MA_CONTROL_EL_BASE)) & 0x1) == 0) error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    default: break;
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_PART1) && (address_data <= M_ADDRESS_LAST_SETPOINTS_PART1))
-  {
-    switch (address_data)
-    {
-    default: break;
-    }
-  }
-  else if (
-           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1)))/* ||
-           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))) ||
-           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))) ||
-           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4)))*/
-          )   
-  {
-    //Уставки, витримки, які мають декілька груп уставок
-     unsigned int /*num_gr, */address_data_tmp = address_data;
-     if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1)))
-     {
-//       num_gr = 0;
-       address_data_tmp -= SHIFT_G1;
-     }
-//     else if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2)))
-//     {
-//       num_gr = 1;
-//       address_data_tmp -= SHIFT_G2;
-//     }
-//     else if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3)))
-//     {
-//       num_gr = 2;
-//       address_data_tmp -= SHIFT_G3;
-//     }
-//     else
-//     {
-//       num_gr = 3;
-//       address_data_tmp -= SHIFT_G4;
-//     }
-     
-    switch (address_data_tmp)
-    {
-    default: break;
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE) && (address_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE))
-  {
-    //Уставки і витримки (продовження), налаштування
-    switch (address_data)
-    {
-    case MA_UVV_TYPE_SIGNAL_INPUT:
-      {
-//        if (data <= ((1 << NUMBER_INPUTS) - 1)) 
-//        {
-//          target_label->type_of_input_signal = data;
-//          
-//          //Коректуємо допуск входів
-//          for(unsigned int i = 0; i < NUMBER_INPUTS; i++)
-//          {
-//            if ((target_label->type_of_input_signal & (1 << i)) !=0)
-//            {
-//              if ((target_label->dopusk_dv[i] % 10) != 0)
-//              {
-//                target_label->dopusk_dv[i] = (target_label->dopusk_dv[i] / 10)*10;
-//              }
+//inline unsigned int Set_data(unsigned short int data, unsigned int address_data, __settings_data method_setting, /*unsigned int to_be_continue, */unsigned int type_interface)
+//{
+//  unsigned int error = 0, temp_value;
+//  
+//  __SETTINGS_FIX *target_label;
+//  if (method_setting == SET_DATA_IMMEDITATE) target_label = &settings_fix;
+//  else target_label = &settings_fix_edit;
 //
-//              if (target_label->dopusk_dv[i] < KOEF_DOPUSK_DV_ZMIN_MIN)
-//                target_label->dopusk_dv[i] = KOEF_DOPUSK_DV_ZMIN_MIN;
-//            }
-//          }
-//        }
-//        else
-//          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_TYPE_DF:
-      {
-//        if (data <= ((1 << NUMBER_DEFINED_FUNCTIONS) - 1)) 
-//          target_label->type_df = data;
-//        else
-//          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_DOPUSK_DV_1:
-    case MA_DOPUSK_DV_2:
-    case MA_DOPUSK_DV_3:
-    case MA_DOPUSK_DV_4:
-    case MA_DOPUSK_DV_5:
-    case MA_DOPUSK_DV_6:
-    case MA_DOPUSK_DV_7:
-    case MA_DOPUSK_DV_8:
-    case MA_DOPUSK_DV_9:
-    case MA_DOPUSK_DV_10:
-      {
-        if (data <= KOEF_DOPUSK_DV_MAX)
-        {
-          //Додатково перевіряємо нижню межу у випадку і крок, коли тип сигналу є змінний сигнал
-//          if (
-//              ((target_label->type_of_input_signal & (1 << (address_data - MA_DOPUSK_DV_1))) == 0) ||
-//              (
-//               ((target_label->type_of_input_signal & (1 << (address_data - MA_DOPUSK_DV_1))) != 0) &&
-//               ( data >= KOEF_DOPUSK_DV_ZMIN_MIN)                                                   &&
-//               ((data % 10) == 0)  
-//              )
-//             )
-//          {
-//            target_label->dopusk_dv[address_data - MA_DOPUSK_DV_1] = data;
-//          }
-//          else
-//            error = ERROR_ILLEGAL_DATA_VALUE;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_DF_PAUSE_1:
-    case MA_DF_PAUSE_2:
-    case MA_DF_PAUSE_3:
-    case MA_DF_PAUSE_4:
-    case MA_DF_PAUSE_5:
-    case MA_DF_PAUSE_6:
-    case MA_DF_PAUSE_7:
-    case MA_DF_PAUSE_8:
-      {
-        temp_value = data*10;
-        
-//#if (TIMEOUT_TIMER_PAUSE_MIN != 0)          
-//        if ((temp_value >= TIMEOUT_TIMER_PAUSE_MIN) && (temp_value <= TIMEOUT_TIMER_PAUSE_MAX))
-//#else
-//        if (temp_value <= TIMEOUT_TIMER_PAUSE_MAX)
-//#endif            
+//  password_changed = false;
+//  if (address_data == MA_PASSWORD_INTERFACE)
+//  {
+//    //Встановлення/зняття паролю доступу
+//    if (type_interface == USB_RECUEST)
+//    {
+//      if (password_set_USB != 0)
+//      {
+//        if ((data == settings_fix.password_interface_USB) || (data == 0x1978)) password_set_USB = 0;
+//        else error = ERROR_ILLEGAL_DATA_VALUE;
+//      }
+//      else if (password_set_USB == 0)
+//      {
+//        if ((data != 0) && (data == settings_fix.password_interface_USB)) password_set_USB = 1;
+//        else 
 //        {
-//          target_label->timeout_pause_df[address_data - MA_DF_PAUSE_1] = temp_value;
+//          target_label->password_interface_USB = data;
+//          password_changed = true;
+//        }
+//      }
+//    }
+//    else if (type_interface == RS485_RECUEST)
+//    {
+//      if (password_set_RS485 != 0)
+//      {
+//        if ((data == settings_fix.password_interface_RS485) || (data == 0x1978)) password_set_RS485 = 0;
+//        else error = ERROR_ILLEGAL_DATA_VALUE;
+//      }
+//      else if (password_set_RS485 == 0)
+//      {
+//        if ((data != 0) && (data == settings_fix.password_interface_RS485)) password_set_RS485 = 1;
+//        else 
+//        {
+//          target_label->password_interface_RS485 = data;
+//          password_changed = true;
+//        }
+//      }
+//    }
+//    else error = ERROR_SLAVE_DEVICE_FAILURE;
+//  }
+//  else if ((address_data >= M_ADDRESS_FIRST_USER_REGISTER) && (address_data <= M_ADDRESS_LAST_USER_REGISTER))
+//  {
+//    //Ранжування регістрів користувача
+//    
+//    if ( !((data >= M_ADDRESS_FIRST_USER_REGISTER_DATA) && (data <= M_ADDRESS_LAST_USER_REGISTER_DATA)) )
+//    {
+//      //Записуємо ранжування регістрів користувача
+//      target_label->user_register[address_data - M_ADDRESS_FIRST_USER_REGISTER] = data;
+//    }
+//    else error = ERROR_ILLEGAL_DATA_VALUE;
+//  }
+//  else if ((address_data >= M_ADDRESS_CONTROL_BASE) && (address_data <= M_ADDRESS_CONTROL_LAST))
+//  {
+//    switch (address_data)
+//    {
+//    case M_ADDRESS_CONTROL_EL:
+//      {
+//        //Для ЦС розширену логіку не можна вимикати
+//        if (((data >> (BIT_MA_CONFIGURATION_EL  - BIT_MA_CONTROL_EL_BASE)) & 0x1) == 0) error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    default: break;
+//    }
+//  }
+//  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_PART1) && (address_data <= M_ADDRESS_LAST_SETPOINTS_PART1))
+//  {
+//    switch (address_data)
+//    {
+//    default: break;
+//    }
+//  }
+//  else if (
+//           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1)))/* ||
+//           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2))) ||
+//           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3))) ||
+//           ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G4)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G4)))*/
+//          )   
+//  {
+//    //Уставки, витримки, які мають декілька груп уставок
+//     unsigned int /*num_gr, */address_data_tmp = address_data;
+//     if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G1)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G1)))
+//     {
+////       num_gr = 0;
+//       address_data_tmp -= SHIFT_G1;
+//     }
+////     else if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G2)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G2)))
+////     {
+////       num_gr = 1;
+////       address_data_tmp -= SHIFT_G2;
+////     }
+////     else if ((address_data >= (M_ADDRESS_FIRST_SETPOINTS_ZACHYSTIV + SHIFT_G3)) && (address_data <= (M_ADDRESS_LAST_SETPOINTS_ZACHYSTIV + SHIFT_G3)))
+////     {
+////       num_gr = 2;
+////       address_data_tmp -= SHIFT_G3;
+////     }
+////     else
+////     {
+////       num_gr = 3;
+////       address_data_tmp -= SHIFT_G4;
+////     }
+//     
+//    switch (address_data_tmp)
+//    {
+//    default: break;
+//    }
+//  }
+//  else if ((address_data >= M_ADDRESS_FIRST_SETPOINTS_CONTINUE) && (address_data <= M_ADDRESS_LAST_SETPOINTS_CONTINUE))
+//  {
+//    //Уставки і витримки (продовження), налаштування
+//    switch (address_data)
+//    {
+//    case MA_UVV_TYPE_SIGNAL_INPUT:
+//      {
+////        if (data <= ((1 << NUMBER_INPUTS) - 1)) 
+////        {
+////          target_label->type_of_input_signal = data;
+////          
+////          //Коректуємо допуск входів
+////          for(unsigned int i = 0; i < NUMBER_INPUTS; i++)
+////          {
+////            if ((target_label->type_of_input_signal & (1 << i)) !=0)
+////            {
+////              if ((target_label->dopusk_dv[i] % 10) != 0)
+////              {
+////                target_label->dopusk_dv[i] = (target_label->dopusk_dv[i] / 10)*10;
+////              }
+////
+////              if (target_label->dopusk_dv[i] < KOEF_DOPUSK_DV_ZMIN_MIN)
+////                target_label->dopusk_dv[i] = KOEF_DOPUSK_DV_ZMIN_MIN;
+////            }
+////          }
+////        }
+////        else
+////          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_TYPE_DF:
+//      {
+////        if (data <= ((1 << NUMBER_DEFINED_FUNCTIONS) - 1)) 
+////          target_label->type_df = data;
+////        else
+////          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_DOPUSK_DV_1:
+//    case MA_DOPUSK_DV_2:
+//    case MA_DOPUSK_DV_3:
+//    case MA_DOPUSK_DV_4:
+//    case MA_DOPUSK_DV_5:
+//    case MA_DOPUSK_DV_6:
+//    case MA_DOPUSK_DV_7:
+//    case MA_DOPUSK_DV_8:
+//    case MA_DOPUSK_DV_9:
+//    case MA_DOPUSK_DV_10:
+//      {
+//        if (data <= KOEF_DOPUSK_DV_MAX)
+//        {
+//          //Додатково перевіряємо нижню межу у випадку і крок, коли тип сигналу є змінний сигнал
+////          if (
+////              ((target_label->type_of_input_signal & (1 << (address_data - MA_DOPUSK_DV_1))) == 0) ||
+////              (
+////               ((target_label->type_of_input_signal & (1 << (address_data - MA_DOPUSK_DV_1))) != 0) &&
+////               ( data >= KOEF_DOPUSK_DV_ZMIN_MIN)                                                   &&
+////               ((data % 10) == 0)  
+////              )
+////             )
+////          {
+////            target_label->dopusk_dv[address_data - MA_DOPUSK_DV_1] = data;
+////          }
+////          else
+////            error = ERROR_ILLEGAL_DATA_VALUE;
 //        }
 //        else
 //          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_DF_WORK_1:
-    case MA_DF_WORK_2:
-    case MA_DF_WORK_3:
-    case MA_DF_WORK_4:
-    case MA_DF_WORK_5:
-    case MA_DF_WORK_6:
-    case MA_DF_WORK_7:
-    case MA_DF_WORK_8:
-      {
+//
+//        break;
+//      }
+//    case MA_DF_PAUSE_1:
+//    case MA_DF_PAUSE_2:
+//    case MA_DF_PAUSE_3:
+//    case MA_DF_PAUSE_4:
+//    case MA_DF_PAUSE_5:
+//    case MA_DF_PAUSE_6:
+//    case MA_DF_PAUSE_7:
+//    case MA_DF_PAUSE_8:
+//      {
 //        temp_value = data*10;
 //        
-//#if (TIMEOUT_TIMER_WORK_MIN != 0)          
-//        if ((temp_value >= TIMEOUT_TIMER_WORK_MIN) && (temp_value <= TIMEOUT_TIMER_WORK_MAX))
+////#if (TIMEOUT_TIMER_PAUSE_MIN != 0)          
+////        if ((temp_value >= TIMEOUT_TIMER_PAUSE_MIN) && (temp_value <= TIMEOUT_TIMER_PAUSE_MAX))
+////#else
+////        if (temp_value <= TIMEOUT_TIMER_PAUSE_MAX)
+////#endif            
+////        {
+////          target_label->timeout_pause_df[address_data - MA_DF_PAUSE_1] = temp_value;
+////        }
+////        else
+////          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_DF_WORK_1:
+//    case MA_DF_WORK_2:
+//    case MA_DF_WORK_3:
+//    case MA_DF_WORK_4:
+//    case MA_DF_WORK_5:
+//    case MA_DF_WORK_6:
+//    case MA_DF_WORK_7:
+//    case MA_DF_WORK_8:
+//      {
+////        temp_value = data*10;
+////        
+////#if (TIMEOUT_TIMER_WORK_MIN != 0)          
+////        if ((temp_value >= TIMEOUT_TIMER_WORK_MIN) && (temp_value <= TIMEOUT_TIMER_WORK_MAX))
+////#else
+////        if (temp_value <= TIMEOUT_TIMER_WORK_MAX)
+////#endif            
+////        {
+////          target_label->timeout_work_df[address_data - MA_DF_WORK_1] = temp_value;
+////        }
+////        else
+////          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_TO_DEACTIVATION_PASSWORD_INTERFACE:
+//      {
+//        //Встановлення часу протягом якого, якщо немає звертання до інтерфейсу, то встановлюється пароль
+//        temp_value = data;
+//        
+//        if(
+//#if (TIMEOUT_DEACTIVATION_PASSWORD_MIN != 0)          
+//           ((temp_value >= TIMEOUT_DEACTIVATION_PASSWORD_MIN) && (temp_value <= TIMEOUT_DEACTIVATION_PASSWORD_MAX)) ||
 //#else
-//        if (temp_value <= TIMEOUT_TIMER_WORK_MAX)
-//#endif            
+//           (temp_value <= TIMEOUT_DEACTIVATION_PASSWORD_MAX) ||
+//#endif   
+//           (temp_value == TIMEOUT_DEACTIVATION_PASSWORD_OFF)
+//          )   
 //        {
-//          target_label->timeout_work_df[address_data - MA_DF_WORK_1] = temp_value;
+//          unsigned int *point_to_timeout_deactivation_password_interface;
+//          if (type_interface == USB_RECUEST)
+//          {
+//            point_to_timeout_deactivation_password_interface = &target_label->timeout_deactivation_password_interface_USB;
+//          }
+//          else if (type_interface == RS485_RECUEST)
+//          {
+//            point_to_timeout_deactivation_password_interface = &target_label->timeout_deactivation_password_interface_RS485;
+//          }
+//          else error = ERROR_SLAVE_DEVICE_FAILURE;
+//      
+//          if (error == 0) *point_to_timeout_deactivation_password_interface = temp_value;
 //        }
 //        else
 //          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_TO_DEACTIVATION_PASSWORD_INTERFACE:
-      {
-        //Встановлення часу протягом якого, якщо немає звертання до інтерфейсу, то встановлюється пароль
-        temp_value = data;
-        
-        if(
-#if (TIMEOUT_DEACTIVATION_PASSWORD_MIN != 0)          
-           ((temp_value >= TIMEOUT_DEACTIVATION_PASSWORD_MIN) && (temp_value <= TIMEOUT_DEACTIVATION_PASSWORD_MAX)) ||
-#else
-           (temp_value <= TIMEOUT_DEACTIVATION_PASSWORD_MAX) ||
-#endif   
-           (temp_value == TIMEOUT_DEACTIVATION_PASSWORD_OFF)
-          )   
-        {
-          unsigned int *point_to_timeout_deactivation_password_interface;
-          if (type_interface == USB_RECUEST)
-          {
-            point_to_timeout_deactivation_password_interface = &target_label->timeout_deactivation_password_interface_USB;
-          }
-          else if (type_interface == RS485_RECUEST)
-          {
-            point_to_timeout_deactivation_password_interface = &target_label->timeout_deactivation_password_interface_RS485;
-          }
-          else error = ERROR_SLAVE_DEVICE_FAILURE;
-      
-          if (error == 0) *point_to_timeout_deactivation_password_interface = temp_value;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_TO_IDLE_NEW_SETTINGS:
-      {
-        //Встановлення часу протягом якого, якщо немає нових змін налаштувнь, то попередні зміни налаштувань деактивуються
-        temp_value = data;
-        
-#if (TIMEOUT_DEACTIVATION_PASSWORD_MIN != 0)          
-        if ((temp_value >= TIMEOUT_NEW_SETTINGS_MIN) && (temp_value <= TIMEOUT_NEW_SETTINGS_MAX))
-#else
-        if (temp_value <= TIMEOUT_NEW_SETTINGS_MAX)
-#endif   
-          target_label->timeout_idle_new_settings = temp_value;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_LANGUAGE_MENU:
-      {
-        temp_value = data;
-        
-#if (VALUE_SETTING_LANGUAGE_MIN != 0)          
-        if ((temp_value >= VALUE_SETTING_LANGUAGE_MIN) && (temp_value <= VALUE_SETTING_LANGUAGE_MAX))
-#else
-        if (temp_value <= VALUE_SETTING_LANGUAGE_MAX)
-#endif            
-          target_label->language = temp_value;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_SPEED_RS485_1:
-      {
-        temp_value = data;
-        
-#if (VALUE_BAUD_RS485_MIN != 0)          
-        if ((temp_value >= VALUE_BAUD_RS485_MIN) && (temp_value <= VALUE_BAUD_RS485_MAX))
-#else
-        if (temp_value <= VALUE_BAUD_RS485_MAX)
-#endif            
-          target_label->baud_RS485 = temp_value;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_STOP_BITS_RS485_1:
-      {
-        temp_value = data - 1;
-        
-#if (VALUE_STOP_BITS_RS485_MIN != 0)          
-        if ((temp_value >= VALUE_STOP_BITS_RS485_MIN) && (temp_value <= VALUE_STOP_BITS_RS485_MAX))
-#else
-        if (temp_value <= VALUE_STOP_BITS_RS485_MAX)
-#endif            
-          target_label->number_stop_bit_RS485 = temp_value;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_PARE_RS485_1:
-      {
-        temp_value = data;
-        
-#if (VALUE_PARE_RS485_MIN != 0)          
-        if ((temp_value >= VALUE_PARE_RS485_MIN) && (temp_value <= VALUE_PARE_RS485_MAX))
-#else
-        if (temp_value <= VALUE_PARE_RS485_MAX)
-#endif            
-          target_label->pare_bit_RS485 = temp_value;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_TIMEOUT_RS485_1:
-      {
-        temp_value = data;
-        
-#if (VALUE_TIME_OUT_1_RS485_MIN != 0)          
-        if ((temp_value >= VALUE_TIME_OUT_1_RS485_MIN) && (temp_value <= VALUE_TIME_OUT_1_RS485_MAX))
-#else
-        if (temp_value <= VALUE_TIME_OUT_1_RS485_MAX)
-#endif            
-          target_label->time_out_1_RS485 = temp_value;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_LOGICAL_ADDRESS:
-      {
-        temp_value = data;
-    
-        if ((temp_value >= KOEF_ADDRESS_MIN) && (temp_value <= KOEF_ADDRESS_MAX))
-          target_label->address = temp_value;
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-
-        break;
-      }
-    case MA_NAME_OF_CELL_CHARS_01_02:
-    case MA_NAME_OF_CELL_CHARS_03_04:
-    case MA_NAME_OF_CELL_CHARS_05_06:
-    case MA_NAME_OF_CELL_CHARS_07_08:
-    case MA_NAME_OF_CELL_CHARS_09_10:
-    case MA_NAME_OF_CELL_CHARS_11_12:
-    case MA_NAME_OF_CELL_CHARS_13_14:
-    case MA_NAME_OF_CELL_CHARS_15_16:
-      {
-        
-        unsigned int two_char_index = (address_data - MA_NAME_OF_CELL_CHARS_01_02) << 1;
-        unsigned int byte_1 = (data & 0xff), byte_2 = (data >> 8) & 0xff;
-        
-        if (
-            (
-             (byte_1 >= 0x20) && (byte_1 <= 0x7e) || /*латинські символи і цифри*/
-             (byte_1 >= 0xc0) && (byte_1 <= 0xff) || /*кириличні російські символи*/
-             (byte_1 == 0xa8)                     || /*російський символ 'Ё'*/  
-             (byte_1 == 0xb8)                     || /*російський символ 'ё'*/  
-             (
-              (target_label->language == LANGUAGE_UA) &&
-              (
-               (byte_1 == 0xaf)                     || /*український символ 'Ї'*/  
-               (byte_1 == 0xbf)                     || /*український символ 'ї'*/  
-               (byte_1 == 0xa5)                     || /*український символ 'Ґ'*/  
-               (byte_1 == 0xb4)                     || /*український символ 'ґ'*/  
-               (byte_1 == 0xaa)                     || /*український символ 'Є'*/  
-               (byte_1 == 0xba)                        /*український символ 'є'*/  
-              ) 
-             ) 
-            )
-            &&  
-            (
-             (byte_2 >= 0x20) && (byte_2 <= 0x7e) || /*латинські символи і цифри*/
-             (byte_2 >= 0xc0) && (byte_2 <= 0xff) || /*кириличні російські символи*/
-             (byte_2 == 0xa8)                     || /*російський символ 'Ё'*/  
-             (byte_2 == 0xb8)                     ||   /*російський символ 'ё'*/  
-             (
-              (target_label->language == LANGUAGE_UA) &&
-              (
-               (byte_2 == 0xaf)                     || /*український символ 'Ї'*/  
-               (byte_2 == 0xbf)                     || /*український символ 'ї'*/  
-               (byte_2 == 0xa5)                     || /*український символ 'Ґ'*/  
-               (byte_2 == 0xb4)                     || /*український символ 'ґ'*/  
-               (byte_2 == 0xaa)                     || /*український символ 'Є'*/  
-               (byte_2 == 0xba)                        /*український символ 'є'*/  
-              ) 
-             )   
-            )
-           )
-        {
-          target_label->name_of_cell[two_char_index    ] = byte_1;
-          target_label->name_of_cell[two_char_index + 1] = byte_2;
-        }
-        else
-          error = ERROR_ILLEGAL_DATA_VALUE;
-        
-        break;
-      }
-    default: break;
-    }
-  }
-  else if ((address_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && (address_data <= M_ADDRESS_LAST_TIME_AND_DATA))
-  {
-    temp_value = data & 0xff;
-    unsigned int tetrad_low = (temp_value & 0xf), tetrad_high = (temp_value >> 4);
-    
-    //Неправильне число, наприлкад, може бути. коли вводиться не 0x10, а 10 = 0xA і це сило 0xA буде вводитися в якийся регістр RTC
-    if((tetrad_low <= 0x9) && (tetrad_high <= 0x9))
-    {
-      switch (address_data)
-      {
-      case MA_YEAR:
-        {
-          time_edit[6] = temp_value;
-          break;
-        }
-      case MA_MONTH:
-        {
-          time_edit[5] = temp_value;
-          break;
-        }
-      case MA_DAY:
-        {
-          time_edit[4] = temp_value;
-          break;
-        }
-      case MA_HOUR:
-        {
-          time_edit[3] = temp_value;
-          break;
-        }
-      case MA_MINUTE:
-        {
-          time_edit[2] = temp_value;
-          break;
-        }
-      case MA_SECOND:
-        {
-          time_edit[1] = temp_value;
-          break;
-        }
-      case MA_MILISECOND:
-        {
-          time_edit[0] = temp_value;
-          break;
-        }
-      default: break;
-      }
-    }
-    else
-      error = ERROR_ILLEGAL_DATA_VALUE;
-  }
-  else if (address_data == MA_CLEAR_NUMBER_RECORD_PR_ERR)
-  {
-    if (
-        /*
-        (current_ekran.current_level == EKRAN_TITLES_PR_ERR_REGISTRATOR )
-        ||  
-        (current_ekran.current_level == EKRAN_DATA_LADEL_PR_ERR         )
-        ||  
-        (current_ekran.current_level == EKRAN_CHANGES_DIAGNOSTICS_PR_ERR)
-        ||
-        */
-        (
-         (control_tasks_dataflash & (
-                                     (1 << TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT   ) |
-                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  ) |
-                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT) |
-                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )
-                                    )
-         ) != 0
-        )
-        ||
-        ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0)  
-       ) 
-    {
-      //Зараз іде зчитування для інтерфейсу запису реєстратора програмних подій, або відкрите вікно відображення запису, тому ця операція є тимчасово недоступною
-      error = ERROR_SLAVE_DEVICE_BUSY;
-    }
-    else
-    {
-      //Помічаємо, що треба очистити реєстратор програмних подій
-      clean_rejestrators |= MASKA_FOR_BIT(CLEAN_PR_ERR_BIT);
-    }
-  }
-  else if (address_data == MA_CURRENT_NUMBER_RECORD_PR_ERR)
-  {
-    if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
-    {
-      //Теоретично такого бути не мало б ніколи
-      error = ERROR_SLAVE_DEVICE_FAILURE;
-    }
-    else if (
-             ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0) ||
-             (
-              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  )) != 0)) ||
-              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT)) != 0))
-             ) 
-            )
-    {
-      /*
-      Зараз іде зчитування для інтерфейсу запису реєстратора програмних подій, 
-      або очистка його, тому ця операція є тимчасово недоступною
-      */
-      error = ERROR_SLAVE_DEVICE_BUSY;
-    }
-    else if (
-             (data < info_rejestrator_pr_err.number_records) &&
-             (data < MAX_NUMBER_RECORDS_INTO_PR_ERR        ) /*Хоч теоретично ця умова має перекриватися завжди першою умовою*/
-            )
-    {
-      if (type_interface == USB_RECUEST)
-      {
-        //Встановлюємо номер запису реєстратора програмних подій для читання через інтерфейс USB
-        number_record_of_pr_err_into_USB = data;
-        //Подаємо команду читання реєстратора програмних подій для  інтерфейсу USB
-
-        //Подаємо команду зчитати дані у бувер пам'яті для USB
-        control_tasks_dataflash |= (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT);
-      }
-      else if (type_interface == RS485_RECUEST)
-      {
-        //Встановлюємо номер запису реєстратора програмних подій для читання через інтерфейс RS-485
-        number_record_of_pr_err_into_RS485 = data;
-        //Подаємо команду читання реєстратора програмних подій для  інтерфейсу RS-485
-
-        //Подаємо команду зчитати дані у бувер пам'яті для RS-485
-        control_tasks_dataflash |= (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT);
-      }
-      else
-      {
-        //Теоретично такого бути не мало б ніколи
-        error = ERROR_SLAVE_DEVICE_FAILURE;
-      }
-    }
-    else
-      error = ERROR_ILLEGAL_DATA_VALUE;
-  }
-  else if (address_data == MA_SET_SERIAL_NUMBER)
-  {
-    if (password_ustuvannja == 0x1978)
-    {
-      //Ввід серійного номеру
-      if (method_setting == SET_DATA_IMMEDITATE)
-        serial_number_dev = data;
-      else
-        edit_serial_number_dev = data;
-    }
-    else 
-    {
-      /*У разі повідомлення про помилку тип помилки ставиться такий ніби така адреса взагалі є недоступною, щоб зменшити ймовірність несанкціонованого запису юстування*/
-      error = ERROR_ILLEGAL_DATA_ADDRESS;
-    }    
-  }
-  else if (address_data == MA_POSSIBILITY_USTUVANNJA)
-  {
-    if (password_ustuvannja != 0x1978)
-    {
-      //Встановлення паролю-дозволу юстування можливе тільки коли записується число 0x1978
-      if (data == 0x1978) password_ustuvannja = 0x1978;
-      else
-      {
-        /*У разі повідомлення про помилку тип помилки ставиться такий ніби така адреса взагалі є недоступною, щоб зменшити ймовірність несанкціонованого запису юстування*/
-        error = ERROR_ILLEGAL_DATA_ADDRESS;
-      }
-    }
-    else
-    {
-      //Записування будь-якого числа (крім числа, яке розблоковує юстування) приводить до заборони подальшого юстування
-      if (data != 0x1978) password_ustuvannja = 0;
-    }
-  }
-  else if ((address_data >= MA_ADDRESS_FIRST_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_USTUVANNJA))
-  {
-    //Ючтування
-    if (password_ustuvannja == 0x1978)
-    {
-      if (method_setting == SET_DATA_IMMEDITATE)
-        ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA  ]  = data;
-      else
-        edit_ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA  ]  = data;
-    }
-    else 
-    {
-      /*У разі повідомлення про помилку тип помилки ставиться такий ніби така адреса взагалі є недоступною, щоб зменшити ймовірність несанкціонованого запису юстування*/
-      error = ERROR_ILLEGAL_DATA_ADDRESS;
-    }
-  }
-//  else if ((address_data >= MA_ADDRESS_FIRST_PHI_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_PHI_USTUVANNJA))
-//  {
-//    //Фазове ючтування
-//    if (password_ustuvannja == 0x1978)
-//    {
-//      unsigned int index = address_data - MA_ADDRESS_FIRST_PHI_USTUVANNJA; 
-//      int phi_tmp = (short int)data;
-//      float phi_radian_tmp = PI*((float)phi_tmp)/1800.0f; /*Оскільки кут встановлюється з точнітю до десятих цілим числом, то для того, щоб отримати правильно радіани - треба поділити не на 180 а на 1800= 180х10 */
-//      if (method_setting == SET_DATA_IMMEDITATE)
+//
+//        break;
+//      }
+//    case MA_TO_IDLE_NEW_SETTINGS:
 //      {
-//        phi_ustuvannja[index] = phi_tmp;
-//        phi_ustuvannja_sin_cos[2*index    ] = arm_sin_f32(phi_radian_tmp);
-//        phi_ustuvannja_sin_cos[2*index + 1] = arm_cos_f32(phi_radian_tmp);
+//        //Встановлення часу протягом якого, якщо немає нових змін налаштувнь, то попередні зміни налаштувань деактивуються
+//        temp_value = data;
+//        
+//#if (TIMEOUT_DEACTIVATION_PASSWORD_MIN != 0)          
+//        if ((temp_value >= TIMEOUT_NEW_SETTINGS_MIN) && (temp_value <= TIMEOUT_NEW_SETTINGS_MAX))
+//#else
+//        if (temp_value <= TIMEOUT_NEW_SETTINGS_MAX)
+//#endif   
+//          target_label->timeout_idle_new_settings = temp_value;
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_LANGUAGE_MENU:
+//      {
+//        temp_value = data;
+//        
+//#if (VALUE_SETTING_LANGUAGE_MIN != 0)          
+//        if ((temp_value >= VALUE_SETTING_LANGUAGE_MIN) && (temp_value <= VALUE_SETTING_LANGUAGE_MAX))
+//#else
+//        if (temp_value <= VALUE_SETTING_LANGUAGE_MAX)
+//#endif            
+//          target_label->language = temp_value;
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_SPEED_RS485_1:
+//      {
+//        temp_value = data;
+//        
+//#if (VALUE_BAUD_RS485_MIN != 0)          
+//        if ((temp_value >= VALUE_BAUD_RS485_MIN) && (temp_value <= VALUE_BAUD_RS485_MAX))
+//#else
+//        if (temp_value <= VALUE_BAUD_RS485_MAX)
+//#endif            
+//          target_label->baud_RS485 = temp_value;
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_STOP_BITS_RS485_1:
+//      {
+//        temp_value = data - 1;
+//        
+//#if (VALUE_STOP_BITS_RS485_MIN != 0)          
+//        if ((temp_value >= VALUE_STOP_BITS_RS485_MIN) && (temp_value <= VALUE_STOP_BITS_RS485_MAX))
+//#else
+//        if (temp_value <= VALUE_STOP_BITS_RS485_MAX)
+//#endif            
+//          target_label->number_stop_bit_RS485 = temp_value;
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_PARE_RS485_1:
+//      {
+//        temp_value = data;
+//        
+//#if (VALUE_PARE_RS485_MIN != 0)          
+//        if ((temp_value >= VALUE_PARE_RS485_MIN) && (temp_value <= VALUE_PARE_RS485_MAX))
+//#else
+//        if (temp_value <= VALUE_PARE_RS485_MAX)
+//#endif            
+//          target_label->pare_bit_RS485 = temp_value;
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_TIMEOUT_RS485_1:
+//      {
+//        temp_value = data;
+//        
+//#if (VALUE_TIME_OUT_1_RS485_MIN != 0)          
+//        if ((temp_value >= VALUE_TIME_OUT_1_RS485_MIN) && (temp_value <= VALUE_TIME_OUT_1_RS485_MAX))
+//#else
+//        if (temp_value <= VALUE_TIME_OUT_1_RS485_MAX)
+//#endif            
+//          target_label->time_out_1_RS485 = temp_value;
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_LOGICAL_ADDRESS:
+//      {
+//        temp_value = data;
+//    
+//        if ((temp_value >= KOEF_ADDRESS_MIN) && (temp_value <= KOEF_ADDRESS_MAX))
+//          target_label->address = temp_value;
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
+//
+//        break;
+//      }
+//    case MA_NAME_OF_CELL_CHARS_01_02:
+//    case MA_NAME_OF_CELL_CHARS_03_04:
+//    case MA_NAME_OF_CELL_CHARS_05_06:
+//    case MA_NAME_OF_CELL_CHARS_07_08:
+//    case MA_NAME_OF_CELL_CHARS_09_10:
+//    case MA_NAME_OF_CELL_CHARS_11_12:
+//    case MA_NAME_OF_CELL_CHARS_13_14:
+//    case MA_NAME_OF_CELL_CHARS_15_16:
+//      {
+//        
+//        unsigned int two_char_index = (address_data - MA_NAME_OF_CELL_CHARS_01_02) << 1;
+//        unsigned int byte_1 = (data & 0xff), byte_2 = (data >> 8) & 0xff;
+//        
+//        if (
+//            (
+//             (byte_1 >= 0x20) && (byte_1 <= 0x7e) || /*латинські символи і цифри*/
+//             (byte_1 >= 0xc0) && (byte_1 <= 0xff) || /*кириличні російські символи*/
+//             (byte_1 == 0xa8)                     || /*російський символ 'Ё'*/  
+//             (byte_1 == 0xb8)                     || /*російський символ 'ё'*/  
+//             (
+//              (target_label->language == LANGUAGE_UA) &&
+//              (
+//               (byte_1 == 0xaf)                     || /*український символ 'Ї'*/  
+//               (byte_1 == 0xbf)                     || /*український символ 'ї'*/  
+//               (byte_1 == 0xa5)                     || /*український символ 'Ґ'*/  
+//               (byte_1 == 0xb4)                     || /*український символ 'ґ'*/  
+//               (byte_1 == 0xaa)                     || /*український символ 'Є'*/  
+//               (byte_1 == 0xba)                        /*український символ 'є'*/  
+//              ) 
+//             ) 
+//            )
+//            &&  
+//            (
+//             (byte_2 >= 0x20) && (byte_2 <= 0x7e) || /*латинські символи і цифри*/
+//             (byte_2 >= 0xc0) && (byte_2 <= 0xff) || /*кириличні російські символи*/
+//             (byte_2 == 0xa8)                     || /*російський символ 'Ё'*/  
+//             (byte_2 == 0xb8)                     ||   /*російський символ 'ё'*/  
+//             (
+//              (target_label->language == LANGUAGE_UA) &&
+//              (
+//               (byte_2 == 0xaf)                     || /*український символ 'Ї'*/  
+//               (byte_2 == 0xbf)                     || /*український символ 'ї'*/  
+//               (byte_2 == 0xa5)                     || /*український символ 'Ґ'*/  
+//               (byte_2 == 0xb4)                     || /*український символ 'ґ'*/  
+//               (byte_2 == 0xaa)                     || /*український символ 'Є'*/  
+//               (byte_2 == 0xba)                        /*український символ 'є'*/  
+//              ) 
+//             )   
+//            )
+//           )
+//        {
+//          target_label->name_of_cell[two_char_index    ] = byte_1;
+//          target_label->name_of_cell[two_char_index + 1] = byte_2;
+//        }
+//        else
+//          error = ERROR_ILLEGAL_DATA_VALUE;
+//        
+//        break;
+//      }
+//    default: break;
+//    }
+//  }
+//  else if ((address_data >= M_ADDRESS_FIRST_TIME_AND_DATA) && (address_data <= M_ADDRESS_LAST_TIME_AND_DATA))
+//  {
+//    temp_value = data & 0xff;
+//    unsigned int tetrad_low = (temp_value & 0xf), tetrad_high = (temp_value >> 4);
+//    
+//    //Неправильне число, наприлкад, може бути. коли вводиться не 0x10, а 10 = 0xA і це сило 0xA буде вводитися в якийся регістр RTC
+//    if((tetrad_low <= 0x9) && (tetrad_high <= 0x9))
+//    {
+//      switch (address_data)
+//      {
+//      case MA_YEAR:
+//        {
+//          time_edit[6] = temp_value;
+//          break;
+//        }
+//      case MA_MONTH:
+//        {
+//          time_edit[5] = temp_value;
+//          break;
+//        }
+//      case MA_DAY:
+//        {
+//          time_edit[4] = temp_value;
+//          break;
+//        }
+//      case MA_HOUR:
+//        {
+//          time_edit[3] = temp_value;
+//          break;
+//        }
+//      case MA_MINUTE:
+//        {
+//          time_edit[2] = temp_value;
+//          break;
+//        }
+//      case MA_SECOND:
+//        {
+//          time_edit[1] = temp_value;
+//          break;
+//        }
+//      case MA_MILISECOND:
+//        {
+//          time_edit[0] = temp_value;
+//          break;
+//        }
+//      default: break;
+//      }
+//    }
+//    else
+//      error = ERROR_ILLEGAL_DATA_VALUE;
+//  }
+//  else if (address_data == MA_CLEAR_NUMBER_RECORD_PR_ERR)
+//  {
+//    if (
+//        /*
+//        (current_ekran.current_level == EKRAN_TITLES_PR_ERR_REGISTRATOR )
+//        ||  
+//        (current_ekran.current_level == EKRAN_DATA_LADEL_PR_ERR         )
+//        ||  
+//        (current_ekran.current_level == EKRAN_CHANGES_DIAGNOSTICS_PR_ERR)
+//        ||
+//        */
+//        (
+//         (control_tasks_dataflash & (
+//                                     (1 << TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT   ) |
+//                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  ) |
+//                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT) |
+//                                     (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )
+//                                    )
+//         ) != 0
+//        )
+//        ||
+//        ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0)  
+//       ) 
+//    {
+//      //Зараз іде зчитування для інтерфейсу запису реєстратора програмних подій, або відкрите вікно відображення запису, тому ця операція є тимчасово недоступною
+//      error = ERROR_SLAVE_DEVICE_BUSY;
+//    }
+//    else
+//    {
+//      //Помічаємо, що треба очистити реєстратор програмних подій
+//      clean_rejestrators |= MASKA_FOR_BIT(CLEAN_PR_ERR_BIT);
+//    }
+//  }
+//  else if (address_data == MA_CURRENT_NUMBER_RECORD_PR_ERR)
+//  {
+//    if ((type_interface != USB_RECUEST) && (type_interface != RS485_RECUEST))
+//    {
+//      //Теоретично такого бути не мало б ніколи
+//      error = ERROR_SLAVE_DEVICE_FAILURE;
+//    }
+//    else if (
+//             ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0) ||
+//             (
+//              ((type_interface == USB_RECUEST  ) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  )) != 0)) ||
+//              ((type_interface == RS485_RECUEST) && ((control_tasks_dataflash & (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT)) != 0))
+//             ) 
+//            )
+//    {
+//      /*
+//      Зараз іде зчитування для інтерфейсу запису реєстратора програмних подій, 
+//      або очистка його, тому ця операція є тимчасово недоступною
+//      */
+//      error = ERROR_SLAVE_DEVICE_BUSY;
+//    }
+//    else if (
+//             (data < info_rejestrator_pr_err.number_records) &&
+//             (data < MAX_NUMBER_RECORDS_INTO_PR_ERR        ) /*Хоч теоретично ця умова має перекриватися завжди першою умовою*/
+//            )
+//    {
+//      if (type_interface == USB_RECUEST)
+//      {
+//        //Встановлюємо номер запису реєстратора програмних подій для читання через інтерфейс USB
+//        number_record_of_pr_err_into_USB = data;
+//        //Подаємо команду читання реєстратора програмних подій для  інтерфейсу USB
+//
+//        //Подаємо команду зчитати дані у бувер пам'яті для USB
+//        control_tasks_dataflash |= (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT);
+//      }
+//      else if (type_interface == RS485_RECUEST)
+//      {
+//        //Встановлюємо номер запису реєстратора програмних подій для читання через інтерфейс RS-485
+//        number_record_of_pr_err_into_RS485 = data;
+//        //Подаємо команду читання реєстратора програмних подій для  інтерфейсу RS-485
+//
+//        //Подаємо команду зчитати дані у бувер пам'яті для RS-485
+//        control_tasks_dataflash |= (1 << TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT);
 //      }
 //      else
 //      {
-//        phi_edit_ustuvannja[index] = phi_tmp;
-//        phi_edit_ustuvannja_sin_cos[2*index    ] = arm_sin_f32(phi_radian_tmp);
-//        phi_edit_ustuvannja_sin_cos[2*index + 1] = arm_cos_f32(phi_radian_tmp);
+//        //Теоретично такого бути не мало б ніколи
+//        error = ERROR_SLAVE_DEVICE_FAILURE;
 //      }
+//    }
+//    else
+//      error = ERROR_ILLEGAL_DATA_VALUE;
+//  }
+//  else if (address_data == MA_SET_SERIAL_NUMBER)
+//  {
+//    if (password_ustuvannja == 0x1978)
+//    {
+//      //Ввід серійного номеру
+//      if (method_setting == SET_DATA_IMMEDITATE)
+//        serial_number_dev = data;
+//      else
+//        edit_serial_number_dev = data;
+//    }
+//    else 
+//    {
+//      /*У разі повідомлення про помилку тип помилки ставиться такий ніби така адреса взагалі є недоступною, щоб зменшити ймовірність несанкціонованого запису юстування*/
+//      error = ERROR_ILLEGAL_DATA_ADDRESS;
+//    }    
+//  }
+//  else if (address_data == MA_POSSIBILITY_USTUVANNJA)
+//  {
+//    if (password_ustuvannja != 0x1978)
+//    {
+//      //Встановлення паролю-дозволу юстування можливе тільки коли записується число 0x1978
+//      if (data == 0x1978) password_ustuvannja = 0x1978;
+//      else
+//      {
+//        /*У разі повідомлення про помилку тип помилки ставиться такий ніби така адреса взагалі є недоступною, щоб зменшити ймовірність несанкціонованого запису юстування*/
+//        error = ERROR_ILLEGAL_DATA_ADDRESS;
+//      }
+//    }
+//    else
+//    {
+//      //Записування будь-якого числа (крім числа, яке розблоковує юстування) приводить до заборони подальшого юстування
+//      if (data != 0x1978) password_ustuvannja = 0;
+//    }
+//  }
+//  else if ((address_data >= MA_ADDRESS_FIRST_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_USTUVANNJA))
+//  {
+//    //Ючтування
+//    if (password_ustuvannja == 0x1978)
+//    {
+//      if (method_setting == SET_DATA_IMMEDITATE)
+//        ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA  ]  = data;
+//      else
+//        edit_ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA  ]  = data;
 //    }
 //    else 
 //    {
@@ -1921,100 +1894,127 @@ inline unsigned int Set_data(unsigned short int data, unsigned int address_data,
 //      error = ERROR_ILLEGAL_DATA_ADDRESS;
 //    }
 //  }
-//  else if (address_data == MA_NUMBER_ITERATION_EL)
+////  else if ((address_data >= MA_ADDRESS_FIRST_PHI_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_PHI_USTUVANNJA))
+////  {
+////    //Фазове ючтування
+////    if (password_ustuvannja == 0x1978)
+////    {
+////      unsigned int index = address_data - MA_ADDRESS_FIRST_PHI_USTUVANNJA; 
+////      int phi_tmp = (short int)data;
+////      float phi_radian_tmp = PI*((float)phi_tmp)/1800.0f; /*Оскільки кут встановлюється з точнітю до десятих цілим числом, то для того, щоб отримати правильно радіани - треба поділити не на 180 а на 1800= 180х10 */
+////      if (method_setting == SET_DATA_IMMEDITATE)
+////      {
+////        phi_ustuvannja[index] = phi_tmp;
+////        phi_ustuvannja_sin_cos[2*index    ] = arm_sin_f32(phi_radian_tmp);
+////        phi_ustuvannja_sin_cos[2*index + 1] = arm_cos_f32(phi_radian_tmp);
+////      }
+////      else
+////      {
+////        phi_edit_ustuvannja[index] = phi_tmp;
+////        phi_edit_ustuvannja_sin_cos[2*index    ] = arm_sin_f32(phi_radian_tmp);
+////        phi_edit_ustuvannja_sin_cos[2*index + 1] = arm_cos_f32(phi_radian_tmp);
+////      }
+////    }
+////    else 
+////    {
+////      /*У разі повідомлення про помилку тип помилки ставиться такий ніби така адреса взагалі є недоступною, щоб зменшити ймовірність несанкціонованого запису юстування*/
+////      error = ERROR_ILLEGAL_DATA_ADDRESS;
+////    }
+////  }
+////  else if (address_data == MA_NUMBER_ITERATION_EL)
+////  {
+////    temp_value = data;
+////    
+////    if ((temp_value >= NUMBER_ITERATION_EL_MIN) && (temp_value <= NUMBER_ITERATION_EL_MAX))
+////      target_label->number_iteration_el = temp_value;
+////    else
+////      error = ERROR_ILLEGAL_DATA_VALUE;
+////  }
+//  else if (address_data == MA_LSW_ADR_MEMORY_TO_WRITE)
 //  {
-//    temp_value = data;
-//    
-//    if ((temp_value >= NUMBER_ITERATION_EL_MIN) && (temp_value <= NUMBER_ITERATION_EL_MAX))
-//      target_label->number_iteration_el = temp_value;
-//    else
-//      error = ERROR_ILLEGAL_DATA_VALUE;
+//    registers_address_write = (registers_address_write & 0xffff0000) + (data);
 //  }
-  else if (address_data == MA_LSW_ADR_MEMORY_TO_WRITE)
-  {
-    registers_address_write = (registers_address_write & 0xffff0000) + (data);
-  }
-  else if (address_data == MA_MSW_ADR_MEMORY_TO_WRITE)
-  {
-   registers_address_write = (registers_address_write & 0xffff) + (data << 16);
-  }
-  else if (address_data == MA_LSW_DATA_MEMORY_TO_WRITE)
-  {
-    unsigned int *label;
-
-    data_write_to_memory = (data_write_to_memory & 0xffff0000) + (data);
-    label = (unsigned int *)(registers_address_write);
-    *label = data_write_to_memory;
-  }
-  else if (address_data == MA_MSW_DATA_MEMORY_TO_WRITE)
-  {
-    data_write_to_memory = data << 16;
-  }
-  else if (address_data == MA_NB_REG_FROM_MEM_READ)
-  {
-    number_registers_read = data;
-  }
-  else if (address_data == MA_LSW_ADR_MEMORY_TO_READ)
-  {
-    unsigned int index;
-    unsigned short int *label;
-
-    registers_address_read = (registers_address_read & 0xffff0000) + (data);
-    label = (unsigned short int *)(registers_address_read);
-	  
-    for (index = 0; index<number_registers_read; index++)
-    {	
-      registers_values[index] = *(label++);
-    }
-  }
-  else if (address_data == MA_MSW_ADR_MEMORY_TO_READ)
-  {
-    registers_address_read = (registers_address_read & 0xffff) + (data << 16);
-  }
-  else if (address_data == MA_PART_RECEIVE_DIG_OSCILOGRAPH)
-  {
-    part_transmit_carrent_data = data;
-    if(part_transmit_carrent_data == 0)
-    {
-      action_is_continued = true;
-      command_to_receive_current_data = true;
-    }
-  }
-  else if (address_data == MA_DEFAULT_SETTINGS)
-  {
-    if (data != CMD_WORD_SET_DEFAULT_SETTINGS)
-    {
-      //Для встановлення мінімальної конфігурації має бути прописано по певній адресі визначене число - інакше повідомляємо, що такої адреси взагалі не існує (примітивний метод маскування від несанкціонованого дослідження карти пам'яті)
-      error = ERROR_ILLEGAL_DATA_ADDRESS;
-    }
-    else
-    {
-      //Скидаємо настройки у "мінімальні заводські значення"
-//      min_settings(target_label);
-    }
-  }
-  else if (address_data == MA_TEST_WATCHDOGS)
-  {
-    if (data != CMD_TEST_EXTERNAL_WATCHDOG)
-    {
-      //Для тестування watchdog треба вказати конкретне число виду тестування - інакше повідомляємо, що такої адреси взагалі не існує (примітивний метод маскування від несанкціонованого дослідження карти пам'яті)
-      error = ERROR_ILLEGAL_DATA_ADDRESS;
-    }
-    else
-    {
-      //Передаємо команду на виконання
-      test_watchdogs = data;
-    }
-  }
-  else if (address_data == MA_CMD_RESET_RESURS_MIN_MAX)
-  {
-    //Скидаємо лічильники для ресурсу
-    restart_resurs_count = 0xff;/*Ненульове значення перезапускає лічильники*/
-  }
-  else error = ERROR_ILLEGAL_DATA_ADDRESS;
-
-  return error;
-}
+//  else if (address_data == MA_MSW_ADR_MEMORY_TO_WRITE)
+//  {
+//   registers_address_write = (registers_address_write & 0xffff) + (data << 16);
+//  }
+//  else if (address_data == MA_LSW_DATA_MEMORY_TO_WRITE)
+//  {
+//    unsigned int *label;
+//
+//    data_write_to_memory = (data_write_to_memory & 0xffff0000) + (data);
+//    label = (unsigned int *)(registers_address_write);
+//    *label = data_write_to_memory;
+//  }
+//  else if (address_data == MA_MSW_DATA_MEMORY_TO_WRITE)
+//  {
+//    data_write_to_memory = data << 16;
+//  }
+//  else if (address_data == MA_NB_REG_FROM_MEM_READ)
+//  {
+//    number_registers_read = data;
+//  }
+//  else if (address_data == MA_LSW_ADR_MEMORY_TO_READ)
+//  {
+//    unsigned int index;
+//    unsigned short int *label;
+//
+//    registers_address_read = (registers_address_read & 0xffff0000) + (data);
+//    label = (unsigned short int *)(registers_address_read);
+//	  
+//    for (index = 0; index<number_registers_read; index++)
+//    {	
+//      registers_values[index] = *(label++);
+//    }
+//  }
+//  else if (address_data == MA_MSW_ADR_MEMORY_TO_READ)
+//  {
+//    registers_address_read = (registers_address_read & 0xffff) + (data << 16);
+//  }
+//  else if (address_data == MA_PART_RECEIVE_DIG_OSCILOGRAPH)
+//  {
+//    part_transmit_carrent_data = data;
+//    if(part_transmit_carrent_data == 0)
+//    {
+//      action_is_continued = true;
+//      command_to_receive_current_data = true;
+//    }
+//  }
+//  else if (address_data == MA_DEFAULT_SETTINGS)
+//  {
+//    if (data != CMD_WORD_SET_DEFAULT_SETTINGS)
+//    {
+//      //Для встановлення мінімальної конфігурації має бути прописано по певній адресі визначене число - інакше повідомляємо, що такої адреси взагалі не існує (примітивний метод маскування від несанкціонованого дослідження карти пам'яті)
+//      error = ERROR_ILLEGAL_DATA_ADDRESS;
+//    }
+//    else
+//    {
+//      //Скидаємо настройки у "мінімальні заводські значення"
+////      min_settings(target_label);
+//    }
+//  }
+//  else if (address_data == MA_TEST_WATCHDOGS)
+//  {
+//    if (data != CMD_TEST_EXTERNAL_WATCHDOG)
+//    {
+//      //Для тестування watchdog треба вказати конкретне число виду тестування - інакше повідомляємо, що такої адреси взагалі не існує (примітивний метод маскування від несанкціонованого дослідження карти пам'яті)
+//      error = ERROR_ILLEGAL_DATA_ADDRESS;
+//    }
+//    else
+//    {
+//      //Передаємо команду на виконання
+//      test_watchdogs = data;
+//    }
+//  }
+//  else if (address_data == MA_CMD_RESET_RESURS_MIN_MAX)
+//  {
+//    //Скидаємо лічильники для ресурсу
+//    restart_resurs_count = 0xff;/*Ненульове значення перезапускає лічильники*/
+//  }
+//  else error = ERROR_ILLEGAL_DATA_ADDRESS;
+//
+//  return error;
+//}
 /***********************************************************************************/
 
 /***********************************************************************************/
