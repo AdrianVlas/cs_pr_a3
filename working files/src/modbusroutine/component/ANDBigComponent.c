@@ -54,67 +54,11 @@ void loadANDBigActualData(void) {
      
      for (int i = 0; i < AND_SIGNALS_IN; i ++)
      {
-        int value = arr[item].settings.param[i] & 0xffff;//LEDIN 0 СД item
+        int value = arr[item].settings.param[i] & 0xffff;//
         tempReadArray[item*REGISTER_FOR_OBJ+2*i+0] = value;
-        value = (arr[item].settings.param[i] >> 16) & 0x7fff;//LEDIN 1 СД item
+        value = (arr[item].settings.param[i] >> 16) & 0x7fff;//
         tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
      }
-//   //AND item.1 0
-//   int value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-//   //AND item.1 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
-//
-//   //AND item.2 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-//   //AND item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
-//
-//   //AND item.2 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-//   //AND item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
-//
-//   //AND item.2 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
-//   //AND item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
-//
-//   //AND item.2 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
-//   //AND item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
-//
-//   //AND item.2 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+10] = value;
-//   //AND item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+11] = value;
-//
-//   //AND item.2 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
-//   //AND item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+13] = value;
-//
-//   //AND item.2 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+14] = value;
-//   //AND item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+15] = value;
-
   }//for
   /*
   Для тих компонетів, де є не один однотипний вхід а декілька (ст. логіка і Журнал подій) після запису треба відсортувати щоб 0-і були вкінці, а числа(id;n; out) іншли в сторону зростання
@@ -143,6 +87,8 @@ int setANDBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateANDBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(andbigcomponent->isActiveActualData) setANDBigCountObject(); //к-во обектов
+  andbigcomponent->isActiveActualData = 0;
   if(privateANDBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(andbigcomponent, adrReg);
@@ -231,9 +177,25 @@ void preANDBigWriteAction(void) {
 void postANDBigWriteAction(void) {
 //action после записи
   if(andbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-  //int countRegister = andbigcomponent->operativMarker[1]-andbigcomponent->operativMarker[0]+1;
-//  if(andbigcomponent->operativMarker[1]<0) countRegister = 1;
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = andbigcomponent->operativMarker[1]-andbigcomponent->operativMarker[0]+1;
+  if(andbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+   __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+        arr[idxSubObj].settings.param[idx_SIGNALS_IN] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+  break;
+  case 1:
+        arr[idxSubObj].settings.param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+  break;
+ }//switch
+  }//for
 }//postANDBigWriteAction() 
 
 int privateANDBigGetReg1(int adrReg)
