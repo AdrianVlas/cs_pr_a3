@@ -293,7 +293,7 @@ void SPI_ADC_IRQHandler(void)
       {
         ustuvannja_meas[k] = ustuvannja[k];
       }
-      for(unsigned int k = 0; k < NUMBER_ANALOG_CANALES; k++) 
+      for(unsigned int k = 0; k < NUMBER_INPUTs_ADCs; k++) 
       {
         ustuvannja_shift_meas[k] = ustuvannja_shift[k];
       }
@@ -536,7 +536,7 @@ void SPI_ADC_IRQHandler(void)
           //Коректуємо зміщення у масиві юстування зміщень
           for (size_t i = 0; i < NUMBER_INPUTs_ADCs; i++)
           {
-            ustuvannja_shift[i] -= ustuvannja_shift_work[i]/ustuvannja_measure_shift;
+            ustuvannja_shift[i] += ustuvannja_shift_work[i]/ustuvannja_measure_shift;
             ustuvannja_shift_work[i] = 0;
           }
 
