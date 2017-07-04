@@ -364,7 +364,7 @@ i = sDiCfg.DiTypeSignal.ul_val;
 i&= ~(1<< lIdxDi);
 i|=  lTypeSignal<<lIdxDi;
 sDiCfg.DiTypeSignal.ul_val   = i;
-if(lTypeSignal & (1<< lIdxDi))
+if(lTypeSignal)// & (1<< lIdxDi)
     sDiCfg.arChDurationDI[lIdxDi] = lDurationDI/10;//Alternate
 else
     sDiCfg.arChDurationDI[lIdxDi] = lDurationDI;//Stable

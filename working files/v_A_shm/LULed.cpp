@@ -255,6 +255,7 @@ arChIntermediaResult[OFFSET_OUT_IN_MNU_NORMAL_SELECTOR] = 1;
 //    arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1] =  0;
 //    arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1] =  0;
     arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
+    arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2+1] =  1;
 
 }
 else{
@@ -526,7 +527,7 @@ pLUShcemasDscRec =m_pArLedShcemasDscRecords[shCounterProcessedRec - LED_NOT_01__
     //while (shCounterProcessedRec < m_shAmountProcessedRec);
     bool bbState = false;
     //this->arrOut[(LED_OUT_NAME__LED_STATE_OUTPUT-1)] = arChIntermediaResult[OFFSET_OUT_LED_OR_17__3_1];
-    j = arChIntermediaResult[LED_OR_07__2_1];
+    j = arChIntermediaResult[OFFSET_OUT_LED_OR_07__2_1];
     this->arrOut[(LED_OUT_NAME__LED_STATE_OUTPUT-1)] = j;
     
     bbState = arChIntermediaResult[OFFSET_OUT_LED_OR_17__3_1]; //
