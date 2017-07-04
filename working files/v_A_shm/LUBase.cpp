@@ -8,6 +8,8 @@
 #include "Shematic.h"
 #include <string.h>
 
+UNNCLUBaseAuxInfo CLUBase::m_AuxInfo;//.l = 0;
+ 
 CLUBase::CLUBase(void) {
     chMaxIteratoin = 10;
     chIteration = 0;

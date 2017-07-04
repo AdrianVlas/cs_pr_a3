@@ -72,7 +72,7 @@ if (lReInit) {
     m_chStateAltZp5ms &= ~2;
     m_chStateAltZp5ms |= bbState << 1;
 
-    *plTmrVal = (500/3);
+    *plTmrVal = (500/7);
     
     }
     return (m_chStateAltZp5ms & 2) >> 1;    
@@ -111,20 +111,35 @@ register long lResetKey = 0;
     return 0;	
 }
 char chIdxLed = 0;
+char chTest_K = 0;
 void CLUTestLed::CalCLUTestLedSchematic(void){
 register long i,j;
  long lZp5secAlt;
 
 j = m_chStateAltZp5ms;
 lZp5secAlt = TAltZp5ms(m_chStateAltZp5ms);
+
+    if( *(arrPchIn[(TEST_LED_IN_NAME__RESET_I-1)]) == 1 ){
+        chTest_K = chIdxLed = 0;
+        memset(static_cast<void*>(arrOut),0,TOTAL_TEST_LED_OUTPUT);
+        //void *memset(void *s, int c, size_t n);
+
+
+    }
+    
 //Check Activate --> Set Test-M & reinit Index
-    if( *(arrPchIn[(TEST_LED_IN_NAME__TEST_K-1)]) == 1 ){
-        if(chIdxLed){
-            arrOut[chIdxLed] = 0;
-            chIdxLed = 0;
-        }    
-        arrOut[TEST_LED_OUT_NAME_TEST_M] = 1;
-    }    
+    if( (*(arrPchIn[(TEST_LED_IN_NAME__TEST_K-1)]) == 1) ){
+        if( chTest_K == 0){
+            if(chIdxLed){
+                arrOut[chIdxLed] = 0;
+                chIdxLed = 0;
+            }    
+            arrOut[TEST_LED_OUT_NAME_TEST_M] = 1;
+            chTest_K = 1;
+        }
+    }
+    else
+        chTest_K = 0;    
     if(arrOut[TEST_LED_OUT_NAME_TEST_M] == 1)
     {
     

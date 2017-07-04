@@ -990,6 +990,9 @@
   <group>
     <name>Linker</name>
     <file>
+      <name>$PROJ_DIR$\..\StackDepth.suc</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\stm32f2xx_flash.icf</name>
     </file>
     <file>
@@ -6559,7 +6562,7 @@
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.cpp</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\working files\v_A_shm\baseinpoint.h</name>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.h</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\CLUTs.cpp</name>
