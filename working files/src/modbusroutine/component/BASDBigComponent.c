@@ -46,19 +46,19 @@ void loadBASDBigActualData(void) {
   __SETTINGS_FIX *arr = &settings_fix_prt;
 
   int value;
-  value = arr->param[FIX_BLOCK_BLOCK] & 0xffff;//RIN0 ДВых. item
+  value = arr->param[FIX_BLOCK_BLOCK] & 0xffff;//
   tempReadArray[0] = value;
-  value = (arr->param[FIX_BLOCK_BLOCK] >> 16) & 0x7fff;//RIN1 ДВых. item
+  value = (arr->param[FIX_BLOCK_BLOCK] >> 16) & 0x7fff;//
   tempReadArray[1] = value;
 
-  value = arr->param[FIX_BLOCK_ALARM] & 0xffff;//RIN0 ДВых. item
+  value = arr->param[FIX_BLOCK_ALARM] & 0xffff;//
   tempReadArray[2] = value;
-  value = (arr->param[FIX_BLOCK_ALARM] >> 16) & 0x7fff;//RIN1 ДВых. item
+  value = (arr->param[FIX_BLOCK_ALARM] >> 16) & 0x7fff;//
   tempReadArray[3] = value;
 
-  value = arr->param[FIX_BLOCK_MUTE] & 0xffff;//RIN0 ДВых. item
+  value = arr->param[FIX_BLOCK_MUTE] & 0xffff;//
   tempReadArray[4] = value;
-  value = (arr->param[FIX_BLOCK_MUTE] >> 16) & 0x7fff;//RIN1 ДВых. item
+  value = (arr->param[FIX_BLOCK_MUTE] >> 16) & 0x7fff;//
   tempReadArray[5] = value;
 }//loadActualData() 
 
@@ -136,9 +136,43 @@ void preBASDBigWriteAction(void) {
 void postBASDBigWriteAction(void) {
 //action после записи
   if(basdbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = basdbigcomponent->operativMarker[1]-basdbigcomponent->operativMarker[0]+1;
-//  if(basdbigcomponent->operativMarker[1]<0) countRegister = 1;
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = basdbigcomponent->operativMarker[1]-basdbigcomponent->operativMarker[0]+1;
+  if(basdbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+  __SETTINGS_FIX *arr = &settings_fix, *arr1 = &settings_fix_edit;
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+basdbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  switch(offset) {//индекс регистра 
+   case 0:
+        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK] &= (uint32_t)~0xffff;
+        arr->param[FIX_BLOCK_BLOCK] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1:
+        arr->param[FIX_BLOCK_BLOCK] &= (uint32_t)~(0x7fff<<16);
+        arr->param[FIX_BLOCK_BLOCK] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 2:
+        arr->param[FIX_BLOCK_ALARM] &= (uint32_t)~0xffff;
+        arr->param[FIX_BLOCK_ALARM] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 3:
+        arr->param[FIX_BLOCK_ALARM] &= (uint32_t)~(0x7fff<<16);
+        arr->param[FIX_BLOCK_ALARM] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 4:
+        arr->param[FIX_BLOCK_MUTE] &= (uint32_t)~0xffff;
+        arr->param[FIX_BLOCK_MUTE] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 5:
+        arr->param[FIX_BLOCK_MUTE] &= (uint32_t)~(0x7fff<<16);
+        arr->param[FIX_BLOCK_MUTE] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+ }//switch
+  }//for
+
 }//
 
 int privateBASDBigGetReg2(int adrReg)

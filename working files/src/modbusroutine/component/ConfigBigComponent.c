@@ -191,75 +191,59 @@ void preConfigBigWriteAction(void) {
 void postConfigBigWriteAction(void) {
 //action после записи
   if(configbigcomponent->operativMarker[0]<0) return;//не было записи
-/*
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = configbigcomponent->operativMarker[1]-configbigcomponent->operativMarker[0]+1;
   if(configbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-  extern COMPONENT_OBJ *andbigcomponent;
-  extern COMPONENT_OBJ *orbigcomponent;
-  extern COMPONENT_OBJ *xorbigcomponent;
-  extern COMPONENT_OBJ *notbigcomponent;
-  extern COMPONENT_OBJ *dtrbigcomponent;
-  extern COMPONENT_OBJ *gibigcomponent;
-  extern COMPONENT_OBJ *mftbigcomponent;
-  extern COMPONENT_OBJ *szsbigcomponent;
-  extern COMPONENT_OBJ *cgsbigcomponent;
-  extern COMPONENT_OBJ *tsbigcomponent;
-  extern COMPONENT_OBJ *tssmallcomponent;
-  extern COMPONENT_OBJ *tubigcomponent;
-  extern COMPONENT_OBJ *tusmallcomponent;
+//   __SETTINGS_FIX *arr = &settings_fix;
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+configbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  switch(offset) {//индекс регистра 
+   case 0://AND
+    current_config_edit.n_and = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 1://OR
+    current_config_edit.n_or = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 2://XOR
+    current_config_edit.n_xor = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 3://NOT
+    current_config_edit.n_not = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 4://D-trg
+    current_config_edit.n_trigger = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 5://GI
+    current_config_edit.n_meander = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 6://MFT
+    current_config_edit.n_timer = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 7://SZS
+    current_config_edit.n_alarm = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 8://ШГС
+    current_config_edit.n_group_alarm = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 9://TS
+    current_config_edit.n_ts = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 10://TU
+    current_config_edit.n_tu = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 11://субмодули журнала
+    current_config_edit.n_log = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 12: //GOOSE in
+   case 13: //GOOSE out
+   case 14: //MMS in
+   case 15: //MMS out
+   break;
+ }//switch
+ action_after_changing_of_configuration(); /*перевірити обов'язково результат*/
+  }//for
 
-for(int i=0; i<countRegister; i++) {
-  int dataReg = tempWriteArray[i+offset];
-  switch(i+offset) {
-   case 0:
-    andbigcomponent->setCountObject(dataReg);
-    break;
-   case 1:
-    orbigcomponent->setCountObject(dataReg);
-    break;
-   case 2:
-    xorbigcomponent->setCountObject(dataReg);
-    break;
-   case 3:
-    notbigcomponent->setCountObject(dataReg);
-    break;
-   case 4:
-    dtrbigcomponent->setCountObject(dataReg);
-    break;
-   case 5:
-    gibigcomponent->setCountObject(dataReg);
-    break;
-   case 6:
-    mftbigcomponent->setCountObject(dataReg);
-    break;
-   case 7:
-    szsbigcomponent->setCountObject(dataReg);
-    break;
-   case 8:
-    cgsbigcomponent->setCountObject(dataReg);
-    break;
-   case 9:
-    tssmallcomponent->setCountObject(dataReg);
-    tsbigcomponent->setCountObject(dataReg);
-    break;
-   case 10:
-    tusmallcomponent->setCountObject(dataReg);
-    tubigcomponent->setCountObject(dataReg);
-    break;
-   case 11:
-    break;
-   case 12:
-    break;
-   case 13:
-    break;
-   case 14:
-    break;
-  }//switch
-
-}//for
-*/
 }//
 
 int privateConfigBigGetReg2(int adrReg)

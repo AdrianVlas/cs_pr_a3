@@ -53,8 +53,8 @@ void loadPKVBigActualData(void) {
     case 0://Время активации пароля после простоя
     tempReadArray[i] = settings_fix.timeout_deactivation_password_interface_USB;
     break;
-    case 1://Проверка/установка пароля
-//    tempReadArray[i] = settings_fix.password_interface_USB;
+    case 1://
+    tempReadArray[i] = 0;
     break;
     case 2://Тайм-аут применения изменений
     tempReadArray[i] = settings_fix.timeout_idle_new_settings;
@@ -88,13 +88,19 @@ void loadPKVBigActualData(void) {
 //    break;
 //    case 12://Задержка приёма 2
 //    tempReadArray[i] = settings_fix.time_out_1_RS485;
+    case 8://
+    case 9://
+    case 10://
+    case 11://
+    case 12://
+     tempReadArray[i] = 0;
     break;
 
     case 13://Адрес устройства в сети
     tempReadArray[i] = settings_fix.address;
     break;
     case 14://Таймаут конца фрейма
-//    tempReadArray[i] = settings_fix.time_out_1_RS485;
+     tempReadArray[i] = 0;
     break;
     case 15://
     tempReadArray[i] = 0;
@@ -147,38 +153,16 @@ void loadPKVBigActualData(void) {
     break;
 
     case 31://Часовой пояс
-    tempReadArray[i] = 0;
-    break;
     case 32://Переход на Зимнее/Летнее время
-    tempReadArray[i] = 0;
-    break;
     case 33://Месяц перехода на Летнее время
-    tempReadArray[i] = 0;
-    break;
     case 34://Неделя месяца перехода на Летнее время
-    tempReadArray[i] = 0;
-    break;
     case 35://День недели перехода на Летнее время
-    tempReadArray[i] = 0;
-    break;
     case 36://Час недели перехода на Летнее время
-    tempReadArray[i] = 0;
-    break;
     case 37://Месяц перехода на Зимнее время
-    tempReadArray[i] = 0;
-    break;
     case 38://Неделя месяца перехода на Зимнее время
-    tempReadArray[i] = 0;
-    break;
     case 39://День недели перехода на Зимнее время
-    tempReadArray[i] = 0;
-    break;
     case 40://Час недели перехода на Зимнее время
-    tempReadArray[i] = 0;
-    break;
     case 41://Синхронизация времени
-    tempReadArray[i] = 0;
-    break;
     case 42://Время утраты синхронизации
     tempReadArray[i] = 0;
     break;
@@ -417,9 +401,144 @@ void prePKVBigWriteAction(void) {
 void postPKVBigWriteAction(void) {
 //action после записи
   if(pkvbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = pkvbigcomponent->operativMarker[1]-pkvbigcomponent->operativMarker[0]+1;
-//  if(pkvbigcomponent->operativMarker[1]<0) countRegister = 1;
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = pkvbigcomponent->operativMarker[1]-pkvbigcomponent->operativMarker[0]+1;
+  if(pkvbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+    unsigned char *label_to_time_array;
+    if (copying_time == 0) label_to_time_array = time;
+    else label_to_time_array = time_copy;
+  
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+pkvbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  switch(offset) {//индекс регистра 
+    case 0://Время активации пароля после простоя
+    settings_fix.timeout_deactivation_password_interface_USB = settings_fix_edit.timeout_deactivation_password_interface_USB = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 1://
+    //tempReadArray[i] = 0;
+    break;
+    case 2://Тайм-аут применения изменений
+    settings_fix.timeout_idle_new_settings = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 3://Язык пользовательского интерфейса
+    settings_fix.language = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 4://
+    //tempReadArray[i] = 0;
+    break;
+    case 5://Скорость порта связи
+    settings_fix.baud_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 6://Количество стоп-бит
+    settings_fix.number_stop_bit_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 7://Паритет
+    settings_fix.pare_bit_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+//    case 8://Задержка приёма
+//    tempReadArray[i] = settings_fix.time_out_1_RS485;
+//    break;
+//    case 9://Скорость порта связи 2
+//    tempReadArray[i] = settings_fix.baud_RS485;
+//    break;
+//    case 10://Количество стоп-бит 2
+//    tempReadArray[i] = settings_fix.number_stop_bit_RS485;
+//    break;
+//    case 11://Паритет 2
+//    tempReadArray[i] = settings_fix.pare_bit_RS485;
+//    break;
+//    case 12://Задержка приёма 2
+//    tempReadArray[i] = settings_fix.time_out_1_RS485;
+    case 8://
+    case 9://
+    case 10://
+    case 11://
+    case 12://
+    // tempReadArray[i] = 0;
+    break;
+
+    case 13://Адрес устройства в сети
+    settings_fix.address = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 14://Таймаут конца фрейма
+    // tempReadArray[i] = 0;
+    break;
+    case 15://
+    //tempReadArray[i] = 0;
+    break;
+    case 16://Символ 1 и 2
+     settings_fix.name_of_cell[0] = (tempWriteArray[offsetTempWriteArray+i]);
+// + ((settings_fix.name_of_cell[1]<<8)&0xFF00);
+    break;
+    case 17://Символ 3 и 4
+     settings_fix.name_of_cell[2] = (tempWriteArray[offsetTempWriteArray+i]);
+//+ ((settings_fix.name_of_cell[3]<<8)&0xFF00);
+    break;
+    case 18://Символ 5 и 6
+     settings_fix.name_of_cell[4] = (tempWriteArray[offsetTempWriteArray+i]);
+//+ ((settings_fix.name_of_cell[5]<<8)&0xFF00);
+    break;
+    case 19://Символ 7 и 8
+     settings_fix.name_of_cell[6] = (tempWriteArray[offsetTempWriteArray+i]);
+//+ ((settings_fix.name_of_cell[7]<<8)&0xFF00);
+    break;
+    case 20://Символ 9 и 10
+     settings_fix.name_of_cell[8] = (tempWriteArray[offsetTempWriteArray+i]);
+//+ ((settings_fix.name_of_cell[9]<<8)&0xFF00);
+    break;
+    case 21://Символ 11 и 12
+     settings_fix.name_of_cell[10] = (tempWriteArray[offsetTempWriteArray+i]);
+//+ ((settings_fix.name_of_cell[11]<<8)&0xFF00);
+    break;
+    case 22://Символ 13 и 14
+     settings_fix.name_of_cell[12] = (tempWriteArray[offsetTempWriteArray+i]);
+//+ ((settings_fix.name_of_cell[13]<<8)&0xFF00);
+    break;
+    case 23://Символ 15 и 16
+     settings_fix.name_of_cell[14] = (tempWriteArray[offsetTempWriteArray+i]);
+//+ ((settings_fix.name_of_cell[15]<<8)&0xFF00);
+    break;
+
+    case 24://Год
+     *(label_to_time_array + 6) = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 25://Месяц
+     *(label_to_time_array + 5) = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 26://День
+     *(label_to_time_array + 4) = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 27://Час
+     *(label_to_time_array + 3) = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 28://Минуты
+     *(label_to_time_array + 2) = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 29://Секунды
+     *(label_to_time_array + 1) = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+    case 30://Сотые секунды
+     *(label_to_time_array + 0) = (tempWriteArray[offsetTempWriteArray+i]);
+    break;
+
+    case 31://Часовой пояс
+    case 32://Переход на Зимнее/Летнее время
+    case 33://Месяц перехода на Летнее время
+    case 34://Неделя месяца перехода на Летнее время
+    case 35://День недели перехода на Летнее время
+    case 36://Час недели перехода на Летнее время
+    case 37://Месяц перехода на Зимнее время
+    case 38://Неделя месяца перехода на Зимнее время
+    case 39://День недели перехода на Зимнее время
+    case 40://Час недели перехода на Зимнее время
+    case 41://Синхронизация времени
+    case 42://Время утраты синхронизации
+    //tempReadArray[i] = 0;
+    break;
+ }//switch
+  }//for
+
 }//
 
 int privatePKVBigGetReg2(int adrReg)
