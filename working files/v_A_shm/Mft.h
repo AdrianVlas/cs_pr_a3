@@ -27,6 +27,7 @@ public:
     CMft(char chM,char chI);
     char* arrPchIn[TOTAL_MFT_IN ];//
     char  arrOut  [TOTAL_MFT_OUTPUT];//
+    char  arrStateIn[TOTAL_MFT_IN ];
 //    long TpauseMft(long lActivKey);
 //    long TdelayMft(long lResetKey,long lInKey);
 //    long TWorkMft (long lResetKey,long lInKey);
@@ -51,6 +52,7 @@ public:
     TmrNode m_NodeTdelay;
     TmrNode m_NodeTWorkDir;
     TmrNode m_NodeTWorkInv;
+    
 
     long LinkMftTimers(void);
     void UpdateCMft(void);

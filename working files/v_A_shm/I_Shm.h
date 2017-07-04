@@ -42,6 +42,7 @@ extern void DoCalcWrp(void);
 extern void  TmrCalls(void);
 extern long RegisterHundlerLUCfg(void* pv);
 
+extern void  CheckingDIRegs(void);
 
 extern char chGlb_ActivatorWREeprom;
 

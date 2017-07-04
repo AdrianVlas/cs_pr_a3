@@ -276,14 +276,38 @@ void Mft_Op(void *pObj){
 
     register long i, j,k;
     //register char* pCh;
-
+    union{
+    char  arChEC[4];
+    short arrShEC[2];
+    long  lEC;
+    } U_EC;
+    U_EC.lEC = 0;
     CMft& rCMft = *(static_cast<CMft*>(pObj));
      	if(rCMft.shShemasOrdNumStng == chMftCmpVal){
             asm(
             "bkpt 1"
             );
-        }   
-    i = static_cast<long>(*(rCMft.arrPchIn[0]));
+        }
+        
+    i = static_cast<long>(*(rCMft.arrPchIn[MFT_IN_NAME__MFTIN-1]));
+    j = static_cast<long>(*(rCMft.arrPchIn[MFT_IN_NAME__RESET_I-1]));
+    
+                
+    if(CLUBase::m_AuxInfo.ch > 0){
+        U_EC.arChEC[0]++;
+        //j = static_cast<long>(*(rCMft.arrPchIn[1]));
+        if(j == rCMft.arrStateIn[MFT_IN_NAME__RESET_I-1]){
+            U_EC.arChEC[0]++;
+            if(i == rCMft.arrStateIn[MFT_IN_NAME__MFTIN-1])
+                U_EC.arChEC[0]++;
+            return;//May be not Operation    
+        }    
+        
+    }
+    
+    rCMft.arrStateIn[MFT_IN_NAME__MFTIN-1]    = i;
+    rCMft.arrStateIn[MFT_IN_NAME__RESET_I-1]  = j;   
+    //--i = static_cast<long>(*(rCMft.arrPchIn[0]));
     j = rCMft.TPauseMftDir(i);
     k = rCMft.TPauseMftInv(!i);
     
