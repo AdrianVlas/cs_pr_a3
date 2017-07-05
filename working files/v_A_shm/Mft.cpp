@@ -270,7 +270,7 @@ long CMft::LinkMftTimers(void) {
     chGlSem--;
     return i;
 }
-
+static char GlbChInPulsDir,GlbChInPulsInv;
 
 void Mft_Op(void *pObj){
 
@@ -310,15 +310,32 @@ void Mft_Op(void *pObj){
     //--i = static_cast<long>(*(rCMft.arrPchIn[0]));
     j = rCMft.TPauseMftDir(i);
     k = rCMft.TPauseMftInv(!i);
-    
+    if(j == 1 && GlbChInPulsDir == 0){
+        GlbChInPulsDir = j;
+        U_EC.arChEC[2] = j;
+    }
+    else{
+        if(j == 0)
+            GlbChInPulsDir = j;
+        U_EC.arChEC[2] = 0;    
+    }
+    if(k == 1 && GlbChInPulsInv == 0){
+        GlbChInPulsInv = k;
+        U_EC.arChEC[3] = k;
+    }
+    else{
+        if(k == 0)
+            GlbChInPulsInv = k;
+         U_EC.arChEC[3] = 0;    
+    }
     i = static_cast<long>(*(rCMft.arrPchIn[1]));//Reset
 
     rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_DIR_OUT-1] = 
-    rCMft.TWorkMftDir(i,j);
+    rCMft.TWorkMftDir(i,U_EC.arChEC[2]);
     rCMft.arrOut[MFT_OUT_NAME__MFT_DEL_OUT-1] = 
     rCMft.TDelayMftDir(i,j);
     rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_INV_OUT-1] = 
-    rCMft.TWorkMftInv(i,k);
+    rCMft.TWorkMftInv(i,U_EC.arChEC[3]);
    
 register __LN_TIMER *pLN_TIMER = reinterpret_cast<__LN_TIMER*>(rCMft.pvCfgLN);
     i = rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_DIR_OUT-1];

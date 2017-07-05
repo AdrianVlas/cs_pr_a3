@@ -977,8 +977,8 @@ uint32_t event_log_handler(void)
   Час фіксації зміни
   ***/
   uint8_t *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
+  if (copying_time == 2) label_to_time_array = time_copy;
+  else label_to_time_array = time;
   /***/
   
   uint32_t *p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]); /*поки що вказівник вказує на елемент де записуються вихідні сигнали, але пре-інкрементація дасть, що вказівник буде вже вказувати та перший вхід при вході у цикл*/

@@ -307,8 +307,8 @@ void changing_diagnostyka_state(void)
       Час фіксації зміни у діагностиці
       ***/
       uint8_t *label_to_time_array;
-      if (copying_time == 0) label_to_time_array = time;
-      else label_to_time_array = time_copy;
+      if (copying_time == 2) label_to_time_array = time_copy;
+      else label_to_time_array = time;
       /***/
         
       /***
@@ -2893,8 +2893,8 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       }
       
       uint8_t *label_to_time_array;
-      if (copying_time == 0) label_to_time_array = time;
-      else label_to_time_array = time_copy;
+      if (copying_time == 2) label_to_time_array = time_copy;
+      else label_to_time_array = time;
 
       if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
       {

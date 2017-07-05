@@ -14,7 +14,7 @@ TraceBufferSize=0x00010000
 TraceStallIfFIFOFull=0x00000000
 TracePortSize=0x00000004
 [DebugChecksum]
-Checksum=-1289662898
+Checksum=1294611215
 [CodeCoverage]
 Enabled=_ 0
 [Exceptions]
@@ -29,23 +29,6 @@ Fmt0=__SETTINGS_FIX-password_2	3	0
 [Trace1]
 Enabled=0
 ShowSource=1
-[Log file]
-LoggingEnabled=_ 0
-LogFile=_ ""
-Category=_ 0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
-[DriverProfiling]
-Enabled=0
-Mode=1
-Graph=0
-Symbiont=0
-Exclusions=
-[CallStackLog]
-Enabled=0
-[CallStackStripe]
-ShowTiming=1
 [Disassemble mode]
 mode=0
 [Breakpoints2]
@@ -56,10 +39,26 @@ Bp3=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.276.5" 0 
 Bp4=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.258.1" 0 0 1 "" 0 "" 0
 Bp5=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUTestLed.cpp}.123.9" 0 0 1 "" 0 "" 0
 Bp6=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.3353.17" 0 0 1 "" 0 "" 0
-Bp7=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.447.25" 0 0 1 "" 0 "" 0
-Bp8=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.429.21" 0 0 1 "" 0 "" 0
-Bp9=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.363.1" 0 0 1 "" 0 "" 0
-Count=10
+Bp7=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.429.21" 0 0 1 "" 0 "" 0
+Bp8=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\src\eeprom_rtc.c}.2578.34" 0 0 1 "" 0 "" 0
+Count=9
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [Aliases]
 Count=0
 SuppressDialog=0
+[DriverProfiling]
+Enabled=0
+Mode=1
+Graph=0
+Symbiont=0
+Exclusions=
+[CallStackLog]
+Enabled=0
+[CallStackStripe]
+ShowTiming=1

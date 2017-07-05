@@ -413,7 +413,7 @@ int main(void)
 
   //Стартова настройка периферії процесора
   start_settings_peripherals();
-//          CheckingDIRegs();  
+  
 #ifdef TEST_MODE
   //Ініціалізація LCD
   lcd_init();
@@ -430,7 +430,24 @@ int main(void)
     )   
   {
     //Випадок, якщо настройки успішно зчитані
-
+          
+    /***
+    Зміни у Андрієвій системі
+    ***/
+    {
+      unsigned int tmp;
+      long res = ChangeCfg((void*)&tmp);
+      if (res != 0) 
+      {
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      }
+      else 
+      {
+        if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      }
+    }
+    /***/
+    
     //Дозволяєм роботу таймера вимірювальної системи
     TIM_Cmd(TIM5, ENABLE);
     // Дозволяєм роботу таймерів системи логіки
@@ -462,6 +479,23 @@ int main(void)
     {
       error_reading_with_eeprom();
     }
+
+    /***
+    Зміни у Андрієвій системі
+    ***/
+    {
+      unsigned int tmp;
+      long res = ChangeCfg((void*)&tmp);
+      if (res != 0) 
+      {
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      }
+      else 
+      {
+        if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      }
+    }
+    /***/
 
     //Дозволяєм роботу таймера вимірювальної системи
     TIM_Cmd(TIM5, ENABLE);
