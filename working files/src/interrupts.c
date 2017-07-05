@@ -799,10 +799,10 @@ void TIM4_IRQHandler(void)
           }
         case 4:
           {
-            unsigned int month = time[5];
+            unsigned int month = 10*((time[5] >> 4) & 0xf) + (time[5] & 0xf);
             if (month == 0x2/*BCD*/)
             {
-              unsigned int year = time[6];
+              unsigned int year = 10*((time[6] >> 4) & 0xf) + (time[6] & 0xf);
               if (
                   ((year & 0x3) == 0) && /*остача від ділення на 4*/
                   (
