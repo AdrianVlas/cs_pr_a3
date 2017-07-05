@@ -3423,7 +3423,7 @@ sLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
 sLV.pInOutParam->pChTest  = static_cast<char*>(0); 
 sLV.pInOutParam->pChReset = static_cast<char*>(0); 
 
-i = settings_fix_prt.param[FIX_VLOCK_TEST_INPUT];
+i = settings_fix_prt.param[FIX_BLOCK_TEST_INPUT];
 locSBitFld.bfInfo_IdLUStng = 
         (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
 locSBitFld.bfInfo_OrdNumStng = 
@@ -3441,7 +3441,7 @@ j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng))
     if(pv!= 0)
     sLV.pInOutParam->pChTest = static_cast<char*>(pv)+j;
     }
-i = settings_fix_prt.param[FIX_VLOCK_TEST_RESET];
+i = settings_fix_prt.param[FIX_BLOCK_TEST_RESET];
 locSBitFld.bfInfo_IdLUStng = 
         (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
 locSBitFld.bfInfo_OrdNumStng = 
