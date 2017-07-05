@@ -770,23 +770,98 @@ void TIM4_IRQHandler(void)
       читання з мікросхеми не може початися, бо ми у перериванні, а ці операції
       виконуються з фонового режиму; відбір же даних буде іти коректно)
       */
-//      copying_time = 1; 
-//      
-//      unsigned int rozrjad = 0;
-//      for(unsigned int i = 0; i < 7; i++)
-//      {
-//        unsigned int data_tmp = 10*((time[i] >> 4) & 0xff) + (time[i] & 0xff);
-//        
-//        unsigned int porig = 99;
-//        
-//        if ((++data_tmp) > porig)
-//        {
-//          rozrjad
-//        }
-//        time[i] = (high << 4) | low;
-//        if (rozrjad == false) break;
-//      }
+      copying_time = 2; 
       
+      unsigned int rozrjad = 0;
+      for(unsigned int i = 0; i < 7; i++)
+      {
+        unsigned int data_tmp = 10*((time[i] >> 4) & 0xf) + (time[i] & 0xf);
+        
+        unsigned int porig;
+        switch (i)
+        {
+        case 0:
+        case 6:
+          {
+            porig = 99;
+            break;
+          }
+        case 1:
+        case 2:
+          {
+            porig = 59;
+            break;
+          }
+        case 3:
+          {
+            porig = 23;
+            break;
+          }
+        case 4:
+          {
+            unsigned int month = time[5];
+            if (month == 0x2/*BCD*/)
+            {
+              unsigned int year = time[6];
+              if (
+                  ((year & 0x3) == 0) && /*остача від ділення на 4*/
+                  (
+                   ((year % 100) != 0) /* ||
+                   ((year % 400) == 0) */ /*не кратний 100 або кратний 400*/
+                  )  
+                 )
+              {
+                porig = 29;
+              } 
+              else
+              {
+                porig = 28;
+              }
+            }
+            else if (
+                     ((month <= 0x7/*BCD*/) && ( (month & 1))) ||
+                     ((month >  0x7/*BCD*/) && (!(month & 1)))
+                    ) 
+            {
+              porig = 31;
+            }
+            else
+            {
+              porig = 30;
+            }
+            break;
+          }
+        case 5:
+          {
+            porig = 12;
+            break;
+          }
+        default:
+          {
+            //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+            total_error_sw_fixed(14);
+          }
+        }
+        
+        if ((++data_tmp) > porig)
+        {
+          rozrjad = 1;
+          
+          if ((i == 4) || (i == 5)) data_tmp = 1;
+          else data_tmp = 0;
+        }
+        else rozrjad = 0;
+        
+        unsigned int high = data_tmp / 10;
+        unsigned int low = data_tmp - high*10;
+        time[i] = (high << 4) | low;
+        
+        if (rozrjad == false) break;
+      }
+
+      copying_time = 1; 
+      
+      for(unsigned int i = 0; i < 7; i++) time_copy[i] = time[i];
       
       copying_time = 0; 
     }
