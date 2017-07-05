@@ -1439,8 +1439,8 @@ void min_config(__CONFIG *target_label)
   target_label->n_log = 0;
   
   uint8_t *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
+  if (copying_time == 2) label_to_time_array = time_copy;
+  else label_to_time_array = time;
      
   for (size_t i = 0; i < 7; i++) target_label->time_config[i] = *(label_to_time_array + i);
   target_label->time_config[7] = DEFAULT_PARAMS_FIX_CHANGES;
@@ -1503,8 +1503,8 @@ void scheme2_config(__CONFIG *target_label)
                          
   
   uint8_t *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
+  if (copying_time == 2) label_to_time_array = time_copy;
+  else label_to_time_array = time;
      
   for (size_t i = 0; i < 7; i++) target_label->time_config[i] = *(label_to_time_array + i);
   target_label->time_config[7] = DEFAULT_PARAMS_FIX_CHANGES;
@@ -1549,8 +1549,8 @@ void min_settings(__SETTINGS_FIX *target_label)
   target_label->schematic = 0; /*признак м≥н≥мальних налаштувань*/
 
   uint8_t *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
+  if (copying_time == 2) label_to_time_array = time_copy;
+  else label_to_time_array = time;
      
   for (size_t i = 0; i < 7; i++) 
   {
@@ -1923,8 +1923,8 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
     target_fix_settings->schematic = 2 << 8; /*признак —хеми 2*/
     
     uint8_t *label_to_time_array;
-    if (copying_time == 0) label_to_time_array = time;
-    else label_to_time_array = time_copy;
+    if (copying_time == 2) label_to_time_array = time_copy;
+    else label_to_time_array = time;
      
     for (size_t i = 0; i < 7; i++) 
     {
