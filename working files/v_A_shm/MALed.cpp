@@ -8,12 +8,24 @@
 //#include "LULss.h"
 #include "IStng.h"
 extern void GetLssMuteAlarmBlockAddr(void* pv);//wraper for EvalIdxinarrLUAreaListElem
+extern void GetMuteAlarmBlockAddr(void* pv);
 CMuteAlarmLed::CMuteAlarmLed(void) {
 }
 
 CMuteAlarmLed::~CMuteAlarmLed(void) {
 }
 void CMuteAlarmLed::UpdateMuteAlarmLed(void) {
+
+MuteAlarmInOutParam locMuteAlarmInOutParam;
+//Find Obj for TEST sig
+memset(static_cast<void*> (&locMuteAlarmInOutParam), 0, sizeof (MuteAlarmInOutParam));
+//Find Obj for RESET-TEST operation
+GetMuteAlarmBlockAddr(static_cast<void*> (&locMuteAlarmInOutParam));
+arrPchIn[(MUTE_ALARM_LED_IN_NAME__BLOCK - 1)] = locMuteAlarmInOutParam.pChBlock;
+arrPchIn[(MUTE_ALARM_LED_IN_NAME__ALARM - 1)] = locMuteAlarmInOutParam.pChAlarm;
+arrPchIn[(MUTE_ALARM_LED_IN_NAME__MUTE  - 1)] = locMuteAlarmInOutParam.pChMute;
+
+
 }
 char chGBL_BP_StopMuteAlarmLed = 0;
 //char ch
@@ -21,8 +33,8 @@ void CMuteAlarmLed::EvalMuteAlarmLed(void) {
 long lStateLed;
 MuteAlarmInOutParam locMuteAlarmInOutParam;
 //Detect Amount LSS
-short shLC__n_alarm = current_config_prt.n_alarm;
-short shCounterScanCLULss = 0;
+//-short shLC__n_alarm = current_config_prt.n_alarm;
+//-short shCounterScanCLULss = 0;
 memset(static_cast<void*> (&locMuteAlarmInOutParam), 0, sizeof (MuteAlarmInOutParam));
 struct {
 char arrChCmd[TOTAL_MUTE_ALARM_LED_IN];
@@ -36,14 +48,17 @@ char arrChCmd[TOTAL_MUTE_ALARM_LED_IN];
                 "bkpt 1"
                 );
 //Hold command
-    do{
-        locMuteAlarmInOutParam.lIndexLss = shCounterScanCLULss;
-        GetLssMuteAlarmBlockAddr(static_cast<void*> (&locMuteAlarmInOutParam));//
-        sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__BLOCK - 1] |= locMuteAlarmInOutParam.pChBlock[0];
-        sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__ALARM - 1] |= locMuteAlarmInOutParam.pChAlarm[0];
-        sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__MUTE  - 1] |= locMuteAlarmInOutParam.pChMute [0];
-    }while(++shCounterScanCLULss < shLC__n_alarm );
-   
+
+//-    do{
+//-        locMuteAlarmInOutParam.lIndexLss = shCounterScanCLULss;
+//-        GetLssMuteAlarmBlockAddr(static_cast<void*> (&locMuteAlarmInOutParam));//
+//-        sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__BLOCK - 1] |= locMuteAlarmInOutParam.pChBlock[0];
+//-        sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__ALARM - 1] |= locMuteAlarmInOutParam.pChAlarm[0];
+//-        sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__MUTE  - 1] |= locMuteAlarmInOutParam.pChMute [0];
+//-    }while(++shCounterScanCLULss < shLC__n_alarm );
+   sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__BLOCK - 1] |= *(arrPchIn[(MUTE_ALARM_LED_IN_NAME__BLOCK - 1)]);
+   sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__ALARM - 1] |= *(arrPchIn[(MUTE_ALARM_LED_IN_NAME__ALARM - 1)]);
+   sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__MUTE  - 1] |= *(arrPchIn[(MUTE_ALARM_LED_IN_NAME__MUTE  - 1)]);
 //State Led
     lStateLed = MUTE_ALARM_HIDE;
     //if(locMuteAlarmInOutParam.pChBlock[0]>0)

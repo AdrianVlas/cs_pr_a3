@@ -82,6 +82,7 @@ extern void ClrTmrVars(void);
 extern UI32Bit DiHrdStateUI32Bit;
 extern UI32Bit DoStateUI32Bit;
 extern UI32Bit LedStateUI32Bit;
+extern UI32Bit DoCheckUI32Bit;
 
 extern void RdHrdIn  (void *pv);
 extern void SetHrdOut(void *pv);

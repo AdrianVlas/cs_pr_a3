@@ -41,6 +41,7 @@ extern char chGlb_ActivatorWREeprom;
 
 
 extern __CONFIG current_config_prt; 
+extern __SETTINGS_FIX settings_fix_prt;
 extern uintptr_t *spca_of_p_prt[];
 //Define this by enum
 extern const char chAmtSchematicElement; //Amount Types

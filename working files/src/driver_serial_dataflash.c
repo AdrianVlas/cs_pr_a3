@@ -154,7 +154,7 @@ void main_routines_for_spi_df(uint32_t index_chip)
              )   
           {
             //Відбулася невизначена помилка, тому треба піти на перезавантаження
-            total_error_sw_fixed(9);
+            total_error_sw_fixed(11);
           }
 
           uint32_t address_internal = address_read_write_tmp[index_chip] & (number_page_serial_dataflash[index_chip]*size_page_serial_dataflash[index_chip] - 1);
@@ -381,7 +381,7 @@ void main_routines_for_spi_df(uint32_t index_chip)
               )   
       {
         //Відбулася невизначена помилка, тому треба піти на перезавантаження
-        total_error_sw_fixed(11);
+        total_error_sw_fixed(13);
       }
       else
       {

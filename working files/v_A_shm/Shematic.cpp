@@ -55,11 +55,14 @@ __CONFIG_CPP preSetUP = {
 };
 
 long long LL_CryaCrya @ "NonZeroIniVars_RAM1" = 15;
+UNN_LogicUnitArea gLUAreaMem  = {
 
+};
+/*
 UNN_LogicUnitArea gLUAreaMem @ "NonZeroIniVars_RAM1" = {
 
 };
-
+*/
 LUAreaAuxVar gblLUAreaAuxVar  = {
     0, //.short shAmountPlacedLogicUnit;//counter placed
     0, //.short shIdxLUAreaListElem;    //Index LU Area List Elem
@@ -151,7 +154,7 @@ shSum8Elem =  ((static_cast<__CONFIG* >(p_current_config_prt))->n_alarm       )
 +((static_cast<__CONFIG* >(p_current_config_prt))->n_timer       )
 +((static_cast<__CONFIG* >(p_current_config_prt))->n_trigger); 
 //Max Amount sequently linked Elem [1]-[2]-[3]-[4]-[5]-[6]-[7]-[8]-[9]
-chIteration = 2;
+chIteration = 5;
 ClrTmrVars();
 if(chInitTerminated != 1)
 Init2();
@@ -199,6 +202,7 @@ void Shematic::DoCalc(void) {
 //        i = arIdxLUAreaListElem[LU_BGS-1];
 //        LUIterator(j,i); 
         lDwnCtr = chIteration;
+        CLUBase::m_AuxInfo.ch = 0;
         do{
             //Startovyi Iterator
             //i = arIdxLUAreaListElem[LU_LSS-1];
@@ -210,6 +214,7 @@ void Shematic::DoCalc(void) {
             //kolichestvo elementov
             j = chSumNLedPlusNOut;
             LUIterator(j,i);//
+            CLUBase::m_AuxInfo.ch++;
         //Predpolagaemyi uroven` vlozenosti
         }while(--lDwnCtr);
         
@@ -1586,6 +1591,7 @@ void Shematic::Init2(void) {
 
 SetupCircutLinks2(static_cast<void*>(&lsLcVarArea));
 eLUTestLed.UpdateCLUTestLed();
+eMuteAlarmLed.UpdateMuteAlarmLed();
 }
 
 void Shematic::SetupCLUDInput_0_1StngParam(void *pv){
@@ -1668,6 +1674,7 @@ void Shematic::SetupCLUDout_1_0StngParam(void *pv){
     pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
     CLUDout_1_0* locPCLUDout_1_0 = static_cast<CLUDout_1_0*>(pInit2LcVarArea->pCLUBase);
     locPCLUDout_1_0->pIn = static_cast<void*>(locPCLUDout_1_0->arrPchIn);
+    locPCLUDout_1_0->pOut = static_cast<void*>(locPCLUDout_1_0->arrOut);
     locPCLUDout_1_0->arrPchSchIn[0] = &chGblGround;
     for(i = 0; i < TOTAL_RELE_VISIO_IN;i++)
     locPCLUDout_1_0->arrPchIn[i] = &chGblGround;
@@ -1732,6 +1739,7 @@ void Shematic::SetupCLULedStngParam(void *pv){
     locRef_CLULed.arrPchIn[i] = &chGblGround;
     locRef_CLULed.chTypeLogicFunction = LU_OP_SET_LED;
     locRef_CLULed.LogicFunc = SET_LED_Op; //???
+    locRef_CLULed.pOut = static_cast<void*>(locRef_CLULed.arrOut);
     bool bbVar = false;
     do{
         //register char* pCh;
@@ -1756,7 +1764,7 @@ shRelativeIndexLU -= 1;
         locRef_CLULed.m_chQTrg06 = bbSel1;
         
     }while(bbVar);
-    
+    locRef_CLULed.UpdateCLULed();
     //-LUCfgInfo sLcLUCfgInfo;
     //-sLcLUCfgInfo.pvLUClass = static_cast<void*>(locPCLULed);
     //-sLcLUCfgInfo.pvCfgSuit = static_cast<void*>(&(locPCLULed->m_LedCfgSuit));
@@ -2011,8 +2019,8 @@ void Shematic::SetupCLULssStngParam(void *pv){
     pInit2LcVarArea->shCounterInitCLUObj++;// sLV.shIdxLUOutDsc++;
 
     CLULss* locPCLULss = static_cast<CLULss*>(pInit2LcVarArea->pCLUBase);
-    //locPCLUFKey->pOut = static_cast<void*>(locPCLUFKey->arrOut);
-    //locPCLUNot_1_1->pIn  = static_cast<void*>(locPCLUNot_1_1->arrPchIn);
+    locPCLULss->pOut = static_cast<void*>(locPCLULss->arrOut);
+    locPCLULss->pIn  = static_cast<void*>(locPCLULss->arrPchIn);
     CLULss& locRef_CLULss = *(static_cast<CLULss*> (pInit2LcVarArea->pCLUBase));
     locRef_CLULss.UpdateCLss();
     
@@ -2034,7 +2042,7 @@ void Shematic::SetupCLULssStngParam(void *pv){
         j = p__LN_ALARM[shRelativeIndexLU].settings.control;
         locRef_CLULss.m_LssCfgSuit.chSel = j;
         i = p__LN_ALARM[shRelativeIndexLU].settings.set_delay[0];
-        locRef_CLULss.m_LssCfgSuit.lTCs = i >> 2;
+        locRef_CLULss.m_LssCfgSuit.lTCs = i /5;
                 
     }while(bbVar);
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
@@ -2090,7 +2098,7 @@ void Shematic::SetupCBGSigStngParam(void *pv){
     locRef_CBGSig.m_BGSigSuit.chStateGS  =  j&(1<< INDEX_CTRL_GROUP_ALARM_STATE);     
     locRef_CBGSig.m_BGSigSuit.lIust  = pLN_GROUP_ALARM[shRelativeIndexLU].settings.pickup[0];  
     j = pLN_GROUP_ALARM[shRelativeIndexLU].settings.set_delay[0];
-    locRef_CBGSig.m_BGSigSuit.lTWait = j >> 2;
+    locRef_CBGSig.m_BGSigSuit.lTWait = j /5;
     i = pLN_GROUP_ALARM[shRelativeIndexLU].settings.analog_input_control;
     if (i > 0)
         locRef_CBGSig.m_chNumberAnalogChanell = i - 1;
@@ -2149,9 +2157,9 @@ void Shematic::SetupCLUMft_2_1StngParam(void *pv){
             lT2 = pLN_TIMER[shRelativeIndexLU].settings.set_delay[TIMER_SET_DELAY_WORK ];
             //rCMft.m_MftSuit.lTpause 
             //rCMft.m_MftSuit.lTWork  
-            rCMft.m_MftSuit.lTpause = lT1 >> 2;
-            rCMft.m_MftSuit.lTWork  = lT2 >> 2;
-            rCMft.m_MftSuit.lTdelay = lT2 >> 2;
+            rCMft.m_MftSuit.lTpause = lT1 /5;
+            rCMft.m_MftSuit.lTWork  = lT2 /5;
+            rCMft.m_MftSuit.lTdelay = lT2 /5;
         }while(bbVar);
        
     }
@@ -2249,7 +2257,7 @@ void Shematic::SetupCPulseAlternatorStngParam(void *pv){
     shRelativeIndexLU = locRef_CPulseAlternator.shLUBieldOrdNum - i - 1;
     locRef_CPulseAlternator.pvCfgLN = static_cast<void*> (pLN_MEANDER+shRelativeIndexLU);
     j = pLN_MEANDER[shRelativeIndexLU].settings.set_delay[MEANDER_SET_DELAY_PERIOD];
-    locRef_CPulseAlternator.m_PulseAltCfgSuit.shTAlternator = j>>2;
+    locRef_CPulseAlternator.m_PulseAltCfgSuit.shTAlternator = j/5;
     locRef_CPulseAlternator.m_NodeTicAlt.lTmrVal = locRef_CPulseAlternator.m_PulseAltCfgSuit.shTAlternator;
     locRef_CPulseAlternator.LinkPulseAltTimer();
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
@@ -3379,7 +3387,7 @@ sLV.pInOutParam->pChBlock = static_cast<char*>(pv);
 sLV.pInOutParam->pChAlarm = static_cast<char*>(&(sLV.pCLULss->arrOut[LSS_OUT_NAME_ALARM-1]));
 sLV.pInOutParam->pChMute  = static_cast<char*>(&(sLV.pCLULss->arrOut[LSS_OUT_NAME_MUTE-1]));
 }
-void GetLUTestLedInDataAddr(void* pv){
+void GetLUTestLedInDataAddrOld(void* pv){
 register long i,j;
 struct {
 LUAreaListElem* arrLUAreaListElem;
@@ -3400,7 +3408,132 @@ sLV.pCLUFKey = static_cast<CLUFKey*>( ( static_cast<LUAreaListElem*>(pv) )->pvLU
 sLV.pInOutParam->pChTest = static_cast<char*>(&(sLV.pCLUFKey->arrOut[0]));
 //Set Reset to VCC
 sLV.pInOutParam->pChReset = &chGblVcc;
-} 
+}
+void GetLUTestLedInDataAddr(void* pv){
+register long i,j;
+SBitFld_LUInInfo locSBitFld;
+struct {
+LUAreaListElem* arrLUAreaListElem;
+TestLedInOutParam *pInOutParam; 
+CLUBase* pCLUBase;
+//char* pCh;
+    } sLV;
+sLV.pInOutParam = static_cast<TestLedInOutParam*>(pv);
+sLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
+sLV.pInOutParam->pChTest  = static_cast<char*>(0); 
+sLV.pInOutParam->pChReset = static_cast<char*>(0); 
+
+i = settings_fix_prt.param[FIX_BLOCK_TEST_INPUT];
+locSBitFld.bfInfo_IdLUStng = 
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+locSBitFld.bfInfo_OrdNumStng = 
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+locSBitFld.bfInfo_OrdNumOut = 
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+
+j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
+ if(j!=(-1)){
+    i = j+locSBitFld.bfInfo_OrdNumStng - 1;
+    pv = static_cast<void*>( &sLV.arrLUAreaListElem[i ]);
+    sLV.pCLUBase = static_cast<CLUBase*>( ( static_cast<LUAreaListElem*>(pv) )->pvLU);
+    pv = sLV.pCLUBase->pOut;
+    j = locSBitFld.bfInfo_OrdNumOut - 1;
+    if(pv!= 0)
+    sLV.pInOutParam->pChTest = static_cast<char*>(pv)+j;
+    }
+i = settings_fix_prt.param[FIX_BLOCK_TEST_RESET];
+locSBitFld.bfInfo_IdLUStng = 
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+locSBitFld.bfInfo_OrdNumStng = 
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+locSBitFld.bfInfo_OrdNumOut = 
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+
+j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
+ if(j!=(-1)){
+    i = j+locSBitFld.bfInfo_OrdNumStng - 1;
+    pv = static_cast<void*>( &sLV.arrLUAreaListElem[i ]);
+    sLV.pCLUBase = static_cast<CLUBase*>( ( static_cast<LUAreaListElem*>(pv) )->pvLU);
+    pv = sLV.pCLUBase->pOut;
+    j = locSBitFld.bfInfo_OrdNumOut - 1;
+    if(pv!= 0)
+    sLV.pInOutParam->pChReset = static_cast<char*>(pv)+j;
+    }
+
+}
+void GetMuteAlarmBlockAddr(void* pv){
+register long i,j;
+SBitFld_LUInInfo locSBitFld;
+
+struct {
+LUAreaListElem* arrLUAreaListElem;
+MuteAlarmInOutParam *pInOutParam; 
+CLUBase* pCLUBase;
+//char* pCh;
+    } sLV;
+    
+sLV.pInOutParam = static_cast<MuteAlarmInOutParam*>(pv);
+sLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
+sLV.pInOutParam->pChBlock = static_cast<char*>(0);
+sLV.pInOutParam->pChAlarm = static_cast<char*>(0);
+sLV.pInOutParam->pChMute  = static_cast<char*>(0); 
+
+i = settings_fix_prt.param[FIX_BLOCK_ALARM];
+locSBitFld.bfInfo_IdLUStng = 
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+locSBitFld.bfInfo_OrdNumStng = 
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+locSBitFld.bfInfo_OrdNumOut = 
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+
+j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
+ if(j!=(-1)){
+    i = j+locSBitFld.bfInfo_OrdNumStng - 1;
+    pv = static_cast<void*>( &sLV.arrLUAreaListElem[i ]);
+    sLV.pCLUBase = static_cast<CLUBase*>( ( static_cast<LUAreaListElem*>(pv) )->pvLU);
+    pv = sLV.pCLUBase->pOut;
+    j = locSBitFld.bfInfo_OrdNumOut - 1;
+    if(pv!= 0)
+    sLV.pInOutParam->pChAlarm = static_cast<char*>(pv)+j;
+    }
+i = settings_fix_prt.param[FIX_BLOCK_BLOCK];
+locSBitFld.bfInfo_IdLUStng = 
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+locSBitFld.bfInfo_OrdNumStng = 
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+locSBitFld.bfInfo_OrdNumOut = 
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+
+j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
+ if(j!=(-1)){
+    i = j+locSBitFld.bfInfo_OrdNumStng - 1;
+    pv = static_cast<void*>( &sLV.arrLUAreaListElem[i ]);
+    sLV.pCLUBase = static_cast<CLUBase*>( ( static_cast<LUAreaListElem*>(pv) )->pvLU);
+    pv = sLV.pCLUBase->pOut;
+    j = locSBitFld.bfInfo_OrdNumOut - 1;
+    if(pv!= 0)
+    sLV.pInOutParam->pChBlock = static_cast<char*>(pv)+j;
+    }
+i = settings_fix_prt.param[FIX_BLOCK_MUTE];
+locSBitFld.bfInfo_IdLUStng = 
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+locSBitFld.bfInfo_OrdNumStng = 
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+locSBitFld.bfInfo_OrdNumOut = 
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+
+j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
+ if(j!=(-1)){
+    i = j+locSBitFld.bfInfo_OrdNumStng - 1;
+    pv = static_cast<void*>( &sLV.arrLUAreaListElem[i ]);
+    sLV.pCLUBase = static_cast<CLUBase*>( ( static_cast<LUAreaListElem*>(pv) )->pvLU);
+    pv = sLV.pCLUBase->pOut;
+    j = locSBitFld.bfInfo_OrdNumOut - 1;
+    if(pv!= 0)
+    sLV.pInOutParam->pChMute  = static_cast<char*>(pv)+j;
+    }
+
+}  
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //``````````````````````````````````````````````````````````````````````````````````
 //==================================================================================

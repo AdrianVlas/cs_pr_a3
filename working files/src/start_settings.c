@@ -1441,8 +1441,8 @@ void min_config(__CONFIG *target_label)
   target_label->n_log = 0;
   
   uint8_t *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
+  if (copying_time == 2) label_to_time_array = time_copy;
+  else label_to_time_array = time;
      
   for (size_t i = 0; i < 7; i++) target_label->time_config[i] = *(label_to_time_array + i);
   target_label->time_config[7] = DEFAULT_PARAMS_FIX_CHANGES;
@@ -1505,8 +1505,8 @@ void scheme2_config(__CONFIG *target_label)
                          
   
   uint8_t *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
+  if (copying_time == 2) label_to_time_array = time_copy;
+  else label_to_time_array = time;
      
   for (size_t i = 0; i < 7; i++) target_label->time_config[i] = *(label_to_time_array + i);
   target_label->time_config[7] = DEFAULT_PARAMS_FIX_CHANGES;
@@ -1551,8 +1551,8 @@ void min_settings(__SETTINGS_FIX *target_label)
   target_label->schematic = 0; /*признак мінімальних налаштувань*/
 
   uint8_t *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
+  if (copying_time == 2) label_to_time_array = time_copy;
+  else label_to_time_array = time;
      
   for (size_t i = 0; i < 7; i++) 
   {
@@ -1861,7 +1861,7 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
     ***/
     {
       if (target_config->n_trigger >= (0 + 1)) target_fix_settings->param[FIX_BLOCK_BLOCK] = ((ID_FB_TRIGGER & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((0 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((TRIGGER_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);    
-      if (target_config->n_or >= (3 + 1)) target_fix_settings->param[FIX_VLOCK_TEST_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((3 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);    
+      if (target_config->n_or >= (3 + 1)) target_fix_settings->param[FIX_BLOCK_TEST_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((3 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);    
 
       size_t _n = 4/*Reset, Mute, Block, Test*/ + 
       DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN)/*Контрольні сигнали всіх ШГС*/ + 
@@ -1925,8 +1925,8 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
     target_fix_settings->schematic = 2 << 8; /*признак Схеми 2*/
     
     uint8_t *label_to_time_array;
-    if (copying_time == 0) label_to_time_array = time;
-    else label_to_time_array = time_copy;
+    if (copying_time == 2) label_to_time_array = time_copy;
+    else label_to_time_array = time;
      
     for (size_t i = 0; i < 7; i++) 
     {

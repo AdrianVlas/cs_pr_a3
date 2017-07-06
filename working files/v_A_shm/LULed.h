@@ -24,8 +24,10 @@ public:
 	CLULed(CLULed&);
 	CLULed(char chM,char chI);
 	void CalcLedSchematic(void);
+    void UpdateCLULed(void);
 	char* arrPchIn[TOTAL_LED_VISIO_IN];//
 	char* arrPchSchIn[shCLULed_1_0_AmtIn];//
+    char  arrStateIn[TOTAL_LED_VISIO_IN ];
 //	char* arrPchAlternator[2];//
     char m_chQTrg06;
     char m_chInC06;
