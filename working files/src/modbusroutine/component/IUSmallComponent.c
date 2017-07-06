@@ -12,7 +12,7 @@ int setIUModbusBit(int, int);//получить содержимое бита
 void preIUSmallReadAction(void);//action до чтения
 void postIUSmallReadAction(void);//action после чтения
 void preIUSmallWriteAction(void);//action до записи
-void postIUSmallWriteAction(void);//action после записи
+int postIUSmallWriteAction(void);//action после записи
 void loadIUSmallActualData(void);
 
 int privateIUGetReg2(int adrReg);
@@ -183,8 +183,9 @@ void preIUSmallWriteAction(void) {
   iucomponent->operativMarker[1] = -1;//оперативный маркер
   iucomponent->isActiveActualData = 1;
 }//
-void postIUSmallWriteAction(void) {
+int postIUSmallWriteAction(void) {
 //action после записи
+ return 0;
 }//
 
 int privateIUGetReg2(int adrReg)

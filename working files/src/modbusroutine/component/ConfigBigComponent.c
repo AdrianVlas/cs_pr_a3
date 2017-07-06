@@ -13,7 +13,7 @@ int privateConfigBigGetReg2(int adrReg);
 void preConfigBigReadAction(void);//action до чтения
 void postConfigBigReadAction(void);//action после чтения
 void preConfigBigWriteAction(void);//action до записи
-void postConfigBigWriteAction(void);//action после записи
+int postConfigBigWriteAction(void);//action после записи
 void loadConfigBigActualData(void);
 
 COMPONENT_OBJ *configbigcomponent;
@@ -188,9 +188,9 @@ void preConfigBigWriteAction(void) {
   configbigcomponent->operativMarker[1] = -1;//оперативный маркер
   configbigcomponent->isActiveActualData = 1;
 }//
-void postConfigBigWriteAction(void) {
+int postConfigBigWriteAction(void) {
 //action после записи
-  if(configbigcomponent->operativMarker[0]<0) return;//не было записи
+  if(configbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = configbigcomponent->operativMarker[1]-configbigcomponent->operativMarker[0]+1;
   if(configbigcomponent->operativMarker[1]<0) countRegister = 1;
@@ -241,9 +241,10 @@ void postConfigBigWriteAction(void) {
    case 15: //MMS out
    break;
  }//switch
- action_after_changing_of_configuration(); /*перевірити обов'язково результат*/
   }//for
 
+ action_after_changing_of_configuration(); //перевірити обов'язково результат
+ return 0;
 }//
 
 int privateConfigBigGetReg2(int adrReg)

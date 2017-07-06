@@ -21,7 +21,7 @@ void setSDISmallCountObject(void);//записать к-во обектов
 void preSDISmallReadAction(void);//action до чтения
 void postSDISmallReadAction(void);//action после чтения
 void preSDISmallWriteAction(void);//action до записи
-void postSDISmallWriteAction(void);//action после записи
+int postSDISmallWriteAction(void);//action после записи
 void loadSDISmallActualData(void);
 
 COMPONENT_OBJ *sdismallcomponent;
@@ -130,8 +130,9 @@ void preSDISmallWriteAction(void) {
   sdismallcomponent->operativMarker[1] = -1;//оперативный маркер
   sdismallcomponent->isActiveActualData = 1;
 }//
-void postSDISmallWriteAction(void) {
+int postSDISmallWriteAction(void) {
 //action после записи
+ return 0;
 }//
 
 int privateSDISmallGetReg1(int adrReg)

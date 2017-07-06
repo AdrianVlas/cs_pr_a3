@@ -21,10 +21,17 @@ void setTUSmallCountObject(void);//записать к-во обектов
 void preTUSmallReadAction(void);//action до чтения
 void postTUSmallReadAction(void);//action после чтения
 void preTUSmallWriteAction(void);//action до записи
-void postTUSmallWriteAction(void);//action после записи
+int postTUSmallWriteAction(void);//action после записи
 void loadTUSmallActualData(void);
+int getTUmallModbusBeginAdrRegister(void);
 
 COMPONENT_OBJ *tusmallcomponent;
+
+int getTUmallModbusBeginAdrRegister(void)
+{
+  //получить адрес нач регистра
+ return BEGIN_ADR_REGISTER;
+}//getTSmallModbusBeginAdrRegister(void)
 
 /**************************************/
 //подготовка компонента телеуправление
@@ -132,8 +139,9 @@ void preTUSmallWriteAction(void) {
   tusmallcomponent->operativMarker[1] = -1;//оперативный маркер
   tusmallcomponent->isActiveActualData = 1;
 }//
-void postTUSmallWriteAction(void) {
+int postTUSmallWriteAction(void) {
 //action после записи
+ return 0;
 }//
 
 int privateTUSmallGetReg1(int adrReg)

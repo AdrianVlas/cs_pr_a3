@@ -258,7 +258,7 @@ void SetHrdOut(void*pv){
 	j = i&0x7f;
 	
 	DoCheckUI32Bit.ar_uch[0] = DoStateUI32Bit.ar_uch[0]^j;
-
+return;
     i = ((UI32Bit*) pv)->ar_uch[0]; 
     j = i&0x10;//Find 5 bit
     if(j){
@@ -326,7 +326,7 @@ register long i;
     fnPLpvrL CurrAuxfunc; // 
     volatile long lAuxVar = 0;
     //volatile LedRegCode lcsLedRegCode;
-
+return;
     i = chCounterLedService + 1;
     if (i >= chNumIndependentParts){
         i = chCounterLedService = 0;

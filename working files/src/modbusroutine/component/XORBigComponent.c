@@ -18,7 +18,7 @@ void setXORBigCountObject(void);//записать к-во обектов
 void preXORBigReadAction(void);//action до чтения
 void postXORBigReadAction(void);//action после чтения
 void preXORBigWriteAction(void);//action до записи
-void postXORBigWriteAction(void);//action после записи
+int postXORBigWriteAction(void);//action после записи
 void loadXORBigActualData(void);
 
 COMPONENT_OBJ *xorbigcomponent;
@@ -58,20 +58,6 @@ void loadXORBigActualData(void) {
         value = (arr[item].settings.param[i] >> 16) & 0x7fff;//LEDIN 1 СД item
         tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
      }
-//        //XOR item.1 0
-//   int value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-//   //XOR item.1 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
-//
-//   //XOR item.2 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-//   //XOR item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
-
    }//for
 }//loadActualData() 
 
@@ -97,6 +83,8 @@ int setXORBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateXORBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(xorbigcomponent->isActiveActualData) setXORBigCountObject(); //к-во обектов
+  xorbigcomponent->isActiveActualData = 0;
   if(privateXORBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(xorbigcomponent, adrReg);
@@ -148,12 +136,37 @@ void preXORBigWriteAction(void) {
   xorbigcomponent->operativMarker[1] = -1;//оперативный маркер
   xorbigcomponent->isActiveActualData = 1;
 }//
-void postXORBigWriteAction(void) {
+int postXORBigWriteAction(void) {
 //action после записи
-  if(xorbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = xorbigcomponent->operativMarker[1]-xorbigcomponent->operativMarker[0]+1;
-//  if(xorbigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(xorbigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = xorbigcomponent->operativMarker[1]-xorbigcomponent->operativMarker[0]+1;
+  if(xorbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LN_XOR *arr = (__LN_XOR*)(spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR]);
+   __settings_for_XOR *arr  = (__settings_for_XOR*)(sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR]);
+   __settings_for_XOR *arr1 = (__settings_for_XOR*)(sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+xorbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+  break;
+  case 1:
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+  break;
+ }//switch
+   superSortParam(2, &(arr1[idxSubObj].param[0]));//сортировка
+   superSortParam(2, &(arr[idxSubObj].param[0]));//сортировка
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateXORBigGetReg1(int adrReg)

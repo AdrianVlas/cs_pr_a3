@@ -15,7 +15,7 @@ int setYustBigModbusBit(int, int);//получить содержимое бита
 void preYustBigReadAction(void);//action до чтения
 void postYustBigReadAction(void);//action после чтения
 void preYustBigWriteAction(void);//action до записи
-void postYustBigWriteAction(void);//action после записи
+int postYustBigWriteAction(void);//action после записи
 void loadYustBigActualData(void);
 
 COMPONENT_OBJ *yustbigcomponent;
@@ -128,12 +128,15 @@ void preYustBigWriteAction(void) {
   yustbigcomponent->operativMarker[1] = -1;//оперативный маркер
   yustbigcomponent->isActiveActualData = 1;
 }//
-void postYustBigWriteAction(void) {
+int postYustBigWriteAction(void) {
 //action после записи
-  if(yustbigcomponent->operativMarker[0]<0) return;//не было записи
+  if(yustbigcomponent->operativMarker[0]<0) return 0;//не было записи
 //  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
 //  int countRegister = yustbigcomponent->operativMarker[1]-yustbigcomponent->operativMarker[0]+1;
 //  if(yustbigcomponent->operativMarker[1]<0) countRegister = 1;
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateYustBigGetReg2(int adrReg)

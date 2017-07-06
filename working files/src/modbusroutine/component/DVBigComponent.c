@@ -19,7 +19,7 @@ void setDVBigCountObject(void);//записать к-во обектов
 void preDVBigReadAction(void);//action до чтения
 void postDVBigReadAction(void);//action после чтения
 void preDVBigWriteAction(void);//action до записи
-void postDVBigWriteAction(void);//action после записи
+int postDVBigWriteAction(void);//action после записи
 void loadDVBigActualData(void);
 
 COMPONENT_OBJ *dvbigcomponent;
@@ -31,7 +31,7 @@ void constructorDVBigComponent(COMPONENT_OBJ *dvbigcomp)
 {
   dvbigcomponent = dvbigcomp;
 
-  dvbigcomponent->countObject = 14;//к-во обектов
+  dvbigcomponent->countObject = 0;//к-во обектов
 
   dvbigcomponent->getModbusRegister = getDVBigModbusRegister;//получить содержимое регистра
   dvbigcomponent->getModbusBit      = getDVBigModbusBit;//получить содержимое бита
@@ -104,7 +104,9 @@ int setDVBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateDVBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-//  if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
+  if(dvbigcomponent->isActiveActualData) setDVBigCountObject(); //к-во обектов
+  dvbigcomponent->isActiveActualData = 0;
+  if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(dvbigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
@@ -150,19 +152,33 @@ void preDVBigWriteAction(void) {
   dvbigcomponent->operativMarker[1] = -1;//оперативный маркер
   dvbigcomponent->isActiveActualData = 1;
 }//
-void postDVBigWriteAction(void) {
+int postDVBigWriteAction(void) {
 //action после записи
-  if(dvbigcomponent->operativMarker[0]<0) return;//не было записи
-/*
-  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  if(dvbigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = dvbigcomponent->operativMarker[1]-dvbigcomponent->operativMarker[0]+1;
   if(dvbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-        qDebug()<<"offsetDV= "<<offset;
-
-        qDebug()<<"operativMarkerDV[0]= "<<dvbigcomponent->operativMarker[0];
-        qDebug()<<"operativMarkerDV[1]= "<<dvbigcomponent->operativMarker[1];
-*/
+//   __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   __settings_for_INPUT *arr  = (__settings_for_INPUT*)(sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+   __settings_for_INPUT *arr1 = (__settings_for_INPUT*)(sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+dvbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://control
+        arr1[idxSubObj].control = arr[idxSubObj].control = (tempWriteArray[offsetTempWriteArray+i]);
+//(1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) !=0) << 0) | (1 << 1) | ((V110_V220 != 0) << 2);
+//        arr[idxSubObj].settings.param[INPUT_TRIGGER_SET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://
+        arr1[idxSubObj].set_delay[INPUT_SET_DELAY_DOPUSK] = arr[idxSubObj].set_delay[INPUT_SET_DELAY_DOPUSK] = (tempWriteArray[offsetTempWriteArray+i]);
+   break;
+ }//switch
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateDVBigGetReg1(int adrReg)

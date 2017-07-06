@@ -19,7 +19,7 @@ void setSDI3ColorSmallCountObject(void);//записать к-во обектов
 void preSDI3ColorSmallReadAction(void);//action до чтения
 void postSDI3ColorSmallReadAction(void);//action после чтения
 void preSDI3ColorSmallWriteAction(void);//action до записи
-void postSDI3ColorSmallWriteAction(void);//action после записи
+int postSDI3ColorSmallWriteAction(void);//action после записи
 void loadSDI3ColorSmallActualData(void);
 
 COMPONENT_OBJ *sdi3colorsmallcomponent;
@@ -112,8 +112,9 @@ void preSDI3ColorSmallWriteAction(void) {
   sdi3colorsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   sdi3colorsmallcomponent->isActiveActualData = 1;
 }//
-void postSDI3ColorSmallWriteAction(void) {
+int postSDI3ColorSmallWriteAction(void) {
 //action после записи
+ return 0;
 }//
 
 int privateSDI3ColorSmallGetReg2(int adrReg)

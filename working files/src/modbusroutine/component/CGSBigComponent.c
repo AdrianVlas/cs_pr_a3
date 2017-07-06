@@ -16,7 +16,7 @@ void setCGSBigCountObject(void);//записать к-во обектов
 void preCGSBigReadAction(void);//action до чтения
 void postCGSBigReadAction(void);//action после чтения
 void preCGSBigWriteAction(void);//action до записи
-void postCGSBigWriteAction(void);//action после записи
+int postCGSBigWriteAction(void);//action после записи
 void loadCGSBigActualData(void);
 
 COMPONENT_OBJ *cgsbigcomponent;
@@ -43,7 +43,6 @@ void constructorCGSBigComponent(COMPONENT_OBJ *cgsbigcomp)
 }//prepareDVinConfig
 
 void loadCGSBigActualData(void) {
- setCGSBigCountObject(); //записать к-во обектов
   //ActualData
    __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
    for(int item=0; item<cgsbigcomponent->countObject; item++) {
@@ -115,13 +114,14 @@ int setCGSBigModbusRegister(int adrReg, int dataReg)
   superSetTempWriteArray(dataReg);//записать в буфер
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
-   case 0:
+   case 0://Параметры ГС item
+   case 1://Входной ток ГС item
    break; 
-   case 1:
+   case 2://Приращение тока ГС item
     if(dataReg>500) return MARKER_ERRORDIAPAZON;
     if(dataReg<5)   return MARKER_ERRORDIAPAZON;
    break; 
-   case 2:
+   case 3://Время tуст ГС item
     if(dataReg>320) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
@@ -138,10 +138,6 @@ int setCGSBigModbusBit(int adrBit, int x)
 
 void setCGSBigCountObject(void) {
 //записать к-во обектов
-  int cntObj = current_config.n_group_alarm;               //Контроль приростів струмів
-  if(cntObj<0) return;
-  //if(cntObj>TOTAL_OBJ) return;
-  cgsbigcomponent->countObject = cntObj;
 }//
 void preCGSBigReadAction(void) {
 //action до чтения
@@ -159,12 +155,39 @@ void preCGSBigWriteAction(void) {
   cgsbigcomponent->operativMarker[1] = -1;//оперативный маркер
   cgsbigcomponent->isActiveActualData = 1;
 }//
-void postCGSBigWriteAction(void) {
+int postCGSBigWriteAction(void) {
 //action после записи
-  if(cgsbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = cgsbigcomponent->operativMarker[1]-cgsbigcomponent->operativMarker[0]+1;
-//  if(cgsbigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(cgsbigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = cgsbigcomponent->operativMarker[1]-cgsbigcomponent->operativMarker[0]+1;
+  if(cgsbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
+   __settings_for_GROUP_ALARM *arr  = (__settings_for_GROUP_ALARM*)(sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
+   __settings_for_GROUP_ALARM *arr1 = (__settings_for_GROUP_ALARM*)(sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+cgsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  switch(offset) {//индекс регистра
+   case 0://Параметры ГС item
+     arr1[0].control = arr[0].control  &= (uint32_t)~0x3;
+     arr1[0].control = arr[0].control  |= (tempWriteArray[offsetTempWriteArray+i]) & 0x3;
+   break; 
+   case 1://Входной ток ГС item
+     arr1[1].analog_input_control = arr[1].analog_input_control = (tempWriteArray[offsetTempWriteArray+i]) << 
+        (group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) 
+              & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
+   break; 
+   case 2://Приращение тока ГС item
+    arr1[2].pickup[GROUP_ALARM_PICKUP_DELTA_I] = arr[2].pickup[GROUP_ALARM_PICKUP_DELTA_I] = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+   case 3://Время tуст ГС item
+    arr1[3].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = arr[3].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = (tempWriteArray[offsetTempWriteArray+i]);
+   break; 
+ }//switch
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateCGSBigGetReg2(int adrReg)

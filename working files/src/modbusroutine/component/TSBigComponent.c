@@ -18,7 +18,7 @@ void setTSBigCountObject(void);//записать к-во обектов
 void preTSBigReadAction(void);//action до чтения
 void postTSBigReadAction(void);//action после чтения
 void preTSBigWriteAction(void);//action до записи
-void postTSBigWriteAction(void);//action после записи
+int postTSBigWriteAction(void);//action после записи
 void loadTSBigActualData(void);
 
 COMPONENT_OBJ *tsbigcomponent;
@@ -46,6 +46,8 @@ void constructorTSBigComponent(COMPONENT_OBJ *tsbigcomp)
 }//prepareDVinConfig
 
 void loadTSBigActualData(void) {
+int getTSmallModbusBeginAdrRegister(void);
+//extern COMPONENT_OBJ *tssmallcomponent;
  setTSBigCountObject(); //записать к-во обектов
 
   //ActualData
@@ -65,8 +67,7 @@ void loadTSBigActualData(void) {
    tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
 
    //Адрес ТС 0  item
-//   value = arr[item].settings.param[0];
-   value = 18000 + item;
+   value = getTSmallModbusBeginAdrRegister() + item;
    tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
 
    }//for
@@ -94,6 +95,8 @@ int setTSBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateTSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(tsbigcomponent->isActiveActualData) setTSBigCountObject(); 
+  tsbigcomponent->isActiveActualData = 0;
   if(privateTSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tsbigcomponent, adrReg);
@@ -109,6 +112,8 @@ int setTSBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
+   break; 
+   case 4:
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch
@@ -145,12 +150,48 @@ void preTSBigWriteAction(void) {
   tsbigcomponent->operativMarker[1] = -1;//оперативный маркер
   tsbigcomponent->isActiveActualData = 1;
 }//
-void postTSBigWriteAction(void) {
+int postTSBigWriteAction(void) {
 //action после записи
-  if(tsbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = tsbigcomponent->operativMarker[1]-tsbigcomponent->operativMarker[0]+1;
-//  if(tsbigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(tsbigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = tsbigcomponent->operativMarker[1]-tsbigcomponent->operativMarker[0]+1;
+  if(tsbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LN_TS *arr = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+   __settings_for_TS *arr  = (__settings_for_TS*)(sca_of_p[ID_FB_TS - _ID_FB_FIRST_VAR]);
+   __settings_for_TS *arr1 = (__settings_for_TS*)(sca_of_p_edit[ID_FB_TS - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+tsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 0://In TC 0
+        arr1[idxSubObj].param[TS_LOGIC_INPUT] = arr[idxSubObj].param[TS_LOGIC_INPUT] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[TS_LOGIC_INPUT] = arr[idxSubObj].param[TS_LOGIC_INPUT] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://In TC 1
+        arr1[idxSubObj].param[TS_LOGIC_INPUT] = arr[idxSubObj].param[TS_LOGIC_INPUT] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[TS_LOGIC_INPUT] = arr[idxSubObj].param[TS_LOGIC_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 2://Block TC 0
+        arr1[idxSubObj].param[TS_BLOCK] = arr[idxSubObj].param[TS_BLOCK] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[TS_BLOCK] = arr[idxSubObj].param[TS_BLOCK] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 3://Block TC 1
+        arr1[idxSubObj].param[TS_BLOCK] = arr[idxSubObj].param[TS_BLOCK] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[TS_BLOCK] = arr[idxSubObj].param[TS_BLOCK] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 4://Адрес ТС
+//    arr[idxSubObj].settings.set_delay[ALARM_SET_DELAY_PERIOD] = (tempWriteArray[offsetTempWriteArray+i]);
+   break;
+
+ }//switch
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateTSBigGetReg1(int adrReg)

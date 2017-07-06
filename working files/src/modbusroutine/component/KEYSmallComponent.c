@@ -22,7 +22,7 @@ void setKEYSmallCountObject(void);//записать к-во обектов
 void preKEYSmallReadAction(void);//action до чтения
 void postKEYSmallReadAction(void);//action после чтения
 void preKEYSmallWriteAction(void);//action до записи
-void postKEYSmallWriteAction(void);//action после записи
+int postKEYSmallWriteAction(void);//action после записи
 void loadKEYSmallActualData(void);
 
 COMPONENT_OBJ *keysmallcomponent;
@@ -140,8 +140,9 @@ void preKEYSmallWriteAction(void) {
   keysmallcomponent->operativMarker[1] = -1;//оперативный маркер
   keysmallcomponent->isActiveActualData = 1;
 }//
-void postKEYSmallWriteAction(void) {
+int postKEYSmallWriteAction(void) {
 //action после записи
+ return 0;
 }//
 
 int privateKEYSmallGetReg1(int adrReg)

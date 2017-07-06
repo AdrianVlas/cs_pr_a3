@@ -18,7 +18,7 @@ void setORBigCountObject(void);//записать к-во обектов
 void preORBigReadAction(void);//action до чтения
 void postORBigReadAction(void);//action после чтения
 void preORBigWriteAction(void);//action до записи
-void postORBigWriteAction(void);//action после записи
+int postORBigWriteAction(void);//action после записи
 void loadORBigActualData(void);
 
 COMPONENT_OBJ *orbigcomponent;
@@ -58,63 +58,6 @@ void loadORBigActualData(void) {
         value = (arr[item].settings.param[i] >> 16) & 0x7fff;//LEDIN 1 СД item
         tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
      }
-     
-//     //OR item.1 0
-//   int value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-//   //OR item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
-//
-//   //OR item.1 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-//   //OR item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
-//
-//   //OR item.1 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-//   //OR item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
-//
-//   //OR item.1 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
-//   //OR item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
-//
-//   //OR item.1 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
-//   //OR item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
-//
-//   //OR item.1 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+10] = value;
-//   //OR item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+11] = value;
-//
-//   //OR item.1 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
-//   //OR item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+13] = value;
-//
-//   //OR item.1 0
-//   value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+14] = value;
-//   //OR item.2 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+15] = value;
-
    }//for
 }//loadActualData() 
 
@@ -140,6 +83,8 @@ int setORBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateORBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(orbigcomponent->isActiveActualData) setORBigCountObject(); //к-во обектов
+  orbigcomponent->isActiveActualData = 0;
   if(privateORBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(orbigcomponent, adrReg);
@@ -221,12 +166,37 @@ void preORBigWriteAction(void) {
   orbigcomponent->operativMarker[1] = -1;//оперативный маркер
   orbigcomponent->isActiveActualData = 1;
 }//
-void postORBigWriteAction(void) {
+int postORBigWriteAction(void) {
 //action после записи
-  if(orbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = orbigcomponent->operativMarker[1]-orbigcomponent->operativMarker[0]+1;
-//  if(orbigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(orbigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = orbigcomponent->operativMarker[1]-orbigcomponent->operativMarker[0]+1;
+  if(orbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LN_OR *arr = (__LN_OR*)(spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]);
+   __settings_for_OR *arr  = (__settings_for_OR*)(sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR]);
+   __settings_for_OR *arr1 = (__settings_for_OR*)(sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+orbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+  break;
+  case 1:
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+  break;
+ }//switch
+   superSortParam(OR_SIGNALS_IN, &(arr1[idxSubObj].param[0]));//сортировка
+   superSortParam(OR_SIGNALS_IN, &(arr[idxSubObj].param[0]));//сортировка
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateORBigGetReg1(int adrReg)

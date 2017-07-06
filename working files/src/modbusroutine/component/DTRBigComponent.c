@@ -18,7 +18,7 @@ void setDTRBigCountObject(void);//записать к-во обектов
 void preDTRBigReadAction(void);//action до чтения
 void postDTRBigReadAction(void);//action после чтения
 void preDTRBigWriteAction(void);//action до записи
-void postDTRBigWriteAction(void);//action после записи
+int postDTRBigWriteAction(void);//action после записи
 void loadDTRBigActualData(void);
 
 COMPONENT_OBJ *dtrbigcomponent;
@@ -52,27 +52,27 @@ void loadDTRBigActualData(void) {
    for(int item=0; item<dtrbigcomponent->countObject; item++) {
 
    //Set D-T 0  item
-   int value = arr[item].settings.param[INPUT_TRIGGER_SET] & 0xffff;//LEDIN 0 СД item
+   int value = arr[item].settings.param[INPUT_TRIGGER_SET] & 0xffff;//
    tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   value = (arr[item].settings.param[INPUT_TRIGGER_SET] >> 16) & 0x7fff;//LEDIN 1 СД item
+   value = (arr[item].settings.param[INPUT_TRIGGER_SET] >> 16) & 0x7fff;//
    tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
 
    //CLR D-T 0  item
-   value = arr[item].settings.param[INPUT_TRIGGER_RESET] & 0xffff;//LEDIN 0 СД item
+   value = arr[item].settings.param[INPUT_TRIGGER_RESET] & 0xffff;//
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   value = (arr[item].settings.param[INPUT_TRIGGER_RESET] >> 16) & 0x7fff;//LEDIN 1 СД item
+   value = (arr[item].settings.param[INPUT_TRIGGER_RESET] >> 16) & 0x7fff;//
    tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
 
    //D D-T 0  item
-   value = arr[item].settings.param[INPUT_TRIGGER_D] & 0xffff;//LEDIN 0 СД item
+   value = arr[item].settings.param[INPUT_TRIGGER_D] & 0xffff;//
    tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-   value = (arr[item].settings.param[INPUT_TRIGGER_D] >> 16) & 0x7fff;//LEDIN 1 СД item
+   value = (arr[item].settings.param[INPUT_TRIGGER_D] >> 16) & 0x7fff;//
    tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
 
    //C D-T 0  item
-   value = arr[item].settings.param[INPUT_TRIGGER_C] & 0xffff;//LEDIN 0 СД item
+   value = arr[item].settings.param[INPUT_TRIGGER_C] & 0xffff;//
    tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
-   value = (arr[item].settings.param[INPUT_TRIGGER_C] >> 16) & 0x7fff;//LEDIN 1 СД item
+   value = (arr[item].settings.param[INPUT_TRIGGER_C] >> 16) & 0x7fff;//
    tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
 
    }//for
@@ -100,6 +100,8 @@ int setDTRBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateDTRBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(dtrbigcomponent->isActiveActualData) setDTRBigCountObject(); //к-во обектов
+  dtrbigcomponent->isActiveActualData = 0;
   if(privateDTRBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(dtrbigcomponent, adrReg);
@@ -161,12 +163,61 @@ void preDTRBigWriteAction(void) {
   dtrbigcomponent->operativMarker[1] = -1;//оперативный маркер
   dtrbigcomponent->isActiveActualData = 1;
 }//
-void postDTRBigWriteAction(void) {
+int postDTRBigWriteAction(void) {
 //action после записи
-  if(dtrbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = dtrbigcomponent->operativMarker[1]-dtrbigcomponent->operativMarker[0]+1;
-//  if(dtrbigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(dtrbigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = dtrbigcomponent->operativMarker[1]-dtrbigcomponent->operativMarker[0]+1;
+  if(dtrbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LN_TRIGGER *arr = (__LN_TRIGGER*)(spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
+   __settings_for_TRIGGER *arr  = (__settings_for_TRIGGER*)(sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
+   __settings_for_TRIGGER *arr1 = (__settings_for_TRIGGER*)(sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+dtrbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Set D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET] = arr[idxSubObj].param[INPUT_TRIGGER_SET] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET] = arr[idxSubObj].param[INPUT_TRIGGER_SET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://Set D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET] = arr[idxSubObj].param[INPUT_TRIGGER_SET] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET] = arr[idxSubObj].param[INPUT_TRIGGER_SET] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 2://CLR D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET] = arr[idxSubObj].param[INPUT_TRIGGER_RESET] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET] = arr[idxSubObj].param[INPUT_TRIGGER_RESET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 3://CLR D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET] = arr[idxSubObj].param[INPUT_TRIGGER_RESET] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET] = arr[idxSubObj].param[INPUT_TRIGGER_RESET] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 4://D D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_D] = arr[idxSubObj].param[INPUT_TRIGGER_D] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_D] = arr[idxSubObj].param[INPUT_TRIGGER_D] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 5://D D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_D] = arr[idxSubObj].param[INPUT_TRIGGER_D] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_D] = arr[idxSubObj].param[INPUT_TRIGGER_D] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 6://C D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_C] = arr[idxSubObj].param[INPUT_TRIGGER_C] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_C] = arr[idxSubObj].param[INPUT_TRIGGER_C] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 7://C D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_C] = arr[idxSubObj].param[INPUT_TRIGGER_C] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_C] = arr[idxSubObj].param[INPUT_TRIGGER_C] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+ }//switch
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateDTRBigGetReg1(int adrReg)

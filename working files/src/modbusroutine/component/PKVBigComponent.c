@@ -15,7 +15,7 @@ int setPKVBigModbusBit(int, int);//получить содержимое бита
 void prePKVBigReadAction(void);//action до чтения
 void postPKVBigReadAction(void);//action после чтения
 void prePKVBigWriteAction(void);//action до записи
-void postPKVBigWriteAction(void);//action после записи
+int postPKVBigWriteAction(void);//action после записи
 void loadPKVBigActualData(void);
 
 COMPONENT_OBJ *pkvbigcomponent;
@@ -189,8 +189,8 @@ void loadPKVBigActualData(void) {
   14224-14225
   ------------
   uint8_t *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
+  if (copying_time == 2) label_to_time_array = time_copy;
+  else label_to_time_array = time;
   Формат BCD
   0 - десяті і соті секунди (на запис тільки 0) (0x0-0x99)
   1 - секунди (0x0-0x59)
@@ -398,43 +398,44 @@ void prePKVBigWriteAction(void) {
   pkvbigcomponent->operativMarker[1] = -1;//оперативный маркер
   pkvbigcomponent->isActiveActualData = 1;
 }//
-void postPKVBigWriteAction(void) {
+int postPKVBigWriteAction(void) {
 //action после записи
-  if(pkvbigcomponent->operativMarker[0]<0) return;//не было записи
+  if(pkvbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = pkvbigcomponent->operativMarker[1]-pkvbigcomponent->operativMarker[0]+1;
   if(pkvbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-    unsigned char *label_to_time_array;
-    if (copying_time == 2) label_to_time_array = time_copy;
-    else label_to_time_array = time;
+    //unsigned char *label_to_time_array;
+   // if (copying_time == 2) label_to_time_array = time_copy;
+  //  else label_to_time_array = time;
   
+  __SETTINGS_FIX *arr = &settings_fix, *arr1 = &settings_fix_edit;
   for(int i=0; i<countRegister; i++) {
   int offset = i+pkvbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   switch(offset) {//индекс регистра 
     case 0://Время активации пароля после простоя
-    settings_fix.timeout_deactivation_password_interface_USB = settings_fix_edit.timeout_deactivation_password_interface_USB = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1->timeout_deactivation_password_interface_USB = arr->timeout_deactivation_password_interface_USB = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 1://
     //tempReadArray[i] = 0;
     break;
     case 2://Тайм-аут применения изменений
-    settings_fix.timeout_idle_new_settings = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1->timeout_idle_new_settings = arr->timeout_idle_new_settings = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 3://Язык пользовательского интерфейса
-    settings_fix.language = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1->language = arr->language = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 4://
     //tempReadArray[i] = 0;
     break;
     case 5://Скорость порта связи
-    settings_fix.baud_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1->baud_RS485 = arr->baud_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 6://Количество стоп-бит
-    settings_fix.number_stop_bit_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1->number_stop_bit_RS485 = arr->number_stop_bit_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 7://Паритет
-    settings_fix.pare_bit_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1->pare_bit_RS485 = arr->pare_bit_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
     break;
 //    case 8://Задержка приёма
 //    tempReadArray[i] = settings_fix.time_out_1_RS485;
@@ -459,7 +460,7 @@ void postPKVBigWriteAction(void) {
     break;
 
     case 13://Адрес устройства в сети
-    settings_fix.address = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1->address = arr->address = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 14://Таймаут конца фрейма
     // tempReadArray[i] = 0;
@@ -468,58 +469,58 @@ void postPKVBigWriteAction(void) {
     //tempReadArray[i] = 0;
     break;
     case 16://Символ 1 и 2
-     settings_fix.name_of_cell[0] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[0] = arr->name_of_cell[0] = (tempWriteArray[offsetTempWriteArray+i]);
 // + ((settings_fix.name_of_cell[1]<<8)&0xFF00);
     break;
     case 17://Символ 3 и 4
-     settings_fix.name_of_cell[2] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[2] = arr->name_of_cell[2] = (tempWriteArray[offsetTempWriteArray+i]);
 //+ ((settings_fix.name_of_cell[3]<<8)&0xFF00);
     break;
     case 18://Символ 5 и 6
-     settings_fix.name_of_cell[4] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[4] = arr->name_of_cell[4] = (tempWriteArray[offsetTempWriteArray+i]);
 //+ ((settings_fix.name_of_cell[5]<<8)&0xFF00);
     break;
     case 19://Символ 7 и 8
-     settings_fix.name_of_cell[6] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[6] = arr->name_of_cell[6] = (tempWriteArray[offsetTempWriteArray+i]);
 //+ ((settings_fix.name_of_cell[7]<<8)&0xFF00);
     break;
     case 20://Символ 9 и 10
-     settings_fix.name_of_cell[8] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[8] = arr->name_of_cell[8] = (tempWriteArray[offsetTempWriteArray+i]);
 //+ ((settings_fix.name_of_cell[9]<<8)&0xFF00);
     break;
     case 21://Символ 11 и 12
-     settings_fix.name_of_cell[10] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[10] = arr->name_of_cell[10] = (tempWriteArray[offsetTempWriteArray+i]);
 //+ ((settings_fix.name_of_cell[11]<<8)&0xFF00);
     break;
     case 22://Символ 13 и 14
-     settings_fix.name_of_cell[12] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[12] = arr->name_of_cell[12] = (tempWriteArray[offsetTempWriteArray+i]);
 //+ ((settings_fix.name_of_cell[13]<<8)&0xFF00);
     break;
     case 23://Символ 15 и 16
-     settings_fix.name_of_cell[14] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[14] = arr->name_of_cell[14] = (tempWriteArray[offsetTempWriteArray+i]);
 //+ ((settings_fix.name_of_cell[15]<<8)&0xFF00);
     break;
 
     case 24://Год
-     *(label_to_time_array + 6) = (tempWriteArray[offsetTempWriteArray+i]);
+//     *(label_to_time_array + 6) = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 25://Месяц
-     *(label_to_time_array + 5) = (tempWriteArray[offsetTempWriteArray+i]);
+//     *(label_to_time_array + 5) = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 26://День
-     *(label_to_time_array + 4) = (tempWriteArray[offsetTempWriteArray+i]);
+//     *(label_to_time_array + 4) = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 27://Час
-     *(label_to_time_array + 3) = (tempWriteArray[offsetTempWriteArray+i]);
+//     *(label_to_time_array + 3) = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 28://Минуты
-     *(label_to_time_array + 2) = (tempWriteArray[offsetTempWriteArray+i]);
+//     *(label_to_time_array + 2) = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 29://Секунды
-     *(label_to_time_array + 1) = (tempWriteArray[offsetTempWriteArray+i]);
+//     *(label_to_time_array + 1) = (tempWriteArray[offsetTempWriteArray+i]);
     break;
     case 30://Сотые секунды
-     *(label_to_time_array + 0) = (tempWriteArray[offsetTempWriteArray+i]);
+//     *(label_to_time_array + 0) = (tempWriteArray[offsetTempWriteArray+i]);
     break;
 
     case 31://Часовой пояс
@@ -538,7 +539,9 @@ void postPKVBigWriteAction(void) {
     break;
  }//switch
   }//for
-
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privatePKVBigGetReg2(int adrReg)

@@ -21,7 +21,7 @@ void setDVSmallCountObject(void);//записать к-во обектов
 void preDVSmallReadAction(void);//action до чтения
 void postDVSmallReadAction(void);//action после чтения
 void preDVSmallWriteAction(void);//action до записи
-void postDVSmallWriteAction(void);//action после записи
+int postDVSmallWriteAction(void);//action после записи
 void loadDVSmallActualData(void);
 
 COMPONENT_OBJ *dvsmallcomponent;
@@ -130,8 +130,9 @@ void preDVSmallWriteAction(void) {
   dvsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   dvsmallcomponent->isActiveActualData = 1;
 }//
-void postDVSmallWriteAction(void) {
+int postDVSmallWriteAction(void) {
 //action после записи
+ return 0;
 }//
 
 int privateDVSmallGetReg1(int adrReg)

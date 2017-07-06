@@ -18,7 +18,7 @@ void setNOTBigCountObject(void);//записать к-во обектов
 void preNOTBigReadAction(void);//action до чтени€
 void postNOTBigReadAction(void);//action после чтени€
 void preNOTBigWriteAction(void);//action до записи
-void postNOTBigWriteAction(void);//action после записи
+int postNOTBigWriteAction(void);//action после записи
 void loadNOTBigActualData(void);
 
 COMPONENT_OBJ *notbigcomponent;
@@ -53,17 +53,11 @@ void loadNOTBigActualData(void) {
 
      for (int i = 0; i < 1; i ++)
      {
-        int value = arr[item].settings.param[i] & 0xffff;//LEDIN 0 —ƒ item
+        int value = arr[item].settings.param[i] & 0xffff;//
         tempReadArray[item*REGISTER_FOR_OBJ+2*i+0] = value;
-        value = (arr[item].settings.param[i] >> 16) & 0x7fff;//LEDIN 1 —ƒ item
+        value = (arr[item].settings.param[i] >> 16) & 0x7fff;//
         tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
      }
-//   //NOT item.1 0
-//   int value = arr[item].settings.param[0];
-//   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-//   //NOT item.1 1
-//   value = arr[item].settings.param[1];
-//   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
    }//for
 }//loadActualData() 
 
@@ -89,6 +83,8 @@ int setNOTBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateNOTBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(notbigcomponent->isActiveActualData) setNOTBigCountObject(); //к-во обектов
+  notbigcomponent->isActiveActualData = 0;
   if(privateNOTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(notbigcomponent, adrReg);
@@ -135,12 +131,29 @@ void preNOTBigWriteAction(void) {
   notbigcomponent->operativMarker[1] = -1;//оперативный маркер
   notbigcomponent->isActiveActualData = 1;
 }//
-void postNOTBigWriteAction(void) {
+int postNOTBigWriteAction(void) {
 //action после записи
-  if(notbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = notbigcomponent->operativMarker[1]-notbigcomponent->operativMarker[0]+1;
-//  if(notbigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(notbigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = notbigcomponent->operativMarker[1]-notbigcomponent->operativMarker[0]+1;
+  if(notbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LN_NOT *arr = (__LN_NOT*)(spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]);
+   __settings_for_NOT *arr  = (__settings_for_NOT*)(sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR]);
+   __settings_for_NOT *arr1 = (__settings_for_NOT*)(sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+notbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+
+        arr1[idxSubObj].param[0] = arr[idxSubObj].param[0] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[0] = arr[idxSubObj].param[0] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+
+        arr1[idxSubObj].param[0] = arr[idxSubObj].param[0] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[0] = arr[idxSubObj].param[0] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateNOTBigGetReg1(int adrReg)

@@ -19,7 +19,7 @@ void setMEBigCountObject(void);
 void preMEBigReadAction(void);//action до чтения
 void postMEBigReadAction(void);//action после чтения
 void preMEBigWriteAction(void);//action до записи
-void postMEBigWriteAction(void);//action после записи
+int postMEBigWriteAction(void);//action после записи
 void loadMEBigActualData(void);
 
 COMPONENT_OBJ *mebigcomponent;
@@ -60,15 +60,10 @@ void loadMEBigActualData(void) {
 
    for(int item=0; item<mebigcomponent->countObject; item++) {
    //Вход item 0
-        value = arr[item] & 0xffff;//LEDIN 0 СД item
-        tempReadArray[item*REGISTER_FOR_OBJ+2*item+0] = value;
-        value = (arr[item] >> 16) & 0x7fff;//LEDIN 1 СД item
-        tempReadArray[item*REGISTER_FOR_OBJ+2*item+1] = value;
-//   value = 0;//arr[item].settings.param[0];
-//   tempReadArray[2+item*REGISTER_FOR_OBJ+0] = value;
-//   //Вход item 1
-//   value = 0;//arr[item].settings.param[1];
-//   tempReadArray[2+item*REGISTER_FOR_OBJ+1] = value;
+        value = arr[item] & 0xffff;//
+        tempReadArray[2+item*REGISTER_FOR_OBJ+2*item+0] = value;
+        value = (arr[item] >> 16) & 0x7fff;//
+        tempReadArray[2+item*REGISTER_FOR_OBJ+2*item+1] = value;
   }//for
 }//loadActualData() 
 
@@ -103,6 +98,9 @@ int setMEBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateMEBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(mebigcomponent->isActiveActualData) setMEBigCountObject(); //к-во обектов
+  mebigcomponent->isActiveActualData = 0;
+  if(privateMEBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(mebigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
@@ -133,12 +131,40 @@ void preMEBigWriteAction(void) {
   mebigcomponent->operativMarker[1] = -1;//оперативный маркер
   mebigcomponent->isActiveActualData = 1;
 }//
-void postMEBigWriteAction(void) {
+int postMEBigWriteAction(void) {
 //action после записи
-  if(mebigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = mebigcomponent->operativMarker[1]-mebigcomponent->operativMarker[0]+1;
-//  if(mebigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(mebigcomponent->operativMarker[0]<0) return 0;//не было записи
+//  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = mebigcomponent->operativMarker[1]-mebigcomponent->operativMarker[0]+1;
+  if(mebigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LOG_INPUT *arr = (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
+//   __settings_for_INPUT *arr  = (__settings_for_INPUT*)(sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+//   __settings_for_INPUT *arr1 = (__settings_for_INPUT*)(sca_of_p_edit[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+mebigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+ // int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+//  int clrME = 2;
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+//   case 0://Очистить журнал 0
+//   break;
+//   case 1://Очистить журнал 1
+//   break;
+
+   case 0://Вход 0 item
+//        arr1[clrME+idxSubObj] = arr[clrME+idxSubObj] &= (uint32_t)~0xffff;
+//        arr1[clrME+idxSubObj] = arr[clrME+idxSubObj] |= (tempWriteArray[clrME+offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://Вход 1 item
+//        arr1[clrME+idxSubObj] = arr[clrME+idxSubObj] &= (uint32_t)~(0x7fff<<16);
+//        arr1[clrME+idxSubObj] = arr[clrME+idxSubObj] |= ((tempWriteArray[clrME+offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+ }//switch
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateMEBigGetReg1(int adrReg)

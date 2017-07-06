@@ -20,7 +20,7 @@ int setCommonSmallModbusBit(int, int);// бита
 void preCommonSmallReadAction(void);//action до чтения
 void postCommonSmallReadAction(void);//action после чтения
 void preCommonSmallWriteAction(void);//action до записи
-void postCommonSmallWriteAction(void);//action после записи
+int postCommonSmallWriteAction(void);//action после записи
 void loadCommonSmallActualData(void);
 
 COMPONENT_OBJ *commonsmallcomponent;
@@ -213,10 +213,10 @@ void preCommonSmallWriteAction(void)
   commonsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   commonsmallcomponent->isActiveActualData = 1;
 }//
-void postCommonSmallWriteAction(void)
+int postCommonSmallWriteAction(void)
 {
 //action после записи
-  if(commonsmallcomponent->operativMarker[0]<0) return;//не было записи
+  if(commonsmallcomponent->operativMarker[0]<0) return 0;//не было записи
   switch(commonsmallcomponent->operativMarker[0])
     {
     case (BEGIN_ADR_REGISTER+1):
@@ -226,19 +226,19 @@ void postCommonSmallWriteAction(void)
         {
         case 1://Активация конфигурации
           //qDebug()<<"1111111111111111111111";
-          fix_block_active_state[0] &= ~0x1;//Прорубить окно
-          fix_block_active_state[0] |= tempWriteArray[0]&1;
+//          fix_block_active_state[0] &= ~0x1;//Прорубить окно
+//          fix_block_active_state[0] |= tempWriteArray[0]&1;
           break;
         case 2://Общий сброс
           //qDebug()<<"2222222222222222222222222";
-          fix_block_active_state[0] &= ~0x2;//Прорубить окно
-          fix_block_active_state[0] |= tempWriteArray[0]&2;
+//          fix_block_active_state[0] &= ~0x2;//Прорубить окно
+//          fix_block_active_state[0] |= tempWriteArray[0]&2;
           break;
         case 3://Активация конфигурации
           //Общий сброс
           //qDebug()<<"333333333333333333333333333333";
-          fix_block_active_state[0] &= ~0x3;//Прорубить окно
-          fix_block_active_state[0] |= tempWriteArray[0]&3;
+//          fix_block_active_state[0] &= ~0x3;//Прорубить окно
+//          fix_block_active_state[0] |= tempWriteArray[0]&3;
           break;
         }//switch
     }//case (BEGIN_ADR_REGISTER+1):
@@ -247,20 +247,23 @@ void postCommonSmallWriteAction(void)
     {
     //      qDebug()<<"111111111111111111111111";
       //Активация конфигурации
-      fix_block_active_state[0] &= ~0x2;//Прорубить окно
-      fix_block_active_state[0] |= tempWriteArray[0]&1;
+//      fix_block_active_state[0] &= ~0x2;//Прорубить окно
+//      fix_block_active_state[0] |= tempWriteArray[0]&1;
+int tt=0;
+if(tempWriteArray[0]&1) 
+                     tt = 1;
     }//case (BEGIN_ADR_REGISTER+1):
     break;
     case (BEGIN_ADR_BIT+17):
     {
   //        qDebug()<<"222222222222222222222222";
       //Общий сброс
-      fix_block_active_state[0] &= ~0x2;//Прорубить окно
-      fix_block_active_state[0] |= tempWriteArray[1]&1;
+//      fix_block_active_state[0] &= ~0x2;//Прорубить окно
+//      fix_block_active_state[0] |= tempWriteArray[1]&1;
     }//case (BEGIN_ADR_REGISTER+1):
     break;
     }//switch
-  if(commonsmallcomponent->operativMarker[1]<0) return;//не было записи
+  if(commonsmallcomponent->operativMarker[1]<0) return 0;//не было записи
   switch(commonsmallcomponent->operativMarker[1])
     {
     case (BEGIN_ADR_BIT+17):
@@ -272,6 +275,7 @@ void postCommonSmallWriteAction(void)
     }//case (BEGIN_ADR_REGISTER+1):
     break;
     }//switch
+ return 0;
 }//
 
 int privateCommonSmallGetReg2(int adrReg)

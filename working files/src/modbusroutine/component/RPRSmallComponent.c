@@ -22,7 +22,7 @@ void setRPRSmallCountObject(void);//записать к-во обектов
 void preRPRSmallReadAction(void);//action до чтения
 void postRPRSmallReadAction(void);//action после чтения
 void preRPRSmallWriteAction(void);//action до записи
-void postRPRSmallWriteAction(void);//action после записи
+int postRPRSmallWriteAction(void);//action после записи
 void loadRPRSmallActualData(void);
 int getRPRSmallModbusBeginAdrRegister(void);
 
@@ -134,8 +134,9 @@ void preRPRSmallWriteAction(void) {
   rprsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   rprsmallcomponent->isActiveActualData = 1;
 }//
-void postRPRSmallWriteAction(void) {
+int postRPRSmallWriteAction(void) {
 //action после записи
+ return 0;
 }//
 
 int privateRPRSmallGetReg2(int adrReg)

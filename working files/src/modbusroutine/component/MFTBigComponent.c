@@ -18,7 +18,7 @@ void setMFTBigCountObject(void);//записать к-во обектов
 void preMFTBigReadAction(void);//action до чтени€
 void postMFTBigReadAction(void);//action после чтени€
 void preMFTBigWriteAction(void);//action до записи
-void postMFTBigWriteAction(void);//action после записи
+int postMFTBigWriteAction(void);//action после записи
 void loadMFTBigActualData(void);
 
 COMPONENT_OBJ *mftbigcomponent;
@@ -96,6 +96,8 @@ int setMFTBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateMFTBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(mftbigcomponent->isActiveActualData) setMFTBigCountObject(); //к-во обектов
+  mftbigcomponent->isActiveActualData = 0;
   if(privateMFTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(mftbigcomponent, adrReg);
@@ -153,12 +155,49 @@ void preMFTBigWriteAction(void) {
   mftbigcomponent->operativMarker[1] = -1;//оперативный маркер
   mftbigcomponent->isActiveActualData = 1;
 }//
-void postMFTBigWriteAction(void) {
+int postMFTBigWriteAction(void) {
 //action после записи
-  if(mftbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = mftbigcomponent->operativMarker[1]-mftbigcomponent->operativMarker[0]+1;
-//  if(mftbigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(mftbigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = mftbigcomponent->operativMarker[1]-mftbigcomponent->operativMarker[0]+1;
+  if(mftbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LN_TIMER *arr = (__LN_TIMER*)(spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
+   __settings_for_TIMER *arr  = (__settings_for_TIMER*)(sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
+   __settings_for_TIMER *arr1 = (__settings_for_TIMER*)(sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+mftbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://“аймер паузы
+    arr1[idxSubObj].set_delay[TIMER_SET_DELAY_PAUSE] = arr[idxSubObj].set_delay[TIMER_SET_DELAY_PAUSE] = (tempWriteArray[offsetTempWriteArray+i]);
+   break;
+   case 1://“аймер работы
+    arr1[idxSubObj].set_delay[TIMER_SET_DELAY_WORK] = arr[idxSubObj].set_delay[TIMER_SET_DELAY_WORK] = (tempWriteArray[offsetTempWriteArray+i]);
+   break;
+
+   case 2://MFT-IN 0 item
+        arr1[idxSubObj].param[TIMER_LOGIC_INPUT] = arr[idxSubObj].param[TIMER_LOGIC_INPUT] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[TIMER_LOGIC_INPUT] = arr[idxSubObj].param[TIMER_LOGIC_INPUT] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 3://MFT-IN 1 item
+        arr1[idxSubObj].param[TIMER_LOGIC_INPUT] = arr[idxSubObj].param[TIMER_LOGIC_INPUT] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[TIMER_LOGIC_INPUT] = arr[idxSubObj].param[TIMER_LOGIC_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 4://Reset-I 0 item
+        arr1[idxSubObj].param[TIMER_RESET] = arr[idxSubObj].param[TIMER_RESET] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[TIMER_RESET] = arr[idxSubObj].param[TIMER_RESET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 5://Reset-I 1 item
+        arr1[idxSubObj].param[TIMER_RESET] = arr[idxSubObj].param[TIMER_RESET] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[TIMER_RESET] = arr[idxSubObj].param[TIMER_RESET] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+ }//switch
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateMFTBigGetReg1(int adrReg)

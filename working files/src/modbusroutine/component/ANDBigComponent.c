@@ -18,7 +18,7 @@ void setANDBigCountObject(void);
 void preANDBigReadAction(void);//action до чтения
 void postANDBigReadAction(void);//action после чтения
 void preANDBigWriteAction(void);//action до записи
-void postANDBigWriteAction(void);//action после записи
+int postANDBigWriteAction(void);//action после записи
 void loadANDBigActualData(void);
 
 COMPONENT_OBJ *andbigcomponent;
@@ -174,13 +174,14 @@ void preANDBigWriteAction(void) {
   andbigcomponent->isActiveActualData = 1;
 }//preANDBigWriteAction() 
 
-void postANDBigWriteAction(void) {
+int postANDBigWriteAction(void) {
 //action после записи
-  if(andbigcomponent->operativMarker[0]<0) return;//не было записи
+  if(andbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = andbigcomponent->operativMarker[1]-andbigcomponent->operativMarker[0]+1;
   if(andbigcomponent->operativMarker[1]<0) countRegister = 1;
 
+ // __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]);
    __settings_for_AND *arr = (__settings_for_AND*)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR]);
    __settings_for_AND *arr1 = (__settings_for_AND*)(sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {
@@ -190,13 +191,20 @@ void postANDBigWriteAction(void) {
 
   switch(offset%2) {//индекс регистра входа
   case 0:
-        arr[idxSubObj].param[idx_SIGNALS_IN] |= arr1[idxSubObj].param[idx_SIGNALS_IN] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
   break;
   case 1:
-        arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
   break;
  }//switch
+   superSortParam(AND_SIGNALS_IN, &(arr1[idxSubObj].param[0]));//сортировка
+   superSortParam(AND_SIGNALS_IN, &(arr[idxSubObj].param[0]));//сортировка
   }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//postANDBigWriteAction() 
 
 int privateANDBigGetReg1(int adrReg)

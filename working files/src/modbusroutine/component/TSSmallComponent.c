@@ -21,10 +21,17 @@ void setTSSmallCountObject(void);//записать к-во обектов
 void preTSSmallReadAction(void);//action до чтения
 void postTSSmallReadAction(void);//action после чтения
 void preTSSmallWriteAction(void);//action до записи
-void postTSSmallWriteAction(void);//action после записи
+int postTSSmallWriteAction(void);//action после записи
 void loadTSSmallActualData(void);
+int getTSmallModbusBeginAdrRegister(void);
 
 COMPONENT_OBJ *tssmallcomponent;
+
+int getTSmallModbusBeginAdrRegister(void)
+{
+  //получить адрес нач регистра
+ return BEGIN_ADR_REGISTER;
+}//getTSmallModbusBeginAdrRegister(void)
 
 /**************************************/
 //подготовка компонента телесигнализации
@@ -151,8 +158,9 @@ void preTSSmallWriteAction(void) {
   tssmallcomponent->operativMarker[1] = -1;//оперативный маркер
   tssmallcomponent->isActiveActualData = 1;
 }//
-void postTSSmallWriteAction(void) {
+int postTSSmallWriteAction(void) {
 //action после записи
+  return 0;
 }//
 
 int privateTSSmallGetReg1(int adrReg)

@@ -14,6 +14,9 @@ void superPostWriteAction(void);
 void superSetOperativMarker(COMPONENT_OBJ *component, int adrReg);
 void superSetTempWriteArray(int dataReg);
 int  superFindTempWriteArrayOffset(int adr);
+int finderMinimum(unsigned int data, int size, unsigned int *arr);
+void finderDubl(int idx, int size, unsigned int *arr);
+void superSortParam(int size, unsigned int *param);
 
 void constructorYustBigComponent(COMPONENT_OBJ *);
 void constructorRPOBigComponent(COMPONENT_OBJ *);

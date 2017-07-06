@@ -18,7 +18,7 @@ void setRPRBigCountObject(void);//записать к-во обектов
 void preRPRBigReadAction(void);//action до чтения
 void postRPRBigReadAction(void);//action после чтения
 void preRPRBigWriteAction(void);//action до записи
-void postRPRBigWriteAction(void);//action после записи
+int postRPRBigWriteAction(void);//action после записи
 void loadRPRBigActualData(void);
 int getRPRSmallModbusBeginAdrRegister(void);
 
@@ -118,10 +118,10 @@ void preRPRBigWriteAction(void)
   rprbigcomponent->operativMarker[1] = -1;//оперативный маркер
   rprbigcomponent->isActiveActualData = 1;
 }//
-void postRPRBigWriteAction(void)
+int postRPRBigWriteAction(void)
 {
 //action после записи
-  if(rprbigcomponent->operativMarker[0]<0) return;//не было записи
+  if(rprbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = rprbigcomponent->operativMarker[1]-rprbigcomponent->operativMarker[0]+1;
   if(rprbigcomponent->operativMarker[1]<0) countRegister = 1;
@@ -145,6 +145,9 @@ void postRPRBigWriteAction(void)
         qDebug()<<"rprAdresRegister[8]= "<<rprAdresRegister[8];
         qDebug()<<"rprAdresRegister[9]= "<<rprAdresRegister[9];
   */
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateRPRBigGetReg2(int adrReg)

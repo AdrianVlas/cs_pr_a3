@@ -18,7 +18,7 @@ void setTUBigCountObject(void);//записать к-во обектов
 void preTUBigReadAction(void);//action до чтения
 void postTUBigReadAction(void);//action после чтения
 void preTUBigWriteAction(void);//action до записи
-void postTUBigWriteAction(void);//action после записи
+int postTUBigWriteAction(void);//action после записи
 void loadTUBigActualData(void);
 
 COMPONENT_OBJ *tubigcomponent;
@@ -46,6 +46,7 @@ void constructorTUBigComponent(COMPONENT_OBJ *tubigcomp)
 }//prepareDVinConfig
 
 void loadTUBigActualData(void) {
+int getTUmallModbusBeginAdrRegister(void);
  setTUBigCountObject(); //записать к-во обектов
 
   //ActualData
@@ -53,14 +54,13 @@ void loadTUBigActualData(void) {
    for(int item=0; item<tubigcomponent->countObject; item++) {
 
    //Block ТУ 0  item
-   int value = arr[item].settings.param[TU_BLOCK] & 0xffff;//LEDIN 0 СД item
+   int value = arr[item].settings.param[TU_BLOCK] & 0xffff;//
    tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   value = (arr[item].settings.param[TU_BLOCK] >> 16) & 0x7fff;//LEDIN 1 СД item
+   value = (arr[item].settings.param[TU_BLOCK] >> 16) & 0x7fff;//
    tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
 
    //Адрес ТУ 0  item
-//   value = arr[item].settings.param[0];
-   value = 18128 + item;
+   value = getTUmallModbusBeginAdrRegister() + item;
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
    }//for
 }//loadActualData() 
@@ -87,6 +87,8 @@ int setTUBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateTUBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(tubigcomponent->isActiveActualData) setTUBigCountObject(); 
+  tubigcomponent->isActiveActualData = 0;
   if(privateTUBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tubigcomponent, adrReg);
@@ -99,9 +101,6 @@ int setTUBigModbusRegister(int adrReg, int dataReg)
    case 1:
    break; 
    case 2:
-    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
-   break; 
-   case 3:
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch
@@ -138,12 +137,39 @@ void preTUBigWriteAction(void) {
   tubigcomponent->operativMarker[1] = -1;//оперативный маркер
   tubigcomponent->isActiveActualData = 1;
 }//
-void postTUBigWriteAction(void) {
+int postTUBigWriteAction(void) {
 //action после записи
-  if(tubigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = tubigcomponent->operativMarker[1]-tubigcomponent->operativMarker[0]+1;
-//  if(tubigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(tubigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = tubigcomponent->operativMarker[1]-tubigcomponent->operativMarker[0]+1;
+  if(tubigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
+   __settings_for_TU *arr  = (__settings_for_TU*)(sca_of_p[ID_FB_TU - _ID_FB_FIRST_VAR]);
+   __settings_for_TU *arr1 = (__settings_for_TU*)(sca_of_p_edit[ID_FB_TU - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+tubigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 0://Block ТУ 0
+        arr1[idxSubObj].param[TU_BLOCK] = arr[idxSubObj].param[TU_BLOCK] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[TU_BLOCK] = arr[idxSubObj].param[TU_BLOCK] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://Block ТУ 1
+        arr1[idxSubObj].param[TU_BLOCK] = arr[idxSubObj].param[TU_BLOCK] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[TU_BLOCK] = arr[idxSubObj].param[TU_BLOCK] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 2://Адрес ТС
+//    arr[idxSubObj].settings.set_delay[ALARM_SET_DELAY_PERIOD] = (tempWriteArray[offsetTempWriteArray+i]);
+   break;
+
+ }//switch
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateTUBigGetReg1(int adrReg)

@@ -712,3 +712,59 @@ int superFindTempWriteArrayOffset(int adr) {
     }//for
   return iComponentOffset;
 }//superFindTempWriteArrayOffset(int adr) 
+
+ int finderMinimum(unsigned int data, int size, unsigned int *arr) {
+unsigned int minData = data;
+unsigned int dataOld = 2000000000;
+for(int i=0; i<size; i++) {
+ if(arr[i]==0) break;
+ if(arr[i]<= minData) continue;
+ if(arr[i]< dataOld) dataOld = arr[i];
+}//for
+if(dataOld == 2000000000) return 0;
+return dataOld;
+}//finderMinimum(int)
+
+ void finderDubl(int idx, int size, unsigned int *arr) {
+unsigned int data = arr[idx];
+if(data==0) return;
+for(int i=idx+1; i<size; i++) if(arr[i]==data) arr[i]=0;
+}//finderDubl(int idx, int *arr) {
+
+ void superSortParam(int size, unsigned int *prm)
+{
+unsigned int tmparr[10];//
+for(int i=0; i<size; i++)tmparr[i]=0;
+//устранение повторов
+for(int i=0; i<size; i++) finderDubl(i, size, prm);
+//qDebug()<<"  finderDubl= "<<param[0]<<" "<<param[1]<<" "<<param[2]<<" "<<param[3]<<" "<<param[4]<<" "<<param[5]<<" "<<param[6]<<" "<<param[7];
+//устранение пробелов
+unsigned int tmpi=0;
+for(int i=0; i<size; i++) {
+if(prm[i]) {
+ tmparr[tmpi] = prm[i];
+ prm[i]=0;
+ tmpi++;
+}//if
+}//for
+//qDebug()<<"finderSpace1= "<<tmparr[0]<<" "<<tmparr[1]<<" "<<tmparr[2]<<" "<<tmparr[3]<<" "<<tmparr[4]<<" "<<tmparr[5]<<" "<<tmparr[6]<<" "<<tmparr[7];
+//qDebug()<<"finderSpace2= "<<param[0]<<" "<<param[1]<<" "<<param[2]<<" "<<param[3]<<" "<<param[4]<<" "<<param[5]<<" "<<param[6]<<" "<<param[7];
+
+if(tmpi) {
+//сортировка
+ unsigned int dataMin = finderMinimum(0, size, tmparr);
+ prm[0] = dataMin;
+for(int i=1; i<size; i++) {
+ if(tmparr[i]==0) break;
+ dataMin = finderMinimum(dataMin, size, tmparr);
+ prm[i] = dataMin;
+}//for
+}//if(tmpi)
+
+//qDebug()<<" "<<tmparr[0]<<" "<<tmparr[1]<<" "<<tmparr[2]<<" "<<tmparr[3]<<" "<<tmparr[4]<<" "<<tmparr[5]<<" "<<tmparr[6]<<" "<<tmparr[7];
+
+//qDebug()<<" ";
+//qDebug()<<" ";
+//qDebug()<<" "<<param[0]<<" "<<param[1]<<" "<<param[2]<<" "<<param[3]<<" "<<param[4]<<" "<<param[5]<<" "<<param[6]<<" "<<param[7];
+}//superSortParam(int size, int *prm)
+

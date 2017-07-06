@@ -13,7 +13,7 @@ void setRESDBigCountObject(void);//записать к-во обектов
 void preRESDBigReadAction(void);//action до чтения
 void postRESDBigReadAction(void);//action после чтения
 void preRESDBigWriteAction(void);//action до записи
-void postRESDBigWriteAction(void);//action после записи
+int postRESDBigWriteAction(void);//action после записи
 void loadRESDBigActualData(void);
 
 int privateRESDBigGetReg2(int adrReg);
@@ -126,12 +126,16 @@ void preRESDBigWriteAction(void) {
   resdbigcomponent->operativMarker[1] = -1;//оперативный маркер
   resdbigcomponent->isActiveActualData = 1;
 }//
-void postRESDBigWriteAction(void) {
+int postRESDBigWriteAction(void) {
 //action после записи
-  if(resdbigcomponent->operativMarker[0]<0) return;//не было записи
+  if(resdbigcomponent->operativMarker[0]<0) return 0;//не было записи
 //  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
 //  int countRegister = resdbigcomponent->operativMarker[1]-resdbigcomponent->operativMarker[0]+1;
 //  if(resdbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateRESDBigGetReg2(int adrReg)

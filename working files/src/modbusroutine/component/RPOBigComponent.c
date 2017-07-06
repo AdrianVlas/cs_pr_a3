@@ -15,7 +15,7 @@ int setRPOBigModbusBit(int, int);//получить содержимое бита
 void preRPOBigReadAction(void);//action до чтения
 void postRPOBigReadAction(void);//action после чтения
 void preRPOBigWriteAction(void);//action до записи
-void postRPOBigWriteAction(void);//action после записи
+int postRPOBigWriteAction(void);//action после записи
 void loadRPOBigActualData(void);
 
 COMPONENT_OBJ *rpobigcomponent;
@@ -99,12 +99,15 @@ void preRPOBigWriteAction(void) {
   rpobigcomponent->operativMarker[1] = -1;//оперативный маркер
   rpobigcomponent->isActiveActualData = 1;
 }//
-void postRPOBigWriteAction(void) {
+int postRPOBigWriteAction(void) {
 //action после записи
-  if(rpobigcomponent->operativMarker[0]<0) return;//не было записи
+  if(rpobigcomponent->operativMarker[0]<0) return 0;//не было записи
 //  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
 //  int countRegister = rpobigcomponent->operativMarker[1]-rpobigcomponent->operativMarker[0]+1;
 //  if(rpobigcomponent->operativMarker[1]<0) countRegister = 1;
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateRPOBigGetReg2(int adrReg)

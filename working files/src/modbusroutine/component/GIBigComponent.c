@@ -18,7 +18,7 @@ void setGIBigCountObject(void);//записать к-во обектов
 void preGIBigReadAction(void);//action до чтения
 void postGIBigReadAction(void);//action после чтения
 void preGIBigWriteAction(void);//action до записи
-void postGIBigWriteAction(void);//action после записи
+int postGIBigWriteAction(void);//action после записи
 void loadGIBigActualData(void);
 
 COMPONENT_OBJ *gibigcomponent;
@@ -79,20 +79,16 @@ int setGIBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateGIBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(gibigcomponent->isActiveActualData) setGIBigCountObject(); //к-во обектов
+  gibigcomponent->isActiveActualData = 0;
   if(privateGIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(gibigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
 
-  switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
-   case 0:
-   break; 
-   case 1:
     if(dataReg>100) return MARKER_ERRORDIAPAZON;
     if(dataReg<5) return MARKER_ERRORDIAPAZON;
-   break; 
-  default: return MARKER_OUTPERIMETR;
-  }//switch
+
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int setGIBigModbusBit(int adrBit, int x)
@@ -126,12 +122,26 @@ void preGIBigWriteAction(void) {
   gibigcomponent->operativMarker[1] = -1;//оперативный маркер
   gibigcomponent->isActiveActualData = 1;
 }//
-void postGIBigWriteAction(void) {
+int postGIBigWriteAction(void) {
 //action после записи
-  if(gibigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = gibigcomponent->operativMarker[1]-gibigcomponent->operativMarker[0]+1;
-//  if(gibigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(gibigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = gibigcomponent->operativMarker[1]-gibigcomponent->operativMarker[0]+1;
+  if(gibigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LN_MEANDER *arr = (__LN_MEANDER*)(spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
+   __settings_for_MEANDER *arr  = (__settings_for_MEANDER*)(sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
+   __settings_for_MEANDER *arr1 = (__settings_for_MEANDER*)(sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+gibigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+
+   arr1[idxSubObj].set_delay[0] = arr[idxSubObj].set_delay[0] = (tempWriteArray[offsetTempWriteArray+i]);
+
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+ return 0;
 }//
 
 int privateGIBigGetReg1(int adrReg)

@@ -18,7 +18,7 @@ void setSZSBigCountObject(void);//записать к-во обектов
 void preSZSBigReadAction(void);//action до чтения
 void postSZSBigReadAction(void);//action после чтения
 void preSZSBigWriteAction(void);//action до записи
-void postSZSBigWriteAction(void);//action после записи
+int postSZSBigWriteAction(void);//action после записи
 void loadSZSBigActualData(void);
 
 COMPONENT_OBJ *szsbigcomponent;
@@ -88,11 +88,10 @@ int getSZSBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateSZSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-
   if(szsbigcomponent->isActiveActualData) loadSZSBigActualData(); //ActualData
   szsbigcomponent->isActiveActualData = 0;
-
   if(privateSZSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
+
   superSetOperativMarker(szsbigcomponent, adrReg);
 
   return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
@@ -107,6 +106,8 @@ int setSZSBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateSZSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(szsbigcomponent->isActiveActualData) setSZSBigCountObject(); //к-во обектов
+  szsbigcomponent->isActiveActualData = 0;
   if(privateSZSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(szsbigcomponent, adrReg);
@@ -175,12 +176,69 @@ void preSZSBigWriteAction(void) {
   szsbigcomponent->operativMarker[1] = -1;//оперативный маркер
   szsbigcomponent->isActiveActualData = 1;
 }//
-void postSZSBigWriteAction(void) {
+int postSZSBigWriteAction(void) {
 //action после записи
-  if(szsbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = szsbigcomponent->operativMarker[1]-szsbigcomponent->operativMarker[0]+1;
-//  if(szsbigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(szsbigcomponent->operativMarker[0]<0) return 0;//не было записи
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = szsbigcomponent->operativMarker[1]-szsbigcomponent->operativMarker[0]+1;
+  if(szsbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LN_ALARM *arr = (__LN_ALARM*)(spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
+   __settings_for_ALARM *arr  = (__settings_for_ALARM*)(sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
+   __settings_for_ALARM *arr1 = (__settings_for_ALARM*)(sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+szsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Режим работы СЗС
+    arr1[idxSubObj].control = arr[idxSubObj].control = (tempWriteArray[offsetTempWriteArray+i]) &0x3;
+   break;
+
+   case 1://Таймер СЗС
+    arr1[idxSubObj].set_delay[ALARM_SET_DELAY_PERIOD] = arr[idxSubObj].set_delay[ALARM_SET_DELAY_PERIOD] = (tempWriteArray[offsetTempWriteArray+i]);
+   break;
+
+   case 2://LSSIN1 0
+        arr1[idxSubObj].param[ALARM_LOGIC_INPUT] = arr[idxSubObj].param[ALARM_LOGIC_INPUT] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[ALARM_LOGIC_INPUT] = arr[idxSubObj].param[ALARM_LOGIC_INPUT] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 3://LSSIN1 1
+        arr1[idxSubObj].param[ALARM_LOGIC_INPUT] = arr[idxSubObj].param[ALARM_LOGIC_INPUT] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[ALARM_LOGIC_INPUT] = arr[idxSubObj].param[ALARM_LOGIC_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 4://Mute-I 0
+        arr1[idxSubObj].param[ALARM_IN_MUTE] = arr[idxSubObj].param[ALARM_IN_MUTE] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[ALARM_IN_MUTE] = arr[idxSubObj].param[ALARM_IN_MUTE] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 5://Mute-I 1
+        arr1[idxSubObj].param[ALARM_IN_MUTE] = arr[idxSubObj].param[ALARM_IN_MUTE] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[ALARM_IN_MUTE] = arr[idxSubObj].param[ALARM_IN_MUTE] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 6://Block-I 0
+        arr1[idxSubObj].param[ALARM_IN_BLOCK] = arr[idxSubObj].param[ALARM_IN_BLOCK] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[ALARM_IN_BLOCK] = arr[idxSubObj].param[ALARM_IN_BLOCK] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 7://Block-I 1
+        arr1[idxSubObj].param[ALARM_IN_BLOCK] = arr[idxSubObj].param[ALARM_IN_BLOCK] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[ALARM_IN_BLOCK] = arr[idxSubObj].param[ALARM_IN_BLOCK] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 8://Reset-I 0
+        arr1[idxSubObj].param[ALARM_RESET] = arr[idxSubObj].param[ALARM_RESET] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[ALARM_RESET] = arr[idxSubObj].param[ALARM_RESET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 9://Reset-I 1
+        arr1[idxSubObj].param[ALARM_RESET] = arr[idxSubObj].param[ALARM_RESET] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[ALARM_RESET] = arr[idxSubObj].param[ALARM_RESET] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+ }//switch
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+  return 0;
 }//
 
 int privateSZSBigGetReg1(int adrReg)

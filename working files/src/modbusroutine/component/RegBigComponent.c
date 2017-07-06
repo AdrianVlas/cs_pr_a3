@@ -19,7 +19,7 @@ int setRegBigModbusBit(int, int);//получить содержимое бита
 void preRegBigReadAction(void);//action до чтени€
 void postRegBigReadAction(void);//action после чтени€
 void preRegBigWriteAction(void);//action до записи
-void postRegBigWriteAction(void);//action после записи
+int postRegBigWriteAction(void);//action после записи
 void loadRegBigActualData(void);
 
 COMPONENT_OBJ *regbigcomponent;
@@ -105,6 +105,9 @@ int setRegBigModbusRegister(int adrReg, int dataReg)
 {
   //записать содержимое регистра
   if(privateRegBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(regbigcomponent->isActiveActualData) setRegBigCountObject(); //к-во обектов
+  regbigcomponent->isActiveActualData = 0;
+  if(privateRegBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(regbigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
@@ -159,12 +162,38 @@ void preRegBigWriteAction(void) {
   regbigcomponent->operativMarker[1] = -1;//оперативный маркер
   regbigcomponent->isActiveActualData = 1;
 }//
-void postRegBigWriteAction(void) {
+int postRegBigWriteAction(void) {
 //action после записи
-  if(regbigcomponent->operativMarker[0]<0) return;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = regbigcomponent->operativMarker[1]-regbigcomponent->operativMarker[0]+1;
-//  if(regbigcomponent->operativMarker[1]<0) countRegister = 1;
+  if(regbigcomponent->operativMarker[0]<0) return 0;//не было записи
+  //int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = regbigcomponent->operativMarker[1]-regbigcomponent->operativMarker[0]+1;
+  if(regbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//   __LOG_INPUT *arr = (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+regbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+//  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+//  int clrME = 6;
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+//   case 0://ќчистить журнал 0
+//   break;
+//   case 1://ќчистить журнал 1
+//   break;
+
+   case 0://¬ход 0 item
+//        arr[clrME+idxSubObj] &= ~0xffff;
+//        arr[clrME+idxSubObj] |= (tempWriteArray[clrME+offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://¬ход 1 item
+//        arr[clrME+idxSubObj] &= ~(0x7fff<<16);
+//        arr[clrME+idxSubObj] |= ((tempWriteArray[clrME+offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+ }//switch
+  }//for
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  restart_timeout_idle_new_settings = true;
+  return 0;
 }//
 
 int privateRegBigGetReg1(int adrReg)

@@ -19,7 +19,7 @@ void setRMTKeySmallCountObject(void);//записать к-во обектов
 void preRMTKeySmallReadAction(void);//action до чтения
 void postRMTKeySmallReadAction(void);//action после чтения
 void preRMTKeySmallWriteAction(void);//action до записи
-void postRMTKeySmallWriteAction(void);//action после записи
+int postRMTKeySmallWriteAction(void);//action после записи
 void loadRMTKeySmallActualData(void);
 
 COMPONENT_OBJ *rmtkeysmallcomponent;
@@ -50,9 +50,6 @@ void loadRMTKeySmallActualData(void) {
   //ActualData
   setRMTKeySmallCountObject(); //записать к-во обектов
 
-//  int cnt_treg = rmtkeysmallcomponent->countObject/16;
-//  if(rmtkeysmallcomponent->countObject%16) cnt_treg++;
-  //for(int ii=0; ii<cnt_treg; ii++) 
    tempReadArray[0] = 0;
    __LN_BUTTON *arr = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
 
@@ -71,25 +68,6 @@ void loadRMTKeySmallActualData(void) {
    if(value) keydata=1;
    tempReadArray[0] |= (keydata&0x1)<<(2);
 
-/*
-   const int array_1[NUMBER_FIX_BUTTONS] = {FIX_BUTTON_MUTE , FIX_BUTTON_RESET, FIX_BUTTON_TEST};
-  for(int item=0; item<rmtkeysmallcomponent->countObject; item++) {
-   int ireg = item/16;
-   int value = arr[array_1[item]].active_state[BUTTON_OUT >> 3] & (1 << (BUTTON_OUT & ((1 << 3) - 1)));
-   int keydata = 0;
-   if(value) keydata=1;
-   tempReadArray[ireg] |= (keydata&0x1)<<(item%16);
-  }//for
-*/
-  /*
-  Підхід аналогічний до ТС
-  +
-  Індекси кнопок визначені enum _fix_button:
-  - спрчатку ідуть кнопки з фіксованою функціональностю
-  - NUMBER_FIX_BUTTONS - це індекс першої вільнопрограмованої кнопки
-  - NUMBER_GENERAL_BUTTONS - це кількість вільнопрограмованих кнопок
-  
-  */
 }//loadActualData() 
 
 int getRMTKeySmallModbusRegister(int adrReg)
@@ -153,8 +131,9 @@ void preRMTKeySmallWriteAction(void) {
   rmtkeysmallcomponent->operativMarker[1] = -1;//оперативный маркер
   rmtkeysmallcomponent->isActiveActualData = 1;
 }//
-void postRMTKeySmallWriteAction(void) {
+int postRMTKeySmallWriteAction(void) {
 //action после записи
+  return 0;
 }//
 
 int privateRMTKeySmallGetReg2(int adrReg)

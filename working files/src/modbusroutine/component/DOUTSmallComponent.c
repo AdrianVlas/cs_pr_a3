@@ -22,7 +22,7 @@ void setDOUTSmallCountObject(void);//записать к-во обектов
 void preDOUTSmallReadAction(void);//action до чтения
 void postDOUTSmallReadAction(void);//action после чтения
 void preDOUTSmallWriteAction(void);//action до записи
-void postDOUTSmallWriteAction(void);//action после записи
+int postDOUTSmallWriteAction(void);//action после записи
 void loadDOUTSmallActualData(void);
 
 COMPONENT_OBJ *doutsmallcomponent;
@@ -126,8 +126,9 @@ void preDOUTSmallWriteAction(void) {
   doutsmallcomponent->operativMarker[1] = -1;//оперативный маркер
   doutsmallcomponent->isActiveActualData = 1;
 }//
-void postDOUTSmallWriteAction(void) {
+int postDOUTSmallWriteAction(void) {
 //action после записи
+ return 0;
 }//
 
 int privateDOUTSmallGetReg1(int adrReg)
