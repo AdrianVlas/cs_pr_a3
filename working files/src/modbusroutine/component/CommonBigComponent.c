@@ -65,15 +65,15 @@ void loadCommonBigActualData(void) {
    tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
 
    //Тест.Вход. 0
-   value = arr->param[FIX_VLOCK_TEST_INPUT] & 0xffff;//
+   value = arr->param[FIX_BLOCK_TEST_INPUT] & 0xffff;//
    tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
-   value = (arr->param[FIX_VLOCK_TEST_INPUT] >> 16) & 0x7fff;//
+   value = (arr->param[FIX_BLOCK_TEST_INPUT] >> 16) & 0x7fff;//
    tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
 
    //Тест.Сброс. 0
-   value = arr->param[FIX_VLOCK_TEST_RESET] & 0xffff;//
+   value = arr->param[FIX_BLOCK_TEST_RESET] & 0xffff;//
    tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
-   value = (arr->param[FIX_VLOCK_TEST_RESET] >> 16) & 0x7fff;//
+   value = (arr->param[FIX_BLOCK_TEST_RESET] >> 16) & 0x7fff;//
    tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
   }//for
 }//loadActualData() 
@@ -192,20 +192,20 @@ void postCommonBigWriteAction(void) {
    break; 
 
    case 6://Тест.Вход. 0
-        arr->param[FIX_VLOCK_TEST_INPUT] &= (uint32_t)~0xffff;
-        arr->param[FIX_VLOCK_TEST_INPUT] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+        arr->param[FIX_BLOCK_TEST_INPUT] &= (uint32_t)~0xffff;
+        arr->param[FIX_BLOCK_TEST_INPUT] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break; 
    case 7://Тест.Вход. 1
-        arr->param[FIX_VLOCK_TEST_INPUT] &= (uint32_t)~(0x7fff<<16);
-        arr->param[FIX_VLOCK_TEST_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+        arr->param[FIX_BLOCK_TEST_INPUT] &= (uint32_t)~(0x7fff<<16);
+        arr->param[FIX_BLOCK_TEST_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
 
    case 8://Тест.Сброс. 0
-        arr->param[FIX_VLOCK_TEST_RESET] &= (uint32_t)~0xffff;
-        arr->param[FIX_VLOCK_TEST_RESET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+        arr->param[FIX_BLOCK_TEST_RESET] &= (uint32_t)~0xffff;
+        arr->param[FIX_BLOCK_TEST_RESET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break; 
    case 9://Тест.Сброс. 1
-        arr->param[FIX_VLOCK_TEST_RESET] &= (uint32_t)~(0x7fff<<16);
-        arr->param[FIX_VLOCK_TEST_RESET] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+        arr->param[FIX_BLOCK_TEST_RESET] &= (uint32_t)~(0x7fff<<16);
+        arr->param[FIX_BLOCK_TEST_RESET] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
    break; 
  }//switch
   }//for

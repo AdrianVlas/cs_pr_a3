@@ -45,8 +45,8 @@ void constructorPKVBigComponent(COMPONENT_OBJ *pkvbigcomp)
 void loadPKVBigActualData(void) {
   //ActualData
     unsigned char *label_to_time_array;
-    if (copying_time == 0) label_to_time_array = time;
-    else label_to_time_array = time_copy;
+    if (copying_time == 2) label_to_time_array = time_copy;
+    else label_to_time_array = time;
     
   for(int i=0; i<REGISTER_FOR_OBJ; i++) {
    switch(i) {
@@ -406,8 +406,8 @@ void postPKVBigWriteAction(void) {
   if(pkvbigcomponent->operativMarker[1]<0) countRegister = 1;
 
     unsigned char *label_to_time_array;
-    if (copying_time == 0) label_to_time_array = time;
-    else label_to_time_array = time_copy;
+    if (copying_time == 2) label_to_time_array = time_copy;
+    else label_to_time_array = time;
   
   for(int i=0; i<countRegister; i++) {
   int offset = i+pkvbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
