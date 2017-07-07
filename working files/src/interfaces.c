@@ -60,7 +60,8 @@ void Usb_routines(void)
         //Копіюємо отримані дані у робочий масив
         for (int i = 0; i < usb_received_count; i++) usb_received[i] = buffer_out[i];
         //Орацювання даних по протоколу MODBUS-RTU прийнятих з USB
-        modbus_rountines(USB_RECUEST);
+//        modbus_rountines(USB_RECUEST);
+        inputPacketParser();
       }
       else
       {

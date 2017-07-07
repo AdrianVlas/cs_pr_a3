@@ -253,6 +253,8 @@ void global_vareiables_installation(void)
   driver_i2c.action =- 1;
   //Значення решти полів поки не грає ролі 
   /**************************/
+  
+  global_component_installation();  
 }
 /**************************************/
 
