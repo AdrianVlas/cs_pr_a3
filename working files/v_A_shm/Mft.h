@@ -44,6 +44,8 @@ public:
     char m_chStateTdelay;
     char m_chStateTWorkDir ;
     char m_chStateTWorkInv ;
+    char m_chInPulsDir;
+    char m_chInPulsInv;
 
     MftSuit m_MftSuit;
     TmrNode m_NodeTpauseDir;

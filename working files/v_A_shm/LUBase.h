@@ -29,7 +29,9 @@ LU_OP_BGS,
 LU_OP_D_TRG__4_2,
 LU_OP_F_KEY,
 LU_OP_TU,
-LU_OP_TS
+LU_OP_TS,
+LU_OP_LOG
+
 };
  void AND_Op    (void *pObj);
  void OR__Op    (void *pObj);

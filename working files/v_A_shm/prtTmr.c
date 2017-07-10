@@ -442,7 +442,7 @@ void UpdateStateDI (void){
                     ulrVal++;
                     j = arChReferenceIdx[i];
                     //j = pprotect_cfg_tbl->ushDurationDI[j] + 1;
-                    j = pDICfgSuit->arChDurationDI[j] + 1;
+                    j = pDICfgSuit->arChDurationDI[j];// + 1
                     if (ulrVal > (unsigned)j){
                         pDICfgSuit->pDITmr[i] = 0;//pCh[OFF_BYTE_DI_timer0 + i] = 0;
                         //pCh[OFF_BYTE_DI_State] &= ~(1 << i);
