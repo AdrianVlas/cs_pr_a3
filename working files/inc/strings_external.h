@@ -161,8 +161,8 @@ extern const uint8_t name_tu_out_signals[MAX_NAMBER_LANGUAGE][TU_SIGNALS_OUT][MA
 extern const uint8_t name_tu[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint32_t first_index_number_tu[MAX_NAMBER_LANGUAGE];
 
-extern const uint8_t name_ts_in_signals[MAX_NAMBER_LANGUAGE][TU_SIGNALS_IN][MAX_COL_LCD + 1];
-extern const uint8_t name_ts_out_signals[MAX_NAMBER_LANGUAGE][TU_SIGNALS_OUT][MAX_COL_LCD + 1];
+extern const uint8_t name_ts_in_signals[MAX_NAMBER_LANGUAGE][TS_SIGNALS_IN][MAX_COL_LCD + 1];
+extern const uint8_t name_ts_out_signals[MAX_NAMBER_LANGUAGE][TS_SIGNALS_OUT][MAX_COL_LCD + 1];
 extern const uint8_t name_ts[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint32_t first_index_number_ts[MAX_NAMBER_LANGUAGE];
 
