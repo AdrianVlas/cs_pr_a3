@@ -29,8 +29,9 @@ LU_FKEY,
 LU_LSS,
 LU_BGS,
 LU_TU,
-LU_TS
-
+LU_TS,
+LU_LOG,
+TOTAL_LU
 };
 
 typedef struct config_tag{ 
@@ -80,7 +81,7 @@ class Shematic
     char chInitTerminated;
     void* pLUAreaList;
     void* p_current_config_prt;//__CONFIG *
-    short arIdxLUAreaListElem[LU_TS];
+    short arIdxLUAreaListElem[TOTAL_LU];
     char chMaxIteratoin;
     char chIteration;
     char chSumNLedPlusNOut;
@@ -126,7 +127,7 @@ public:
     void SetupCPulseAlternatorStngParam(void *pv);
     void SetupCLUTuStngParam(void *pv);
     void SetupCLUTsStngParam(void *pv);
-    //void SetupCLUvStngParam(void *pv);
+    void SetupCLULogStngParam(void *pv);
     long FillSBitFld_LUInInfo(void *pvIn,void *pvOut);
     long FillSBitFld_LUInInfo2(void *pvIn,void *pvOut);
     long EvalIdxibnarrSBitFldCRefInfo(long lLUStng);

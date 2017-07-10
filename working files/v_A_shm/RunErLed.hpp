@@ -13,9 +13,6 @@ RUN_ERROR_LED_YELLOW
 
 
 
-
-
-
 class CLURunErrorLed :
 public CLUBase {
 public:
