@@ -842,6 +842,9 @@ long Shematic::EvalSizeObj(long lId) {
         case LU_TS:
             lsizeObj = sizeof (CLUTs);
             break;
+        case LU_LOG:
+            lsizeObj = sizeof (CLULog);
+            break;
 
         default:
             lsizeObj = 0;
