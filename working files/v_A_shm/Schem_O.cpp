@@ -33,6 +33,7 @@
 #include "MALed.hpp"
 #include "RunErLed.hpp"
 #include "LUTestLed.h"
+#include "LULog.hpp"
 //#include "../inc/variables_external.h"
 //#include "../inc/libraries.h"
 void DiOp(void *pObj);
@@ -103,7 +104,11 @@ short *parIdxLUAreaListElem;
             shCounterInitCLUDout++;
             
     } 
-//////////////////////////////////////////////////////////////////        
+//////////////////////////////////////////////////////////////////  
+    i = parIdxLUAreaListElem[LU_LOG-1];
+    // j = i + shCounterInitCLUDout;
+    pv = (pLUAreaListElem[i]).pvLU;
+    Log_Op(pv);  
 /*
     lAmtProcessObj = (static_cast<__CONFIG* >(p_current_config_prt))-> n_group_alarm;
     shCounterInitCLUDout = 0;

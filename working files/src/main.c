@@ -4,6 +4,7 @@
 #include "type_definition.h"
 #include "strings_global.h"
 #include "variables_global.h"
+#include "variables_global_m.h"
 #include "functions_global.h"
 #include "../v_A_shm/I_Shm.h"
 #include "../v_A_shm/IStng.h"
@@ -151,7 +152,7 @@ inline void periodical_operations(void)
     watchdog_routine();
 
     //Обробляємо запит
-    modbus_rountines(RS485_RECUEST);
+//    modbus_rountines(RS485_RECUEST);
   }
   else if (make_reconfiguration_RS_485 != 0)
   {
