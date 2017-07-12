@@ -218,7 +218,6 @@ extern unsigned int count_number_set_bit(unsigned int*, unsigned int);
 extern void set_bit(unsigned int*, unsigned int);
 extern void clear_bit(unsigned int*, unsigned int);
 //extern void input_scan(void);
-//extern void clocking_global_timers(void);
 extern void main_protection(void);
 extern void diagnostyca_adc_execution(void);
 
