@@ -50,7 +50,7 @@ extern unsigned int semaphore_measure_values_low1;
 
 extern unsigned int number_inputs_for_fix_one_second;
 extern unsigned int measurement[NUMBER_ANALOG_CANALES];
-extern unsigned int measurement_high[2][NUMBER_ANALOG_CANALES], bank_measurement_high;
+//extern unsigned int measurement_high[2][NUMBER_ANALOG_CANALES], bank_measurement_high;
 extern unsigned int measurement_middle[NUMBER_ANALOG_CANALES]; 
 extern unsigned int measurement_low[NUMBER_ANALOG_CANALES]; 
 
@@ -58,8 +58,6 @@ extern const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2];
 extern const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2];
 extern uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 extern unsigned char crc_trg_func, crc_trg_func_ctrl;
-extern unsigned int activation_function_from_interface;
-extern unsigned int reset_trigger_function_from_interface;
 extern uint32_t *diagnostyka_before;
 extern uint32_t *diagnostyka;
 extern uint32_t *set_diagnostyka;

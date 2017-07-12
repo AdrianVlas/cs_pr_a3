@@ -292,84 +292,43 @@ inline void calc_measurement(void)
 /*****************************************************/
 
 /*****************************************************/
-//Функція обробки таймерів
-/*****************************************************/
-//inline void clocking_global_timers(void)
-//{
-//  //Опрацьовуємо дискретні входи
-//  input_scan();
-//  
-//  //опрацьовуємо всі решта таймери логіки
-//  for (unsigned int i = INDEX_TIMER_TEMP; i < MAX_NUMBER_GLOBAL_TIMERS; i++)
-//  {
-//    if (global_timers[i] >= 0)
-//    {
-//      //Першою умовою того, що таймер треба тактувати є той факт, що величина таймеру не від'ємна
-//
-//      //Перевіряємо чи треба збільшувати величину таймеру, якщо він ще не досягнув свого максимуму
-//      if (global_timers[i] <= (0x7fffffff - DELTA_TIME_FOR_TIMERS)) global_timers[i] += DELTA_TIME_FOR_TIMERS;
-//    }
-//  }
-//}
-/*****************************************************/
-
-/*****************************************************/
 //Функція захистів з якої здійснюються всі інші операції
 /*****************************************************/
 inline void main_protection(void)
 {
-  /**************************/
-  //Перевірка, чи треба очистити трігерні функції
-  /**************************/
-  if (reset_trigger_function_from_interface !=0)
+  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
   {
-    
-    //Помічаємо що ми виконали очистку по ВСІХ інтерфейсах
-    reset_trigger_function_from_interface = 0;
-  }
-  /**************************/
-
-  /**************************/
-  //Опрацьовуємо натиснуті кнопки
-  /**************************/
-  __LN_BUTTON *p_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
-  for (uint32_t i = 0; i < current_config_prt.n_button; i++)
-  {
-    //Скидаємо  попередній стан
-    p_button->active_state [BUTTON_OUT >> 3]  &= (uint8_t)(~( 1 << (BUTTON_OUT & ((1 << 3) - 1))));
-    
-    //Перевіряємо, чи не встановлений MUTEX
-    if ((p_button->internal_input[BUTTON_INT_MUTEX >> 3] & (1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1)))) == 0)
+    /**************************/
+    //Опрацьовуємо натиснуті кнопки
+    /**************************/
+    __LN_BUTTON *p_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+    for (uint32_t i = 0; i < current_config_prt.n_button; i++)
     {
-      //MUTEX не встановлений
-      
-      //Визначаємо стан вхідної інформації
-      uint32_t state_tmp = ((p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] & (1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1)))) != 0);
-      if (state_tmp)
+      //Скидаємо  попередній стан
+      p_button->active_state [BUTTON_OUT >> 3]  &= (uint8_t)(~( 1 << (BUTTON_OUT & ((1 << 3) - 1))));
+    
+      //Перевіряємо, чи не встановлений MUTEX
+      if ((p_button->internal_input[BUTTON_INT_MUTEX >> 3] & (1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1)))) == 0)
       {
-        //Встановлюємо вихід
-        p_button->active_state[BUTTON_OUT >> 3]  |= (1 << (BUTTON_OUT & ((1 << 3) - 1)));
+        //MUTEX не встановлений
+      
+        //Визначаємо стан вхідної інформації
+        uint32_t state_tmp = ((p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] & (1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1)))) != 0);
+        if (state_tmp)
+        {
+          //Встановлюємо вихід
+          p_button->active_state[BUTTON_OUT >> 3]  |= (1 << (BUTTON_OUT & ((1 << 3) - 1)));
         
-        //Скидаємо інформацію з входу
-        p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1))));
+          //Скидаємо інформацію з входу
+          p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1))));
+        }
       }
+      //Переводимо вказівник на наступну кнопку
+      p_button++;
     }
-    //Переводимо вказівник на наступну кнопку
-    p_button++;
   }
   /**************************/
     
-  /**************************/
-  //Опрацьовуємо сигнали з ТУ/Goose
-  /**************************/
-  if (activation_function_from_interface != 0)
-  {
-
-    //Очищаємо помітку активації функцій з інетфейсу, які ми вже опрацювали
-  }
-  activation_function_from_interface = 0;
-  /**************************/
-
   /***********************************************************/
   //Розрахунок вимірювань
   /***********************************************************/
@@ -386,22 +345,22 @@ inline void main_protection(void)
   SetHrdOut((void*)&DoStateUI32Bit);
   SetHrdLed((void*)&LedStateUI32Bit);
   //Копіюємо вимірювання для низькопріоритетних і високопріоритетних завдань
-  unsigned int bank_measurement_high_tmp = (bank_measurement_high ^ 0x1) & 0x1;
+//  unsigned int bank_measurement_high_tmp = (bank_measurement_high ^ 0x1) & 0x1;
   if(semaphore_measure_values_low1 == 0)
   {
     for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++) 
     {
-      measurement_high[bank_measurement_high_tmp][i] = measurement_middle[i] = measurement[i];
+      /*measurement_high[bank_measurement_high_tmp][i] = */measurement_middle[i] = measurement[i];
     }
   }
-  else
-  {
-    for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++) 
-    {
-      measurement_high[bank_measurement_high_tmp][i] = measurement[i];
-    }
-  }
-  bank_measurement_high = bank_measurement_high_tmp;
+//  else
+//  {
+//    for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++) 
+//    {
+//      measurement_high[bank_measurement_high_tmp][i] = measurement[i];
+//    }
+//  }
+//  bank_measurement_high = bank_measurement_high_tmp;
   /**************************/
 
   /**************************/
@@ -684,12 +643,6 @@ void TIM2_IRQHandler(void)
     uint32_t current_tick = TIM2->CCR1;
     
     /***********************************************************/
-    //Опрцювання логічних тайменрів і дискретних входів тільки коли настройки успішно прочитані
-    /***********************************************************/
-//    clocking_global_timers();
-    /***********************************************************/
-    
-    /***********************************************************/
     //Опрцювання функцій захистів
     /***********************************************************/
 //    //Діагностика вузлів, яку треба проводити кожен раз перед початком опрацьовуванням логіки пристрою
@@ -755,15 +708,18 @@ void TIM2_IRQHandler(void)
     /***********************************************************/
     //Підготовлюємо новий запис для Журналу подій
     /***********************************************************/
-    if (event_log_handler())
+    if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
     {
-      //Додано новий запис у Журнал подій
-      *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) |= (__LOG_INPUT)(1 << EVENT_LOG_WORK);
-    }
-    else
-    {
-      //Новий запис у Журнал подій не додавався
-      *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) &= (__LOG_INPUT)(~(1 << EVENT_LOG_WORK));
+      if (event_log_handler())
+      {
+        //Додано новий запис у Журнал подій
+        *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) |= (__LOG_INPUT)(1 << EVENT_LOG_WORK);
+      }
+      else
+      {
+        //Новий запис у Журнал подій не додавався
+        *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) &= (__LOG_INPUT)(~(1 << EVENT_LOG_WORK));
+      }
     }
     /***********************************************************/
     

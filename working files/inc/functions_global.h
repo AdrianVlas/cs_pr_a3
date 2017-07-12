@@ -218,7 +218,6 @@ void changing_diagnostyka_state(void);
 unsigned int count_number_set_bit(unsigned int*, unsigned int);
 
 //void input_scan(void);
-//void clocking_global_timers(void);
 void main_protection(void);
 void diagnostyca_adc_execution(void);
 
