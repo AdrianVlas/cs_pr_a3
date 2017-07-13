@@ -264,8 +264,29 @@ void SetHrdOut(void*pv){
 //	i = DoStateUI32Bit.ar_uch[0];
 	j = shGblDOCheckIn;
 	i = ~j;
+
+#ifdef LIMITED_OUTS_MODE
+	#warning message Checking Discrete Outs 6,7 will Disabled
 	j = i&0x1f;
-//	j = i&0x7f;
+	#pragma message("---prtTmr.c in Limited Mode ---")
+	
+#else
+	// #ifdef _DEBUG
+         // //Print("Hello from MQL5 compiler [DEBUG]");
+      // #else
+        // #ifdef _RELEASE
+           // //Print("Hello from MQL5 compiler [RELEASE]");
+        // #endif
+    // #endif
+	#pragma message("---prtTmr.c in Strict Mode---")
+	//
+	#pragma message ("---Checking Discrete Outs 6,7 will Enabled---")
+	
+	
+	j = i&0x7f;
+#endif	
+	
+//	
 	if(chCheckIndicator == 0){
 	
 	DoCheckUI32Bit.ar_uch[0] = DoHdwUI32Bit.ar_uch[0]^j;

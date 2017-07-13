@@ -204,7 +204,7 @@ void Shematic::DoCalc(void) {
         //Set to 0 DOState
 
         eRunErrorLed.EvalRunErrorLed();
-    
+        return;
     }
     if(chStateOptimisation == 0){    
         DoCalcLUSources();
@@ -1619,7 +1619,7 @@ void Shematic::Init2(void) {
         } while (shCounterInitCLULog < shLC__n_log && j);
 
     }
-
+eRunErrorLed.UpdateRunErrorLed();
 SetupCircutLinks2(static_cast<void*>(&lsLcVarArea));
 eLUTestLed.UpdateCLUTestLed();
 eMuteAlarmLed.UpdateMuteAlarmLed();
