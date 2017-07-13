@@ -1,6 +1,6 @@
 #pragma once
 #include "lubase.h"
-const short shCLULURunErrorLed_x_y_AmtOut = 0;
+const short shCLULURunErrorLed_x_y_AmtOut = 2;
 const short shCLULURunErrorLed_x_y_AmtIn  = 3;
 
 enum RUN_ERROR_LED_COLORS{
@@ -22,6 +22,7 @@ public:
     CLURunErrorLed(void);
     ~CLURunErrorLed(void);
     char* arrPchIn[shCLULURunErrorLed_x_y_AmtIn ];//
+    char  arrOut  [shCLULURunErrorLed_x_y_AmtOut];
     void UpdateRunErrorLed(void);
     void EvalRunErrorLed(void);
 };

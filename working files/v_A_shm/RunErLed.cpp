@@ -84,7 +84,10 @@ CLURunErrorLed::~CLURunErrorLed(void) {
 
 }
 void CLURunErrorLed::UpdateRunErrorLed(void){
-
+//Set Input parameters
+pIn = static_cast<void*>(arrPchIn);
+//Set OutPut parameters
+pOut = static_cast<void*>(arrOut);
 }
 
 char chGBL_BP_StopRunErrorLed = 0;
@@ -128,18 +131,31 @@ char *pCh;
     pCh = reinterpret_cast<char*>(fix_block_active_state);
     if( (*pCh)&((1<<FIX_BLOCK_AVAR_DEFECT)|(1<<FIX_BLOCK_DEFECT))){
         ;
-        if((*pCh)&( 1 << FIX_BLOCK_AVAR_DEFECT ))
+        if((*pCh)&( 1 << FIX_BLOCK_AVAR_DEFECT )){
             chErrorState |= 1;
+            arrOut[0] = 1;
+        }    
         else{
-                if((*pCh)&(1<<FIX_BLOCK_DEFECT))
+                if((*pCh)&(1<<FIX_BLOCK_DEFECT)){
                     chErrorState |= 2;
+                    arrOut[1] = 1;
+                }
             }
     }
-    else
+    else{
         chErrorState = 4;
-        
-    if(chErrorState&1 )
+        arrOut[0] = 0;
+        arrOut[1] = 0;
+}
+    
+    
+    if(chErrorState&1 ){
+    
      lStateLed = RUN_ERROR_LED_RED;
+        DoStateUI32Bit.ul_val = 0;
+        LedStateUI32Bit.ul_val = 0;
+        DoHdwUI32Bit.ul_val = 0;
+    }
     else{
         if(chErrorState&2 )
      lStateLed = RUN_ERROR_LED_YELLOW;

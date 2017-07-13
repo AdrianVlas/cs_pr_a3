@@ -1,4 +1,5 @@
 #include <string.h>
+#include <intrinsics.h>
 #include "prtTmr.h"
 const unsigned char uCh_MAX_Amt_1_MS_TMR  = 200;
 
@@ -174,7 +175,7 @@ short shGbl__REL7_REL14__RD_VAL;
 short shGblDOCheckIn;
 
 
-
+char chCheckIndicator;
 UI32Bit DiHrdStateUI32Bit;//, DiHrdStateUI32Bit
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //---
@@ -226,13 +227,21 @@ sLV.pLAdr4 = reinterpret_cast<char*>( NOR_PSRAM_BANK2);
 sLV.pLAdr4 += ADR_READ_DIN06__12<<1;
 sLV.chVal = *(sLV.pLAdr3);
 */
-shGblDOCheckIn = (shGbl__REL_1_6__RD_VAL&0x100)>>4;
-j = i&0xf00;
-shGblDOCheckIn |= j>>8;
-j = i >>14;
-shGblDOCheckIn |= j<<5;   
+	if(chCheckIndicator >= 1){
+		shGblDOCheckIn = (shGbl__REL_1_6__RD_VAL&0x100)>>4;
+		j = i&0xf00;
+		shGblDOCheckIn |= j>>8;
+		j = i >>14;
+		shGblDOCheckIn |= j<<5;  
+		chCheckIndicator --;
+	}
 }
-UI32Bit DoStateUI32Bit,DoCheckUI32Bit;
+// __istate_t s = __get_interrupt_state();
+// __disable_interrupt();
+// / * Do something here. * /
+// __set_interrupt_state(s);
+
+UI32Bit DoStateUI32Bit,DoHdwUI32Bit,DoCheckUI32Bit;
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //---
 extern void SetHrdOut(void*pv);
@@ -251,14 +260,17 @@ extern void SetHrdOut(void*pv);
 void SetHrdOut(void*pv){
     register long i,j;
     register void *pvRlc;
-	
+	__istate_t s = __get_interrupt_state();__disable_interrupt();		
 //	i = DoStateUI32Bit.ar_uch[0];
 	j = shGblDOCheckIn;
 	i = ~j;
-	j = i&0x7f;
+	j = i&0x1f;
+//	j = i&0x7f;
+	if(chCheckIndicator == 0){
 	
-	DoCheckUI32Bit.ar_uch[0] = DoStateUI32Bit.ar_uch[0]^j;
-
+	DoCheckUI32Bit.ar_uch[0] = DoHdwUI32Bit.ar_uch[0]^j;
+	chCheckIndicator++;
+}
     i = ((UI32Bit*) pv)->ar_uch[0]; 
     j = i&0x10;//Find 5 bit
     if(j){
@@ -271,6 +283,8 @@ void SetHrdOut(void*pv){
 		j <<= 1;
 		chGbl_REL_1_6__ROWS_A_D__RW_VAL = j;
 		}
+
+		
     pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_WRITE_RDO__REL_1_6__ROWS_A__D<<1));
     *((char*)pvRlc) = j;//???
     pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO_REL7_REL14<<1));
@@ -283,7 +297,8 @@ void SetHrdOut(void*pv){
     j |= (i&0x60)<<1;
 	
     *((char*)pvRlc) = j;
-
+	DoHdwUI32Bit = DoStateUI32Bit;
+__set_interrupt_state(s);
     
 }
 #include "HlDefs.h"

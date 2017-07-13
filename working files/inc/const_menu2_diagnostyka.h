@@ -106,6 +106,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   | (1 << (ERROR_GND_ADC_TEST_COARSE_BIT - 32))                 \
   | (1 << (ERROR_VREF_ADC_TEST_COARSE_BIT - 32))                \
   | (1 << (ERROR_VDD_ADC_TEST_COARSE_BIT - 32))                 \
+  | (1 << (ERROR_EXTERNAL_SRAM_BIT - 32))                       \
   | (1 << (ERROR_INTERNAL_FLASH_BIT - 32))                      \
 )
 

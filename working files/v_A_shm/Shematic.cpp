@@ -169,6 +169,9 @@ chInitTerminated = 1;
 
 char chStateOptimisation = 0;
 
+
+
+
 void Shematic::DoCalc(void) {
 
     register long i, j;
@@ -196,7 +199,13 @@ void Shematic::DoCalc(void) {
     else
         CBGSig::m_chCounterCall = ++j;
     i = 0;    
-//    UpdateStateDI();    
+//    UpdateStateDI();
+    if( (chErrorState&1) != 0){
+        //Set to 0 DOState
+
+        eRunErrorLed.EvalRunErrorLed();
+    
+    }
     if(chStateOptimisation == 0){    
         DoCalcLUSources();
 //        j = (static_cast<__CONFIG* >(p_current_config_prt))-> n_group_alarm;
@@ -2702,8 +2711,10 @@ long  Shematic::EvalIdxinarrLUAreaListElem(long lLUStng) {
             +current_config_prt.n_meander
             +current_config_prt.n_tu
             +current_config_prt.n_ts;
-            break;    
-
+            break;
+        case TARAS_ALAS_STNG_LU_STNG_FIX:
+                j = -2;
+            break;
         default:
             j = -1;
     }
@@ -3413,6 +3424,17 @@ void Shematic::SetupCLUInternalRef2(void *pv){
         }    
          //Find Obj
         j = EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
+        if(j==(-2)){
+         #warning eRunErrorLed.pOut not Complite. It may contain Error!!!
+            rsLV.pCh = static_cast<char*>(0);
+            //rsLV.pCh = static_cast<char*>(rsLV.pCLURef->pOut);
+            rsLV.pCh = static_cast<char*>(eRunErrorLed.pOut);
+            rsLV.pCh += static_cast<unsigned char>(locSBitFld.bfInfo_OrdNumOut - 1); //As Idx
+            if (rsLV.pCh) {
+                rsLV.arrPchIn = static_cast<char**>(rsLV.pCLUBase->pIn);
+                rsLV.arrPchIn[ik] = rsLV.pCh;
+            }
+        }else
         if(j!=(-1)){
              short shCounterFindObj = 0;
              short shAmtLookObj = 0;
