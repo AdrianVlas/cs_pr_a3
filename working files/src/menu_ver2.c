@@ -22,29 +22,29 @@ const uint8_t name_string_error_1[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] =
 
 const uint8_t name_string_error_2[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
 {
-  "Повтор?Enter/Esc",
-  "Повтор?Enter/Esc",
-  "Repeat?Enter/Esc",
-  "Повтор?Enter/Esc"
+  "Повтор?Esc/Enter",
+  "Повтор?Esc/Enter",
+  "Repeat?Esc/Enter",
+  "Повтор?Esc/Enter"
 };
 
 const uint8_t name_string[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
 {
   {
    "Ввести изменения",
-   "Да-ENTER Нет-ESC"
+   "Нет-ESC Да-ENTER"
   },
   {
    "  Ввести зміни  ",
-   "Так-ENTER Ні-ESC"
+   "Ні-ESC Так-ENTER"
   },
   {
    " Enter changes  ",
-   "Yes-ENTER No-ESC"
+   "No-ESC Yes-ENTER"
   },
   {
    "Ввести изменения",
-   "Да-ENTER Нет-ESC"
+   "Нет-ESC Да-ENTER"
   }
 };
 

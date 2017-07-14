@@ -31,6 +31,7 @@ LU_BGS,
 LU_TU,
 LU_TS,
 LU_LOG,
+LU_STNG_FIX,
 TOTAL_LU
 };
 
@@ -275,7 +276,7 @@ void ResetarNum(void);
 extern  short shLssLUAreaListElemIndex; 
 extern  const short arrShCalcLUOrderNumsSchmPage2[];
 extern  const char  arrChCalcLUOrderNumsSchmPage2[];
-
+extern  char chErrorState;
 
 
 

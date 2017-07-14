@@ -2970,6 +2970,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
       }
       /***/
       
+//      DCD_DevDisconnect(&USB_OTG_dev);
       /***
       Подаємо команду на перезапуск
       ***/
