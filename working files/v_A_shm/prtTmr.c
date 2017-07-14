@@ -175,7 +175,7 @@ short shGbl__REL7_REL14__RD_VAL;
 short shGblDOCheckIn;
 
 
-char chCheckIndicator;
+short shCheckIndicator;
 UI32Bit DiHrdStateUI32Bit;//, DiHrdStateUI32Bit
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //---
@@ -193,7 +193,7 @@ extern void RdHrdIn(void*pv);
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 ////////////////////////////////////////////////////////////////////////////////////
 void RdHrdIn(void *pv){
-    register long i,j;
+    register long i,j,l;
     register void *pvRlc;
     //reinterpret_cast<void*>(NOR_PSRAM_BANK2);
     pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_READ_DIN01__05<<1));
@@ -227,13 +227,15 @@ sLV.pLAdr4 = reinterpret_cast<char*>( NOR_PSRAM_BANK2);
 sLV.pLAdr4 += ADR_READ_DIN06__12<<1;
 sLV.chVal = *(sLV.pLAdr3);
 */
-	if(chCheckIndicator >= 1){
+    pvRlc = (void*)&shCheckIndicator;
+    l = *((unsigned char*)pvRlc);
+	if( l >= 1){
 		shGblDOCheckIn = (shGbl__REL_1_6__RD_VAL&0x100)>>4;
 		j = i&0xf00;
 		shGblDOCheckIn |= j>>8;
 		j = i >>14;
 		shGblDOCheckIn |= j<<5;  
-		chCheckIndicator --;
+		*((unsigned char*)pvRlc) = --l;//shCheckIndicator --;
 	}
 }
 // __istate_t s = __get_interrupt_state();
@@ -287,11 +289,24 @@ void SetHrdOut(void*pv){
 #endif	
 	
 //	
-	if(chCheckIndicator == 0){
-	
-	DoCheckUI32Bit.ar_uch[0] = DoHdwUI32Bit.ar_uch[0]^j;
-	chCheckIndicator++;
-}
+
+    pvRlc = (void*)&shCheckIndicator;
+    i = *((unsigned short*)pvRlc);
+	if(i != 0){
+	//if(shCheckIndicator != 0){
+        i &= 1<<13;
+        if(i!=0){
+            //i = *((unsigned char*)pvRlc);
+            DoCheckUI32Bit.ar_uch[0] = DoHdwUI32Bit.ar_uch[0]^j;
+            shCheckIndicator++;
+        }
+        else{
+            i |= (1<<13)|(1<<14);
+            i++;
+            shCheckIndicator = i;
+        }
+    }
+    
     i = ((UI32Bit*) pv)->ar_uch[0]; 
     j = i&0x10;//Find 5 bit
     if(j){
@@ -319,6 +334,7 @@ void SetHrdOut(void*pv){
 	
     *((char*)pvRlc) = j;
 	DoHdwUI32Bit = DoStateUI32Bit;
+    shCheckIndicator |= 1<<14;
 __set_interrupt_state(s);
     
 }
