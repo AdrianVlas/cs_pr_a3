@@ -3,10 +3,10 @@
 
 const uint8_t name_string_ask[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
 {
-  "Нет-Esc/Да-Enter",
-  "Ні-Esc/Так-Enter",
-  "No-Esc/Yes-Enter",
-  "Нет-Esc/Да-Enter"
+  "Да-Enter/Нет-Esc",
+  "Так-Enter/Ні-Esc",
+  "Yes-Enter/No-Esc",
+  "Да-Enter/Нет-Esc"
 };
 
 const uint8_t information_no_edition[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
