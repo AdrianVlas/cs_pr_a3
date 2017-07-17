@@ -345,12 +345,13 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         if(lTReset(bbT1ms))
         ch_DTrg = 0;
         if (m_BGSigSuit.chCheckBgs > 0){
-            if (measurement[m_chNumberAnalogChanell] <= static_cast<unsigned long> (m_lKcDeltaIy))
+            rl_Val = (m_lKcDeltaIy*58981)>>16;
+            if (measurement[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rl_Val) )//(m_lKcDeltaIy)
                 arrOut[BGS_OUT_NAME_CE - 1] = 1;
         }else{
             arrOut[BGS_OUT_NAME_CE - 1] = 0;
         }
-        if (measurement[m_chNumberAnalogChanell] > 5000)
+        if (measurement[m_chNumberAnalogChanell] > 2000)
         arrOut[BGS_OUT_NAME_OC  - 1] = 1;
     }
     else{
