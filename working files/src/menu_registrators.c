@@ -170,7 +170,8 @@ void make_ekran_list_event_log(void)
               n_input   = (param >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
               out_input = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
               
-              NNC = buffer_for_menu_read_record[12];
+              NNC = (buffer_for_menu_read_record[12] << (0*8)) | 
+                    (buffer_for_menu_read_record[13] << (1*8));
               
               record_check_ok = true;
             }
