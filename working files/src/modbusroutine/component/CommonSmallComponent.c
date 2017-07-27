@@ -249,9 +249,10 @@ int postCommonSmallWriteAction(void)
       //Активация конфигурации
 //      fix_block_active_state[0] &= ~0x2;//Прорубить окно
 //      fix_block_active_state[0] |= tempWriteArray[0]&1;
-int tt=0;
+//int tt=0;
 if(tempWriteArray[0]&1) 
-                     tt = 1;
+       set_config_and_settings(1, USB_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+                        //                   tt = 1;
     }//case (BEGIN_ADR_REGISTER+1):
     break;
     case (BEGIN_ADR_BIT+17):
