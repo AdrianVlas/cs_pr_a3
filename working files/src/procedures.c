@@ -2946,6 +2946,10 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
              (state_execution_spi_df[INDEX_DATAFLASH_1] != TRANSACTION_EXECUTING_NONE) ||
              (state_execution_spi_df[INDEX_DATAFLASH_2] != TRANSACTION_EXECUTING_NONE)
             )
+            ||
+            (data_usb_transmiting == true)
+            ||
+            (GPIO_ReadOutputDataBit(GPIO_485DE, GPIO_PIN_485DE) == Bit_SET)
            )
       {
         //Робота з watchdogs
@@ -2966,6 +2970,50 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
         {
           //Повне роозблоковування обміну з мікросхемами для драйверу I2C
           _CLEAR_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+        }
+        
+        //Обмін по USB
+        if (settings_fix.password_interface_USB)
+        {
+          unsigned int timeout = settings_fix.timeout_deactivation_password_interface_USB;
+          if ((timeout != 0) && (timeout_idle_USB >= timeout) && ((restart_timeout_interface & (1 << USB_RECUEST)) == 0)) password_set_USB = 1;
+        }
+        Usb_routines();
+
+        //Обмін по RS-485
+        if (settings_fix.password_interface_RS485)
+        {
+          unsigned int timeout = settings_fix.timeout_deactivation_password_interface_RS485;
+          if ((timeout != 0) && (timeout_idle_RS485 >= timeout) && ((restart_timeout_interface & (1 << RS485_RECUEST)) == 0)) password_set_RS485 = 1;
+        }
+        if(
+           ((DMA_StreamRS485_Rx->CR & (uint32_t)DMA_SxCR_EN) == 0) &&
+           (RxBuffer_RS485_count != 0) &&
+           (make_reconfiguration_RS_485 == 0)
+          )
+        {
+          //Це є умовою, що дані стоять у черзі  на обробку
+      
+          //Обробляємо запит
+//          modbus_rountines(RS485_RECUEST);
+        }
+        else if (make_reconfiguration_RS_485 != 0)
+        {
+          //Стоїть умова переконфігурувати RS-485
+      
+          //Перевіряємо чи на даний моент не іде передача даних на верхній рівень
+          if (GPIO_ReadOutputDataBit(GPIO_485DE, GPIO_PIN_485DE) == Bit_RESET)
+          {
+
+            //Переконфігуровуємо USART для RS-485
+            USART_RS485_Configure();
+
+            //Відновлюємо моніторинг каналу RS-485
+            restart_monitoring_RS485();
+      
+            //Знімаємо індикацю про невикану переконфігупацію інтерфейсу RS-485
+            make_reconfiguration_RS_485 = 0;
+          }
         }
       }
       /***/
