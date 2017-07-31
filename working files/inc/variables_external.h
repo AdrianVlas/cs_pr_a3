@@ -94,6 +94,7 @@ extern const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS];
 extern const uint8_t * const array_p_name_out[NUMBER_ALL_BLOCKS];
 
 
+extern unsigned int restart_device;
 extern unsigned int periodical_tasks_TEST_CONFIG;
 extern unsigned int periodical_tasks_TEST_SETTINGS;
 extern unsigned int periodical_tasks_TEST_USTUVANNJA;

@@ -243,6 +243,7 @@ int postConfigBigWriteAction(void) {
  }//switch
   }//for
 
+  //12345678  
  __result_dym_mem_select result_1 = action_after_changing_of_configuration(); //перевірити обов'язково результат
  if (result_1 == DYN_MEM_SELECT_OK) config_settings_modified |= (MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION) | MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC));
  else
@@ -265,6 +266,7 @@ int postConfigBigWriteAction(void) {
      */
    }
  }
+ //12345678
  return 0;
 }//
 

@@ -198,6 +198,7 @@ const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   0
 };
 
+unsigned int restart_device = false;
 unsigned int periodical_tasks_TEST_CONFIG = false;
 unsigned int periodical_tasks_TEST_SETTINGS = false;
 unsigned int periodical_tasks_TEST_USTUVANNJA = false;
