@@ -243,7 +243,28 @@ int postConfigBigWriteAction(void) {
  }//switch
   }//for
 
- action_after_changing_of_configuration(); //перевірити обов'язково результат
+ __result_dym_mem_select result_1 = action_after_changing_of_configuration(); //перевірити обов'язково результат
+ if (result_1 == DYN_MEM_SELECT_OK) config_settings_modified |= (MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION) | MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC));
+ else
+ {
+   //Відбулася помилка з виділенням динамічної пам'яті
+   if (result_1 == DYN_MEM_NO_ENOUGH_MEM)
+   {
+     /*
+     Повідомити треба верхній рівень про те, що під час процесу виділення динамічної пам'яті ВДАЛОСЯ повернути систему до попереднього стану
+     Тому прилад може продовжувати функціонувати, хоч цю зміну віі відкинув
+     */
+   }
+   else
+   {
+     if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+     /*
+     Повідомити треба верхній рівень про те, що під час процесу виділення динамічної пам'яті навіть НЕ ВДАЛОСЯ зробити відкат до попереднього стану
+     
+     ПРИЛАД ТРЕБА ПІСЛЯ ВІДПОВІДІ ЗАБЛОКУВАТИ І ПЕРЕЗАПУСТИТИ!!!
+     */
+   }
+ }
  return 0;
 }//
 
