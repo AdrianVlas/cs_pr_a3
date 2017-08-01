@@ -44,8 +44,10 @@ void constructorYustBigComponent(COMPONENT_OBJ *yustbigcomp)
 
 void loadYustBigActualData(void) {
   //ActualData
-  for(int i=0; i<REGISTER_FOR_OBJ; i++) tempReadArray[i] = ustuvannja[i];
+  for(int i=0; i<NUMBER_ANALOG_CANALES; i++) tempReadArray[i] = ustuvannja[i];
   /*
+  Амплітудне юстування
+  
   масиви юстування знаходиться у 
   ustuvannja_meas - працює вимірювальна система (не рухати!)
   ustuvannja - контейнер
@@ -73,6 +75,9 @@ void loadYustBigActualData(void) {
   {
     temp_value = ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA ];
   }
+  
+  Юстування зміщення каналів
+  У змфінну ustuvannja_measure_shift записати 0 (перед тим перевірити, що вона рівна -1)
   */
 }//loadActualData() 
 
@@ -129,6 +134,41 @@ void preYustBigWriteAction(void) {
   yustbigcomponent->isActiveActualData = 1;
 }//
 int postYustBigWriteAction(void) {
+  /*
+  Амплітудне юстування
+  
+  масиви юстування знаходиться у 
+  ustuvannja_meas - працює вимірювальна система (не рухати!)
+  ustuvannja - контейнер
+  edit_ustuvannja - для редагування
+  
+  Алгоритм запису
+  У changed_ustuvannja записати CHANGED_ETAP_EXECUTION (це блокує перевірку на достовірність ustuvannja_meas і ustuvannja)
+  У кіцевому результати зробити зміни у ustuvannja (можна використовувати edit_ustuvannja як масив для редагування з можливістю відновлення з ustuvannja)
+  
+  Для відміни внесення юстування у changed_ustuvannja записати CHANGED_ETAP_NONE але тоді ustuvannja_meas мусить дорівнювати ustuvannja бо інакше самодіагностика буде сваритися
+  
+  Для активації змін у changed_ustuvannja записати CHANGED_ETAP_ENDED. Дальше все зробить вимірювальна система
+  
+  бажано запис юстування робити по спеціальному секретному паролю
+  я для цього використловував password_ustuvannja. Спочатку записував туди 0x1978 і цим дозволяв запис юстування. запис іншого числа  блокував запис юстування.
+
+  else if (address_data == MA_POSSIBILITY_USTUVANNJA)
+  {
+    Повідомлення про те, чи можна проводити операцю юстування
+     0 - операція юстування є забороненою
+     1 - операція юстування є дозволеною
+    if (password_ustuvannja == 0x1978) temp_value = 1;
+    else temp_value = 0;
+  }
+  else if ((address_data >= MA_ADDRESS_FIRST_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_USTUVANNJA))
+  {
+    temp_value = ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA ];
+  }
+  
+  Юстування зміщення каналів
+  У змфінну ustuvannja_measure_shift записати 0 (перед тим перевірити, що вона рівна -1)
+  */
 //action после записи
   if(yustbigcomponent->operativMarker[0]<0) return 0;//не было записи
 //  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray

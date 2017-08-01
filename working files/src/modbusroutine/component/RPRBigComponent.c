@@ -48,6 +48,11 @@ void constructorRPRBigComponent(COMPONENT_OBJ *rprbigcomp)
 
 void loadRPRBigActualData(void)
 {
+  /*
+  Читання/запис здійснється з полів (коментарі додані у файлі type_definition.h для структури типу __CONFIG)
+  settings_fix_prt/settings_fix/settings_fix_edit->user_register[]
+  
+  */
   //ActualData
   for(int i=0; i<100; i++) tempReadArray[i] = i;
   /*
@@ -144,6 +149,11 @@ int postRPRBigWriteAction(void)
         qDebug()<<"rprAdresRegister[7]= "<<rprAdresRegister[7];
         qDebug()<<"rprAdresRegister[8]= "<<rprAdresRegister[8];
         qDebug()<<"rprAdresRegister[9]= "<<rprAdresRegister[9];
+  */
+  /*
+  Читання/запис здійснється з полів (коментарі додані у файлі type_definition.h для структури типу __CONFIG)
+  settings_fix_prt/settings_fix/settings_fix_edit->user_register[]
+  
   */
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
   restart_timeout_idle_new_settings = true;
