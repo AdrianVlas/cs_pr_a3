@@ -16,7 +16,7 @@ void preAISmallReadAction(void);//action до чтения
 void postAISmallReadAction(void);//action после чтения
 void preAISmallWriteAction(void);//action до записи
 int postAISmallWriteAction(void);//action после записи
-void loadAISmallActualData(void);
+//void loadAISmallActualData(void);
 
 COMPONENT_OBJ *aismallcomponent;
 
@@ -41,7 +41,7 @@ void constructorAISmallComponent(COMPONENT_OBJ *aismallcomp)
 
   aismallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadAISmallActualData(void) {
   //ActualData
   for(int i=0; i<5; i++) 
@@ -62,7 +62,7 @@ void loadAISmallActualData(void) {
     tempReadArray[i] = (short) measurement[IM_I4];
    break;
   }//switch
-
+*/
   /*
   1) Всі вимірювання у unsigned int measurement[NUMBER_ANALOG_CANALES] Всі вимірювання приведені у мілі-величини
   2) відповідність індексів до їх реальних каналів:
@@ -73,19 +73,33 @@ void loadAISmallActualData(void) {
 #define IM_U          4
 
   */
-}//loadActualData() 
+//}//loadActualData() 
 
 int getAISmallModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateAISmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
 
-  if(aismallcomponent->isActiveActualData) loadAISmallActualData(); //ActualData
-  aismallcomponent->isActiveActualData = 0;
+//  if(aismallcomponent->isActiveActualData) loadAISmallActualData(); //ActualData
+//  aismallcomponent->isActiveActualData = 0;
 
   superSetOperativMarker(aismallcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Напряжение Ucv
+    return measurement[IM_U];
+   case 1://Ток Iin1
+    return measurement[IM_I1];
+   case 2://Ток Iin2
+    return measurement[IM_I2];
+   case 3://Ток Iin3
+    return measurement[IM_I3];
+   case 4://Ток Iin4
+    return measurement[IM_I4];
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTModbusRegister(int adrReg)
 int getAISmallModbusBit(int adrBit)
 {

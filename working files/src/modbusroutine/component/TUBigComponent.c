@@ -20,6 +20,7 @@ void postTUBigReadAction(void);//action после чтения
 void preTUBigWriteAction(void);//action до записи
 int postTUBigWriteAction(void);//action после записи
 void loadTUBigActualData(void);
+int getTUmallModbusBeginAdrRegister(void);
 
 COMPONENT_OBJ *tubigcomponent;
 
@@ -45,6 +46,7 @@ void constructorTUBigComponent(COMPONENT_OBJ *tubigcomp)
   tubigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
+/*
 void loadTUBigActualData(void) {
 int getTUmallModbusBeginAdrRegister(void);
  setTUBigCountObject(); //записать к-во обектов
@@ -64,18 +66,34 @@ int getTUmallModbusBeginAdrRegister(void);
    tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
    }//for
 }//loadActualData() 
+*/
 
 int getTUBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateTUBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(tubigcomponent->isActiveActualData) loadTUBigActualData(); //ActualData
+  if(tubigcomponent->isActiveActualData) setTUBigCountObject(); //записать к-во обектов
   tubigcomponent->isActiveActualData = 0;
   if(privateTUBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tubigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+   //Block ТУ 0  item
+    return arr[idxSubObj].settings.param[TU_BLOCK] & 0xffff;//
+   case 1:
+    return (arr[idxSubObj].settings.param[TU_BLOCK] >> 16) & 0x7fff;//
+
+   case 2:
+   //Адрес ТУ 0  item
+    return getTUmallModbusBeginAdrRegister() + idxSubObj;
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getTUBigModbusBit(int adrBit)
 {
@@ -99,6 +117,8 @@ int setTUBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
    break; 

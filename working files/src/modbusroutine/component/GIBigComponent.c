@@ -19,7 +19,7 @@ void preGIBigReadAction(void);//action до чтения
 void postGIBigReadAction(void);//action после чтения
 void preGIBigWriteAction(void);//action до записи
 int postGIBigWriteAction(void);//action после записи
-void loadGIBigActualData(void);
+//void loadGIBigActualData(void);
 
 COMPONENT_OBJ *gibigcomponent;
 
@@ -44,7 +44,7 @@ void constructorGIBigComponent(COMPONENT_OBJ *gibigcomp)
 
   gibigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadGIBigActualData(void) {
  setGIBigCountObject(); //записать к-во обектов
   //ActualData
@@ -56,18 +56,27 @@ void loadGIBigActualData(void) {
    }//for
 
 }//loadActualData() 
+*/
 
 int getGIBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateGIBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(gibigcomponent->isActiveActualData) loadGIBigActualData(); //ActualData
+  if(gibigcomponent->isActiveActualData) setGIBigCountObject(); //к-во обектов
   gibigcomponent->isActiveActualData = 0;
   if(privateGIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(gibigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_MEANDER *arr = (__LN_MEANDER*)(spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+   return arr[idxSubObj].settings.set_delay[0];
+ }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getGIBigModbusBit(int adrBit)
 {

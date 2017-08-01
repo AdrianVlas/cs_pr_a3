@@ -19,7 +19,7 @@ void preANDBigReadAction(void);//action до чтения
 void postANDBigReadAction(void);//action после чтения
 void preANDBigWriteAction(void);//action до записи
 int postANDBigWriteAction(void);//action после записи
-void loadANDBigActualData(void);
+//void loadANDBigActualData(void);
 
 COMPONENT_OBJ *andbigcomponent;
 
@@ -45,6 +45,7 @@ void constructorANDBigComponent(COMPONENT_OBJ *andbigcomp)
   andbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
+/*
 void loadANDBigActualData(void) {
  setANDBigCountObject(); //записать к-во обектов
 
@@ -60,22 +61,34 @@ void loadANDBigActualData(void) {
         tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
      }
   }//for
+*/
   /*
   Для тих компонетів, де є не один однотипний вхід а декілька (ст. логіка і Журнал подій) після запису треба відсортувати щоб 0-і були вкінці, а числа(id;n; out) іншли в сторону зростання
   */
-}//loadActualData() 
+//}//loadActualData() 
 
 int getANDBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateANDBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(andbigcomponent->isActiveActualData) loadANDBigActualData(); //ActualData
+  if(andbigcomponent->isActiveActualData) setANDBigCountObject(); //к-во обектов
   andbigcomponent->isActiveActualData = 0;
   if(privateANDBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(andbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idxParam = (offset/2)%AND_SIGNALS_IN;//индекс param
+  switch(offset%2) {//индекс регистра 
+   case 0:
+        return  arr[idxSubObj].settings.param[idxParam] & 0xffff;//
+   case 1:
+        return  (arr[idxSubObj].settings.param[idxParam] >> 16) & 0x7fff;//
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getANDBigModbusBit(int adrBit)
 {
@@ -99,36 +112,50 @@ int setANDBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 6:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 7:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 8:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 9:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 10:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 11:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 12:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 13:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 14:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;

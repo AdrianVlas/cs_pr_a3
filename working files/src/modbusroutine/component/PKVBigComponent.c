@@ -194,8 +194,8 @@ void loadPKVBigActualData(void) {
   14224-14225
   ------------
   uint8_t *label_to_time_array;
-  if (copying_time == 2) label_to_time_array = time_copy;
-  else label_to_time_array = time;
+  if (copying_time == 0) label_to_time_array = time;
+  else label_to_time_array = time_copy;
   Формат BCD
   0 - десяті і соті секунди (на запис тільки 0) (0x0-0x99)
   1 - секунди (0x0-0x59)
@@ -411,8 +411,9 @@ int postPKVBigWriteAction(void) {
   if(pkvbigcomponent->operativMarker[1]<0) countRegister = 1;
 
     unsigned char *label_to_time_array = time_edit;
-   // if (copying_time == 2) label_to_time_array = time_copy;
-  //  else label_to_time_array = time;
+    for(int i=0; i<7; i++) time_edit[i] = time[i];
+   // if (copying_time == 0) label_to_time_array = time;
+  //  else label_to_time_array = time_copy;
   
   __SETTINGS_FIX *arr = &settings_fix, *arr1 = &settings_fix_edit;
   for(int i=0; i<countRegister; i++) {

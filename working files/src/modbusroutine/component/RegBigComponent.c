@@ -122,7 +122,7 @@ int setRegBigModbusRegister(int adrReg, int dataReg)
     if(dataReg<5) return MARKER_ERRORDIAPAZON;
    break; 
     case 2://12002
-    return MARKER_ERRORPERIMETR;
+    if(dataReg>99) return MARKER_ERRORDIAPAZON;
    case 3: //12003
     if(dataReg>99) return MARKER_ERRORDIAPAZON;
    break; 

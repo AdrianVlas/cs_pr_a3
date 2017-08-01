@@ -19,7 +19,7 @@ void preDOUTBigReadAction(void);//action до чтения
 void postDOUTBigReadAction(void);//action после чтения
 void preDOUTBigWriteAction(void);//action до записи
 int postDOUTBigWriteAction(void);//action после записи
-void loadDOUTBigActualData(void);
+//void loadDOUTBigActualData(void);
 
 COMPONENT_OBJ *doutbigcomponent;
 
@@ -44,6 +44,7 @@ void constructorDOUTBigComponent(COMPONENT_OBJ *doutcomp)
   doutbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
+/*
 void loadDOUTBigActualData(void) {
  setDOUTBigCountObject(); //записать к-во обектов
 
@@ -83,12 +84,13 @@ void loadDOUTBigActualData(void) {
    value = (arr[item].settings.param[OUTPUT_LED_MEANDER2] >> 16) & 0x7fff;//Генератор С2 1 Имп.ДВых. item
    tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
   }//for
+*/
   /*
   ...
   
   на входи "Генератор C1" і "Генератор C2" можна встановити тільки генеротори, тобто id мусить дорівнювати ID_FB_MEANDER, n не може перевищувати кількість генераторів у конфігурації, out мусить дорівнювати 1, бо у генератора є єдиний вихід
   */
-}//loadActualData() 
+//}//loadActualData() 
 
 int getDOUTBigModbusRegister(int adrReg)
 {
@@ -200,29 +202,46 @@ int setDOUTBigModbusRegister(int adrReg, int dataReg)
    case 0:
    break; 
    case 1:
-//    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
-//    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
-//    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 6:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 7:
-//    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 8:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 9:
-//    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 10:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 11:
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 12:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch
@@ -266,7 +285,6 @@ int postDOUTBigWriteAction(void) {
   int countRegister = doutbigcomponent->operativMarker[1]-doutbigcomponent->operativMarker[0]+1;
   if(doutbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//  __LN_OUTPUT_LED *arr = (__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
    __settings_for_OUTPUT_LED *arr  = (__settings_for_OUTPUT_LED*)(sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
    __settings_for_OUTPUT_LED *arr1 = (__settings_for_OUTPUT_LED*)(sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {

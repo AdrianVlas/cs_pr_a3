@@ -20,7 +20,7 @@ void preDVBigReadAction(void);//action до чтени€
 void postDVBigReadAction(void);//action после чтени€
 void preDVBigWriteAction(void);//action до записи
 int postDVBigWriteAction(void);//action после записи
-void loadDVBigActualData(void);
+//void loadDVBigActualData(void);
 
 COMPONENT_OBJ *dvbigcomponent;
 
@@ -45,7 +45,7 @@ void constructorDVBigComponent(COMPONENT_OBJ *dvbigcomp)
 
   dvbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadDVBigActualData(void) {
  setDVBigCountObject(); //записать к-во обектов
 
@@ -57,7 +57,7 @@ void loadDVBigActualData(void) {
    value = arr[item].settings.set_delay[INPUT_SET_DELAY_DOPUSK];
    tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
   }//for
-
+*/
   /*
   1. јдресу потр≥бного елементу вибраного функц≥онального блоку визначаЇмо €к ≥ дл€ Small
   2. якщо працюЇмо з структурою ***_prt, то тип беретьс€ __LN_XXX у вс≥х ≥нших випадках тип беретьс€ __settings_for_ххх
@@ -80,19 +80,29 @@ void loadDVBigActualData(void) {
   uint32_t analog_input_control - дл€ Ў√— виб≥р аналогових канал≥в
   
   */
-}//loadActualData() 
+//}//loadActualData() 
 
 int getDVBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateDVBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(dvbigcomponent->isActiveActualData) loadDVBigActualData(); //ActualData
+  if(dvbigcomponent->isActiveActualData) setDVBigCountObject(); //к-во обектов
   dvbigcomponent->isActiveActualData = 0;
   if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(dvbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+     return (((arr[idxSubObj].settings.control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) !=0) << 0) | (1 << 1) | ((V110_V220 != 0) << 2);
+   case 1:
+     return arr[idxSubObj].settings.set_delay[INPUT_SET_DELAY_DOPUSK];
+ }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getDVBigModbusBit(int adrReg)
 {

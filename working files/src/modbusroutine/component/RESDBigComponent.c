@@ -84,16 +84,22 @@ int setRESDBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch

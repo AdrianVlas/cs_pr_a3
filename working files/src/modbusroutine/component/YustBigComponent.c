@@ -3,7 +3,7 @@
 //начальный регистр в карте памяти
 #define BEGIN_ADR_REGISTER 61968
 //макс к-во обектов
-#define REGISTER_FOR_OBJ 33
+#define REGISTER_FOR_OBJ NUMBER_ANALOG_CANALES
 
 int privateYustBigGetReg2(int adrReg);
 
@@ -171,9 +171,32 @@ int postYustBigWriteAction(void) {
   */
 //action после записи
   if(yustbigcomponent->operativMarker[0]<0) return 0;//не было записи
-//  int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
-//  int countRegister = yustbigcomponent->operativMarker[1]-yustbigcomponent->operativMarker[0]+1;
-//  if(yustbigcomponent->operativMarker[1]<0) countRegister = 1;
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = yustbigcomponent->operativMarker[1]-yustbigcomponent->operativMarker[0]+1;
+  if(yustbigcomponent->operativMarker[1]<0) countRegister = 1;
+
+//  for(int i=0; i<countRegister; i++) ustuvannja[i] = tempWriteArray[offsetTempWriteArray+i];
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+yustbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+//  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+//  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%(REGISTER_FOR_OBJ+1)) {//индекс регистра входа
+  case 0:
+  case 1:
+  case 2:
+  case 3:
+  case 4:
+      ustuvannja[offset%(REGISTER_FOR_OBJ+1)] = tempWriteArray[offsetTempWriteArray+i];
+  break;
+  case 5:
+   if(ustuvannja_measure_shift==-1) ustuvannja_measure_shift =0;
+  break;
+ }//switch
+  }//for
+
+
+  changed_ustuvannja = CHANGED_ETAP_EXECUTION;// (це блокує перевірку на достовірність ustuvannja_meas і ustuvannja)
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
   restart_timeout_idle_new_settings = true;
  return 0;
@@ -182,7 +205,7 @@ int postYustBigWriteAction(void) {
 int privateYustBigGetReg2(int adrReg)
 {
   //проверить внешний периметр
-  int count_register = REGISTER_FOR_OBJ;
+  int count_register = REGISTER_FOR_OBJ+1;
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)

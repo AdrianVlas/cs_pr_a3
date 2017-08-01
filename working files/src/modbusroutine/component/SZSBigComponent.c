@@ -19,7 +19,7 @@ void preSZSBigReadAction(void);//action до чтения
 void postSZSBigReadAction(void);//action после чтения
 void preSZSBigWriteAction(void);//action до записи
 int postSZSBigWriteAction(void);//action после записи
-void loadSZSBigActualData(void);
+//void loadSZSBigActualData(void);
 
 COMPONENT_OBJ *szsbigcomponent;
 
@@ -44,7 +44,7 @@ void constructorSZSBigComponent(COMPONENT_OBJ *szsbigcomp)
 
   szsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadSZSBigActualData(void) {
  setSZSBigCountObject(); //записать к-во обектов
   //ActualData
@@ -83,18 +83,56 @@ void loadSZSBigActualData(void) {
    tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
    }//for
 }//loadActualData() 
+*/
 
 int getSZSBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateSZSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(szsbigcomponent->isActiveActualData) loadSZSBigActualData(); //ActualData
+  if(szsbigcomponent->isActiveActualData) setSZSBigCountObject(); //к-во обектов
   szsbigcomponent->isActiveActualData = 0;
   if(privateSZSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(szsbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_ALARM *arr = (__LN_ALARM*)(spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+   //Режим работы СЗС item
+    return arr[idxSubObj].settings.control & 0x3;
+
+   case 1:
+   //Таймер СЗС  item
+    return arr[idxSubObj].settings.set_delay[ALARM_SET_DELAY_PERIOD]/100;
+
+   case 2:
+   //LSSIN1 0 СЗС  item
+    return arr[idxSubObj].settings.param[ALARM_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
+   case 3:
+    return (arr[idxSubObj].settings.param[ALARM_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 4:
+   //Mute-I 0 СЗС   item
+    return arr[idxSubObj].settings.param[ALARM_IN_MUTE] & 0xffff;//LEDIN 0 СД item
+   case 5:
+    return (arr[idxSubObj].settings.param[ALARM_IN_MUTE] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 6:
+   //Block-I 0 СЗС    item
+    return arr[idxSubObj].settings.param[ALARM_IN_BLOCK] & 0xffff;//LEDIN 0 СД item
+   case 7:
+    return (arr[idxSubObj].settings.param[ALARM_IN_BLOCK] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 8:
+   //Reset-I 0 СЗС   item
+    return arr[idxSubObj].settings.param[ALARM_RESET] & 0xffff;//LEDIN 0 СД item
+   case 9:
+    return (arr[idxSubObj].settings.param[ALARM_RESET] >> 16) & 0x7fff;//LEDIN 1 СД item
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getSZSBigModbusBit(int adrBit)
 {
@@ -125,21 +163,29 @@ int setSZSBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 6:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 7:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 8:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 9:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch
@@ -195,7 +241,7 @@ int postSZSBigWriteAction(void) {
    break;
 
    case 1://Таймер СЗС
-    arr1[idxSubObj].set_delay[ALARM_SET_DELAY_PERIOD] = arr[idxSubObj].set_delay[ALARM_SET_DELAY_PERIOD] = (tempWriteArray[offsetTempWriteArray+i]);
+       arr1[idxSubObj].set_delay[ALARM_SET_DELAY_PERIOD] = arr[idxSubObj].set_delay[ALARM_SET_DELAY_PERIOD] = (tempWriteArray[offsetTempWriteArray+i]*100);
    break;
 
    case 2://LSSIN1 0

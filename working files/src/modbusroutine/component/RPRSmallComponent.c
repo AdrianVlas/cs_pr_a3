@@ -60,7 +60,7 @@ void loadRPRSmallActualData(void) {
   //ActualData
 //      qDebug()<<"loadRPRSmallActualData=";//<<result;
   for(int i=0; i<rprsmallcomponent->countObject; i++) {
-      int result = superReaderRegister(rprAdresRegister[i]);
+      int result = superReaderRegister(settings_fix.user_register[i]);
       switch(result)
         {
         case MARKER_ERRORPERIMETR://ошибка периметра

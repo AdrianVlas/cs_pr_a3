@@ -15,7 +15,7 @@ void preBASDBigReadAction(void);//action до чтения
 void postBASDBigReadAction(void);//action после чтения
 void preBASDBigWriteAction(void);//action до записи
 int postBASDBigWriteAction(void);//action после записи
-void loadBASDBigActualData(void);
+//void loadBASDBigActualData(void);
 
 COMPONENT_OBJ *basdbigcomponent;
 /**************************************/
@@ -40,7 +40,7 @@ void constructorBASDBigComponent(COMPONENT_OBJ *basdbigcomp)
   basdbigcomponent->isActiveActualData = 0;
 
 }//prepareDVinConfig
-
+/*
 void loadBASDBigActualData(void) {
   //ActualData
   __SETTINGS_FIX *arr = &settings_fix_prt;
@@ -61,18 +61,38 @@ void loadBASDBigActualData(void) {
   value = (arr->param[FIX_BLOCK_MUTE] >> 16) & 0x7fff;//
   tempReadArray[5] = value;
 }//loadActualData() 
+*/
 
 int getBASDBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateBASDBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
 
-  if(basdbigcomponent->isActiveActualData) loadBASDBigActualData(); //ActualData
-  basdbigcomponent->isActiveActualData = 0;
+//  if(basdbigcomponent->isActiveActualData) loadBASDBigActualData(); //ActualData
+//  basdbigcomponent->isActiveActualData = 0;
 
   superSetOperativMarker(basdbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  __SETTINGS_FIX *arr = &settings_fix_prt;
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+  case 0:
+   return arr->param[FIX_BLOCK_BLOCK] & 0xffff;//
+  case 1:
+   return (arr->param[FIX_BLOCK_BLOCK] >> 16) & 0x7fff;//
+
+  case 2:
+   return arr->param[FIX_BLOCK_ALARM] & 0xffff;//
+  case 3:
+   return (arr->param[FIX_BLOCK_ALARM] >> 16) & 0x7fff;//
+
+  case 4:
+   return arr->param[FIX_BLOCK_MUTE] & 0xffff;//
+  case 5:
+   return (arr->param[FIX_BLOCK_MUTE] >> 16) & 0x7fff;//
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDVModbusRegister(int adrReg)
 int getBASDBigModbusBit(int adrBit)
 {
@@ -90,16 +110,25 @@ int setBASDBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    default: return MARKER_OUTPERIMETR;
   }//switch

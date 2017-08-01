@@ -19,7 +19,7 @@ void preXORBigReadAction(void);//action до чтения
 void postXORBigReadAction(void);//action после чтения
 void preXORBigWriteAction(void);//action до записи
 int postXORBigWriteAction(void);//action после записи
-void loadXORBigActualData(void);
+//void loadXORBigActualData(void);
 
 COMPONENT_OBJ *xorbigcomponent;
 
@@ -44,7 +44,7 @@ void constructorXORBigComponent(COMPONENT_OBJ *xorbigcomp)
 
   xorbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadXORBigActualData(void) {
  setXORBigCountObject(); //записать к-во обектов
   //ActualData
@@ -60,18 +60,30 @@ void loadXORBigActualData(void) {
      }
    }//for
 }//loadActualData() 
+*/
 
 int getXORBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateXORBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(xorbigcomponent->isActiveActualData) loadXORBigActualData(); //ActualData
+  if(xorbigcomponent->isActiveActualData) setXORBigCountObject(); //к-во обектов
   xorbigcomponent->isActiveActualData = 0;
   if(privateXORBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(xorbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_XOR *arr = (__LN_XOR*)(spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idxParam = (offset/2)%AND_SIGNALS_IN;//индекс param
+  switch(offset%2) {//индекс регистра 
+   case 0:
+        return  arr[idxSubObj].settings.param[idxParam] & 0xffff;//
+   case 1:
+        return  (arr[idxSubObj].settings.param[idxParam] >> 16) & 0x7fff;//
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getXORBigModbusBit(int adrBit)
 {
@@ -95,11 +107,15 @@ int setXORBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch
