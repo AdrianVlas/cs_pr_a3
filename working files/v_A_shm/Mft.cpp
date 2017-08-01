@@ -78,8 +78,16 @@ m_chStateTpauseInv   = 0;
 m_chStateTdelay      = 0;
 m_chStateTWorkDir    = 0;
 m_chStateTWorkInv    = 0;
-m_chInPulsDir      = 0;    
-m_chInPulsInv      = 0;
+m_chInPulsDir      = 1;    
+m_chInPulsInv      = 1;
+
+//m_chNot1           = 0;
+//m_chOR2            = 0;
+m_chOR3            = 0;
+//m_D4Q              = 0;
+//m_D4_In            = 0;
+m_D5Q              = 0;
+m_D5_In            = 1;
 
 chMftCmpVal = 123;
 }
@@ -316,10 +324,24 @@ void Mft_Op(void *pObj){
     }
     
     rCMft.arrStateIn[MFT_IN_NAME__MFTIN-1]    = i;
-    rCMft.arrStateIn[MFT_IN_NAME__RESET_I-1]  = j;   
+    rCMft.arrStateIn[MFT_IN_NAME__RESET_I-1]  = j; 
+     
+
+    
     //--i = static_cast<long>(*(rCMft.arrPchIn[0]));
     j = rCMft.TPauseMftDir(i);
-    k = rCMft.TPauseMftInv(!i);
+    rCMft.m_chOR3 = j || !i;
+    if(rCMft.m_chOR3 != 0){
+        
+        rCMft.m_D5Q = 0;
+    }
+    else{
+        if((!i) ||(rCMft.m_D5_In == 0)){
+            rCMft.m_D5Q = 1;
+        }
+    }
+    rCMft.m_D5_In = !i;
+    k = rCMft.TPauseMftInv(rCMft.m_D5Q);
     if(j == 1 && rCMft.m_chInPulsDir == 0){
         rCMft.m_chInPulsDir = j;
         U_EC.arChEC[2] = j;

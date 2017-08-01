@@ -9,6 +9,6 @@ extern  COMPONENT_OBJ config_array[];
 extern  short tempReadArray[];
 extern  short tempWriteArray[];
 extern  int   indexTW;//индекс буфера записи
-extern  short rprAdresRegister[];//хранилище адресов пользовательских регистров
+//extern  short rprAdresRegister[];//хранилище адресов пользовательских регистров
 
 #endif

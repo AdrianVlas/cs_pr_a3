@@ -24,7 +24,14 @@ inline void watchdog_routine(void)
   time_delta_watchdog_input = delta_time* 10;
   
   //Робота з watchdogs з контролем всіх інших систем
-  if((control_word_of_watchdog & UNITED_BITS_WATCHDOG) == UNITED_BITS_WATCHDOG)
+  if(
+     ((control_word_of_watchdog & UNITED_BITS_WATCHDOG) == UNITED_BITS_WATCHDOG) 
+     ||
+     (
+      (restart_device != false) &&
+      ((control_word_of_watchdog & (UNITED_BITS_WATCHDOG & (uint32_t)(~(WATCHDOG_PROTECTION | WATCHDOG_PROTECTION_1)))) == (UNITED_BITS_WATCHDOG & (uint32_t)(~(WATCHDOG_PROTECTION | WATCHDOG_PROTECTION_1))))
+     ) 
+    )   
   {
     //Змінюємо стан біту зовнішнього Watchdog на протилежний
     if (test_watchdogs != CMD_TEST_EXTERNAL_WATCHDOG)
@@ -41,7 +48,7 @@ inline void watchdog_routine(void)
       else delta_time = time_2_watchdog_output + 0xffff - time_1_watchdog_output;
       time_delta_watchdog_output = delta_time* 10;
     }
-
+  
     control_word_of_watchdog =  0;
   }
 #ifdef DEBUG_TEST
@@ -186,7 +193,39 @@ inline void periodical_operations(void)
   Щоб за один оберт виконувалася тільки одна перевірка, тобто щоб в одному оберті
   не було надто довга затримка на фонову перевірку, хоч і важливу.
   */
-  if (periodical_tasks_TEST_CONFIG != 0)
+  if (restart_device != 0)
+  {
+    if(
+       !(
+         (
+          (control_i2c_taskes[0]     != 0) ||
+          (control_i2c_taskes[1]     != 0) ||
+          (driver_i2c.state_execution > 0)
+         )
+         ||
+         (
+          (control_tasks_dataflash != 0) ||
+          (state_execution_spi_df[INDEX_DATAFLASH_1] != TRANSACTION_EXECUTING_NONE) ||
+          (state_execution_spi_df[INDEX_DATAFLASH_2] != TRANSACTION_EXECUTING_NONE)
+         )
+         ||
+         (data_usb_transmiting == true)
+         ||
+         (GPIO_ReadOutputDataBit(GPIO_485DE, GPIO_PIN_485DE) == Bit_SET)
+        )
+       )
+    {
+//      DCD_DevDisconnect(&USB_OTG_dev);
+      /***
+      Подаємо команду на перезапуск
+      ***/
+      NVIC_SystemReset();
+      
+      restart_device = false;
+      /***/
+    }
+  }
+  else if (periodical_tasks_TEST_CONFIG != 0)
   {
     //Стоїть у черзі активна задача самоконтролю конфігурації
     if ((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)) != 0)

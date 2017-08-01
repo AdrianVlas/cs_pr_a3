@@ -19,7 +19,7 @@ void preORBigReadAction(void);//action до чтени€
 void postORBigReadAction(void);//action после чтени€
 void preORBigWriteAction(void);//action до записи
 int postORBigWriteAction(void);//action после записи
-void loadORBigActualData(void);
+//void loadORBigActualData(void);
 
 COMPONENT_OBJ *orbigcomponent;
 
@@ -44,7 +44,7 @@ void constructorORBigComponent(COMPONENT_OBJ *orbigcomp)
 
   orbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadORBigActualData(void) {
  setORBigCountObject(); //записать к-во обектов
   //ActualData
@@ -60,18 +60,30 @@ void loadORBigActualData(void) {
      }
    }//for
 }//loadActualData() 
+*/
 
 int getORBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateORBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(orbigcomponent->isActiveActualData) loadORBigActualData(); //ActualData
+  if(orbigcomponent->isActiveActualData) setORBigCountObject(); //к-во обектов
   orbigcomponent->isActiveActualData = 0;
   if(privateORBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(orbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_OR *arr = (__LN_OR*)(spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idxParam = (offset/2)%OR_SIGNALS_IN;//индекс param
+  switch(offset%2) {//индекс регистра 
+   case 0:
+        return  arr[idxSubObj].settings.param[idxParam] & 0xffff;//
+   case 1:
+        return  (arr[idxSubObj].settings.param[idxParam] >> 16) & 0x7fff;//
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getORBigModbusBit(int adrReg)
 {
@@ -95,41 +107,57 @@ int setORBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
+    //контроль параметров ранжировани€
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
+    //контроль параметров ранжировани€
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
+    //контроль параметров ранжировани€
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 6:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 7:
+    //контроль параметров ранжировани€
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 8:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 9:
+    //контроль параметров ранжировани€
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 10:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 11:
+    //контроль параметров ранжировани€
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 12:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 13:
+    //контроль параметров ранжировани€
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 14:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 15:
+    //контроль параметров ранжировани€
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch

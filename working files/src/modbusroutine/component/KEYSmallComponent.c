@@ -85,7 +85,7 @@ int getKEYSmallModbusRegister(int adrReg)
 
   superSetOperativMarker(keysmallcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTModbusRegister(int adrReg)
 int getKEYSmallModbusBit(int adrBit)
 {

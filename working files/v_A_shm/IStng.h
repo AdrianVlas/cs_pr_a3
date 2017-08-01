@@ -8,6 +8,8 @@
 #include "../inc/const_menu_ver2.h"
 #include "../inc/const_modbus_memory_map.h"
 #include "../inc/type_definition.h"
+#include "../inc/const_measurement.h"
+
 
 
 enum TARAS_ALIAS_ID_LU_STNG { 

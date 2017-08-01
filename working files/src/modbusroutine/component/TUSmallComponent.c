@@ -121,7 +121,7 @@ void setTUSmallCountObject(void) {
   int cntObj = current_config.n_tu;    //Кількість блоків сигналізацій
   if(cntObj<0) return;
   if(cntObj>TOTAL_OBJ) return;
-  tusmallcomponent->countObject = 16;//cntObj;
+  tusmallcomponent->countObject = cntObj;
 }//
 void preTUSmallReadAction(void) {
 //action до чтения

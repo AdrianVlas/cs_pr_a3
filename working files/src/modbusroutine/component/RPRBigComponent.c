@@ -46,27 +46,34 @@ void constructorRPRBigComponent(COMPONENT_OBJ *rprbigcomp)
   rprbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadRPRBigActualData(void)
-{
+//void loadRPRBigActualData(void)
+//{
+  /*
+  Читання/запис здійснється з полів (коментарі додані у файлі type_definition.h для структури типу __CONFIG)
+  settings_fix_prt/settings_fix/settings_fix_edit->user_register[]
+  
+  */
   //ActualData
-  for(int i=0; i<100; i++) tempReadArray[i] = i;
+  //for(int i=0; i<100; i++) tempReadArray[i] = i;
   /*
   Читання/запис здійснється у 
   settings_fix_prt/settings_fix/settings_fix_edit.user_register[номер регістру]
 */
-}//loadActualData()
+//}//loadActualData()
 
 int getRPRBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateRPRBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
 
-  if(rprbigcomponent->isActiveActualData) loadRPRBigActualData(); //ActualData
-  rprbigcomponent->isActiveActualData = 0;
+//  if(rprbigcomponent->isActiveActualData) loadRPRBigActualData(); //ActualData
+//  rprbigcomponent->isActiveActualData = 0;
+
+  int offset = adrReg-BEGIN_ADR_REGISTER;
 
   superSetOperativMarker(rprbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  return settings_fix.user_register[offset];//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getRPRBigModbusBit(int adrBit)
 {
@@ -127,7 +134,8 @@ int postRPRBigWriteAction(void)
   if(rprbigcomponent->operativMarker[1]<0) countRegister = 1;
 
   for(int i=0; i<countRegister; i++)
-      rprAdresRegister[i+rprbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER] = tempWriteArray[offset+i];
+      settings_fix.user_register[i+rprbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER] =
+      settings_fix_edit.user_register[i+rprbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER] = tempWriteArray[offset+i];
   /*
         qDebug()<<"offset= "<<offset;
 
@@ -144,6 +152,11 @@ int postRPRBigWriteAction(void)
         qDebug()<<"rprAdresRegister[7]= "<<rprAdresRegister[7];
         qDebug()<<"rprAdresRegister[8]= "<<rprAdresRegister[8];
         qDebug()<<"rprAdresRegister[9]= "<<rprAdresRegister[9];
+  */
+  /*
+  Читання/запис здійснється з полів (коментарі додані у файлі type_definition.h для структури типу __CONFIG)
+  settings_fix_prt/settings_fix/settings_fix_edit->user_register[]
+  
   */
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
   restart_timeout_idle_new_settings = true;

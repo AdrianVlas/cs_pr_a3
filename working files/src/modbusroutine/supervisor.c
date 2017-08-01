@@ -20,13 +20,13 @@ unsigned char  outputPacket[300];
 /**************************************/
 void inputPacketParser(void)
 {
-rprAdresRegister[0] = 0;
-rprAdresRegister[1] = 1;
-rprAdresRegister[2] = 2;
-rprAdresRegister[3] = 3;
-rprAdresRegister[4] = 4;
-rprAdresRegister[5] = 5;
-rprAdresRegister[6] = 6;
+//rprAdresRegister[0] = 0;
+//rprAdresRegister[1] = 1;
+//rprAdresRegister[2] = 2;
+//rprAdresRegister[3] = 3;
+//rprAdresRegister[4] = 4;
+//rprAdresRegister[5] = 5;
+//rprAdresRegister[6] = 6;
   //for(int i=0; i<100; i++) outputPacket[i] = -1;
                      //0-adr 1-func   2-MadrReg    3-LadrReg   4-Mcnt   5-Lcnt
   //byte inputPacket[] {0x1,     3,     0x2,        0xBB,       0x0,     0x7};
@@ -53,6 +53,9 @@ rprAdresRegister[6] = 6;
 //*/
   int adrUnit = inputPacket[0];
   int numFunc = inputPacket[1];
+  //Перевірка address
+  if(adrUnit!=settings_fix.address) return;
+
   int sizeOutputPacket = 0;
   indexTW = 0;//индекс буфера записи
   switch(numFunc)
@@ -768,3 +771,66 @@ for(int i=1; i<size; i++) {
 //qDebug()<<" "<<param[0]<<" "<<param[1]<<" "<<param[2]<<" "<<param[3]<<" "<<param[4]<<" "<<param[5]<<" "<<param[6]<<" "<<param[7];
 }//superSortParam(int size, int *prm)
 
+int superControlParam(int param) 
+{
+//контроль параметров ранжирования
+int id  = (param>>8)&0xff;//id блока
+unsigned int cnt = param&0xff;//номер блока
+//int num = param&0xffff;//номер выхода
+switch(id){
+ case ID_FB_INPUT:
+  if(cnt>=current_config.n_input) return 1;
+ break;
+ case ID_FB_OUTPUT:
+  if(cnt>=current_config.n_output) return 1;
+ break;
+ case ID_FB_LED:
+  if(cnt>=current_config.n_led) return 1;
+ break;
+ case ID_FB_BUTTON:
+  if(cnt>=current_config.n_button) return 1;
+ break;
+
+ case ID_FB_ALARM:
+  if(cnt>=current_config.n_alarm) return 1;
+ break;
+case ID_FB_GROUP_ALARM:
+  if(cnt>=4) return 1;
+ break;
+ case ID_FB_AND:
+  if(cnt>=current_config.n_and) return 1;
+ break;
+ case ID_FB_OR:
+  if(cnt>=current_config.n_or) return 1;
+ break;
+ case ID_FB_XOR:
+  if(cnt>=current_config.n_xor) return 1;
+ break;
+ case ID_FB_NOT:
+  if(cnt>=current_config.n_not) return 1;
+ break;
+
+ case ID_FB_TIMER:
+  if(cnt>=current_config.n_timer) return 1;
+ break;
+ case ID_FB_TRIGGER:
+  if(cnt>=current_config.n_trigger) return 1;
+ break;
+
+ case ID_FB_MEANDER:
+  if(cnt>=current_config.n_meander) return 1;
+ break;
+ case ID_FB_TU:
+  if(cnt>=current_config.n_tu) return 1;
+ break;
+ case ID_FB_TS:
+  if(cnt>=current_config.n_ts) return 1;
+ break;
+
+ case ID_FB_EVENT_LOG:
+  if(cnt>=current_config.n_log) return 1;
+ break;
+ default: return 1;
+}//switch id
+return 0;
+}//superControlParam

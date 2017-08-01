@@ -44,7 +44,7 @@ void constructorSDIBigComponent(COMPONENT_OBJ *sdibigcomp)
 
   sdibigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadSDIBigActualData(void) {
  setSDIBigCountObject(); //записать к-во обектов
 
@@ -85,18 +85,57 @@ void loadSDIBigActualData(void) {
    tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
   }//for
 }//loadActualData() 
+*/
 
 int getSDIBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateSDIBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(sdibigcomponent->isActiveActualData) loadSDIBigActualData(); //ActualData
+  if(sdibigcomponent->isActiveActualData) setSDIBigCountObject(); //к-во обектов
   sdibigcomponent->isActiveActualData = 0;
   if(privateSDIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(sdibigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  __LN_OUTPUT_LED *arr = (__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+     return arr[idxSubObj].settings.control;//Параметры СД item
+
+   case 1:
+     return arr[idxSubObj].settings.param[OUTPUT_LED_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
+   case 2:
+     return (arr[idxSubObj].settings.param[OUTPUT_LED_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 3:
+     return arr[idxSubObj].settings.param[OUTPUT_LED_RESET] & 0xffff;//Reset 0 СД item
+   case 4:
+     return (arr[idxSubObj].settings.param[OUTPUT_LED_RESET] >> 16) & 0x7fff;//Reset 1 СД item
+
+   case 5:
+     return arr[idxSubObj].settings.param[OUTPUT_LED_BL_IMP] & 0xffff;//BL-IMP 0 СД item
+   case 6:
+     return (arr[idxSubObj].settings.param[OUTPUT_LED_BL_IMP] >> 16) & 0x7fff;//BL-IMP 1 СД item
+
+   case 7:
+     return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1_MEANDER2] & 0xffff;//C1/C2 0 СД item
+   case 8:
+     return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1_MEANDER2] >> 16) & 0x7fff;//C1/C2 1 СД item
+
+   case 9:
+     return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1] & 0xffff;//Генератор С1 Имп.0 СД item
+   case 10:
+     return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1] >> 16) & 0x7fff;//Генератор С1 Имп.1 СД item
+
+   case 11:
+     return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER2] & 0xffff;//Генератор С2 Имп.0 СД item
+   case 12:
+     return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER2] >> 16) & 0x7fff;//Генератор С2 Имп. 1 СД item
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getSDIBigModbusRegister(int adrReg)
 int getSDIBigModbusBit(int adrBit)
 {
@@ -117,36 +156,50 @@ int setSDIBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 6:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 7:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 8:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 9:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 10:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 11:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 12:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch

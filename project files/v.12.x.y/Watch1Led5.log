@@ -1,0 +1,33 @@
+Expression	Value	Location	Type	
+spca_of_p_prt	<array>	0x20011F88	uintptr_t *[16]	
+gblLUAreaAuxVar	<struct>	0x200000E0	LUAreaAuxVar	
+pLN_OUTPUT[shRelativeIndexLU].settings	Error (col 1): Unknown or ambiguous symbol. pLN_OUTPUT			
+chGBLBPStopSetOut	Error (col 1): Unknown or ambiguous symbol. chGBLBPStopSetOut			
+chBkpt	'\0' (0x00)	0x20012631	char	
+arChIntermediaResult	Error (col 1): Unknown or ambiguous symbol. arChIntermediaResult			
+gLUAreaMem.headLUAreaList	<struct>	0x200003C8	LUAreaListElem	
+gLUAreaMem	<union>	0x200003C8	UNN_LogicUnitArea	
+chGBL_BP_StopLss	'\0' (0x00)	0x20012633	char	
+DiHrdStateUI32Bit	<union>	0x20012578	UI32Bit	
+arrChCalcLUOrderNumsSchmPage2	<array>""	0x0803913C	char[170]	
+eMuteAlarmLed	<class>	0x20012188	class CMuteAlarmLed	
+CLUBase::m_AuxInfo.ch	'\0' (0x00)	0x2001240C	char	
+sDiCfg.arChDurationDI	<array>""	0x200120C8	char[19]	
+eRunErrorLed	<class>	0x200120F8	class CLURunErrorLed	
+chErrorState	'\0' (0x00)	0x20012649	char	
+CBGSig::m_chCounterCall	'c' (0x63)	0x20000214	char	
+CBGSig::ChanelsNames	<array>""	0x20012324	unsigned char[5]	
+CBGSig::PickUPs	<array>	0x200121F0	unsigned int[5]	
+pLN_OUTPUT_LED[shRelativeIndexLU]	<struct>	0x600732E8	__LN_OUTPUT_LED	
+settings	<struct>	0x600732E8	__settings_for_OUTPUT_LED	
+control	0x00000000	0x600732E8	uint32_t	
+param	<array>	0x600732EC	uint32_t[6]	
+[0]	0x0C050002	0x600732EC	uint32_t	
+[1]	0x09010001	0x600732F0	uint32_t	
+[2]	0x00000000	0x600732F4	uint32_t	
+[3]	0x00000000	0x600732F8	uint32_t	
+[4]	0x00000000	0x600732FC	uint32_t	
+[5]	0x00000000	0x60073300	uint32_t	
+active_state	<array>""	0x60073304	uint8_t[1]	
+d_trigger_state	<array>""	0x60073305	uint8_t[1]	
+d_trigger_state_tmp	<array>""	0x60073306	uint8_t[1]	

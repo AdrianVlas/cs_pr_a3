@@ -17,7 +17,7 @@ void preCGSBigReadAction(void);//action до чтения
 void postCGSBigReadAction(void);//action после чтения
 void preCGSBigWriteAction(void);//action до записи
 int postCGSBigWriteAction(void);//action после записи
-void loadCGSBigActualData(void);
+//void loadCGSBigActualData(void);
 
 COMPONENT_OBJ *cgsbigcomponent;
 /**************************************/
@@ -41,7 +41,7 @@ void constructorCGSBigComponent(COMPONENT_OBJ *cgsbigcomp)
 
   cgsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadCGSBigActualData(void) {
   //ActualData
    __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
@@ -63,7 +63,7 @@ void loadCGSBigActualData(void) {
    value = arr[item].settings.set_delay[GROUP_ALARM_SET_DELAY_DELAY];
    tempReadArray[item*REGISTER_FOR_OBJ+3] = value / 100;
    }//for
-
+*/
   /*
   ...
   
@@ -85,19 +85,40 @@ const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_
   Максимальне число: (NUMBER_ANALOG_CANALES - 1) - бо останній канал - це напруга.
   
   */
-}//loadActualData() 
+//}//loadActualData() 
 
 int getCGSBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateCGSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
 
-  if(cgsbigcomponent->isActiveActualData) loadCGSBigActualData(); //ActualData
-  cgsbigcomponent->isActiveActualData = 0;
+//  if(cgsbigcomponent->isActiveActualData) loadCGSBigActualData(); //ActualData
+//  cgsbigcomponent->isActiveActualData = 0;
 
   superSetOperativMarker(cgsbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+  case 0:
+   //Параметры ГС item
+   return arr[idxSubObj].settings.control &0x3;
+
+  case 1:
+   //Входной ток ГС item
+   return (arr[idxSubObj].settings.analog_input_control >> group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
+
+  case 2:
+   //Приращение тока ГС item
+   return arr[idxSubObj].settings.pickup[GROUP_ALARM_PICKUP_DELTA_I];
+
+  case 3:
+   //Время tуст ГС item
+   return arr[idxSubObj].settings.set_delay[GROUP_ALARM_SET_DELAY_DELAY];
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getCGSBigModbusBit(int adrBit)
 {

@@ -20,7 +20,7 @@ void preMEBigReadAction(void);//action до чтения
 void postMEBigReadAction(void);//action после чтения
 void preMEBigWriteAction(void);//action до записи
 int postMEBigWriteAction(void);//action после записи
-void loadMEBigActualData(void);
+//void loadMEBigActualData(void);
 
 COMPONENT_OBJ *mebigcomponent;
 
@@ -45,7 +45,7 @@ void constructorMEBigComponent(COMPONENT_OBJ *mebigcomp)
 
   mebigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadMEBigActualData(void) {
  setMEBigCountObject(); //записать к-во обектов
   //ActualData
@@ -66,18 +66,37 @@ void loadMEBigActualData(void) {
         tempReadArray[2+item*REGISTER_FOR_OBJ+2*item+1] = value;
   }//for
 }//loadActualData() 
-
+*/
 int getMEBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateMEBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(mebigcomponent->isActiveActualData) loadMEBigActualData(); //ActualData
+  if(mebigcomponent->isActiveActualData) setMEBigCountObject(); //записать к-во обектов
   mebigcomponent->isActiveActualData = 0;
   if(privateMEBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(mebigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = (offset+2)/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset) {//индекс регистра 
+   case 0:
+   //Очистить журнал 0
+     return 0;//arr[item].settings.param[0];
+   case 1:
+   //Очистить журнал 1
+     return 0;//arr[item].settings.param[1];
+  }//switch
+
+   __LOG_INPUT *arr = (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+     return arr[idxSubObj] & 0xffff;//
+   case 1:
+     return (arr[idxSubObj] >> 16) & 0x7fff;//
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getMEBigModbusBit(int adrBit)
 {

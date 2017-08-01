@@ -96,7 +96,8 @@ public:
     void DoCalcLUSources(void);
     void LUSelector( long lIdxLU);
     void LUIterator(long AmountCalcLU, long lIdxLU);
-    void Init(void);
+    void Init_(void);
+    long Init(void);
     void Init1(void);
     void PrintPointsState(void);
     void PrintShematicElemPointsState(void);
@@ -112,7 +113,7 @@ public:
     void DetectCircutLinks(void);
     void SetupLULinks(void *pv);
     //	friend void GetHIDLU(void**ppv,long lIdxLUinStng );
-    void Init2(void);
+    long Init2(void);
     void SetupCLUDInput_0_1StngParam(void *pv);
     void SetupCLUDout_1_0StngParam(void *pv);
     void SetupCLULedStngParam(void *pv);
@@ -136,7 +137,7 @@ public:
     long EvalAmtIn_arrLUAreaListElem(long lLUStng);
     void SetupCLUInternalRef(void *pv);
     void SetupCLUInternalRef2(void *pv);
-	
+    void SetupCLUInternalRefLed(void *pv);
 	friend long InitSchematic(void);
 	friend long ReInitSchematic(void);
 	friend void DoCalcWrp(void);

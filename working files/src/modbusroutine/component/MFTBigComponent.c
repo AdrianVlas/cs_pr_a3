@@ -19,7 +19,7 @@ void preMFTBigReadAction(void);//action до чтения
 void postMFTBigReadAction(void);//action после чтения
 void preMFTBigWriteAction(void);//action до записи
 int postMFTBigWriteAction(void);//action после записи
-void loadMFTBigActualData(void);
+//void loadMFTBigActualData(void);
 
 COMPONENT_OBJ *mftbigcomponent;
 
@@ -44,7 +44,7 @@ void constructorMFTBigComponent(COMPONENT_OBJ *mftbigcomp)
 
   mftbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadMFTBigActualData(void) {
  setMFTBigCountObject(); //записать к-во обектов
   //ActualData
@@ -73,18 +73,44 @@ void loadMFTBigActualData(void) {
    }//for
 
 }//loadActualData() 
-
+*/
 int getMFTBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateMFTBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(mftbigcomponent->isActiveActualData) loadMFTBigActualData(); //ActualData
+  if(mftbigcomponent->isActiveActualData) setMFTBigCountObject(); //к-во обектов
   mftbigcomponent->isActiveActualData = 0;
   if(privateMFTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(mftbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_TIMER *arr = (__LN_TIMER*)(spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+   //Таймер паузы  item
+    return arr[idxSubObj].settings.set_delay[TIMER_SET_DELAY_PAUSE]/10;
+
+   case 1:
+   //Таймер работы   item
+   return arr[idxSubObj].settings.set_delay[TIMER_SET_DELAY_WORK]/10;
+
+   case 2:
+   //MFT-IN 1 0 item
+   return arr[idxSubObj].settings.param[TIMER_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
+
+   case 3:
+   return  (arr[idxSubObj].settings.param[TIMER_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 4:
+   //Reset-I  0 item
+   return arr[idxSubObj].settings.param[TIMER_RESET] & 0xffff;//LEDIN 0 СД item
+   case 5:
+   return (arr[idxSubObj].settings.param[TIMER_RESET] >> 16) & 0x7fff;//LEDIN 1 СД item
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getMFTBigModbusBit(int adrBit)
 {
@@ -114,11 +140,15 @@ int setMFTBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch

@@ -44,7 +44,7 @@ void constructorNOTBigComponent(COMPONENT_OBJ *notbigcomp)
 
   notbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadNOTBigActualData(void) {
  setNOTBigCountObject(); //записать к-во обектов
   //ActualData
@@ -60,18 +60,29 @@ void loadNOTBigActualData(void) {
      }
    }//for
 }//loadActualData() 
+*/
 
 int getNOTBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateNOTBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(notbigcomponent->isActiveActualData) loadNOTBigActualData(); //ActualData
+  if(notbigcomponent->isActiveActualData) setNOTBigCountObject(); //к-во обектов
   notbigcomponent->isActiveActualData = 0;
   if(privateNOTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(notbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_NOT *arr = (__LN_NOT*)(spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+        return arr[idxSubObj].settings.param[0] & 0xffff;//
+   case 1:
+        return (arr[idxSubObj].settings.param[0] >> 16) & 0x7fff;//
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getNOTBigModbusBit(int adrBit)
 {
@@ -95,6 +106,8 @@ int setNOTBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
+    //контроль параметров ранжировани€
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch

@@ -140,7 +140,7 @@ void setTSSmallCountObject(void) {
   int cntObj = current_config.n_ts;    //Кількість блоків сигналізацій
   if(cntObj<0) return;
   if(cntObj>TOTAL_OBJ) return;
-  tssmallcomponent->countObject = 16;//cntObj;
+  tssmallcomponent->countObject = cntObj;
 }//
 void preTSSmallReadAction(void) {
 //action до чтения

@@ -105,13 +105,9 @@ short *parIdxLUAreaListElem;
             
     } 
 //////////////////////////////////////////////////////////////////  
-    i = parIdxLUAreaListElem[LU_LOG-1];
-    // j = i + shCounterInitCLUDout;
-    pv = (pLUAreaListElem[i]).pvLU;
-    Log_Op(pv);  
-/*
     lAmtProcessObj = (static_cast<__CONFIG* >(p_current_config_prt))-> n_group_alarm;
     shCounterInitCLUDout = 0;
+    CBGSig::chAlreadyCalculated = 0;
     i = parIdxLUAreaListElem[LU_BGS-1];
     while (shCounterInitCLUDout < lAmtProcessObj ) {
             j = i + shCounterInitCLUDout;
@@ -119,7 +115,17 @@ short *parIdxLUAreaListElem;
             BGSig_Op(pv);
             shCounterInitCLUDout++;
             
-    } 
+    }
+CBGSig::chAlreadyCalculated = 1;    
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////  
+    i = parIdxLUAreaListElem[LU_LOG-1];
+    // j = i + shCounterInitCLUDout;
+    pv = (pLUAreaListElem[i]).pvLU;
+    Log_Op(pv);  
+/*
+
 */ 
 //////////////////////////////////////////////////////////////////        
 //    lAmtProcessObj = (static_cast<__CONFIG* >(p_current_config_prt))-> n_tu;

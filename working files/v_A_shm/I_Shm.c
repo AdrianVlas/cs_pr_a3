@@ -51,9 +51,9 @@ fnPvrL arrChangeCfgFnptr[16] = {
 };
 
 long ChangeCfg(void* pv){
-    register long i, lRes, lCtrElem;
+    register long i, lRes, lCtrElem, lVl;
 
-	lRes = InitSchematic();
+	lVl = InitSchematic();
     lRes = i = 0;
     lCtrElem = chGlbAmountRegisteredElem;
     if (lCtrElem)
@@ -66,7 +66,7 @@ long ChangeCfg(void* pv){
         } while (--lCtrElem > 0 && lRes == 0);
     }
 
-    return i;
+    return lVl;
 }
 
 // long RegisterHundlerLUCfg(void* pv){

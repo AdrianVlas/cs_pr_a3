@@ -1273,7 +1273,9 @@ uint32_t event_log_handler(void)
       buffer_log_records[index_into_buffer_log++] = (param >> (2*8)) & 0xff;
       buffer_log_records[index_into_buffer_log++] = (param >> (3*8)) & 0xff;
 
-      buffer_log_records[index_into_buffer_log] = NNC_now;
+      buffer_log_records[index_into_buffer_log++] = (NNC_now >> (0*8)) & 0xff;
+      buffer_log_records[index_into_buffer_log  ] = (NNC_now >> (1*8)) & 0xff;
+
       if (id_input == ID_FB_GROUP_ALARM)
       {
 //        ((__LN_GROUP_ALARM*)address)->NNC_before = NNC_now;

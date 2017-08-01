@@ -7,7 +7,7 @@ const long lU_NOM = 220000;
 #include "BgsAux.h"
 #include <stdint.h>
 #include "../inc/const_measurement.h"
-
+#include "../inc/const_global.h"
 extern volatile unsigned long measurement_DBG[10];
 extern unsigned int measurement[];
 typedef struct BgsSuit_tag{
@@ -34,11 +34,20 @@ public:
     char* arrPchIn[TOTAL_BGS_VISIO_IN]; //
     char arrOut [TOTAL_BGS_VISIO_OUT]; //Tra
 static char m_chCounterCall;
+static char chAlreadyCalculated;
+static char chNeedTimerCalculated;
+static char chMeasUpdateInterval;
+static unsigned int  meas  [NUMBER_ANALOG_CANALES]; 
+static unsigned int  DMeas        [NUMBER_ANALOG_CANALES]; 
+static unsigned int  PickUPs      [NUMBER_ANALOG_CANALES]; 
+static unsigned char ChanelsNames [NUMBER_ANALOG_CANALES]; 
+
     char m_chLinkedTimers; //Field bit
     char m_chStateTWait;
     char m_chStateTReset;
     char m_chNumberAnalogChanell;
-	char m_chWRIfix;
+	char m_chWRIfix,m_chIfixDir;
+    char m_chStdpCE, m_chStdpOV ;
 	char m_chWRIp;
 	char m_chWRIc;
 	char m_chWR_NNC;

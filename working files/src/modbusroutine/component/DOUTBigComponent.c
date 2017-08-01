@@ -19,7 +19,7 @@ void preDOUTBigReadAction(void);//action до чтения
 void postDOUTBigReadAction(void);//action после чтения
 void preDOUTBigWriteAction(void);//action до записи
 int postDOUTBigWriteAction(void);//action после записи
-void loadDOUTBigActualData(void);
+//void loadDOUTBigActualData(void);
 
 COMPONENT_OBJ *doutbigcomponent;
 
@@ -44,6 +44,7 @@ void constructorDOUTBigComponent(COMPONENT_OBJ *doutcomp)
   doutbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
+/*
 void loadDOUTBigActualData(void) {
  setDOUTBigCountObject(); //записать к-во обектов
 
@@ -83,24 +84,102 @@ void loadDOUTBigActualData(void) {
    value = (arr[item].settings.param[OUTPUT_LED_MEANDER2] >> 16) & 0x7fff;//Генератор С2 1 Имп.ДВых. item
    tempReadArray[item*REGISTER_FOR_OBJ+12] = value;
   }//for
+*/
   /*
   ...
   
   на входи "Генератор C1" і "Генератор C2" можна встановити тільки генеротори, тобто id мусить дорівнювати ID_FB_MEANDER, n не може перевищувати кількість генераторів у конфігурації, out мусить дорівнювати 1, бо у генератора є єдиний вихід
   */
-}//loadActualData() 
+//}//loadActualData() 
 
 int getDOUTBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateDOUTBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(doutbigcomponent->isActiveActualData) loadDOUTBigActualData(); //ActualData
+  if(doutbigcomponent->isActiveActualData)// loadDOUTBigActualData(); //ActualData
+                                           setDOUTBigCountObject(); //записать к-во обектов
   doutbigcomponent->isActiveActualData = 0;
   if(privateDOUTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(doutbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  __LN_OUTPUT_LED *arr = (__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
+//  int offset = i+doutbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Параметры ДВых. item
+    return arr[idxSubObj].settings.control;// = (tempWriteArray[offsetTempWriteArray+i]);
+   //break;
+
+   case 1://RIN 0 ДВых. item
+        //arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] = 
+         return arr[idxSubObj].settings.param[OUTPUT_LED_LOGIC_INPUT] & 0xffff;// &= (uint32_t)~0xffff;
+        //arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] = arr[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+//   break;
+   case 2://RIN 1 ДВых. item
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_LOGIC_INPUT]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
+//        arr[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+//   break; 
+
+   case 3://Reset 0 ДВых. item
+        //arr1[idxSubObj].param[OUTPUT_LED_RESET] = 
+        return arr[idxSubObj].settings.param[OUTPUT_LED_RESET] & 0xffff;// &= (uint32_t)~0xffff;
+//        arr1[idxSubObj].param[OUTPUT_LED_RESET] = arr[idxSubObj].param[OUTPUT_LED_RESET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+  // break;
+   case 4://Reset 1 ДВых. item
+        //arr1[idxSubObj].param[OUTPUT_LED_RESET] = 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_RESET]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
+//        arr1[idxSubObj].param[OUTPUT_LED_RESET] = arr[idxSubObj].param[OUTPUT_LED_RESET] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+//   break; 
+
+   case 5://BL-IMP 0 ДВых. item
+        //arr1[idxSubObj].param[OUTPUT_LED_BL_IMP] = 
+        return arr[idxSubObj].settings.param[OUTPUT_LED_BL_IMP] & 0xffff;// &= (uint32_t)~0xffff;
+//        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP] = arr[idxSubObj].param[OUTPUT_LED_BL_IMP] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+//   break;
+   case 6://BL-IMP 1 ДВых. item
+//        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP] = 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_BL_IMP]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
+//        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP] = arr[idxSubObj].param[OUTPUT_LED_BL_IMP] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+//   break; 
+
+   case 7://C1/C2 0 ДВых. item
+//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] = 
+        return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1_MEANDER2] & 0xffff;// &= (uint32_t)~0xffff;
+//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] = arr[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+  // break;
+   case 8://C1/C2 1 ДВых. item
+        //arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] = 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1_MEANDER2]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
+//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] = arr[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+//   break; 
+
+   case 9://Генератор С1 0 ДВых. item
+        //arr1[idxSubObj].param[OUTPUT_LED_MEANDER1] = 
+        return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1] & 0xffff;// &= (uint32_t)~0xffff;
+ //       arr1[idxSubObj].param[OUTPUT_LED_MEANDER1] = arr[idxSubObj].param[OUTPUT_LED_MEANDER1] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+ //  break;
+   case 10://Генератор С1 1 ДВых. item
+        //arr1[idxSubObj].param[OUTPUT_LED_MEANDER1] = 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
+//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1] = arr[idxSubObj].param[OUTPUT_LED_MEANDER1] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+//   break; 
+
+   case 11://Генератор С2 0 ДВых. item
+        //arr1[idxSubObj].param[OUTPUT_LED_MEANDER2] = 
+        return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER2] & 0xffff;// &= (uint32_t)~0xffff;
+//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER2] = arr[idxSubObj].param[OUTPUT_LED_MEANDER2] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+//   break;
+   case 12://Генератор С2 1 ДВых. item
+        //arr1[idxSubObj].param[OUTPUT_LED_MEANDER2] = 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER2]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
+//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER2] = arr[idxSubObj].param[OUTPUT_LED_MEANDER2] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+  // break; 
+ }//switch
+
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getDOUTBigModbusBit(int adrBit)
 {
@@ -123,29 +202,46 @@ int setDOUTBigModbusRegister(int adrReg, int dataReg)
    case 0:
    break; 
    case 1:
-//    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
-//    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
-//    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 6:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 7:
-//    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 8:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 9:
-//    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 10:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 11:
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 12:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch
@@ -189,7 +285,6 @@ int postDOUTBigWriteAction(void) {
   int countRegister = doutbigcomponent->operativMarker[1]-doutbigcomponent->operativMarker[0]+1;
   if(doutbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//  __LN_OUTPUT_LED *arr = (__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
    __settings_for_OUTPUT_LED *arr  = (__settings_for_OUTPUT_LED*)(sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
    __settings_for_OUTPUT_LED *arr1 = (__settings_for_OUTPUT_LED*)(sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {
@@ -205,8 +300,8 @@ int postDOUTBigWriteAction(void) {
         arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] = arr[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break;
    case 2://RIN 1 ДВых. item
-        arr[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] &= (uint32_t)~(0x7fff<<16);
-        arr[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+        arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] = arr[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] = arr[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
    break; 
 
    case 3://Reset 0 ДВых. item

@@ -270,7 +270,10 @@ void SetHrdOut(void*pv){
 #ifdef LIMITED_OUTS_MODE
 	#warning message Checking Discrete Outs 6,7 will Disabled
 	j = i&0x1f;
+	#pragma message("'''''''''''''''''''''''''''''''")
+	#pragma message("       !!!CAUTION!!!           ")
 	#pragma message("---prtTmr.c in Limited Mode ---")
+	#pragma message("===============================")
 	
 #else
 	// #ifdef _DEBUG

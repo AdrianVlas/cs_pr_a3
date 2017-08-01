@@ -1,0 +1,14 @@
+Variable	Value	Location	Type	
+this	sh (0x20012048)	R4	class Shematic *	
+pv	0x20000498 (gLUAreaMem + 208)	R5	void *	
+i	0x00000008	R9	long	
+j	0x0000001A	R6	long	
+pInit2LcVarArea	0x2001FB90	R7	Init2LcVarArea *	
+locPCLULed	0x20007E74 (gLUAreaMem + 31404)	0x2001FB68	class CLULed *	
+locRef_CLULed	0x20007E74 (gLUAreaMem + 31404)	R8	class CLULed &	
+bbVar	0x00	0x2001FB62	bool	
+pLN_OUTPUT_LED	0x60073268	0x2001FB64	__LN_OUTPUT_LED *	
+shRelativeIndexLU	0x0000	R11	short	
+bbSel1	0x00	R10	bool	
+bbSel2	0xFB	0x2001FB61	bool	
+bbSel3	0x90	0x2001FB60	bool	

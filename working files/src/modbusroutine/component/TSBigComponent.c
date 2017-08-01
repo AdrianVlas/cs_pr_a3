@@ -20,6 +20,7 @@ void postTSBigReadAction(void);//action после чтения
 void preTSBigWriteAction(void);//action до записи
 int postTSBigWriteAction(void);//action после записи
 void loadTSBigActualData(void);
+int getTSmallModbusBeginAdrRegister(void);
 
 COMPONENT_OBJ *tsbigcomponent;
 
@@ -44,7 +45,7 @@ void constructorTSBigComponent(COMPONENT_OBJ *tsbigcomp)
 
   tsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadTSBigActualData(void) {
 int getTSmallModbusBeginAdrRegister(void);
 //extern COMPONENT_OBJ *tssmallcomponent;
@@ -73,17 +74,40 @@ int getTSmallModbusBeginAdrRegister(void);
    }//for
 }//loadActualData() 
 
+*/
+
 int getTSBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateTSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(tsbigcomponent->isActiveActualData) loadTSBigActualData(); //ActualData
+  if(tsbigcomponent->isActiveActualData) setTSBigCountObject(); //записать к-во обектов
   tsbigcomponent->isActiveActualData = 0;
   if(privateTSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tsbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   __LN_TS *arr = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+   //In TC 0  item
+    return arr[idxSubObj].settings.param[TS_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
+   case 1:
+    return (arr[idxSubObj].settings.param[TS_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 2:
+   //Block TC 0  item
+    return arr[idxSubObj].settings.param[TS_BLOCK] & 0xffff;//LEDIN 0 СД item
+   case 3:
+    return (arr[idxSubObj].settings.param[TS_BLOCK] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 4:
+   //Адрес ТС 0  item
+   return getTSmallModbusBeginAdrRegister() + idxSubObj;
+  }//switch
+
+  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
 int getTSBigModbusBit(int adrBit)
 {
@@ -107,13 +131,19 @@ int setTSBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch
@@ -157,7 +187,6 @@ int postTSBigWriteAction(void) {
   int countRegister = tsbigcomponent->operativMarker[1]-tsbigcomponent->operativMarker[0]+1;
   if(tsbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LN_TS *arr = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
    __settings_for_TS *arr  = (__settings_for_TS*)(sca_of_p[ID_FB_TS - _ID_FB_FIRST_VAR]);
    __settings_for_TS *arr1 = (__settings_for_TS*)(sca_of_p_edit[ID_FB_TS - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {

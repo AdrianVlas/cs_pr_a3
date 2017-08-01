@@ -61,7 +61,7 @@ enum _index_dataflash
 #define NUMBER_PAGES_INTO_LOG            480
 #define NUMBER_PAGES_INTO_PR_ERR        (NUMBER_PAGES_INTO_DATAFLASH_1 - NUMBER_PAGES_INTO_LOG)
 
-#define SIZE_ONE_RECORD_LOG                   13
+#define SIZE_ONE_RECORD_LOG                   14
 #define MAX_NUMBER_RECORDS_LOG_INTO_BUFFER    100 //максимальнакількість записів в буфері типу FIFO, які чекають на запису DataFlash
 #define SIZE_BUFFER_FOR_LOG                   (SIZE_ONE_RECORD_LOG*MAX_NUMBER_RECORDS_LOG_INTO_BUFFER)
 #define MIN_ADDRESS_LOG_AREA                  0x0
