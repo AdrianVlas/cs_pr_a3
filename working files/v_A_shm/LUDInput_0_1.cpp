@@ -30,7 +30,15 @@ void READ_DI_Op(void *pObj) {
     else{
         j = 0;
         }
-//    pCLUDInput_0_1->arrOut[0] = j;    
+#ifdef LIMITED_INPUTS_MODE  
+    #pragma message("'''''''''''''''''''''''''''''''")
+	#pragma message("       !!!CAUTION!!!           ")
+	#pragma message("---Discrete Input wil be blocked ---")
+	#pragma message("===============================")
+#else
+    #pragma message("---Dis Input in Strict Mode---")
+    pCLUDInput_0_1->arrOut[0] = j; 
+#endif	    
     //Set State    
     pLN_INPUT = static_cast<__LN_INPUT*>(pCLUDInput_0_1->pvCfgLN);
     pLN_INPUT->active_state[(INPUT_OUT/8) ] = j<<INPUT_OUT;

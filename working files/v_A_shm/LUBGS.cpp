@@ -62,11 +62,12 @@ m_chStateTReset  = 0;
 m_lIfix = m_lMeasIti_mn_1 = m_lKcDeltaIy = 0;
  m_lNNC = m_lNNP = m_lIp = m_lIc = 0;
 m_chNumberAnalogChanell = 0;
- m_chWRIfix = 0;
+ m_chWRIfix = 0;m_chIfixDir = 0;
  m_chWRIp   = 0;
  m_chWRIc   = 0;
  m_chWR_NNC = 0;
  m_chWR_NNP = 0;
+m_chStdpCE = m_chStdpOV = 0;
 
 ch_DTrg = 0;
 ch_C1 = 0;
@@ -74,6 +75,25 @@ ch_C1 = 0;
 
 }
  char CBGSig::m_chCounterCall = 99;
+  char CBGSig::chAlreadyCalculated = 0;
+    char CBGSig::chNeedTimerCalculated = 0;
+       char CBGSig::chMeasUpdateInterval = 0;
+ unsigned int CBGSig::meas[NUMBER_ANALOG_CANALES] = {
+ 0,0,0,0,0
+ };
+ 
+ unsigned int CBGSig::DMeas[NUMBER_ANALOG_CANALES] = {
+ 0,0,0,0,0
+ };
+ 
+unsigned int CBGSig::PickUPs [NUMBER_ANALOG_CANALES] = {
+ 0,0,0,0,0
+ };
+ 
+unsigned char CBGSig::ChanelsNames[NUMBER_ANALOG_CANALES] = {
+ 0,0,0,0,0
+ };
+ 
 long CBGSig::LinkBGSigTimers(void) {
     register long i = 0;
     //Insert TpauseMft
@@ -174,13 +194,15 @@ void BGSig_Op(void *pObj) {
 register long i;
     CBGSig& rCBGSig = *(static_cast<CBGSig*> (pObj));
     i = rCBGSig.m_chCounterCall;
+    i |= rCBGSig.chAlreadyCalculated;//CLUBase::m_AuxInfo.ch;
    if(i == 0){
-       rCBGSig.m_chCounterCall = 0;
+//       rCBGSig.m_chCounterCall = 0;
         if(rCBGSig.shLUBieldOrdNum == shIdxBGSBkpt)
    asm(
                "bkpt 1"
                );
-    rCBGSig.CalcBusGrSigSchematic();
+    rCBGSig.CalcBusGrSigSchematicDbg();
+    //rCBGSig.CalcBusGrSigSchematic();
     }
 //    else{
 //        rCBGSig.m_chCounterCall = ++i;
@@ -193,7 +215,7 @@ register long i;
 //static char chGLB_C1 = 0;
 void CBGSig::CalcBusGrSigSchematicDbg(void) {
     register long  rl_Val,i;
-
+    register long  lRamainderNNP, lRamainderNNC;
 //#pragma data_alignment=4 
 //    char arChIntermediaResult[(TOTAL_BGS_LU)];
 memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
@@ -203,18 +225,22 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     if (ch_C1 == 0 && (i) == 1) {
         ch_DTrg = 1;
     }
+    ch_C1 = i;
 	i = 0;
 	bool bbDeltaItminusIf;
     if (ch_DTrg == 1) {
         long j, Iti;
         Iti = measurement_DBG[m_chNumberAnalogChanell];
-        if (Iti > m_lIfix) {
+        
+        if ( (Iti > m_lIfix) ) {
             j = Iti - m_lIfix;
         } else {
             j = m_lIfix - Iti;
         }
+        
         i = (m_BGSigSuit.lIust * measurement_DBG[4]) / lU_NOM;
-        if (j > i)
+                i *=9; i/=10;//i *= 58981;i>>=16;//0.9 koeff
+        if (j >= i)
             i = 1;
         else
             i = 0;
@@ -225,58 +251,130 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     if(bbTDelay && m_chWRIp == 0){
         m_lIp = m_lIfix;
         m_lIc = measurement_DBG[m_chNumberAnalogChanell];
-
         if (m_BGSigSuit.chCheckBgs == 0) {
             m_lNNC = m_lIc / (m_lKcDeltaIy);
             m_lNNP = m_lIp / (m_lKcDeltaIy);
+            lRamainderNNC  = m_lIc % (m_lKcDeltaIy);
+            if(lRamainderNNC>=(m_lKcDeltaIy>>1))
+                m_lNNC++;
+            lRamainderNNP = m_lIp % (m_lKcDeltaIy);
+            if(lRamainderNNP>=(m_lKcDeltaIy>>1))
+                m_lNNP++;
+            
         } else {
             m_lNNC = (m_lIc - m_lKcDeltaIy) / m_lKcDeltaIy;
             m_lNNP = (m_lIp - m_lKcDeltaIy) / m_lKcDeltaIy;
+            lRamainderNNC   = (m_lIc - m_lKcDeltaIy) % m_lKcDeltaIy;
+            if(lRamainderNNC>=(m_lKcDeltaIy>>1))
+                m_lNNC++;
+            lRamainderNNP  = (m_lIp - m_lKcDeltaIy) % m_lKcDeltaIy;
+            if(lRamainderNNP>=(m_lKcDeltaIy>>1))
+                m_lNNP++;
         }
-//        rl_Val = m_lNNC - m_lNNP;
-//		if(rl_Val>0)
-//        arrOut[BGS_OUT_NAME_NNP - 1] = 1;
-//		rl_Val = m_lNNP - m_lNNC;
-//		if(rl_Val>0)
-//        arrOut[BGS_OUT_NAME_NNM - 1] = 1;
-//		if(m_lNNC>1)
-//        arrOut[BGS_OUT_NAME_CC  - 1] = 1;
-        
-	
+        m_chWRIp = 1;
     }
     else {
         if (bbTDelay == false)
         m_chWRIp = false;
     }
-    rl_Val = m_lNNC - m_lNNP;
-    if (rl_Val > 0)
-        arrOut[BGS_OUT_NAME_NNP - 1] = 1;
-    rl_Val = m_lNNP - m_lNNC;
-    if (rl_Val > 0)
-        arrOut[BGS_OUT_NAME_NNM - 1] = 1;
-    if (m_lNNC > 1)
-        arrOut[BGS_OUT_NAME_CC - 1] = 1;
-    arrOut[BGS_OUT_NAME_NNC_INF-1] = m_lNNC;
-    bbT1ms = bbTDelay || ((!bbDeltaItminusIf) &&(ch_DTrg == 1));
+    ;bbT1ms = bbTDelay || ((!bbDeltaItminusIf) &&(ch_DTrg == 1));
     if(lTReset(bbT1ms))
     ch_DTrg = 0;
-    if (measurement_DBG[m_chNumberAnalogChanell] <= static_cast<unsigned long> (m_lKcDeltaIy))
-        arrOut[BGS_OUT_NAME_CE - 1] = 1;
-    if (measurement_DBG[m_chNumberAnalogChanell] > 5000)
-    arrOut[BGS_OUT_NAME_OC  - 1] = 1;
+
+    
+    if(m_BGSigSuit.chStateGS){
+        rl_Val = m_lNNC - m_lNNP;
+        if (rl_Val > 0)
+            arrOut[BGS_OUT_NAME_NNP - 1] = 1;
+        rl_Val = m_lNNP - m_lNNC;
+        if (rl_Val > 0)
+            arrOut[BGS_OUT_NAME_NNM - 1] = 1;
+        if (m_lNNC > 1)
+            arrOut[BGS_OUT_NAME_CC - 1] = 1;
+        arrOut[BGS_OUT_NAME_NNC_INF-1] = m_lNNC;
+        
+        if (m_BGSigSuit.chCheckBgs > 0){
+            rl_Val = m_lKcDeltaIy;//(m_lKcDeltaIy*58981)>>16;
+            
+            
+            if (measurement_DBG[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rl_Val) ){
+                m_chStdpCE = 1;
+            }
+            else{
+            rl_Val *= 11;rl_Val /= 10;
+                if( (measurement_DBG[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rl_Val)) 
+                &&  (m_chStdpCE == 1) )
+                    m_chStdpCE = 1;
+                else
+                    m_chStdpCE = 0;
+            }
+            
+            if( m_chStdpCE == 1)
+                arrOut[BGS_OUT_NAME_CE - 1] = 1;
+            else
+                arrOut[BGS_OUT_NAME_CE - 1] = 0;
+        }else{
+            arrOut[BGS_OUT_NAME_CE - 1] = 0;
+        }
+        
+
+       if (measurement_DBG[m_chNumberAnalogChanell] > 2000){
+            m_chStdpOV = 1;
+        }
+        else{
+            if( (m_chStdpOV == 1) && (measurement_DBG[m_chNumberAnalogChanell] > 1800) )
+                m_chStdpOV = 1;
+            else
+                m_chStdpOV = 0;
+        }
+        if( m_chStdpOV == 1)
+            arrOut[BGS_OUT_NAME_OC  - 1] = 1;
+        else
+            arrOut[BGS_OUT_NAME_OC  - 1] = 0;
+         
+
+    }
+    else{
+        arrOut[BGS_OUT_NAME_NNP - 1] = 0;
+        arrOut[BGS_OUT_NAME_NNM - 1] = 0;
+        arrOut[BGS_OUT_NAME_CC  - 1] = 0;
+        arrOut[BGS_OUT_NAME_NNC_INF-1] = 0;
+        arrOut[BGS_OUT_NAME_CE  - 1] = 0;
+        arrOut[BGS_OUT_NAME_OC  - 1] = 0;
+    }
     register __LN_GROUP_ALARM *pLN_GROUP_ALARM = static_cast<__LN_GROUP_ALARM *>(pvCfgLN);
     
-    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_NNP/8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_CC  -1])<<( GROUP_ALARM_OUT_NNP%8);
-    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_NNM/8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_OC  -1])<<( GROUP_ALARM_OUT_NNM%8);
-    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_CC /8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_CE  -1])<<( GROUP_ALARM_OUT_CC %8);
-    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_CE /8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_NNP -1])<<( GROUP_ALARM_OUT_CE %8);
-    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_OC /8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_NNM -1])<<( GROUP_ALARM_OUT_OC %8);
-    pLN_GROUP_ALARM->NNC = arrOut[BGS_OUT_NAME_NNC_INF-1];
+   rl_Val = 0;
+    rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_NNP -1])<<( GROUP_ALARM_OUT_NNP%8);
+    rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_NNM -1])<<( GROUP_ALARM_OUT_NNM%8);
+    rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_CC  -1])<<( GROUP_ALARM_OUT_CC %8);
+    rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_OC  -1])<<( GROUP_ALARM_OUT_OC %8);
+    rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_CE  -1])<<( GROUP_ALARM_OUT_CE %8);
+    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_OC /8) ] = rl_Val;
+    i = m_lNNC;
+    if(i < 0)
+        pLN_GROUP_ALARM->NNC = 0;//arrOut[BGS_OUT_NAME_NNC_INF-1];
+    else
+        pLN_GROUP_ALARM->NNC = i;//arrOut[BGS_OUT_NAME_NNC_INF-1];
+    rl_Val = 0;
+    
+    if(m_chStateTWait)
+        rl_Val |= 1;
+   if(m_chStateTReset)
+        rl_Val |= 1<<1;//Be Careful you don`t difer bits of each LU
+        
+    i = CBGSig::chNeedTimerCalculated;
+    if(rl_Val>0)
+        i |= 1<<shShemasOrdNumStng;
+    else
+        i &= ~(1<<shShemasOrdNumStng);
+    CBGSig::chNeedTimerCalculated = i;//It`s Need for Call recalc because Timer work
+
     
 }
 void CBGSig::CalcBusGrSigSchematic(void) {
     register long  rl_Val,i;
-
+    register long  lRamainderNNP, lRamainderNNC;
 //#pragma data_alignment=4 
 //    char arChIntermediaResult[(TOTAL_BGS_LU)];
 memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
@@ -286,6 +384,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     if (ch_C1 == 0 && (i) == 1) {
         ch_DTrg = 1;
     }
+    ch_C1 = i;
 	i = 0;
 	bool bbDeltaItminusIf;
     if (ch_DTrg == 1) {
@@ -296,7 +395,8 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         } else {
             j = m_lIfix - Iti;
         }
-        i = (m_BGSigSuit.lIust * measurement[I_U]) / lU_NOM;
+        i = (m_BGSigSuit.lIust * measurement[4]) / lU_NOM;
+        i *=9; i/=10;//i *= 58981;i>>=16;//0.9 koeff
         if (j > i)
             i = 1;
         else
@@ -312,27 +412,37 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         if (m_BGSigSuit.chCheckBgs == 0) {
             m_lNNC = m_lIc / (m_lKcDeltaIy);
             m_lNNP = m_lIp / (m_lKcDeltaIy);
+            lRamainderNNC  = m_lIc % (m_lKcDeltaIy);
+            if(lRamainderNNC>=(m_lKcDeltaIy>>1))
+                m_lNNC++;
+            lRamainderNNP = m_lIp % (m_lKcDeltaIy);
+            if(lRamainderNNP>=(m_lKcDeltaIy>>1))
+                m_lNNP++;
+            
         } else {
             m_lNNC = (m_lIc - m_lKcDeltaIy) / m_lKcDeltaIy;
             m_lNNP = (m_lIp - m_lKcDeltaIy) / m_lKcDeltaIy;
+            lRamainderNNC   = (m_lIc - m_lKcDeltaIy) % m_lKcDeltaIy;
+            if(lRamainderNNC>=(m_lKcDeltaIy>>1))
+                m_lNNC++;
+            lRamainderNNP  = (m_lIp - m_lKcDeltaIy) % m_lKcDeltaIy;
+            if(lRamainderNNP>=(m_lKcDeltaIy>>1))
+                m_lNNP++;
         }
-//        rl_Val = m_lNNC - m_lNNP;
-//		if(rl_Val>0)
-//        arrOut[BGS_OUT_NAME_NNP - 1] = 1;
-//		rl_Val = m_lNNP - m_lNNC;
-//		if(rl_Val>0)
-//        arrOut[BGS_OUT_NAME_NNM - 1] = 1;
-//		if(m_lNNC>1)
-//        arrOut[BGS_OUT_NAME_CC  - 1] = 1;
-        
+
+        m_chWRIp = 1;
 	
     }
     else {
         if (bbTDelay == false)
         m_chWRIp = false;
     }
-    rl_Val = m_lNNC - m_lNNP;
+    bbT1ms = bbTDelay || ((!bbDeltaItminusIf) &&(ch_DTrg == 1));
+    if(lTReset(bbT1ms))
+    ch_DTrg = 0;
+    
     if(m_BGSigSuit.chStateGS){
+        rl_Val = m_lNNC - m_lNNP;
         if (rl_Val > 0)
             arrOut[BGS_OUT_NAME_NNP - 1] = 1;
         rl_Val = m_lNNP - m_lNNC;
@@ -341,18 +451,51 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         if (m_lNNC > 1)
             arrOut[BGS_OUT_NAME_CC - 1] = 1;
         arrOut[BGS_OUT_NAME_NNC_INF-1] = m_lNNC;
-        bbT1ms = bbTDelay || ((!bbDeltaItminusIf) &&(ch_DTrg == 1));
-        if(lTReset(bbT1ms))
-        ch_DTrg = 0;
+        
+
+        
         if (m_BGSigSuit.chCheckBgs > 0){
-            rl_Val = (m_lKcDeltaIy*58981)>>16;
-            if (measurement[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rl_Val) )//(m_lKcDeltaIy)
+            rl_Val = m_lKcDeltaIy;//(m_lKcDeltaIy*58981)>>16;
+            
+            
+            if (measurement[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rl_Val) ){
+                m_chStdpCE = 1;
+            }
+            else{
+                rl_Val *= 11;rl_Val /= 10;
+                if( (measurement[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rl_Val)) 
+                &&  (m_chStdpCE == 1) )
+                    m_chStdpCE = 1;
+                else
+                    m_chStdpCE = 0;
+            }
+            
+            if( m_chStdpCE == 1)
                 arrOut[BGS_OUT_NAME_CE - 1] = 1;
+            else
+                arrOut[BGS_OUT_NAME_CE - 1] = 0;
         }else{
             arrOut[BGS_OUT_NAME_CE - 1] = 0;
         }
-        if (measurement[m_chNumberAnalogChanell] > 2000)
-        arrOut[BGS_OUT_NAME_OC  - 1] = 1;
+        
+        
+        
+        if (measurement[m_chNumberAnalogChanell] > 2000){
+            m_chStdpOV = 1;
+            
+        }
+        else{
+            if( (m_chStdpOV == 1) && (measurement[m_chNumberAnalogChanell] > 1800) )
+                m_chStdpOV = 1;
+            else
+                m_chStdpOV = 0;
+        }
+        
+        if( m_chStdpOV == 1)
+            arrOut[BGS_OUT_NAME_OC  - 1] = 1;
+        else
+            arrOut[BGS_OUT_NAME_OC  - 1] = 0;
+            
     }
     else{
         arrOut[BGS_OUT_NAME_NNP - 1] = 0;
@@ -364,13 +507,33 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     }
     register __LN_GROUP_ALARM *pLN_GROUP_ALARM = static_cast<__LN_GROUP_ALARM *>(pvCfgLN);
     
-    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_NNP/8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_CC  -1])<<( GROUP_ALARM_OUT_NNP%8);
-    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_NNM/8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_OC  -1])<<( GROUP_ALARM_OUT_NNM%8);
-    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_CC /8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_CE  -1])<<( GROUP_ALARM_OUT_CC %8);
-    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_CE /8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_NNP -1])<<( GROUP_ALARM_OUT_CE %8);
-    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_OC /8) ] = static_cast<bool>(arrOut[BGS_OUT_NAME_NNM -1])<<( GROUP_ALARM_OUT_OC %8);
-    pLN_GROUP_ALARM->NNC = arrOut[BGS_OUT_NAME_NNC_INF-1];
+   rl_Val = 0;
+    rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_NNP -1])<<( GROUP_ALARM_OUT_NNP%8);
+    rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_NNM -1])<<( GROUP_ALARM_OUT_NNM%8);
+    rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_CC  -1])<<( GROUP_ALARM_OUT_CC %8);
+    rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_OC  -1])<<( GROUP_ALARM_OUT_OC %8);
+    rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_CE  -1])<<( GROUP_ALARM_OUT_CE %8);
+    pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_OC /8) ] = rl_Val;
+     i = m_lNNC;
+    if(i < 0)
+        pLN_GROUP_ALARM->NNC = 0;//arrOut[BGS_OUT_NAME_NNC_INF-1];
+    else
+        pLN_GROUP_ALARM->NNC = i;//arrOut[BGS_OUT_NAME_NNC_INF-1];
+        
+    rl_Val = 0;
     
+    if(m_chStateTWait)
+        rl_Val |= 1;
+   if(m_chStateTReset)
+        rl_Val |= 1<<1;//Be Careful you don`t difer bits of each LU
+        
+    i = CBGSig::chNeedTimerCalculated;
+    if(rl_Val>0)
+        i |= 1<<shShemasOrdNumStng;
+    else
+        i &= ~(1<<shShemasOrdNumStng);
+    CBGSig::chNeedTimerCalculated = i;//It`s Need for Call recalc because Timer work
+
 }
 //long Ibus, long lTinterval
 // UCV - від 54 до 253 В.
@@ -387,21 +550,48 @@ long CBGSig::EvalDeltaIbusDbg(void) {
 //    Iti = measurement_DBG[m_chNumberAnalogChanell];
     if (Iti > m_lMeasIti_mn_1) {
         j = Iti - m_lMeasIti_mn_1;
+//        m_chIfixDir |= 2;
+//        m_chIfixDir &= ~4;
     } else {
         j = m_lMeasIti_mn_1 - Iti;
+        //m_chIfixDir |= 4;
+        //m_chIfixDir &= ~2;
     }
     //i = (m_BGSigSuit.lIust * measurement[4]) / lU_NOM;
     i = (m_BGSigSuit.lIust * measurement_DBG[4]) / lU_NOM;
 m_lKcDeltaIy = i;
-    if (j > i) {//Novyi New-made
-        if (m_chWRIfix == 0) {
-            m_lIfix = m_lMeasIti_mn_1;
-            m_chWRIfix = 1;
-            i = 1;
-        }
-        
-    } else{ i = 0;m_chWRIfix = 0;
+i*=9;i/=10;
+    if (ch_DTrg == 1)
+    {
+        i = 0;
     }
+    else{
+    
+        if (j > i) {//Novyi New-made
+            if (m_chWRIfix == 0) {
+                m_lIfix = m_lMeasIti_mn_1;
+                m_chWRIfix = 1;
+                i = 1;
+            }
+            
+        } else{ i = 0;m_chWRIfix = 0;
+            if (m_chWRIfix == 0 && ch_DTrg == 0 
+            && ch_C1 == 0 && m_chIfixDir != 0) {
+                j = m_lIfix;
+                if (j<Iti)
+                    i = Iti - j;
+                else
+                    i = j - Iti;
+                if(i > m_lKcDeltaIy ){
+                    // asm(
+                    // "bkpt 1"
+                    // );
+                    i = 1;
+                }
+                else i = 0;
+            }
+        }
+    }    
     m_lMeasIti_mn_1 = Iti;
     
 
@@ -424,15 +614,39 @@ long CBGSig::EvalDeltaIbus(void) {
     //i = (m_BGSigSuit.lIust * measurement[4]) / lU_NOM;
     i = (m_BGSigSuit.lIust * measurement[4]) / lU_NOM;
 m_lKcDeltaIy = i;
-    if (j > i) {//Novyi New-made
-        if (m_chWRIfix == 0) {
-            m_lIfix = m_lMeasIti_mn_1;
-            m_chWRIfix = 1;
-            i = 1;
-        }
-        
-    } else{ i = 0;m_chWRIfix = 0;
+i*=9;i/=10;//i *= 58981;i>>=16;//0.9 koeff
+    if (ch_DTrg == 1)
+    {
+        i = 0;
     }
+    else{
+        if (j > i) {//Novyi New-made
+            if (m_chWRIfix == 0) {
+                m_lIfix = m_lMeasIti_mn_1;
+                m_chWRIfix = 1;
+                i = 1;
+            }
+            
+        } else{ i = 0;m_chWRIfix = 0;
+            if (m_chWRIfix == 0 && ch_DTrg == 0 
+            && ch_C1 == 0 && m_chIfixDir != 0) {
+                j = m_lIfix;
+                if (j<Iti)
+                    i = Iti - j;
+                else
+                    i = j - Iti;
+                if(i > m_lKcDeltaIy ){
+                    // asm(
+                    // "bkpt 1"
+                    // );
+                    i = 1;
+                }
+                else i = 0;
+            }
+        
+        
+        }
+    }    
     m_lMeasIti_mn_1 = Iti;
     
 

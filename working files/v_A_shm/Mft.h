@@ -37,6 +37,14 @@ public:
     long TWorkMftDir(long lResetKey, long lInKey);
     long TWorkMftInv(long lResetKey, long lInKey);
     
+//    char m_chNot1;
+//    char m_chOR2;
+    char m_chOR3;
+//    char m_D4Q;
+//    char m_D4_In;
+    char m_D5Q;
+    char m_D5_In;
+    
     char m_chLinkedTimers; //Field bit
     char m_chStateTpauseDir;
     char m_chStateTpauseInv;
