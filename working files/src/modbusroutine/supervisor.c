@@ -777,6 +777,7 @@ int superControlParam(int param)
 int id  = (param>>8)&0xff;//id блока
 unsigned int cnt = param&0xff;//номер блока
 //int num = param&0xffff;//номер выхода
+if(param==0) return 0;
 switch(id){
  case ID_FB_INPUT:
   if(cnt>=current_config.n_input) return 1;
