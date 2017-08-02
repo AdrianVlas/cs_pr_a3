@@ -4,6 +4,8 @@
 #include "header.h"
 
 void inputPacketParser();
+void inputPacketParserUSB();
+void inputPacketParserRS485();
 unsigned short int  AddCRC(unsigned char inpbyte, unsigned short int oldCRC);
 int Error_modbus(unsigned int address, unsigned int function, unsigned int error, unsigned char *output_data);
 int outputFunc16PacketEncoder(int adrUnit, int adrReg, int cntReg);
@@ -13,8 +15,43 @@ int outputFunc5PacketEncoder(int adrUnit, int adrBit);
 int outputFunc3PacketEncoder(int adrUnit, int adrReg, int cntReg);
 int outputFunc1PacketEncoder(int adrUnit, int adrReg, int cntReg);
 
-unsigned char  outputPacket[300];
+unsigned char  *outputPacket;
+unsigned char  outputPacket_USB[300];
+unsigned char  outputPacket_RS485[300];
 
+int sizeOutputPacket = 0;
+unsigned char *inputPacket;// = usb_received;
+int *received_count;// = &usb_received_count;
+
+/**************************************/
+//разбор входного пакета USB
+/**************************************/
+void inputPacketParserUSB(void)
+{
+ inputPacket = usb_received;
+ received_count = &usb_received_count;
+
+ outputPacket = outputPacket_USB;
+ inputPacketParser();
+
+ usb_transmiting_count = sizeOutputPacket;
+ for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
+ data_usb_transmiting = true;
+}//inputPacketParserUSB(void)
+/**************************************/
+//разбор входного пакета RS485
+/**************************************/
+void inputPacketParserRS485(void)
+{
+// inputPacket = usb_received;
+// received_count = &usb_received_count;
+ outputPacket = outputPacket_RS485;
+ inputPacketParser();
+
+// usb_transmiting_count = sizeOutputPacket;
+// for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
+// data_usb_transmiting = true;
+}//inputPacketParserRS485(void)
 /**************************************/
 //разбор входного пакета
 /**************************************/
@@ -42,8 +79,9 @@ void inputPacketParser(void)
                                //0-adr 1-func   2-MadrReg    3-LadrReg   4-Mcnt    5-Lcnt  6-cntByte  7-Mdata1  8-Ldata1   9-Mdata2  10-Ldata2   11-Mdata3  12-Ldata3   11-Mdata4  12-Ldata4   11-Mdata5  12-Ldata5   11-Mdata6  12-Ldata6   11-Mdata7  12-Ldata7   11-Mdata8  12-Ldata8
 //  unsigned char inputPacket[] {0x1,      16,     0x4,         0x81,       0x0,       8,      16,         0,       11,          0,       12,         0,        13,         0,        14,         0,        15,         0,        16,         0,        17,         0,        18};
 ///*
-    unsigned char *inputPacket = usb_received;
-    int *received_count = &usb_received_count;
+
+//    unsigned char *inputPacket = usb_received;
+//    int *received_count = &usb_received_count;
   //Перевірка контрольної суми
   unsigned short CRC_sum;
   CRC_sum = 0xffff;
@@ -56,7 +94,7 @@ void inputPacketParser(void)
   //Перевірка address
   if(adrUnit!=settings_fix.address) return;
 
-  int sizeOutputPacket = 0;
+  sizeOutputPacket = 0;
   indexTW = 0;//индекс буфера записи
   switch(numFunc)
     {
@@ -138,9 +176,9 @@ void inputPacketParser(void)
   *(outputPacket + sizeOutputPacket+1)  = CRC_sum >> 8;
   sizeOutputPacket += 2;
 ///*
-  usb_transmiting_count = sizeOutputPacket;
-  for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
-  data_usb_transmiting = true;
+//  usb_transmiting_count = sizeOutputPacket;
+//  for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
+//  data_usb_transmiting = true;
 //*/
 
   //qDebug()<<" "<<outputPacket[0]<<" "<<outputPacket[1]<<" "<<outputPacket[2]<<" "<<outputPacket[3]<<

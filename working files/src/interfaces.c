@@ -61,7 +61,7 @@ void Usb_routines(void)
         for (int i = 0; i < usb_received_count; i++) usb_received[i] = buffer_out[i];
         //Орацювання даних по протоколу MODBUS-RTU прийнятих з USB
 //        modbus_rountines(USB_RECUEST);
-        inputPacketParser();
+        inputPacketParserUSB();
       }
       else
       {
