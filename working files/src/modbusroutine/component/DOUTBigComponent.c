@@ -234,14 +234,14 @@ int setDOUTBigModbusRegister(int adrReg, int dataReg)
    break; 
    case 10:
     //контроль параметров ранжирования
-    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
+    if(superControlParam_gi(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 11:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 12:
     //контроль параметров ранжирования
-    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
+    if(superControlParam_gi(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch

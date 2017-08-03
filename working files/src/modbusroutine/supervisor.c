@@ -875,3 +875,20 @@ case ID_FB_GROUP_ALARM:
 }//switch id
 return 0;
 }//superControlParam
+
+int superControlParam_gi(int param) 
+{
+//контроль параметров gi
+int id  = (param>>8)&0xff;//id блока
+unsigned int cnt = param&0xff;//номер блока
+//int num = param&0xffff;//номер выхода
+if(param==0) return 0;
+switch(id){
+
+ case ID_FB_MEANDER:
+  if(cnt>=current_config.n_meander) return 1;
+ break;
+ default: return 1;
+}//switch id
+return 0;
+}//superControlParam_gi
