@@ -143,6 +143,7 @@ char *pCh;
             }
     }
     else{
+        if( (*pCh)&(1<<FIX_BLOCK_RUN) )
         chErrorState = 4;
         arrOut[0] = 0;
         arrOut[1] = 0;

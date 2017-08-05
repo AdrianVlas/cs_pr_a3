@@ -122,7 +122,8 @@ user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo3/cs_pr_a/Device-2.12.x.y (master)
 $ git push -n --repo https://github.com/AdrianVlas/cs_pr_a3.git
 Username for 'https://github.com': vid25prtvcs@gmail.com
 Everything up-to-date
-
+AdnVsforGIT17093
+vid25prtvcs@gmail.com
 
 $ git add -v .
 add 'gitNames.txt'

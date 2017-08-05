@@ -3757,9 +3757,9 @@ ClrTmrVars();
 long lRes;
 if(chInitTerminated != 1)
 lRes = Init2();
-TIM3InitInfo sInitT3Info = {
-0xffff,(2000-1),1
-};
+//.TIM3InitInfo sInitT3Info = {
+//.0xffff,(2000-1),1
+//.};
 //TIM3ReInit(static_cast<void*>(&sInitT3Info));
 
 chInitTerminated = 1;
