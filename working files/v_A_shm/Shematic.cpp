@@ -35,6 +35,7 @@
 #include "RunErLed.hpp"
 #include "LUTestLed.h"
 #include "LULog.hpp"
+#include "FixblWrp.hpp"
 //#include "../inc/variables_external.h"
 //#include "../inc/libraries.h"
 
@@ -220,9 +221,23 @@ void Shematic::DoCalc(void) {
             //else
                 
             }
-        if(CBGSig::chMeasUpdateInterval == 0)    
-         memcpy(reinterpret_cast<void*>(CBGSig::meas),
-        reinterpret_cast<void*>(measurement), I_U*sizeof(long));    
+        if(CBGSig::chMeasUpdateInterval == 0){
+            
+             memcpy(reinterpret_cast<void*>(CBGSig::meas),
+            reinterpret_cast<void*>(measurement), I_U*sizeof(long));
+            i = CBGSig::m_chIdxGrupSamples;
+            j = I_U*1;//sizeof(long)
+//            lDwnCtr = reinterpret_cast<long>(&(CBGSig::measbuf[i][0]));
+            
+            memcpy(reinterpret_cast<void*>(&(CBGSig::measbuf[i][0])),
+            //reinterpret_cast<void*>(PMeas), I_U*sizeof(long));
+            reinterpret_cast<void*>(measurement), I_U*sizeof(long));
+            i++;
+            if(i > 2)
+            i = 0;
+            CBGSig::m_chIdxGrupSamples = i;
+        
+        }        
     //}    
     if(CBGSig::chNeedTimerCalculated >0)    
          CBGSig::m_chCounterCall = 0;//It`s initiated Recalc when Timer work    
@@ -239,6 +254,7 @@ void Shematic::DoCalc(void) {
     }
     if(chStateOptimisation == 0){    
         DoCalcLUSources();
+        FBWrp_Op(pCFixBlockWrp);
 //        j = (static_cast<__CONFIG* >(p_current_config_prt))-> n_group_alarm;
 //        i = arIdxLUAreaListElem[LU_BGS-1];
 //        LUIterator(j,i); 
@@ -884,6 +900,9 @@ long Shematic::EvalSizeObj(long lId) {
             break;
         case LU_LOG:
             lsizeObj = sizeof (CLULog);
+            break;
+        case LU_STNG_FIX:
+            lsizeObj = sizeof (CFixBlockWrp);
             break;
 
         default:
@@ -1700,7 +1719,41 @@ long Shematic::Init2(void) {
         } while (shCounterInitCLULog < shLC__n_log && j);
 
     }
-eRunErrorLed.UpdateRunErrorLed();
+    if(lsLcVarArea.chErrCount == 0){
+        CFixBlockWrp locCFixBlockWrp(0,10);
+        pCFixBlockWrp = static_cast<void*>(0);
+         //FBWrp_Op(static_cast<void*>(&locCFixBlockWrp));
+        j = 0;
+        j = InsertLU(LU_STNG_FIX, static_cast<void*>(&locCFixBlockWrp));
+        if (j == 0) 
+            lsLcVarArea.chErrCount |= 1;//Insert Data Error
+        else{
+                 register void* pv;
+                 register long l;
+                 l = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
+                pv = static_cast<void*>(&(lsLcVarArea.arrLUAreaListElem[l-1])); 
+                lsLcVarArea.pCLUBase = static_cast<CLUBase*>(
+                        (static_cast<LUAreaListElem*>(pv))->pvLU);
+                lsLcVarArea.pCLUBase->shShemasIdLUStng =  TARAS_ALAS_STNG_LU_STNG_FIX;
+                lsLcVarArea.pCLUBase->shShemasOrdNumStng = 1;
+                 ;//lsLcVarArea->shIdxGlobalObjectMapPointers + 1
+                //lsLcVarArea->shCounterInitCLUObj++;
+                CFixBlockWrp &lRefCFixBlockWrp = *(static_cast<CFixBlockWrp*>(lsLcVarArea.pCLUBase));
+                lRefCFixBlockWrp.pOut = static_cast<void*>(lRefCFixBlockWrp.arrOut);
+                lRefCFixBlockWrp.pIn   = static_cast<void*>(lRefCFixBlockWrp.arrPchIn);
+                    for(l = 0; l < lRefCFixBlockWrp.chNumInput;l++)
+                        lRefCFixBlockWrp.arrPchIn[l] = &chGblGround;
+                  
+                    lRefCFixBlockWrp.chTypeLogicFunction = LU_OP_STNG_FIX;
+      #pragma calls=  FBWrp_Op 
+        
+                    lRefCFixBlockWrp.LogicFunc = FBWrp_Op;
+                    lRefCFixBlockWrp.LogicFunc(static_cast<void*>(lsLcVarArea.pCLUBase));
+            pCFixBlockWrp = static_cast<void*> (static_cast<void*>(lsLcVarArea.pCLUBase));   
+        }       
+            
+    }
+    eRunErrorLed.UpdateRunErrorLed();
 SetupCircutLinks2(static_cast<void*>(&lsLcVarArea));
 
 eLUTestLed.UpdateCLUTestLed();
@@ -2808,7 +2861,7 @@ long  Shematic::EvalIdxinarrLUAreaListElem(long lLUStng) {
             +current_config_prt.n_ts;
             break;
         case TARAS_ALAS_STNG_LU_STNG_FIX:
-                j = -2;
+               j =  gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
             break;
         default:
             j = -1;

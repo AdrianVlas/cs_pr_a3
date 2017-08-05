@@ -34,6 +34,7 @@
 #include "RunErLed.hpp"
 #include "LUTestLed.h"
 #include "LULog.hpp"
+#include "FixblWrp.hpp"
 //#include "../inc/variables_external.h"
 //#include "../inc/libraries.h"
 void DiOp(void *pObj);
@@ -159,6 +160,7 @@ pv = (pLUAreaListElem[lIdxLU]).pvLU;
 //                    }
 //    }
 //#pragma inline
+
 void Shematic::LUIterator(long AmountCalcLU, long lIdxLU){
 register void* pv;
 register LUAreaListElem*pLUAreaListElem;
@@ -167,6 +169,7 @@ pLUAreaListElem = static_cast<LUAreaListElem*>(this->pLUAreaList);
 //parIdxLUAreaListElem = arIdxLUAreaListElem;
     while (AmountCalcLU--) {
         pv = (pLUAreaListElem[lIdxLU++]).pvLU;
+      #pragma calls=  FBWrp_Op             
         (static_cast<CLUBase*>( pv))->LogicFunc( pv);
     }
 }

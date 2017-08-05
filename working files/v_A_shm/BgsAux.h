@@ -94,5 +94,7 @@ OFFSET_OUT_BGS_EvalNCC_1,
 TOTAL_BGS_LU_CALC_POINT = OFFSET_OUT_BGS_EvalNCC_1+1
 };
 
+
+    
 #endif
 
