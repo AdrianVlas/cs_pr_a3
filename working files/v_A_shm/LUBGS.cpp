@@ -16,6 +16,7 @@
 volatile unsigned long measurement_DBG[10] = {
 0,0,0,0,90000,0,0,0,0,0,
 };
+unsigned long *PMeas = const_cast<unsigned long*>(&measurement_DBG[0]);
 
 
 CBGSig::CBGSig(void):CLUBase()  {
@@ -93,6 +94,13 @@ unsigned int CBGSig::PickUPs [NUMBER_ANALOG_CANALES] = {
 unsigned char CBGSig::ChanelsNames[NUMBER_ANALOG_CANALES] = {
  0,0,0,0,0
  };
+
+ char CBGSig::m_chIdxGrupSamples = 0;
+ unsigned int  CBGSig::measbuf[3][I_U] = {
+ {0,0,0,0},
+  {0,0,0,0},
+   {0,0,0,0}
+};
  
 long CBGSig::LinkBGSigTimers(void) {
     register long i = 0;
@@ -201,8 +209,8 @@ register long i;
    asm(
                "bkpt 1"
                );
-    rCBGSig.CalcBusGrSigSchematicDbg();
-    //rCBGSig.CalcBusGrSigSchematic();
+    //rCBGSig.CalcBusGrSigSchematicDbg();
+    rCBGSig.CalcBusGrSigSchematic();
     }
 //    else{
 //        rCBGSig.m_chCounterCall = ++i;
@@ -379,7 +387,8 @@ void CBGSig::CalcBusGrSigSchematic(void) {
 //    char arChIntermediaResult[(TOTAL_BGS_LU)];
 memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
 
-    i = EvalDeltaIbus();
+//    i = EvalDeltaIbus();
+    i = EvalDeltaIbus(static_cast<void*>(CBGSig::measbuf));
 
     if (ch_C1 == 0 && (i) == 1) {
         ch_DTrg = 1;
@@ -456,7 +465,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         
         if (m_BGSigSuit.chCheckBgs > 0){
             rl_Val = m_lKcDeltaIy;//(m_lKcDeltaIy*58981)>>16;
-            
+            rl_Val *= 9;rl_Val /= 10;
             
             if (measurement[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rl_Val) ){
                 m_chStdpCE = 1;
@@ -657,6 +666,157 @@ i*=9;i/=10;//i *= 58981;i>>=16;//0.9 koeff
 
 //     return 0;
 // }
+
+long CBGSig::EvalDeltaIbusDbg(void*pv) {
+    register long i, j,Iti;
+    //Kc = Ucurr_power/Unom_power
+    //Num Analog Chanel
+//    Iti = measurement_DBG[m_chNumberAnalogChanell];
+    Iti = *(static_cast<long*>(pv)+m_chNumberAnalogChanell);
+	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm(
+	            "bkpt 1"
+	            );
+//    Iti = measurement_DBG[m_chNumberAnalogChanell];
+    if (Iti > m_lMeasIti_mn_1) {
+        j = Iti - m_lMeasIti_mn_1;
+//        m_chIfixDir |= 2;
+//        m_chIfixDir &= ~4;
+    } else {
+        j = m_lMeasIti_mn_1 - Iti;
+        //m_chIfixDir |= 4;
+        //m_chIfixDir &= ~2;
+    }
+    //i = (m_BGSigSuit.lIust * measurement[4]) / lU_NOM;
+    i = (m_BGSigSuit.lIust * measurement_DBG[4]) / lU_NOM;
+m_lKcDeltaIy = i;
+i*=9;i/=10;
+    if (ch_DTrg == 1)
+    {
+        i = 0;
+    }
+    else{
+    
+        if (j > i) {//Novyi New-made
+            if (m_chWRIfix == 0) {
+                m_lIfix = m_lMeasIti_mn_1;
+                m_chWRIfix = 1;
+                i = 1;
+            }
+            
+        } else{ i = 0;m_chWRIfix = 0;
+            if (m_chWRIfix == 0 && ch_DTrg == 0 
+            && ch_C1 == 0 && m_chIfixDir != 0) {
+                j = m_lIfix;
+                if (j<Iti)
+                    i = Iti - j;
+                else
+                    i = j - Iti;
+                if(i > m_lKcDeltaIy ){
+                    // asm(
+                    // "bkpt 1"
+                    // );
+                    i = 1;
+                }
+                else i = 0;
+            }
+        }
+    }    
+    m_lMeasIti_mn_1 = Iti;
+    
+
+    return i;
+}
+long CBGSig::EvalDeltaIbus(void *pv) {
+    register long i, j,Ii,Ip;
+    volatile long lRetVal;
+    lRetVal = 0;
+    //Kc = Ucurr_power/Unom_power
+    //Num Analog Chanel
+    i = CBGSig::m_chIdxGrupSamples;
+//Look Oldest Val
+  
+    Ip =  *(static_cast<long*>(pv)+m_chNumberAnalogChanell
+    + (i*I_U*1) );
+    if(i == 0)
+        i = 2;
+    else i--;     
+    Ii = *(static_cast<long*>(pv)+m_chNumberAnalogChanell+ (i*I_U*1) );
+    
+	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm(
+	            "bkpt 1"
+	            );
+//    Iti = measurement[m_chNumberAnalogChanell];
+    if (Ii > Ip) {
+        j = Ii - Ip;
+    } else {
+        j = Ip - Ii;
+    }
+    //i = (m_BGSigSuit.lIust * measurement[4]) / lU_NOM;
+    i = (m_BGSigSuit.lIust * measurement[4]) / lU_NOM;
+    m_lKcDeltaIy = i;
+    i*=9;i/=10;//i *= 58981;i>>=16;//0.9 koeff
+
+    if (ch_DTrg == 1)
+    {
+        i = 0;
+    }
+    else{
+        if (j > i) {//Novyi New-made
+            if (m_chWRIfix == 0) {
+                m_lIfix = Ip;
+                m_chWRIfix = 1;
+                lRetVal = 1;
+            }
+            
+        } else{ 
+            i = CBGSig::m_chIdxGrupSamples;
+            i++;
+            if(i > 2)
+            i = 0;
+            Ip =  *(static_cast<long*>(pv)+m_chNumberAnalogChanell
+            + (i*I_U*1) );
+            if (Ii > Ip) {
+                j = Ii - Ip;
+            } else {
+                j = Ip - Ii;
+            }
+            i = m_lKcDeltaIy;
+            i*=9;i/=10;
+            if (j > i) {//Novyi New-made
+                if (m_chWRIfix == 0) {
+                    m_lIfix = Ip;
+                    m_chWRIfix = 1;
+                    lRetVal = 1;
+                }
+              //Break;  
+            }
+            else{
+                 m_chWRIfix = 0;
+                if (m_chWRIfix == 0  
+                 && ch_C1 == 0 && m_chIfixDir != 0){
+                j = m_lIfix;
+                if (j<Ii)
+                    i = Ii - j;
+                else
+                    i = j - Ii;
+                if(i > m_lKcDeltaIy ){
+                    // asm(
+                    // "bkpt 1"
+                    // );
+                    lRetVal = 1;
+                }
+                else i = 0;; //Nothing Means
+
+                } 
+            }
+
+        }
+    }    
+ 
+    
+
+    return lRetVal;
+}
 /*
 long CBGSig::EvalDeltaIbusFix(long Ibus, long Ifix, long lActive){
 register long i;

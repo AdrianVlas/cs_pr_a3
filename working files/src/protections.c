@@ -416,6 +416,7 @@ inline void main_protection(void)
 
     if (present_diagnostyka != false)
     {
+      _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_RUN);
       _SET_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
       /**************************/
       //Сигнал "Несправность Аварийная"
@@ -456,6 +457,7 @@ inline void main_protection(void)
     {
       _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
       _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+      _SET_BIT(fix_block_active_state, FIX_BLOCK_RUN);
     }
   }
   /**************************/

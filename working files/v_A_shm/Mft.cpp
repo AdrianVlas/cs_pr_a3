@@ -330,13 +330,13 @@ void Mft_Op(void *pObj){
     
     //--i = static_cast<long>(*(rCMft.arrPchIn[0]));
     j = rCMft.TPauseMftDir(i);
-    rCMft.m_chOR3 = j || !i;
+    rCMft.m_chOR3 = j || i;
     if(rCMft.m_chOR3 != 0){
         
         rCMft.m_D5Q = 0;
     }
     else{
-        if((!i) ||(rCMft.m_D5_In == 0)){
+        if((i == 0) &&(rCMft.m_D5_In == 0)){
             rCMft.m_D5Q = 1;
         }
     }

@@ -82,6 +82,7 @@ class Shematic
     char chInitTerminated;
     void* pLUAreaList;
     void* p_current_config_prt;//__CONFIG *
+    void* pCFixBlockWrp;
     short arIdxLUAreaListElem[TOTAL_LU];
     char chMaxIteratoin;
     char chIteration;

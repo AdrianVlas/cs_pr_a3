@@ -293,7 +293,10 @@ extern void EXITI_POWER_IRQHandler(void);
 extern int str_to_int_DATE_Mmm(void);
 
 extern long ChangeCfg(void* pv);
+
 extern void inputPacketParser(void);
+extern void inputPacketParserUSB(void);
+extern void inputPacketParserRS485(void);
 
 #ifdef TEST_MODE
 extern void empty_settings(void);

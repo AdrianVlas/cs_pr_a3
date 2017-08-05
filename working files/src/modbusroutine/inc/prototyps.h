@@ -18,6 +18,7 @@ int finderMinimum(unsigned int data, int size, unsigned int *arr);
 void finderDubl(int idx, int size, unsigned int *arr);
 void superSortParam(int size, unsigned int *param);
 int superControlParam(int param);
+int superControlParam_gi(int param);
 
 void constructorYustBigComponent(COMPONENT_OBJ *);
 void constructorRPOBigComponent(COMPONENT_OBJ *);

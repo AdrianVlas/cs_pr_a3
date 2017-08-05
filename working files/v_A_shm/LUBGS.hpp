@@ -34,13 +34,16 @@ public:
     char* arrPchIn[TOTAL_BGS_VISIO_IN]; //
     char arrOut [TOTAL_BGS_VISIO_OUT]; //Tra
 static char m_chCounterCall;
+static char m_chIdxGrupSamples;
 static char chAlreadyCalculated;
 static char chNeedTimerCalculated;
 static char chMeasUpdateInterval;
+
 static unsigned int  meas  [NUMBER_ANALOG_CANALES]; 
 static unsigned int  DMeas        [NUMBER_ANALOG_CANALES]; 
 static unsigned int  PickUPs      [NUMBER_ANALOG_CANALES]; 
 static unsigned char ChanelsNames [NUMBER_ANALOG_CANALES]; 
+static unsigned int  measbuf[3][I_U]; 
 
     char m_chLinkedTimers; //Field bit
     char m_chStateTWait;
@@ -65,6 +68,9 @@ static unsigned char ChanelsNames [NUMBER_ANALOG_CANALES];
     //long Ibus, long lTinterval
     long EvalDeltaIbus(void); //Ibus- Current for check lTinterval - IntervalTime
     long EvalDeltaIbusDbg(void); //Ibus- Current for check lTinterval - IntervalTime
+    long EvalDeltaIbus(void *pv); //Ibus- Current for check lTinterval - IntervalTime
+    long EvalDeltaIbusDbg(void *pv); //Ibus- Current for check lTinterval - IntervalTime
+    
     //long StoreIfixTimeFix(long lTime, long lIbus, long lActive);
     long EvalDeltaIbusFix(long Ibus, long Ifix, long lActive);
     long EvalIptp(long lI, long lT, long lActive);
@@ -85,3 +91,6 @@ static unsigned char ChanelsNames [NUMBER_ANALOG_CANALES];
 };
 
 extern void BGSig_Op(void *pObj);
+extern unsigned long *PMeas;
+
+
