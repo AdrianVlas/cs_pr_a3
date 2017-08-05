@@ -82,7 +82,7 @@ long l;
         rCFixBlockWrp.arrOut[ERROR_C_CMD]          = 0;
     }
     
-    if(l&(((1<<FIX_BLOCK_AVAR_DEFECT)|(1<<FIX_BLOCK_DEFECT)))){
+    if(l&(1<<(FIX_BLOCK_RUN))){
         rCFixBlockWrp.arrOut[RUN_CMD]              = 0;
     }
     else{
