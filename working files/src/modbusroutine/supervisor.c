@@ -28,6 +28,10 @@ int *received_count;// = &usb_received_count;
 /**************************************/
 void inputPacketParserUSB(void)
 {
+// if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS)) return;
+// if(config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) return;
+// if(config_settings_modified&MASKA_FOR_BIT(BIT_USB_LOCKS)) return;
+
  inputPacket = usb_received;
  received_count = &usb_received_count;
 
@@ -43,6 +47,10 @@ void inputPacketParserUSB(void)
 /**************************************/
 void inputPacketParserRS485(void)
 {
+// if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS)) return;
+// if(config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) return;
+// if(config_settings_modified&MASKA_FOR_BIT(BIT_USB_LOCKS)) return;
+
 // inputPacket = usb_received;
 // received_count = &usb_received_count;
  outputPacket = outputPacket_RS485;

@@ -193,16 +193,21 @@ int postCGSBigWriteAction(void) {
      arr1[0].control = arr[0].control  &= (uint32_t)~0x3;
      arr1[0].control = arr[0].control  |= (tempWriteArray[offsetTempWriteArray+i]) & 0x3;
    break; 
-   case 1://Входной ток ГС item
-     arr1[1].analog_input_control = arr[1].analog_input_control = (tempWriteArray[offsetTempWriteArray+i]) << 
-        (group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) 
-              & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
-   break; 
+  case 1:{//Входной ток ГС item
+//     arr1[1].analog_input_control = arr[1].analog_input_control = (tempWriteArray[offsetTempWriteArray+i]) << 
+//        (group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) 
+//              & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
+      uint32_t maska = (1 << group_alarm_analog_ctrl_patten[_MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1;
+      uint32_t shift = group_alarm_analog_ctrl_patten[_MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0];
+//	  arr1[1].analog_input_control = arr[1].analog_input_control = (arr[1].analog_input_control & ((uint32_t)(~(maska << shift)))) | (tempWriteArray[offsetTempWriteArray+i]) << shift);
+	  arr1[1].analog_input_control = arr[1].analog_input_control &= ((uint32_t)(~(maska << shift)));// | (tempWriteArray[offsetTempWriteArray+i]) << shift);
+	  arr1[1].analog_input_control = arr[1].analog_input_control |= (tempWriteArray[offsetTempWriteArray+i]) << shift;
+  } break; 
    case 2://Приращение тока ГС item
-    arr1[2].pickup[GROUP_ALARM_PICKUP_DELTA_I] = arr[2].pickup[GROUP_ALARM_PICKUP_DELTA_I] = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1[2].pickup[GROUP_ALARM_PICKUP_DELTA_I] = arr[2].pickup[GROUP_ALARM_PICKUP_DELTA_I] = 333;//(tempWriteArray[offsetTempWriteArray+i]);
    break; 
    case 3://Время tуст ГС item
-    arr1[3].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = arr[3].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1[3].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = arr[3].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = 222;//(tempWriteArray[offsetTempWriteArray+i]);
    break; 
  }//switch
   }//for
