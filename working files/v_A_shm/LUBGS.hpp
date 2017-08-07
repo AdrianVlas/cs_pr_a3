@@ -63,6 +63,7 @@ static unsigned int  measbuf[3][I_U];
     long m_lMeasIti_mn_1,m_lKcDeltaIy;
     long m_lNNC,m_lNNP;
     long m_lIfix,m_lIp,m_lIc;
+    long m_lIcMulUnom,m_lIpMulUnom,m_lIyMulU;
     long LinkBGSigTimers(void);
     void UpdateCBGSig(void);
     //long Ibus, long lTinterval

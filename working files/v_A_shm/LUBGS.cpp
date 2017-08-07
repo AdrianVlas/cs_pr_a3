@@ -417,25 +417,40 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     if(bbTDelay && m_chWRIp == 0){
         m_lIp = m_lIfix;
         m_lIc = measurement[m_chNumberAnalogChanell];
-
+        m_lIcMulUnom  = m_lIc*lU_NOM;
+        m_lIpMulUnom  = m_lIp*lU_NOM;
+        m_lIyMulU     = m_BGSigSuit.lIust * measurement[4];
+        
         if (m_BGSigSuit.chCheckBgs == 0) {
-            m_lNNC = m_lIc / (m_lKcDeltaIy);
-            m_lNNP = m_lIp / (m_lKcDeltaIy);
-            lRamainderNNC  = m_lIc % (m_lKcDeltaIy);
-            if(lRamainderNNC>=(m_lKcDeltaIy>>1))
-                m_lNNC++;
-            lRamainderNNP = m_lIp % (m_lKcDeltaIy);
-            if(lRamainderNNP>=(m_lKcDeltaIy>>1))
-                m_lNNP++;
+
+            m_lNNC = ( m_lIcMulUnom )/(m_lIyMulU);//(m_lKcDeltaIy);
+            m_lNNP = ( m_lIpMulUnom )/(m_lIyMulU);//(m_lKcDeltaIy);
+            
+            lRamainderNNC   = (m_lIcMulUnom) % m_lIyMulU;  //lRamainderNNC  = m_lIc % (m_lKcDeltaIy);
+            if(lRamainderNNC>=(m_lIyMulU>>1))              //if(lRamainderNNC>=(m_lKcDeltaIy>>1))
+                m_lNNC++;                                  //    m_lNNC++;
+            lRamainderNNP  =  (m_lIpMulUnom )%(m_lIyMulU); //lRamainderNNP = m_lIp % (m_lKcDeltaIy);
+            if(lRamainderNNP>=(m_lIyMulU>>1))              //if(lRamainderNNP>=(m_lKcDeltaIy>>1))
+                m_lNNP++;                                  //    m_lNNP++;
+
+            
             
         } else {
-            m_lNNC = (m_lIc - m_lKcDeltaIy) / m_lKcDeltaIy;
-            m_lNNP = (m_lIp - m_lKcDeltaIy) / m_lKcDeltaIy;
-            lRamainderNNC   = (m_lIc - m_lKcDeltaIy) % m_lKcDeltaIy;
-            if(lRamainderNNC>=(m_lKcDeltaIy>>1))
+            //m_lNNC = (m_lIc - m_lKcDeltaIy) / m_lKcDeltaIy;
+            //m_lNNP = (m_lIp - m_lKcDeltaIy) / m_lKcDeltaIy;
+            m_lNNC = (m_lIcMulUnom )/(m_lIyMulU)-1;
+            m_lNNP = (m_lIpMulUnom )/(m_lIyMulU)-1;            
+            //lRamainderNNC   = (m_lIc - m_lKcDeltaIy) % m_lKcDeltaIy;
+            //if(lRamainderNNC>=(m_lKcDeltaIy>>1))
+            //    m_lNNC++;
+            //lRamainderNNP  = (m_lIp - m_lKcDeltaIy) % m_lKcDeltaIy;
+            //if(lRamainderNNP>=(m_lKcDeltaIy>>1))
+            //    m_lNNP++;
+            lRamainderNNC   = (m_lIcMulUnom) % m_lIyMulU;
+            if(lRamainderNNC>=(m_lIyMulU>>1))
                 m_lNNC++;
-            lRamainderNNP  = (m_lIp - m_lKcDeltaIy) % m_lKcDeltaIy;
-            if(lRamainderNNP>=(m_lKcDeltaIy>>1))
+            lRamainderNNP  =  (m_lIpMulUnom )%(m_lIyMulU);
+            if(lRamainderNNP>=(m_lIyMulU>>1))
                 m_lNNP++;
         }
 
@@ -523,12 +538,14 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_OC  -1])<<( GROUP_ALARM_OUT_OC %8);
     rl_Val |= static_cast<bool>(arrOut[BGS_OUT_NAME_CE  -1])<<( GROUP_ALARM_OUT_CE %8);
     pLN_GROUP_ALARM->active_state[(GROUP_ALARM_OUT_OC /8) ] = rl_Val;
-     i = m_lNNC;
-    if(i < 0)
-        pLN_GROUP_ALARM->NNC = 0;//arrOut[BGS_OUT_NAME_NNC_INF-1];
-    else
-        pLN_GROUP_ALARM->NNC = i;//arrOut[BGS_OUT_NAME_NNC_INF-1];
-        
+    pLN_GROUP_ALARM->NNC = 0;
+    if(m_BGSigSuit.chStateGS){
+         i = m_lNNC;
+        if(i < 0)
+            pLN_GROUP_ALARM->NNC = 0;//arrOut[BGS_OUT_NAME_NNC_INF-1];
+        else
+            pLN_GROUP_ALARM->NNC = i;//arrOut[BGS_OUT_NAME_NNC_INF-1];
+    }    
     rl_Val = 0;
     
     if(m_chStateTWait)
