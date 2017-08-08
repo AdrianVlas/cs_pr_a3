@@ -3,9 +3,9 @@
 
 #include "header.h"
 
-void inputPacketParser();
-void inputPacketParserUSB();
-void inputPacketParserRS485();
+int inputPacketParser(void);
+void inputPacketParserUSB(void);
+void inputPacketParserRS485(void);
 unsigned short int  AddCRC(unsigned char inpbyte, unsigned short int oldCRC);
 int Error_modbus(unsigned int address, unsigned int function, unsigned int error, unsigned char *output_data);
 int outputFunc16PacketEncoder(int adrUnit, int adrReg, int cntReg);
@@ -22,6 +22,7 @@ unsigned char  outputPacket_RS485[300];
 int sizeOutputPacket = 0;
 unsigned char *inputPacket;// = usb_received;
 int *received_count;// = &usb_received_count;
+//int numFunc;//номер ф-ции
 
 /**************************************/
 //разбор входного пакета USB
@@ -33,14 +34,31 @@ void inputPacketParserUSB(void)
 // if(config_settings_modified&MASKA_FOR_BIT(BIT_USB_LOCKS)) return;
 
  inputPacket = usb_received;
+ switch(inputPacket[1]) {//номер ф-ции
+  case 1:
+  case 2:
+  case 3:
+  case 4:
+  break;
+  case 5:
+  case 6:
+  case 15:
+  case 16:
+	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS)) return;
+	 if(config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) return;
+  break;
+  default:return;
+ }//switch
+
  received_count = &usb_received_count;
 
  outputPacket = outputPacket_USB;
- inputPacketParser();
+ if(inputPacketParser()==0) return;
 
  usb_transmiting_count = sizeOutputPacket;
  for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
  data_usb_transmiting = true;
+ 
 }//inputPacketParserUSB(void)
 /**************************************/
 //разбор входного пакета RS485
@@ -52,9 +70,33 @@ void inputPacketParserRS485(void)
 // if(config_settings_modified&MASKA_FOR_BIT(BIT_USB_LOCKS)) return;
 
 // inputPacket = usb_received;
+inputPacket = RxBuffer_RS485;
+
+ switch(inputPacket[1]) {//номер ф-ции
+  case 1:
+  case 2:
+  case 3:
+  case 4:
+  break;
+  case 5:
+  case 6:
+  case 15:
+  case 16:
+	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS)) return;
+	 if(config_settings_modified&MASKA_FOR_BIT(BIT_USB_LOCKS)) return;
+  break;
+  default:return;
+ }//switch
+
 // received_count = &usb_received_count;
+// outputPacket = outputPacket_RS485;
+received_count = &RxBuffer_RS485_count;
  outputPacket = outputPacket_RS485;
- inputPacketParser();
+ if(inputPacketParser()==0) return;
+
+TxBuffer_RS485_count = sizeOutputPacket;
+for (int i = 0; i < TxBuffer_RS485_count; i++) TxBuffer_RS485[i] = outputPacket[i];
+start_transmint_data_via_RS_485(TxBuffer_RS485_count);
 
 // usb_transmiting_count = sizeOutputPacket;
 // for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
@@ -63,7 +105,7 @@ void inputPacketParserRS485(void)
 /**************************************/
 //разбор входного пакета
 /**************************************/
-void inputPacketParser(void)
+int inputPacketParser(void)
 {
 //rprAdresRegister[0] = 0;
 //rprAdresRegister[1] = 1;
@@ -94,13 +136,13 @@ void inputPacketParser(void)
   unsigned short CRC_sum;
   CRC_sum = 0xffff;
   for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
-  if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2)) return;
-  if ((CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) return;
+  if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2)) return 0;
+  if ((CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) return 0;
 //*/
   int adrUnit = inputPacket[0];
-  int numFunc = inputPacket[1];
+  int numFunc = inputPacket[1];//номер ф-ции
   //Перевірка address
-  if(adrUnit!=settings_fix.address) return;
+  if(adrUnit!=settings_fix.address) return 0;
 
   sizeOutputPacket = 0;
   indexTW = 0;//индекс буфера записи
@@ -111,7 +153,7 @@ void inputPacketParser(void)
     {
       int adrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int cntBit  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
-      if(cntBit>125) return;//слишком длинный пакет
+      if(cntBit>125) return 0;//слишком длинный пакет
       //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit<<" cntBit="<<cntBit;
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc1PacketEncoder(adrUnit, adrBit, cntBit);
@@ -122,7 +164,7 @@ void inputPacketParser(void)
     {
       int adrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int cntReg  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
-      if(cntReg>125) return;//слишком длинный пакет
+      if(cntReg>125) return 0;//слишком длинный пакет
       //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrReg="<<adrReg<<" cntReg="<<cntReg;
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc3PacketEncoder(adrUnit, adrReg, cntReg);
@@ -132,7 +174,7 @@ void inputPacketParser(void)
     {
       int adrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int dataBit = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
-      if(dataBit!=0xFF00) return;
+      if(dataBit!=0xFF00) return 0;
 //      if(cntReg>125) return;//слишком длинный пакет
       //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit;//<<" dataReg="<<dataReg;
       outputPacket[1] = (unsigned char)numFunc;
@@ -154,7 +196,7 @@ void inputPacketParser(void)
       int adrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int cntBit  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       int cntByte = (unsigned int)inputPacket[6];
-      if(cntBit>125*16) return;//слишком длинный пакет
+      if(cntBit>125*16) return 0;//слишком длинный пакет
       //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit<<" cntBit="<<cntBit;
       for(int i=0; i<cntByte; i++) 
               tempReadArray[i] = (unsigned short)(inputPacket[7+i]);
@@ -166,7 +208,7 @@ void inputPacketParser(void)
     {
       int adrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int cntReg  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
-      if(cntReg>125) return;//слишком длинный пакет
+      if(cntReg>125) return 0;//слишком длинный пакет
       //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrReg="<<adrReg<<" cntReg="<<cntReg;
       for(int i=0; i<cntReg; i++) 
               tempReadArray[i] = (unsigned short)(inputPacket[7+1+(i*2)]) +256*(unsigned short)(inputPacket[7+(i*2)]);
@@ -174,7 +216,7 @@ void inputPacketParser(void)
       sizeOutputPacket = outputFunc16PacketEncoder(adrUnit, adrReg, cntReg);
     }
     break;
-    default: return;
+    default: return 0;
     }//switch
 
  // unsigned short CRC_sum;
@@ -183,6 +225,26 @@ void inputPacketParser(void)
   *(outputPacket + sizeOutputPacket)  = CRC_sum & 0xff;
   *(outputPacket + sizeOutputPacket+1)  = CRC_sum >> 8;
   sizeOutputPacket += 2;
+/*  
+  int tt1 = outputPacket[0];
+  int tt2 = outputPacket[1];
+  int tt3 = outputPacket[2];
+  int tt4 = outputPacket[3];
+  int tt5 = outputPacket[4];
+  int tt6 = outputPacket[5];
+  int tt7 = outputPacket[6];
+  int tt8 = outputPacket[7];
+  int tt9 = outputPacket[8];
+  int tt10 = outputPacket[9];
+  int tt11 = outputPacket[10];
+  int tt12 = outputPacket[11];
+  int tt13 = outputPacket[12];
+  int tt14 = outputPacket[13];
+  int tt15 = outputPacket[14];
+  int tt16 = outputPacket[15];
+  int tt17 = outputPacket[16];
+*/
+  return 1;
 ///*
 //  usb_transmiting_count = sizeOutputPacket;
 //  for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];

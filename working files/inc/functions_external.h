@@ -294,7 +294,7 @@ extern int str_to_int_DATE_Mmm(void);
 
 extern long ChangeCfg(void* pv);
 
-extern void inputPacketParser(void);
+//extern void inputPacketParser(void);
 extern void inputPacketParserUSB(void);
 extern void inputPacketParserRS485(void);
 
