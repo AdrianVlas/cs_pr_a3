@@ -890,56 +890,56 @@ switch(id){
  case _ID_FB_FIRST_ALL:
  break;
  case ID_FB_INPUT:
-  if(cnt>=current_config.n_input) return 1;
+  if(cnt>current_config.n_input) return 1;
  break;
  case ID_FB_OUTPUT:
-  if(cnt>=current_config.n_output) return 1;
+  if(cnt>current_config.n_output) return 1;
  break;
  case ID_FB_LED:
-  if(cnt>=current_config.n_led) return 1;
+  if(cnt>current_config.n_led) return 1;
  break;
  case ID_FB_BUTTON:
-  if(cnt>=current_config.n_button) return 1;
+  if(cnt>current_config.n_button) return 1;
  break;
 
  case ID_FB_ALARM:
-  if(cnt>=current_config.n_alarm) return 1;
+  if(cnt>current_config.n_alarm) return 1;
  break;
 case ID_FB_GROUP_ALARM:
-  if(cnt>=4) return 1;
+  if(cnt>4) return 1;
  break;
  case ID_FB_AND:
-  if(cnt>=current_config.n_and) return 1;
+  if(cnt>current_config.n_and) return 1;
  break;
  case ID_FB_OR:
-  if(cnt>=current_config.n_or) return 1;
+  if(cnt>current_config.n_or) return 1;
  break;
  case ID_FB_XOR:
-  if(cnt>=current_config.n_xor) return 1;
+  if(cnt>current_config.n_xor) return 1;
  break;
  case ID_FB_NOT:
-  if(cnt>=current_config.n_not) return 1;
+  if(cnt>current_config.n_not) return 1;
  break;
 
  case ID_FB_TIMER:
-  if(cnt>=current_config.n_timer) return 1;
+  if(cnt>current_config.n_timer) return 1;
  break;
  case ID_FB_TRIGGER:
-  if(cnt>=current_config.n_trigger) return 1;
+  if(cnt>current_config.n_trigger) return 1;
  break;
 
  case ID_FB_MEANDER:
-  if(cnt>=current_config.n_meander) return 1;
+  if(cnt>current_config.n_meander) return 1;
  break;
  case ID_FB_TU:
-  if(cnt>=current_config.n_tu) return 1;
+  if(cnt>current_config.n_tu) return 1;
  break;
  case ID_FB_TS:
-  if(cnt>=current_config.n_ts) return 1;
+  if(cnt>current_config.n_ts) return 1;
  break;
 
  case ID_FB_EVENT_LOG:
-  if(cnt>=current_config.n_log) return 1;
+  if(cnt>current_config.n_log) return 1;
  break;
  default: return 1;
 }//switch id
