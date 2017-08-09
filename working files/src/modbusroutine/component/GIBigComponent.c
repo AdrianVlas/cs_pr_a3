@@ -145,7 +145,7 @@ int postGIBigWriteAction(void) {
   int offset = i+gibigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
 
-   arr1[idxSubObj].set_delay[0] = arr[idxSubObj].set_delay[0] = (tempWriteArray[offsetTempWriteArray+i]);
+   arr1[idxSubObj].set_delay[0] = arr[idxSubObj].set_delay[0] = (tempWriteArray[offsetTempWriteArray+i])*10;
 
   }//for
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);

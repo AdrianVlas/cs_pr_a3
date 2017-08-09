@@ -15,8 +15,8 @@ void global_component_installation(void) {
   constructorSDIBigComponent(&(config_array[SDIBIGCOMPONENT]));//подготовка компонента sdi
   constructorRMTKeySmallComponent(&(config_array[RMTKEYSMALLCOMPONENT]));//подготовка компонента rmt key
   constructorSDI3ColorSmallComponent(&(config_array[SDI3COLORSMALLCOMPONENT]));//подготовка компонента sdi
-  constructorRESDBigComponent(&(config_array[RESDBIGCOMPONENT]));//подготовка компонента esd
-  constructorBASDBigComponent(&(config_array[BASDBIGCOMPONENT]));//подготовка компонента esd
+ // constructorRESDBigComponent(&(config_array[RESDBIGCOMPONENT]));//подготовка компонента esd
+//  constructorBASDBigComponent(&(config_array[BASDBIGCOMPONENT]));//подготовка компонента esd
   constructorConfigBigComponent(&(config_array[CONFIGBIGCOMPONENT]));//подготовка компонента config
   constructorGIBigComponent(&(config_array[GIBIGCOMPONENT]));//подготовка компонента gi
   constructorSZSBigComponent(&(config_array[SZSBIGCOMPONENT]));//подготовка компонента szs

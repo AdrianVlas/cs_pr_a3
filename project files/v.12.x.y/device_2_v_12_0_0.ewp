@@ -4854,9 +4854,6 @@
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\ANDBigComponent.c</name>
             </file>
             <file>
-              <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\BASDBigComponent.c</name>
-            </file>
-            <file>
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\CGSBigComponent.c</name>
             </file>
             <file>
@@ -4909,9 +4906,6 @@
             </file>
             <file>
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\RegBigComponent.c</name>
-            </file>
-            <file>
-              <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\RESDBigComponent.c</name>
             </file>
             <file>
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\RMTKeySmallComponent.c</name>

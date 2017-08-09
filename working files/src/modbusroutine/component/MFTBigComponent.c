@@ -200,13 +200,13 @@ int postMFTBigWriteAction(void) {
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0://Таймер паузы
     {
-    int tt1 = (tempWriteArray[offsetTempWriteArray+i]);
+  //  int tt1 = (tempWriteArray[offsetTempWriteArray+i]);
     arr1[idxSubObj].set_delay[TIMER_SET_DELAY_PAUSE] = arr[idxSubObj].set_delay[TIMER_SET_DELAY_PAUSE] = (tempWriteArray[offsetTempWriteArray+i]);
     }
    break;
    case 1://Таймер работы
     {
-    int tt1 = (tempWriteArray[offsetTempWriteArray+i]);
+//    int tt1 = (tempWriteArray[offsetTempWriteArray+i]);
     arr1[idxSubObj].set_delay[TIMER_SET_DELAY_WORK] = arr[idxSubObj].set_delay[TIMER_SET_DELAY_WORK] = (tempWriteArray[offsetTempWriteArray+i]);
     }
    break;
