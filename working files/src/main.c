@@ -115,7 +115,11 @@ inline void periodical_operations(void)
   if ((timeout_idle_new_settings >= settings_fix.timeout_idle_new_settings) && (restart_timeout_idle_new_settings == 0))
   {
     unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
-    if (result != 0)
+    if (result == 0)
+    {
+      timeout_idle_new_settings = 0;
+    }
+    else
     {
       //Повідомляємо про критичну помилку
       current_state_menu2.edition = ED_ERROR;

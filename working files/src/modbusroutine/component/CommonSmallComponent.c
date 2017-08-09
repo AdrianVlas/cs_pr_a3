@@ -64,19 +64,19 @@ void loadCommonSmallActualData(void)
           if(fix_block_active_state[FIX_BLOCK_AVAR_DEFECT >> 3] & (1 << (FIX_BLOCK_AVAR_DEFECT & ((1 << 3) - 1))))
                               tempReadArray[0] |= (1<<bit);
           break;
-        case 2://Изменение конфигурации
-          if(fix_block_active_state[FIX_BLOCK_SETTINGS_CHANGED >> 8] & (1 << (FIX_BLOCK_SETTINGS_CHANGED & ((1 << 3) - 1))))
-                              tempReadArray[0] |= (1<<bit);
-          break;
-        case 3://Ошибка работы лог схемы
+        case 2://Ошибка работы лог схемы
           if(fix_block_active_state[FIX_BLOCK_SCHEME_INCORRECT >> 3 ] & (1 << (FIX_BLOCK_SCHEME_INCORRECT & ((1 << 3) - 1))))
                               tempReadArray[0] |= (1<<bit);
           break;
-        case 4://Пароль установлен - ти маєш це поле зробити
-          if(fix_block_active_state[0] & 0x1)
+        case 3://Ошибка работы триггеров
+          if(fix_block_active_state[FIX_BLOCK_D_TRIGGER_STATE_INCORRECT >> 3 ] & (1 << (FIX_BLOCK_D_TRIGGER_STATE_INCORRECT & ((1 << 3) - 1))))
                               tempReadArray[0] |= (1<<bit);
           break;
-        case 5://Время синхронизировано -немає
+        case 4://Изменение конфигурации
+          if(fix_block_active_state[FIX_BLOCK_SETTINGS_CHANGED >> 8] & (1 << (FIX_BLOCK_SETTINGS_CHANGED & ((1 << 3) - 1))))
+                              tempReadArray[0] |= (1<<bit);
+          break;
+        case 5://Пароль установлен - ти маєш це поле зробити
           if(fix_block_active_state[0] & 0x1)
                               tempReadArray[0] |= (1<<bit);
           break;
@@ -86,16 +86,13 @@ void loadCommonSmallActualData(void)
           __LOG_INPUT *arr = (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
           int value = arr[0] & (1 << (EVENT_LOG_WORK & ((1 << 5) - 1)));
           
-          if (value)
-//          if(fix_block_active_state[0] & 0x1)
-                              tempReadArray[0] |= (1<<bit);
+          if (value) tempReadArray[0] |= (1<<bit);
           break;
           }
         case 7://Запуск регистратора - немає
-//          if(fix_block_active_state[0] & 0x1)
                               tempReadArray[0] |= 0;//(1<<bit);
           break;
-        case 8://Пропуск
+        case 8://Время синхронизировано
           tempReadArray[0] |= 0;
           break;
         case 9://Ключ управления местное\дистанционное -немає
@@ -250,8 +247,10 @@ int postCommonSmallWriteAction(void)
 //      fix_block_active_state[0] &= ~0x2;//Прорубить окно
 //      fix_block_active_state[0] |= tempWriteArray[0]&1;
 //int tt=0;
-if(tempWriteArray[0]&1) 
+if(tempWriteArray[0]==1) 
        set_config_and_settings(1, USB_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+if(tempWriteArray[0]==0) 
+       set_config_and_settings(0, USB_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
                         //                   tt = 1;
     }//case (BEGIN_ADR_REGISTER+1):
     break;

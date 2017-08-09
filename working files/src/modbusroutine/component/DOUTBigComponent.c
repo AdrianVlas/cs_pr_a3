@@ -109,73 +109,44 @@ int getDOUTBigModbusRegister(int adrReg)
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0://Параметры ДВых. item
-    return arr[idxSubObj].settings.control;// = (tempWriteArray[offsetTempWriteArray+i]);
-   //break;
+    return arr[idxSubObj].settings.control;
 
    case 1://RIN 0 ДВых. item
-        //arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] = 
-         return arr[idxSubObj].settings.param[OUTPUT_LED_LOGIC_INPUT] & 0xffff;// &= (uint32_t)~0xffff;
-        //arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] = arr[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
-//   break;
+         return arr[idxSubObj].settings.param[OUTPUT_LED_LOGIC_INPUT] & 0xffff;
+
    case 2://RIN 1 ДВых. item
-        return (arr[idxSubObj].settings.param[OUTPUT_LED_LOGIC_INPUT]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
-//        arr[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
-//   break; 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_LOGIC_INPUT]  >> 16) & 0x7fff;
 
    case 3://Reset 0 ДВых. item
-        //arr1[idxSubObj].param[OUTPUT_LED_RESET] = 
-        return arr[idxSubObj].settings.param[OUTPUT_LED_RESET] & 0xffff;// &= (uint32_t)~0xffff;
-//        arr1[idxSubObj].param[OUTPUT_LED_RESET] = arr[idxSubObj].param[OUTPUT_LED_RESET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
-  // break;
+        return arr[idxSubObj].settings.param[OUTPUT_LED_RESET] & 0xffff;
+
    case 4://Reset 1 ДВых. item
-        //arr1[idxSubObj].param[OUTPUT_LED_RESET] = 
-        return (arr[idxSubObj].settings.param[OUTPUT_LED_RESET]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
-//        arr1[idxSubObj].param[OUTPUT_LED_RESET] = arr[idxSubObj].param[OUTPUT_LED_RESET] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
-//   break; 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_RESET]  >> 16) & 0x7fff;
 
    case 5://BL-IMP 0 ДВых. item
-        //arr1[idxSubObj].param[OUTPUT_LED_BL_IMP] = 
-        return arr[idxSubObj].settings.param[OUTPUT_LED_BL_IMP] & 0xffff;// &= (uint32_t)~0xffff;
-//        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP] = arr[idxSubObj].param[OUTPUT_LED_BL_IMP] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
-//   break;
+        return arr[idxSubObj].settings.param[OUTPUT_LED_BL_IMP] & 0xffff;
+
    case 6://BL-IMP 1 ДВых. item
-//        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP] = 
-        return (arr[idxSubObj].settings.param[OUTPUT_LED_BL_IMP]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
-//        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP] = arr[idxSubObj].param[OUTPUT_LED_BL_IMP] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
-//   break; 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_BL_IMP]  >> 16) & 0x7fff;
 
    case 7://C1/C2 0 ДВых. item
-//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] = 
-        return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1_MEANDER2] & 0xffff;// &= (uint32_t)~0xffff;
-//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] = arr[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
-  // break;
+        return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1_MEANDER2] & 0xffff;
+
    case 8://C1/C2 1 ДВых. item
-        //arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] = 
-        return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1_MEANDER2]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
-//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] = arr[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
-//   break; 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1_MEANDER2]  >> 16) & 0x7fff;
 
    case 9://Генератор С1 0 ДВых. item
-        //arr1[idxSubObj].param[OUTPUT_LED_MEANDER1] = 
-        return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1] & 0xffff;// &= (uint32_t)~0xffff;
- //       arr1[idxSubObj].param[OUTPUT_LED_MEANDER1] = arr[idxSubObj].param[OUTPUT_LED_MEANDER1] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
- //  break;
+        return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1] & 0xffff;
+
    case 10://Генератор С1 1 ДВых. item
-        //arr1[idxSubObj].param[OUTPUT_LED_MEANDER1] = 
-        return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
-//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1] = arr[idxSubObj].param[OUTPUT_LED_MEANDER1] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
-//   break; 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER1]  >> 16) & 0x7fff;
 
    case 11://Генератор С2 0 ДВых. item
-        //arr1[idxSubObj].param[OUTPUT_LED_MEANDER2] = 
-        return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER2] & 0xffff;// &= (uint32_t)~0xffff;
-//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER2] = arr[idxSubObj].param[OUTPUT_LED_MEANDER2] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
-//   break;
+        return arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER2] & 0xffff;
+
    case 12://Генератор С2 1 ДВых. item
-        //arr1[idxSubObj].param[OUTPUT_LED_MEANDER2] = 
-        return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER2]  >> 16) & 0x7fff;// &= (uint32_t)~(0x7fff<<16);
-//        arr1[idxSubObj].param[OUTPUT_LED_MEANDER2] = arr[idxSubObj].param[OUTPUT_LED_MEANDER2] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
-  // break; 
+        return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER2]  >> 16) & 0x7fff;
+
  }//switch
 
 

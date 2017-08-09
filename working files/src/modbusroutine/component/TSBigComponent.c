@@ -1,9 +1,9 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 7894
+#define BEGIN_ADR_REGISTER 7880
 //макс к-во обектов
-#define TOTAL_OBJ 126
+#define TOTAL_OBJ 128
 #define REGISTER_FOR_OBJ 5
 
 int privateTSBigGetReg1(int adrReg);

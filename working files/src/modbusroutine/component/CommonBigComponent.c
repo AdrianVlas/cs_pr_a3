@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 13781
+#define BEGIN_ADR_REGISTER 13768
 //макс к-во обектов
 #define REGISTER_FOR_OBJ 10
 
