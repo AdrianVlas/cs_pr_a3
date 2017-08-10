@@ -66,7 +66,36 @@ void loadTSSmallActualData(void) {
   for(int item=0; item<tssmallcomponent->countObject; item++) {
    int ireg = item/16;
 
-   int value = arr[item].active_state[TU_OUT  >> 3] & (1 << (TU_OUT  & ((1 << 3) - 1)));
+   //Встановлюємо MUTEX (1)
+   arr[item].internal_input[TS_INT_MUTEX >> 3] |= (1 << (TS_INT_MUTEX & ((1 << 3) - 1)));
+   
+   //Чиатання стану
+   int value = arr[item].active_state[TS_OUT  >> 3] & (1 << (TS_OUT  & ((1 << 3) - 1)));
+
+   //Встановлюємо про те що читання відбулося (2)
+   arr[item].internal_input[TS_INT_READING >> 3] |= (1 << (TS_INT_READING & ((1 << 3) - 1)));
+
+
+   //Скидаємо MUTEX (3)
+   arr[item].internal_input[TS_INT_MUTEX >> 3] &= (uint8_t)(~(1 << (TS_INT_MUTEX & ((1 << 3) - 1))));
+
+///*
+//ТУ
+//*/
+//__LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
+//
+////Встановлюємо MUTEX (1)
+//arr[item].internal_input[TU_INT_MUTEX >> 3] |= (1 << (TU_INT_MUTEX & ((1 << 3) - 1)));
+//
+////Встановлюємо про те що треба активувати дане ТУ (2)
+//arr[item].internal_input[TU_INT_ACTIVATION >> 3] |= (1 << (TU_INT_ACTIVATION & ((1 << 3) - 1)));
+//
+//
+////Скидаємо MUTEX (3)
+//arr[item].internal_input[TU_INT_MUTEX >> 3] &= (uint8_t)(~(1 << (TU_INT_MUTEX & ((1 << 3) - 1))));
+
+   
+/***/   
    
    int tsdata = 0;
    if(value) tsdata=1;

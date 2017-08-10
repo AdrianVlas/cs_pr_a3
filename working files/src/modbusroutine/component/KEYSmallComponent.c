@@ -24,6 +24,7 @@ void postKEYSmallReadAction(void);//action после чтения
 void preKEYSmallWriteAction(void);//action до записи
 int postKEYSmallWriteAction(void);//action после записи
 void loadKEYSmallActualData(void);
+void loadRMTKeySmallActualData(void);
 
 COMPONENT_OBJ *keysmallcomponent;
 
@@ -58,6 +59,8 @@ void loadKEYSmallActualData(void) {
   int cnt_treg = keysmallcomponent->countObject/16;
   if(keysmallcomponent->countObject%16) cnt_treg++;
   for(int ii=0; ii<cnt_treg; ii++) tempReadArray[ii] = 0;
+  loadRMTKeySmallActualData();
+
    __LN_BUTTON *arr = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
   for(int item=0; item<keysmallcomponent->countObject; item++) {
    int ireg = (item+keyOffset)/16;
@@ -86,8 +89,6 @@ int getKEYSmallModbusRegister(int adrReg)
   if(privateKEYSmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(keysmallcomponent, adrReg);
-
-  tempReadArray[0] &=~0x7;
 
   return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTModbusRegister(int adrReg)
@@ -154,16 +155,18 @@ int postKEYSmallWriteAction(void) {
 int privateKEYSmallGetReg1(int adrReg)
 {
   //проверить внутренний периметр
-  int count_register = keysmallcomponent->countObject/16;
-  if(keysmallcomponent->countObject%16) count_register++;
+  int keyOffset=3;
+  int count_register = (keyOffset+keysmallcomponent->countObject)/16;
+  if((keyOffset+keysmallcomponent->countObject)%16) count_register++;
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateDOUTSmallGetReg2(int adrReg)
 int privateKEYSmallGetReg2(int adrReg)
 {
   //проверить внутренний периметр
-  int count_register = TOTAL_OBJ/16;
-  if(TOTAL_OBJ%16) count_register++;
+  int keyOffset=3;
+  int count_register = (keyOffset+TOTAL_OBJ)/16;
+  if((keyOffset+TOTAL_OBJ)%16) count_register++;
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateDOUTSmallGetReg2(int adrReg)

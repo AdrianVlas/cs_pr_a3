@@ -14,6 +14,7 @@ int outputFunc6PacketEncoder(int adrUnit, int adrReg, int dataReg);
 int outputFunc5PacketEncoder(int adrUnit, int adrBit, int dataBit);
 int outputFunc3PacketEncoder(int adrUnit, int adrReg, int cntReg);
 int outputFunc1PacketEncoder(int adrUnit, int adrReg, int cntReg);
+void superrestart_monitoring_RS485(void);
 
 unsigned char  *outputPacket;
 unsigned char  outputPacket_USB[300];
@@ -76,8 +77,8 @@ received_count = &RxBuffer_RS485_count;
   case 6:
   case 15:
   case 16:
-	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS)) return;
-	 if(config_settings_modified&MASKA_FOR_BIT(BIT_USB_LOCKS)) return;
+	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS)) {superrestart_monitoring_RS485();return;}
+	 if(config_settings_modified&MASKA_FOR_BIT(BIT_USB_LOCKS)) {superrestart_monitoring_RS485();return;}
   break;
   default:return;
  }//switch
@@ -85,7 +86,7 @@ received_count = &RxBuffer_RS485_count;
 // received_count = &usb_received_count;
 // outputPacket = outputPacket_RS485;
  outputPacket = outputPacket_RS485;
- if(inputPacketParser()==0) return;
+ if(inputPacketParser()==0) {superrestart_monitoring_RS485();return;}
 
 TxBuffer_RS485_count = sizeOutputPacket;
 for (int i = 0; i < TxBuffer_RS485_count; i++) TxBuffer_RS485[i] = outputPacket[i];
@@ -95,6 +96,11 @@ start_transmint_data_via_RS_485(TxBuffer_RS485_count);
 // for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
 // data_usb_transmiting = true;
 }//inputPacketParserRS485(void)
+void superrestart_monitoring_RS485() {
+ //для продовження приймати нові пакети
+restart_monitoring_RS485(); //для продовження приймати нові пакети
+}//superrestart_monitoring_RS485
+
 /**************************************/
 //разбор входного пакета
 /**************************************/
@@ -435,7 +441,6 @@ int outputFunc5PacketEncoder(int adrUnit, int adrBit, int dataBit)
                               10,//error,
                               outputPacket);//output_data
     }//switch
-  //qDebug()<<"result= "<<result;
 
   superPostWriteAction();//action после записи
 
@@ -453,6 +458,7 @@ int outputFunc5PacketEncoder(int adrUnit, int adrBit, int dataBit)
   idxOutputPacket++;
 //MdataReg
   outputPacket[idxOutputPacket] = (unsigned char)(0xFF);
+  if(dataBit==0) outputPacket[idxOutputPacket] = (unsigned char)(0x00);
   idxOutputPacket++;
 //LdataReg
   outputPacket[idxOutputPacket] = (unsigned char)(0x0);

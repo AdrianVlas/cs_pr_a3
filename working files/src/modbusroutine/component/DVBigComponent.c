@@ -91,7 +91,7 @@ int getDVBigModbusRegister(int adrReg)
   if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(dvbigcomponent, adrReg);
-
+/*
    __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -101,8 +101,21 @@ int getDVBigModbusRegister(int adrReg)
    case 1:
      return arr[idxSubObj].settings.set_delay[INPUT_SET_DELAY_DOPUSK];
  }//switch
+*/
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  __settings_for_INPUT *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_INPUT*)(sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR])) + idxSubObj);
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+//     return (((arr[idxSubObj].settings.control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) !=0) << 0) | (1 << 1) | ((V110_V220 != 0) << 2);
+     return (((arr->control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) !=0) << 0) | (1 << 1) | ((V110_V220 != 0) << 2);
+   case 1:
+//     return arr[idxSubObj].settings.set_delay[INPUT_SET_DELAY_DOPUSK];
+     return arr->set_delay[INPUT_SET_DELAY_DOPUSK];
+ }//switch
+
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getDVBigModbusBit(int adrReg)
 {
@@ -169,7 +182,6 @@ int postDVBigWriteAction(void) {
   int countRegister = dvbigcomponent->operativMarker[1]-dvbigcomponent->operativMarker[0]+1;
   if(dvbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
    __settings_for_INPUT *arr  = (__settings_for_INPUT*)(sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
    __settings_for_INPUT *arr1 = (__settings_for_INPUT*)(sca_of_p_edit[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {
@@ -184,7 +196,7 @@ int postDVBigWriteAction(void) {
    break;
  }//switch
   }//for
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

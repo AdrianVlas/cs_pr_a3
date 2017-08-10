@@ -301,33 +301,99 @@ inline void main_protection(void)
     /**************************/
     //Опрацьовуємо натиснуті кнопки
     /**************************/
-    __LN_BUTTON *p_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
-    for (uint32_t i = 0; i < current_config_prt.n_button; i++)
     {
-      //Скидаємо  попередній стан
-      p_button->active_state [BUTTON_OUT >> 3]  &= (uint8_t)(~( 1 << (BUTTON_OUT & ((1 << 3) - 1))));
-    
-      //Перевіряємо, чи не встановлений MUTEX
-      if ((p_button->internal_input[BUTTON_INT_MUTEX >> 3] & (1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1)))) == 0)
+      __LN_BUTTON *p_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+      for (uint32_t i = 0; i < current_config_prt.n_button; i++)
       {
-        //MUTEX не встановлений
-      
-        //Визначаємо стан вхідної інформації
-        uint32_t state_tmp = ((p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] & (1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1)))) != 0);
-        if (state_tmp)
+        //Скидаємо  попередній стан
+        p_button->active_state [BUTTON_OUT >> 3]  &= (uint8_t)(~( 1 << (BUTTON_OUT & ((1 << 3) - 1))));
+    
+        //Перевіряємо, чи не встановлений MUTEX
+        if ((p_button->internal_input[BUTTON_INT_MUTEX >> 3] & (1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1)))) == 0)
         {
-          //Встановлюємо вихід
-          p_button->active_state[BUTTON_OUT >> 3]  |= (1 << (BUTTON_OUT & ((1 << 3) - 1)));
+          //MUTEX не встановлений
+      
+          //Визначаємо стан вхідної інформації
+          uint32_t state_tmp = ((p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] & (1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1)))) != 0);
+          if (state_tmp)
+          {
+            //Встановлюємо вихід
+            p_button->active_state[BUTTON_OUT >> 3]  |= (1 << (BUTTON_OUT & ((1 << 3) - 1)));
         
-          //Скидаємо інформацію з входу
-          p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1))));
+            //Скидаємо інформацію з входу
+            p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1))));
+          }
         }
+        //Переводимо вказівник на наступну кнопку
+        p_button++;
       }
-      //Переводимо вказівник на наступну кнопку
-      p_button++;
     }
+    /**************************/
+
+    /**************************/
+    //Опрацьовуємо ТУ
+    /**************************/
+    {
+      __LN_TU *p_tu = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
+      for (uint32_t i = 0; i < current_config_prt.n_tu; i++)
+      {
+        //Скидаємо  попередній стан
+        p_tu->active_state [TU_OUT >> 3]  &= (uint8_t)(~( 1 << (TU_OUT & ((1 << 3) - 1))));
+    
+        //Перевіряємо, чи не встановлений MUTEX
+        if ((p_tu->internal_input[TU_INT_MUTEX >> 3] & (1 << (TU_INT_MUTEX & ((1 << 3) - 1)))) == 0)
+        {
+          //MUTEX не встановлений
+      
+          //Визначаємо стан вхідної інформації
+          uint32_t state_tmp = ((p_tu->internal_input[TU_INT_ACTIVATION >> 3] & (1 << (TU_INT_ACTIVATION & ((1 << 3) - 1)))) != 0);
+          if (state_tmp)
+          {
+            //Встановлюємо вихід
+            p_tu->active_state[TU_OUT >> 3]  |= (1 << (TU_OUT & ((1 << 3) - 1)));
+        
+            //Скидаємо інформацію з входу
+            p_tu->internal_input[TU_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (TU_INT_ACTIVATION & ((1 << 3) - 1))));
+          }
+        }
+        //Переводимо вказівник на наступну кнопку
+        p_tu++;
+      }
+    }
+    /**************************/
+
+    /**************************/
+    //Опрацьовуємо ТС
+    /**************************/
+    {
+      __LN_TS *p_ts = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+      for (uint32_t i = 0; i < current_config_prt.n_tu; i++)
+      {
+        //Скидаємо  попередній стан
+        p_ts->active_state [TS_OUT >> 3]  &= (uint8_t)(~( 1 << (TS_OUT & ((1 << 3) - 1))));
+    
+        //Перевіряємо, чи не встановлений MUTEX
+        if ((p_ts->internal_input[TS_INT_MUTEX >> 3] & (1 << (TS_INT_MUTEX & ((1 << 3) - 1)))) == 0)
+        {
+          //MUTEX не встановлений
+      
+          //Визначаємо стан вхідної інформації
+          uint32_t state_tmp = ((p_ts->internal_input[TS_INT_READING >> 3] & (1 << (TS_INT_READING & ((1 << 3) - 1)))) != 0);
+          if (state_tmp)
+          {
+            //Встановлюємо вихід
+            p_ts->active_state[TS_OUT >> 3]  |= (1 << (TS_OUT & ((1 << 3) - 1)));
+        
+            //Скидаємо інформацію з входу
+            p_ts->internal_input[TS_INT_READING >> 3] &= (uint8_t)(~(1 << (TS_INT_READING & ((1 << 3) - 1))));
+          }
+        }
+        //Переводимо вказівник на наступну кнопку
+        p_ts++;
+      }
+    }
+    /**************************/
   }
-  /**************************/
     
   /***********************************************************/
   //Розрахунок вимірювань
