@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 6091
+#define BEGIN_ADR_REGISTER 6072
 //макс к-во обектов
 #define REGISTER_FOR_OBJ 4
 
@@ -188,21 +188,30 @@ int postCGSBigWriteAction(void) {
    __settings_for_GROUP_ALARM *arr1 = (__settings_for_GROUP_ALARM*)(sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {
   int offset = i+cgsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
-  switch(offset) {//индекс регистра
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0://Параметры ГС item
-     arr1[0].control = arr[0].control  &= (uint32_t)~0x3;
-     arr1[0].control = arr[0].control  |= (tempWriteArray[offsetTempWriteArray+i]) & 0x3;
+     arr1[idxSubObj].control = arr[idxSubObj].control  &= (uint32_t)~0x3;
+     arr1[idxSubObj].control = arr[idxSubObj].control  |= (tempWriteArray[offsetTempWriteArray+i]) & 0x3;
    break; 
-   case 1://Входной ток ГС item
-     arr1[1].analog_input_control = arr[1].analog_input_control = (tempWriteArray[offsetTempWriteArray+i]) << 
-        (group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) 
-              & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
-   break; 
+  case 1:{//Входной ток ГС item
+//     arr1[1].analog_input_control = arr[1].analog_input_control = (tempWriteArray[offsetTempWriteArray+i]) << 
+//        (group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) 
+//              & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
+      uint32_t maska = (1 << group_alarm_analog_ctrl_patten[_MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1;
+      uint32_t shift = group_alarm_analog_ctrl_patten[_MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0];
+//	  arr1[1].analog_input_control = arr[1].analog_input_control = (arr[1].analog_input_control & ((uint32_t)(~(maska << shift)))) | (tempWriteArray[offsetTempWriteArray+i]) << shift);
+	  arr1[idxSubObj].analog_input_control = arr[idxSubObj].analog_input_control &= ((uint32_t)(~(maska << shift)));// | (tempWriteArray[offsetTempWriteArray+i]) << shift);
+	  arr1[idxSubObj].analog_input_control = arr[idxSubObj].analog_input_control |= (tempWriteArray[offsetTempWriteArray+i]) << shift;
+  } break; 
    case 2://Приращение тока ГС item
-    arr1[2].pickup[GROUP_ALARM_PICKUP_DELTA_I] = arr[2].pickup[GROUP_ALARM_PICKUP_DELTA_I] = (tempWriteArray[offsetTempWriteArray+i]);
+    {
+   // int tt1 = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1[idxSubObj].pickup[GROUP_ALARM_PICKUP_DELTA_I] = arr[idxSubObj].pickup[GROUP_ALARM_PICKUP_DELTA_I] = (tempWriteArray[offsetTempWriteArray+i]);
+    }
    break; 
    case 3://Время tуст ГС item
-    arr1[3].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = arr[3].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1[idxSubObj].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = arr[idxSubObj].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = (tempWriteArray[offsetTempWriteArray+i]);
    break; 
  }//switch
   }//for

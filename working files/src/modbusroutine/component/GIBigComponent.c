@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 4676
+#define BEGIN_ADR_REGISTER 4664
 //макс к-во обектов
 #define TOTAL_OBJ 128
 #define REGISTER_FOR_OBJ 1
@@ -73,10 +73,10 @@ int getGIBigModbusRegister(int adrReg)
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0:
-   return arr[idxSubObj].settings.set_delay[0];
+   return arr[idxSubObj].settings.set_delay[0]/100;
  }//switch
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getGIBigModbusBit(int adrBit)
 {
@@ -138,14 +138,13 @@ int postGIBigWriteAction(void) {
   int countRegister = gibigcomponent->operativMarker[1]-gibigcomponent->operativMarker[0]+1;
   if(gibigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LN_MEANDER *arr = (__LN_MEANDER*)(spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
    __settings_for_MEANDER *arr  = (__settings_for_MEANDER*)(sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
    __settings_for_MEANDER *arr1 = (__settings_for_MEANDER*)(sca_of_p_edit[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {
   int offset = i+gibigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
 
-   arr1[idxSubObj].set_delay[0] = arr[idxSubObj].set_delay[0] = (tempWriteArray[offsetTempWriteArray+i]);
+   arr1[idxSubObj].set_delay[0] = arr[idxSubObj].set_delay[0] = (tempWriteArray[offsetTempWriteArray+i])*100;
 
   }//for
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);

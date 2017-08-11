@@ -267,7 +267,7 @@ void total_error_sw_fixed(unsigned int);
 
 int str_to_int_DATE_Mmm(void);
 
-extern void inputPacketParser(void);
+//extern void inputPacketParser(void);
 extern void inputPacketParserUSB(void);
 extern void inputPacketParserRS485(void);
 

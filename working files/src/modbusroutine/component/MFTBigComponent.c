@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 6107
+#define BEGIN_ADR_REGISTER 6088
 //макс к-во обектов
 #define TOTAL_OBJ 128
 #define REGISTER_FOR_OBJ 6
@@ -90,27 +90,27 @@ int getMFTBigModbusRegister(int adrReg)
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0:
    //Таймер паузы  item
-    return arr[idxSubObj].settings.set_delay[TIMER_SET_DELAY_PAUSE]/10;
+    return arr[idxSubObj].settings.set_delay[TIMER_SET_DELAY_PAUSE];///10;
 
    case 1:
    //Таймер работы   item
-   return arr[idxSubObj].settings.set_delay[TIMER_SET_DELAY_WORK]/10;
+   return arr[idxSubObj].settings.set_delay[TIMER_SET_DELAY_WORK];///10;
 
    case 2:
    //MFT-IN 1 0 item
-   return arr[idxSubObj].settings.param[TIMER_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
+   return arr[idxSubObj].settings.param[TIMER_LOGIC_INPUT] & 0xffff;
 
    case 3:
-   return  (arr[idxSubObj].settings.param[TIMER_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
+   return  (arr[idxSubObj].settings.param[TIMER_LOGIC_INPUT] >> 16) & 0x7fff;
 
    case 4:
    //Reset-I  0 item
-   return arr[idxSubObj].settings.param[TIMER_RESET] & 0xffff;//LEDIN 0 СД item
+   return arr[idxSubObj].settings.param[TIMER_RESET] & 0xffff;
    case 5:
-   return (arr[idxSubObj].settings.param[TIMER_RESET] >> 16) & 0x7fff;//LEDIN 1 СД item
+   return (arr[idxSubObj].settings.param[TIMER_RESET] >> 16) & 0x7fff;
   }//switch
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getMFTBigModbusBit(int adrBit)
 {
@@ -192,7 +192,6 @@ int postMFTBigWriteAction(void) {
   int countRegister = mftbigcomponent->operativMarker[1]-mftbigcomponent->operativMarker[0]+1;
   if(mftbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LN_TIMER *arr = (__LN_TIMER*)(spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
    __settings_for_TIMER *arr  = (__settings_for_TIMER*)(sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
    __settings_for_TIMER *arr1 = (__settings_for_TIMER*)(sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {
@@ -200,10 +199,16 @@ int postMFTBigWriteAction(void) {
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0://Таймер паузы
+    {
+  //  int tt1 = (tempWriteArray[offsetTempWriteArray+i]);
     arr1[idxSubObj].set_delay[TIMER_SET_DELAY_PAUSE] = arr[idxSubObj].set_delay[TIMER_SET_DELAY_PAUSE] = (tempWriteArray[offsetTempWriteArray+i]);
+    }
    break;
    case 1://Таймер работы
+    {
+//    int tt1 = (tempWriteArray[offsetTempWriteArray+i]);
     arr1[idxSubObj].set_delay[TIMER_SET_DELAY_WORK] = arr[idxSubObj].set_delay[TIMER_SET_DELAY_WORK] = (tempWriteArray[offsetTempWriteArray+i]);
+    }
    break;
 
    case 2://MFT-IN 0 item

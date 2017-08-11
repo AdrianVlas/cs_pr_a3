@@ -1,9 +1,9 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 416
+#define BEGIN_ADR_REGISTER 408
 //начальный bit в карте памяти
-#define BEGIN_ADR_BIT 20256
+#define BEGIN_ADR_BIT 20128
 //макс к-во обектов
 #define BIT_FOR_OBJ 1
 
@@ -25,7 +25,7 @@ void loadRMTKeySmallActualData(void);
 COMPONENT_OBJ *rmtkeysmallcomponent;
 
 /**************************************/
-//подготовка компонента ранжирование пользовательских регистров
+//подготовка компонента ранжирование клавиш MUTE RESET TEST
 /**************************************/
 void constructorRMTKeySmallComponent(COMPONENT_OBJ *rmtkeysmallcomp)
 {
