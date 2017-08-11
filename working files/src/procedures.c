@@ -2370,6 +2370,11 @@ void min_settings_TS(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
         ((__LN_TS *)(base) + shift)->active_state[i] = 0;
       }
 
+      for (size_t i = 0; i < DIV_TO_HIGHER(TS_SIGNALS_ADD_INPUT, 8); i++)
+      {
+        ((__LN_TS *)(base) + shift)->add_input_state[i] = 0;
+      }
+
       for (size_t i = 0; i < DIV_TO_HIGHER(TS_SIGNALS_INT_IN, 8); i++)
       {
         ((__LN_TS *)(base) + shift)->internal_input[i] = 0;

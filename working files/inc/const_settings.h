@@ -518,6 +518,14 @@ enum _TS_output_signals
     
 };
 
+enum _TS_add_input_signals
+{
+  TS_READING = 0,
+  
+  TS_SIGNALS_ADD_INPUT
+    
+};
+
 enum _TS_input_signals
 {
   TS_LOGIC_INPUT = 0,

@@ -440,6 +440,7 @@ typedef struct
   __settings_for_TS settings;
   
   uint8_t active_state[DIV_TO_HIGHER(TS_SIGNALS_OUT, 8)];
+  uint8_t add_input_state[DIV_TO_HIGHER(TS_SIGNALS_ADD_INPUT, 8)];
   
   uint8_t internal_input[DIV_TO_HIGHER(TS_SIGNALS_INT_IN, 8)];
 
