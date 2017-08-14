@@ -156,8 +156,6 @@ int setSDIBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
-    //контроль параметров ранжирования
-    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;

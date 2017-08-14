@@ -367,10 +367,10 @@ inline void main_protection(void)
     /**************************/
     {
       __LN_TS *p_ts = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
-      for (uint32_t i = 0; i < current_config_prt.n_tu; i++)
+      for (uint32_t i = 0; i < current_config_prt.n_ts; i++)
       {
         //Скидаємо  попередній стан
-        p_ts->active_state [TS_OUT >> 3]  &= (uint8_t)(~( 1 << (TS_OUT & ((1 << 3) - 1))));
+        p_ts->add_input_state[TS_READING >> 3]  &= (uint8_t)(~( 1 << (TS_READING & ((1 << 3) - 1))));
     
         //Перевіряємо, чи не встановлений MUTEX
         if ((p_ts->internal_input[TS_INT_MUTEX >> 3] & (1 << (TS_INT_MUTEX & ((1 << 3) - 1)))) == 0)
@@ -382,7 +382,7 @@ inline void main_protection(void)
           if (state_tmp)
           {
             //Встановлюємо вихід
-            p_ts->active_state[TS_OUT >> 3]  |= (1 << (TS_OUT & ((1 << 3) - 1)));
+            p_ts->add_input_state[TS_READING >> 3]  |= (1 << (TS_READING & ((1 << 3) - 1)));
         
             //Скидаємо інформацію з входу
             p_ts->internal_input[TS_INT_READING >> 3] &= (uint8_t)(~(1 << (TS_INT_READING & ((1 << 3) - 1))));
