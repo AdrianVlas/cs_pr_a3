@@ -79,13 +79,14 @@ int getTSmallModbusBeginAdrRegister(void);
 int getTSBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateTSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(tsbigcomponent->isActiveActualData) setTSBigCountObject(); //записать к-во обектов
   tsbigcomponent->isActiveActualData = 0;
   if(privateTSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tsbigcomponent, adrReg);
-
+/*
    __LN_TS *arr = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -106,8 +107,31 @@ int getTSBigModbusRegister(int adrReg)
    //Адрес ТС 0  item
    return getTSmallModbusBeginAdrRegister() + idxSubObj;
   }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  __settings_for_TS *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TS*)(sca_of_p[ID_FB_TS - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TS*)(sca_of_p[ID_FB_TS - _ID_FB_FIRST_VAR])) + idxSubObj);
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+   //In TC 0  item
+    return arr->param[TS_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
+   case 1:
+    return (arr->param[TS_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 2:
+   //Block TC 0  item
+    return arr->param[TS_BLOCK] & 0xffff;//LEDIN 0 СД item
+   case 3:
+    return (arr->param[TS_BLOCK] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 4:
+   //Адрес ТС 0  item
+   return getTSmallModbusBeginAdrRegister() + idxSubObj;
+  }//switch
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getTSBigModbusBit(int adrBit)
 {

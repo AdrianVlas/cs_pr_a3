@@ -70,13 +70,14 @@ void loadANDBigActualData(void) {
 int getANDBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateANDBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(andbigcomponent->isActiveActualData) setANDBigCountObject(); //к-во обектов
   andbigcomponent->isActiveActualData = 0;
   if(privateANDBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(andbigcomponent, adrReg);
-
+/*
    __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -87,8 +88,21 @@ int getANDBigModbusRegister(int adrReg)
    case 1:
         return  (arr[idxSubObj].settings.param[idxParam] >> 16) & 0x7fff;//
   }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idxParam = (offset/2)%AND_SIGNALS_IN;//индекс param
+  __settings_for_AND *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_AND*)(spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_AND*)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_AND*)(spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_AND*)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR])) + idxSubObj);
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  switch(offset%2) {//индекс регистра 
+   case 0:
+        return  arr->param[idxParam] & 0xffff;//
+   case 1:
+        return  (arr->param[idxParam] >> 16) & 0x7fff;//
+  }//switch
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getANDBigModbusBit(int adrBit)
 {
@@ -208,7 +222,6 @@ int postANDBigWriteAction(void) {
   int countRegister = andbigcomponent->operativMarker[1]-andbigcomponent->operativMarker[0]+1;
   if(andbigcomponent->operativMarker[1]<0) countRegister = 1;
 
- // __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]);
    __settings_for_AND *arr = (__settings_for_AND*)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR]);
    __settings_for_AND *arr1 = (__settings_for_AND*)(sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {

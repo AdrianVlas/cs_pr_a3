@@ -65,6 +65,7 @@ void loadNOTBigActualData(void) {
 int getNOTBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;  
   if(privateNOTBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(notbigcomponent->isActiveActualData) setNOTBigCountObject(); //к-во обектов
   notbigcomponent->isActiveActualData = 0;
@@ -72,6 +73,7 @@ int getNOTBigModbusRegister(int adrReg)
 
   superSetOperativMarker(notbigcomponent, adrReg);
 
+/*
    __LN_NOT *arr = (__LN_NOT*)(spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -81,8 +83,20 @@ int getNOTBigModbusRegister(int adrReg)
    case 1:
         return (arr[idxSubObj].settings.param[0] >> 16) & 0x7fff;//
   }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  __settings_for_NOT *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_NOT*)(spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_NOT*)(sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_NOT*)(spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_NOT*)(sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR])) + idxSubObj);
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+        return arr->param[0] & 0xffff;//
+   case 1:
+        return (arr->param[0] >> 16) & 0x7fff;//
+  }//switch
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getNOTBigModbusBit(int adrBit)
 {
@@ -151,7 +165,6 @@ int postNOTBigWriteAction(void) {
   int countRegister = notbigcomponent->operativMarker[1]-notbigcomponent->operativMarker[0]+1;
   if(notbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LN_NOT *arr = (__LN_NOT*)(spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]);
    __settings_for_NOT *arr  = (__settings_for_NOT*)(sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR]);
    __settings_for_NOT *arr1 = (__settings_for_NOT*)(sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {

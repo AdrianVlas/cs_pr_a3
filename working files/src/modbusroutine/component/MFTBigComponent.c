@@ -77,13 +77,14 @@ void loadMFTBigActualData(void) {
 int getMFTBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateMFTBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(mftbigcomponent->isActiveActualData) setMFTBigCountObject(); //к-во обектов
   mftbigcomponent->isActiveActualData = 0;
   if(privateMFTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(mftbigcomponent, adrReg);
-
+/*
    __LN_TIMER *arr = (__LN_TIMER*)(spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -109,7 +110,35 @@ int getMFTBigModbusRegister(int adrReg)
    case 5:
    return (arr[idxSubObj].settings.param[TIMER_RESET] >> 16) & 0x7fff;
   }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  __settings_for_TIMER *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_TIMER*)(spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TIMER*)(sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_TIMER*)(spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TIMER*)(sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR])) + idxSubObj);
 
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+   //Таймер паузы  item
+    return arr->set_delay[TIMER_SET_DELAY_PAUSE];///10;
+
+   case 1:
+   //Таймер работы   item
+   return arr->set_delay[TIMER_SET_DELAY_WORK];///10;
+
+   case 2:
+   //MFT-IN 1 0 item
+   return arr->param[TIMER_LOGIC_INPUT] & 0xffff;
+
+   case 3:
+   return  (arr->param[TIMER_LOGIC_INPUT] >> 16) & 0x7fff;
+
+   case 4:
+   //Reset-I  0 item
+   return arr->param[TIMER_RESET] & 0xffff;
+   case 5:
+   return (arr->param[TIMER_RESET] >> 16) & 0x7fff;
+  }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getMFTBigModbusBit(int adrBit)

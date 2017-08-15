@@ -84,6 +84,7 @@ void loadDVBigActualData(void) {
 
 int getDVBigModbusRegister(int adrReg)
 {
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   //получить содержимое регистра
   if(privateDVBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(dvbigcomponent->isActiveActualData) setDVBigCountObject(); //к-во обектов
@@ -106,6 +107,8 @@ int getDVBigModbusRegister(int adrReg)
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   __settings_for_INPUT *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_INPUT*)(sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_INPUT*)(sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR])) + idxSubObj);
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0:
 //     return (((arr[idxSubObj].settings.control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) !=0) << 0) | (1 << 1) | ((V110_V220 != 0) << 2);
@@ -196,7 +199,7 @@ int postDVBigWriteAction(void) {
    break;
  }//switch
   }//for
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_USB_LOCKS);
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

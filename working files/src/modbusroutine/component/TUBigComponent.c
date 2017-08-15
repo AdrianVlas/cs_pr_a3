@@ -71,13 +71,14 @@ int getTUmallModbusBeginAdrRegister(void);
 int getTUBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateTUBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(tubigcomponent->isActiveActualData) setTUBigCountObject(); //записать к-во обектов
   tubigcomponent->isActiveActualData = 0;
   if(privateTUBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tubigcomponent, adrReg);
-
+/*
    __LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -92,8 +93,25 @@ int getTUBigModbusRegister(int adrReg)
    //Адрес ТУ 0  item
     return getTUmallModbusBeginAdrRegister() + idxSubObj;
   }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  __settings_for_TU *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TU*)(sca_of_p[ID_FB_TU - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TU*)(sca_of_p[ID_FB_TU - _ID_FB_FIRST_VAR])) + idxSubObj);
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+   //Block ТУ 0  item
+    return arr->param[TU_BLOCK] & 0xffff;//
+   case 1:
+    return (arr->param[TU_BLOCK] >> 16) & 0x7fff;//
+
+   case 2:
+   //Адрес ТУ 0  item
+    return getTUmallModbusBeginAdrRegister() + idxSubObj;
+  }//switch
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getTUBigModbusBit(int adrBit)
 {
@@ -164,7 +182,6 @@ int postTUBigWriteAction(void) {
   int countRegister = tubigcomponent->operativMarker[1]-tubigcomponent->operativMarker[0]+1;
   if(tubigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
    __settings_for_TU *arr  = (__settings_for_TU*)(sca_of_p[ID_FB_TU - _ID_FB_FIRST_VAR]);
    __settings_for_TU *arr1 = (__settings_for_TU*)(sca_of_p_edit[ID_FB_TU - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {

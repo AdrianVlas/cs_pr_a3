@@ -88,13 +88,14 @@ void loadSZSBigActualData(void) {
 int getSZSBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateSZSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(szsbigcomponent->isActiveActualData) setSZSBigCountObject(); //к-во обектов
   szsbigcomponent->isActiveActualData = 0;
   if(privateSZSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(szsbigcomponent, adrReg);
-
+/*
    __LN_ALARM *arr = (__LN_ALARM*)(spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -131,8 +132,47 @@ int getSZSBigModbusRegister(int adrReg)
    case 9:
     return (arr[idxSubObj].settings.param[ALARM_RESET] >> 16) & 0x7fff;//LEDIN 1 СД item
   }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  __settings_for_ALARM *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_ALARM*)(spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_ALARM*)(sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_ALARM*)(spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_ALARM*)(sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR])) + idxSubObj);
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+   //Режим работы СЗС item
+    return arr->control & 0x3;
+
+   case 1:
+   //Таймер СЗС  item
+    return arr->set_delay[ALARM_SET_DELAY_PERIOD]/100;
+
+   case 2:
+   //LSSIN1 0 СЗС  item
+    return arr->param[ALARM_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
+   case 3:
+    return (arr->param[ALARM_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 4:
+   //Mute-I 0 СЗС   item
+    return arr->param[ALARM_IN_MUTE] & 0xffff;//LEDIN 0 СД item
+   case 5:
+    return (arr->param[ALARM_IN_MUTE] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 6:
+   //Block-I 0 СЗС    item
+    return arr->param[ALARM_IN_BLOCK] & 0xffff;//LEDIN 0 СД item
+   case 7:
+    return (arr->param[ALARM_IN_BLOCK] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 8:
+   //Reset-I 0 СЗС   item
+    return arr->param[ALARM_RESET] & 0xffff;//LEDIN 0 СД item
+   case 9:
+    return (arr->param[ALARM_RESET] >> 16) & 0x7fff;//LEDIN 1 СД item
+  }//switch
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getSZSBigModbusBit(int adrBit)
 {

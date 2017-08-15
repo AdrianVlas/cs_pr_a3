@@ -1653,9 +1653,6 @@
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\RPRSmallComponent.c</name>
             </file>
             <file>
-              <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\SDI3ColorSmallComponent.c</name>
-            </file>
-            <file>
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\SDIBigComponent.c</name>
             </file>
             <file>
