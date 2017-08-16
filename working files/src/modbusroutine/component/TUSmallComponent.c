@@ -22,16 +22,12 @@ void preTUSmallReadAction(void);//action до чтения
 void postTUSmallReadAction(void);//action после чтения
 void preTUSmallWriteAction(void);//action до записи
 int postTUSmallWriteAction(void);//action после записи
-void loadTUSmallActualData(void);
-int getTUmallModbusBeginAdrRegister(void);
+int getTUSmallModbusBeginAdrRegister(void);
+void setTUSmallActualData(int beginOffset, int endOffset, int *localArr);
+void postTUSmallWriteRegister(void);
+void postTUSmallWriteBit(void);
 
 COMPONENT_OBJ *tusmallcomponent;
-
-int getTUmallModbusBeginAdrRegister(void)
-{
-  //получить адрес нач регистра
- return BEGIN_ADR_REGISTER;
-}//getTSmallModbusBeginAdrRegister(void)
 
 /**************************************/
 //подготовка компонента телеуправление
@@ -54,26 +50,36 @@ void constructorTUSmallComponent(COMPONENT_OBJ *tusmallcomp)
 
   tusmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadTUSmallActualData(void) {
- setTUSmallCountObject(); //записать к-во обектов
 
-  //ActualData
-  int cnt_treg = tusmallcomponent->countObject/16;
-  if(tusmallcomponent->countObject%16) cnt_treg++;
-  for(int ii=0; ii<cnt_treg; ii++) tempReadArray[ii] = 0;
-   __LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
-  for(int item=0; item<tusmallcomponent->countObject; item++) {
-   int ireg = item/16;
+int getTUSmallModbusBeginAdrRegister(void)
+{
+  //получить адрес нач регистра
+ return BEGIN_ADR_REGISTER;
+}//getTSmallModbusBeginAdrRegister(void)
 
-   int value = arr[item].active_state[TU_OUT  >> 3] & (1 << (TU_OUT  & ((1 << 3) - 1)));
-   
-   int tudata = 0;
-   if(value) tudata=1;
-   tempReadArray[ireg] |= (tudata&0x1)<<(item%16);
+void setTUSmallActualData(int beginOffset, int endOffset, int *localArr) {
+int i=0;
+__LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
+  for(int item=beginOffset; item<endOffset; item++) {
+
+   if(item<tusmallcomponent->countObject) {
+     if(localArr[i]) {
+//        qDebug()<<"itemLocalArr= "<<item;
+//
+//Встановлюємо MUTEX (1)
+arr[item].internal_input[TU_INT_MUTEX >> 3] |= (1 << (TU_INT_MUTEX & ((1 << 3) - 1)));
+
+//Встановлюємо про те що треба активувати дане ТУ (2)
+arr[item].internal_input[TU_INT_ACTIVATION >> 3] |= (1 << (TU_INT_ACTIVATION & ((1 << 3) - 1)));
+
+
+//Скидаємо MUTEX (3)
+arr[item].internal_input[TU_INT_MUTEX >> 3] &= (uint8_t)(~(1 << (TU_INT_MUTEX & ((1 << 3) - 1))));
+     }//if
+   }//if
+   i++;
   }//for
-}//loadActualData() 
-*/
+}//setTUSmallActualData(int beginOffset, int endOffset, int *localArr)
 
 int getTUSmallModbusRegister(int x)
 {
@@ -92,12 +98,10 @@ int getTUSmallModbusBit(int x)
 int setTUSmallModbusRegister(int adrReg, int dataReg)
 {
   if(privateTUSmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(tusmallcomponent->isActiveActualData) setTUSmallCountObject(); //записать к-во обектов
+  if(tusmallcomponent->isActiveActualData)  setTUSmallCountObject(); //записать к-во обектов
   tusmallcomponent->isActiveActualData = 0;
   if(privateTUSmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
-//  UNUSED(x);
-  //записать содержимое регистра
+  
   superSetOperativMarker(tusmallcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
 
@@ -106,11 +110,10 @@ int setTUSmallModbusRegister(int adrReg, int dataReg)
 int setTUSmallModbusBit(int adrBit, int dataBit)
 {
   if(privateTUSmallGetBit2(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(tusmallcomponent->isActiveActualData) setTUSmallCountObject(); //записать к-во обектов
+  if(tusmallcomponent->isActiveActualData)  setTUSmallCountObject(); //записать к-во обектов
   tusmallcomponent->isActiveActualData = 0;
   if(privateTUSmallGetBit1(adrBit)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-//  UNUSED(x);
-  //записать содержимое bit
+  
   superSetOperativMarker(tusmallcomponent, adrBit);
   superSetTempWriteArray(dataBit);//записать в буфер
 
@@ -142,7 +145,12 @@ void preTUSmallWriteAction(void) {
 }//
 int postTUSmallWriteAction(void) {
 //action после записи
- return 0;
+//action после записи
+  if(tusmallcomponent->operativMarker[0]<0) return 0;//не было записи
+
+  if(tusmallcomponent->operativMarker[0]<BEGIN_ADR_BIT)  postTUSmallWriteRegister();
+  else postTUSmallWriteBit();
+  return 0;
 }//
 
 int privateTUSmallGetReg1(int adrReg)
@@ -178,3 +186,56 @@ int privateTUSmallGetBit2(int adrBit)
   if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void postTUSmallWriteBit(void) 
+{
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_BIT);//найти смещение TempWriteArray
+  int countBit = tusmallcomponent->operativMarker[1]-tusmallcomponent->operativMarker[0]+1;
+  if(tusmallcomponent->operativMarker[1]<0) countBit = 1;
+
+ int localArr[150];
+ for(int i=0; i<150; i++) localArr[i] = 0;
+
+ for(int i=0; i<countBit; i++) localArr[i]=tempWriteArray[offsetTempWriteArray+i];
+ int offsetLocA = tusmallcomponent->operativMarker[0]-BEGIN_ADR_BIT;
+
+ int beginOffset = offsetLocA;
+ int endOffset   = (offsetLocA +countBit);
+ setTUSmallActualData(beginOffset, endOffset, localArr);
+}//postTUSmallWriteBit
+
+void postTUSmallWriteRegister(void) 
+{
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int countRegister = tusmallcomponent->operativMarker[1]-tusmallcomponent->operativMarker[0]+1;
+  if(tusmallcomponent->operativMarker[1]<0) countRegister = 1;
+
+
+  int offsetLocA = tusmallcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+
+    int beginOffset = offsetLocA*16;
+    int endOffset   = (offsetLocA +countRegister)*16;
+
+ int localArr[150];
+ for(int i=0; i<150; i++) localArr[i] = 0;
+//распаковка вх регистров
+    int cntB=0;//счетчик бит
+    for (int i=0; i<countRegister; i++) {//счетчик регистров
+
+      if (tempWriteArray[offsetTempWriteArray+i]==0) {
+        cntB+=16;
+        continue;
+      }//if
+      else {
+        for (int b=0; b<16; b++) {
+          localArr[cntB] = 0;
+          if ((tempWriteArray[offsetTempWriteArray+i]&(1<<b))!=0) {
+            localArr[cntB] = 1;
+          }//if
+          cntB++;
+        }//for
+      }
+    }//for
+
+ setTUSmallActualData(beginOffset, endOffset, localArr);
+}//postTUSmallWriteRegister() 

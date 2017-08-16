@@ -201,21 +201,21 @@ int getIUModbusRegister(int adrReg)
 
   return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDVModbusRegister(int adrReg)
-int getIUModbusBit(int adrBit) {
+int getIUModbusBit(int x) {
   //получить содержимое bit
-  superSetOperativMarker(iucomponent, adrBit);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getIUModbusBit(int )
-int setIUModbusRegister(int adrReg, int x) {
+int setIUModbusRegister(int x, int y) {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое регистра
-  superSetOperativMarker(iucomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//setIUModbusRegister(int, int)
-int setIUModbusBit(int adrBit, int x) {
+int setIUModbusBit(int x, int y) {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое bit
-  superSetOperativMarker(iucomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//setIUModbusBit(int, int )
 

@@ -93,10 +93,10 @@ int getYustBigModbusRegister(int adrReg)
 
   return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
-int getYustBigModbusBit(int adrBit)
+int getYustBigModbusBit(int x)
 {
   //получить содержимое регистра
-  superSetOperativMarker(yustbigcomponent, adrBit);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 int setYustBigModbusRegister(int adrReg, int dataReg)
@@ -109,11 +109,11 @@ int setYustBigModbusRegister(int adrReg, int dataReg)
 
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setYustBigModbusBit(int adrBit, int x)
+int setYustBigModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое bit
-  superSetOperativMarker(yustbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 

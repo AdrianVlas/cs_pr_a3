@@ -100,18 +100,18 @@ int getRPRSmallModbusBit(int adrBit)
   if(tmp&maska) return 1;
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setRPRSmallModbusRegister(int adrReg, int x)
+int setRPRSmallModbusRegister(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое регистра
-  superSetOperativMarker(rprsmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setRPRSmallModbusBit(int adrBit, int x)
+int setRPRSmallModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое bit
-  superSetOperativMarker(rprsmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 

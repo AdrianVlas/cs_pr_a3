@@ -120,11 +120,11 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0:
    //Таймер паузы  item
-    return arr->set_delay[TIMER_SET_DELAY_PAUSE];///10;
+    return arr->set_delay[TIMER_SET_DELAY_PAUSE]/10;
 
    case 1:
    //Таймер работы   item
-   return arr->set_delay[TIMER_SET_DELAY_WORK];///10;
+   return arr->set_delay[TIMER_SET_DELAY_WORK]/10;
 
    case 2:
    //MFT-IN 1 0 item
@@ -141,10 +141,10 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int getMFTBigModbusBit(int adrBit)
+int getMFTBigModbusBit(int x)
 {
   //получить содержимое регистра
-  superSetOperativMarker(mftbigcomponent, adrBit);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 int setMFTBigModbusRegister(int adrReg, int dataReg)
@@ -183,11 +183,11 @@ int setMFTBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setMFTBigModbusBit(int adrBit, int x)
+int setMFTBigModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //получить содержимое регистра
-  superSetOperativMarker(mftbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
@@ -230,13 +230,13 @@ int postMFTBigWriteAction(void) {
    case 0://Таймер паузы
     {
   //  int tt1 = (tempWriteArray[offsetTempWriteArray+i]);
-    arr1[idxSubObj].set_delay[TIMER_SET_DELAY_PAUSE] = arr[idxSubObj].set_delay[TIMER_SET_DELAY_PAUSE] = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1[idxSubObj].set_delay[TIMER_SET_DELAY_PAUSE] = arr[idxSubObj].set_delay[TIMER_SET_DELAY_PAUSE] = (tempWriteArray[offsetTempWriteArray+i])*10;
     }
    break;
    case 1://Таймер работы
     {
 //    int tt1 = (tempWriteArray[offsetTempWriteArray+i]);
-    arr1[idxSubObj].set_delay[TIMER_SET_DELAY_WORK] = arr[idxSubObj].set_delay[TIMER_SET_DELAY_WORK] = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1[idxSubObj].set_delay[TIMER_SET_DELAY_WORK] = arr[idxSubObj].set_delay[TIMER_SET_DELAY_WORK] = (tempWriteArray[offsetTempWriteArray+i])*10;
     }
    break;
 

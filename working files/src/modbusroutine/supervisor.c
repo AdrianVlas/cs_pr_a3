@@ -45,7 +45,7 @@ void inputPacketParserUSB(void)
   for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
   if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2)) return;
   if ((CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) return;
-  if(outputPacket[0]!=settings_fix.address) return;
+  if(inputPacket[0]!=settings_fix.address) return;
 
  switch(inputPacket[1]) {//номер ф-ции
   case 1:
@@ -112,7 +112,7 @@ received_count = &RxBuffer_RS485_count;
   for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
   if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2) ||//) return;
      (CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) {superrestart_monitoring_RS485();return;}
-  if(outputPacket[0]!=settings_fix.address) {superrestart_monitoring_RS485();return;}
+  if(inputPacket[0]!=settings_fix.address) {superrestart_monitoring_RS485();return;}
 
  switch(inputPacket[1]) {//номер ф-ции
   case 1:

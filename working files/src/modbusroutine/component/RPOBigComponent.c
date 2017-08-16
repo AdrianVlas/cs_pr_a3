@@ -59,10 +59,10 @@ int getRPOBigModbusRegister(int adrReg)
 
   return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
-int getRPOBigModbusBit(int adrBit)
+int getRPOBigModbusBit(int x)
 {
   //получить содержимое регистра
-  superSetOperativMarker(rpobigcomponent, adrBit);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 int setRPOBigModbusRegister(int adrReg, int dataReg)
@@ -75,11 +75,11 @@ int setRPOBigModbusRegister(int adrReg, int dataReg)
 
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setRPOBigModbusBit(int adrBit, int x)
+int setRPOBigModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //получить содержимое регистра
-  superSetOperativMarker(rpobigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
