@@ -247,10 +247,19 @@ int postCommonSmallWriteAction(void)
 //      fix_block_active_state[0] &= ~0x2;//Прорубить окно
 //      fix_block_active_state[0] |= tempWriteArray[0]&1;
 //int tt=0;
+  extern int pointInterface;
+  if(pointInterface==0) {//метка интерфейса 0-USB 1-RS485
 if(tempWriteArray[0]==1) 
        set_config_and_settings(1, USB_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
 if(tempWriteArray[0]==0) 
        set_config_and_settings(0, USB_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+}//if
+  if(pointInterface==1) {//метка интерфейса 0-USB 1-RS485
+if(tempWriteArray[0]==1) 
+       set_config_and_settings(1, RS485_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+if(tempWriteArray[0]==0) 
+       set_config_and_settings(0, RS485_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+}//if
                         //                   tt = 1;
     }//case (BEGIN_ADR_REGISTER+1):
     break;

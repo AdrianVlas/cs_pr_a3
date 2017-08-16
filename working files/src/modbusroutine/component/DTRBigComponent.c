@@ -82,13 +82,14 @@ void loadDTRBigActualData(void) {
 int getDTRBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateDTRBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(dtrbigcomponent->isActiveActualData) setDTRBigCountObject(); //к-во обектов
   dtrbigcomponent->isActiveActualData = 0;
   if(privateDTRBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(dtrbigcomponent, adrReg);
-
+/*
    __LN_TRIGGER *arr = (__LN_TRIGGER*)(spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -117,8 +118,39 @@ int getDTRBigModbusRegister(int adrReg)
   case 7:
    return (arr[idxSubObj].settings.param[INPUT_TRIGGER_C] >> 16) & 0x7fff;//
   }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  __settings_for_TRIGGER *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_TRIGGER*)(spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TRIGGER*)(sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_TRIGGER*)(spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TRIGGER*)(sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR])) + idxSubObj);
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+  case 0:
+   //Set D-T 0  item
+   return arr->param[INPUT_TRIGGER_SET] & 0xffff;//
+  case 1:
+   return (arr->param[INPUT_TRIGGER_SET] >> 16) & 0x7fff;//
+
+  case 2:
+   //CLR D-T 0  item
+   return arr->param[INPUT_TRIGGER_RESET] & 0xffff;//
+  case 3:
+   return (arr->param[INPUT_TRIGGER_RESET] >> 16) & 0x7fff;//
+
+  case 4:
+   //D D-T 0  item
+   return arr->param[INPUT_TRIGGER_D] & 0xffff;//
+  case 5:
+   return (arr->param[INPUT_TRIGGER_D] >> 16) & 0x7fff;//
+
+  case 6:
+   //C D-T 0  item
+   return arr->param[INPUT_TRIGGER_C] & 0xffff;//
+  case 7:
+   return (arr->param[INPUT_TRIGGER_C] >> 16) & 0x7fff;//
+  }//switch
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getDTRBigModbusBit(int adrBit)
 {

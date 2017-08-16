@@ -14,7 +14,7 @@ TraceBufferSize=0x00010000
 TraceStallIfFIFOFull=0x00000000
 TracePortSize=0x00000004
 [DebugChecksum]
-Checksum=1578087221
+Checksum=-214203831
 [CodeCoverage]
 Enabled=_ 0
 [Exceptions]
@@ -55,14 +55,11 @@ Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\prtTmr.c}.452.19" 0
 Bp3=_ 0 "EMUL_DATA" "DoCheckUI32Bit.ar_uch[0]" 2 0 1 0 4294967295
 Bp4=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Schem_O.cpp}.111.5" 0 0 1 "" 0 "" 0
 Bp5=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.3629.17" 0 0 1 "" 0 "" 0
-Bp6=_ 0 "EMUL_DATA" "0x2001FBC1" 0 0 0 0 4294967295
-Bp7=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.3395.17" 0 0 1 "" 0 "" 0
-Bp8=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.1871.9" 0 0 1 "" 0 "" 0
-Bp9=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Mft.cpp}.340.13" 0 0 1 "" 0 "" 0
-Bp10=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUBGS.cpp}.394.9" 0 0 1 "" 0 "" 0
-Bp11=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUBGS.cpp}.783.17" 0 0 1 "" 0 "" 0
-Bp12=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\LUBGS.cpp}.805.21" 0 0 1 "" 0 "" 0
-Count=13
+Bp6=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.3395.17" 0 0 1 "" 0 "" 0
+Bp7=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.1871.9" 0 0 1 "" 0 "" 0
+Bp8=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Mft.cpp}.340.13" 0 0 1 "" 0 "" 0
+Bp9=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.2271.5" 0 0 1 "" 0 "" 0
+Count=10
 [Aliases]
 Count=0
 SuppressDialog=0

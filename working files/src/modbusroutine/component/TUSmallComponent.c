@@ -54,7 +54,7 @@ void constructorTUSmallComponent(COMPONENT_OBJ *tusmallcomp)
 
   tusmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
+/*
 void loadTUSmallActualData(void) {
  setTUSmallCountObject(); //записать к-во обектов
 
@@ -73,47 +73,48 @@ void loadTUSmallActualData(void) {
    tempReadArray[ireg] |= (tudata&0x1)<<(item%16);
   }//for
 }//loadActualData() 
+*/
 
-int getTUSmallModbusRegister(int adrReg)
+int getTUSmallModbusRegister(int x)
 {
   //получить содержимое регистра
+  UNUSED(x);
+  return MARKER_OUTPERIMETR;
+
+}//getDVModbusRegister(int adrReg)
+int getTUSmallModbusBit(int x)
+{
+  //получить содержимое bit
+  UNUSED(x);
+  return MARKER_OUTPERIMETR;
+
+}//getTUSmallModbusBit(int adrBit)
+int setTUSmallModbusRegister(int adrReg, int dataReg)
+{
   if(privateTUSmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(tusmallcomponent->isActiveActualData) loadTUSmallActualData(); //ActualData
+  if(tusmallcomponent->isActiveActualData) setTUSmallCountObject(); //записать к-во обектов
   tusmallcomponent->isActiveActualData = 0;
   if(privateTUSmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
-  superSetOperativMarker(tusmallcomponent, adrReg);
-
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
-}//getDVModbusRegister(int adrReg)
-int getTUSmallModbusBit(int adrBit)
-{
-  //получить содержимое bit
-  if(privateTUSmallGetBit2(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(tusmallcomponent->isActiveActualData) loadTUSmallActualData();
-  tusmallcomponent->isActiveActualData = 0;
-  if(privateTUSmallGetBit1(adrBit)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
-  superSetOperativMarker(tusmallcomponent, adrBit);
-
-  short tmp   = tempReadArray[(adrBit-BEGIN_ADR_BIT)/16];
-  short maska = 1<<((adrBit-BEGIN_ADR_BIT)%16);
-  if(tmp&maska) return 1;
-  return 0;
-}//getTUSmallModbusBit(int adrBit)
-int setTUSmallModbusRegister(int adrReg, int x)
-{
-  UNUSED(x);
+//  UNUSED(x);
   //записать содержимое регистра
   superSetOperativMarker(tusmallcomponent, adrReg);
-  return MARKER_OUTPERIMETR;
+  superSetTempWriteArray(dataReg);//записать в буфер
+
+  return 0;
 }//getDVModbusRegister(int adrReg)
-int setTUSmallModbusBit(int adrBit, int x)
+int setTUSmallModbusBit(int adrBit, int dataBit)
 {
-  UNUSED(x);
+  if(privateTUSmallGetBit2(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
+  if(tusmallcomponent->isActiveActualData) setTUSmallCountObject(); //записать к-во обектов
+  tusmallcomponent->isActiveActualData = 0;
+  if(privateTUSmallGetBit1(adrBit)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
+//  UNUSED(x);
   //записать содержимое bit
   superSetOperativMarker(tusmallcomponent, adrBit);
-  return MARKER_OUTPERIMETR;
+  superSetTempWriteArray(dataBit);//записать в буфер
+
+  return 0;
 }//getDVModbusRegister(int adrReg)
 
 void setTUSmallCountObject(void) {

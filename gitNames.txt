@@ -168,3 +168,46 @@ $ git commit -m 'I think Really A-Version on 05-05-2017'
  delete mode 100644 working files/src/menu_param_logical_nodes.c       <-this deleated from directory
  create mode 100644 working files/v_A_shm/LUTestLed.cpp  <- this i add
  create mode 100644 working files/v_A_shm/LUTestLed.h    <- this i add
+
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo2 (master)
+$ git clone https://github.com/Malynovsky/Device-2.12.x.y.git cs_pr_tt1
+Cloning into 'cs_pr_tt1'...
+remote: Counting objects: 5026, done.
+remote: Compressing objects: 100% (172/172), done.
+remote: Total 5026 (delta 182), reused 197 (delta 110), pack-reused 4744
+Receiving objects: 100% (5026/5026), 2.92 MiB | 673.00 KiB/s, done.
+Resolving deltas: 100% (3835/3835), done.
+
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo2 (master)
+$ cd cs_pr_tt
+
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo2/cs_pr_tt (master)
+$ git remote -v
+origin  https://github.com/Malynovsky/Device-2.12.x.y.git (fetch)
+origin  https://github.com/Malynovsky/Device-2.12.x.y.git (push)
+
+
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo2/cs_pr_tt1 (master)
+$ git checkout -b master origin Synchro
+fatal: Cannot update paths and switch to branch 'master' at the same time.
+Did you intend to checkout 'Synchro' which can not be resolved as commit?
+
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo2/cs_pr_tt1 (master)
+$  git checkout -b master
+fatal: A branch named 'master' already exists.
+
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo2/cs_pr_tt1 (master)
+$ git checkout -b  origin Synchro
+fatal: Cannot update paths and switch to branch 'origin' at the same time.
+Did you intend to checkout 'Synchro' which can not be resolved as commit?
+
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo2/cs_pr_tt1 (master)
+$ git checkout -b  Synchro
+Switched to a new branch 'Synchro'
+user@MARKOVSKI MINGW64 /G/emb_pj/CS_Demo/demo2/cs_pr_tt1 (Synchro)
+$ git pull origin Synchro
+From https://github.com/Malynovsky/Device-2.12.x.y
+ * branch            Synchro    -> FETCH_HEAD
+Updating a66dc45..4ceef3a
+Fast-forward
+ .gitignore    

@@ -90,13 +90,14 @@ void loadSDIBigActualData(void) {
 int getSDIBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateSDIBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(sdibigcomponent->isActiveActualData) setSDIBigCountObject(); //к-во обектов
   sdibigcomponent->isActiveActualData = 0;
   if(privateSDIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(sdibigcomponent, adrReg);
-
+/*
   __LN_OUTPUT_LED *arr = (__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -134,8 +135,49 @@ int getSDIBigModbusRegister(int adrReg)
    case 12:
      return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER2] >> 16) & 0x7fff;//Генератор С2 Имп. 1 СД item
   }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  __settings_for_OUTPUT_LED *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_OUTPUT_LED*)(sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_OUTPUT_LED*)(sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR])) + idxSubObj);
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+     return arr->control;//Параметры СД item
+
+   case 1:
+     return arr->param[OUTPUT_LED_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
+   case 2:
+     return (arr->param[OUTPUT_LED_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
+
+   case 3:
+     return arr->param[OUTPUT_LED_RESET] & 0xffff;//Reset 0 СД item
+   case 4:
+     return (arr->param[OUTPUT_LED_RESET] >> 16) & 0x7fff;//Reset 1 СД item
+
+   case 5:
+     return arr->param[OUTPUT_LED_BL_IMP] & 0xffff;//BL-IMP 0 СД item
+   case 6:
+     return (arr->param[OUTPUT_LED_BL_IMP] >> 16) & 0x7fff;//BL-IMP 1 СД item
+
+   case 7:
+     return arr->param[OUTPUT_LED_MEANDER1_MEANDER2] & 0xffff;//C1/C2 0 СД item
+   case 8:
+     return (arr->param[OUTPUT_LED_MEANDER1_MEANDER2] >> 16) & 0x7fff;//C1/C2 1 СД item
+
+   case 9:
+     return arr->param[OUTPUT_LED_MEANDER1] & 0xffff;//Генератор С1 Имп.0 СД item
+   case 10:
+     return (arr->param[OUTPUT_LED_MEANDER1] >> 16) & 0x7fff;//Генератор С1 Имп.1 СД item
+
+   case 11:
+     return arr->param[OUTPUT_LED_MEANDER2] & 0xffff;//Генератор С2 Имп.0 СД item
+   case 12:
+     return (arr->param[OUTPUT_LED_MEANDER2] >> 16) & 0x7fff;//Генератор С2 Имп. 1 СД item
+  }//switch
+
+  return 0;
 }//getSDIBigModbusRegister(int adrReg)
 int getSDIBigModbusBit(int adrBit)
 {
@@ -156,6 +198,8 @@ int setSDIBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
+    //контроль параметров ранжирования
+//    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;

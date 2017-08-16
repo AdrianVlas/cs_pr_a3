@@ -65,13 +65,14 @@ void loadORBigActualData(void) {
 int getORBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateORBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(orbigcomponent->isActiveActualData) setORBigCountObject(); //к-во обектов
   orbigcomponent->isActiveActualData = 0;
   if(privateORBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(orbigcomponent, adrReg);
-
+/*
    __LN_OR *arr = (__LN_OR*)(spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -82,8 +83,21 @@ int getORBigModbusRegister(int adrReg)
    case 1:
         return  (arr[idxSubObj].settings.param[idxParam] >> 16) & 0x7fff;//
   }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idxParam = (offset/2)%OR_SIGNALS_IN;//индекс param
+  __settings_for_OR *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_OR*)(spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_OR*)(sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_OR*)(spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_OR*)(sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR])) + idxSubObj);
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  switch(offset%2) {//индекс регистра 
+   case 0:
+        return  arr->param[idxParam] & 0xffff;//
+   case 1:
+        return  (arr->param[idxParam] >> 16) & 0x7fff;//
+  }//switch
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getORBigModbusBit(int adrReg)
 {

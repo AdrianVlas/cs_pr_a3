@@ -95,6 +95,7 @@ void loadDOUTBigActualData(void) {
 int getDOUTBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateDOUTBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(doutbigcomponent->isActiveActualData)// loadDOUTBigActualData(); //ActualData
                                            setDOUTBigCountObject(); //записать к-во обектов
@@ -102,9 +103,8 @@ int getDOUTBigModbusRegister(int adrReg)
   if(privateDOUTBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(doutbigcomponent, adrReg);
-
+/*
   __LN_OUTPUT_LED *arr = (__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
-//  int offset = i+doutbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
@@ -148,9 +148,55 @@ int getDOUTBigModbusRegister(int adrReg)
         return (arr[idxSubObj].settings.param[OUTPUT_LED_MEANDER2]  >> 16) & 0x7fff;
 
  }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  __settings_for_OUTPUT_LED *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_OUTPUT_LED*)(sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_OUTPUT_LED*)(sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR])) + idxSubObj);
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Параметры ДВых. item
+    return arr->control;
 
+   case 1://RIN 0 ДВых. item
+         return arr->param[OUTPUT_LED_LOGIC_INPUT] & 0xffff;
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+   case 2://RIN 1 ДВых. item
+        return (arr->param[OUTPUT_LED_LOGIC_INPUT]  >> 16) & 0x7fff;
+
+   case 3://Reset 0 ДВых. item
+        return arr->param[OUTPUT_LED_RESET] & 0xffff;
+
+   case 4://Reset 1 ДВых. item
+        return (arr->param[OUTPUT_LED_RESET]  >> 16) & 0x7fff;
+
+   case 5://BL-IMP 0 ДВых. item
+        return arr->param[OUTPUT_LED_BL_IMP] & 0xffff;
+
+   case 6://BL-IMP 1 ДВых. item
+        return (arr->param[OUTPUT_LED_BL_IMP]  >> 16) & 0x7fff;
+
+   case 7://C1/C2 0 ДВых. item
+        return arr->param[OUTPUT_LED_MEANDER1_MEANDER2] & 0xffff;
+
+   case 8://C1/C2 1 ДВых. item
+        return (arr->param[OUTPUT_LED_MEANDER1_MEANDER2]  >> 16) & 0x7fff;
+
+   case 9://Генератор С1 0 ДВых. item
+        return arr->param[OUTPUT_LED_MEANDER1] & 0xffff;
+
+   case 10://Генератор С1 1 ДВых. item
+        return (arr->param[OUTPUT_LED_MEANDER1]  >> 16) & 0x7fff;
+
+   case 11://Генератор С2 0 ДВых. item
+        return arr->param[OUTPUT_LED_MEANDER2] & 0xffff;
+
+   case 12://Генератор С2 1 ДВых. item
+        return (arr->param[OUTPUT_LED_MEANDER2]  >> 16) & 0x7fff;
+
+ }//switch
+
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getDOUTBigModbusBit(int adrBit)
 {

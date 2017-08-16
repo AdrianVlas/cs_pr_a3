@@ -22,7 +22,7 @@ void preTSSmallReadAction(void);//action до чтения
 void postTSSmallReadAction(void);//action после чтения
 void preTSSmallWriteAction(void);//action до записи
 int postTSSmallWriteAction(void);//action после записи
-void loadTSSmallActualData(void);
+void loadTSSmallActualData(int beginOffset, int endOffset);
 int getTSmallModbusBeginAdrRegister(void);
 
 COMPONENT_OBJ *tssmallcomponent;
@@ -55,9 +55,9 @@ void constructorTSSmallComponent(COMPONENT_OBJ *tssmallcomp)
   tssmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-void loadTSSmallActualData(void) {
+void loadTSSmallActualData(int beginOffset, int endOffset) {
   //ActualData
-  setTSSmallCountObject(); //записать к-во обектов
+//  setTSSmallCountObject(); //записать к-во обектов
 
   int cnt_treg = tssmallcomponent->countObject/16;
   if(tssmallcomponent->countObject%16) cnt_treg++;
@@ -66,11 +66,13 @@ void loadTSSmallActualData(void) {
   for(int item=0; item<tssmallcomponent->countObject; item++) {
    int ireg = item/16;
 
+   int value =0;
+   if(item>=beginOffset && item<endOffset) {
    //Встановлюємо MUTEX (1)
    arr[item].internal_input[TS_INT_MUTEX >> 3] |= (1 << (TS_INT_MUTEX & ((1 << 3) - 1)));
    
    //Чиатання стану
-   int value = arr[item].active_state[TS_OUT  >> 3] & (1 << (TS_OUT  & ((1 << 3) - 1)));
+   value = arr[item].active_state[TS_OUT  >> 3] & (1 << (TS_OUT  & ((1 << 3) - 1)));
 
    //Встановлюємо про те що читання відбулося (2)
    arr[item].internal_input[TS_INT_READING >> 3] |= (1 << (TS_INT_READING & ((1 << 3) - 1)));
@@ -78,69 +80,50 @@ void loadTSSmallActualData(void) {
 
    //Скидаємо MUTEX (3)
    arr[item].internal_input[TS_INT_MUTEX >> 3] &= (uint8_t)(~(1 << (TS_INT_MUTEX & ((1 << 3) - 1))));
-
-///*
-//ТУ
-//*/
-//__LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
-//
-////Встановлюємо MUTEX (1)
-//arr[item].internal_input[TU_INT_MUTEX >> 3] |= (1 << (TU_INT_MUTEX & ((1 << 3) - 1)));
-//
-////Встановлюємо про те що треба активувати дане ТУ (2)
-//arr[item].internal_input[TU_INT_ACTIVATION >> 3] |= (1 << (TU_INT_ACTIVATION & ((1 << 3) - 1)));
-//
-//
-////Скидаємо MUTEX (3)
-//arr[item].internal_input[TU_INT_MUTEX >> 3] &= (uint8_t)(~(1 << (TU_INT_MUTEX & ((1 << 3) - 1))));
-
-   
-/***/   
+   }//if
    
    int tsdata = 0;
    if(value) tsdata=1;
    tempReadArray[ireg] |= (tsdata&0x1)<<(item%16);
   }//for
-
-  /*
-  Загальну кількість завжди треба брати з конфігурації current_config_prt типу __CONFIG (для читання поточного стану) і/або current_config/current_config_edit (для редагування)
-  
-  1) spca_of_p_prt (масив вказівників на динамічну пам'ять, де знаходяться актуальні дані - для читання стану)
-  2) Індекс функц.блоку береться з enum _id_fb (const_settings.h) - _ID_FB_FIRST_VAR. Наприклад, для ТС spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]
-   - це вказівник на першу адресу всіх ТС-ів
-  3) У цій пам'яті знаходиться масив типу __LN_XXX (Наприклад для ТС __LN_TS)
-  4) Вкзівник треба перемістити на потрібний елемент. Наприклад: (((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]) + item), де item  - це номер ТС-у, який нас цікавить
-    Всі типи описані у файлі type_definition.h.
-  __settings_for_XXX - це вкорочена структура тільки налаштувань (працює з масивом вказівників sca_of_p і sca_of_p_edit)
-  __LN_XXX - це hjpibhtyf структура налаштувань, станів і службової інформації (працює тільки з масивом spca_of_p_prt)
-  5) Стан зчитуєтться з поля active_state відповідної струтури
-  6) Номера бітів визначвені enum _XXX_output_signals (для ТС - це enum _TS_output_signals const_settings.h).
-  
-  Наприклад зитування стану виходу дисткртного входу за номером _n
-  __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
-  value = arr[_n].active_state[INPUT_OUT >> 3] & (1 << (INPUT_OUT & ((1 << 3) - 1)));
-  */
 }//loadActualData() 
 
 int getTSSmallModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+//extern int cntBit;//к-во бит для чтения
+extern int globalcntReg;//к-во регистров для чтения
+extern int globalbeginAdrReg;
   if(privateTSSmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(tssmallcomponent->isActiveActualData) loadTSSmallActualData(); //ActualData
+  if(tssmallcomponent->isActiveActualData) {
+    setTSSmallCountObject(); //записать к-во обектов
+    int begin = globalbeginAdrReg-BEGIN_ADR_REGISTER;
+    if(begin<0) globalcntReg += begin;
+    if(privateTSSmallGetReg1(adrReg+globalcntReg-1)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
+    int beginOffset = (adrReg-BEGIN_ADR_REGISTER)*16;
+    int endOffset   = (adrReg-BEGIN_ADR_REGISTER +globalcntReg)*16;
+    loadTSSmallActualData(beginOffset, endOffset);  //ActualData
+  }//if
   tssmallcomponent->isActiveActualData = 0;
-  if(privateTSSmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
-
-  superSetOperativMarker(tssmallcomponent, adrReg);
 
   return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDVModbusRegister(int adrReg)
 int getTSSmallModbusBit(int adrBit)
 {
   //получить содержимое bit
+extern int globalcntBit;//к-во бит для чтения
+extern int globalbeginAdrBit;
   if(privateTSSmallGetBit2(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-  if(tssmallcomponent->isActiveActualData) loadTSSmallActualData();
+  if(tssmallcomponent->isActiveActualData) {
+    setTSSmallCountObject(); //записать к-во обектов
+    int begin = globalbeginAdrBit-BEGIN_ADR_BIT;
+    if(begin<0) globalcntBit += begin;
+    if(privateTSSmallGetBit1(adrBit +globalcntBit-1)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
+    int beginOffset = adrBit-BEGIN_ADR_BIT;
+    int endOffset   = adrBit-BEGIN_ADR_BIT +globalcntBit;
+    loadTSSmallActualData(beginOffset, endOffset);  //ActualData
+  }//if
   tssmallcomponent->isActiveActualData = 0;
-  if(privateTSSmallGetBit1(adrBit)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tssmallcomponent, adrBit);
 

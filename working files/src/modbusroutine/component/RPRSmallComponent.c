@@ -142,14 +142,14 @@ int postRPRSmallWriteAction(void) {
 int privateRPRSmallGetReg2(int adrReg)
 {
   //проверить внешний периметр
-  int count_register = rprsmallcomponent->countObject;
+  int count_register = rprsmallcomponent->countObject/16;
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
 int privateRPRSmallGetBit2(int adrBit)
 {
   //проверить внешний периметр
-  int count_bit = 16*(rprsmallcomponent->countObject);
+  int count_bit = rprsmallcomponent->countObject;
   if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetBit2(int adrBit)

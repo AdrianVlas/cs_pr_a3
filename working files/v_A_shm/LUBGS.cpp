@@ -270,14 +270,31 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
                 m_lNNP++;
             
         } else {
-            m_lNNC = (m_lIc - m_lKcDeltaIy) / m_lKcDeltaIy;
-            m_lNNP = (m_lIp - m_lKcDeltaIy) / m_lKcDeltaIy;
-            lRamainderNNC   = (m_lIc - m_lKcDeltaIy) % m_lKcDeltaIy;
+            //m_lNNC = (m_lIc - m_lKcDeltaIy) / m_lKcDeltaIy;
+            //m_lNNP = (m_lIp - m_lKcDeltaIy) / m_lKcDeltaIy;
+            m_lNNC = (m_lIc ) / m_lKcDeltaIy;
+			
+            m_lNNP = (m_lIp ) / m_lKcDeltaIy;
+			
+            //lRamainderNNC   = (m_lIc - m_lKcDeltaIy) % m_lKcDeltaIy;
+            lRamainderNNC   = (m_lIc ) % m_lKcDeltaIy;
+			if(lRamainderNNC>0)
+				lRamainderNNC--;
             if(lRamainderNNC>=(m_lKcDeltaIy>>1))
                 m_lNNC++;
-            lRamainderNNP  = (m_lIp - m_lKcDeltaIy) % m_lKcDeltaIy;
+            //lRamainderNNP  = (m_lIp - m_lKcDeltaIy) % m_lKcDeltaIy;
+            lRamainderNNP  = (m_lIp ) % m_lKcDeltaIy;
+			if(lRamainderNNP>0)
+				lRamainderNNP--;
             if(lRamainderNNP>=(m_lKcDeltaIy>>1))
                 m_lNNP++;
+			
+			if(m_lNNC>0)
+				m_lNNC--;
+			//else{}
+			if(m_lNNP>0)
+				m_lNNP--;
+			//else{}
         }
         m_chWRIp = 1;
     }
@@ -297,7 +314,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         rl_Val = m_lNNP - m_lNNC;
         if (rl_Val > 0)
             arrOut[BGS_OUT_NAME_NNM - 1] = 1;
-        if (m_lNNC > 1)
+        if (m_lNNC >= 1)
             arrOut[BGS_OUT_NAME_CC - 1] = 1;
         arrOut[BGS_OUT_NAME_NNC_INF-1] = m_lNNC;
         
@@ -436,22 +453,28 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
             
             
         } else {
-            //m_lNNC = (m_lIc - m_lKcDeltaIy) / m_lKcDeltaIy;
-            //m_lNNP = (m_lIp - m_lKcDeltaIy) / m_lKcDeltaIy;
-            m_lNNC = (m_lIcMulUnom )/(m_lIyMulU)-1;
-            m_lNNP = (m_lIpMulUnom )/(m_lIyMulU)-1;            
+            m_lNNC = (m_lIc ) / m_lKcDeltaIy;
+			
+            m_lNNP = (m_lIp ) / m_lKcDeltaIy;
+			
             //lRamainderNNC   = (m_lIc - m_lKcDeltaIy) % m_lKcDeltaIy;
-            //if(lRamainderNNC>=(m_lKcDeltaIy>>1))
-            //    m_lNNC++;
-            //lRamainderNNP  = (m_lIp - m_lKcDeltaIy) % m_lKcDeltaIy;
-            //if(lRamainderNNP>=(m_lKcDeltaIy>>1))
-            //    m_lNNP++;
-            lRamainderNNC   = (m_lIcMulUnom) % m_lIyMulU;
-            if(lRamainderNNC>=(m_lIyMulU>>1))
+            lRamainderNNC   = (m_lIc ) % m_lKcDeltaIy;
+			if(lRamainderNNC>0)
+				lRamainderNNC--;
+            if(lRamainderNNC>=(m_lKcDeltaIy>>1))
                 m_lNNC++;
-            lRamainderNNP  =  (m_lIpMulUnom )%(m_lIyMulU);
-            if(lRamainderNNP>=(m_lIyMulU>>1))
+            //lRamainderNNP  = (m_lIp - m_lKcDeltaIy) % m_lKcDeltaIy;
+            lRamainderNNP  = (m_lIp ) % m_lKcDeltaIy;
+			if(lRamainderNNP>0)
+				lRamainderNNP--;
+            if(lRamainderNNP>=(m_lKcDeltaIy>>1))
                 m_lNNP++;
+			
+			if(m_lNNC>0)
+				m_lNNC--;
+			//else{}
+			if(m_lNNP>0)
+				m_lNNP--;
         }
 
         m_chWRIp = 1;
@@ -472,7 +495,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         rl_Val = m_lNNP - m_lNNC;
         if (rl_Val > 0)
             arrOut[BGS_OUT_NAME_NNM - 1] = 1;
-        if (m_lNNC > 1)
+        if (m_lNNC >= 1)
             arrOut[BGS_OUT_NAME_CC - 1] = 1;
         arrOut[BGS_OUT_NAME_NNC_INF-1] = m_lNNC;
         

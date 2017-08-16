@@ -23,15 +23,30 @@ unsigned char  outputPacket_RS485[300];
 int sizeOutputPacket = 0;
 unsigned char *inputPacket;
 int *received_count;
+int pointInterface=0;//метка интерфейса 0-USB 1-RS485
+int globalcntBit  = 0;//к-во бит 
+int globalcntReg  = 0;//к-во регистров 
+int globalbeginAdrReg  = 0;//адрес нач регистра 
+int globalbeginAdrBit  = 0;//адрес нач бит 
 
 /**************************************/
 //разбор входного пакета USB
 /**************************************/
 void inputPacketParserUSB(void)
 {
+ pointInterface=0;//метка интерфейса 0-USB 1-RS485
  received_count = &usb_received_count;
 
  inputPacket = usb_received;
+ outputPacket = outputPacket_USB;
+  //Перевірка контрольної суми
+  unsigned short CRC_sum;
+  CRC_sum = 0xffff;
+  for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
+  if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2)) return;
+  if ((CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) return;
+  if(outputPacket[0]!=settings_fix.address) return;
+
  switch(inputPacket[1]) {//номер ф-ции
   case 1:
   case 2:
@@ -42,15 +57,39 @@ void inputPacketParserUSB(void)
   case 6:
   case 15:
   case 16:
-	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS)) return;
-	 if(config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) return;
+	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS) ||//) return;
+	    config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) { //return;
+                 sizeOutputPacket=Error_modbus(outputPacket[0], // address,
+                              outputPacket[1],//function,
+                              10,//error,
+                              outputPacket);//output_data
+              usb_transmiting_count = sizeOutputPacket;
+              for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
+              data_usb_transmiting = true;
+              return;
+            }//if
   break;
   default:return;
  }//switch
 
 
- outputPacket = outputPacket_USB;
  if(inputPacketParser()==0) return;
+
+ switch(inputPacket[1]) {//номер ф-ции
+  case 1:
+  case 2:
+  case 3:
+  case 4:
+  break;
+  case 5:
+  case 6:
+  case 15:
+  case 16:
+  if(!(outputPacket[1]&0x80))//function
+      config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
+  break;
+  default:return;
+ }//switch
 
  usb_transmiting_count = sizeOutputPacket;
  for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
@@ -62,9 +101,18 @@ void inputPacketParserUSB(void)
 /**************************************/
 void inputPacketParserRS485(void)
 {
+ pointInterface=1;//метка интерфейса 0-USB 1-RS485
 inputPacket = RxBuffer_RS485;
 
 received_count = &RxBuffer_RS485_count;
+ outputPacket = outputPacket_RS485;
+  //Перевірка контрольної суми
+  unsigned short CRC_sum;
+  CRC_sum = 0xffff;
+  for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
+  if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2) ||//) return;
+     (CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) {superrestart_monitoring_RS485();return;}
+  if(outputPacket[0]!=settings_fix.address) {superrestart_monitoring_RS485();return;}
 
  switch(inputPacket[1]) {//номер ф-ции
   case 1:
@@ -77,16 +125,40 @@ received_count = &RxBuffer_RS485_count;
   case 6:
   case 15:
   case 16:
-	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS)) {superrestart_monitoring_RS485();return;}
-	 if(config_settings_modified&MASKA_FOR_BIT(BIT_USB_LOCKS)) {superrestart_monitoring_RS485();return;}
+	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS) ||//) return;
+	    config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) { //return;
+             sizeOutputPacket=Error_modbus(outputPacket[0], // address,
+                              outputPacket[1],//function,
+                              10,//error,
+                              outputPacket);//output_data
+             TxBuffer_RS485_count = sizeOutputPacket;
+             for (int i = 0; i < TxBuffer_RS485_count; i++) TxBuffer_RS485[i] = outputPacket[i];
+             start_transmint_data_via_RS_485(TxBuffer_RS485_count);
+             return;
+            }//if
   break;
-  default:return;
+  default:{superrestart_monitoring_RS485();return;}
  }//switch
 
 // received_count = &usb_received_count;
 // outputPacket = outputPacket_RS485;
- outputPacket = outputPacket_RS485;
  if(inputPacketParser()==0) {superrestart_monitoring_RS485();return;}
+
+ switch(inputPacket[1]) {//номер ф-ции
+  case 1:
+  case 2:
+  case 3:
+  case 4:
+  break;
+  case 5:
+  case 6:
+  case 15:
+  case 16:
+  if(!(outputPacket[1]&0x80))//function
+       config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  break;
+  default:return;
+ }//switch
 
 TxBuffer_RS485_count = sizeOutputPacket;
 for (int i = 0; i < TxBuffer_RS485_count; i++) TxBuffer_RS485[i] = outputPacket[i];
@@ -96,27 +168,28 @@ start_transmint_data_via_RS_485(TxBuffer_RS485_count);
 // for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
 // data_usb_transmiting = true;
 }//inputPacketParserRS485(void)
-void superrestart_monitoring_RS485() {
+//void superrestart_monitoring_RS485() {
  //для продовження приймати нові пакети
-restart_monitoring_RS485(); //для продовження приймати нові пакети
-}//superrestart_monitoring_RS485
+//restart_monitoring_RS485(); //для продовження приймати нові пакети
+//}//superrestart_monitoring_RS485
 
 /**************************************/
 //разбор входного пакета
 /**************************************/
 int inputPacketParser(void)
 {
+/*
   //Перевірка контрольної суми
   unsigned short CRC_sum;
   CRC_sum = 0xffff;
   for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
   if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2)) return 0;
   if ((CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) return 0;
-
+*/
   int adrUnit = inputPacket[0];
   int numFunc = inputPacket[1];//номер ф-ции
   //Перевірка address
-  if(adrUnit!=settings_fix.address) return 0;
+//  if(adrUnit!=settings_fix.address) return 0;
 
   sizeOutputPacket = 0;
   indexTW = 0;//индекс буфера записи
@@ -125,29 +198,30 @@ int inputPacketParser(void)
     case 2:
     case 1:
     {
-      int adrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
-      int cntBit  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
-      if(cntBit>125) return 0;//слишком длинный пакет
+      globalbeginAdrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
+      globalcntBit      = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
+      if(globalcntBit>125) return 0;//слишком длинный пакет
       //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit<<" cntBit="<<cntBit;
       outputPacket[1] = (unsigned char)numFunc;
-      sizeOutputPacket = outputFunc1PacketEncoder(adrUnit, adrBit, cntBit);
+      sizeOutputPacket = outputFunc1PacketEncoder(adrUnit, globalbeginAdrBit, globalcntBit);
     }
     break;
     case 4:
     case 3:
     {
-      int adrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
-      int cntReg  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
-      if(cntReg>125) return 0;//слишком длинный пакет
+      globalbeginAdrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
+      globalcntReg      = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
+      if(globalcntReg>125) return 0;//слишком длинный пакет
       //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrReg="<<adrReg<<" cntReg="<<cntReg;
       outputPacket[1] = (unsigned char)numFunc;
-      sizeOutputPacket = outputFunc3PacketEncoder(adrUnit, adrReg, cntReg);
+      sizeOutputPacket = outputFunc3PacketEncoder(adrUnit, globalbeginAdrReg, globalcntReg);
     }
     break;
     case 5:
     {
-      int adrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
+      globalbeginAdrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int dataBit = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
+      globalcntBit      = 1;
       switch(dataBit) {
         case 0xFF00:
          dataBit = 1;
@@ -158,46 +232,47 @@ int inputPacketParser(void)
         default: return 0;
       }//switch
       outputPacket[1] = (unsigned char)numFunc;
-      sizeOutputPacket = outputFunc5PacketEncoder(adrUnit, adrBit, dataBit);
+      sizeOutputPacket = outputFunc5PacketEncoder(adrUnit, globalbeginAdrBit, dataBit);
     }
     break;
     case 6:
     {
-      int adrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
+      globalbeginAdrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int dataReg = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
+      globalcntReg      = 1;
       outputPacket[1] = (unsigned char)numFunc;
-      sizeOutputPacket = outputFunc6PacketEncoder(adrUnit, adrReg, dataReg);
+      sizeOutputPacket = outputFunc6PacketEncoder(adrUnit, globalbeginAdrReg, dataReg);
     }
     break;
     case 15:
     {
-      int adrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
-      int cntBit  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
+      globalbeginAdrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
+      globalcntBit  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       int cntByte = (unsigned int)inputPacket[6];
-      if(cntBit>125*16) return 0;//слишком длинный пакет
+      if(globalcntBit>125*16) return 0;//слишком длинный пакет
 
       for(int i=0; i<cntByte; i++) 
               tempReadArray[i] = (unsigned short)(inputPacket[7+i]);
       outputPacket[1] = (unsigned char)numFunc;
-      sizeOutputPacket = outputFunc15PacketEncoder(adrUnit, adrBit, cntBit);
+      sizeOutputPacket = outputFunc15PacketEncoder(adrUnit, globalbeginAdrBit, globalcntBit);
     }
     break;
     case 16:
     {
-      int adrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
-      int cntReg  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
-      if(cntReg>125) return 0;//слишком длинный пакет
+      globalbeginAdrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
+      globalcntReg  = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
+      if(globalcntReg>125) return 0;//слишком длинный пакет
 
-      for(int i=0; i<cntReg; i++) 
+      for(int i=0; i<globalcntReg; i++) 
               tempReadArray[i] = (unsigned short)(inputPacket[7+1+(i*2)]) +256*(unsigned short)(inputPacket[7+(i*2)]);
       outputPacket[1] = (unsigned char)numFunc;
-      sizeOutputPacket = outputFunc16PacketEncoder(adrUnit, adrReg, cntReg);
+      sizeOutputPacket = outputFunc16PacketEncoder(adrUnit, globalbeginAdrReg, globalcntReg);
     }
     break;
     default: return 0;
     }//switch
 
-  CRC_sum = 0xffff;
+  unsigned short CRC_sum = 0xffff;
   for (int index = 0; index < sizeOutputPacket; index++) CRC_sum = AddCRC((*(outputPacket + index)) ,CRC_sum);
   *(outputPacket + sizeOutputPacket)  = CRC_sum & 0xff;
   *(outputPacket + sizeOutputPacket+1)  = CRC_sum >> 8;

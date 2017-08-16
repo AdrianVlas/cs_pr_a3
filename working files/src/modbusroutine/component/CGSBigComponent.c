@@ -90,13 +90,12 @@ const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_
 int getCGSBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateCGSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
 
-//  if(cgsbigcomponent->isActiveActualData) loadCGSBigActualData(); //ActualData
-//  cgsbigcomponent->isActiveActualData = 0;
 
   superSetOperativMarker(cgsbigcomponent, adrReg);
-
+/*
    __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -117,8 +116,31 @@ int getCGSBigModbusRegister(int adrReg)
    //Время tуст ГС item
    return arr[idxSubObj].settings.set_delay[GROUP_ALARM_SET_DELAY_DELAY];
   }//switch
+*/
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  __settings_for_GROUP_ALARM *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_GROUP_ALARM*)(sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR])) + idxSubObj);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+                        arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_GROUP_ALARM*)(sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR])) + idxSubObj);
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+  case 0:
+   //Параметры ГС item
+   return arr->control &0x3;
+
+  case 1:
+   //Входной ток ГС item
+   return (arr->analog_input_control >> group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
+
+  case 2:
+   //Приращение тока ГС item
+   return arr->pickup[GROUP_ALARM_PICKUP_DELTA_I];
+
+  case 3:
+   //Время tуст ГС item
+   return arr->set_delay[GROUP_ALARM_SET_DELAY_DELAY];
+  }//switch
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getCGSBigModbusBit(int adrBit)
 {
@@ -183,7 +205,6 @@ int postCGSBigWriteAction(void) {
   int countRegister = cgsbigcomponent->operativMarker[1]-cgsbigcomponent->operativMarker[0]+1;
   if(cgsbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
    __settings_for_GROUP_ALARM *arr  = (__settings_for_GROUP_ALARM*)(sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
    __settings_for_GROUP_ALARM *arr1 = (__settings_for_GROUP_ALARM*)(sca_of_p_edit[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {

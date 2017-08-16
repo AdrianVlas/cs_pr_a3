@@ -76,7 +76,7 @@ int getMEBigModbusRegister(int adrReg)
   if(privateMEBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(mebigcomponent, adrReg);
-
+/*
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = (offset+2)/REGISTER_FOR_OBJ;//индекс субобъекта
   switch(offset) {//индекс регистра 
@@ -95,8 +95,8 @@ int getMEBigModbusRegister(int adrReg)
    case 1:
      return (arr[idxSubObj] >> 16) & 0x7fff;//
   }//switch
-
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+*/
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getMEBigModbusBit(int adrBit)
 {
