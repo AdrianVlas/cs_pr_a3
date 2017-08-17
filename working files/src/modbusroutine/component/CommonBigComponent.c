@@ -126,10 +126,10 @@ int getCommonBigModbusRegister(int adrReg)
 
   return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
-int getCommonBigModbusBit(int adrBit)
+int getCommonBigModbusBit(int x)
 {
   //получить содержимое bit
-  superSetOperativMarker(commonbigcomponent, adrBit);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 int setCommonBigModbusRegister(int adrReg, int dataReg)
@@ -180,11 +180,11 @@ int setCommonBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setCommonBigModbusBit(int adrBit, int x)
+int setCommonBigModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //получить содержимое регистра
-  superSetOperativMarker(commonbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 

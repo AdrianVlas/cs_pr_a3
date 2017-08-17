@@ -234,10 +234,10 @@ int getPKVBigModbusRegister(int adrReg)
 
   return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTBigModbusRegister(int adrReg)
-int getPKVBigModbusBit(int adrBit)
+int getPKVBigModbusBit(int x)
 {
   //получить содержимое регистра
-  superSetOperativMarker(pkvbigcomponent, adrBit);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 int setPKVBigModbusRegister(int adrReg, int dataReg)
@@ -379,11 +379,11 @@ int setPKVBigModbusRegister(int adrReg, int dataReg)
 
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setPKVBigModbusBit(int adrBit, int x)
+int setPKVBigModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //получить содержимое регистра
-  superSetOperativMarker(pkvbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 

@@ -200,10 +200,10 @@ int getConfigBigModbusRegister(int adrReg)
 
   return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDVModbusRegister(int adrReg)
-int getConfigBigModbusBit(int adrBit)
+int getConfigBigModbusBit(int x)
 {
   //получить содержимое регистра
-  superSetOperativMarker(configbigcomponent, adrBit);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 int setConfigBigModbusRegister(int adrReg, int dataReg)
@@ -216,11 +216,11 @@ int setConfigBigModbusRegister(int adrReg, int dataReg)
   if(dataReg>128) return MARKER_ERRORDIAPAZON;
   return 0;
 }//getDVModbusRegister(int adrReg)
-int setConfigBigModbusBit(int adrBit, int x)
+int setConfigBigModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое bit
-  superSetOperativMarker(configbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 

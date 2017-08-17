@@ -98,10 +98,10 @@ extern int pointInterface;
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int getNOTBigModbusBit(int adrBit)
+int getNOTBigModbusBit(int x)
 {
   //получить содержимое регистра
-  superSetOperativMarker(notbigcomponent, adrBit);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 int setNOTBigModbusRegister(int adrReg, int dataReg)
@@ -127,11 +127,11 @@ int setNOTBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setNOTBigModbusBit(int adrBit, int x)
+int setNOTBigModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //получить содержимое регистра
-  superSetOperativMarker(notbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 

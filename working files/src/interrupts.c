@@ -465,7 +465,7 @@ void TIM4_IRQHandler(void)
             unsigned int global_requect;
             if(
                ((global_requect = (RxBuffer_RS485[0] == BROADCAST_ADDRESS_MODBUS_RTU)) != 0) ||
-               (RxBuffer_RS485[0] == settings_fix.address)
+               (RxBuffer_RS485[0] == settings_fix_prt.address)
               )   
             {
               //Інакше прийнятий пакет буде стояти в очікуванні на подальшу обробку - якщо не виконувати більше тут ніяких дій (не перезапускати моніторинг)
@@ -713,7 +713,7 @@ void TIM4_IRQHandler(void)
       }
       else 
       { 
-        if (timeout_idle_new_settings < (settings_fix.timeout_idle_new_settings)) timeout_idle_new_settings++;
+        if (timeout_idle_new_settings < (settings_fix_prt.timeout_idle_new_settings)) timeout_idle_new_settings++;
       }
 
       //Робота з таймерами простою USB
@@ -724,7 +724,7 @@ void TIM4_IRQHandler(void)
       }
       else 
       {
-        if (timeout_idle_USB < (settings_fix.timeout_deactivation_password_interface_USB)) timeout_idle_USB++;
+        if (timeout_idle_USB < (settings_fix_prt.timeout_deactivation_password_interface_USB)) timeout_idle_USB++;
       }
 
       //Робота з таймерами простою RS-485
@@ -735,7 +735,7 @@ void TIM4_IRQHandler(void)
       }
       else 
       {
-        if (timeout_idle_RS485 < (settings_fix.timeout_deactivation_password_interface_RS485)) timeout_idle_RS485++;
+        if (timeout_idle_RS485 < (settings_fix_prt.timeout_deactivation_password_interface_RS485)) timeout_idle_RS485++;
       }
 
       //Ресурс

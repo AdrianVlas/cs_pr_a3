@@ -97,18 +97,18 @@ int getRMTKeySmallModbusBit(int adrBit)
   if(tmp&maska) return 1;
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setRMTKeySmallModbusRegister(int adrReg, int x)
+int setRMTKeySmallModbusRegister(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое регистра
-  superSetOperativMarker(rmtkeysmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setRMTKeySmallModbusBit(int adrBit, int x)
+int setRMTKeySmallModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //получить содержимое регистра
-  superSetOperativMarker(rmtkeysmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 

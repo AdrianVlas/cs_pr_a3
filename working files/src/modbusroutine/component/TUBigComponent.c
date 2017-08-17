@@ -20,7 +20,7 @@ void postTUBigReadAction(void);//action после чтения
 void preTUBigWriteAction(void);//action до записи
 int postTUBigWriteAction(void);//action после записи
 void loadTUBigActualData(void);
-int getTUmallModbusBeginAdrRegister(void);
+int getTUSmallModbusBeginAdrRegister(void);
 
 COMPONENT_OBJ *tubigcomponent;
 
@@ -109,14 +109,14 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 
    case 2:
    //Адрес ТУ 0  item
-    return getTUmallModbusBeginAdrRegister() + idxSubObj;
+    return getTUSmallModbusBeginAdrRegister() + idxSubObj;
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int getTUBigModbusBit(int adrBit)
+int getTUBigModbusBit(int x)
 {
   //получить содержимое регистра
-  superSetOperativMarker(tubigcomponent, adrBit);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 int setTUBigModbusRegister(int adrReg, int dataReg)
@@ -144,11 +144,11 @@ int setTUBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setTUBigModbusBit(int adrBit, int x)
+int setTUBigModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //получить содержимое регистра
-  superSetOperativMarker(tubigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 

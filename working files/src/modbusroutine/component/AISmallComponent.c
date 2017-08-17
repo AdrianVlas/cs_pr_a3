@@ -101,25 +101,25 @@ int getAISmallModbusRegister(int adrReg)
 
   return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDOUTModbusRegister(int adrReg)
-int getAISmallModbusBit(int adrBit)
+int getAISmallModbusBit(int x)
 {
   //получить содержимое bit
-  superSetOperativMarker(aismallcomponent, adrBit);
+  UNUSED(x);
 
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setAISmallModbusRegister(int adrReg, int x)
+int setAISmallModbusRegister(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое регистра
-  superSetOperativMarker(aismallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
-int setAISmallModbusBit(int adrBit, int x)
+int setAISmallModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое bit
-  superSetOperativMarker(aismallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 

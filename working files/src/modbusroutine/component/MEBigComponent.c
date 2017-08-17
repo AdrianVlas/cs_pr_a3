@@ -98,10 +98,10 @@ int getMEBigModbusRegister(int adrReg)
 */
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int getMEBigModbusBit(int adrBit)
+int getMEBigModbusBit(int x)
 {
   //получить содержимое регистра
-  superSetOperativMarker(mebigcomponent, adrBit);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 
@@ -126,11 +126,11 @@ int setMEBigModbusRegister(int adrReg, int dataReg)
 
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setMEBigModbusBit(int adrBit, int x)
+int setMEBigModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //получить содержимое регистра
-  superSetOperativMarker(mebigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 

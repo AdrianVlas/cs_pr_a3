@@ -87,6 +87,7 @@ class Shematic
     char chMaxIteratoin;
     char chIteration;
     char chSumNLedPlusNOut;
+    char chSumNTUPlusNTS;
     short shSum8Elem;
 
 public:

@@ -132,18 +132,18 @@ extern int globalbeginAdrBit;
   if(tmp&maska) return 1;
   return 0;
 }//getDVModbusRegister(int adrReg)
-int setTSSmallModbusRegister(int adrReg, int x)
+int setTSSmallModbusRegister(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое регистра
-  superSetOperativMarker(tssmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
-int setTSSmallModbusBit(int adrBit, int x)
+int setTSSmallModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое bit
-  superSetOperativMarker(tssmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 

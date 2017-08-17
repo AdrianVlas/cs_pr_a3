@@ -99,10 +99,10 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int getORBigModbusBit(int adrReg)
+int getORBigModbusBit(int x)
 {
   //получить содержимое регистра
-  superSetOperativMarker(orbigcomponent, adrReg);
+  UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 int setORBigModbusRegister(int adrReg, int dataReg)
@@ -177,11 +177,11 @@ int setORBigModbusRegister(int adrReg, int dataReg)
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
-int setORBigModbusBit(int adrBit, int x)
+int setORBigModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //получить содержимое регистра
-  superSetOperativMarker(orbigcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDOUTBigModbusRegister(int adrReg)
 

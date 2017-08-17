@@ -18,10 +18,14 @@ CLUTu::CLUTu(void) {
 
 CLUTu::~CLUTu(void) {
 }
+char chDbgTU = 0;
 CLUTu::CLUTu(char chM,char chI) {
 	chMaxIteratoin = chM;
 	chIteration = chI;
+    chNumInput  = static_cast<char> (TOTAL_TU__1_1_IN);
     chNumOutput = static_cast<char>(shCLUTU_x_y_AmtOut);
+    for (long i = 0; i < chNumInput; i++)
+        arrPchIn[i] = reinterpret_cast<char*> (0xcccccccc);
 	for (long i = 0; i < chNumOutput; i++)
         arrOut[i] = 0;
 }
@@ -30,12 +34,12 @@ long i,j;
 
 	CLUTu *pCLUTu = static_cast<CLUTu*>(pObj);
     __LN_TU *pLN_TU = static_cast<__LN_TU *>(pCLUTu->pvCfgLN);
-    i = pLN_TU->active_state[0];
+    i = pLN_TU->active_state[0]||chDbgTU;
 //find Index
 // i = pCLUTu->shShemasOrdNumStng;
     // i--;
     //Look State
-    j = *(pCLUTu->arrPchIn[TU__1_1_IN_NAME__BLOCK-1]); 
+    j = *(pCLUTu->arrPchIn[TU__1_1_IN_NAME__BLOCK-1]); //
     pCLUTu->arrOut[TU__1_1_OUT_NAME_CO-1] = i && (!j);
     
 }

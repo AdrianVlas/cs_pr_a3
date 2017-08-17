@@ -92,18 +92,18 @@ int getDVSmallModbusBit(int adrBit)
   if(tmp&maska) return 1;
   return 0;
 }//getDVModbusBit(int adrReg)
-int setDVSmallModbusRegister(int adrReg, int x)
+int setDVSmallModbusRegister(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //записать содержимое регистра
-  superSetOperativMarker(dvsmallcomponent, adrReg);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
-int setDVSmallModbusBit(int adrBit, int x)
+int setDVSmallModbusBit(int x, int y)
 {
   UNUSED(x);
+  UNUSED(y);
   //получить содержимое регистра
-  superSetOperativMarker(dvsmallcomponent, adrBit);
   return MARKER_OUTPERIMETR;
 }//getDVModbusRegister(int adrReg)
 
