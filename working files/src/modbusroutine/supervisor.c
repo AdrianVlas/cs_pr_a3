@@ -45,7 +45,7 @@ void inputPacketParserUSB(void)
   for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
   if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2)) return;
   if ((CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) return;
-  if(inputPacket[0]!=settings_fix.address) return;
+  if(inputPacket[0]!=settings_fix_prt.address) return;
 
  switch(inputPacket[1]) {//номер ф-ции
   case 1:
@@ -59,10 +59,16 @@ void inputPacketParserUSB(void)
   case 16:
 	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS) ||//) return;
 	    config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) { //return;
-                 sizeOutputPacket=Error_modbus(outputPacket[0], // address,
-                              outputPacket[1],//function,
-                              10,//error,
+                 sizeOutputPacket=Error_modbus(inputPacket[0], // address,
+                              0x80|inputPacket[1],//function,
+                              0x55,//error,
                               outputPacket);//output_data
+  CRC_sum = 0xffff;
+  for (int index = 0; index < sizeOutputPacket; index++) CRC_sum = AddCRC((*(outputPacket + index)) ,CRC_sum);
+  *(outputPacket + sizeOutputPacket)  = CRC_sum & 0xff;
+  *(outputPacket + sizeOutputPacket+1)  = CRC_sum >> 8;
+  sizeOutputPacket += 2;
+
               usb_transmiting_count = sizeOutputPacket;
               for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
               data_usb_transmiting = true;
@@ -112,7 +118,7 @@ received_count = &RxBuffer_RS485_count;
   for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
   if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2) ||//) return;
      (CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) {superrestart_monitoring_RS485();return;}
-  if(inputPacket[0]!=settings_fix.address) {superrestart_monitoring_RS485();return;}
+  if(inputPacket[0]!=settings_fix_prt.address) {superrestart_monitoring_RS485();return;}
 
  switch(inputPacket[1]) {//номер ф-ции
   case 1:
@@ -127,10 +133,16 @@ received_count = &RxBuffer_RS485_count;
   case 16:
 	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS) ||//) return;
 	    config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) { //return;
-             sizeOutputPacket=Error_modbus(outputPacket[0], // address,
-                              outputPacket[1],//function,
-                              10,//error,
+             sizeOutputPacket=Error_modbus(inputPacket[0], // address,
+                              0x80|inputPacket[1],//function,
+                              0x55,//error,
                               outputPacket);//output_data
+  CRC_sum = 0xffff;
+  for (int index = 0; index < sizeOutputPacket; index++) CRC_sum = AddCRC((*(outputPacket + index)) ,CRC_sum);
+  *(outputPacket + sizeOutputPacket)  = CRC_sum & 0xff;
+  *(outputPacket + sizeOutputPacket+1)  = CRC_sum >> 8;
+  sizeOutputPacket += 2;
+
              TxBuffer_RS485_count = sizeOutputPacket;
              for (int i = 0; i < TxBuffer_RS485_count; i++) TxBuffer_RS485[i] = outputPacket[i];
              start_transmint_data_via_RS_485(TxBuffer_RS485_count);
@@ -229,7 +241,13 @@ int inputPacketParser(void)
         case 0x0000:
          dataBit = 0;
         break;
-        default: return 0;
+        default: {
+          sizeOutputPacket = Error_modbus(adrUnit, // address,
+                              numFunc|0x80,//function,
+                              3,//error,
+                              outputPacket);//output_data
+          return 1;
+        }
       }//switch
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc5PacketEncoder(adrUnit, globalbeginAdrBit, dataBit);
