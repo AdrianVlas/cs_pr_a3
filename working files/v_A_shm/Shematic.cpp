@@ -271,6 +271,9 @@ void Shematic::DoCalc(void) {
             //kolichestvo elementov
             j = chSumNLedPlusNOut;
             LUIterator(j,i);//
+            i = arIdxLUAreaListElem[LU_TU-1];
+            j = chSumNTUPlusNTS;
+            LUIterator(j,i);//
             CLUBase::m_AuxInfo.ch++;
         //Predpolagaemyi uroven` vlozenosti
         }while(--lDwnCtr);
@@ -2473,7 +2476,7 @@ void Shematic::SetupCLUTuStngParam(void *pv){
     locRef_CLUTu.arrPchIn[i] = &chGblGround;
     locRef_CLUTu.chTypeLogicFunction = LU_OP_TU;
     locRef_CLUTu.LogicFunc = TU_Op;
-    locRef_CLUTu.LogicFunc(pInit2LcVarArea->pCLUBase);
+    //locRef_CLUTu.LogicFunc(pInit2LcVarArea->pCLUBase);
     bool bbVar = false;
     do {
         __LN_TU *pLN_TU;
@@ -2483,6 +2486,7 @@ void Shematic::SetupCLUTuStngParam(void *pv){
         shRelativeIndexLU = locRef_CLUTu.shLUBieldOrdNum - i - 1;
         locRef_CLUTu.pvCfgLN = static_cast<void*> (pLN_TU + shRelativeIndexLU);
     } while (bbVar);
+    locRef_CLUTu.LogicFunc(pInit2LcVarArea->pCLUBase);
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_TU-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
@@ -2517,7 +2521,7 @@ void Shematic::SetupCLUTsStngParam(void *pv){
     locRef_CLUTs.arrPchIn[i] = &chGblGround;
     locRef_CLUTs.chTypeLogicFunction = LU_OP_TS;
     locRef_CLUTs.LogicFunc = Ts__2_1_Op;
-    locRef_CLUTs.LogicFunc(pInit2LcVarArea->pCLUBase);
+    
      bool bbVar = false;
     do {
         __LN_TS *pLN_TS;
@@ -2527,6 +2531,7 @@ void Shematic::SetupCLUTsStngParam(void *pv){
         shRelativeIndexLU = locRef_CLUTs.shLUBieldOrdNum - i - 1;
         locRef_CLUTs.pvCfgLN = static_cast<void*> (pLN_TS + shRelativeIndexLU);
     } while (bbVar);
+    locRef_CLUTs.LogicFunc(pInit2LcVarArea->pCLUBase);
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_TS-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
@@ -3547,6 +3552,36 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
     else{
         sLV.shIdx += current_config_prt.n_timer;
     }
+    if (current_config_prt.n_tu != 0) {
+	sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_tu;
+        j = 0; //Idx in OutPut for Test
+        sLV.shIdx += current_config_prt.n_trigger+ current_config_prt.n_meander;
+        rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
+        do {
+            SetupCLUInternalRef2(static_cast<void*>(&rsLV));
+        } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+    else{
+        sLV.shIdx += current_config_prt.n_trigger + current_config_prt.n_meander;
+    }
+    if (current_config_prt.n_ts != 0) {
+	sLV.shCounterScanedObj = 0;
+        sLV.shAmtLU = current_config_prt.n_ts;
+        j = 0; //Idx in OutPut for Test
+        sLV.shIdx += current_config_prt.n_tu;
+        rsLV.shIdx = sLV.shIdx; rsLV.pV = static_cast<void*>(&sLV.shCounterScanedObj);
+        do {
+            SetupCLUInternalRef2(static_cast<void*>(&rsLV));
+        } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
+    }
+    else{
+        sLV.shIdx += current_config_prt.n_tu;
+    }
+    
+    
+    
+    
 //#warning eRunErrorLed.pOut not Complite. It may contain Error!!!
 }
 
@@ -3751,6 +3786,8 @@ shSum8Elem =  ((static_cast<__CONFIG* >(p_current_config_prt))->n_alarm       )
 +((static_cast<__CONFIG* >(p_current_config_prt))->n_not         )
 +((static_cast<__CONFIG* >(p_current_config_prt))->n_timer       )
 +((static_cast<__CONFIG* >(p_current_config_prt))->n_trigger); 
+chSumNTUPlusNTS = ((static_cast<__CONFIG* >(p_current_config_prt))->n_tu)
++((static_cast<__CONFIG* >(p_current_config_prt))->n_ts         );
 //Max Amount sequently linked Elem [1]-[2]-[3]-[4]-[5]-[6]-[7]-[8]-[9]
 chIteration = 5;
 ClrTmrVars();
