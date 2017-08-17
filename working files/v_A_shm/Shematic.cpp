@@ -2485,6 +2485,8 @@ void Shematic::SetupCLUTuStngParam(void *pv){
         i = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_TU); //locRef_CLULed.
         shRelativeIndexLU = locRef_CLUTu.shLUBieldOrdNum - i - 1;
         locRef_CLUTu.pvCfgLN = static_cast<void*> (pLN_TU + shRelativeIndexLU);
+        j = static_cast<long>(
+                pLN_TU[shRelativeIndexLU].settings.param[0]);//control
     } while (bbVar);
     locRef_CLUTu.LogicFunc(pInit2LcVarArea->pCLUBase);
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
