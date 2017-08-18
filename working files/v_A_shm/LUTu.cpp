@@ -22,9 +22,9 @@ char chDbgTU = 0;
 CLUTu::CLUTu(char chM,char chI) {
 	chMaxIteratoin = chM;
 	chIteration = chI;
-    chNumInput  = static_cast<char> (TOTAL_TU__1_1_IN);
+    chNumInput  = static_cast<char> (TOTAL_TU__1_1_IN);//TOTAL_TU__1_1_IN
     chNumOutput = static_cast<char>(shCLUTU_x_y_AmtOut);
-    for (long i = 0; i < chNumInput; i++)
+    for (long i = 0; i < TOTAL_TU__1_1_IN; i++)
         arrPchIn[i] = reinterpret_cast<char*> (0xcccccccc);
 	for (long i = 0; i < chNumOutput; i++)
         arrOut[i] = 0;

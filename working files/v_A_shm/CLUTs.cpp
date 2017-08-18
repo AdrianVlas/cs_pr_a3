@@ -63,7 +63,7 @@ CLUTs::CLUTs(char chM,char chI) {
 register long i;
     chMaxIteratoin = chM;
     chIteration = chI;
-    chNumInput  = static_cast<char> (TOTAL_Ts__2_1_IN);//shCLUTs_x_y_AmtIn
+    chNumInput  = static_cast<char> (TOTAL_Ts__2_1_IN);//TOTAL_Ts__2_1_IN
     chNumOutput = static_cast<char> (TOTAL_Ts__2_1_OUTPUT);//shCLUTs_x_y_AmtOut
     chTypeLogicFunction = LU_OP_NOT;
     LogicFunc = Ts__2_1_Op; //
