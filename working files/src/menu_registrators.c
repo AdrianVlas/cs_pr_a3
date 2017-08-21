@@ -130,6 +130,8 @@ void make_ekran_list_event_log(void)
           {
             //Ми не дочекалися завершення читання з мікросхеми DataFalash
             record_read_ok = false;
+            number_record_of_log_into_menu = 0xffffffff;
+            
             _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT);
 
             //Копіюємо  рядки у робочий екран
@@ -484,6 +486,8 @@ void make_ekran_list_event_pr_err(void)
           {
             //Ми не дочекалися завершення читання з мікросхеми DataFalash
             record_read_ok = false;
+            number_record_of_pr_err_into_menu = 0xffffffff;
+            
             _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT);
 
             //Копіюємо  рядки у робочий екран
