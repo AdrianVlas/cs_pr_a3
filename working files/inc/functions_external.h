@@ -195,6 +195,8 @@ extern void move_into_ekran_list_inputs_outputs(unsigned int, int);
 extern void make_ekran_list_inputs_outputs(void);
 extern unsigned int max_number_digit_in_number(int);
 extern void make_ekran_state_inputs_or_outputs(void);
+extern void move_into_ekran_state_analog_inputs(unsigned int, int);
+extern void make_ekran_state_analog_inputs(void);
 extern void move_into_ekran_input_or_output(unsigned int, int);
 extern void make_ekran_list_registrators(void);
 extern enum _result_pressed_enter_during_edition press_enter_in_setting_language(void);
@@ -205,6 +207,7 @@ extern void make_ekran_list_event_log(void);
 extern void make_ekran_list_event_pr_err(void);
 extern void make_ekran_data_reg(void);
 
+extern __result_dym_mem_select allocate_dynamic_memory_for_diagnostyka(__action_dym_mem_select, uint32_t, uint32_t);
 extern __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *, __CONFIG *);
 extern __result_dym_mem_select action_after_changing_of_configuration(void);
 extern void calculate_namber_bit_waiting_for_rs_485(void);
@@ -215,7 +218,6 @@ extern unsigned int count_number_set_bit(unsigned int*, unsigned int);
 extern void set_bit(unsigned int*, unsigned int);
 extern void clear_bit(unsigned int*, unsigned int);
 //extern void input_scan(void);
-//extern void clocking_global_timers(void);
 extern void main_protection(void);
 extern void diagnostyca_adc_execution(void);
 
@@ -225,10 +227,10 @@ extern void restart_monitoring_RS485(void);
 extern void start_transmint_data_via_RS_485(unsigned int);
 extern unsigned short int  AddCRC(unsigned char, unsigned short int);
 extern uint32_t bit_adr_to_reg_adr(uint32_t, uint32_t*, uint32_t*);
-extern void modbus_rountines(unsigned int);
-extern void Error_modbus(unsigned int, unsigned int, unsigned int, unsigned char*);
-extern unsigned int Get_data(unsigned char *, unsigned int, unsigned in, __getting_data, __bit_byte);
-extern unsigned int Set_data(unsigned short int, unsigned int, __settings_data, /*unsigned int,*/ unsigned int);
+//extern void modbus_rountines(unsigned int);
+//extern void Error_modbus(unsigned int, unsigned int, unsigned int, unsigned char*);
+//extern unsigned int Get_data(unsigned char *, unsigned int, unsigned in, __getting_data, __bit_byte);
+//extern unsigned int Set_data(unsigned short int, unsigned int, __settings_data, /*unsigned int,*/ unsigned int);
 //extern unsigned int Get_data_file(unsigned char*, unsigned char*, unsigned int*, unsigned int);
 
 extern ErrorStatus check_errors_i2c(void);
@@ -291,6 +293,10 @@ extern void EXITI_POWER_IRQHandler(void);
 extern int str_to_int_DATE_Mmm(void);
 
 extern long ChangeCfg(void* pv);
+
+//extern void inputPacketParser(void);
+extern void inputPacketParserUSB(void);
+extern void inputPacketParserRS485(void);
 
 #ifdef TEST_MODE
 extern void empty_settings(void);

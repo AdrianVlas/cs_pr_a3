@@ -27,6 +27,7 @@ public:
     CMft(char chM,char chI);
     char* arrPchIn[TOTAL_MFT_IN ];//
     char  arrOut  [TOTAL_MFT_OUTPUT];//
+    char  arrStateIn[TOTAL_MFT_IN ];
 //    long TpauseMft(long lActivKey);
 //    long TdelayMft(long lResetKey,long lInKey);
 //    long TWorkMft (long lResetKey,long lInKey);
@@ -36,6 +37,14 @@ public:
     long TWorkMftDir(long lResetKey, long lInKey);
     long TWorkMftInv(long lResetKey, long lInKey);
     
+//    char m_chNot1;
+//    char m_chOR2;
+    char m_chOR3;
+//    char m_D4Q;
+//    char m_D4_In;
+    char m_D5Q;
+    char m_D5_In;
+    
     char m_chLinkedTimers; //Field bit
     char m_chStateTpauseDir;
     char m_chStateTpauseInv;
@@ -43,6 +52,8 @@ public:
     char m_chStateTdelay;
     char m_chStateTWorkDir ;
     char m_chStateTWorkInv ;
+    char m_chInPulsDir;
+    char m_chInPulsInv;
 
     MftSuit m_MftSuit;
     TmrNode m_NodeTpauseDir;
@@ -51,6 +62,7 @@ public:
     TmrNode m_NodeTdelay;
     TmrNode m_NodeTWorkDir;
     TmrNode m_NodeTWorkInv;
+    
 
     long LinkMftTimers(void);
     void UpdateCMft(void);

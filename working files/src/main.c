@@ -4,6 +4,7 @@
 #include "type_definition.h"
 #include "strings_global.h"
 #include "variables_global.h"
+#include "variables_global_m.h"
 #include "functions_global.h"
 #include "../v_A_shm/I_Shm.h"
 #include "../v_A_shm/IStng.h"
@@ -23,7 +24,14 @@ inline void watchdog_routine(void)
   time_delta_watchdog_input = delta_time* 10;
   
   //Робота з watchdogs з контролем всіх інших систем
-  if((control_word_of_watchdog & UNITED_BITS_WATCHDOG) == UNITED_BITS_WATCHDOG)
+  if(
+     ((control_word_of_watchdog & UNITED_BITS_WATCHDOG) == UNITED_BITS_WATCHDOG) 
+     ||
+     (
+      (restart_device != false) &&
+      ((control_word_of_watchdog & (UNITED_BITS_WATCHDOG & (uint32_t)(~(WATCHDOG_PROTECTION | WATCHDOG_PROTECTION_1)))) == (UNITED_BITS_WATCHDOG & (uint32_t)(~(WATCHDOG_PROTECTION | WATCHDOG_PROTECTION_1))))
+     ) 
+    )   
   {
     //Змінюємо стан біту зовнішнього Watchdog на протилежний
     if (test_watchdogs != CMD_TEST_EXTERNAL_WATCHDOG)
@@ -40,7 +48,7 @@ inline void watchdog_routine(void)
       else delta_time = time_2_watchdog_output + 0xffff - time_1_watchdog_output;
       time_delta_watchdog_output = delta_time* 10;
     }
-
+  
     control_word_of_watchdog =  0;
   }
 #ifdef DEBUG_TEST
@@ -104,10 +112,14 @@ inline void periodical_operations(void)
   watchdog_routine();
 
   //Робота з таймером очікування нових змін налаштувань
-  if ((timeout_idle_new_settings >= settings_fix.timeout_idle_new_settings) && (restart_timeout_idle_new_settings == 0))
+  if ((timeout_idle_new_settings >= settings_fix_prt.timeout_idle_new_settings) && (restart_timeout_idle_new_settings == 0))
   {
     unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
-    if (result != 0)
+    if (result == 0)
+    {
+      timeout_idle_new_settings = 0;
+    }
+    else
     {
       //Повідомляємо про критичну помилку
       current_state_menu2.edition = ED_ERROR;
@@ -116,7 +128,7 @@ inline void periodical_operations(void)
     type_of_settings_changed_from_interface = 0;
   }
   //Фіксація сигналу про те що налаштуванння/конфігурація змінені чи ні
-  if ((config_settings_modified & (MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS)) != 0) 
+  if ((config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION) | MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC))) != 0) 
   {
     _SET_BIT(fix_block_active_state, FIX_BLOCK_SETTINGS_CHANGED);
   }
@@ -126,17 +138,17 @@ inline void periodical_operations(void)
   }
   
   //Обмін по USB
-  if (settings_fix.password_interface_USB)
+  if (settings_fix_prt.password_interface_USB)
   {
-    unsigned int timeout = settings_fix.timeout_deactivation_password_interface_USB;
+    unsigned int timeout = settings_fix_prt.timeout_deactivation_password_interface_USB;
     if ((timeout != 0) && (timeout_idle_USB >= timeout) && ((restart_timeout_interface & (1 << USB_RECUEST)) == 0)) password_set_USB = 1;
   }
   Usb_routines();
 
   //Обмін по RS-485
-  if (settings_fix.password_interface_RS485)
+  if (settings_fix_prt.password_interface_RS485)
   {
-    unsigned int timeout = settings_fix.timeout_deactivation_password_interface_RS485;
+    unsigned int timeout = settings_fix_prt.timeout_deactivation_password_interface_RS485;
     if ((timeout != 0) && (timeout_idle_RS485 >= timeout) && ((restart_timeout_interface & (1 << RS485_RECUEST)) == 0)) password_set_RS485 = 1;
   }
   if(
@@ -151,7 +163,7 @@ inline void periodical_operations(void)
     watchdog_routine();
 
     //Обробляємо запит
-    modbus_rountines(RS485_RECUEST);
+//    modbus_rountines(RS485_RECUEST);
   }
   else if (make_reconfiguration_RS_485 != 0)
   {
@@ -185,7 +197,39 @@ inline void periodical_operations(void)
   Щоб за один оберт виконувалася тільки одна перевірка, тобто щоб в одному оберті
   не було надто довга затримка на фонову перевірку, хоч і важливу.
   */
-  if (periodical_tasks_TEST_CONFIG != 0)
+  if (restart_device != 0)
+  {
+    if(
+       !(
+         (
+          (control_i2c_taskes[0]     != 0) ||
+          (control_i2c_taskes[1]     != 0) ||
+          (driver_i2c.state_execution > 0)
+         )
+         ||
+         (
+          (control_tasks_dataflash != 0) ||
+          (state_execution_spi_df[INDEX_DATAFLASH_1] != TRANSACTION_EXECUTING_NONE) ||
+          (state_execution_spi_df[INDEX_DATAFLASH_2] != TRANSACTION_EXECUTING_NONE)
+         )
+         ||
+         (data_usb_transmiting == true)
+         ||
+         (GPIO_ReadOutputDataBit(GPIO_485DE, GPIO_PIN_485DE) == Bit_SET)
+        )
+       )
+    {
+//      DCD_DevDisconnect(&USB_OTG_dev);
+      /***
+      Подаємо команду на перезапуск
+      ***/
+      NVIC_SystemReset();
+      
+      restart_device = false;
+      /***/
+    }
+  }
+  else if (periodical_tasks_TEST_CONFIG != 0)
   {
     //Стоїть у черзі активна задача самоконтролю конфігурації
     if ((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)) != 0)
@@ -285,14 +329,14 @@ inline void periodical_operations(void)
       //Контроль достовірності реєстратора пройшов успішно
     
       //Скидаємо повідомлення у слові діагностики
-      _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT);
+      if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT);
     }
     else
     {
       //Контроль достовірності реєстратора не пройшов
 
       //Виствляємо повідомлення у слові діагностики
-      _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT);
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_LOG_CONTROL_BIT);
     }
 
     //Скидаємо активну задачу самоконтролю по резервній копії для Журналу подій
@@ -310,14 +354,14 @@ inline void periodical_operations(void)
       //Контроль достовірності реєстратора пройшов успішно
     
       //Скидаємо повідомлення у слові діагностики
-      _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
+      if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
     }
     else
     {
       //Контроль достовірності реєстратора не пройшов
 
       //Виствляємо повідомлення у слові діагностики
-      _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_INFO_REJESTRATOR_PR_ERR_CONTROL_BIT);
     }
 
     //Скидаємо активну задачу самоконтролю по резервній копії для реєстратора програмних подій
@@ -383,26 +427,29 @@ int main(void)
 #ifdef SYSTEM_VIEWER_ENABLE
   SEGGER_SYSVIEW_Conf();            /* Configure and initialize SystemView  */
 #endif
+
+  //Намагаємося виділити пам'ять під незалежні від конфігурації стани діагностики
+  allocate_dynamic_memory_for_diagnostyka(MAKE_DYN_MEM, 0, 0);
   
   //Виставляємо подію про зупинку пристрою у попередньому сеансі роботи, а час встановиться пізніше, RTC запм'ятовує час пропадання живлення
-  _SET_BIT(set_diagnostyka, EVENT_STOP_SYSTEM_BIT);
+  if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_STOP_SYSTEM_BIT);
   changing_diagnostyka_state();//Підготовлюємо новий запис для реєстратора програмних подій
   
   //Перевіряємо, що відбулося: запуск приладу, програмний перезапуск чи перезапуск (перезапуск роботи приладу без зняття оперативного живлення) 
   if (RCC_GetFlagStatus(RCC_FLAG_SFTRST) == SET)
   {
     //Виставляємо подію про програмний перезапуск пристрою
-    _SET_BIT(set_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT);
   }
   else if (RCC_GetFlagStatus(RCC_FLAG_PORRST) != SET)
   {
     //Виставляємо подію про перезапуск пристрою (бо не зафіксовано подію Power-on/Power-down)
-    _SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT);
   }
   else
   {
     //Виставляємо подію про запуск пристрою 
-    _SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT);
   }
   //Очищаємо прапорці
   RCC->CSR |= RCC_CSR_RMVF;
@@ -428,6 +475,23 @@ int main(void)
   {
     //Випадок, якщо настройки успішно зчитані
           
+    /***
+    Зміни у Андрієвій системі
+    ***/
+    {
+      unsigned int tmp;
+      long res = ChangeCfg((void*)&tmp);
+      if (res != 0) 
+      {
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      }
+      else 
+      {
+        if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      }
+    }
+    /***/
+    
     //Дозволяєм роботу таймера вимірювальної системи
     TIM_Cmd(TIM5, ENABLE);
     // Дозволяєм роботу таймерів системи логіки
@@ -460,6 +524,23 @@ int main(void)
       error_reading_with_eeprom();
     }
 
+    /***
+    Зміни у Андрієвій системі
+    ***/
+    {
+      unsigned int tmp;
+      long res = ChangeCfg((void*)&tmp);
+      if (res != 0) 
+      {
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      }
+      else 
+      {
+        if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+      }
+    }
+    /***/
+
     //Дозволяєм роботу таймера вимірювальної системи
     TIM_Cmd(TIM5, ENABLE);
     //Дозволяєм роботу таймерів системи логіки
@@ -469,13 +550,13 @@ int main(void)
   changing_diagnostyka_state();//Підготовлюємо новий потенційно можливий запис для реєстратора програмних подій
 
   //Визначаємо, чи стоїть дозвіл запису через інтерфейси з паролем
-  if (settings_fix.password_interface_RS485 == 0) password_set_RS485 = 0;
+  if (settings_fix_prt.password_interface_RS485 == 0) password_set_RS485 = 0;
   else password_set_RS485 = 1;
-  timeout_idle_RS485 = settings_fix.timeout_deactivation_password_interface_RS485;
+  timeout_idle_RS485 = settings_fix_prt.timeout_deactivation_password_interface_RS485;
   
-  if (settings_fix.password_interface_USB   == 0) password_set_USB   = 0;
+  if (settings_fix_prt.password_interface_USB   == 0) password_set_USB   = 0;
   else password_set_USB   = 1;
-  timeout_idle_USB = settings_fix.timeout_deactivation_password_interface_USB;
+  timeout_idle_USB = settings_fix_prt.timeout_deactivation_password_interface_USB;
   
   //Перевірка параметрування мікросхем DataFlash
   start_checking_dataflash();
@@ -533,8 +614,14 @@ int main(void)
         sum += *point++;
         periodical_operations();
       }
-      if (sum != (unsigned short)__checksum) _SET_BIT(set_diagnostyka, ERROR_INTERNAL_FLASH_BIT);
-      else _SET_BIT(clear_diagnostyka, ERROR_INTERNAL_FLASH_BIT);
+      if (sum != (unsigned short)__checksum) 
+      {
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_INTERNAL_FLASH_BIT);
+      }
+      else 
+      {
+        if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_INTERNAL_FLASH_BIT);
+      }
       /************************************************************/
 
       periodical_tasks_TEST_FLASH_MEMORY = false;

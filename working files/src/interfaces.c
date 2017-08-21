@@ -60,7 +60,8 @@ void Usb_routines(void)
         //Копіюємо отримані дані у робочий масив
         for (int i = 0; i < usb_received_count; i++) usb_received[i] = buffer_out[i];
         //Орацювання даних по протоколу MODBUS-RTU прийнятих з USB
-        modbus_rountines(USB_RECUEST);
+//        modbus_rountines(USB_RECUEST);
+        inputPacketParserUSB();
       }
       else
       {
@@ -80,7 +81,7 @@ void USART_RS485_Configure(void)
   USART_InitTypeDef USART_InitStructure;
 
   unsigned int baud_RS485;
-  switch (settings_fix.baud_RS485)
+  switch (settings_fix_prt.baud_RS485)
   {
   case 0:
     {
@@ -120,7 +121,7 @@ void USART_RS485_Configure(void)
   }
   
   unsigned int pare_RS485;
-  switch (settings_fix.pare_bit_RS485)
+  switch (settings_fix_prt.pare_bit_RS485)
   {
   case 0:
     {
@@ -175,7 +176,7 @@ void USART_RS485_Configure(void)
   USART_InitStructure.USART_BaudRate = baud_RS485;
   if (pare_RS485 == USART_Parity_No) USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   else USART_InitStructure.USART_WordLength = USART_WordLength_9b;
-  if (settings_fix.number_stop_bit_RS485 == 0) USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  if (settings_fix_prt.number_stop_bit_RS485 == 0) USART_InitStructure.USART_StopBits = USART_StopBits_1;
   else USART_InitStructure.USART_StopBits = USART_StopBits_2; 
   USART_InitStructure.USART_Parity = pare_RS485;
   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;

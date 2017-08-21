@@ -3,10 +3,10 @@
 
 const uint8_t name_string_ask[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
 {
-  "Да-Enter/Нет-Esc",
-  "Так-Enter/Ні-Esc",
-  "Yes-Enter/No-Esc",
-  "Да-Enter/Нет-Esc"
+  "Нет-Esc/Да-Enter",
+  "Ні-Esc/Так-Enter",
+  "No-Esc/Yes-Enter",
+  "Нет-Esc/Да-Enter"
 };
 
 const uint8_t information_no_edition[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
@@ -136,17 +136,17 @@ const uint8_t name_string_alarm_control[MAX_NAMBER_LANGUAGE][MAX_INDEX_CTRL_ALAR
 
 const uint8_t information_alarm_control[MAX_NAMBER_LANGUAGE][ALARM_MODES_NUMBER][MAX_COL_LCD + 1] = 
 {
-  {"    ПРОСТОЙ     ", "   ТРИГГЕРНЫЙ   ", "    ЗАД.ВР.     "},
-  {"    ПРОСТИЙ     ", "   ТРИҐЕРНИЙ    ", "    ЗАД.ЧАС     "},
-  {"     SIMPLE     ", "    TRIGGER     ", "    ЗАД.ВР.     "},
-  {"    ПРОСТИЙ     ", "   ТРИГГЕРНЫЙ   ", "    ЗАД.ВР.     "}
+  {"   НОРМАЛЬНЫЙ   ", "   ТРИГГЕРНЫЙ   ", "    ЗАД.ВР.     "},
+  {"   НОРМАЛЬНИЙ   ", "   ТРИҐЕРНИЙ    ", "    ЗАД.ЧАС     "},
+  {"     NORMAL     ", "    TRIGGER     ", "    ЗАД.ВР.     "},
+  {"   НОРМАЛЬНИЙ   ", "   ТРИГГЕРНЫЙ   ", "    ЗАД.ВР.     "}
 };
 const unsigned int cursor_x_alarm_control[MAX_NAMBER_LANGUAGE][ALARM_MODES_NUMBER] = 
 {
-  {3, 2, 3},
-  {3, 2, 3},
+  {2, 2, 3},
+  {2, 2, 3},
   {4, 3, 3},
-  {3, 2, 3}
+  {2, 2, 3}
 };
 
 const uint8_t name_alarm_in_signals[MAX_NAMBER_LANGUAGE][ALARM_SIGNALS_IN][MAX_COL_LCD + 1] =
@@ -813,19 +813,23 @@ const uint8_t name_string_labels[MAX_NAMBER_LANGUAGE][MAX_ROW_LABELS_M2][MAX_COL
 {
   {
     " Метка конфиг.  ",
-    " Метка настроек "
+    " Метка настроек ",
+    " Метка схемы    "
   },
   {
     " Мітка конфіг.  ",
-    " Мітка налашт.  "
+    " Мітка налашт.  ",
+    " Метка схеми    "
   },
   {
     " Configur.Mark  ",
-    " Settings Mark  "
+    " Settings Mark  ",
+    " Scheme Mark    ",
   },
   {
     " Метка конфиг.  ",
-    " Метка настроек "
+    " Метка настроек ",
+    " Метка схемы    "
   }
 };
 
@@ -1227,6 +1231,7 @@ const uint8_t name_string_pr_err[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_DIAGNOSTYKA][M
     NAME_DIAGN_KZ
   }
 };
+const uint32_t first_index_array_name_error_rele[MAX_NAMBER_LANGUAGE] = {12, 13, 3, 12};
 
 const uint8_t passive_active[MAX_NAMBER_LANGUAGE][2][5 + 1] = 
 {

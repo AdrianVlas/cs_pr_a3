@@ -174,7 +174,7 @@ inline void calc_measurement(void)
     */
     
     float mnognyk = (i < (NUMBER_ANALOG_CANALES - 1)) ? MNOGNYK_I_DIJUCHE_FLOAT : MNOGNYK_U_DIJUCHE_FLOAT;
-    float value_float = mnognyk*((float)sqrt_sum_sqr_data_local[i])/(64.0f); /*64 = 4*16. 16 - це підсилення каналів "Analog Input"; 4 - це sqrt(16), а 16 береться з того, що 32 = 16*2 */
+    float value_float = mnognyk*((float)sqrt_sum_sqr_data_local[i])/((i != IM_U) ? 64.0f : 4.0f); /*64 = 4*16. 16 - це підсилення каналів "Analog Input"; 4 - це sqrt(16), а 16 береться з того, що 32 = 16*2 */
     measurement[i] = (unsigned int)value_float; 
     /***/
   }
@@ -292,177 +292,260 @@ inline void calc_measurement(void)
 /*****************************************************/
 
 /*****************************************************/
-//Функція обробки таймерів
-/*****************************************************/
-//inline void clocking_global_timers(void)
-//{
-//  //Опрацьовуємо дискретні входи
-//  input_scan();
-//  
-//  //опрацьовуємо всі решта таймери логіки
-//  for (unsigned int i = INDEX_TIMER_TEMP; i < MAX_NUMBER_GLOBAL_TIMERS; i++)
-//  {
-//    if (global_timers[i] >= 0)
-//    {
-//      //Першою умовою того, що таймер треба тактувати є той факт, що величина таймеру не від'ємна
-//
-//      //Перевіряємо чи треба збільшувати величину таймеру, якщо він ще не досягнув свого максимуму
-//      if (global_timers[i] <= (0x7fffffff - DELTA_TIME_FOR_TIMERS)) global_timers[i] += DELTA_TIME_FOR_TIMERS;
-//    }
-//  }
-//}
-/*****************************************************/
-
-/*****************************************************/
 //Функція захистів з якої здійснюються всі інші операції
 /*****************************************************/
 inline void main_protection(void)
 {
-  /**************************/
-  //Перевірка, чи треба очистити трігерні функції
-  /**************************/
-  if (reset_trigger_function_from_interface !=0)
+  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
   {
-    
-    //Помічаємо що ми виконали очистку по ВСІХ інтерфейсах
-    reset_trigger_function_from_interface = 0;
-  }
-  /**************************/
-
-  /**************************/
-  //Опрацьовуємо натиснуті кнопки
-  /**************************/
-  __LN_BUTTON *p_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
-  for (uint32_t i = 0; i < current_config_prt.n_button; i++)
-  {
-    //Скидаємо  попередній стан
-    p_button->active_state [BUTTON_OUT >> 3]  &= (uint8_t)(~( 1 << (BUTTON_OUT & ((1 << 3) - 1))));
-    
-    //Перевіряємо, чи не встановлений MUTEX
-    if ((p_button->internal_input[BUTTON_INT_MUTEX >> 3] & (1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1)))) == 0)
+    /**************************/
+    //Опрацьовуємо натиснуті кнопки
+    /**************************/
     {
-      //MUTEX не встановлений
-      
-      //Визначаємо стан вхідної інформації
-      uint32_t state_tmp = ((p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] & (1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1)))) != 0);
-      if (state_tmp)
+      __LN_BUTTON *p_button = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+      for (uint32_t i = 0; i < current_config_prt.n_button; i++)
       {
-        //Встановлюємо вихід
-        p_button->active_state[BUTTON_OUT >> 3]  |= (1 << (BUTTON_OUT & ((1 << 3) - 1)));
+        //Скидаємо  попередній стан
+        p_button->active_state [BUTTON_OUT >> 3]  &= (uint8_t)(~( 1 << (BUTTON_OUT & ((1 << 3) - 1))));
+    
+        //Перевіряємо, чи не встановлений MUTEX
+        if ((p_button->internal_input[BUTTON_INT_MUTEX >> 3] & (1 << (BUTTON_INT_MUTEX & ((1 << 3) - 1)))) == 0)
+        {
+          //MUTEX не встановлений
+      
+          //Визначаємо стан вхідної інформації
+          uint32_t state_tmp = ((p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] & (1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1)))) != 0);
+          if (state_tmp)
+          {
+            //Встановлюємо вихід
+            p_button->active_state[BUTTON_OUT >> 3]  |= (1 << (BUTTON_OUT & ((1 << 3) - 1)));
         
-        //Скидаємо інформацію з входу
-        p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1))));
+            //Скидаємо інформацію з входу
+            p_button->internal_input[BUTTON_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (BUTTON_INT_ACTIVATION & ((1 << 3) - 1))));
+          }
+        }
+        //Переводимо вказівник на наступну кнопку
+        p_button++;
       }
     }
-    //Переводимо вказівник на наступну кнопку
-    p_button++;
-  }
-  /**************************/
+    /**************************/
+
+    /**************************/
+    //Опрацьовуємо ТУ
+    /**************************/
+    {
+      __LN_TU *p_tu = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
+      for (uint32_t i = 0; i < current_config_prt.n_tu; i++)
+      {
+        //Скидаємо  попередній стан
+        p_tu->active_state [TU_OUT >> 3]  &= (uint8_t)(~( 1 << (TU_OUT & ((1 << 3) - 1))));
     
-  /**************************/
-  //Опрацьовуємо сигнали з ТУ/Goose
-  /**************************/
-  if (activation_function_from_interface != 0)
-  {
+        //Перевіряємо, чи не встановлений MUTEX
+        if ((p_tu->internal_input[TU_INT_MUTEX >> 3] & (1 << (TU_INT_MUTEX & ((1 << 3) - 1)))) == 0)
+        {
+          //MUTEX не встановлений
+      
+          //Визначаємо стан вхідної інформації
+          uint32_t state_tmp = ((p_tu->internal_input[TU_INT_ACTIVATION >> 3] & (1 << (TU_INT_ACTIVATION & ((1 << 3) - 1)))) != 0);
+          if (state_tmp)
+          {
+            //Встановлюємо вихід
+            p_tu->active_state[TU_OUT >> 3]  |= (1 << (TU_OUT & ((1 << 3) - 1)));
+        
+            //Скидаємо інформацію з входу
+            p_tu->internal_input[TU_INT_ACTIVATION >> 3] &= (uint8_t)(~(1 << (TU_INT_ACTIVATION & ((1 << 3) - 1))));
+          }
+        }
+        //Переводимо вказівник на наступну кнопку
+        p_tu++;
+      }
+    }
+    /**************************/
 
-    //Очищаємо помітку активації функцій з інетфейсу, які ми вже опрацювали
+    /**************************/
+    //Опрацьовуємо ТС
+    /**************************/
+    {
+      __LN_TS *p_ts = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+      for (uint32_t i = 0; i < current_config_prt.n_ts; i++)
+      {
+        //Скидаємо  попередній стан
+        p_ts->add_input_state[TS_READING >> 3]  &= (uint8_t)(~( 1 << (TS_READING & ((1 << 3) - 1))));
+    
+        //Перевіряємо, чи не встановлений MUTEX
+        if ((p_ts->internal_input[TS_INT_MUTEX >> 3] & (1 << (TS_INT_MUTEX & ((1 << 3) - 1)))) == 0)
+        {
+          //MUTEX не встановлений
+      
+          //Визначаємо стан вхідної інформації
+          uint32_t state_tmp = ((p_ts->internal_input[TS_INT_READING >> 3] & (1 << (TS_INT_READING & ((1 << 3) - 1)))) != 0);
+          if (state_tmp)
+          {
+            //Встановлюємо вихід
+            p_ts->add_input_state[TS_READING >> 3]  |= (1 << (TS_READING & ((1 << 3) - 1)));
+        
+            //Скидаємо інформацію з входу
+            p_ts->internal_input[TS_INT_READING >> 3] &= (uint8_t)(~(1 << (TS_INT_READING & ((1 << 3) - 1))));
+          }
+        }
+        //Переводимо вказівник на наступну кнопку
+        p_ts++;
+      }
+    }
+    /**************************/
   }
-  activation_function_from_interface = 0;
-  /**************************/
-
+    
   /***********************************************************/
   //Розрахунок вимірювань
   /***********************************************************/
   calc_measurement();
-  RdHrdIn((void*)&DiHrdStateUI32Bit);
+  //RdHrdIn((void*)&DiHrdStateUI32Bit);
   
-  SetHrdOut((void*)&DoStateUI32Bit);
-  SetHrdLed((void*)&LedStateUI32Bit);
+  
   //TmrCalls();
   DoCalcWrp();
+  if(chGlb_ActivatorWREeprom>0){
+    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+    chGlb_ActivatorWREeprom = 0;
+  }
+  SetHrdOut((void*)&DoStateUI32Bit);
+  SetHrdLed((void*)&LedStateUI32Bit);
   //Копіюємо вимірювання для низькопріоритетних і високопріоритетних завдань
-  unsigned int bank_measurement_high_tmp = (bank_measurement_high ^ 0x1) & 0x1;
+//  unsigned int bank_measurement_high_tmp = (bank_measurement_high ^ 0x1) & 0x1;
   if(semaphore_measure_values_low1 == 0)
   {
     for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++) 
     {
-      measurement_high[bank_measurement_high_tmp][i] = measurement_middle[i] = measurement[i];
+      /*measurement_high[bank_measurement_high_tmp][i] = */measurement_middle[i] = measurement[i];
     }
   }
-  else
-  {
-    for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++) 
-    {
-      measurement_high[bank_measurement_high_tmp][i] = measurement[i];
-    }
-  }
-  bank_measurement_high = bank_measurement_high_tmp;
+//  else
+//  {
+//    for (unsigned int i = 0; i < NUMBER_ANALOG_CANALES; i++) 
+//    {
+//      measurement_high[bank_measurement_high_tmp][i] = measurement[i];
+//    }
+//  }
+//  bank_measurement_high = bank_measurement_high_tmp;
   /**************************/
 
   /**************************/
   //Сигнал "Несправность Общая"
   /**************************/
-  diagnostyca_adc_execution();
-
-  unsigned int diagnostyka_tmp[2];
-  diagnostyka_tmp[0] = diagnostyka[0];
-  diagnostyka_tmp[1] = diagnostyka[1];
-
-  diagnostyka_tmp[0] &= (unsigned int)(~clear_diagnostyka[0]); 
-  diagnostyka_tmp[0] |= set_diagnostyka[0]; 
-
-  diagnostyka_tmp[1] &= (unsigned int)(~clear_diagnostyka[1]); 
-  diagnostyka_tmp[1] |= set_diagnostyka[1]; 
-
-  _CLEAR_BIT(diagnostyka_tmp, EVENT_START_SYSTEM_BIT);
-  _CLEAR_BIT(diagnostyka_tmp, EVENT_DROP_POWER_BIT);
-  if (
-      (diagnostyka_tmp[0] != 0) ||
-      (diagnostyka_tmp[1] != 0)
-     )   
+  static size_t _n;
+  if (_n == 0)
   {
-    _SET_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
-    /**************************/
-    //Сигнал "Несправность Аварийная"
-    /**************************/
-    if (
-        ((diagnostyka_tmp[0] & MASKA_AVAR_ERROR_0) != 0) ||
-        ((diagnostyka_tmp[1] & MASKA_AVAR_ERROR_1) != 0)
-       )   
+    size_t n_diagn_states = 0;
+    
+    switch (diagnostyka_arrays_located)
     {
-      _SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+    case DIAGN_ARRAYS_ALL:
+      {
+        n_diagn_states = NUMBER_ERRORS;
+        break;
+      }
+    case DIAGN_ARRAYS_SHORT:
+    case DIAGN_ARRAYS_ERROR:
+      {
+        n_diagn_states = _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS;
+        break;
+      }
+    default:
+      {
+        break;
+      }
+    }
+    _n = DIV_TO_HIGHER(n_diagn_states, 32);
+  }
+  
+  if (_n != 0) /*не пишу else, а повтороно пишу if щоб і при першому визначенні кількості сигналів діагностики перевірялася діагностика*/
+  {
+    diagnostyca_adc_execution();
+    
+    for (size_t i = 0; i < _n; i++)
+    {
+      diagnostyka_tmp_high[i] = diagnostyka[i];
+
+      diagnostyka_tmp_high[i] &= (unsigned int)(~clear_diagnostyka[i]); 
+      diagnostyka_tmp_high[i] |= set_diagnostyka[i]; 
+    }
+
+    _CLEAR_BIT(diagnostyka_tmp_high, EVENT_START_SYSTEM_BIT);
+    _CLEAR_BIT(diagnostyka_tmp_high, EVENT_SOFT_RESTART_SYSTEM_BIT);
+    _CLEAR_BIT(diagnostyka_tmp_high, EVENT_DROP_POWER_BIT);
+
+    uint32_t present_diagnostyka = false;
+    for (size_t i = 0; ((present_diagnostyka == false) && (i < _n)); i++)
+    {
+      if (diagnostyka_tmp_high[i] != 0) present_diagnostyka = true;
+    }
+
+    if (present_diagnostyka != false)
+    {
+      _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_RUN);
+      _SET_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
+      /**************************/
+      //Сигнал "Несправность Аварийная"
+      /**************************/
+      if (
+          ((diagnostyka_tmp_high[0] & MASKA_AVAR_ERROR_0) != 0) ||
+          ((diagnostyka_tmp_high[1] & MASKA_AVAR_ERROR_1) != 0)
+         )   
+      {
+        _SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+      }
+      else
+      {
+        const uint32_t val1 = ERROR_DIGITAL_OUTPUTS_BIT / 32;
+        const uint32_t maska_val2 = (uint32_t)(~((1 << (ERROR_DIGITAL_OUTPUTS_BIT % 32)) - 1));
+        
+        present_diagnostyka = false;
+        for (size_t i = val1; ((present_diagnostyka == false) && (i < _n)); i++)
+        {
+          if (diagnostyka_tmp_high[i] != 0) 
+          {
+            if (
+                (i != val1) ||
+                ((diagnostyka_tmp_high[val1] & maska_val2) != 0)  
+               )   
+            {
+              present_diagnostyka = true;
+            }
+          }
+        }
+        
+        if (present_diagnostyka != false) _SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+        else _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+      }
+      /**************************/
     }
     else
     {
+      _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
       _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
+      _SET_BIT(fix_block_active_state, FIX_BLOCK_RUN);
     }
-    /**************************/
-  }
-  else
-  {
-    _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_DEFECT);
-    _CLEAR_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
   }
   /**************************/
 
   
-  //Логічні схеми мають працювати тільки у тому випадку, якщо немє сигналу "Аварийная неисправность"
-  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
-  {
-    //Аварійна ситуація не зафіксована
-
-  }
-  else
-  {
-    //Аварійна ситуація зафіксована
-    
-    //Скидаємо всі активні функції, крім інформативних
-    
-    //Деактивовуємо всі реле
-    
-    //Скидаємо всі таймери, які присутні у лозіці
-    
-  }
+//  //Логічні схеми мають працювати тільки у тому випадку, якщо немє сигналу "Аварийная неисправность"
+//  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
+//  {
+//    //Аварійна ситуація не зафіксована
+//
+//  }
+//  else
+//  {
+//    //Аварійна ситуація зафіксована
+//    
+//    //Скидаємо всі активні функції, крім інформативних
+//    
+//    //Деактивовуємо всі реле
+//    
+//    //Скидаємо всі таймери, які присутні у лозіці
+//    
+//  }
 
   /**************************/
   //Робота з функціями, які мають записуватися у енергонезалежну пам'ять
@@ -484,17 +567,17 @@ inline void main_protection(void)
   //Вивід інформації на виходи
   /**************************/
   
-  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
-  {
-    //Не зафіксовано аварійної ситуації, тому встановлювати реле можна
-    
-  }
-  else
-  {
-    //Зафіксовано аварійнe ситуацію, тому деактивуємо всі реле!!!
-
-    //Деактивовуємо всі реле
-  }
+//  if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
+//  {
+//    //Не зафіксовано аварійної ситуації, тому встановлювати реле можна
+//    
+//  }
+//  else
+//  {
+//    //Зафіксовано аварійнe ситуацію, тому деактивуємо всі реле!!!
+//
+//    //Деактивовуємо всі реле
+//  }
   
   //Виводимо інформацію по виходах на піни процесора (у зворотньому порядку)
 //  unsigned int temp_state_outputs = 0;
@@ -546,7 +629,8 @@ void TIM3_IRQHandler(void)
     /***********************************************************************************************/
     TIM3->SR = (uint16_t)((~(uint32_t)TIM_IT_CC1) & 0xffff);
     uint16_t current_tick = TIM3->CCR1;
-  
+    RdHrdIn((void*)&DiHrdStateUI32Bit);
+    UpdateStateDI(); 
     /***********************************************************/
     //Встановлюємо "значення лічильника для наступного переривання"
     /***********************************************************/
@@ -627,12 +711,6 @@ void TIM2_IRQHandler(void)
     uint32_t current_tick = TIM2->CCR1;
     
     /***********************************************************/
-    //Опрцювання логічних тайменрів і дискретних входів тільки коли настройки успішно прочитані
-    /***********************************************************/
-//    clocking_global_timers();
-    /***********************************************************/
-    
-    /***********************************************************/
     //Опрцювання функцій захистів
     /***********************************************************/
 //    //Діагностика вузлів, яку треба проводити кожен раз перед початком опрацьовуванням логіки пристрою
@@ -698,15 +776,18 @@ void TIM2_IRQHandler(void)
     /***********************************************************/
     //Підготовлюємо новий запис для Журналу подій
     /***********************************************************/
-    if (event_log_handler())
+    if (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT) == 0)
     {
-      //Додано новий запис у Журнал подій
-      *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) |= (__LOG_INPUT)(1 << EVENT_LOG_WORK);
-    }
-    else
-    {
-      //Новий запис у Журнал подій не додавався
-      *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) &= (__LOG_INPUT)(~(1 << EVENT_LOG_WORK));
+      if (event_log_handler())
+      {
+        //Додано новий запис у Журнал подій
+        *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) |= (__LOG_INPUT)(1 << EVENT_LOG_WORK);
+      }
+      else
+      {
+        //Новий запис у Журнал подій не додавався
+        *((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) &= (__LOG_INPUT)(~(1 << EVENT_LOG_WORK));
+      }
     }
     /***********************************************************/
     
@@ -906,7 +987,10 @@ uint32_t event_log_handler(void)
   number_empty_cells = (int32_t)(tail - head);
   if (
       (number_empty_cells == 0) &&
-      (_CHECK_SET_BIT(diagnostyka, ERROR_LOG_OVERLOAD_BIT) == 0)
+      (
+       (diagnostyka == NULL) ||
+       (_CHECK_SET_BIT(diagnostyka, ERROR_LOG_OVERLOAD_BIT) == 0)
+      )   
      )
   {
     number_empty_cells = MAX_NUMBER_RECORDS_LOG_INTO_BUFFER;
@@ -917,8 +1001,8 @@ uint32_t event_log_handler(void)
   Час фіксації зміни
   ***/
   uint8_t *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
+  if (copying_time == 2) label_to_time_array = time_copy;
+  else label_to_time_array = time;
   /***/
   
   uint32_t *p_param = ((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]); /*поки що вказівник вказує на елемент де записуються вихідні сигнали, але пре-інкрементація дасть, що вказівник буде вже вказувати та перший вхід при вході у цикл*/
@@ -1257,7 +1341,9 @@ uint32_t event_log_handler(void)
       buffer_log_records[index_into_buffer_log++] = (param >> (2*8)) & 0xff;
       buffer_log_records[index_into_buffer_log++] = (param >> (3*8)) & 0xff;
 
-      buffer_log_records[index_into_buffer_log] = NNC_now;
+      buffer_log_records[index_into_buffer_log++] = (NNC_now >> (0*8)) & 0xff;
+      buffer_log_records[index_into_buffer_log  ] = (NNC_now >> (1*8)) & 0xff;
+
       if (id_input == ID_FB_GROUP_ALARM)
       {
 //        ((__LN_GROUP_ALARM*)address)->NNC_before = NNC_now;
@@ -1287,11 +1373,11 @@ uint32_t event_log_handler(void)
        (param != 0)
       ) 
   {
-    _SET_BIT(set_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
   }
   else
   {
-    _SET_BIT(clear_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_LOG_OVERLOAD_BIT);
   }
   
   return result;

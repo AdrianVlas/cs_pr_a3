@@ -7,7 +7,11 @@
 #include "stm32f2xx_it.h"
 #include "Ereg.h"
 #include "prtTmr.h"
+#include "IStng.h"
+#include "const_menu2_diagnostyka.h"
+extern uint32_t *set_diagnostyka;
 
+//#include "I_Shm.h"
 void PUT_Op_1_0(void *pObj) {
     CLUDout_1_0& refCLUDout_1_0 = *(static_cast<CLUDout_1_0*> (pObj));
     //CLUDout_1_0 *pCLUDout_1_0 = (CLUDout_1_0*)pObj;
@@ -22,6 +26,7 @@ CLUDout_1_0::CLUDout_1_0(char chM,char chI)//,LUOutDsc* pLUOutDsc)
  //-void *memset(void *s, int c, size_t n);
     memset(static_cast<void*>(arrPchIn),0xcc,sizeof(char*)*TOTAL_RELE_VISIO_IN);
     memset(static_cast<void*>(arrPchSchIn),0xcc,sizeof(char*)*shCLUDout_1_0_AmtIn);
+    memset(static_cast<void*>(arrStateIn),0xcc,sizeof(char*)*TOTAL_RELE_VISIO_IN);
     //memset(static_cast<void*>(arrPchAlternator),0xcc,sizeof(char*)*2);
     memset(static_cast<void*>(arrOut),0,sizeof(char)*TOTAL_RELE_VISIO_OUTPUT);
     memset(static_cast<void*>(&m_ReleyCfgSuit),0,sizeof(ReleyCfgSuit));
@@ -57,11 +62,11 @@ CLUDout_1_0::~CLUDout_1_0(void) {
     
 }
 
-char chGBLBPStopSetOut = 0;
+short shGBLBPStopSetOut = 0;
 void SET_OUT_Op(void *pObj) {
     //CLUDout_1_0 *pCLUDout_1_0 = reinterpret_cast<CLUDout_1_0 *>(pObj);
     CLUDout_1_0& rCLUDout_1_0 = *(static_cast<CLUDout_1_0*> (pObj));
-	if(chGBLBPStopSetOut == 1)
+	if(shGBLBPStopSetOut == rCLUDout_1_0.shLUBieldOrdNum)
     asm(
                 "bkpt 1"
                 );
@@ -116,13 +121,21 @@ void CLUDout_1_0::UpdateCLUDout_1_0(void){
     }
 }
 
-
+short shBkptIdDO = 0;
 void CLUDout_1_0::CalcReleySchematic(void){
 register long rl_Val,i;
-
+const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
 #pragma data_alignment=4
 char arChIntermediaResult[(TOTAL_RELE_LU_CALC_POINT)];
-const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
+volatile bool boolchQTrg06 = m_chQTrg06;
+
+//for (i = OFFSET_OUT_RELE_Not01__1_1; i < OFFSET_OUT_IN_RELE_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
+//    arChIntermediaResult[i] = 0xcc;
+    if(shBkptIdDO == shShemasOrdNumStng)
+   asm(
+       "bkpt 1"
+       );
+    
 arChIntermediaResult[OFFSET_OUT_IN_RELE_TRIGGER_SELECTOR         ] = 0;//
 arChIntermediaResult[OFFSET_OUT_IN_RELE_STABLE_SELECTOR          ] = 0;//
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SELECTOR           ] = 0;//
@@ -143,42 +156,100 @@ pCh = (this->arrPchIn[(RELEY_IN_NAME__BL_IMP - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_RELE__BL_IMP] = pCh[0];//
 pCh = (this->arrPchIn[(RELEY_IN_NAME__C1_C2 - 1)]);
 arChIntermediaResult[OFFSET_OUT_IN_RELE__C1_C2] = pCh[0];//
+pCh = (this->arrPchIn[(RELEY_IN_NAME__C2 - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_RELE_C2] =  pCh[0];
+pCh = (this->arrPchIn[(RELEY_IN_NAME__C1 - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_RELE_C1] =  pCh[0];
+
+if(CLUBase::m_AuxInfo.ch > 0){
+    i = arChIntermediaResult[OFFSET_OUT_IN_RELE__RIN];
+        rl_Val = arChIntermediaResult[OFFSET_OUT_IN_RELE__RESET];
+        if((i == arrStateIn[0])&& (rl_Val == arrStateIn[1])){
+            return;
+        }
+    arrStateIn[0] = i;
+    arrStateIn[1] = rl_Val;
+}
+else{
+    rl_Val = 0;
+    for (i = 0; i < (OFFSET_OUT_IN_RELE_VCC-OFFSET_OUT_IN_RELE__RIN); i++){
+        if(arChIntermediaResult[i+OFFSET_OUT_IN_RELE__RIN] != arrStateIn[i])
+        rl_Val++;
+    }
+    if(rl_Val == 0)
+        return;
+    memcpy(reinterpret_cast<void*>(arrStateIn),
+    reinterpret_cast<void*>(&arChIntermediaResult[OFFSET_OUT_IN_RELE__RIN]), OFFSET_OUT_IN_RELE_VCC-OFFSET_OUT_IN_RELE__RIN);    
+
+}      
+     
 if(this->m_ReleyCfgSuit.chSel1 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_RELE_NORMAL_SELECTOR] = 1;
 i = 0;
+ arChIntermediaResult[OFFSET_OUT_RELE_D_TRG_06__2_2] =  0;
+//    arChIntermediaResult[OFFSET_OUT_RELE_And16__3_1] =  0;
+//    arChIntermediaResult[OFFSET_OUT_RELE_And17__3_1] =  0;
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_RELE_TRIGGER_SELECTOR] = 1;
+arChIntermediaResult[OFFSET_OUT_IN_RELE_NORMAL_SELECTOR] =  0;
  i = 1;
+
+//    arChIntermediaResult[OFFSET_OUT_RELE_D_TRG_06__2_2] =  0;
+//    arChIntermediaResult[OFFSET_OUT_RELE_Not01__1_1] =  0;
+    
+     arChIntermediaResult[OFFSET_OUT_RELE_And03__2_1] =  0;
 }
 if(this->m_ReleyCfgSuit.chSel2 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_RELE_STABLE_SELECTOR] = 1;
 rl_Val = 0;
+    arChIntermediaResult[OFFSET_OUT_RELE_And16__3_1] =  0;
+    arChIntermediaResult[OFFSET_OUT_RELE_And17__3_1] =  0;
+
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SELECTOR] = 1;
 rl_Val = 1;
+    arChIntermediaResult[OFFSET_OUT_RELE_And11__2_1] =  0;
+    pCh = (this->arrPchIn[(RELEY_IN_NAME__C1 - 1)]);
+    arChIntermediaResult[OFFSET_OUT_IN_RELE_C1] =  pCh[0];
+    arChIntermediaResult[OFFSET_OUT_IN_RELE_C2] =  0;
+    
 }
 if(this->m_ReleyCfgSuit.chSel3 == 0){
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SIMPLE_SELECTOR] = 1;
-    //arChIntermediaResult[OFFSET_OUT_LED_AND_15__3_1] =  0;
-    //arChIntermediaResult[OFFSET_OUT_LED_AND_16__3_1] =  0;
-    //arChIntermediaResult[OFFSET_OUT_LED_D_TRG_06__4_2] =  0;
+    arChIntermediaResult[OFFSET_OUT_RELE_And10__2_1] =  0;
+    arChIntermediaResult[OFFSET_OUT_RELE_Not15__1_1] =  1;
+    arChIntermediaResult[OFFSET_OUT_RELE_And17__3_1] =  0;
 }
 else{
 arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_EXTANDED_SELECTOR] = 1;
+pCh = (this->arrPchIn[(RELEY_IN_NAME__C2 - 1)]);
+arChIntermediaResult[OFFSET_OUT_IN_RELE_C2] =  pCh[0];
+arChIntermediaResult[OFFSET_OUT_RELE_Or_07__2_1] =  
+arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_EXTANDED_SELECTOR]
+| arChIntermediaResult[OFFSET_OUT_IN_RELE_PULSE_SIMPLE_SELECTOR];
+
 }
+
 
 //
 //
 //
-for (i = OFFSET_OUT_RELE_Not01__1_1; i < OFFSET_OUT_IN_RELE_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
-    arChIntermediaResult[i] = 0xcc;
+
+arChIntermediaResult[OFFSET_OUT_IN_RELE_VCC   ] = 1;
+arChIntermediaResult[OFFSET_OUT_IN_RELE_GROUND] = 0;
+    
 rl_Val = 0;
 long k, j, l;
 short shCounterProcessedRec = m_shStartRecord;//RELE_Not01__1_1;
   do {
-    pLUShcemasDscRec = arPReleShcemasDscRecords[shCounterProcessedRec - RELE_Not01__1_1];
+    //pLUShcemasDscRec = arPReleShcemasDscRecords[shCounterProcessedRec - RELE_Not01__1_1];
+pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
+    if(shBkptIdDO == shShemasOrdNumStng)
+   asm(
+       "bkpt 1"
+       );
     i = pLUShcemasDscRec->chTypeOperation;
     switch (i) {
         case LU_GEN_OP_AND:
@@ -343,8 +414,12 @@ short shCounterProcessedRec = m_shStartRecord;//RELE_Not01__1_1;
     }
 
   } while (shCounterProcessedRec < m_shAmountProcessedRec);//IN_RELE_NORMAL_SELECTOR
-    this->arrOut[(RELE_OUT_NAME__RELE_STATE_OUTPUT - 1)] = arChIntermediaResult[OFFSET_OUT_RELE_Or_07__2_1];
+    
     bool bbState = false;
+    bbState = arChIntermediaResult[OFFSET_OUT_RELE_Or_09__2_1];
+    j = bbState;
+    this->arrOut[(RELE_OUT_NAME__RELE_STATE_OUTPUT - 1)] = j;
+    
     bbState = arChIntermediaResult[OFFSET_OUT_RELE_Or_18__3_1];
     i = this->shShemasOrdNumStng;
     i--;
@@ -352,5 +427,23 @@ short shCounterProcessedRec = m_shStartRecord;//RELE_Not01__1_1;
         DoStateUI32Bit.ul_val |= (1) << i;
     } else {
         DoStateUI32Bit.ul_val &= ~((1) << i); //Phis write to Led
+    }  
+    register __LN_OUTPUT_LED *pLN_OUTPUT = static_cast<__LN_OUTPUT_LED*>(pvCfgLN);
+    
+    pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] &= ~(1<<OUTPUT_LED_OUT);//Clr
+    pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] |= j<<OUTPUT_LED_OUT;
+    if(DoCheckUI32Bit.ul_val &((1) << i) ){
+       // pLN_OUTPUT->active_state[(OUTPUT_LED_ERROR/8) ] |= 1<<OUTPUT_LED_ERROR;
+       //#define _SET_BIT(_array, _number_bit)                                           \
+      //_array[_number_bit >> 5] |= (unsigned int)(1 << (_number_bit & 0x1f)) 
+        if (set_diagnostyka != NULL){
+            set_diagnostyka[(ERROR_DIGITAL_OUTPUTS_BIT+i)>>5] |= 
+            static_cast<unsigned int>(1 << ((ERROR_DIGITAL_OUTPUTS_BIT+i) & 0x1f)); 
+        }
     }
+    if(boolchQTrg06 != static_cast<bool>(m_chQTrg06) ){
+    pLN_OUTPUT->d_trigger_state[OUTPUT_LED_D_TRIGGER_1/8] = m_chQTrg06<<OUTPUT_LED_D_TRIGGER_1;
+    chGlb_ActivatorWREeprom++;//_SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+    } 
+    
 }

@@ -1,6 +1,6 @@
 #include <string.h>
 #include "Mft.h"
-
+#include "IStng.h"
 
 
 
@@ -40,12 +40,16 @@ m_chStateTWorkInv    = 0;
 
 }
 CMft::CMft(char chM,char chI){
+register long i;
     chMaxIteratoin = chM;
     chIteration = chI;
 
 chNumInput  = static_cast<char>(TOTAL_MFT_IN);//
 chNumOutput = static_cast<char>(TOTAL_MFT_OUTPUT);
-
+for (i = 0; i < chNumInput; i++)
+        arrPchIn[i] = reinterpret_cast<char*> (0xcccccccc); //&chGblGround;
+    for (i = 0; i < chNumOutput; i++)
+        arrOut[i] = 0;
 
 
 m_NodeTpauseDir.lTmrVal = 0;
@@ -74,6 +78,17 @@ m_chStateTpauseInv   = 0;
 m_chStateTdelay      = 0;
 m_chStateTWorkDir    = 0;
 m_chStateTWorkInv    = 0;
+m_chInPulsDir      = 1;    
+m_chInPulsInv      = 1;
+
+//m_chNot1           = 0;
+//m_chOR2            = 0;
+m_chOR3            = 0;
+//m_D4Q              = 0;
+//m_D4_In            = 0;
+m_D5Q              = 0;
+m_D5_In            = 1;
+
 chMftCmpVal = 123;
 }
 CMft::~CMft(void) {
@@ -150,6 +165,7 @@ long CMft::TDelayMftDir(long lResetKey, long lInKey) {
             if (*plTmrVal != lInKey)
                 *plTmrVal = lInKey; //lResetKey == 0!
             m_chStateTdelay = 1;//Activated
+            
             return 1;
         
         } else {
@@ -182,7 +198,8 @@ long CMft::TWorkMftDir(long lResetKey, long lInKey) {
                 if (*plTmrVal != lInKey)
                     *plTmrVal = lInKey;
                 m_chStateTWorkDir = 1;
-                return 1;
+                if(lInKey != 0)
+                    return 1;
             } else {
                 lInKey = *plTmrVal;
                 if (lInKey != 0)
@@ -215,7 +232,8 @@ long CMft::TWorkMftInv(long lResetKey, long lInKey) {
                 if (*plTmrVal != lInKey)
                     *plTmrVal = lInKey;
                 m_chStateTWorkInv = 1;
-                return 1;
+                if(lInKey != 0)
+                    return 1;
             } else {
                 lInKey = *plTmrVal;
                 if (lInKey != 0)
@@ -270,32 +288,98 @@ long CMft::LinkMftTimers(void) {
     chGlSem--;
     return i;
 }
-
+//static char GlbChInPulsDir,GlbChInPulsInv;
 
 void Mft_Op(void *pObj){
 
     register long i, j,k;
     //register char* pCh;
-
+    union{
+    char  arChEC[4];
+    short arrShEC[2];
+    long  lEC;
+    } U_EC;
+    U_EC.lEC = 0;
     CMft& rCMft = *(static_cast<CMft*>(pObj));
      	if(rCMft.shShemasOrdNumStng == chMftCmpVal){
             asm(
             "bkpt 1"
             );
-        }   
-    i = static_cast<long>(*(rCMft.arrPchIn[0]));
-    j = rCMft.TPauseMftDir(i);
-    k = rCMft.TPauseMftInv(!i);
+        }
+        
+    i = static_cast<long>(*(rCMft.arrPchIn[MFT_IN_NAME__MFTIN-1]));
+    j = static_cast<long>(*(rCMft.arrPchIn[MFT_IN_NAME__RESET_I-1]));
     
+                
+    if(CLUBase::m_AuxInfo.ch > 0){
+        U_EC.arChEC[0]++;
+        //j = static_cast<long>(*(rCMft.arrPchIn[1]));
+        if(j == rCMft.arrStateIn[MFT_IN_NAME__RESET_I-1]){
+            U_EC.arChEC[0]++;
+            if(i == rCMft.arrStateIn[MFT_IN_NAME__MFTIN-1])
+                U_EC.arChEC[0]++;
+            return;//May be not Operation    
+        }    
+        
+    }
+    
+    rCMft.arrStateIn[MFT_IN_NAME__MFTIN-1]    = i;
+    rCMft.arrStateIn[MFT_IN_NAME__RESET_I-1]  = j; 
+     
+
+    
+    //--i = static_cast<long>(*(rCMft.arrPchIn[0]));
+    j = rCMft.TPauseMftDir(i);
+    rCMft.m_chOR3 = j || i;
+    if(rCMft.m_chOR3 != 0){
+        
+        rCMft.m_D5Q = 0;
+    }
+    else{
+        if((i == 0) &&(rCMft.m_D5_In == 0)){
+            rCMft.m_D5Q = 1;
+        }
+    }
+    rCMft.m_D5_In = !i;
+    k = rCMft.TPauseMftInv(rCMft.m_D5Q);
+    if(j == 1 && rCMft.m_chInPulsDir == 0){
+        rCMft.m_chInPulsDir = j;
+        U_EC.arChEC[2] = j;
+    }
+    else{
+        if(j == 0)
+            rCMft.m_chInPulsDir = j;
+        U_EC.arChEC[2] = 0;    
+    }
+    if(k == 1 && rCMft.m_chInPulsInv == 0){
+        rCMft.m_chInPulsInv = k;
+        U_EC.arChEC[3] = k;
+    }
+    else{
+        if(k == 0)
+            rCMft.m_chInPulsInv = k;
+         U_EC.arChEC[3] = 0;    
+    }
     i = static_cast<long>(*(rCMft.arrPchIn[1]));//Reset
 
     rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_DIR_OUT-1] = 
-    rCMft.TWorkMftDir(i,j);
+    rCMft.TWorkMftDir(i,U_EC.arChEC[2]);
     rCMft.arrOut[MFT_OUT_NAME__MFT_DEL_OUT-1] = 
     rCMft.TDelayMftDir(i,j);
     rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_INV_OUT-1] = 
-    rCMft.TWorkMftInv(i,k);
+    rCMft.TWorkMftInv(i,U_EC.arChEC[3]);
+   
+register __LN_TIMER *pLN_TIMER = reinterpret_cast<__LN_TIMER*>(rCMft.pvCfgLN);
+    i = rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_DIR_OUT-1];
+    j = rCMft.arrOut[MFT_OUT_NAME__MFT_DEL_OUT-1]    ;
+    k = rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_INV_OUT-1];
+    
+    pLN_TIMER->active_state[(TIMER_OUT_RISE_IMPULSE /8) ] = i<< ( TIMER_OUT_RISE_IMPULSE %8);
+    pLN_TIMER->active_state[(TIMER_OUT_RISE_DELAY /8)   ] = j<< ( TIMER_OUT_RISE_DELAY   %8)  ;
+    pLN_TIMER->active_state[(TIMER_OUT_FALL_IMPULSE /8) ] = k<< ( TIMER_OUT_FALL_IMPULSE %8);    
+   
 
+    
 }
 
 long MftEvalTpauseTmr(long lActivKey,TmrDsc *pTmrDsc) {

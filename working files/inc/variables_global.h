@@ -55,6 +55,8 @@ unsigned int index_array_of_current_data_value = 0;
 unsigned int changed_ustuvannja = CHANGED_ETAP_NONE; 
 unsigned char crc_ustuvannja;
 unsigned int ustuvannja_meas[NUMBER_ANALOG_CANALES], ustuvannja[NUMBER_ANALOG_CANALES], edit_ustuvannja[NUMBER_ANALOG_CANALES];
+int32_t ustuvannja_shift_meas[NUMBER_INPUTs_ADCs], ustuvannja_shift[NUMBER_INPUTs_ADCs], ustuvannja_shift_work[NUMBER_INPUTs_ADCs];
+int ustuvannja_measure_shift = -1;
 
 uint32_t sqr_current_data[NUMBER_POINT][NUMBER_ANALOG_CANALES];
 uint32_t index_array_of_sqr_current_data;
@@ -66,7 +68,7 @@ unsigned int semaphore_measure_values_low1 = 0;
 
 unsigned int number_inputs_for_fix_one_second = 0;
 unsigned int measurement[NUMBER_ANALOG_CANALES]; 
-unsigned int measurement_high[2][NUMBER_ANALOG_CANALES] , bank_measurement_high = 0; 
+//unsigned int measurement_high[2][NUMBER_ANALOG_CANALES] , bank_measurement_high = 0; 
 unsigned int measurement_middle[NUMBER_ANALOG_CANALES]; 
 unsigned int measurement_low[NUMBER_ANALOG_CANALES]; 
 
@@ -74,12 +76,27 @@ const uint32_t alarm_ctrl_patten[MAX_INDEX_CTRL_ALARM][2] = {0, 2};
 const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2] = {{0, 8}};
 uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
 unsigned char crc_trg_func, crc_trg_func_ctrl;
-unsigned int activation_function_from_interface = 0;
-unsigned int reset_trigger_function_from_interface = 0;
-unsigned int diagnostyka_before[2] = {0, 0};
-unsigned int diagnostyka[2] = {0, 0};
-unsigned int set_diagnostyka[2] = {0, 0};
-unsigned int clear_diagnostyka[2] = {0, 0};
+uint32_t *diagnostyka_before = NULL;
+uint32_t *diagnostyka = NULL;
+uint32_t *set_diagnostyka = NULL;
+uint32_t *clear_diagnostyka = NULL;
+uint32_t *set_diagnostyka_tmp = NULL;
+uint32_t *clear_diagnostyka_tmp = NULL;
+uint32_t *value_changes_diagnostyka = NULL;
+uint32_t *diagnostyka_tmp_high = NULL;
+uint32_t *diagnostyka_tmp_low = NULL;
+uint32_t ** const diagnostika_arrays[N_DIAGN_ARRAYS] = {
+                                                        &diagnostyka_before, 
+                                                        &diagnostyka,
+                                                        &set_diagnostyka,
+                                                        &clear_diagnostyka,
+                                                        &set_diagnostyka_tmp,
+                                                        &clear_diagnostyka_tmp,
+                                                        &value_changes_diagnostyka,
+                                                        &diagnostyka_tmp_high,
+                                                        &diagnostyka_tmp_low,
+                                                       };
+__diagnostyka_arrays_located diagnostyka_arrays_located = DIAGN_ARRAYS_NONE;
 
 //SRAM1 int global_timers[MAX_NUMBER_GLOBAL_TIMERS]; //Масив глобальних таймерів
 
@@ -181,6 +198,7 @@ const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   0
 };
 
+unsigned int restart_device = false;
 unsigned int periodical_tasks_TEST_CONFIG = false;
 unsigned int periodical_tasks_TEST_SETTINGS = false;
 unsigned int periodical_tasks_TEST_USTUVANNJA = false;

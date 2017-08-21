@@ -22,6 +22,7 @@ public:
     void UpdateCLUDout_1_0(void);
     char* arrPchIn[TOTAL_RELE_VISIO_IN]; //
     char* arrPchSchIn[shCLUDout_1_0_AmtIn];//
+    char  arrStateIn[TOTAL_RELE_VISIO_IN ];
     char m_chQTrg06;
     char m_chInC06;
 	char m_chErrorQTrg06;

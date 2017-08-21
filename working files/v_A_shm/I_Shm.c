@@ -1,5 +1,7 @@
 #include "I_Shm.h"
 #include "IStng.h"
+#include "prtTmr.h"
+
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //``````````````````````````````````````````````````````````````````````````````````
 //==================================================================================
@@ -23,6 +25,8 @@
 extern __CONFIG current_config_prt; 
  __CONFIG ccfg;
 */
+char chGlb_ActivatorWREeprom = 0;
+
 char chGlbAmountRegisteredElem = 0;
 long lGlbRegisteredElemField = 0;
 const char chAmtSchematicElement = 15;//
@@ -47,9 +51,9 @@ fnPvrL arrChangeCfgFnptr[16] = {
 };
 
 long ChangeCfg(void* pv){
-    register long i, lRes, lCtrElem;
+    register long i, lRes, lCtrElem, lVl;
 
-    lRes = InitSchematic();
+	lVl = InitSchematic();
     lRes = i = 0;
     lCtrElem = chGlbAmountRegisteredElem;
     if (lCtrElem)
@@ -62,7 +66,7 @@ long ChangeCfg(void* pv){
         } while (--lCtrElem > 0 && lRes == 0);
     }
 
-    return i;
+    return lVl;
 }
 
 // long RegisterHundlerLUCfg(void* pv){
@@ -95,16 +99,30 @@ sLv.pCh = (char*)( spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
 sLv.pCh += sLv.shRelativeIndexLU * sizeof(__LN_OUTPUT_LED);
 
 
-
-
-
-
-
-
-
 return 0;
 }
 */
+extern DICfgSuit sDiCfg;
+long lIdxWr = 0;
+unsigned char arChInRg[20000] @ "ZeroInivars_RAM1";
+void CheckingDIRegs(void){
+while(1){	
+	//Read Data from Reg Then Save It
+	;
+	;
+	RdHrdIn((void*)&DiHrdStateUI32Bit);
+    UpdateStateDI(); 
+	arChInRg[lIdxWr++] = sDiCfg.DiState.ul_val;
+	if(lIdxWr >= 20000){
+		lIdxWr = 0;
+		asm(
+                "bkpt 1"
+                );
+	}
+	
+}
+
+}
 //#include "../inc/variables_external.h" зараз поки що не йде
 
 

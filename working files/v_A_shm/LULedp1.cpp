@@ -410,7 +410,7 @@ const short shAmtLedShcemasSimpleModeDscRecords = sizeof(arPLedShcemasStableDire
 const LedShcemasDscRecord* const arPLedShcemasStableTriggerDscRecords[] = {
 &Not01__1_1DscRec,
 &And02__2_1DscRec,
-&And03__2_1DscRec,
+//&And03__2_1DscRec,
 &And04__2_1DscRec,
 &Or_05__2_1DscRec,
 &D_TRG_06__4_2DscRec,
@@ -469,13 +469,16 @@ const LedShcemasDscRecord* const arPLedShcemasPulseC2TrigDscRecords[] = {
 &And09__2_1DscRec,
 &And08__2_1DscRec,
 &And13__2_1DscRec,
+&Not14__1_1DscRec,
 &And10__2_1DscRec,
+&Or_11__2_1DscRec,
 &Or_12__2_1DscRec,
+&And15__3_1DscRec,
 &And16__3_1DscRec,
 &Or17__3_1DscRec 
 };
 const short shAmtLedShcemasPulseC2TrigModeDscRecords = sizeof(arPLedShcemasPulseC2TrigDscRecords)
-/sizeof(LedShcemasDscRecord*); 
+/sizeof(LedShcemasDscRecord*);  
 
  
  

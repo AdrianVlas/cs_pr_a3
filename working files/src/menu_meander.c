@@ -163,7 +163,7 @@ enum _result_pressed_enter_during_edition press_enter_in_delay_meander(void)
             if (check_data_setpoint(p_settings_for_meander_edit->set_delay[MEANDER_SET_DELAY_PERIOD], TIMEOUT_MEANDER_PERIOD_MIN, TIMEOUT_MEANDER_PERIOD_MAX) == 1)
             {
               p_settings_for_meander_cont->set_delay[MEANDER_SET_DELAY_PERIOD] = p_settings_for_meander_edit->set_delay[MEANDER_SET_DELAY_PERIOD];
-              config_settings_modified |= MASKA_CHANGED_SETTINGS;
+              config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
               result = RPEDE_DATA_CHANGED_OK;
             }
             else result = RPEDE_DATA_CHANGED_OUT_OF_RANGE;

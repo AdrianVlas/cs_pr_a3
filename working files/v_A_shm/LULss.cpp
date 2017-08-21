@@ -6,6 +6,8 @@
 #include "stm32f2xx_it.h"
 #include "Ereg.h"
 //include "prtTmr.h"
+#include "IStng.h"
+
 CLULss::CLULss(void) {
 }
 
@@ -228,12 +230,14 @@ inline long CLULss::GetStateVarchErrorQTrg(long lIdTrg){
 //static char chGLB_QTrg11 = 0;static char chGLB_InC11 = 0;
 void CLULss::CalcLssSchematic(void){
 register long rl_Val,i;
-
+const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
 #pragma data_alignment=4
 char arChIntermediaResult[(TOTAL_LSS_LU_CALC_POINT)];
-const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
-for (i = OFFSET_OUT_LSS_NOT_01__1_1; i < OFFSET_OUT_IN_LSS_VCC; i++)//OFFSET_OUT_Or_22__3_1
-    arChIntermediaResult[i] = 0xcc;
+volatile bool boolchQTrg29 = m_chQTrg29,boolchQTrg11 = m_chQTrg11;
+
+//for (i = OFFSET_OUT_LSS_NOT_01__1_1; i < OFFSET_OUT_IN_LSS_VCC; i++)//OFFSET_OUT_Or_22__3_1
+//    arChIntermediaResult[i] = 0xcc;
+    
 arChIntermediaResult[ OFFSET_OUT_IN_LSS_NORMAL      ] = 0;//
 arChIntermediaResult[ OFFSET_OUT_IN_LSS_TRIGGER     ] = 0;//
 arChIntermediaResult[ OFFSET_OUT_IN_LSS_TIMELIMITED ] = 0;//
@@ -468,10 +472,11 @@ arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];//
 }
 void CLULss::CalcLssSchematicOpt(void){
 register long rl_Val,i;
-
+const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
 #pragma data_alignment=4
 char arChIntermediaResult[(TOTAL_LSS_LU_CALC_POINT)];
-const LedShcemasDscRecord* pLUShcemasDscRec;// = &arPLedShcemasDscRecords;
+volatile bool boolchQTrg29 = m_chQTrg29,boolchQTrg11 = m_chQTrg11;
+
 //for (i = OFFSET_OUT_LSS_NOT_01__1_1; i < OFFSET_OUT_IN_LSS_VCC; i++)//OFFSET_OUT_Or_22__3_1
 //    arChIntermediaResult[i] = 0xcc;
 arChIntermediaResult[ OFFSET_OUT_IN_LSS_NORMAL      ] = 0;//
@@ -671,15 +676,30 @@ do{
             ;
         } //switch    
     } while (shCounterProcessedRec < IN_SIMPLE_SELECTOR);//IN_LSS_VCC
-arChIntermediaResult[ OFFSET_OUT_OUT_LSS_ALARM    ] = 
+i = arChIntermediaResult[ OFFSET_OUT_OUT_LSS_ALARM    ] = 
 arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];//
 
-arChIntermediaResult[ OFFSET_OUT_OUT_LSS_MUTE     ] = 
+j = arChIntermediaResult[ OFFSET_OUT_OUT_LSS_MUTE     ] = 
 arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];// 
    
- this->arrOut [LSS_OUT_NAME_ALARM -1] = arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];       
- this->arrOut [LSS_OUT_NAME_MUTE  -1] = arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];      
-
+   
+ this->arrOut [LSS_OUT_NAME_ALARM -1] = i;//arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];       
+ this->arrOut [LSS_OUT_NAME_MUTE  -1] = j;//arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];      
+ 
+register __LN_ALARM *p__LN_ALARM =  static_cast<__LN_ALARM*>(pvCfgLN);
+   //volatile bool boolchQTrg29 = chQTrg29,boolchQTrg11 = m_chQTrg11;
+    p__LN_ALARM->active_state[(ALARM_OUT_ALARM/8) ] = (static_cast<bool>(i))<<(ALARM_OUT_ALARM%8);
+    p__LN_ALARM->active_state[(ALARM_OUT_MUTE/8) ]  = (static_cast<bool>(j))<<(ALARM_OUT_MUTE%8) ;
+    
+    if(boolchQTrg29 != static_cast<bool>(m_chQTrg29) ){
+    p__LN_ALARM->d_trigger_state[ALARM_D_TRIGGER_1/8] = (static_cast<bool>(m_chQTrg29))<<(ALARM_D_TRIGGER_1%8);
+    chGlb_ActivatorWREeprom++;
+    }
+    if(boolchQTrg11 != static_cast<bool>(m_chQTrg11) ){
+    p__LN_ALARM->d_trigger_state[ALARM_D_TRIGGER_2/8] = (static_cast<bool>(m_chQTrg11))<<(ALARM_D_TRIGGER_2%8);
+    chGlb_ActivatorWREeprom++;
+    }
+    
 }
 
 char chGBL_BP_StopLss = 0;

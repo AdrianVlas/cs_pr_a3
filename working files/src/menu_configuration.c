@@ -449,13 +449,16 @@ enum _result_pressed_enter_during_edition press_enter_in_configuration(void)
       {
         //Треба виконати дії по зміні конфігурації
         __result_dym_mem_select result_1 = action_after_changing_of_configuration();
-        if (result_1 == DYN_MEM_SELECT_OK) config_settings_modified |= MASKA_CHANGED_CONFIGURATION | MASKA_CHANGED_SETTINGS;
+        if (result_1 == DYN_MEM_SELECT_OK) config_settings_modified |= (MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION) | MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC));
         else
         {
         
           result = (result_1 == DYN_MEM_NO_ENOUGH_MEM) ? RPEDE_DATA_CHANGED_WRONG_RETURN_OK : RPEDE_DATA_CHANGED_WRONG_RETURN_BAD;
           
-          if (result == RPEDE_DATA_CHANGED_WRONG_RETURN_BAD) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+          if (result == RPEDE_DATA_CHANGED_WRONG_RETURN_BAD) 
+          {
+            if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+          }
         }
       }
 

@@ -8,6 +8,8 @@
 #include "../inc/const_menu_ver2.h"
 #include "../inc/const_modbus_memory_map.h"
 #include "../inc/type_definition.h"
+#include "../inc/const_measurement.h"
+
 
 
 enum TARAS_ALIAS_ID_LU_STNG { 
@@ -30,10 +32,11 @@ TARAS_ALAS_STNG_LU_MFT   = ID_FB_TIMER,
 TARAS_ALAS_STNG_LU_KEY  = ID_FB_BUTTON,
 TARAS_ALAS_STNG_LU_TU = ID_FB_TU,
 TARAS_ALAS_STNG_LU_TS = ID_FB_TS,
-
+TARAS_ALAS_STNG_LU_LOG = ID_FB_EVENT_LOG,
+TARAS_ALAS_STNG_LU_STNG_FIX    = ID_FB_CONTROL_BLOCK,
 TARAS_ALAS_STNG_LU_UPPER_BOUND = _ID_FB_LAST_ALL
 };
-
+extern char chGlb_ActivatorWREeprom;
 
 
 
@@ -41,6 +44,7 @@ TARAS_ALAS_STNG_LU_UPPER_BOUND = _ID_FB_LAST_ALL
 
 
 extern __CONFIG current_config_prt; 
+extern __SETTINGS_FIX settings_fix_prt;
 extern uintptr_t *spca_of_p_prt[];
 //Define this by enum
 extern const char chAmtSchematicElement; //Amount Types

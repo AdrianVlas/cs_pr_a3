@@ -13,6 +13,12 @@ void* pvChangeSuitFn;
 
 #endif
 
+typedef struct TIM3_InitInfo_tag{
+unsigned short shARR;
+unsigned short shPSC;
+unsigned short shRes;
+
+}TIM3InitInfo;
 
 
 
@@ -23,6 +29,8 @@ extern "C" {
 long ChangeCfgLULed(void* pv);
 
 extern void  TmrCalls(void);
+extern  void TIM3ReInit(void* pv);
+
 #ifdef __cplusplus
 }
 #endif
@@ -33,5 +41,10 @@ extern long ReInitSchematic(void);
 extern void DoCalcWrp(void);
 extern void  TmrCalls(void);
 extern long RegisterHundlerLUCfg(void* pv);
+
+extern void  CheckingDIRegs(void);
+
+extern char chGlb_ActivatorWREeprom;
+
 
 #endif

@@ -123,6 +123,7 @@ extern const uint8_t password_item_level_password[MAX_ROW_LIST_PASSWORDS_M2][MAX
 extern const uint8_t name_string_registrators[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_REGISTRATORS_M2][MAX_COL_LCD + 1];
 extern const uint8_t information_no_records[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1];
 extern const uint8_t name_string_pr_err[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_DIAGNOSTYKA][MAX_COL_LCD + 1];
+extern const uint32_t first_index_array_name_error_rele[MAX_NAMBER_LANGUAGE];
 extern const uint8_t passive_active[MAX_NAMBER_LANGUAGE][2][6];
 extern const uint8_t info_data_corrupted[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1];
 extern const uint8_t information_timeout[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1];
@@ -160,8 +161,8 @@ extern const uint8_t name_tu_out_signals[MAX_NAMBER_LANGUAGE][TU_SIGNALS_OUT][MA
 extern const uint8_t name_tu[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint32_t first_index_number_tu[MAX_NAMBER_LANGUAGE];
 
-extern const uint8_t name_ts_in_signals[MAX_NAMBER_LANGUAGE][TU_SIGNALS_IN][MAX_COL_LCD + 1];
-extern const uint8_t name_ts_out_signals[MAX_NAMBER_LANGUAGE][TU_SIGNALS_OUT][MAX_COL_LCD + 1];
+extern const uint8_t name_ts_in_signals[MAX_NAMBER_LANGUAGE][TS_SIGNALS_IN][MAX_COL_LCD + 1];
+extern const uint8_t name_ts_out_signals[MAX_NAMBER_LANGUAGE][TS_SIGNALS_OUT][MAX_COL_LCD + 1];
 extern const uint8_t name_ts[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint32_t first_index_number_ts[MAX_NAMBER_LANGUAGE];
 

@@ -88,6 +88,7 @@ typedef struct
 **********/
 typedef struct
 {
+  uint32_t n_iteration;                                         //Кількість ітерацій для пошуку стаціонарного стану
   uint32_t param[FIX_BLOCK_SIGNALS_IN];                         //Сигнали на входах
   
   uint32_t password_1;                                          //Пароль для проглядання з меню
@@ -122,7 +123,29 @@ typedef struct
   
   int32_t language;                                             //мова меню  0= змінна мов не підтримується; 1=RU; 2=UA; 3=EN; 4=KZ; 5=др.
   
-  unsigned char time_setpoints[7+1];                            //Час останніх змін уставок-витримок-управління
+  uint16_t schematic;                                           //Схема
+                                                                /*
+                                                                Молодший байт
+                                                                0 - Не модифікована
+                                                                1 - Модифікована
+
+                                                                Старший байт
+                                                                0 - Основа  - Мінімальні налаштування
+                                                                1 - Основа - Схема 1
+                                                                2 - Основа - Схема 2
+                                                                3 - Основа - Схема 3
+                                                                4 - Основа - Схема 4
+                                                                ...
+                                                                */
+  
+  uint8_t time_setpoints[7+1];                                  //Час останніх змін уставок-витримок-управління
+                                                                //Останній байт масиву сигналізує мітку звідки зміни були проведені
+                                                                //0 - мінімальні параметри
+                                                                //1 - клавіатура
+                                                                //2 - USB
+                                                                //3 - RS-485
+
+  uint8_t time_schematic[7+1];                                  //Час останніх змін зв'язків між елементами
                                                                 //Останній байт масиву сигналізує мітку звідки зміни були проведені
                                                                 //0 - мінімальні параметри
                                                                 //1 - клавіатура
@@ -417,6 +440,7 @@ typedef struct
   __settings_for_TS settings;
   
   uint8_t active_state[DIV_TO_HIGHER(TS_SIGNALS_OUT, 8)];
+  uint8_t add_input_state[DIV_TO_HIGHER(TS_SIGNALS_ADD_INPUT, 8)];
   
   uint8_t internal_input[DIV_TO_HIGHER(TS_SIGNALS_INT_IN, 8)];
 
@@ -458,6 +482,17 @@ typedef enum _result_dyn_mem_select
   DYN_MEM_SELECT_OK
     
 } __result_dym_mem_select;
+
+typedef enum _diagnostyka_arrays_located
+{
+  DIAGN_ARRAYS_NONE = 0,
+  DIAGN_ARRAYS_CHANGING,
+  DIAGN_ARRAYS_ERROR,
+  DIAGN_ARRAYS_SHORT,
+  DIAGN_ARRAYS_ALL
+
+} __diagnostyka_arrays_located;
+
 
 typedef struct
 {

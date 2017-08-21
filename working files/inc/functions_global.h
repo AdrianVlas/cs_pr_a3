@@ -200,6 +200,8 @@ void move_into_ekran_list_inputs_outputs(unsigned int, int);
 void make_ekran_list_inputs_outputs(void);
 void make_ekran_state_inputs_or_outputs(void);
 unsigned int max_number_digit_in_number(int);
+void move_into_ekran_state_analog_inputs(unsigned int, int);
+void make_ekran_state_analog_inputs(void);
 void move_into_ekran_input_or_output(unsigned int, int);
 void make_ekran_list_registrators(void);
 void move_into_ekran_event_registraqtors(unsigned int, int);
@@ -207,6 +209,7 @@ void make_ekran_list_event_log(void);
 void make_ekran_list_event_pr_err(void);
 void make_ekran_data_reg(void);
 
+__result_dym_mem_select allocate_dynamic_memory_for_diagnostyka(__action_dym_mem_select, uint32_t, uint32_t);
 __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select, unsigned int, uintptr_t *[], uintptr_t *[], __CONFIG *, __CONFIG *, __CONFIG *);
 __result_dym_mem_select action_after_changing_of_configuration(void);
 void calculate_namber_bit_waiting_for_rs_485(void);
@@ -215,7 +218,6 @@ void changing_diagnostyka_state(void);
 unsigned int count_number_set_bit(unsigned int*, unsigned int);
 
 //void input_scan(void);
-//void clocking_global_timers(void);
 void main_protection(void);
 void diagnostyca_adc_execution(void);
 
@@ -225,10 +227,10 @@ void restart_monitoring_RS485(void);
 void start_transmint_data_via_RS_485(unsigned int);
 unsigned short int  AddCRC(unsigned char, unsigned short int);
 uint32_t bit_adr_to_reg_adr(uint32_t, uint32_t*, uint32_t*);
-void modbus_rountines(unsigned int);
-void Error_modbus(unsigned char, unsigned char, unsigned char, unsigned char *);
-unsigned int Get_data(unsigned char *, unsigned int, unsigned int, __getting_data, __bit_byte);
-unsigned int Set_data(unsigned short int, unsigned int, __settings_data, /*unsigned int,*/ unsigned int);
+//void modbus_rountines(unsigned int);
+//void Error_modbus(unsigned char, unsigned char, unsigned char, unsigned char *);
+//unsigned int Get_data(unsigned char *, unsigned int, unsigned int, __getting_data, __bit_byte);
+//unsigned int Set_data(unsigned short int, unsigned int, __settings_data, /*unsigned int,*/ unsigned int);
 //unsigned int Get_data_file(unsigned char*, unsigned char*, unsigned int*, unsigned int);
 
 ErrorStatus check_errors_i2c(void);
@@ -264,6 +266,10 @@ void watchdog_routine(void);
 void total_error_sw_fixed(unsigned int);
 
 int str_to_int_DATE_Mmm(void);
+
+//extern void inputPacketParser(void);
+extern void inputPacketParserUSB(void);
+extern void inputPacketParserRS485(void);
 
 #ifdef TEST_MODE
 void empty_settings(void);

@@ -29,8 +29,10 @@ LU_FKEY,
 LU_LSS,
 LU_BGS,
 LU_TU,
-LU_TS
-
+LU_TS,
+LU_LOG,
+LU_STNG_FIX,
+TOTAL_LU
 };
 
 typedef struct config_tag{ 
@@ -80,10 +82,12 @@ class Shematic
     char chInitTerminated;
     void* pLUAreaList;
     void* p_current_config_prt;//__CONFIG *
-    short arIdxLUAreaListElem[LU_TS];
+    void* pCFixBlockWrp;
+    short arIdxLUAreaListElem[TOTAL_LU];
     char chMaxIteratoin;
     char chIteration;
     char chSumNLedPlusNOut;
+    char chSumNTUPlusNTS;
     short shSum8Elem;
 
 public:
@@ -94,7 +98,8 @@ public:
     void DoCalcLUSources(void);
     void LUSelector( long lIdxLU);
     void LUIterator(long AmountCalcLU, long lIdxLU);
-    void Init(void);
+    void Init_(void);
+    long Init(void);
     void Init1(void);
     void PrintPointsState(void);
     void PrintShematicElemPointsState(void);
@@ -110,7 +115,7 @@ public:
     void DetectCircutLinks(void);
     void SetupLULinks(void *pv);
     //	friend void GetHIDLU(void**ppv,long lIdxLUinStng );
-    void Init2(void);
+    long Init2(void);
     void SetupCLUDInput_0_1StngParam(void *pv);
     void SetupCLUDout_1_0StngParam(void *pv);
     void SetupCLULedStngParam(void *pv);
@@ -126,7 +131,7 @@ public:
     void SetupCPulseAlternatorStngParam(void *pv);
     void SetupCLUTuStngParam(void *pv);
     void SetupCLUTsStngParam(void *pv);
-    //void SetupCLUvStngParam(void *pv);
+    void SetupCLULogStngParam(void *pv);
     long FillSBitFld_LUInInfo(void *pvIn,void *pvOut);
     long FillSBitFld_LUInInfo2(void *pvIn,void *pvOut);
     long EvalIdxibnarrSBitFldCRefInfo(long lLUStng);
@@ -134,7 +139,7 @@ public:
     long EvalAmtIn_arrLUAreaListElem(long lLUStng);
     void SetupCLUInternalRef(void *pv);
     void SetupCLUInternalRef2(void *pv);
-	
+    void SetupCLUInternalRefLed(void *pv);
 	friend long InitSchematic(void);
 	friend long ReInitSchematic(void);
 	friend void DoCalcWrp(void);
@@ -274,7 +279,7 @@ void ResetarNum(void);
 extern  short shLssLUAreaListElemIndex; 
 extern  const short arrShCalcLUOrderNumsSchmPage2[];
 extern  const char  arrChCalcLUOrderNumsSchmPage2[];
-
+extern  char chErrorState;
 
 
 

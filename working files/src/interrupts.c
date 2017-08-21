@@ -465,7 +465,7 @@ void TIM4_IRQHandler(void)
             unsigned int global_requect;
             if(
                ((global_requect = (RxBuffer_RS485[0] == BROADCAST_ADDRESS_MODBUS_RTU)) != 0) ||
-               (RxBuffer_RS485[0] == settings_fix.address)
+               (RxBuffer_RS485[0] == settings_fix_prt.address)
               )   
             {
               //Інакше прийнятий пакет буде стояти в очікуванні на подальшу обробку - якщо не виконувати більше тут ніяких дій (не перезапускати моніторинг)
@@ -636,9 +636,10 @@ void TIM4_IRQHandler(void)
     /***********************************************************/
     if (
         ((current_state_menu2.current_level == TIME_MANU2_LEVEL) && (current_state_menu2.edition <= ED_CAN_BE_EDITED)) ||
-        (current_state_menu2.current_level == MEASUREMENT_MENU2_LEVEL      ) ||
-        (current_state_menu2.current_level == INPUTS_MENU2_LEVEL)   ||
-        (current_state_menu2.current_level == OUTPUTS_MENU2_LEVEL)   ||
+        (current_state_menu2.current_level == MEASUREMENT_MENU2_LEVEL ) ||
+        (current_state_menu2.current_level == INPUTS_MENU2_LEVEL) ||
+        (current_state_menu2.current_level == OUTPUTS_MENU2_LEVEL) ||
+        (current_state_menu2.current_level == ANALOG_INPUTS_MENU2_LEVEL) ||
         (current_state_menu2.current_level == DIAGNOSTICS_MENU2_LEVEL) 
        )
     {
@@ -704,7 +705,7 @@ void TIM4_IRQHandler(void)
       if (
           (restart_timeout_idle_new_settings != 0) ||
           (_CHECK_SET_BIT(fix_block_active_state, FIX_BLOCK_SETTINGS_CHANGED) == 0) ||
-          ((config_settings_modified & MASKA_MENU_LOCKS) != 0) 
+          ((config_settings_modified & MASKA_FOR_BIT(BIT_MENU_LOCKS)) != 0) 
          )
       {
         timeout_idle_new_settings  = 0;
@@ -712,7 +713,7 @@ void TIM4_IRQHandler(void)
       }
       else 
       { 
-        if (timeout_idle_new_settings < (settings_fix.timeout_idle_new_settings)) timeout_idle_new_settings++;
+        if (timeout_idle_new_settings < (settings_fix_prt.timeout_idle_new_settings)) timeout_idle_new_settings++;
       }
 
       //Робота з таймерами простою USB
@@ -723,7 +724,7 @@ void TIM4_IRQHandler(void)
       }
       else 
       {
-        if (timeout_idle_USB < (settings_fix.timeout_deactivation_password_interface_USB)) timeout_idle_USB++;
+        if (timeout_idle_USB < (settings_fix_prt.timeout_deactivation_password_interface_USB)) timeout_idle_USB++;
       }
 
       //Робота з таймерами простою RS-485
@@ -734,7 +735,7 @@ void TIM4_IRQHandler(void)
       }
       else 
       {
-        if (timeout_idle_RS485 < (settings_fix.timeout_deactivation_password_interface_RS485)) timeout_idle_RS485++;
+        if (timeout_idle_RS485 < (settings_fix_prt.timeout_deactivation_password_interface_RS485)) timeout_idle_RS485++;
       }
 
       //Ресурс
@@ -754,6 +755,115 @@ void TIM4_IRQHandler(void)
         resurs_global_min = 0xffffffff;
         resurs_global_max = 0;
       }
+    }
+    /***********************************************************/
+
+    /***********************************************************/
+    //Корекція десятих і сотих секунд
+    /***********************************************************/
+    if (copying_time == 0)
+    {
+      //На даний момент не іде встановлення або зчитування часу
+
+      /*
+      Помічаємо, що зараз  будемо змінювати час (при цьому встановлення або
+      читання з мікросхеми не може початися, бо ми у перериванні, а ці операції
+      виконуються з фонового режиму; відбір же даних буде іти коректно)
+      */
+      copying_time = 2; 
+      
+      unsigned int rozrjad = 0;
+      for(unsigned int i = 0; i < 7; i++)
+      {
+        unsigned int data_tmp = 10*((time[i] >> 4) & 0xf) + (time[i] & 0xf);
+        
+        unsigned int porig;
+        switch (i)
+        {
+        case 0:
+        case 6:
+          {
+            porig = 99;
+            break;
+          }
+        case 1:
+        case 2:
+          {
+            porig = 59;
+            break;
+          }
+        case 3:
+          {
+            porig = 23;
+            break;
+          }
+        case 4:
+          {
+            unsigned int month = 10*((time[5] >> 4) & 0xf) + (time[5] & 0xf);
+            if (month == 0x2/*BCD*/)
+            {
+              unsigned int year = 10*((time[6] >> 4) & 0xf) + (time[6] & 0xf);
+              if (
+                  ((year & 0x3) == 0) && /*остача від ділення на 4*/
+                  (
+                   ((year % 100) != 0) /* ||
+                   ((year % 400) == 0) */ /*не кратний 100 або кратний 400*/
+                  )  
+                 )
+              {
+                porig = 29;
+              } 
+              else
+              {
+                porig = 28;
+              }
+            }
+            else if (
+                     ((month <= 0x7/*BCD*/) && ( (month & 1))) ||
+                     ((month >  0x7/*BCD*/) && (!(month & 1)))
+                    ) 
+            {
+              porig = 31;
+            }
+            else
+            {
+              porig = 30;
+            }
+            break;
+          }
+        case 5:
+          {
+            porig = 12;
+            break;
+          }
+        default:
+          {
+            //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+            total_error_sw_fixed(14);
+          }
+        }
+        
+        if ((++data_tmp) > porig)
+        {
+          rozrjad = 1;
+          
+          if ((i == 4) || (i == 5)) data_tmp = 1;
+          else data_tmp = 0;
+        }
+        else rozrjad = 0;
+        
+        unsigned int high = data_tmp / 10;
+        unsigned int low = data_tmp - high*10;
+        time[i] = (high << 4) | low;
+        
+        if (rozrjad == false) break;
+      }
+
+      copying_time = 1; 
+      
+      for(unsigned int i = 0; i < 7; i++) time_copy[i] = time[i];
+      
+      copying_time = 0; 
     }
     /***********************************************************/
 
@@ -1235,6 +1345,8 @@ void TIM4_IRQHandler(void)
                   /***
                   Перший раз вже зчитаний час з моменту перезапуску
                   ***/
+                  (diagnostyka     != NULL) &&
+                  (set_diagnostyka != NULL) &&
                   (_CHECK_SET_BIT(    diagnostyka, EVENT_START_SYSTEM_BIT       ) == 0) &&
                   (_CHECK_SET_BIT(set_diagnostyka, EVENT_START_SYSTEM_BIT       ) == 0) &&
                   (_CHECK_SET_BIT(    diagnostyka, EVENT_RESTART_SYSTEM_BIT     ) == 0) &&
@@ -1666,7 +1778,7 @@ void SPI_DF_IRQHandler(void)
   }
   
   /*Виставляємо повідомлення про помилку обміну через SPI_DF*/
-  _SET_BIT(set_diagnostyka, ERROR_SPI_DF_BIT);
+  if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_SPI_DF_BIT);
 
   //Дозволяємо переривання від помилок на SPI_DF
   SPI_I2S_ITConfig(SPI_DF, SPI_I2S_IT_ERR, ENABLE);
@@ -1718,7 +1830,7 @@ void DMA_StreamSPI_DF_Rx_IRQHandler(void)
   }
       
   //Обмін відбувся вдало - скидаємо повідомлення про попередньо можливу помилку обміну через SPI_DF
-  _SET_BIT(clear_diagnostyka, ERROR_SPI_DF_BIT);
+  if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_SPI_DF_BIT);
   
 #ifdef SYSTEM_VIEWER_ENABLE
   SEGGER_SYSVIEW_RecordExitISR();
@@ -1846,14 +1958,14 @@ void EXITI_POWER_IRQHandler(void)
       //Живлення появилося на вході блоку живлення
 
       //Виставляємо повідомлення про цю подію
-      _SET_BIT(clear_diagnostyka, EVENT_DROP_POWER_BIT);
+      if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, EVENT_DROP_POWER_BIT);
     }
     else
     {
       //Живлення пропало на вході блоку живлення
 
       //Виставляємо повідомлення про цю подію
-      _SET_BIT(set_diagnostyka, EVENT_DROP_POWER_BIT);
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_DROP_POWER_BIT);
     }
   }
   

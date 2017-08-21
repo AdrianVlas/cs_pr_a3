@@ -6,8 +6,8 @@ const short shCLUTs_x_y_AmtIn  = 2;
 enum Ts__2_1_INPUT_NAMES{
 Ts__2_1_IN_NAME__CI = 1,//Connection Input
 Ts__2_1_IN_NAME__BLOCK,
-Ts__2_1_IN_NAME__INF_REQ,//Addr Request Variable
-TOTAL_Ts__2_1_IN = Ts__2_1_IN_NAME__INF_REQ
+//Ts__2_1_IN_NAME__INF_REQ,//Addr Request Variable
+TOTAL_Ts__2_1_IN = Ts__2_1_IN_NAME__BLOCK
 };
 
 enum Ts__2_1_OUTPUT_NAMES{

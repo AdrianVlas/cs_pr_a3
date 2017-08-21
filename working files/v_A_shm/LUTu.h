@@ -4,10 +4,10 @@ const short shCLUTU_x_y_AmtOut = 1;
 const short shCLUTU_x_y_AmtIn  = 1;
 
 enum TU__1_1_INPUT_NAMES{
-//TU__1_1_IN_NAME__CI = 1,//Connection Input
-TU__1_1_IN_NAME__BLOCK,
-TU__1_1_IN_NAME__INF_REQ,//Addr Request Variable
-TOTAL_TU__1_1_IN = TU__1_1_IN_NAME__INF_REQ
+TU__1_1_IN_NAME__BLOCK = 1,//Connection Input
+//TU__1_1_IN_NAME__CI,
+//TU__1_1_IN_NAME__INF_REQ,//Addr Request Variable
+TOTAL_TU__1_1_IN = TU__1_1_IN_NAME__BLOCK
 };
 
 enum TU__1_1_OUTPUT_NAMES{

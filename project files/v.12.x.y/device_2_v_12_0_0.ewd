@@ -81,7 +81,7 @@
         </option>
         <option>
           <name>OCProductVersion</name>
-          <state>7.10.1.6733</state>
+          <state>7.40.3.8937</state>
         </option>
         <option>
           <name>OCDynDriverList</name>
@@ -914,11 +914,11 @@
         </option>
         <option>
           <name>CCJLinkTcpIpSerialNo</name>
-          <state>164103890</state>
+          <state></state>
         </option>
         <option>
           <name>CCCpuClockEdit</name>
-          <state>120.0</state>
+          <state>72.0</state>
         </option>
         <option>
           <name>CCSwoClockAuto</name>

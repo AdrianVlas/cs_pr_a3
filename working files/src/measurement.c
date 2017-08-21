@@ -150,8 +150,14 @@ void operate_test_ADCs(void)
     gnd_adc_averange_sum[i] -= gnd_adc_moment_value[i][index_array_of_one_value];
     gnd_adc_moment_value[i][index_array_of_one_value] = temp;
     gnd_tmp += gnd_adc_averange[i] = gnd_adc_averange_sum[i] >> VAGA_NUMBER_POINT;
-    if (temp > 0xA1) _SET_BIT(set_diagnostyka, ERROR_GND_ADC_TEST_COARSE_BIT);
-    else _SET_BIT(clear_diagnostyka, ERROR_GND_ADC_TEST_COARSE_BIT);
+    if (temp > 0xA1) 
+    {
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_GND_ADC_TEST_COARSE_BIT);
+    }
+    else 
+    {
+      if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_GND_ADC_TEST_COARSE_BIT);
+    }
   }
   gnd_adc = gnd_tmp / NUMBER_GND_ADC;
   
@@ -161,8 +167,14 @@ void operate_test_ADCs(void)
   vref_adc_averange_sum -= vref_adc_moment_value[index_array_of_one_value];
   vref_adc_moment_value[index_array_of_one_value] = temp;
   vref_adc = vref_adc_averange_sum >> VAGA_NUMBER_POINT;
-  if ((temp < 0x614) || (temp > 0x9EB)) _SET_BIT(set_diagnostyka, ERROR_VREF_ADC_TEST_COARSE_BIT);
-  else _SET_BIT(clear_diagnostyka, ERROR_VREF_ADC_TEST_COARSE_BIT);
+  if ((temp < 0x614) || (temp > 0x9EB)) 
+  {
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_VREF_ADC_TEST_COARSE_BIT);
+  }
+  else 
+  {
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_VREF_ADC_TEST_COARSE_BIT);
+  }
   
   //VDD для АЦП
   temp = output_adc[C_VDD_ADC].value; 
@@ -170,8 +182,14 @@ void operate_test_ADCs(void)
   vdd_adc_averange_sum -= vdd_adc_moment_value[index_array_of_one_value];
   vdd_adc_moment_value[index_array_of_one_value] = temp;
   vdd_adc = vdd_adc_averange_sum >> VAGA_NUMBER_POINT;
-  if ((temp <0x6F2) || (temp > 0xD48)) _SET_BIT(set_diagnostyka, ERROR_VDD_ADC_TEST_COARSE_BIT);
-  else _SET_BIT(clear_diagnostyka, ERROR_VDD_ADC_TEST_COARSE_BIT);
+  if ((temp <0x6F2) || (temp > 0xD48)) 
+  {
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_VDD_ADC_TEST_COARSE_BIT);
+  }
+  else 
+  {
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_VDD_ADC_TEST_COARSE_BIT);
+  }
 
   //Всі масиви одної величини ми вже опрацювали  
   if((++index_array_of_one_value) == NUMBER_POINT)
@@ -275,6 +293,10 @@ void SPI_ADC_IRQHandler(void)
       {
         ustuvannja_meas[k] = ustuvannja[k];
       }
+      for(unsigned int k = 0; k < NUMBER_INPUTs_ADCs; k++) 
+      {
+        ustuvannja_shift_meas[k] = ustuvannja_shift[k];
+      }
       
       //Помічаємо, що зміни прийняті системою захистів
       changed_ustuvannja = CHANGED_ETAP_NONE;
@@ -310,7 +332,8 @@ void SPI_ADC_IRQHandler(void)
         _x1 = ADCs_data_raw[I_I1].tick;
         _y1 = ADCs_data_raw[I_I1].value;
         
-        _y2 = output_adc[C_I1_1].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_I1_1].value - ustuvannja_shift_meas[C_I1_1] - gnd_adc_tmp - vref_adc_tmp;
+        if (ustuvannja_measure_shift >= 0) ustuvannja_shift_work[C_I1_1] += _y2;
         if (abs(_y2) > 87)
         { 
           _x2 = output_adc[C_I1_1].tick;
@@ -318,7 +341,8 @@ void SPI_ADC_IRQHandler(void)
         }
         else
         {
-          _y2 = output_adc[C_I1_16].value - gnd_adc_tmp - vref_adc_tmp;
+          _y2 = output_adc[C_I1_16].value - ustuvannja_shift_meas[C_I1_16] - gnd_adc_tmp - vref_adc_tmp;
+          if (ustuvannja_measure_shift >= 0) ustuvannja_shift_work[C_I1_16] += _y2;
 
           _x2 = output_adc[C_I1_16].tick;
           _y2 = (int)((-_y2)*ustuvannja_meas[I_I1])>>(USTUVANNJA_VAGA);
@@ -358,7 +382,8 @@ void SPI_ADC_IRQHandler(void)
         _x1 = ADCs_data_raw[I_I2].tick;
         _y1 = ADCs_data_raw[I_I2].value;
         
-        _y2 = output_adc[C_I2_1].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_I2_1].value - ustuvannja_shift_meas[C_I2_1] - gnd_adc_tmp - vref_adc_tmp;
+        if (ustuvannja_measure_shift >= 0) ustuvannja_shift_work[C_I2_1] += _y2;
         if (abs(_y2) > 87)
         {
           _x2 = output_adc[C_I2_1].tick;
@@ -366,7 +391,8 @@ void SPI_ADC_IRQHandler(void)
         }
         else
         {
-          _y2 = output_adc[C_I2_16].value - gnd_adc_tmp - vref_adc_tmp;
+          _y2 = output_adc[C_I2_16].value - ustuvannja_shift_meas[C_I2_16] - gnd_adc_tmp - vref_adc_tmp;
+          if (ustuvannja_measure_shift >= 0) ustuvannja_shift_work[C_I2_16] += _y2;
 
           _x2 = output_adc[C_I2_16].tick;
           _y2 = (int)((-_y2)*ustuvannja_meas[I_I2])>>(USTUVANNJA_VAGA);
@@ -406,7 +432,8 @@ void SPI_ADC_IRQHandler(void)
         _x1 = ADCs_data_raw[I_I3].tick;
         _y1 = ADCs_data_raw[I_I3].value;
         
-        _y2 = output_adc[C_I3_1].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_I3_1].value - ustuvannja_shift_meas[C_I3_1] - gnd_adc_tmp - vref_adc_tmp;
+        if (ustuvannja_measure_shift >= 0) ustuvannja_shift_work[C_I3_1] += _y2;
         if (abs(_y2) > 87)
         {
           _x2 = output_adc[C_I3_1].tick;
@@ -414,7 +441,8 @@ void SPI_ADC_IRQHandler(void)
         }
         else
         {
-          _y2 = output_adc[C_I3_16].value - gnd_adc_tmp - vref_adc_tmp;
+          _y2 = output_adc[C_I3_16].value - ustuvannja_shift_meas[C_I3_16] - gnd_adc_tmp - vref_adc_tmp;
+          if (ustuvannja_measure_shift >= 0) ustuvannja_shift_work[C_I3_16] += _y2;
 
           _x2 = output_adc[C_I3_16].tick;
           _y2 = (int)((-_y2)*ustuvannja_meas[I_I3])>>(USTUVANNJA_VAGA);
@@ -454,19 +482,11 @@ void SPI_ADC_IRQHandler(void)
         _x1 = ADCs_data_raw[I_U].tick;
         _y1 = ADCs_data_raw[I_U].value;
         
-        _y2 = output_adc[C_U_1].value - gnd_adc_tmp - vref_adc_tmp;
-        if (abs(_y2) > 87)
-        {
-          _x2 = output_adc[C_U_1].tick;
-          _y2 = (int)(_y2*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA - 4);
-        }
-        else
-        {
-          _y2 = output_adc[C_U_16].value - gnd_adc_tmp - vref_adc_tmp;
+        _y2 = output_adc[C_U_1].value - ustuvannja_shift_meas[C_U_1] - gnd_adc_tmp - vref_adc_tmp;
+        if (ustuvannja_measure_shift >= 0) ustuvannja_shift_work[C_U_1] += _y2;
 
-          _x2 = output_adc[C_U_16].tick;
-          _y2 = (int)((-_y2)*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA);
-        }
+        _x2 = output_adc[C_U_1].tick;
+        _y2 = (int)(_y2*ustuvannja_meas[I_U])>>(USTUVANNJA_VAGA);
       
         if (_x2 > _x1) _DX = _x2 - _x1;
         else
@@ -502,6 +522,36 @@ void SPI_ADC_IRQHandler(void)
         total_error_sw_fixed(58);
       }
       index_array_of_sqr_current_data = index_array_of_sqr_current_data_tmp;
+      
+      if (ustuvannja_measure_shift >= 0)
+      {
+        //Іде інтегрування зміщення за 1 с
+        if (++ustuvannja_measure_shift >= (NUMBER_POINT*MAIN_FREQUENCY))
+        {
+          //Завершилося інтегрування зміщення за 1 с
+          
+          //Перевіряємо, чи не іде процес амплітудного юстування (хоч такого робити не можна!)
+          uint32_t changed_etap_execution = (changed_ustuvannja == CHANGED_ETAP_EXECUTION);
+          if (changed_etap_execution == false ) changed_ustuvannja = CHANGED_ETAP_EXECUTION;
+          //Коректуємо зміщення у масиві юстування зміщень
+          for (size_t i = 0; i < NUMBER_INPUTs_ADCs; i++)
+          {
+            ustuvannja_shift[i] += ustuvannja_shift_work[i]/ustuvannja_measure_shift;
+            ustuvannja_shift_work[i] = 0;
+          }
+
+          //Перевіряємо, чи не іде процес амплітудного юстування (хоч такого робити не можна!)
+          if (changed_etap_execution == false) 
+          {
+            //Фіксуємо зміну юуствання
+            changed_ustuvannja = CHANGED_ETAP_ENDED;
+            //Запис юстування
+            _SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT);
+          }
+          //Виводимо повідомлення, що процес визначення зміщення завершився
+          ustuvannja_measure_shift = -1;
+        }
+      }
 
       status_adc_read_work &= (unsigned int)(~DATA_VAL_READ);
 

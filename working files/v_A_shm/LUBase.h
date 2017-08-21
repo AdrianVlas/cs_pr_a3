@@ -29,7 +29,10 @@ LU_OP_BGS,
 LU_OP_D_TRG__4_2,
 LU_OP_F_KEY,
 LU_OP_TU,
-LU_OP_TS
+LU_OP_TS,
+LU_OP_LOG,
+LU_OP_STNG_FIX
+
 };
  void AND_Op    (void *pObj);
  void OR__Op    (void *pObj);
@@ -66,6 +69,13 @@ typedef long(*logicfnptr1)(void*pIn,void *pOut);//-  pointer to a exec function
 //class CLUBase;
 typedef void(*logicfnptr)(void *pObj);//-  pointer to a exec function
 
+typedef  union{
+        char ch;
+        short sh;
+        long l;
+    } UNNCLUBaseAuxInfo;
+
+
 class BaseInPoint;
 class CLUBase
 {
@@ -75,6 +85,8 @@ public:
 	CLUBase(CLUBase&);
 	CLUBase(char chM,char chI,char chNumIn,char chNumOut);
 	CLUBase& operator= (const CLUBase&);
+//    static  char chCBL_II;
+    static UNNCLUBaseAuxInfo m_AuxInfo;
 	void* pIn;//List Addr//BaseInPoint* pIn;//List Addr
 //	struct ch{
 		char chMaxIteratoin;

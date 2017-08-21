@@ -33,6 +33,8 @@
 #include "MALed.hpp"
 #include "RunErLed.hpp"
 #include "LUTestLed.h"
+#include "LULog.hpp"
+#include "FixblWrp.hpp"
 //#include "../inc/variables_external.h"
 //#include "../inc/libraries.h"
 void DiOp(void *pObj);
@@ -103,6 +105,29 @@ short *parIdxLUAreaListElem;
             shCounterInitCLUDout++;
             
     } 
+//////////////////////////////////////////////////////////////////  
+    lAmtProcessObj = (static_cast<__CONFIG* >(p_current_config_prt))-> n_group_alarm;
+    shCounterInitCLUDout = 0;
+    CBGSig::chAlreadyCalculated = 0;
+    i = parIdxLUAreaListElem[LU_BGS-1];
+    while (shCounterInitCLUDout < lAmtProcessObj ) {
+            j = i + shCounterInitCLUDout;
+            pv = (pLUAreaListElem[j]).pvLU;
+            BGSig_Op(pv);
+            shCounterInitCLUDout++;
+            
+    }
+CBGSig::chAlreadyCalculated = 1;    
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////  
+    i = parIdxLUAreaListElem[LU_LOG-1];
+    // j = i + shCounterInitCLUDout;
+    pv = (pLUAreaListElem[i]).pvLU;
+    Log_Op(pv);  
+/*
+
+*/ 
 //////////////////////////////////////////////////////////////////        
 //    lAmtProcessObj = (static_cast<__CONFIG* >(p_current_config_prt))-> n_tu;
 //    long lIdxCounter = 0;
@@ -135,6 +160,7 @@ pv = (pLUAreaListElem[lIdxLU]).pvLU;
 //                    }
 //    }
 //#pragma inline
+
 void Shematic::LUIterator(long AmountCalcLU, long lIdxLU){
 register void* pv;
 register LUAreaListElem*pLUAreaListElem;
@@ -143,6 +169,7 @@ pLUAreaListElem = static_cast<LUAreaListElem*>(this->pLUAreaList);
 //parIdxLUAreaListElem = arIdxLUAreaListElem;
     while (AmountCalcLU--) {
         pv = (pLUAreaListElem[lIdxLU++]).pvLU;
+      #pragma calls=  FBWrp_Op             
         (static_cast<CLUBase*>( pv))->LogicFunc( pv);
     }
 }
@@ -207,6 +234,8 @@ CLUFKey *pCLUFKey = static_cast<CLUFKey*>(pObj);
 i = static_cast<char*>(pCLUFKey->pIn)[0];
     if(i!= 0)
     pCLUFKey->chKeyPres = i;
+ //   if(i == 0)
+ //   i = pCLUFKey->chKeyPres;
     pCLUFKey->arrOut[0] = i;    
 }
 
@@ -327,14 +356,21 @@ CLUTrig& refCLUDTrg = *(static_cast<CLUTrig *> (pObj));
     }
 refCLUDTrg.chIn_C = *(refCLUDTrg.arrPchIn[DTRG__4_2_IN_NAME__C_SLASH - 1]);    
 }
+short shBkptIdAlt;
 void AltOp(void *pObj){
     register long i, j;
 
     CPulseAlternator& rPulseAlt = *(static_cast<CPulseAlternator*> (pObj));
     j = rPulseAlt.arrOut[0];
+        if(shBkptIdAlt == rPulseAlt.shShemasOrdNumStng)
+   asm(
+       "bkpt 1"
+       );
     i = rPulseAlt.TAlt(j);
 	
-rPulseAlt.arrOut[0] = static_cast<char>(i);    
+rPulseAlt.arrOut[0] = static_cast<char>(i);
+    register __LN_MEANDER *pLN_MEANDER = static_cast<__LN_MEANDER*>(rPulseAlt.pvCfgLN);
+    pLN_MEANDER->active_state[( MEANDER_OUT/8) ] = i<< MEANDER_OUT;    
 }
 #pragma inline=forced
 void TuOp(void *pObj){

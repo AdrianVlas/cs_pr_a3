@@ -34,6 +34,7 @@ i = pCLUFKey->shShemasOrdNumStng;
     i = static_cast<char*>(pCLUFKey->pIn)[0];
     if(i!= 0)
     pCLUFKey->chKeyPres = i;
+
     pCLUFKey->arrOut[0] = i;
     //static_cast<char*>(pCLUFKey->pIn)[0];
 }
