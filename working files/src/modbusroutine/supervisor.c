@@ -28,6 +28,7 @@ int globalcntBit  = 0;//к-во бит
 int globalcntReg  = 0;//к-во регистров 
 int globalbeginAdrReg  = 0;//адрес нач регистра 
 int globalbeginAdrBit  = 0;//адрес нач бит 
+int upravlFlag=0;//флаг пакетов управления 1-есть управление
 
 /**************************************/
 //разбор входного пакета USB
@@ -35,6 +36,7 @@ int globalbeginAdrBit  = 0;//адрес нач бит
 void inputPacketParserUSB(void)
 {
  pointInterface=0;//метка интерфейса 0-USB 1-RS485
+ upravlFlag=0;//флаг пакетов управления 1-есть управление
  received_count = &usb_received_count;
 
  inputPacket = usb_received;
@@ -46,7 +48,7 @@ void inputPacketParserUSB(void)
   if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2)) return;
   if ((CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) return;
   if(inputPacket[0]!=settings_fix_prt.address) return;
-
+/*
  switch(inputPacket[1]) {//номер ф-ции
   case 1:
   case 2:
@@ -57,11 +59,13 @@ void inputPacketParserUSB(void)
   case 6:
   case 15:
   case 16:
+
+         //upravlFlag=0;//флаг пакетов управления 1-есть управление
 	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS) ||//) return;
 	    config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) { //return;
                  sizeOutputPacket=Error_modbus(inputPacket[0], // address,
                               0x80|inputPacket[1],//function,
-                              0x55,//error,
+                              ERROR_SLAVE_DEVICE_BUSY,//error,
                               outputPacket);//output_data
   CRC_sum = 0xffff;
   for (int index = 0; index < sizeOutputPacket; index++) CRC_sum = AddCRC((*(outputPacket + index)) ,CRC_sum);
@@ -74,10 +78,11 @@ void inputPacketParserUSB(void)
               data_usb_transmiting = true;
               return;
             }//if
+
   break;
   default:return;
  }//switch
-
+*/
 
  if(inputPacketParser()==0) return;
 
@@ -108,6 +113,7 @@ void inputPacketParserUSB(void)
 void inputPacketParserRS485(void)
 {
  pointInterface=1;//метка интерфейса 0-USB 1-RS485
+ upravlFlag=0;//флаг пакетов управления 1-есть управление
 inputPacket = RxBuffer_RS485;
 
 received_count = &RxBuffer_RS485_count;
@@ -119,7 +125,7 @@ received_count = &RxBuffer_RS485_count;
   if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2) ||//) return;
      (CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) {superrestart_monitoring_RS485();return;}
   if(inputPacket[0]!=settings_fix_prt.address) {superrestart_monitoring_RS485();return;}
-
+/*
  switch(inputPacket[1]) {//номер ф-ции
   case 1:
   case 2:
@@ -132,10 +138,10 @@ received_count = &RxBuffer_RS485_count;
   case 15:
   case 16:
 	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS) ||//) return;
-	    config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) { //return;
+	    config_settings_modified&MASKA_FOR_BIT(BIT_USB_LOCKS)) { //return;
              sizeOutputPacket=Error_modbus(inputPacket[0], // address,
                               0x80|inputPacket[1],//function,
-                              0x55,//error,
+                              ERROR_SLAVE_DEVICE_BUSY,//error,
                               outputPacket);//output_data
   CRC_sum = 0xffff;
   for (int index = 0; index < sizeOutputPacket; index++) CRC_sum = AddCRC((*(outputPacket + index)) ,CRC_sum);
@@ -151,7 +157,7 @@ received_count = &RxBuffer_RS485_count;
   break;
   default:{superrestart_monitoring_RS485();return;}
  }//switch
-
+*/
 // received_count = &usb_received_count;
 // outputPacket = outputPacket_RS485;
  if(inputPacketParser()==0) {superrestart_monitoring_RS485();return;}
@@ -176,32 +182,16 @@ TxBuffer_RS485_count = sizeOutputPacket;
 for (int i = 0; i < TxBuffer_RS485_count; i++) TxBuffer_RS485[i] = outputPacket[i];
 start_transmint_data_via_RS_485(TxBuffer_RS485_count);
 
-// usb_transmiting_count = sizeOutputPacket;
-// for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
-// data_usb_transmiting = true;
 }//inputPacketParserRS485(void)
-//void superrestart_monitoring_RS485() {
- //для продовження приймати нові пакети
-//restart_monitoring_RS485(); //для продовження приймати нові пакети
-//}//superrestart_monitoring_RS485
 
 /**************************************/
 //разбор входного пакета
 /**************************************/
 int inputPacketParser(void)
 {
-/*
-  //Перевірка контрольної суми
-  unsigned short CRC_sum;
-  CRC_sum = 0xffff;
-  for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
-  if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2)) return 0;
-  if ((CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) return 0;
-*/
+
   int adrUnit = inputPacket[0];
   int numFunc = inputPacket[1];//номер ф-ции
-  //Перевірка address
-//  if(adrUnit!=settings_fix.address) return 0;
 
   sizeOutputPacket = 0;
   indexTW = 0;//индекс буфера записи
@@ -243,8 +233,8 @@ int inputPacketParser(void)
         break;
         default: {
           sizeOutputPacket = Error_modbus(adrUnit, // address,
-                              numFunc|0x80,//function,
-                              3,//error,
+                              numFunc,//function,
+                              ERROR_ILLEGAL_DATA_VALUE,//error,
                               outputPacket);//output_data
           return 1;
         }
@@ -287,7 +277,13 @@ int inputPacketParser(void)
       sizeOutputPacket = outputFunc16PacketEncoder(adrUnit, globalbeginAdrReg, globalcntReg);
     }
     break;
-    default: return 0;
+    default: {
+          sizeOutputPacket = Error_modbus(adrUnit, // address,
+                              numFunc,//function,
+                              ERROR_ILLEGAL_FUNCTION,//error,
+                              outputPacket);//output_data
+          return 1;
+        }
     }//switch
 
   unsigned short CRC_sum = 0xffff;
@@ -334,18 +330,16 @@ int outputFunc16PacketEncoder(int adrUnit, int adrReg, int cntReg)
           break;
         case MARKER_ERRORPERIMETR:
           result = -2;
-//       break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_ADDRESS,//error,
                               outputPacket);//output_data
 
         case MARKER_ERRORDIAPAZON:
           result = -3;
-//       break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_VALUE,//error,
                               outputPacket);//output_data
         default:
         {
@@ -357,10 +351,11 @@ int outputFunc16PacketEncoder(int adrUnit, int adrReg, int cntReg)
   if(flag)//незначащие пакеты недопустимы
     return Error_modbus(adrUnit, // address,
                         outputPacket[1],//function,
-                        10,//error,
+                        ERROR_ILLEGAL_DATA_ADDRESS,//error,
                         outputPacket);//output_data
 
-  superPostWriteAction();//action после записи
+  int upravlReturn = superPostWriteAction();//action после записи
+  if(upravlReturn) return upravlReturn;//сформировать пакет ошибки
 
   int idxOutputPacket = 0;
 //adrUnit
@@ -402,18 +397,16 @@ int outputFunc15PacketEncoder(int adrUnit, int adrBit, int cntBit)
           break;
         case MARKER_ERRORPERIMETR:
           result = -2;
-//       break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_ADDRESS,//error,
                               outputPacket);//output_data
 
         case MARKER_ERRORDIAPAZON:
           result = -3;
-//       break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_VALUE,//error,
                               outputPacket);//output_data
         default:
         {
@@ -425,10 +418,11 @@ int outputFunc15PacketEncoder(int adrUnit, int adrBit, int cntBit)
   if(flag)//незначащие пакеты недопустимы
     return Error_modbus(adrUnit, // address,
                         outputPacket[1],//function,
-                        10,//error,
+                        ERROR_ILLEGAL_DATA_ADDRESS,//error,
                         outputPacket);//output_data
 
-  superPostWriteAction();//action после записи
+  int upravlReturn = superPostWriteAction();//action после записи
+  if(upravlReturn) return upravlReturn;//сформировать пакет ошибки
 
   int idxOutputPacket = 0;
 //adrUnit
@@ -460,29 +454,26 @@ int outputFunc6PacketEncoder(int adrUnit, int adrReg, int dataReg)
     {
     case MARKER_OUTPERIMETR:
       result = -1;
-//      break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_ADDRESS,//error,
                               outputPacket);//output_data
     case MARKER_ERRORPERIMETR:
       result = -2;
-//      break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_ADDRESS,//error,
                               outputPacket);//output_data
     case MARKER_ERRORDIAPAZON:
       result = -3;
-//      break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_VALUE,//error,
                               outputPacket);//output_data
     }//switch
-  //qDebug()<<"result= "<<result;
 
-  superPostWriteAction();//action после записи
+  int upravlReturn = superPostWriteAction();//action после записи
+  if(upravlReturn) return upravlReturn;//сформировать пакет ошибки
 
   int idxOutputPacket = 0;
 //adrUnit
@@ -514,28 +505,26 @@ int outputFunc5PacketEncoder(int adrUnit, int adrBit, int dataBit)
     {
     case MARKER_OUTPERIMETR:
       result = -1;
-//      break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_ADDRESS,//error,
                               outputPacket);//output_data
     case MARKER_ERRORPERIMETR:
       result = -2;
-//      break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_ADDRESS,//error,
                               outputPacket);//output_data
     case MARKER_ERRORDIAPAZON:
       result = -3;
-//      break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_VALUE,//error,
                               outputPacket);//output_data
     }//switch
 
-  superPostWriteAction();//action после записи
+  int upravlReturn = superPostWriteAction();//action после записи
+  if(upravlReturn) return upravlReturn;//сформировать пакет ошибки
 
   int idxOutputPacket = 0;
 //adrUnit
@@ -580,7 +569,7 @@ int outputFunc3PacketEncoder(int adrUnit, int adrReg, int cntReg)
 //       break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_ADDRESS,//error,
                               outputPacket);//output_data
         default:
         {
@@ -593,7 +582,7 @@ int outputFunc3PacketEncoder(int adrUnit, int adrReg, int cntReg)
   if(flag)//незначащие пакеты недопустимы
     return Error_modbus(adrUnit, // address,
                         outputPacket[1],//function,
-                        10,//error,
+                        ERROR_ILLEGAL_DATA_ADDRESS,//error,
                         outputPacket);//output_data
   superPostReadAction();//action после чтения
 
@@ -643,7 +632,7 @@ int outputFunc1PacketEncoder(int adrUnit, int adrBit, int cntBit)
 //          break;
           return Error_modbus(adrUnit, // address,
                               outputPacket[1],//function,
-                              10,//error,
+                              ERROR_ILLEGAL_DATA_ADDRESS,//error,
                               outputPacket);//output_data
         default:
         {
@@ -656,7 +645,7 @@ int outputFunc1PacketEncoder(int adrUnit, int adrBit, int cntBit)
   if(flag)//незначащие пакеты недопустимы
     return Error_modbus(adrUnit, // address,
                         outputPacket[1],//function,
-                        10,//error,
+                        ERROR_ILLEGAL_DATA_ADDRESS,//error,
                         outputPacket);//output_data
   superPostReadAction();//action после чтения
 
@@ -734,13 +723,38 @@ void superPreWriteAction(void)
 /**************************************/
 //action после записи
 /**************************************/
-void superPostWriteAction(void)
+int superPostWriteAction(void)
 {
+//сформировать пакет ошибки
+         if(upravlFlag==0) {//флаг пакетов управления 1-есть управление
+switch(pointInterface) {//метка интерфейса 0-USB 1-RS485
+ case 0://USB
+	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS) ||
+	    config_settings_modified&MASKA_FOR_BIT(BIT_RS485_LOCKS)) { 
+                 return Error_modbus(inputPacket[0], // address,
+                              inputPacket[1],//function,
+                              ERROR_SLAVE_DEVICE_BUSY,//error,
+                              outputPacket);//output_data
+          }//if
+       break;
+ case 1:
+	 if(config_settings_modified&MASKA_FOR_BIT(BIT_MENU_LOCKS) ||
+	    config_settings_modified&MASKA_FOR_BIT(BIT_USB_LOCKS)) { 
+                  return Error_modbus(inputPacket[0], // address,
+                              inputPacket[1],//function,
+                              ERROR_SLAVE_DEVICE_BUSY,//error,
+                              outputPacket);//output_data
+          }//if
+       break;
+ }//switch
+}//if
+
   int i=0;
   for(; i<TOTAL_COMPONENT; i++)
     {
       config_array[i].postWriteAction();
     }//for
+  return 0;
 }//superPostWriteAction
 
 /**************************************/
@@ -776,7 +790,6 @@ int superWriterRegister(int adrReg, int dataReg)
       if(result==MARKER_ERRORDIAPAZON) break;
     }//for
   if(i==TOTAL_COMPONENT) result = MARKER_OUTPERIMETR;
-  //qDebug()<<"("<<i<<")";
   return result;
 }//superWriterRegister(int adrReg, int dataReg)
 
@@ -915,8 +928,6 @@ if(prm[i]) {
  tmpi++;
 }//if
 }//for
-//qDebug()<<"finderSpace1= "<<tmparr[0]<<" "<<tmparr[1]<<" "<<tmparr[2]<<" "<<tmparr[3]<<" "<<tmparr[4]<<" "<<tmparr[5]<<" "<<tmparr[6]<<" "<<tmparr[7];
-//qDebug()<<"finderSpace2= "<<param[0]<<" "<<param[1]<<" "<<param[2]<<" "<<param[3]<<" "<<param[4]<<" "<<param[5]<<" "<<param[6]<<" "<<param[7];
 
 if(tmpi) {
 //сортировка
@@ -928,12 +939,6 @@ for(int i=1; i<size; i++) {
  prm[i] = dataMin;
 }//for
 }//if(tmpi)
-
-//qDebug()<<" "<<tmparr[0]<<" "<<tmparr[1]<<" "<<tmparr[2]<<" "<<tmparr[3]<<" "<<tmparr[4]<<" "<<tmparr[5]<<" "<<tmparr[6]<<" "<<tmparr[7];
-
-//qDebug()<<" ";
-//qDebug()<<" ";
-//qDebug()<<" "<<param[0]<<" "<<param[1]<<" "<<param[2]<<" "<<param[3]<<" "<<param[4]<<" "<<param[5]<<" "<<param[6]<<" "<<param[7];
 }//superSortParam(int size, int *prm)
 
 int superControlParam(int param) 

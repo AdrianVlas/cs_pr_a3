@@ -155,6 +155,7 @@ int getCommonSmallModbusBit(int adrBit)
 }//getDVModbusRegister(int adrReg)
 int setCommonSmallModbusRegister(int adrReg, int dataReg)
 {
+  extern int upravlFlag;//флаг пакетов управления 1-есть управление
   //записать содержимое регистра
   if(privateCommonSmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
 
@@ -166,6 +167,7 @@ int setCommonSmallModbusRegister(int adrReg, int dataReg)
     case 0:
       return MARKER_ERRORPERIMETR;
     case 1:
+      upravlFlag=1;//флаг пакетов управления 1-есть управление
    break; 
    default: return MARKER_OUTPERIMETR;
     }//switch
@@ -173,6 +175,7 @@ int setCommonSmallModbusRegister(int adrReg, int dataReg)
 }//getDVModbusRegister(int adrReg)
 int setCommonSmallModbusBit(int adrBit, int dataBit)
 {
+  extern int upravlFlag;//флаг пакетов управления 1-есть управление
   //записать содержимое bit
   if(privateCommonSmallGetBit2(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
 
@@ -182,10 +185,10 @@ int setCommonSmallModbusBit(int adrBit, int dataBit)
   switch(adrBit-BEGIN_ADR_BIT)
     {
     case 16:
-      //    qDebug()<<"16="<<dataBit;
+      upravlFlag=1;//флаг пакетов управления 1-есть управление
       return dataBit;
     case 17:
-//      qDebug()<<"17="<<dataBit;
+      upravlFlag=1;//флаг пакетов управления 1-есть управление
       return dataBit;
     }//switch
   return MARKER_ERRORPERIMETR;

@@ -10,7 +10,7 @@ int  superWriterBit(int, int);
 void superPreReadAction(void);
 void superPostReadAction(void);
 void superPreWriteAction(void);
-void superPostWriteAction(void);
+int  superPostWriteAction(void);
 void superSetOperativMarker(COMPONENT_OBJ *component, int adrReg);
 void superSetTempWriteArray(int dataReg);
 int  superFindTempWriteArrayOffset(int adr);

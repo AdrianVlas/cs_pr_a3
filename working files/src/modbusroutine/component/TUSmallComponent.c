@@ -97,6 +97,7 @@ int getTUSmallModbusBit(int x)
 }//getTUSmallModbusBit(int adrBit)
 int setTUSmallModbusRegister(int adrReg, int dataReg)
 {
+  extern  int upravlFlag;//флаг пакетов управления 1-есть управление
   if(privateTUSmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(tusmallcomponent->isActiveActualData)  setTUSmallCountObject(); //записать к-во обектов
   tusmallcomponent->isActiveActualData = 0;
@@ -104,11 +105,13 @@ int setTUSmallModbusRegister(int adrReg, int dataReg)
   
   superSetOperativMarker(tusmallcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
+  upravlFlag=1;//флаг пакетов управления 1-есть управление
 
   return 0;
 }//getDVModbusRegister(int adrReg)
 int setTUSmallModbusBit(int adrBit, int dataBit)
 {
+  extern int upravlFlag;//флаг пакетов управления 1-есть управление
   if(privateTUSmallGetBit2(adrBit)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(tusmallcomponent->isActiveActualData)  setTUSmallCountObject(); //записать к-во обектов
   tusmallcomponent->isActiveActualData = 0;
@@ -116,6 +119,7 @@ int setTUSmallModbusBit(int adrBit, int dataBit)
   
   superSetOperativMarker(tusmallcomponent, adrBit);
   superSetTempWriteArray(dataBit);//записать в буфер
+  upravlFlag=1;//флаг пакетов управления 1-есть управление
 
   return 0;
 }//getDVModbusRegister(int adrReg)

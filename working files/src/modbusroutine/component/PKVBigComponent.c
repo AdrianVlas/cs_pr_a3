@@ -441,8 +441,8 @@ int postPKVBigWriteAction(void) {
     break;
     case 4://
     //tempReadArray[i] = 0;
-    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-    restart_timeout_idle_new_settings = true;
+//    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+//    restart_timeout_idle_new_settings = true;
     break;
     case 5://Скорость порта связи
     arr1->baud_RS485 = arr->baud_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
