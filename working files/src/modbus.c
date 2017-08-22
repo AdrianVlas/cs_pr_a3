@@ -2465,7 +2465,7 @@ inline unsigned short int  AddCRC(unsigned char inpbyte, unsigned short int oldC
 /***********************************************************************************/
 //Подача команди нва передачу даних через інтерфейс RS-485
 /***********************************************************************************/
-inline void start_transmint_data_via_RS_485(unsigned int count)
+void start_transmint_data_via_RS_485(unsigned int count)
 {
   //Перевіряємо, чи можна передавати дані
   unsigned int current_time_tim4 = TIM4->CNT;

@@ -96,6 +96,10 @@ int getMEBigModbusRegister(int adrReg)
      return (arr[idxSubObj] >> 16) & 0x7fff;//
   }//switch
 */
+//  __LOG_INPUT *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS  )) == 0 ) ? (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1 : ((__LOG_INPUT*)sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+//  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+//               arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1 : ((__LOG_INPUT*)sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getMEBigModbusBit(int x)

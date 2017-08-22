@@ -14,7 +14,7 @@ int outputFunc6PacketEncoder(int adrUnit, int adrReg, int dataReg);
 int outputFunc5PacketEncoder(int adrUnit, int adrBit, int dataBit);
 int outputFunc3PacketEncoder(int adrUnit, int adrReg, int cntReg);
 int outputFunc1PacketEncoder(int adrUnit, int adrReg, int cntReg);
-void superrestart_monitoring_RS485(void);
+//void restart_monitoring_RS485(void);
 
 unsigned char  *outputPacket;
 unsigned char  outputPacket_USB[300];
@@ -123,8 +123,8 @@ received_count = &RxBuffer_RS485_count;
   CRC_sum = 0xffff;
   for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
   if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2) ||//) return;
-     (CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) {superrestart_monitoring_RS485();return;}
-  if(inputPacket[0]!=settings_fix_prt.address) {superrestart_monitoring_RS485();return;}
+     (CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) {restart_monitoring_RS485();return;}
+  if(inputPacket[0]!=settings_fix_prt.address) {restart_monitoring_RS485();return;}
 /*
  switch(inputPacket[1]) {//номер ф-ции
   case 1:
@@ -155,12 +155,12 @@ received_count = &RxBuffer_RS485_count;
              return;
             }//if
   break;
-  default:{superrestart_monitoring_RS485();return;}
+  default:{restart_monitoring_RS485();return;}
  }//switch
 */
 // received_count = &usb_received_count;
 // outputPacket = outputPacket_RS485;
- if(inputPacketParser()==0) {superrestart_monitoring_RS485();return;}
+ if(inputPacketParser()==0) {restart_monitoring_RS485();return;}
 
  switch(inputPacket[1]) {//номер ф-ции
   case 1:
@@ -181,6 +181,8 @@ received_count = &RxBuffer_RS485_count;
 TxBuffer_RS485_count = sizeOutputPacket;
 for (int i = 0; i < TxBuffer_RS485_count; i++) TxBuffer_RS485[i] = outputPacket[i];
 start_transmint_data_via_RS_485(TxBuffer_RS485_count);
+
+//restart_device = true;
 
 }//inputPacketParserRS485(void)
 
