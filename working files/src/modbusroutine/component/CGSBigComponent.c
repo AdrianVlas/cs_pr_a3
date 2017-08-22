@@ -138,7 +138,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 
   case 3:
    //Время tуст ГС item
-   return arr->set_delay[GROUP_ALARM_SET_DELAY_DELAY];
+   return arr->set_delay[GROUP_ALARM_SET_DELAY_DELAY]/100;
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
@@ -232,7 +232,7 @@ int postCGSBigWriteAction(void) {
     }
    break; 
    case 3://Время tуст ГС item
-    arr1[idxSubObj].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = arr[idxSubObj].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1[idxSubObj].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = arr[idxSubObj].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = (tempWriteArray[offsetTempWriteArray+i])*100;
    break; 
  }//switch
   }//for
