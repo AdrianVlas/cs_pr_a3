@@ -164,6 +164,10 @@ inline void periodical_operations(void)
 
     //Обробляємо запит
 //    modbus_rountines(RS485_RECUEST);
+    inputPacketParserRS485();
+    
+    //Виставляємо, що кількість прийнятих байт рівна 0
+    RxBuffer_RS485_count = 0;
   }
   else if (make_reconfiguration_RS_485 != 0)
   {
