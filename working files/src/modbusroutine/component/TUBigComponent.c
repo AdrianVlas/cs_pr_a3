@@ -46,28 +46,6 @@ void constructorTUBigComponent(COMPONENT_OBJ *tubigcomp)
   tubigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-/*
-void loadTUBigActualData(void) {
-int getTUmallModbusBeginAdrRegister(void);
- setTUBigCountObject(); //записать к-во обектов
-
-  //ActualData
-   __LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
-   for(int item=0; item<tubigcomponent->countObject; item++) {
-
-   //Block ТУ 0  item
-   int value = arr[item].settings.param[TU_BLOCK] & 0xffff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   value = (arr[item].settings.param[TU_BLOCK] >> 16) & 0x7fff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
-
-   //Адрес ТУ 0  item
-   value = getTUmallModbusBeginAdrRegister() + item;
-   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   }//for
-}//loadActualData() 
-*/
-
 int getTUBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
@@ -78,22 +56,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateTUBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tubigcomponent, adrReg);
-/*
-   __LN_TU *arr = (__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
-  int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-   case 0:
-   //Block ТУ 0  item
-    return arr[idxSubObj].settings.param[TU_BLOCK] & 0xffff;//
-   case 1:
-    return (arr[idxSubObj].settings.param[TU_BLOCK] >> 16) & 0x7fff;//
 
-   case 2:
-   //Адрес ТУ 0  item
-    return getTUmallModbusBeginAdrRegister() + idxSubObj;
-  }//switch
-*/
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   __settings_for_TU *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_TU*)(spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TU*)(sca_of_p[ID_FB_TU - _ID_FB_FIRST_VAR])) + idxSubObj);
@@ -121,6 +84,8 @@ int getTUBigModbusBit(int x)
 }//getDOUTBigModbusRegister(int adrReg)
 int setTUBigModbusRegister(int adrReg, int dataReg)
 {
+extern int upravlSetting;//флаг Setting
+extern int upravlSchematic;//флаг Shematic
   //записать содержимое регистра
   if(privateTUBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(tubigcomponent->isActiveActualData) setTUBigCountObject(); 
@@ -132,13 +97,16 @@ int setTUBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
+    upravlSetting = 1;//флаг Setting
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch
@@ -176,6 +144,8 @@ void preTUBigWriteAction(void) {
   tubigcomponent->isActiveActualData = 1;
 }//
 int postTUBigWriteAction(void) {
+extern int upravlSetting;//флаг Setting
+extern int upravlSchematic;//флаг Shematic
 //action после записи
   if(tubigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -199,12 +169,29 @@ int postTUBigWriteAction(void) {
    break; 
 
    case 2://Адрес ТС
-//    arr[idxSubObj].settings.set_delay[ALARM_SET_DELAY_PERIOD] = (tempWriteArray[offsetTempWriteArray+i]);
    break;
 
  }//switch
   }//for
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+tubigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 0://Block ТУ 0
+   case 1://Block ТУ 1
+        if(superValidParam(arr1[idxSubObj].param[TU_BLOCK])) return 2;//контроль валидности
+  break;
+
+ }//switch
+  }//for
+
+  if(upravlSetting)//флаг Setting
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  if(upravlSchematic)//флаг Shematic
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

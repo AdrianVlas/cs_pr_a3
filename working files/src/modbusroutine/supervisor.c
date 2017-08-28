@@ -29,6 +29,9 @@ int globalcntReg  = 0;//к-во регистров
 int globalbeginAdrReg  = 0;//адрес нач регистра 
 int globalbeginAdrBit  = 0;//адрес нач бит 
 int upravlFlag=0;//флаг пакетов управления 1-есть управление
+int upravlSetting=0;//флаг Setting
+int upravlSchematic=0;//флаг Shematic
+int globalResetFlag=0;//флаг глобального сброса
 
 /**************************************/
 //разбор входного пакета USB
@@ -37,6 +40,10 @@ void inputPacketParserUSB(void)
 {
  pointInterface=0;//метка интерфейса 0-USB 1-RS485
  upravlFlag=0;//флаг пакетов управления 1-есть управление
+ upravlSetting=0;//флаг Setting
+ upravlSchematic=0;//флаг Shematic
+ globalResetFlag=0;//флаг глобального сброса
+
  received_count = &usb_received_count;
 
  inputPacket = usb_received;
@@ -105,6 +112,9 @@ void inputPacketParserUSB(void)
  usb_transmiting_count = sizeOutputPacket;
  for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
  data_usb_transmiting = true;
+
+//флаг глобального сброса
+ if(globalResetFlag) restart_device = true;
  
 }//inputPacketParserUSB(void)
 /**************************************/
@@ -113,8 +123,12 @@ void inputPacketParserUSB(void)
 void inputPacketParserRS485(void)
 {
  pointInterface=1;//метка интерфейса 0-USB 1-RS485
+ globalResetFlag=0;//флаг глобального сброса
  upravlFlag=0;//флаг пакетов управления 1-есть управление
-inputPacket = RxBuffer_RS485;
+ upravlSetting=0;//флаг Setting
+ upravlSchematic=0;//флаг Shematic
+
+ inputPacket = RxBuffer_RS485;
 
 received_count = &RxBuffer_RS485_count;
  outputPacket = outputPacket_RS485;
@@ -182,7 +196,8 @@ TxBuffer_RS485_count = sizeOutputPacket;
 for (int i = 0; i < TxBuffer_RS485_count; i++) TxBuffer_RS485[i] = outputPacket[i];
 start_transmint_data_via_RS_485(TxBuffer_RS485_count);
 
-//restart_device = true;
+//флаг глобального сброса
+ if(globalResetFlag) restart_device = true;
 
 }//inputPacketParserRS485(void)
 
@@ -754,7 +769,11 @@ switch(pointInterface) {//метка интерфейса 0-USB 1-RS485
   int i=0;
   for(; i<TOTAL_COMPONENT; i++)
     {
-      config_array[i].postWriteAction();
+      if(config_array[i].postWriteAction()==2)//invalid param
+                  return Error_modbus(inputPacket[0], // address,
+                              inputPacket[1],//function,
+                              ERROR_ILLEGAL_DATA_VALUE,//error,
+                              outputPacket);//output_data
     }//for
   return 0;
 }//superPostWriteAction
@@ -1044,3 +1063,14 @@ switch(id){
 }//switch id
 return 0;
 }//superControlParam_gi
+
+int superValidParam(uint32_t param)
+{
+//контроль валидности параметров
+//параметр не должен быть наполовину нулевым
+ if(param==0) return 0;
+ if(!(param&0x0000FFFF)) return 1;
+ if(!(param&0xFFFF0000)) return 1;
+ return 0;
+}//
+

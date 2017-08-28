@@ -44,19 +44,6 @@ void constructorGIBigComponent(COMPONENT_OBJ *gibigcomp)
 
   gibigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadGIBigActualData(void) {
- setGIBigCountObject(); //записать к-во обектов
-  //ActualData
-   __LN_MEANDER *arr = (__LN_MEANDER*)(spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
-   for(int item=0; item<gibigcomponent->countObject; item++) {
-
-   int value = arr[item].settings.set_delay[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   }//for
-
-}//loadActualData() 
-*/
 
 int getGIBigModbusRegister(int adrReg)
 {
@@ -68,15 +55,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateGIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(gibigcomponent, adrReg);
-/*
-   __LN_MEANDER *arr = (__LN_MEANDER*)(spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
-  int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-   case 0:
-   return arr[idxSubObj].settings.set_delay[0]/100;
- }//switch
-*/
+
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   __settings_for_MEANDER *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_MEANDER*)(spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_MEANDER*)(sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR])) + idxSubObj);

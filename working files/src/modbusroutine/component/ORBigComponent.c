@@ -233,9 +233,24 @@ int postORBigWriteAction(void) {
         arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
   break;
  }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+orbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+  case 1:
+        if(superValidParam(arr1[idxSubObj].param[idx_SIGNALS_IN])) return 2;//контроль валидности
+  break;
+ }//switch
    superSortParam(OR_SIGNALS_IN, &(arr1[idxSubObj].param[0]));//сортировка
    superSortParam(OR_SIGNALS_IN, &(arr[idxSubObj].param[0]));//сортировка
   }//for
+
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   restart_timeout_idle_new_settings = true;
  return 0;

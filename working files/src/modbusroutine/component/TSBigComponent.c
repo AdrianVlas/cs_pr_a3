@@ -45,36 +45,6 @@ void constructorTSBigComponent(COMPONENT_OBJ *tsbigcomp)
 
   tsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadTSBigActualData(void) {
-int getTSmallModbusBeginAdrRegister(void);
-//extern COMPONENT_OBJ *tssmallcomponent;
- setTSBigCountObject(); //записать к-во обектов
-
-  //ActualData
-   __LN_TS *arr = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
-   for(int item=0; item<tsbigcomponent->countObject; item++) {
-
-   //In TC 0  item
-   int value = arr[item].settings.param[TS_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   value = (arr[item].settings.param[TS_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
-   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
-
-   //Block TC 0  item
-   value = arr[item].settings.param[TS_BLOCK] & 0xffff;//LEDIN 0 СД item
-   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   value = (arr[item].settings.param[TS_BLOCK] >> 16) & 0x7fff;//LEDIN 1 СД item
-   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
-
-   //Адрес ТС 0  item
-   value = getTSmallModbusBeginAdrRegister() + item;
-   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-
-   }//for
-}//loadActualData() 
-
-*/
 
 int getTSBigModbusRegister(int adrReg)
 {
@@ -86,28 +56,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateTSBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(tsbigcomponent, adrReg);
-/*
-   __LN_TS *arr = (__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
-  int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-   case 0:
-   //In TC 0  item
-    return arr[idxSubObj].settings.param[TS_LOGIC_INPUT] & 0xffff;//LEDIN 0 СД item
-   case 1:
-    return (arr[idxSubObj].settings.param[TS_LOGIC_INPUT] >> 16) & 0x7fff;//LEDIN 1 СД item
 
-   case 2:
-   //Block TC 0  item
-    return arr[idxSubObj].settings.param[TS_BLOCK] & 0xffff;//LEDIN 0 СД item
-   case 3:
-    return (arr[idxSubObj].settings.param[TS_BLOCK] >> 16) & 0x7fff;//LEDIN 1 СД item
-
-   case 4:
-   //Адрес ТС 0  item
-   return getTSmallModbusBeginAdrRegister() + idxSubObj;
-  }//switch
-*/
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   __settings_for_TS *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_TS*)(spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TS*)(sca_of_p[ID_FB_TS - _ID_FB_FIRST_VAR])) + idxSubObj);
@@ -141,6 +90,8 @@ int getTSBigModbusBit(int x)
 }//getDOUTBigModbusRegister(int adrReg)
 int setTSBigModbusRegister(int adrReg, int dataReg)
 {
+extern int upravlSetting;//флаг Setting
+extern int upravlSchematic;//флаг Shematic
   //записать содержимое регистра
   if(privateTSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(tsbigcomponent->isActiveActualData) setTSBigCountObject(); 
@@ -152,21 +103,26 @@ int setTSBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
     //контроль параметров ранжирования
+    upravlSetting = 1;//флаг Setting
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
@@ -205,6 +161,8 @@ void preTSBigWriteAction(void) {
   tsbigcomponent->isActiveActualData = 1;
 }//
 int postTSBigWriteAction(void) {
+extern int upravlSetting;//флаг Setting
+extern int upravlSchematic;//флаг Shematic
 //action после записи
   if(tsbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -237,12 +195,33 @@ int postTSBigWriteAction(void) {
    break; 
 
    case 4://Адрес ТС
-//    arr[idxSubObj].settings.set_delay[ALARM_SET_DELAY_PERIOD] = (tempWriteArray[offsetTempWriteArray+i]);
    break;
 
  }//switch
   }//for
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+tsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 0://In TC 0
+   case 1://In TC 1
+        if(superValidParam(arr1[idxSubObj].param[TS_LOGIC_INPUT])) return 2;//контроль валидности
+  break;
+
+   case 2://Block TC 0
+   case 3://Block TC 1
+        if(superValidParam(arr1[idxSubObj].param[TS_BLOCK])) return 2;//контроль валидности
+  break;
+ }//switch
+  }//for
+
+  if(upravlSetting)//флаг Setting
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  if(upravlSchematic)//флаг Shematic
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
