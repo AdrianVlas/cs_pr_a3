@@ -62,10 +62,10 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   switch(offset) {//индекс регистра 
    case 0:
    //К-во записей 0
-     return info_rejestrator_log.number_records;
+     return info_rejestrator_log.number_records & 0xffff;
    case 1:
    //К-во записей 1
-    return info_rejestrator_log.number_records;
+    return (info_rejestrator_log.number_records >> 16) & 0x7fff;//
   }//switch
 
   __LOG_INPUT *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS  )) == 0 ) ? (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1 : ((__LOG_INPUT*)sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
@@ -179,11 +179,13 @@ extern int upravlSchematic;//флаг Shematic
   switch(offset) {//индекс регистра 
    case 0:
    //К-во записей 0
-     info_rejestrator_log.number_records = tempWriteArray[offsetTempWriteArray+i];
+     info_rejestrator_log.number_records &= (uint32_t)~0xffff;
+     info_rejestrator_log.number_records |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
      break;
    case 1:
    //К-во записей 1
-     info_rejestrator_log.number_records = tempWriteArray[offsetTempWriteArray+i];
+     info_rejestrator_log.number_records &= (uint32_t)~(0x7fff<<16);
+     info_rejestrator_log.number_records |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
      break;
   }//switch
 

@@ -304,6 +304,16 @@ int outputFunc20PacketEncoder(int adrUnit, int fileNumber, int recordNumber, int
 int bazaRecord = (fileNumber-5)*10000;
 int number_record_of_log = bazaRecord + recordNumber;
 
+if(number_record_of_log>info_rejestrator_log.number_records)
+      return Error_modbus(adrUnit, // address,
+                          outputPacket[1],//function,
+                          2,//error,
+                          outputPacket);//output_data
+
+      switch(pointInterface)  //метка интерфейса 0-USB 1-RS485
+        {
+        case 0: {
+        //USB
 number_record_of_log_into_USB = number_record_of_log;//номер запису для читання;
   _SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT);
 
@@ -323,7 +333,7 @@ number_record_of_log_into_USB = number_record_of_log;//номер запису для читання;
 
       //Робота з Watchdog
       watchdog_routine();
-    }
+    }//while
 
   if ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT )) != 0)
     {
@@ -332,9 +342,49 @@ number_record_of_log_into_USB = number_record_of_log;//номер запису для читання;
       _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT);
       return Error_modbus(adrUnit, // address,
                           outputPacket[1],//function,
-                          10,//error,
+                          2,//error,
                           outputPacket);//output_data
-    }
+    }//if
+    } break;                                                                        
+
+        case 1: {
+        //RS485
+number_record_of_log_into_RS485 = number_record_of_log;//номер запису для читання;
+  _SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT);
+
+  uint32_t delta_time = 0;
+  uint32_t time_start = TIM4->CNT;
+  while (
+    ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )) != 0) &&
+    (delta_time < MAX_TIMEOUT_WAITING_REQUESTED_DATA)
+  )
+    {
+      uint32_t current_time_tim4 = TIM4->CNT;
+
+      if (current_time_tim4 >= time_start)
+        delta_time = current_time_tim4 - time_start;
+      else
+        delta_time = current_time_tim4 + 0x10000 - time_start;
+
+      //Робота з Watchdog
+      watchdog_routine();
+    }//while
+
+  if ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )) != 0)
+    {
+      //Ми не дочекалися завершення читання з мікросхеми DataFalash
+      number_record_of_log_into_RS485 = 0xffffffff;
+      _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT);
+      return Error_modbus(adrUnit, // address,
+                          outputPacket[1],//function,
+                          2,//error,
+                          outputPacket);//output_data
+    }//if
+    } break;
+
+
+ }//switch
+
   //Успішне читання даних з енергонезалеженої пам'яті DataFlash
 
   short dataRegister[130];
@@ -885,10 +935,9 @@ int superReaderRegister(int adrReg)
     {
       result = config_array[i].getModbusRegister(adrReg);
       if(!(result==MARKER_OUTPERIMETR)) break;
-      if(result==MARKER_ERRORPERIMETR) break;
+//      if(result==MARKER_ERRORPERIMETR) break;
     }//for
   if(i==TOTAL_COMPONENT) result = MARKER_OUTPERIMETR;
-  //qDebug()<<"("<<i<<")";
   return result;
 }//superReaderRegister()
 
@@ -903,8 +952,8 @@ int superWriterRegister(int adrReg, int dataReg)
     {
       result = config_array[i].setModbusRegister(adrReg, dataReg);
       if(!(result==MARKER_OUTPERIMETR)) break;
-      if(result==MARKER_ERRORPERIMETR) break;
-      if(result==MARKER_ERRORDIAPAZON) break;
+//      if(result==MARKER_ERRORPERIMETR) break;
+//      if(result==MARKER_ERRORDIAPAZON) break;
     }//for
   if(i==TOTAL_COMPONENT) result = MARKER_OUTPERIMETR;
   return result;
@@ -921,10 +970,9 @@ int superReaderBit(int adrBit)
     {
       result = config_array[i].getModbusBit(adrBit);
       if(!(result==MARKER_OUTPERIMETR)) break;
-      if(result==MARKER_ERRORPERIMETR) break;
+//      if(result==MARKER_ERRORPERIMETR) break;
     }//for
   if(i==TOTAL_COMPONENT) result = MARKER_OUTPERIMETR;
-  //qDebug()<<"("<<i<<")";
   return result;
 }//superReaderBit()
 
@@ -939,11 +987,10 @@ int superWriterBit(int adrBit, int dataBit)
     {
       result = config_array[i].setModbusBit(adrBit, dataBit);
       if(!(result==MARKER_OUTPERIMETR)) break;
-      if(result==MARKER_ERRORPERIMETR) break;
-      if(result==MARKER_ERRORDIAPAZON) break;
+//      if(result==MARKER_ERRORPERIMETR) break;
+//      if(result==MARKER_ERRORDIAPAZON) break;
     }//for
   if(i==TOTAL_COMPONENT) result = MARKER_OUTPERIMETR;
-  //qDebug()<<"("<<i<<")";
   return result;
 }//superReaderRegister()
 
@@ -1040,7 +1087,6 @@ void superSortParam(int size, unsigned int *prm)
   for(int i=0; i<size; i++)tmparr[i]=0;
 //устранение повторов
   for(int i=0; i<size; i++) finderDubl(i, size, prm);
-//qDebug()<<"  finderDubl= "<<param[0]<<" "<<param[1]<<" "<<param[2]<<" "<<param[3]<<" "<<param[4]<<" "<<param[5]<<" "<<param[6]<<" "<<param[7];
 //устранение пробелов
   unsigned int tmpi=0;
   for(int i=0; i<size; i++)
@@ -1178,13 +1224,174 @@ int superValidParam(uint32_t param)
 //контроль валидности параметров
 //параметр не должен быть наполовину нулевым
   if(param==0) return 0;
-  if(!(param&0x0000FFFF)) return 1;
-  if(!(param&0xFFFF0000)) return 1;
+//  if(!(param&0x0000FFFF)) return 1;//номер выхода не может быть 0
+//  if(!(param&0xFFFF0000)) return 1;
 //кореляции
-//  switch(param&0xFF000000)
-//  {
-//   case 
-//  }//switch
+//  int id  = (param>>24)&0xff;//id блока
+//  int out = param&0xffff;//номер выхода
+  uint32_t id   = (param >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;
+  uint32_t n    = (param >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
+  uint32_t out  = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
+  if ((id >= _ID_FB_FIRST_ALL) && (id < _ID_FB_LAST_ALL))
+  {
+    //Роблю тільки для USB, так як не заню , як визначити звідки іде запит
+    uint32_t n_nodes;
+    switch (id)
+    {
+    case ID_FB_CONTROL_BLOCK:
+      {
+        n_nodes = 1;
+        break;
+      }
+    case ID_FB_INPUT:
+      {
+        n_nodes = current_config.n_input;
+        break;
+      }
+    case ID_FB_OUTPUT:
+      {
+        n_nodes = current_config.n_output;
+        break;
+      }
+    case ID_FB_LED:
+      {
+        n_nodes = current_config.n_led;
+        break;
+      }
+    case ID_FB_BUTTON:
+      {
+        n_nodes = current_config.n_button;
+        break;
+      }
+    case ID_FB_ALARM:
+      {
+        n_nodes = current_config.n_alarm;
+        break;
+      }
+    case ID_FB_GROUP_ALARM:
+      {
+        n_nodes = current_config.n_group_alarm;
+        break;
+      }
+    case ID_FB_AND:
+      {
+        n_nodes = current_config.n_and;
+        break;
+      }
+    case ID_FB_OR:
+      {
+        n_nodes = current_config.n_or;
+        break;
+      }
+    case ID_FB_XOR:
+      {
+        n_nodes = current_config.n_xor;
+        break;
+      }
+    case ID_FB_NOT:
+      {
+        n_nodes = current_config.n_not;
+        break;
+      }
+    case ID_FB_TIMER:
+      {
+        n_nodes = current_config.n_timer;
+        break;
+      }
+    case ID_FB_TRIGGER:
+      {
+        n_nodes = current_config.n_trigger;
+        break;
+      }
+    case ID_FB_MEANDER:
+      {
+        n_nodes = current_config.n_meander;
+        break;
+      }
+    case ID_FB_TU:
+      {
+        n_nodes = current_config.n_tu;
+        break;
+      }
+    case ID_FB_TS:
+      {
+        n_nodes = current_config.n_ts;
+        break;
+      }
+    case ID_FB_EVENT_LOG:
+      {
+        n_nodes = 1;
+        break;
+      }
+    default:
+      {
+        return 1;
+      }
+    }
+    if ((n   == 0) || (n > n_nodes)) return 1;
+    if ((out == 0) || (out > number_output_signals_logical_nodes[id - 1])) return 1;
+  }
+  else return 1;
+//  switch(id)
+//    {
+//    case _ID_FB_FIRST_ALL:
+//      if(out>FIX_BLOCK_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_INPUT:
+//      if(out>INPUT_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_OUTPUT:
+//      if(out>OUTPUT_LED_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_LED:
+//      if(out>OUTPUT_LED_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_BUTTON:
+//      if(out>BUTTON_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//
+//    case ID_FB_ALARM:
+//      if(out>ALARM_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_GROUP_ALARM:
+//      if(out>GROUP_ALARM_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_AND:
+//      if(out>STANDARD_LOGIC_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_OR:
+//      if(out>STANDARD_LOGIC_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_XOR:
+//      if(out>STANDARD_LOGIC_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_NOT:
+//      if(out>STANDARD_LOGIC_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//
+//    case ID_FB_TIMER:
+//      if(out>TIMER_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_TRIGGER:
+//      if(out>TRIGGER_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//
+//    case ID_FB_MEANDER:
+//      if(out>MEANDER_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_TU:
+//      if(out>TU_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    case ID_FB_TS:
+//      if(out>TS_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//
+//    case ID_FB_EVENT_LOG:
+//      if(out>EVENT_LOG_SIGNALS_OUT) return 1;//номер выхода не может быть больше
+//      break;
+//    default:
+//      return 1;
+//    }//switch id
   return 0;
 }//
 
