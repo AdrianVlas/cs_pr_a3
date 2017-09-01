@@ -6,7 +6,7 @@
 #include "../inc/macroses.h"
 #include "../inc/const_global.h"
 #include "../inc/const_menu_ver2.h"
-#include "../inc/const_modbus_memory_map.h"
+#include "../inc/const_interfaces.h"
 #include "../inc/type_definition.h"
 #include "../inc/const_measurement.h"
 

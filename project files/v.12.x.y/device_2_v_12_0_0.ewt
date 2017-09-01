@@ -1399,9 +1399,6 @@
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_interfaces.h</name>
         </file>
-        <file>
-          <name>$PROJ_DIR$\..\..\working files\inc\const_modbus_memory_map.h</name>
-        </file>
       </group>
       <group>
         <name>menu</name>
@@ -1707,9 +1704,6 @@
         </group>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\interfaces.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\..\working files\src\modbus.c</name>
         </file>
       </group>
       <group>
