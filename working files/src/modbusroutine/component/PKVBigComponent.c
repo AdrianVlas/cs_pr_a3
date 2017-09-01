@@ -310,33 +310,47 @@ int setPKVBigModbusRegister(int adrReg, int dataReg)
    case 22: //14015
    case 23: //14015
    break; 
-   case 24: //14024
-    if(dataReg>99) return MARKER_ERRORDIAPAZON;
+   case 24: //14224
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x99) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 25: //14025
-    if(dataReg>12) return MARKER_ERRORDIAPAZON;
-    if(dataReg<1) return MARKER_ERRORDIAPAZON;
+   case 25: //14225
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg==0) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x12) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
+//    if(dataReg==0xA || dataReg==0xB || dataReg==0xC || dataReg==0xD || dataReg==0xE || dataReg==0xF) return MARKER_ERRORDIAPAZON;
    break; 
-   case 26: //14026
-    if(dataReg>31) return MARKER_ERRORDIAPAZON;
-    if(dataReg<1) return MARKER_ERRORDIAPAZON;
+   case 26: //14226
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg==0) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x31) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 27: //14027
-    if(dataReg>23) return MARKER_ERRORDIAPAZON;
+   case 27: //14227
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x23) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 28: //14028
-   case 29: //14029
-    if(dataReg>59) return MARKER_ERRORDIAPAZON;
+   case 28: //14228
+   case 29: //14229
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x59) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 30: //14030
-    if(dataReg>99) return MARKER_ERRORDIAPAZON;
+   case 30: //14230
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x99) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
    case 31: //14031
-    if(dataReg>32767) dataReg -=32768;
+//    if(dataReg>32767) dataReg -=32768;
     if(dataReg>720) return MARKER_ERRORDIAPAZON;
     if(dataReg<-720) return MARKER_ERRORDIAPAZON;
    break; 
    case 32: //14032
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
     if(dataReg>1) return MARKER_ERRORDIAPAZON;
    break; 
    case 33: //14033
@@ -441,8 +455,8 @@ int postPKVBigWriteAction(void) {
     break;
     case 4://
     //tempReadArray[i] = 0;
-    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-    restart_timeout_idle_new_settings = true;
+//    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+//    restart_timeout_idle_new_settings = true;
     break;
     case 5://Скорость порта связи
     arr1->baud_RS485 = arr->baud_RS485 = (tempWriteArray[offsetTempWriteArray+i]);

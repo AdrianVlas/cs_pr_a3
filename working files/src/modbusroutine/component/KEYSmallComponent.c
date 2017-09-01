@@ -86,6 +86,7 @@ int getKEYSmallModbusRegister(int adrReg)
   if(privateKEYSmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(keysmallcomponent->isActiveActualData) loadKEYSmallActualData(); //ActualData
   keysmallcomponent->isActiveActualData = 0;
+  if(adrReg!=BEGIN_ADR_REGISTER)//нет внутр периметра на адресе BEGIN_ADR_REGISTER
   if(privateKEYSmallGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(keysmallcomponent, adrReg);

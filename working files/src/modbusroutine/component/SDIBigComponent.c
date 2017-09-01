@@ -187,6 +187,8 @@ int getSDIBigModbusBit(int x)
 }//getSDIBigModbusBit(int )
 int setSDIBigModbusRegister(int adrReg, int dataReg)
 {
+extern int upravlSetting;//флаг Setting
+extern int upravlSchematic;//флаг Shematic
   //записать содержимое регистра
   if(privateSDIBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(sdibigcomponent->isActiveActualData) setSDIBigCountObject(); //к-во обектов
@@ -198,49 +200,60 @@ int setSDIBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
-    //контроль параметров ранжирования
-//    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
+     upravlSetting = 1;//флаг Setting
    break; 
    case 1:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 6:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 7:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 8:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 9:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 10:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam_gi(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 11:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 12:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam_gi(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
@@ -279,13 +292,14 @@ void preSDIBigWriteAction(void) {
   sdibigcomponent->isActiveActualData = 1;
 }//
 int postSDIBigWriteAction(void) {
+extern int upravlSetting;//флаг Setting
+extern int upravlSchematic;//флаг Shematic
 //action после записи
   if(sdibigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = sdibigcomponent->operativMarker[1]-sdibigcomponent->operativMarker[0]+1;
   if(sdibigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//  __LN_OUTPUT_LED *arr = (__LN_OUTPUT_LED*)(spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
    __settings_for_OUTPUT_LED *arr  = (__settings_for_OUTPUT_LED*)(sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR]);
    __settings_for_OUTPUT_LED *arr1 = (__settings_for_OUTPUT_LED*)(sca_of_p_edit[ID_FB_LED - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {
@@ -351,7 +365,45 @@ int postSDIBigWriteAction(void) {
    break; 
  }//switch
   }//for
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+sdibigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 1://RIN 0 ДВых. item
+   case 2://RIN 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT])) return 2;//контроль валидности
+  break;
+
+   case 3://Reset 0 ДВых. item
+   case 4://Reset 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_RESET])) return 2;//контроль валидности
+  break;
+   case 5://BL-IMP 0 ДВых. item
+   case 6://BL-IMP 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_BL_IMP])) return 2;//контроль валидности
+  break;
+   case 7://C1/C2 0 ДВых. item
+   case 8://C1/C2 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2])) return 2;//контроль валидности
+  break;
+   case 9://Генератор С1 0 ДВых. item
+   case 10://Генератор С1 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_MEANDER1])) return 2;//контроль валидности
+  break;
+   case 11://Генератор С2 0 ДВых. item
+   case 12://Генератор С2 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_MEANDER2])) return 2;//контроль валидности
+  break;
+ }//switch
+  }//for
+
+  if(upravlSetting)//флаг Setting
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  if(upravlSchematic)//флаг Shematic
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

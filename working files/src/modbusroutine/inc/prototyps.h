@@ -2,7 +2,7 @@
 #define __PROTOTYPS_H
 
 void global_component_installation(void);
-//void global_component_prepared(void);
+int  superReader20(int);
 int  superReaderRegister(int);
 int  superWriterRegister(int, int);
 int  superReaderBit(int);
@@ -10,7 +10,7 @@ int  superWriterBit(int, int);
 void superPreReadAction(void);
 void superPostReadAction(void);
 void superPreWriteAction(void);
-void superPostWriteAction(void);
+int  superPostWriteAction(void);
 void superSetOperativMarker(COMPONENT_OBJ *component, int adrReg);
 void superSetTempWriteArray(int dataReg);
 int  superFindTempWriteArrayOffset(int adr);
@@ -19,6 +19,7 @@ void finderDubl(int idx, int size, unsigned int *arr);
 void superSortParam(int size, unsigned int *param);
 int superControlParam(int param);
 int superControlParam_gi(int param);
+int superValidParam(unsigned int param);
 
 void constructorYustBigComponent(COMPONENT_OBJ *);
 void constructorRPOBigComponent(COMPONENT_OBJ *);

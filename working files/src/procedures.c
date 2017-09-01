@@ -2444,7 +2444,7 @@ void copy_settings_LOG(unsigned int mem_to_prt, unsigned int mem_from_prt, uintp
     {
       if ((mem_to_prt == false) && (mem_from_prt == true))
       {
-        *((__LOG_INPUT *)(base_target) + shift*LOG_SIGNALS_IN + i) = *((__LOG_INPUT *)(base_source) + 1 + shift*LOG_SIGNALS_IN + i);
+        *((__LOG_INPUT *)(base_target) + shift*LOG_SIGNALS_IN + i) = (*((__LOG_INPUT *)(base_source) + 1 + shift*LOG_SIGNALS_IN + i))  & (__LOG_INPUT)(~(MASKA_PARAM_INTERNAL_BITS << SFIFT_PARAM_INTERNAL_BITS));
       }
       else if ((mem_to_prt == true) && (mem_from_prt == false))
       {

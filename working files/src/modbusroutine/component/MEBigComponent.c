@@ -45,30 +45,10 @@ void constructorMEBigComponent(COMPONENT_OBJ *mebigcomp)
 
   mebigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadMEBigActualData(void) {
- setMEBigCountObject(); //записать к-во обектов
-  //ActualData
- //!!!!!!!!!!
-   __LOG_INPUT *arr = (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
-   //Очистить журнал 0
-   int value = 0;//arr[item].settings.param[0];
-   tempReadArray[0] = value;
-   //Очистить журнал 1
-   value = 0;//arr[item].settings.param[1];
-   tempReadArray[1] = value;
 
-   for(int item=0; item<mebigcomponent->countObject; item++) {
-   //Вход item 0
-        value = arr[item] & 0xffff;//
-        tempReadArray[2+item*REGISTER_FOR_OBJ+2*item+0] = value;
-        value = (arr[item] >> 16) & 0x7fff;//
-        tempReadArray[2+item*REGISTER_FOR_OBJ+2*item+1] = value;
-  }//for
-}//loadActualData() 
-*/
 int getMEBigModbusRegister(int adrReg)
 {
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   //получить содержимое регистра
   if(privateMEBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(mebigcomponent->isActiveActualData) setMEBigCountObject(); //записать к-во обектов
@@ -76,26 +56,30 @@ int getMEBigModbusRegister(int adrReg)
   if(privateMEBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(mebigcomponent, adrReg);
-/*
+
   int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = (offset+2)/REGISTER_FOR_OBJ;//индекс субобъекта
+
   switch(offset) {//индекс регистра 
    case 0:
-   //Очистить журнал 0
-     return 0;//arr[item].settings.param[0];
+   //К-во записей 0
+     return info_rejestrator_log.number_records & 0xffff;
    case 1:
-   //Очистить журнал 1
-     return 0;//arr[item].settings.param[1];
+   //К-во записей 1
+    return (info_rejestrator_log.number_records >> 16) & 0x7fff;//
   }//switch
 
-   __LOG_INPUT *arr = (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+  __LOG_INPUT *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS  )) == 0 ) ? (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1 : ((__LOG_INPUT*)sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+  int idxParam = ((offset-2)/2);//индекс param
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+               arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1 : ((__LOG_INPUT*)sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+
+  switch((offset-2)%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0:
-     return arr[idxSubObj] & 0xffff;//
+        return  arr[idxParam] & 0xffff;//
    case 1:
-     return (arr[idxSubObj] >> 16) & 0x7fff;//
+        return  (arr[idxParam] >> 16) & 0x7fff;//
   }//switch
-*/
+
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getMEBigModbusBit(int x)
@@ -115,6 +99,8 @@ void setMEBigCountObject(void) {
 }//
 int setMEBigModbusRegister(int adrReg, int dataReg)
 {
+extern int upravlSetting;//флаг Setting
+extern int upravlSchematic;//флаг Shematic
   //записать содержимое регистра
   if(privateMEBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(mebigcomponent->isActiveActualData) setMEBigCountObject(); //к-во обектов
@@ -123,6 +109,32 @@ int setMEBigModbusRegister(int adrReg, int dataReg)
 
   superSetOperativMarker(mebigcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
+
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+
+  switch(offset) {//индекс регистра 
+   case 0:
+   case 1:
+   //К-во записей 0
+     upravlSetting = 1;//флаг Setting
+     break;
+  }//switch
+
+  int idxParam = ((offset-2)/2);//индекс param
+  if(idxParam<0) return 0;
+
+  switch((offset-2)%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0:
+        upravlSchematic = 1;//флаг Shematic
+    if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
+     break;
+   case 1:
+        upravlSchematic = 1;//флаг Shematic
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
+     break;
+
+  }//switch
 
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
@@ -151,37 +163,64 @@ void preMEBigWriteAction(void) {
   mebigcomponent->isActiveActualData = 1;
 }//
 int postMEBigWriteAction(void) {
+extern int upravlSetting;//флаг Setting
+extern int upravlSchematic;//флаг Shematic
 //action после записи
   if(mebigcomponent->operativMarker[0]<0) return 0;//не было записи
-//  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
+  int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = mebigcomponent->operativMarker[1]-mebigcomponent->operativMarker[0]+1;
   if(mebigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LOG_INPUT *arr = (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]) + 1;
-//   __settings_for_INPUT *arr  = (__settings_for_INPUT*)(sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
-//   __settings_for_INPUT *arr1 = (__settings_for_INPUT*)(sca_of_p_edit[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+   __LOG_INPUT *arr  = (__LOG_INPUT*)(sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+   __LOG_INPUT *arr1 = (__LOG_INPUT*)(sca_of_p_edit[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {
   int offset = i+mebigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
- // int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-//  int clrME = 2;
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-//   case 0://Очистить журнал 0
-//   break;
-//   case 1://Очистить журнал 1
-//   break;
 
+  switch(offset) {//индекс регистра 
+   case 0:
+   //К-во записей 0
+     info_rejestrator_log.number_records &= (uint32_t)~0xffff;
+     info_rejestrator_log.number_records |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+     break;
+   case 1:
+   //К-во записей 1
+     info_rejestrator_log.number_records &= (uint32_t)~(0x7fff<<16);
+     info_rejestrator_log.number_records |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+     break;
+  }//switch
+
+  int idxParam = ((offset-2)/2);//индекс param
+  if(idxParam<0) break;
+  switch((offset-2)%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0://Вход 0 item
-//        arr1[clrME+idxSubObj] = arr[clrME+idxSubObj] &= (uint32_t)~0xffff;
-//        arr1[clrME+idxSubObj] = arr[clrME+idxSubObj] |= (tempWriteArray[clrME+offsetTempWriteArray+i] & 0xffff);
+        arr1[idxParam] = arr[idxParam] &= (uint32_t)~0xffff;
+        arr1[idxParam] = arr[idxParam] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break;
    case 1://Вход 1 item
-//        arr1[clrME+idxSubObj] = arr[clrME+idxSubObj] &= (uint32_t)~(0x7fff<<16);
-//        arr1[clrME+idxSubObj] = arr[clrME+idxSubObj] |= ((tempWriteArray[clrME+offsetTempWriteArray+i] & 0x7fff)<<16);//
+        arr1[idxParam] = arr[idxParam] &= (uint32_t)~(0x7fff<<16);
+        arr1[idxParam] = arr[idxParam] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
    break; 
 
  }//switch
   }//for
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+mebigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxParam = ((offset-2)/2);//индекс param
+  if(idxParam<0) break;
+  switch((offset-2)%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Вход 0 item
+   case 1://Вход 1 item
+        if(superValidParam(arr1[idxParam])) return 2;//контроль валидности
+  break;
+ }//switch
+  }//for
+
+  if(upravlSetting)//флаг Setting
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  if(upravlSchematic)//флаг Shematic
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

@@ -41,51 +41,6 @@ void constructorCGSBigComponent(COMPONENT_OBJ *cgsbigcomp)
 
   cgsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadCGSBigActualData(void) {
-  //ActualData
-   __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
-   for(int item=0; item<cgsbigcomponent->countObject; item++) {
-
-   //Параметры ГС item
-   int value = arr[item].settings.control &0x3;
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-
-   //Входной ток ГС item
-   value = (arr[item].settings.analog_input_control >> group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
-   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
-
-   //Приращение тока ГС item
-   value = arr[item].settings.pickup[GROUP_ALARM_PICKUP_DELTA_I];
-   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-
-   //Время tуст ГС item
-   value = arr[item].settings.set_delay[GROUP_ALARM_SET_DELAY_DELAY];
-   tempReadArray[item*REGISTER_FOR_OBJ+3] = value / 100;
-   }//for
-*/
-  /*
-  ...
-  
-  параметрування вхідного аналового каналу
-  1) поле analog_input_control розбите на сегменти
-  2) кожен сегмент маж початковий біт і кількість бітів, які для ШГС визначено у 
-  
-const uint32_t group_alarm_analog_ctrl_patten[MAX_INDEX_CTRL_GROUP_ALARM - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][2] = {{0, 8}};  
-  
-  Пояснення
-  у даному вупадку цей масвив складається з єдиного елемету(сегменту) і значення для цього єдиного сегменту треба взяти з 0-ого біту analog_input_control і брати 8 біт. Тобто [0-7]
-  Це значення вищначає номер струмового каналу:
-  0 - не заведено жодного струмового каналу (тільки читається - записати 0 не можна)
-  1 - I1
-  2 - I2
-  3 - i3
-  4 - I4
-  
-  Максимальне число: (NUMBER_ANALOG_CANALES - 1) - бо останній канал - це напруга.
-  
-  */
-//}//loadActualData() 
 
 int getCGSBigModbusRegister(int adrReg)
 {
@@ -93,30 +48,8 @@ int getCGSBigModbusRegister(int adrReg)
 extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateCGSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
 
-
   superSetOperativMarker(cgsbigcomponent, adrReg);
-/*
-   __LN_GROUP_ALARM *arr = (__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
-  int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-  case 0:
-   //Параметры ГС item
-   return arr[idxSubObj].settings.control &0x3;
 
-  case 1:
-   //Входной ток ГС item
-   return (arr[idxSubObj].settings.analog_input_control >> group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
-
-  case 2:
-   //Приращение тока ГС item
-   return arr[idxSubObj].settings.pickup[GROUP_ALARM_PICKUP_DELTA_I];
-
-  case 3:
-   //Время tуст ГС item
-   return arr[idxSubObj].settings.set_delay[GROUP_ALARM_SET_DELAY_DELAY];
-  }//switch
-*/
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   __settings_for_GROUP_ALARM *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_GROUP_ALARM*)(spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_GROUP_ALARM*)(sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR])) + idxSubObj);
@@ -138,7 +71,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 
   case 3:
    //Время tуст ГС item
-   return arr->set_delay[GROUP_ALARM_SET_DELAY_DELAY];
+   return arr->set_delay[GROUP_ALARM_SET_DELAY_DELAY]/100;
   }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
@@ -216,23 +149,19 @@ int postCGSBigWriteAction(void) {
      arr1[idxSubObj].control = arr[idxSubObj].control  |= (tempWriteArray[offsetTempWriteArray+i]) & 0x3;
    break; 
   case 1:{//Входной ток ГС item
-//     arr1[1].analog_input_control = arr[1].analog_input_control = (tempWriteArray[offsetTempWriteArray+i]) << 
-//        (group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0]) 
-//              & ((1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1);
       uint32_t maska = (1 << group_alarm_analog_ctrl_patten[_MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1;
       uint32_t shift = group_alarm_analog_ctrl_patten[_MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0];
-//	  arr1[1].analog_input_control = arr[1].analog_input_control = (arr[1].analog_input_control & ((uint32_t)(~(maska << shift)))) | (tempWriteArray[offsetTempWriteArray+i]) << shift);
+
 	  arr1[idxSubObj].analog_input_control = arr[idxSubObj].analog_input_control &= ((uint32_t)(~(maska << shift)));// | (tempWriteArray[offsetTempWriteArray+i]) << shift);
 	  arr1[idxSubObj].analog_input_control = arr[idxSubObj].analog_input_control |= (tempWriteArray[offsetTempWriteArray+i]) << shift;
   } break; 
    case 2://Приращение тока ГС item
     {
-   // int tt1 = (tempWriteArray[offsetTempWriteArray+i]);
     arr1[idxSubObj].pickup[GROUP_ALARM_PICKUP_DELTA_I] = arr[idxSubObj].pickup[GROUP_ALARM_PICKUP_DELTA_I] = (tempWriteArray[offsetTempWriteArray+i]);
     }
    break; 
    case 3://Время tуст ГС item
-    arr1[idxSubObj].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = arr[idxSubObj].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1[idxSubObj].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = arr[idxSubObj].set_delay[GROUP_ALARM_SET_DELAY_DELAY] = (tempWriteArray[offsetTempWriteArray+i])*100;
    break; 
  }//switch
   }//for

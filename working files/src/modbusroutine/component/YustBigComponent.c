@@ -176,6 +176,7 @@ int postYustBigWriteAction(void) {
   if(yustbigcomponent->operativMarker[1]<0) countRegister = 1;
 
 //  for(int i=0; i<countRegister; i++) ustuvannja[i] = tempWriteArray[offsetTempWriteArray+i];
+changed_ustuvannja = CHANGED_ETAP_EXECUTION;
   for(int i=0; i<countRegister; i++) {
   int offset = i+yustbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
 //  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -196,9 +197,13 @@ int postYustBigWriteAction(void) {
   }//for
 
 
-  changed_ustuvannja = CHANGED_ETAP_EXECUTION;// (це блокує перевірку на достовірність ustuvannja_meas і ustuvannja)
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-  restart_timeout_idle_new_settings = true;
+//  changed_ustuvannja = CHANGED_ETAP_EXECUTION;// (це блокує перевірку на достовірність ustuvannja_meas і ustuvannja)
+//  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+//  restart_timeout_idle_new_settings = true;
+//changed_ustuvannja = CHANGED_ETAP_EXECUTION;
+serial_number_dev = 100;//значення;
+changed_ustuvannja = CHANGED_ETAP_ENDED;
+_SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT);
  return 0;
 }//
 

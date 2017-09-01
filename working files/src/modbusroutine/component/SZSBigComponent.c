@@ -182,6 +182,8 @@ int getSZSBigModbusBit(int x)
 }//getDOUTBigModbusRegister(int adrReg)
 int setSZSBigModbusRegister(int adrReg, int dataReg)
 {
+extern int upravlSetting;//флаг Setting
+extern int upravlSchematic;//флаг Shematic
   //записать содержимое регистра
   if(privateSZSBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
   if(szsbigcomponent->isActiveActualData) setSZSBigCountObject(); //к-во обектов
@@ -193,38 +195,48 @@ int setSZSBigModbusRegister(int adrReg, int dataReg)
 
   switch((adrReg-BEGIN_ADR_REGISTER)%REGISTER_FOR_OBJ) {
    case 0:
+     upravlSetting = 1;//флаг Setting
     if(dataReg>2) return MARKER_ERRORDIAPAZON;
    break; 
    case 1:
+     upravlSetting = 1;//флаг Setting
     if(dataReg>320) return MARKER_ERRORDIAPAZON;
     if(dataReg<5) return MARKER_ERRORDIAPAZON;
    break; 
    case 2:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 3:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 4:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 5:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 6:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 7:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    case 8:
+    upravlSchematic = 1;//флаг Shematic
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 9:
     //контроль параметров ранжирования
+    upravlSchematic = 1;//флаг Shematic
     if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
   default: return MARKER_OUTPERIMETR;
@@ -263,13 +275,14 @@ void preSZSBigWriteAction(void) {
   szsbigcomponent->isActiveActualData = 1;
 }//
 int postSZSBigWriteAction(void) {
+extern int upravlSetting;//флаг Setting
+extern int upravlSchematic;//флаг Shematic
 //action после записи
   if(szsbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = szsbigcomponent->operativMarker[1]-szsbigcomponent->operativMarker[0]+1;
   if(szsbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LN_ALARM *arr = (__LN_ALARM*)(spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
    __settings_for_ALARM *arr  = (__settings_for_ALARM*)(sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
    __settings_for_ALARM *arr1 = (__settings_for_ALARM*)(sca_of_p_edit[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
   for(int i=0; i<countRegister; i++) {
@@ -322,7 +335,37 @@ int postSZSBigWriteAction(void) {
 
  }//switch
   }//for
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+szsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 2://LSSIN1 0
+   case 3://LSSIN1 1
+        if(superValidParam(arr1[idxSubObj].param[ALARM_LOGIC_INPUT])) return 2;//контроль валидности
+  break;
+
+   case 4://Mute-I 0
+   case 5://Mute-I 1
+        if(superValidParam(arr1[idxSubObj].param[ALARM_IN_MUTE])) return 2;//контроль валидности
+  break;
+   case 6://Block-I 0
+   case 7://Block-I 1
+        if(superValidParam(arr1[idxSubObj].param[ALARM_IN_BLOCK])) return 2;//контроль валидности
+  break;
+   case 8://Reset-I 0
+   case 9://Reset-I 1
+        if(superValidParam(arr1[idxSubObj].param[ALARM_RESET])) return 2;//контроль валидности
+  break;
+ }//switch
+  }//for
+
+  if(upravlSetting)//флаг Setting
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  if(upravlSchematic)//флаг Shematic
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   restart_timeout_idle_new_settings = true;
   return 0;
 }//

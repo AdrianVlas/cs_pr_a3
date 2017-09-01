@@ -41,51 +41,11 @@ void constructorCommonBigComponent(COMPONENT_OBJ *commonbigcomp)
 
   commonbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadCommonBigActualData(void) {
-  //ActualData
-   __SETTINGS_FIX *arr = &settings_fix;
-   for(int item=0; item<commonbigcomponent->countObject; item++) {
-   //Тревога 0
-   int value = arr->param[FIX_BLOCK_ALARM] & 0xffff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   value = (arr->param[FIX_BLOCK_ALARM] >> 16) & 0x7fff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
-
-   //Тишина 0
-   value = arr->param[FIX_BLOCK_MUTE] & 0xffff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   value = (arr->param[FIX_BLOCK_MUTE] >> 16) & 0x7fff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
-
-   //Блок. 0
-   value = arr->param[FIX_BLOCK_BLOCK] & 0xffff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-   value = (arr->param[FIX_BLOCK_BLOCK] >> 16) & 0x7fff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
-
-   //Тест.Вход. 0
-   value = arr->param[FIX_BLOCK_TEST_INPUT] & 0xffff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
-   value = (arr->param[FIX_BLOCK_TEST_INPUT] >> 16) & 0x7fff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
-
-   //Тест.Сброс. 0
-   value = arr->param[FIX_BLOCK_TEST_RESET] & 0xffff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+8] = value;
-   value = (arr->param[FIX_BLOCK_TEST_RESET] >> 16) & 0x7fff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+9] = value;
-  }//for
-}//loadActualData() 
-*/
 
 int getCommonBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateCommonBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-
-//  if(commonbigcomponent->isActiveActualData) loadCommonBigActualData(); //ActualData
-//  commonbigcomponent->isActiveActualData = 0;
 
   superSetOperativMarker(commonbigcomponent, adrReg);
 
@@ -112,19 +72,15 @@ int getCommonBigModbusRegister(int adrReg)
 
   case 6:
    //Тест.Вход. 0
-   //return arr->param[FIX_BLOCK_TEST_INPUT] & 0xffff;//
   case 7:
-   //return (arr->param[FIX_BLOCK_TEST_INPUT] >> 16) & 0x7fff;//
 
   case 8:
    //Тест.Сброс. 0
-   //return arr->param[FIX_BLOCK_TEST_RESET] & 0xffff;//
   case 9:
-   //return (arr->param[FIX_BLOCK_TEST_RESET] >> 16) & 0x7fff;//
     break;
   }//switch
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  return 0;
 }//getDOUTBigModbusRegister(int adrReg)
 int getCommonBigModbusBit(int x)
 {
@@ -211,7 +167,6 @@ int postCommonBigWriteAction(void) {
   int countRegister = commonbigcomponent->operativMarker[1]-commonbigcomponent->operativMarker[0]+1;
   if(commonbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __SETTINGS_FIX *arr = &settings_fix;
   __SETTINGS_FIX *arr = &settings_fix, *arr1 = &settings_fix_edit;
   for(int i=0; i<countRegister; i++) {
   int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
@@ -244,24 +199,38 @@ int postCommonBigWriteAction(void) {
    break; 
 
    case 6://Тест.Вход. 0
-//        arr1->param[FIX_BLOCK_TEST_INPUT] = arr->param[FIX_BLOCK_TEST_INPUT] &= (uint32_t)~0xffff;
-        //arr1->param[FIX_BLOCK_TEST_INPUT] = arr->param[FIX_BLOCK_TEST_INPUT] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break; 
    case 7://Тест.Вход. 1
-//        arr1->param[FIX_BLOCK_TEST_INPUT] = arr->param[FIX_BLOCK_TEST_INPUT] &= (uint32_t)~(0x7fff<<16);
-        //arr1->param[FIX_BLOCK_TEST_INPUT] = arr->param[FIX_BLOCK_TEST_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
 
    case 8://Тест.Сброс. 0
-//        arr1->param[FIX_BLOCK_TEST_RESET] = arr->param[FIX_BLOCK_TEST_RESET] &= (uint32_t)~0xffff;
-//        arr1->param[FIX_BLOCK_TEST_RESET] = arr->param[FIX_BLOCK_TEST_RESET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break; 
    case 9://Тест.Сброс. 1
-        //arr1->param[FIX_BLOCK_TEST_RESET] = arr->param[FIX_BLOCK_TEST_RESET] &= (uint32_t)~(0x7fff<<16);
-        //arr1->param[FIX_BLOCK_TEST_RESET] = arr->param[FIX_BLOCK_TEST_RESET] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
    break; 
  }//switch
   }//for
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+
+  switch(offset) {//индекс регистра 
+   case 0://Тревога 0
+   case 1:
+        if(superValidParam(arr1->param[FIX_BLOCK_ALARM])) return 2;//контроль валидности
+  break;
+
+   case 2://Тишина 0
+   case 3://Тишина 1
+        if(superValidParam(arr1->param[FIX_BLOCK_MUTE])) return 2;//контроль валидности
+  break;
+   case 4://Блок. 0
+   case 5://Блок. 1
+        if(superValidParam(arr1->param[FIX_BLOCK_BLOCK])) return 2;//контроль валидности
+  break;
+ }//switch
+  }//for
+
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

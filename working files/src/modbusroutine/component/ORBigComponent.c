@@ -44,23 +44,6 @@ void constructorORBigComponent(COMPONENT_OBJ *orbigcomp)
 
   orbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadORBigActualData(void) {
- setORBigCountObject(); //записать к-во обектов
-  //ActualData
-   __LN_OR *arr = (__LN_OR*)(spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]);
-   for(int item=0; item<orbigcomponent->countObject; item++) {
-
-     for (int i = 0; i < OR_SIGNALS_IN; i ++)
-     {
-        int value = arr[item].settings.param[i] & 0xffff;//LEDIN 0 СД item
-        tempReadArray[item*REGISTER_FOR_OBJ+2*i+0] = value;
-        value = (arr[item].settings.param[i] >> 16) & 0x7fff;//LEDIN 1 СД item
-        tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
-     }
-   }//for
-}//loadActualData() 
-*/
 
 int getORBigModbusRegister(int adrReg)
 {
@@ -72,18 +55,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateORBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(orbigcomponent, adrReg);
-/*
-   __LN_OR *arr = (__LN_OR*)(spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]);
-  int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  int idxParam = (offset/2)%OR_SIGNALS_IN;//индекс param
-  switch(offset%2) {//индекс регистра 
-   case 0:
-        return  arr[idxSubObj].settings.param[idxParam] & 0xffff;//
-   case 1:
-        return  (arr[idxSubObj].settings.param[idxParam] >> 16) & 0x7fff;//
-  }//switch
-*/
+
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   int idxParam = (offset/2)%OR_SIGNALS_IN;//индекс param
@@ -233,9 +205,24 @@ int postORBigWriteAction(void) {
         arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
   break;
  }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+orbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+  case 1:
+        if(superValidParam(arr1[idxSubObj].param[idx_SIGNALS_IN])) return 2;//контроль валидности
+  break;
+ }//switch
    superSortParam(OR_SIGNALS_IN, &(arr1[idxSubObj].param[0]));//сортировка
    superSortParam(OR_SIGNALS_IN, &(arr[idxSubObj].param[0]));//сортировка
   }//for
+
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   restart_timeout_idle_new_settings = true;
  return 0;
