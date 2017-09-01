@@ -302,7 +302,7 @@ int outputFunc20PacketEncoder(int adrUnit, int fileNumber, int recordNumber, int
 {
 //выходной кодировщик 20 функции
 int bazaRecord = (fileNumber-5)*10000;
-int number_record_of_log = bazaRecord + recordNumber;
+unsigned int number_record_of_log = bazaRecord + recordNumber;
 
 if(number_record_of_log>info_rejestrator_log.number_records)
       return Error_modbus(adrUnit, // address,

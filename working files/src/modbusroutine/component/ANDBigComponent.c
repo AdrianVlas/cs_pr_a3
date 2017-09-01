@@ -19,6 +19,7 @@ void preANDBigReadAction(void);//action до чтения
 void postANDBigReadAction(void);//action после чтения
 void preANDBigWriteAction(void);//action до записи
 int postANDBigWriteAction(void);//action после записи
+void repairEditArrayAND(int countRegister, __settings_for_AND *arr, __settings_for_AND *arr1);
 
 COMPONENT_OBJ *andbigcomponent;
 
@@ -192,6 +193,43 @@ int postANDBigWriteAction(void) {
 
    __settings_for_AND *arr = (__settings_for_AND*)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR]);
    __settings_for_AND *arr1 = (__settings_for_AND*)(sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR]);
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+        arr1[idxSubObj].param[idx_SIGNALS_IN] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[idx_SIGNALS_IN] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+  break;
+  case 1:
+        arr1[idxSubObj].param[idx_SIGNALS_IN]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[idx_SIGNALS_IN]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+  break;
+ }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+  case 1:
+        if(superValidParam(arr1[idxSubObj].param[idx_SIGNALS_IN]))
+                {//контроль валидности
+                repairEditArrayAND(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
   for(int i=0; i<countRegister; i++) {
   int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -207,20 +245,6 @@ int postANDBigWriteAction(void) {
         arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
   break;
  }//switch
-  }//for
-
-  //контроль валидности
-  for(int i=0; i<countRegister; i++) {
-  int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
-
-  switch(offset%2) {//индекс регистра входа
-  case 0:
-  case 1:
-        if(superValidParam(arr1[idxSubObj].param[idx_SIGNALS_IN])) return 2;//контроль валидности
-  break;
- }//switch
         superSortParam(AND_SIGNALS_IN, &(arr1[idxSubObj].param[0]));//сортировка
         superSortParam(AND_SIGNALS_IN, &(arr[idxSubObj].param[0]));//сортировка
   }//for
@@ -229,6 +253,22 @@ int postANDBigWriteAction(void) {
   restart_timeout_idle_new_settings = true;
  return 0;
 }//postANDBigWriteAction() 
+
+void repairEditArrayAND(int countRegister, __settings_for_AND *arr, __settings_for_AND *arr1) {
+  //восстановить edit массив
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+  case 1:
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN];
+  break;
+ }//switch
+  }//for
+}//repairEditArray(int countRegister, __settings_for_AND *arr, __settings_for_AND *arr1) 
 
 int privateANDBigGetReg1(int adrReg)
 {

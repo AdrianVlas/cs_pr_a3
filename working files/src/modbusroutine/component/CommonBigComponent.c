@@ -16,7 +16,7 @@ void preCommonBigReadAction(void);//action до чтения
 void postCommonBigReadAction(void);//action после чтения
 void preCommonBigWriteAction(void);//action до записи
 int postCommonBigWriteAction(void);//action после записи
-//void loadCommonBigActualData(void);
+void repairEditArrayCommon(int countRegister, __SETTINGS_FIX *arr, __SETTINGS_FIX *arr1);
 
 COMPONENT_OBJ *commonbigcomponent;
 
@@ -168,6 +168,74 @@ int postCommonBigWriteAction(void) {
   if(commonbigcomponent->operativMarker[1]<0) countRegister = 1;
 
   __SETTINGS_FIX *arr = &settings_fix, *arr1 = &settings_fix_edit;
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  switch(offset) {//индекс регистра 
+   case 0://Тревога 0
+        arr1->param[FIX_BLOCK_ALARM]  &= (uint32_t)~0xffff;
+        arr1->param[FIX_BLOCK_ALARM]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break; 
+   case 1://Тревога 1
+        arr1->param[FIX_BLOCK_ALARM]  &= (uint32_t)~(0x7fff<<16);
+        arr1->param[FIX_BLOCK_ALARM]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 2://Тишина 0
+        arr1->param[FIX_BLOCK_MUTE]  &= (uint32_t)~0xffff;
+        arr1->param[FIX_BLOCK_MUTE]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break; 
+   case 3://Тишина 1
+        arr1->param[FIX_BLOCK_MUTE]  &= (uint32_t)~(0x7fff<<16);
+        arr1->param[FIX_BLOCK_MUTE]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 4://Блок. 0
+        arr1->param[FIX_BLOCK_BLOCK]  &= (uint32_t)~0xffff;
+        arr1->param[FIX_BLOCK_BLOCK]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break; 
+   case 5://Блок. 1
+        arr1->param[FIX_BLOCK_BLOCK]  &= (uint32_t)~(0x7fff<<16);
+        arr1->param[FIX_BLOCK_BLOCK]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+ }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+
+  switch(offset) {//индекс регистра 
+   case 0://Тревога 0
+   case 1:
+        if(superValidParam(arr1->param[FIX_BLOCK_ALARM])) 
+                {//контроль валидности
+                repairEditArrayCommon(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 2://Тишина 0
+   case 3://Тишина 1
+        if(superValidParam(arr1->param[FIX_BLOCK_MUTE]))
+                {//контроль валидности
+                repairEditArrayCommon(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+   case 4://Блок. 0
+   case 5://Блок. 1
+        if(superValidParam(arr1->param[FIX_BLOCK_BLOCK]))
+                {//контроль валидности
+                repairEditArrayCommon(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
   for(int i=0; i<countRegister; i++) {
   int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   switch(offset) {//индекс регистра 
@@ -209,31 +277,34 @@ int postCommonBigWriteAction(void) {
  }//switch
   }//for
 
-  //контроль валидности
-  for(int i=0; i<countRegister; i++) {
-  int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
-
-  switch(offset) {//индекс регистра 
-   case 0://Тревога 0
-   case 1:
-        if(superValidParam(arr1->param[FIX_BLOCK_ALARM])) return 2;//контроль валидности
-  break;
-
-   case 2://Тишина 0
-   case 3://Тишина 1
-        if(superValidParam(arr1->param[FIX_BLOCK_MUTE])) return 2;//контроль валидности
-  break;
-   case 4://Блок. 0
-   case 5://Блок. 1
-        if(superValidParam(arr1->param[FIX_BLOCK_BLOCK])) return 2;//контроль валидности
-  break;
- }//switch
-  }//for
-
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
+
+void repairEditArrayCommon(int countRegister, __SETTINGS_FIX *arr, __SETTINGS_FIX *arr1) {
+  //восстановить edit массив
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  switch(offset) {//индекс регистра 
+   case 0://Тревога 0
+   case 1://Тревога 1
+        arr1->param[FIX_BLOCK_ALARM] = arr->param[FIX_BLOCK_ALARM];
+   break; 
+
+   case 2://Тишина 0
+   case 3://Тишина 1
+        arr1->param[FIX_BLOCK_MUTE] = arr->param[FIX_BLOCK_MUTE];
+   break; 
+
+   case 4://Блок. 0
+   case 5://Блок. 1
+        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK];
+   break; 
+
+ }//switch
+  }//for
+}//repairEditArray(int countRegister, __SETTINGS_FIX *arr, __SETTINGS_FIX *arr1) 
 
 int privateCommonBigGetReg2(int adrReg)
 {

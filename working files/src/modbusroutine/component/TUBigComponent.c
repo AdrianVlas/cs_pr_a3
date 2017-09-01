@@ -21,6 +21,7 @@ void preTUBigWriteAction(void);//action до записи
 int postTUBigWriteAction(void);//action после записи
 void loadTUBigActualData(void);
 int getTUSmallModbusBeginAdrRegister(void);
+void repairEditArrayTU(int countRegister, __settings_for_TU *arr, __settings_for_TU *arr1);
 
 COMPONENT_OBJ *tubigcomponent;
 
@@ -154,6 +155,43 @@ extern int upravlSchematic;//флаг Shematic
 
    __settings_for_TU *arr  = (__settings_for_TU*)(sca_of_p[ID_FB_TU - _ID_FB_FIRST_VAR]);
    __settings_for_TU *arr1 = (__settings_for_TU*)(sca_of_p_edit[ID_FB_TU - _ID_FB_FIRST_VAR]);
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+tubigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 0://Block ТУ 0
+        arr1[idxSubObj].param[TU_BLOCK]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[TU_BLOCK]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://Block ТУ 1
+        arr1[idxSubObj].param[TU_BLOCK]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[TU_BLOCK]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+ }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+tubigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 0://Block ТУ 0
+   case 1://Block ТУ 1
+        if(superValidParam(arr1[idxSubObj].param[TU_BLOCK])) 
+                {//контроль валидности
+                repairEditArrayTU(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
   for(int i=0; i<countRegister; i++) {
   int offset = i+tubigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -174,20 +212,6 @@ extern int upravlSchematic;//флаг Shematic
  }//switch
   }//for
 
-  //контроль валидности
-  for(int i=0; i<countRegister; i++) {
-  int offset = i+tubigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-
-   case 0://Block ТУ 0
-   case 1://Block ТУ 1
-        if(superValidParam(arr1[idxSubObj].param[TU_BLOCK])) return 2;//контроль валидности
-  break;
-
- }//switch
-  }//for
-
   if(upravlSetting)//флаг Setting
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
   if(upravlSchematic)//флаг Shematic
@@ -195,6 +219,21 @@ extern int upravlSchematic;//флаг Shematic
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
+
+void repairEditArrayTU(int countRegister, __settings_for_TU *arr, __settings_for_TU *arr1) {
+  //восстановить edit массив
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+tubigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 0://Block ТУ 0
+   case 1://Block ТУ 1
+        arr1[idxSubObj].param[TU_BLOCK] = arr[idxSubObj].param[TU_BLOCK];
+   break; 
+ }//switch
+  }//for
+}//repairEditArray(int countRegister, __settings_for_TU *arr, __settings_for_TU *arr1) 
 
 int privateTUBigGetReg1(int adrReg)
 {

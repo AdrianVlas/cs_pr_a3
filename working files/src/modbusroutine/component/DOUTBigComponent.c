@@ -19,6 +19,7 @@ void preDOUTBigReadAction(void);//action до чтения
 void postDOUTBigReadAction(void);//action после чтения
 void preDOUTBigWriteAction(void);//action до записи
 int postDOUTBigWriteAction(void);//action после записи
+void repairEditArrayDOUT(int countRegister, __settings_for_OUTPUT_LED *arr, __settings_for_OUTPUT_LED *arr1);
 
 COMPONENT_OBJ *doutbigcomponent;
 
@@ -227,12 +228,132 @@ extern int upravlSchematic;//флаг Shematic
 
    __settings_for_OUTPUT_LED *arr  = (__settings_for_OUTPUT_LED*)(sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
    __settings_for_OUTPUT_LED *arr1 = (__settings_for_OUTPUT_LED*)(sca_of_p_edit[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+doutbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 1://RIN 0 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 2://RIN 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 3://Reset 0 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_RESET]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[OUTPUT_LED_RESET]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 4://Reset 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_RESET]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[OUTPUT_LED_RESET]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 5://BL-IMP 0 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 6://BL-IMP 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 7://C1/C2 0 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 8://C1/C2 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 9://Генератор С1 0 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 10://Генератор С1 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 11://Генератор С2 0 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER2]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER2]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 12://Генератор С2 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER2]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER2]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+ }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+doutbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 1://RIN 0 ДВых. item
+   case 2://RIN 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT])) 
+                {//контроль валидности
+                repairEditArrayDOUT(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 3://Reset 0 ДВых. item
+   case 4://Reset 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_RESET]))
+                {//контроль валидности
+                repairEditArrayDOUT(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+   case 5://BL-IMP 0 ДВых. item
+   case 6://BL-IMP 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_BL_IMP])) 
+                {//контроль валидности
+                repairEditArrayDOUT(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+   case 7://C1/C2 0 ДВых. item
+   case 8://C1/C2 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2]))
+                {//контроль валидности
+                repairEditArrayDOUT(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+   case 9://Генератор С1 0 ДВых. item
+   case 10://Генератор С1 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_MEANDER1])) 
+                {//контроль валидности
+                repairEditArrayDOUT(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+   case 11://Генератор С2 0 ДВых. item
+   case 12://Генератор С2 1 ДВых. item
+        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_MEANDER2]))
+                {//контроль валидности
+                repairEditArrayDOUT(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
   for(int i=0; i<countRegister; i++) {
   int offset = i+doutbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0://Параметры ДВых. item
-    arr[idxSubObj].control = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1[idxSubObj].control = arr[idxSubObj].control = (tempWriteArray[offsetTempWriteArray+i]);
    break;
 
    case 1://RIN 0 ДВых. item
@@ -291,40 +412,6 @@ extern int upravlSchematic;//флаг Shematic
  }//switch
   }//for
 
-  //контроль валидности
-  for(int i=0; i<countRegister; i++) {
-  int offset = i+doutbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-   case 1://RIN 0 ДВых. item
-   case 2://RIN 1 ДВых. item
-        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT])) return 2;//контроль валидности
-  break;
-
-   case 3://Reset 0 ДВых. item
-   case 4://Reset 1 ДВых. item
-        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_RESET])) return 2;//контроль валидности
-  break;
-   case 5://BL-IMP 0 ДВых. item
-   case 6://BL-IMP 1 ДВых. item
-        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_BL_IMP])) return 2;//контроль валидности
-  break;
-   case 7://C1/C2 0 ДВых. item
-   case 8://C1/C2 1 ДВых. item
-        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2])) return 2;//контроль валидности
-  break;
-   case 9://Генератор С1 0 ДВых. item
-   case 10://Генератор С1 1 ДВых. item
-        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_MEANDER1])) return 2;//контроль валидности
-  break;
-   case 11://Генератор С2 0 ДВых. item
-   case 12://Генератор С2 1 ДВых. item
-        if(superValidParam(arr1[idxSubObj].param[OUTPUT_LED_MEANDER2])) return 2;//контроль валидности
-  break;
- }//switch
-  }//for
-
   if(upravlSetting)//флаг Setting
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
   if(upravlSchematic)//флаг Shematic
@@ -332,6 +419,45 @@ extern int upravlSchematic;//флаг Shematic
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
+
+void repairEditArrayDOUT(int countRegister, __settings_for_OUTPUT_LED *arr, __settings_for_OUTPUT_LED *arr1) {
+  //восстановить edit массив
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+doutbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 1://RIN 0 ДВых. item
+   case 2://RIN 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT] = arr[idxSubObj].param[OUTPUT_LED_LOGIC_INPUT];
+   break; 
+
+   case 3://Reset 0 ДВых. item
+   case 4://Reset 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_RESET] = arr[idxSubObj].param[OUTPUT_LED_RESET];
+   break; 
+
+   case 5://BL-IMP 0 ДВых. item
+   case 6://BL-IMP 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_BL_IMP] = arr[idxSubObj].param[OUTPUT_LED_BL_IMP];
+   break; 
+
+   case 7://C1/C2 0 ДВых. item
+   case 8://C1/C2 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2] = arr[idxSubObj].param[OUTPUT_LED_MEANDER1_MEANDER2];
+   break; 
+
+   case 9://Генератор С1 0 ДВых. item
+   case 10://Генератор С1 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER1] = arr[idxSubObj].param[OUTPUT_LED_MEANDER1];
+   break; 
+
+   case 11://Генератор С2 0 ДВых. item
+   case 12://Генератор С2 1 ДВых. item
+        arr1[idxSubObj].param[OUTPUT_LED_MEANDER2] = arr[idxSubObj].param[OUTPUT_LED_MEANDER2];
+   break; 
+ }//switch
+  }//for
+}//repairEditArray(int countRegister, __settings_for_OUTPUT_LED *arr, __settings_for_OUTPUT_LED *arr1) 
 
 int privateDOUTBigGetReg1(int adrReg)
 {

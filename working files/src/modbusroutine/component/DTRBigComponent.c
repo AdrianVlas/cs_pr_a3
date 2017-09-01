@@ -20,6 +20,7 @@ void postDTRBigReadAction(void);//action после чтения
 void preDTRBigWriteAction(void);//action до записи
 int postDTRBigWriteAction(void);//action после записи
 void loadDTRBigActualData(void);
+void repairEditArrayDTR(int countRegister, __settings_for_TRIGGER *arr, __settings_for_TRIGGER *arr1);
 
 COMPONENT_OBJ *dtrbigcomponent;
 
@@ -179,6 +180,94 @@ int postDTRBigWriteAction(void) {
 
    __settings_for_TRIGGER *arr  = (__settings_for_TRIGGER*)(sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
    __settings_for_TRIGGER *arr1 = (__settings_for_TRIGGER*)(sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+dtrbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Set D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://Set D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 2://CLR D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 3://CLR D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 4://D D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_D]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_D]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 5://D D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_D]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_D]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 6://C D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_C]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_C]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 7://C D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_C]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_C]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+ }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+dtrbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Set D-T item
+   case 1://Set D-T item
+        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_SET]))
+                {//контроль валидности
+                repairEditArrayDTR(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 2://CLR D-T item
+   case 3://CLR D-T item
+        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_RESET])) 
+                {//контроль валидности
+                repairEditArrayDTR(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 4://D D-T item
+   case 5://D D-T item
+        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_D]))
+                {//контроль валидности
+                repairEditArrayDTR(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 6://C D-T item
+   case 7://C D-T item
+        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_C]))
+                {//контроль валидности
+                repairEditArrayDTR(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
   for(int i=0; i<countRegister; i++) {
   int offset = i+dtrbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -222,37 +311,40 @@ int postDTRBigWriteAction(void) {
  }//switch
   }//for
 
-  //контроль валидности
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  restart_timeout_idle_new_settings = true;
+ return 0;
+}//
+
+void repairEditArrayDTR(int countRegister, __settings_for_TRIGGER *arr, __settings_for_TRIGGER *arr1) {
+  //восстановить edit массив
   for(int i=0; i<countRegister; i++) {
   int offset = i+dtrbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0://Set D-T item
    case 1://Set D-T item
-        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_SET])) return 2;//контроль валидности
-  break;
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET] = arr[idxSubObj].param[INPUT_TRIGGER_SET];
+   break; 
 
    case 2://CLR D-T item
    case 3://CLR D-T item
-        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_RESET])) return 2;//контроль валидности
-  break;
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET] = arr[idxSubObj].param[INPUT_TRIGGER_RESET];
+   break; 
 
    case 4://D D-T item
    case 5://D D-T item
-        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_D])) return 2;//контроль валидности
-  break;
+        arr1[idxSubObj].param[INPUT_TRIGGER_D] = arr[idxSubObj].param[INPUT_TRIGGER_D];
+   break; 
 
    case 6://C D-T item
    case 7://C D-T item
-        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_C])) return 2;//контроль валидности
-  break;
+        arr1[idxSubObj].param[INPUT_TRIGGER_C] = arr[idxSubObj].param[INPUT_TRIGGER_C];
+   break; 
+
  }//switch
   }//for
-
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
-  restart_timeout_idle_new_settings = true;
- return 0;
-}//
+}//repairEditArray(int countRegister, __settings_for_TRIGGER *arr, __settings_for_TRIGGER *arr1) 
 
 int privateDTRBigGetReg1(int adrReg)
 {

@@ -19,6 +19,7 @@ void preMFTBigReadAction(void);//action до чтения
 void postMFTBigReadAction(void);//action после чтения
 void preMFTBigWriteAction(void);//action до записи
 int postMFTBigWriteAction(void);//action после записи
+void repairEditArrayMFT(int countRegister, __settings_for_TIMER *arr, __settings_for_TIMER *arr1);
 
 COMPONENT_OBJ *mftbigcomponent;
 
@@ -177,6 +178,59 @@ extern int upravlSchematic;//флаг Shematic
 
    __settings_for_TIMER *arr  = (__settings_for_TIMER*)(sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
    __settings_for_TIMER *arr1 = (__settings_for_TIMER*)(sca_of_p_edit[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+mftbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 2://MFT-IN 0 item
+        arr1[idxSubObj].param[TIMER_LOGIC_INPUT]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[TIMER_LOGIC_INPUT]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 3://MFT-IN 1 item
+        arr1[idxSubObj].param[TIMER_LOGIC_INPUT]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[TIMER_LOGIC_INPUT]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 4://Reset-I 0 item
+        arr1[idxSubObj].param[TIMER_RESET]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[TIMER_RESET]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 5://Reset-I 1 item
+        arr1[idxSubObj].param[TIMER_RESET]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[TIMER_RESET]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+ }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+mftbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 2://MFT-IN 0 item
+   case 3://MFT-IN 1 item
+        if(superValidParam(arr1[idxSubObj].param[TIMER_LOGIC_INPUT])) 
+                {//контроль валидности
+                repairEditArrayMFT(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 4://Reset-I 0 item
+   case 5://Reset-I 1 item
+        if(superValidParam(arr1[idxSubObj].param[TIMER_RESET]))
+                {//контроль валидности
+                repairEditArrayMFT(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
   for(int i=0; i<countRegister; i++) {
   int offset = i+mftbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -212,25 +266,6 @@ extern int upravlSchematic;//флаг Shematic
  }//switch
   }//for
 
-  //контроль валидности
-  for(int i=0; i<countRegister; i++) {
-  int offset = i+mftbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-
-   case 2://MFT-IN 0 item
-   case 3://MFT-IN 1 item
-        if(superValidParam(arr1[idxSubObj].param[TIMER_LOGIC_INPUT])) return 2;//контроль валидности
-  break;
-
-   case 4://Reset-I 0 item
-   case 5://Reset-I 1 item
-        if(superValidParam(arr1[idxSubObj].param[TIMER_RESET])) return 2;//контроль валидности
-  break;
-
- }//switch
-  }//for
-
   if(upravlSetting)//флаг Setting
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
   if(upravlSchematic)//флаг Shematic
@@ -238,6 +273,25 @@ extern int upravlSchematic;//флаг Shematic
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
+
+void repairEditArrayMFT(int countRegister, __settings_for_TIMER *arr, __settings_for_TIMER *arr1) {
+  //восстановить edit массив
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+mftbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 2://MFT-IN 0 item
+   case 3://MFT-IN 1 item
+        arr1[idxSubObj].param[TIMER_LOGIC_INPUT] = arr[idxSubObj].param[TIMER_LOGIC_INPUT];
+   break; 
+
+   case 4://Reset-I 0 item
+   case 5://Reset-I 1 item
+        arr1[idxSubObj].param[TIMER_RESET] = arr[idxSubObj].param[TIMER_RESET];
+   break; 
+ }//switch
+  }//for
+}//repairEditArray(int countRegister, __settings_for_TIMER *arr, __settings_for_TIMER *arr1) 
 
 int privateMFTBigGetReg1(int adrReg)
 {
