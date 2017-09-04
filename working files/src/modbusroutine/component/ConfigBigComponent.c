@@ -306,6 +306,7 @@ int postConfigBigWriteAction(void) {
      Тому прилад може продовжувати функціонувати, хоч цю зміну віі відкинув
      */
 //    return SUPER_ERROR1;
+                return 2;//уйти
    }
    else
    {
@@ -316,6 +317,7 @@ int postConfigBigWriteAction(void) {
      ПРИЛАД ТРЕБА ПІСЛЯ ВІДПОВІДІ ЗАБЛОКУВАТИ І ПЕРЕЗАПУСТИТИ!!!
      */
 //    return SUPER_ERROR1;
+                return 2;//уйти
    }
  }
  return 0;

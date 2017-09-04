@@ -252,7 +252,31 @@ extern int globalResetFlag;//флаг глобального сброса
     case (BEGIN_ADR_BIT+15):
     {
      //Очистить журнал Событий
-    }//case (BEGIN_ADR_REGISTER+1):
+  if (
+//    (current_state_menu2.current_level == LOG_LIST_MENU2_LEVEL) ||
+  //  (current_state_menu2.current_level == LOG_DATA_MENU2_LEVEL)
+    //||  
+    (
+     (control_tasks_dataflash & (
+                                 MASKA_FOR_BIT(TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT   ) |
+                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT  ) |
+                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT) |
+                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT )
+                                )
+     ) != 0
+    )
+    ||
+    ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_LOG_BIT)) != 0)
+   )
+{
+return 2;
+	//Повідомити, що операція тимчасово недоступна
+}
+else
+{
+    clean_rejestrators |= (unsigned int)(MASKA_FOR_BIT(CLEAN_LOG_BIT));
+}
+  }//case (BEGIN_ADR_REGISTER+1):
     break;
     case (BEGIN_ADR_BIT+16):
     {

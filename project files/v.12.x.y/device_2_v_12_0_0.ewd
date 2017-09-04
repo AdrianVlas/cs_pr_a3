@@ -607,7 +607,7 @@
         </option>
         <option>
           <name>IjetCpuClockEdit</name>
-          <state>72.0</state>
+          <state>120.0</state>
         </option>
         <option>
           <name>IjetSwoPrescalerList</name>
@@ -712,7 +712,7 @@
         </option>
         <option>
           <name>IjetSelectedCPUBehaviour</name>
-          <state>0</state>
+          <state></state>
         </option>
         <option>
           <name>ICpuName</name>
