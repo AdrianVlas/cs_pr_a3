@@ -911,7 +911,7 @@ int superReader20(int offsetRegister)
    case 3://минуты секунды
    return ((buffer_for_USB_read_record_log[3] << 8) | buffer_for_USB_read_record_log[2]);
    case 4://миллисекунды
-   return buffer_for_USB_read_record_log[1];
+   return ((buffer_for_USB_read_record_log[1] >> 4)*10 + (buffer_for_USB_read_record_log[1] &  0xf))*100;
    case 5://идентификатор объекта
    return (word & 0xffff);
    case 6://идентификатор объекта
@@ -923,6 +923,87 @@ int superReader20(int offsetRegister)
   }//switch
    return 0xAA;//просто так
 }//superReader20(int fileNumber, int offsetRegister)
+
+//int superReader20_(int offsetRegister)
+//{
+//  uint32_t word = buffer_for_USB_read_record_log[8] | (buffer_for_USB_read_record_log[9] << 8);
+//  switch(offsetRegister) {
+//   case 0://статус события
+//   return ((word >> 16) & 0x1);
+//   case 1://год месяц
+//   return ((buffer_for_USB_read_record_log[7] << 8) | buffer_for_USB_read_record_log[6]);
+//   case 2://день часы
+//   return ((buffer_for_USB_read_record_log[5] << 8) | buffer_for_USB_read_record_log[4]);
+//   case 3://минуты секунды
+//   return ((buffer_for_USB_read_record_log[3] << 8) | buffer_for_USB_read_record_log[2]);
+//   case 4://миллисекунды
+//   return ((buffer_for_USB_read_record_log[1] >> 4)*10 + (buffer_for_USB_read_record_log[1] &  0xf))*100;
+//   case 5://идентификатор объекта
+//   return (word & 0x7fff);
+//  }//switch
+//   return 0xAA;//просто так
+//  
+////if (
+////    (current_state_menu2.current_level == PR_ERR_LIST_MENU2_LEVEL) ||
+////    (current_state_menu2.current_level == PR_ERR_DATA_MENU2_LEVEL)
+////    ||  
+////    (
+////     (control_tasks_dataflash & (
+////                                 MASKA_FOR_BIT(TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT   ) |
+////                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  ) |
+////                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT) |
+////                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )
+////                                )
+////     ) != 0
+////    )
+////    ||
+////    ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0)
+////   )
+////{
+////	//Повідомити, що операція тимчасово недоступна
+////}
+////else
+////{
+////    clean_rejestrators |= (unsigned int)(MASKA_FOR_BIT(CLEAN_PR_ERR_BIT));
+////}
+//
+//
+//{
+//        //USB
+////number_record_of_pr_err_into_USB = number_record_of_pr_err;//номер запису для читання;
+////  _SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT);
+////
+////  uint32_t delta_time = 0;
+////  uint32_t time_start = TIM4->CNT;
+////  while (
+////    ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) &&
+////    (delta_time < MAX_TIMEOUT_WAITING_REQUESTED_DATA)
+////  )
+////    {
+////      uint32_t current_time_tim4 = TIM4->CNT;
+////
+////      if (current_time_tim4 >= time_start)
+////        delta_time = current_time_tim4 - time_start;
+////      else
+////        delta_time = current_time_tim4 + 0x10000 - time_start;
+////
+////      //Робота з Watchdog
+////      watchdog_routine();
+////    }//while
+////
+////  if ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0)
+////    {
+////      //Ми не дочекалися завершення читання з мікросхеми DataFalash
+////      number_record_of_pr_err_into_USB = 0xffffffff;
+////      _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT);
+////      return Error_modbus(adrUnit, // address,
+////                          outputPacket[1],//function,
+////                          2,//error,
+////                          outputPacket);//output_data
+////    }//if
+////    } break;                                                                        
+//  
+//}//superReader20(int fileNumber, int offsetRegister)
 
 /**************************************/
 //регистровый читатель
