@@ -124,7 +124,7 @@ getTSBigModbusBit, getTSBigModbusRegister, postTSBigReadAction, postTSBigWriteAc
 getTUSmallModbusBit, getTUSmallModbusRegister, postTUSmallReadAction, postTUSmallWriteAction, preTUSmallReadAction, preTUSmallWriteAction, setTUSmallModbusBit, setTUSmallModbusRegister,
 getTUBigModbusBit, getTUBigModbusRegister, postTUBigReadAction, postTUBigWriteAction, preTUBigReadAction, preTUBigWriteAction, setTUBigModbusBit, setTUBigModbusRegister,
 getXORBigModbusBit, getXORBigModbusRegister, postXORBigReadAction, postXORBigWriteAction, preXORBigReadAction, preXORBigWriteAction, setXORBigModbusBit, setXORBigModbusRegister,
-getYustBigModbusBit, getYustBigModbusRegister, postYustBigReadAction, postYustBigWriteAction, preYustBigReadAction, preYustBigWriteAction, setYustBigModbusBit, setYustBigModbusRegister;
-
+getYustBigModbusBit, getYustBigModbusRegister, postYustBigReadAction, postYustBigWriteAction, preYustBigReadAction, preYustBigWriteAction, setYustBigModbusBit, setYustBigModbusRegister,
+getRegProBigModbusBit, getRegProBigModbusRegister, postRegProBigReadAction, postRegProBigWriteAction, preRegProBigReadAction, preRegProBigWriteAction, setRegProBigModbusBit, setRegProBigModbusRegister;
 
 exclude USBD_USR_DeviceConnected, USBD_USR_DeviceDisconnected;

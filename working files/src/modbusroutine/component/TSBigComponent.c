@@ -21,6 +21,7 @@ void preTSBigWriteAction(void);//action до записи
 int postTSBigWriteAction(void);//action после записи
 void loadTSBigActualData(void);
 int getTSmallModbusBeginAdrRegister(void);
+void repairEditArrayTS(int countRegister, __settings_for_TS *arr, __settings_for_TS *arr1);
 
 COMPONENT_OBJ *tsbigcomponent;
 
@@ -171,6 +172,60 @@ extern int upravlSchematic;//флаг Shematic
 
    __settings_for_TS *arr  = (__settings_for_TS*)(sca_of_p[ID_FB_TS - _ID_FB_FIRST_VAR]);
    __settings_for_TS *arr1 = (__settings_for_TS*)(sca_of_p_edit[ID_FB_TS - _ID_FB_FIRST_VAR]);
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+tsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 0://In TC 0
+        arr1[idxSubObj].param[TS_LOGIC_INPUT]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[TS_LOGIC_INPUT]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://In TC 1
+        arr1[idxSubObj].param[TS_LOGIC_INPUT]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[TS_LOGIC_INPUT]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 2://Block TC 0
+        arr1[idxSubObj].param[TS_BLOCK]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[TS_BLOCK]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 3://Block TC 1
+        arr1[idxSubObj].param[TS_BLOCK]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[TS_BLOCK]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+ }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+tsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 0://In TC 0
+   case 1://In TC 1
+        if(superValidParam(arr1[idxSubObj].param[TS_LOGIC_INPUT])) 
+                {//контроль валидности
+                repairEditArrayTS(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 2://Block TC 0
+   case 3://Block TC 1
+        if(superValidParam(arr1[idxSubObj].param[TS_BLOCK]))
+                {//контроль валидности
+                repairEditArrayTS(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
   for(int i=0; i<countRegister; i++) {
   int offset = i+tsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -200,24 +255,6 @@ extern int upravlSchematic;//флаг Shematic
  }//switch
   }//for
 
-  //контроль валидности
-  for(int i=0; i<countRegister; i++) {
-  int offset = i+tsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-
-   case 0://In TC 0
-   case 1://In TC 1
-        if(superValidParam(arr1[idxSubObj].param[TS_LOGIC_INPUT])) return 2;//контроль валидности
-  break;
-
-   case 2://Block TC 0
-   case 3://Block TC 1
-        if(superValidParam(arr1[idxSubObj].param[TS_BLOCK])) return 2;//контроль валидности
-  break;
- }//switch
-  }//for
-
   if(upravlSetting)//флаг Setting
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
   if(upravlSchematic)//флаг Shematic
@@ -225,6 +262,27 @@ extern int upravlSchematic;//флаг Shematic
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
+
+void repairEditArrayTS(int countRegister, __settings_for_TS *arr, __settings_for_TS *arr1) {
+  //восстановить edit массив
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+tsbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+
+   case 0://In TC 0
+   case 1://In TC 1
+        arr1[idxSubObj].param[TS_LOGIC_INPUT] = arr[idxSubObj].param[TS_LOGIC_INPUT];
+   break; 
+
+   case 2://Block TC 0
+   case 3://Block TC 1
+        arr1[idxSubObj].param[TS_BLOCK] = arr[idxSubObj].param[TS_BLOCK];
+   break; 
+
+ }//switch
+  }//for
+}//repairEditArray(int countRegister, __settings_for_TS *arr, __settings_for_TS *arr1) 
 
 int privateTSBigGetReg1(int adrReg)
 {

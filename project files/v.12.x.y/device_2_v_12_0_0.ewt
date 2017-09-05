@@ -1696,6 +1696,9 @@
             </file>
           </group>
           <file>
+            <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\RegProBigComponent.c</name>
+          </file>
+          <file>
             <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\start_settings_m.c</name>
           </file>
           <file>

@@ -445,7 +445,7 @@ int main(void)
     //Виставляємо подію про програмний перезапуск пристрою
     if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT);
   }
-  else if (RCC_GetFlagStatus(RCC_FLAG_PORRST) != SET)
+  else if (RCC_GetFlagStatus(RCC_FLAG_BORRST/*RCC_FLAG_PORRST*/) != SET)
   {
     //Виставляємо подію про перезапуск пристрою (бо не зафіксовано подію Power-on/Power-down)
     if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT);

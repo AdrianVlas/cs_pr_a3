@@ -20,7 +20,7 @@ void preMEBigReadAction(void);//action до чтени€
 void postMEBigReadAction(void);//action после чтени€
 void preMEBigWriteAction(void);//action до записи
 int postMEBigWriteAction(void);//action после записи
-//void loadMEBigActualData(void);
+void repairEditArrayME(int countRegister, __LOG_INPUT *arr, __LOG_INPUT *arr1);
 
 COMPONENT_OBJ *mebigcomponent;
 
@@ -173,6 +173,43 @@ extern int upravlSchematic;//флаг Shematic
 
    __LOG_INPUT *arr  = (__LOG_INPUT*)(sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
    __LOG_INPUT *arr1 = (__LOG_INPUT*)(sca_of_p_edit[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+mebigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+
+  int idxParam = ((offset-2)/2);//индекс param
+  if(idxParam<0) break;
+  switch((offset-2)%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://¬ход 0 item
+        arr1[idxParam]  &= (uint32_t)~0xffff;
+        arr1[idxParam]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://¬ход 1 item
+        arr1[idxParam]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxParam]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+ }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+mebigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxParam = ((offset-2)/2);//индекс param
+  if(idxParam<0) break;
+  switch((offset-2)%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://¬ход 0 item
+   case 1://¬ход 1 item
+        if(superValidParam(arr1[idxParam])) 
+                {//контроль валидности
+                repairEditArrayME(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
   for(int i=0; i<countRegister; i++) {
   int offset = i+mebigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
 
@@ -204,19 +241,6 @@ extern int upravlSchematic;//флаг Shematic
  }//switch
   }//for
 
-  //контроль валидности
-  for(int i=0; i<countRegister; i++) {
-  int offset = i+mebigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
-  int idxParam = ((offset-2)/2);//индекс param
-  if(idxParam<0) break;
-  switch((offset-2)%REGISTER_FOR_OBJ) {//индекс регистра 
-   case 0://¬ход 0 item
-   case 1://¬ход 1 item
-        if(superValidParam(arr1[idxParam])) return 2;//контроль валидности
-  break;
- }//switch
-  }//for
-
   if(upravlSetting)//флаг Setting
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
   if(upravlSchematic)//флаг Shematic
@@ -224,6 +248,23 @@ extern int upravlSchematic;//флаг Shematic
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
+
+void repairEditArrayME(int countRegister, __LOG_INPUT *arr, __LOG_INPUT *arr1) {
+  //восстановить edit массив
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+mebigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+
+  int idxParam = ((offset-2)/2);//индекс param
+  if(idxParam<0) break;
+  switch((offset-2)%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://¬ход 0 item
+   case 1://¬ход 1 item
+        arr1[idxParam] = arr[idxParam];
+   break; 
+
+ }//switch
+  }//for
+}//repairEditArray(int countRegister, __LOG_INPUT *arr, __LOG_INPUT *arr1) 
 
 int privateMEBigGetReg1(int adrReg)
 {
