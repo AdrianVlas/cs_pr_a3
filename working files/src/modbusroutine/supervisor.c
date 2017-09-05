@@ -1,6 +1,6 @@
 //#include <QtWidgets>
 //#include "loghandler.h"
-                     //0-adr  1-func   2-ByteCount 3-RefType  4-MFileNumber   5-LFileNumber   6-MRecordNumber  7-LRecordNumber  8-MRecordLen  9-LRecordLen
+//0-adr  1-func   2-ByteCount 3-RefType  4-MFileNumber   5-LFileNumber   6-MRecordNumber  7-LRecordNumber  8-MRecordLen  9-LRecordLen
 //  byte inputPacket[] {0x1,      20,     7,          6,         0x0,               5,             0,             0,                  0,          9};
 
 #include "header.h"
@@ -239,7 +239,7 @@ int inputPacketParser(void)
     case 20:
     {
       //int byteCount = inputPacket[2];
-     // int refType   = inputPacket[3];
+      // int refType   = inputPacket[3];
       int fileNumber   = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       int recordNumber = (unsigned int)inputPacket[7] +256*(unsigned int)inputPacket[6];
       int recordLen    = (unsigned int)inputPacket[9] +256*(unsigned int)inputPacket[8];
@@ -301,89 +301,93 @@ int inputPacketParser(void)
 int outputFunc20PacketEncoder(int adrUnit, int fileNumber, int recordNumber, int recordLen)
 {
 //выходной кодировщик 20 функции
-int bazaRecord = (fileNumber-5)*10000;
-unsigned int number_record_of_log = bazaRecord + recordNumber;
+  int bazaRecord = (fileNumber-5)*10000;
+  unsigned int number_record_of_log = bazaRecord + recordNumber;
 
-if(number_record_of_log>info_rejestrator_log.number_records)
-      return Error_modbus(adrUnit, // address,
-                          outputPacket[1],//function,
-                          2,//error,
-                          outputPacket);//output_data
+  if(number_record_of_log>info_rejestrator_log.number_records)
+    return Error_modbus(adrUnit, // address,
+                        outputPacket[1],//function,
+                        2,//error,
+                        outputPacket);//output_data
 
-      switch(pointInterface)  //метка интерфейса 0-USB 1-RS485
+  switch(pointInterface)  //метка интерфейса 0-USB 1-RS485
+    {
+    case 0:
+    {
+      //USB
+      number_record_of_log_into_USB = number_record_of_log;//номер запису для читання;
+      _SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT);
+
+      uint32_t delta_time = 0;
+      uint32_t time_start = TIM4->CNT;
+      while (
+        ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT )) != 0) &&
+        (delta_time < MAX_TIMEOUT_WAITING_REQUESTED_DATA)
+      )
         {
-        case 0: {
-        //USB
-number_record_of_log_into_USB = number_record_of_log;//номер запису для читання;
-  _SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT);
+          uint32_t current_time_tim4 = TIM4->CNT;
 
-  uint32_t delta_time = 0;
-  uint32_t time_start = TIM4->CNT;
-  while (
-    ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT )) != 0) &&
-    (delta_time < MAX_TIMEOUT_WAITING_REQUESTED_DATA)
-  )
+          if (current_time_tim4 >= time_start)
+            delta_time = current_time_tim4 - time_start;
+          else
+            delta_time = current_time_tim4 + 0x10000 - time_start;
+
+          //Робота з Watchdog
+          watchdog_routine();
+        }//while
+
+      if ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT )) != 0)
+        {
+          //Ми не дочекалися завершення читання з мікросхеми DataFalash
+          number_record_of_log_into_USB = 0xffffffff;
+          _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT);
+          return Error_modbus(adrUnit, // address,
+                              outputPacket[1],//function,
+                              2,//error,
+                              outputPacket);//output_data
+        }//if
+    }
+    break;
+
+    case 1:
     {
-      uint32_t current_time_tim4 = TIM4->CNT;
+      //RS485
+      number_record_of_log_into_RS485 = number_record_of_log;//номер запису для читання;
+      _SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT);
 
-      if (current_time_tim4 >= time_start)
-        delta_time = current_time_tim4 - time_start;
-      else
-        delta_time = current_time_tim4 + 0x10000 - time_start;
+      uint32_t delta_time = 0;
+      uint32_t time_start = TIM4->CNT;
+      while (
+        ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )) != 0) &&
+        (delta_time < MAX_TIMEOUT_WAITING_REQUESTED_DATA)
+      )
+        {
+          uint32_t current_time_tim4 = TIM4->CNT;
 
-      //Робота з Watchdog
-      watchdog_routine();
-    }//while
+          if (current_time_tim4 >= time_start)
+            delta_time = current_time_tim4 - time_start;
+          else
+            delta_time = current_time_tim4 + 0x10000 - time_start;
 
-  if ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT )) != 0)
-    {
-      //Ми не дочекалися завершення читання з мікросхеми DataFalash
-      number_record_of_log_into_USB = 0xffffffff;
-      _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT);
-      return Error_modbus(adrUnit, // address,
-                          outputPacket[1],//function,
-                          2,//error,
-                          outputPacket);//output_data
-    }//if
-    } break;                                                                        
+          //Робота з Watchdog
+          watchdog_routine();
+        }//while
 
-        case 1: {
-        //RS485
-number_record_of_log_into_RS485 = number_record_of_log;//номер запису для читання;
-  _SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT);
-
-  uint32_t delta_time = 0;
-  uint32_t time_start = TIM4->CNT;
-  while (
-    ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )) != 0) &&
-    (delta_time < MAX_TIMEOUT_WAITING_REQUESTED_DATA)
-  )
-    {
-      uint32_t current_time_tim4 = TIM4->CNT;
-
-      if (current_time_tim4 >= time_start)
-        delta_time = current_time_tim4 - time_start;
-      else
-        delta_time = current_time_tim4 + 0x10000 - time_start;
-
-      //Робота з Watchdog
-      watchdog_routine();
-    }//while
-
-  if ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )) != 0)
-    {
-      //Ми не дочекалися завершення читання з мікросхеми DataFalash
-      number_record_of_log_into_RS485 = 0xffffffff;
-      _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT);
-      return Error_modbus(adrUnit, // address,
-                          outputPacket[1],//function,
-                          2,//error,
-                          outputPacket);//output_data
-    }//if
-    } break;
+      if ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT )) != 0)
+        {
+          //Ми не дочекалися завершення читання з мікросхеми DataFalash
+          number_record_of_log_into_RS485 = 0xffffffff;
+          _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT);
+          return Error_modbus(adrUnit, // address,
+                              outputPacket[1],//function,
+                              2,//error,
+                              outputPacket);//output_data
+        }//if
+    }
+    break;
 
 
- }//switch
+    }//switch
 
   //Успішне читання даних з енергонезалеженої пам'яті DataFlash
 
@@ -411,7 +415,7 @@ number_record_of_log_into_RS485 = number_record_of_log;//номер запису для читанн
       switch(result)
         {
         case MARKER_OUTPERIMETR:
-        //  dataRegister[idxDataRegister] = -1;
+          //  dataRegister[idxDataRegister] = -1;
 //          dataRegister[idxDataRegister] = 0;//(short) result;
           break;
         case MARKER_ERRORPERIMETR://ошибка периметра
@@ -899,111 +903,67 @@ int superPostWriteAction(void)
 /**************************************/
 int superReader20(int offsetRegister)
 {
-  uint32_t word = buffer_for_USB_read_record_log[8] | (buffer_for_USB_read_record_log[9] << 8) | (buffer_for_USB_read_record_log[10] << 16) | (buffer_for_USB_read_record_log[11] << 24);
-  uint32_t number = buffer_for_USB_read_record_log[12] | (buffer_for_USB_read_record_log[13] << 8);
-  switch(offsetRegister) {
-   case 0://статус события
-   return ((word >> 31) & 0x1);
-   case 1://год месяц
-   return ((buffer_for_USB_read_record_log[7] << 8) | buffer_for_USB_read_record_log[6]);
-   case 2://день часы
-   return ((buffer_for_USB_read_record_log[5] << 8) | buffer_for_USB_read_record_log[4]);
-   case 3://минуты секунды
-   return ((buffer_for_USB_read_record_log[3] << 8) | buffer_for_USB_read_record_log[2]);
-   case 4://миллисекунды
-   return ((buffer_for_USB_read_record_log[1] >> 4)*10 + (buffer_for_USB_read_record_log[1] &  0xf))*100;
-   case 5://идентификатор объекта
-   return (word & 0xffff);
-   case 6://идентификатор объекта
-   return ((word >> 16) & 0x7fff);
-   case 7://значение
-   return (number & 0xffff);
-   case 8://значение
-   return ((number >> 16) & 0xffff);
-  }//switch
-   return 0xAA;//просто так
+  switch(pointInterface)  //метка интерфейса 0-USB 1-RS485
+    {
+    case 0:
+    {
+      //USB
+      uint32_t word = buffer_for_USB_read_record_log[8] | (buffer_for_USB_read_record_log[9] << 8) | (buffer_for_USB_read_record_log[10] << 16) | (buffer_for_USB_read_record_log[11] << 24);
+      uint32_t number = buffer_for_USB_read_record_log[12] | (buffer_for_USB_read_record_log[13] << 8);
+      switch(offsetRegister)
+        {
+        case 0://статус события
+          return ((word >> 31) & 0x1);
+        case 1://год месяц
+          return ((buffer_for_USB_read_record_log[7] << 8) | buffer_for_USB_read_record_log[6]);
+        case 2://день часы
+          return ((buffer_for_USB_read_record_log[5] << 8) | buffer_for_USB_read_record_log[4]);
+        case 3://минуты секунды
+          return ((buffer_for_USB_read_record_log[3] << 8) | buffer_for_USB_read_record_log[2]);
+        case 4://миллисекунды
+          return buffer_for_USB_read_record_log[1];
+        case 5://идентификатор объекта
+          return (word & 0xffff);
+        case 6://идентификатор объекта
+          return ((word >> 16) & 0x7fff);
+        case 7://значение
+          return (number & 0xffff);
+        case 8://значение
+          return ((number >> 16) & 0xffff);
+        }//switch
+    }
+    break;
+    case 1:
+    {
+      //RS485
+      uint32_t word = buffer_for_RS485_read_record_log[8] | (buffer_for_RS485_read_record_log[9] << 8) | (buffer_for_RS485_read_record_log[10] << 16) | (buffer_for_RS485_read_record_log[11] << 24);
+      uint32_t number = buffer_for_RS485_read_record_log[12] | (buffer_for_RS485_read_record_log[13] << 8);
+      switch(offsetRegister)
+        {
+        case 0://статус события
+          return ((word >> 31) & 0x1);
+        case 1://год месяц
+          return ((buffer_for_RS485_read_record_log[7] << 8) | buffer_for_RS485_read_record_log[6]);
+        case 2://день часы
+          return ((buffer_for_RS485_read_record_log[5] << 8) | buffer_for_RS485_read_record_log[4]);
+        case 3://минуты секунды
+          return ((buffer_for_RS485_read_record_log[3] << 8) | buffer_for_RS485_read_record_log[2]);
+        case 4://миллисекунды
+          return buffer_for_RS485_read_record_log[1];
+        case 5://идентификатор объекта
+          return (word & 0xffff);
+        case 6://идентификатор объекта
+          return ((word >> 16) & 0x7fff);
+        case 7://значение
+          return (number & 0xffff);
+        case 8://значение
+          return ((number >> 16) & 0xffff);
+        }//switch
+    }
+    break;
+    }//switch
+  return 0xAA;//просто так
 }//superReader20(int fileNumber, int offsetRegister)
-
-//int superReader20_(int offsetRegister)
-//{
-//  uint32_t word = buffer_for_USB_read_record_log[8] | (buffer_for_USB_read_record_log[9] << 8);
-//  switch(offsetRegister) {
-//   case 0://статус события
-//   return ((word >> 16) & 0x1);
-//   case 1://год месяц
-//   return ((buffer_for_USB_read_record_log[7] << 8) | buffer_for_USB_read_record_log[6]);
-//   case 2://день часы
-//   return ((buffer_for_USB_read_record_log[5] << 8) | buffer_for_USB_read_record_log[4]);
-//   case 3://минуты секунды
-//   return ((buffer_for_USB_read_record_log[3] << 8) | buffer_for_USB_read_record_log[2]);
-//   case 4://миллисекунды
-//   return ((buffer_for_USB_read_record_log[1] >> 4)*10 + (buffer_for_USB_read_record_log[1] &  0xf))*100;
-//   case 5://идентификатор объекта
-//   return (word & 0x7fff);
-//  }//switch
-//   return 0xAA;//просто так
-//  
-////if (
-////    (current_state_menu2.current_level == PR_ERR_LIST_MENU2_LEVEL) ||
-////    (current_state_menu2.current_level == PR_ERR_DATA_MENU2_LEVEL)
-////    ||  
-////    (
-////     (control_tasks_dataflash & (
-////                                 MASKA_FOR_BIT(TASK_WRITE_PR_ERR_RECORDS_INTO_DATAFLASH_BIT   ) |
-////                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT  ) |
-////                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_RS485_BIT) |
-////                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_MENU_BIT )
-////                                )
-////     ) != 0
-////    )
-////    ||
-////    ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_PR_ERR_BIT)) != 0)
-////   )
-////{
-////	//Повідомити, що операція тимчасово недоступна
-////}
-////else
-////{
-////    clean_rejestrators |= (unsigned int)(MASKA_FOR_BIT(CLEAN_PR_ERR_BIT));
-////}
-//
-//
-//{
-//        //USB
-////number_record_of_pr_err_into_USB = number_record_of_pr_err;//номер запису для читання;
-////  _SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT);
-////
-////  uint32_t delta_time = 0;
-////  uint32_t time_start = TIM4->CNT;
-////  while (
-////    ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) &&
-////    (delta_time < MAX_TIMEOUT_WAITING_REQUESTED_DATA)
-////  )
-////    {
-////      uint32_t current_time_tim4 = TIM4->CNT;
-////
-////      if (current_time_tim4 >= time_start)
-////        delta_time = current_time_tim4 - time_start;
-////      else
-////        delta_time = current_time_tim4 + 0x10000 - time_start;
-////
-////      //Робота з Watchdog
-////      watchdog_routine();
-////    }//while
-////
-////  if ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0)
-////    {
-////      //Ми не дочекалися завершення читання з мікросхеми DataFalash
-////      number_record_of_pr_err_into_USB = 0xffffffff;
-////      _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT);
-////      return Error_modbus(adrUnit, // address,
-////                          outputPacket[1],//function,
-////                          2,//error,
-////                          outputPacket);//output_data
-////    }//if
-////    } break;                                                                        
-//  
-//}//superReader20(int fileNumber, int offsetRegister)
 
 /**************************************/
 //регистровый читатель
@@ -1314,104 +1274,104 @@ int superValidParam(uint32_t param)
   uint32_t n    = (param >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;
   uint32_t out  = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;
   if ((id >= _ID_FB_FIRST_ALL) && (id < _ID_FB_LAST_ALL))
-  {
-    //Роблю тільки для USB, так як не заню , як визначити звідки іде запит
-    uint32_t n_nodes;
-    switch (id)
     {
-    case ID_FB_CONTROL_BLOCK:
-      {
-        n_nodes = 1;
-        break;
-      }
-    case ID_FB_INPUT:
-      {
-        n_nodes = current_config.n_input;
-        break;
-      }
-    case ID_FB_OUTPUT:
-      {
-        n_nodes = current_config.n_output;
-        break;
-      }
-    case ID_FB_LED:
-      {
-        n_nodes = current_config.n_led;
-        break;
-      }
-    case ID_FB_BUTTON:
-      {
-        n_nodes = current_config.n_button;
-        break;
-      }
-    case ID_FB_ALARM:
-      {
-        n_nodes = current_config.n_alarm;
-        break;
-      }
-    case ID_FB_GROUP_ALARM:
-      {
-        n_nodes = current_config.n_group_alarm;
-        break;
-      }
-    case ID_FB_AND:
-      {
-        n_nodes = current_config.n_and;
-        break;
-      }
-    case ID_FB_OR:
-      {
-        n_nodes = current_config.n_or;
-        break;
-      }
-    case ID_FB_XOR:
-      {
-        n_nodes = current_config.n_xor;
-        break;
-      }
-    case ID_FB_NOT:
-      {
-        n_nodes = current_config.n_not;
-        break;
-      }
-    case ID_FB_TIMER:
-      {
-        n_nodes = current_config.n_timer;
-        break;
-      }
-    case ID_FB_TRIGGER:
-      {
-        n_nodes = current_config.n_trigger;
-        break;
-      }
-    case ID_FB_MEANDER:
-      {
-        n_nodes = current_config.n_meander;
-        break;
-      }
-    case ID_FB_TU:
-      {
-        n_nodes = current_config.n_tu;
-        break;
-      }
-    case ID_FB_TS:
-      {
-        n_nodes = current_config.n_ts;
-        break;
-      }
-    case ID_FB_EVENT_LOG:
-      {
-        n_nodes = 1;
-        break;
-      }
-    default:
-      {
-        return 1;
-      }
+      //Роблю тільки для USB, так як не заню , як визначити звідки іде запит
+      uint32_t n_nodes;
+      switch (id)
+        {
+        case ID_FB_CONTROL_BLOCK:
+        {
+          n_nodes = 1;
+          break;
+        }
+        case ID_FB_INPUT:
+        {
+          n_nodes = current_config.n_input;
+          break;
+        }
+        case ID_FB_OUTPUT:
+        {
+          n_nodes = current_config.n_output;
+          break;
+        }
+        case ID_FB_LED:
+        {
+          n_nodes = current_config.n_led;
+          break;
+        }
+        case ID_FB_BUTTON:
+        {
+          n_nodes = current_config.n_button;
+          break;
+        }
+        case ID_FB_ALARM:
+        {
+          n_nodes = current_config.n_alarm;
+          break;
+        }
+        case ID_FB_GROUP_ALARM:
+        {
+          n_nodes = current_config.n_group_alarm;
+          break;
+        }
+        case ID_FB_AND:
+        {
+          n_nodes = current_config.n_and;
+          break;
+        }
+        case ID_FB_OR:
+        {
+          n_nodes = current_config.n_or;
+          break;
+        }
+        case ID_FB_XOR:
+        {
+          n_nodes = current_config.n_xor;
+          break;
+        }
+        case ID_FB_NOT:
+        {
+          n_nodes = current_config.n_not;
+          break;
+        }
+        case ID_FB_TIMER:
+        {
+          n_nodes = current_config.n_timer;
+          break;
+        }
+        case ID_FB_TRIGGER:
+        {
+          n_nodes = current_config.n_trigger;
+          break;
+        }
+        case ID_FB_MEANDER:
+        {
+          n_nodes = current_config.n_meander;
+          break;
+        }
+        case ID_FB_TU:
+        {
+          n_nodes = current_config.n_tu;
+          break;
+        }
+        case ID_FB_TS:
+        {
+          n_nodes = current_config.n_ts;
+          break;
+        }
+        case ID_FB_EVENT_LOG:
+        {
+          n_nodes = 1;
+          break;
+        }
+        default:
+        {
+          return 1;
+        }
+        }
+      if ((n   == 0) || (n > n_nodes)) return 1;
+      if ((out == 0) || (out > number_output_signals_logical_nodes[id - 1])) return 1;
     }
-    if ((n   == 0) || (n > n_nodes)) return 1;
-    if ((out == 0) || (out > number_output_signals_logical_nodes[id - 1])) return 1;
-  }
   else return 1;
 //  switch(id)
 //    {

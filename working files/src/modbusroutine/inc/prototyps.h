@@ -51,6 +51,7 @@ void constructorCommonSmallComponent(COMPONENT_OBJ *);
 void constructorCommonBigComponent(COMPONENT_OBJ *);
 void constructorMEBigComponent(COMPONENT_OBJ *);
 void constructorRegBigComponent(COMPONENT_OBJ *);
+void constructorRegProBigComponent(COMPONENT_OBJ *);
 void constructorRPRBigComponent(COMPONENT_OBJ *);
 void constructorRPRSmallComponent(COMPONENT_OBJ *);
 void constructorKEYSmallComponent(COMPONENT_OBJ *);

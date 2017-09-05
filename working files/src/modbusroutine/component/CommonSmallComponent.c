@@ -253,9 +253,9 @@ extern int globalResetFlag;//флаг глобального сброса
     {
      //Очистить журнал Событий
   if (
-//    (current_state_menu2.current_level == LOG_LIST_MENU2_LEVEL) ||
-  //  (current_state_menu2.current_level == LOG_DATA_MENU2_LEVEL)
-    //||  
+    (current_state_menu2.current_level == LOG_LIST_MENU2_LEVEL) ||
+    (current_state_menu2.current_level == LOG_DATA_MENU2_LEVEL)
+    ||  
     (
      (control_tasks_dataflash & (
                                  MASKA_FOR_BIT(TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT   ) |
