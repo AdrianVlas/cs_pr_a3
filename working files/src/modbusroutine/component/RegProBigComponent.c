@@ -1,9 +1,9 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 61949
+#define BEGIN_ADR_REGISTER 61948
 //макс к-во обектов
-#define REGISTER_FOR_OBJ 9
+#define REGISTER_FOR_OBJ 3
 
 int privateRegProBigGetReg2(int adrReg);
 
@@ -50,27 +50,13 @@ int getRegProBigModbusRegister(int adrReg)
 
   int offsetRegister = adrReg-BEGIN_ADR_REGISTER;
 
-  uint32_t word = buffer_for_USB_read_record_log[8] | (buffer_for_USB_read_record_log[9] << 8);
   switch(offsetRegister)
     {
-    case 0://Очистить регистратор программных ошибок
+    case 0://Запись серийного номера устройства
+    case 1://Очистить регистратор программных ошибок
       return MARKER_ERRORPERIMETR;
-    case 1://номер запису для читання;
+    case 2://номер запису для читання;
       return number_record_of_pr_err_into_USB;
-    case 2://Количество событий в регистраторе программных ошибок
-      return 0;//info_rejestrator_err.number_records;
-    case 3://статус события
-      return ((word >> 16) & 0x1);
-    case 4://год месяц
-      return ((buffer_for_USB_read_record_log[7] << 8) | buffer_for_USB_read_record_log[6]);
-    case 5://день часы
-      return ((buffer_for_USB_read_record_log[5] << 8) | buffer_for_USB_read_record_log[4]);
-    case 6://минуты секунды
-      return ((buffer_for_USB_read_record_log[3] << 8) | buffer_for_USB_read_record_log[2]);
-    case 7://миллисекунды
-      return ((buffer_for_USB_read_record_log[1] >> 4)*10 + (buffer_for_USB_read_record_log[1] &  0xf))*100;
-    case 8://идентификатор объекта
-      return (word & 0x7fff);
     }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)
@@ -93,9 +79,8 @@ int setRegProBigModbusRegister(int adrReg, int dataReg)
 
   switch(offsetRegister)
     {
-    case 0://Очистить регистратор программных ошибок
-      return 0;
-    case 1://номер запису для читання;
+    case 0://Запись серийного номера устройства
+    case 1://Очистить регистратор программных ошибок
       return 0;
     }//switch
 
@@ -130,6 +115,7 @@ void preRegProBigWriteAction(void)
 }//
 int postRegProBigWriteAction(void)
 {
+extern int upravlYust;//флаг юстировки
 //action после записи
   if(regprobigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -142,7 +128,14 @@ int postRegProBigWriteAction(void)
 
       switch(offset)  //индекс регистра входа
         {
-        case 0://Очистить регистратор программных ошибок
+        case 0://Запись серийного номера устройства
+          if(upravlYust!=0x1978) return 2;//флаг юстировки
+          changed_ustuvannja = CHANGED_ETAP_EXECUTION;
+          serial_number_dev = tempWriteArray[offsetTempWriteArray+i];//значення;
+          changed_ustuvannja = CHANGED_ETAP_ENDED;
+         _SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT);
+         return 0;
+        case 1://Очистить регистратор программных ошибок
         {
           if (
             (current_state_menu2.current_level == PR_ERR_LIST_MENU2_LEVEL) ||
@@ -168,11 +161,6 @@ int postRegProBigWriteAction(void)
             {
               clean_rejestrators |= (unsigned int)(MASKA_FOR_BIT(CLEAN_PR_ERR_BIT));
             }
-        }
-        break;
-        case 1://номер запису для читання;
-        {
-          number_record_of_pr_err_into_USB = tempWriteArray[offsetTempWriteArray+i];
         }
         break;
         default:

@@ -3,6 +3,7 @@
 
 void global_component_installation(void);
 int  superReader20(int);
+int  superReader20Pro(int);
 int  superReaderRegister(int);
 int  superWriterRegister(int, int);
 int  superReaderBit(int);
