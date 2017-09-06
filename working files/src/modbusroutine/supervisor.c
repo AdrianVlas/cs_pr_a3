@@ -11,6 +11,7 @@ void inputPacketParserRS485(void);
 unsigned short int  AddCRC(unsigned char inpbyte, unsigned short int oldCRC);
 int Error_modbus(unsigned int address, unsigned int function, unsigned int error, unsigned char *output_data);
 int outputFunc20PacketEncoder(int adrUnit, int fileNumber, int recordNumber, int recordLen);
+int outputFunc20PacketEncoderPro(int adrUnit, int recordNumber, int recordLen);
 int outputFunc16PacketEncoder(int adrUnit, int adrReg, int cntReg);
 int outputFunc15PacketEncoder(int adrUnit, int adrBit, int cntBit);
 int outputFunc6PacketEncoder(int adrUnit, int adrReg, int dataReg);
@@ -34,6 +35,7 @@ int globalbeginAdrBit  = 0;//адрес нач бит
 int upravlFlag=0;//флаг пакетов управлени€ 1-есть управление
 int upravlSetting=0;//флаг Setting
 int upravlSchematic=0;//флаг Shematic
+int upravlYust=0;//флаг юстировки
 int globalResetFlag=0;//флаг глобального сброса
 
 /**************************************/
@@ -243,6 +245,19 @@ int inputPacketParser(void)
       int fileNumber   = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       int recordNumber = (unsigned int)inputPacket[7] +256*(unsigned int)inputPacket[6];
       int recordLen    = (unsigned int)inputPacket[9] +256*(unsigned int)inputPacket[8];
+      if(fileNumber==15) {//pro
+      if(((unsigned int)recordLen)>6)
+        {
+          sizeOutputPacket = Error_modbus(adrUnit, // address,
+                                          inputPacket[1],//function,
+                                          2,//error,
+                                          outputPacket);//output_data
+          break;
+        }//if
+        outputPacket[1] = (unsigned char)numFunc;
+        sizeOutputPacket = outputFunc20PacketEncoderPro(adrUnit, recordNumber, recordLen);
+        break;
+      }//if(fileNumber==15) 
       if(fileNumber<5 || fileNumber>14 || ((unsigned int)recordNumber)>9999 || ((unsigned int)recordLen)>9)
         {
           sizeOutputPacket = Error_modbus(adrUnit, // address,
@@ -297,6 +312,72 @@ int inputPacketParser(void)
   */
   return 1;
 }//inputPacketParser
+
+int outputFunc20PacketEncoderPro(int adrUnit, int recordNumber, int recordLen)
+{
+//выходной кодировщик 20 функции Pro
+//  int bazaRecord = (fileNumber-5)*10000;
+  unsigned int number_record_of_log = recordNumber;
+
+  if(number_record_of_log>number_record_of_pr_err_into_USB)
+    return Error_modbus(adrUnit, // address,
+                        outputPacket[1],//function,
+                        2,//error,
+                        outputPacket);//output_data
+  short dataRegister[130];
+  int   idxDataRegister = 0;
+  int idxOutputPacket = 0;
+//adrUnit
+  outputPacket[idxOutputPacket] = (unsigned char)adrUnit;
+  idxOutputPacket++;
+//numFunc
+  idxOutputPacket++;
+//Resp. Data length
+  outputPacket[idxOutputPacket] = (unsigned char)((2+recordLen*2)&0xFF);
+  idxOutputPacket++;
+//File resp. length
+  outputPacket[idxOutputPacket] = (unsigned char)((1+recordLen*2)&0xFF);
+  idxOutputPacket++;
+//Ref. Type
+  outputPacket[idxOutputPacket] = 6;
+  idxOutputPacket++;
+
+  for(; idxDataRegister<recordLen; idxDataRegister++)
+    {
+      int result = superReader20Pro(idxDataRegister);
+      switch(result)
+        {
+        case MARKER_OUTPERIMETR:
+          //  dataRegister[idxDataRegister] = -1;
+//          dataRegister[idxDataRegister] = 0;//(short) result;
+          break;
+        case MARKER_ERRORPERIMETR://ошибка периметра
+          //dataRegister[idxDataRegister] = -2;
+//       break;
+          return Error_modbus(adrUnit, // address,
+                              outputPacket[1],//function,
+                              10,//error,
+                              outputPacket);//output_data
+        default:
+        {
+          dataRegister[idxDataRegister] = (short) result;
+        }
+        }//switch
+//      qDebug()<<"result= "<<dataRegister[idxDataRegister];
+    }//for
+
+  for(int i=0; i<idxDataRegister; i++)
+    {
+//Mdata
+      outputPacket[idxOutputPacket] = (unsigned char)((dataRegister[i]>>8)&0xFF);
+      idxOutputPacket++;
+//Ldata
+      outputPacket[idxOutputPacket] = (unsigned char)(dataRegister[i]&0xFF);
+      idxOutputPacket++;
+    }//for
+
+  return idxOutputPacket;
+}//outputFunc20PacketEncoderPro(int adrUnit, int recordNumber, int recordLen);
 
 int outputFunc20PacketEncoder(int adrUnit, int fileNumber, int recordNumber, int recordLen)
 {
@@ -897,6 +978,30 @@ int superPostWriteAction(void)
     }//for
   return 0;
 }//superPostWriteAction
+
+/**************************************/
+//регистровый читатель 20-й функции
+/**************************************/
+int superReader20Pro(int offsetRegister)
+{
+  uint32_t word = buffer_for_USB_read_record_log[8] | (buffer_for_USB_read_record_log[9] << 8);
+  switch(offsetRegister)
+    {
+    case 0://статус событи€
+      return ((word >> 16) & 0x1);
+    case 1://год мес€ц
+      return ((buffer_for_USB_read_record_log[7] << 8) | buffer_for_USB_read_record_log[6]);
+    case 2://день часы
+      return ((buffer_for_USB_read_record_log[5] << 8) | buffer_for_USB_read_record_log[4]);
+    case 3://минуты секунды
+      return ((buffer_for_USB_read_record_log[3] << 8) | buffer_for_USB_read_record_log[2]);
+    case 4://миллисекунды
+      return ((buffer_for_USB_read_record_log[1] >> 4)*10 + (buffer_for_USB_read_record_log[1] &  0xf))*100;
+    case 5://идентификатор объекта
+      return (word & 0x7fff);
+    }//switch
+  return 0xAA;//просто так
+}//superReader20Pro(int offsetRegister)
 
 /**************************************/
 //регистровый читатель 20-й функции

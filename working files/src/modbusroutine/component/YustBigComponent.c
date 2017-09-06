@@ -1,9 +1,9 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 61968
+#define BEGIN_ADR_REGISTER 61967
 //макс к-во обектов
-#define REGISTER_FOR_OBJ NUMBER_ANALOG_CANALES
+#define REGISTER_FOR_OBJ 7
 
 int privateYustBigGetReg2(int adrReg);
 
@@ -44,41 +44,7 @@ void constructorYustBigComponent(COMPONENT_OBJ *yustbigcomp)
 
 void loadYustBigActualData(void) {
   //ActualData
-  for(int i=0; i<NUMBER_ANALOG_CANALES; i++) tempReadArray[i] = ustuvannja[i];
-  /*
-  Амплітудне юстування
-  
-  масиви юстування знаходиться у 
-  ustuvannja_meas - працює вимірювальна система (не рухати!)
-  ustuvannja - контейнер
-  edit_ustuvannja - для редагування
-  
-  Алгоритм запису
-  У changed_ustuvannja записати CHANGED_ETAP_EXECUTION (це блокує перевірку на достовірність ustuvannja_meas і ustuvannja)
-  У кіцевому результати зробити зміни у ustuvannja (можна використовувати edit_ustuvannja як масив для редагування з можливістю відновлення з ustuvannja)
-  
-  Для відміни внесення юстування у changed_ustuvannja записати CHANGED_ETAP_NONE але тоді ustuvannja_meas мусить дорівнювати ustuvannja бо інакше самодіагностика буде сваритися
-  Для активації змін у changed_ustuvannja записати CHANGED_ETAP_ENDED. Дальше все зробить вимірювальна система
-  
-  бажано запис юстування робити по спеціальному секретному паролю
-  я для цього використловував password_ustuvannja. Спочатку записував туди 0x1978 і цим дозволяв запис юстування. запис іншого числа  блокував запис юстування.
-
-  else if (address_data == MA_POSSIBILITY_USTUVANNJA)
-  {
-    Повідомлення про те, чи можна проводити операцю юстування
-     0 - операція юстування є забороненою
-     1 - операція юстування є дозволеною
-    if (password_ustuvannja == 0x1978) temp_value = 1;
-    else temp_value = 0;
-  }
-  else if ((address_data >= MA_ADDRESS_FIRST_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_USTUVANNJA))
-  {
-    temp_value = ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA ];
-  }
-  
-  Юстування зміщення каналів
-  У змфінну ustuvannja_measure_shift записати 0 (перед тим перевірити, що вона рівна -1)
-  */
+  for(int i=1; i<7; i++) tempReadArray[i] = ustuvannja[i-1];
 }//loadActualData() 
 
 int getYustBigModbusRegister(int adrReg)
@@ -91,7 +57,10 @@ int getYustBigModbusRegister(int adrReg)
 
   superSetOperativMarker(yustbigcomponent, adrReg);
 
-  return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  int offset = adrReg-BEGIN_ADR_REGISTER;
+  if(offset==0) return MARKER_ERRORPERIMETR;//Разрешение юстировки
+
+  return tempReadArray[offset];
 }//getDOUTBigModbusRegister(int adrReg)
 int getYustBigModbusBit(int x)
 {
@@ -133,77 +102,53 @@ void preYustBigWriteAction(void) {
   yustbigcomponent->operativMarker[1] = -1;//оперативный маркер
   yustbigcomponent->isActiveActualData = 1;
 }//
-int postYustBigWriteAction(void) {
-  /*
-  Амплітудне юстування
-  
-  масиви юстування знаходиться у 
-  ustuvannja_meas - працює вимірювальна система (не рухати!)
-  ustuvannja - контейнер
-  edit_ustuvannja - для редагування
-  
-  Алгоритм запису
-  У changed_ustuvannja записати CHANGED_ETAP_EXECUTION (це блокує перевірку на достовірність ustuvannja_meas і ustuvannja)
-  У кіцевому результати зробити зміни у ustuvannja (можна використовувати edit_ustuvannja як масив для редагування з можливістю відновлення з ustuvannja)
-  
-  Для відміни внесення юстування у changed_ustuvannja записати CHANGED_ETAP_NONE але тоді ustuvannja_meas мусить дорівнювати ustuvannja бо інакше самодіагностика буде сваритися
-  
-  Для активації змін у changed_ustuvannja записати CHANGED_ETAP_ENDED. Дальше все зробить вимірювальна система
-  
-  бажано запис юстування робити по спеціальному секретному паролю
-  я для цього використловував password_ustuvannja. Спочатку записував туди 0x1978 і цим дозволяв запис юстування. запис іншого числа  блокував запис юстування.
 
-  else if (address_data == MA_POSSIBILITY_USTUVANNJA)
-  {
-    Повідомлення про те, чи можна проводити операцю юстування
-     0 - операція юстування є забороненою
-     1 - операція юстування є дозволеною
-    if (password_ustuvannja == 0x1978) temp_value = 1;
-    else temp_value = 0;
-  }
-  else if ((address_data >= MA_ADDRESS_FIRST_USTUVANNJA ) && (address_data <= MA_ADDRESS_LAST_USTUVANNJA))
-  {
-    temp_value = ustuvannja[address_data - MA_ADDRESS_FIRST_USTUVANNJA ];
-  }
-  
-  Юстування зміщення каналів
-  У змфінну ustuvannja_measure_shift записати 0 (перед тим перевірити, що вона рівна -1)
-  */
+int postYustBigWriteAction(void) {
+extern int upravlYust;//флаг юстировки
 //action после записи
   if(yustbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = yustbigcomponent->operativMarker[1]-yustbigcomponent->operativMarker[0]+1;
   if(yustbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//  for(int i=0; i<countRegister; i++) ustuvannja[i] = tempWriteArray[offsetTempWriteArray+i];
-changed_ustuvannja = CHANGED_ETAP_EXECUTION;
+  int flag2 = 0;
   for(int i=0; i<countRegister; i++) {
   int offset = i+yustbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
-//  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-//  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+    switch(offset%(REGISTER_FOR_OBJ)) {//индекс регистра входа
+     case 0://Разрешение юстировки
+      flag2 = 1;
+      upravlYust = tempWriteArray[offsetTempWriteArray+i];//флаг юстировки
+     break;
+    }//switch
+  }//for
+ if(flag2==1 && countRegister==1) return 0;//уйти если была запись только Разрешение юстировки
 
-  switch(offset%(REGISTER_FOR_OBJ+1)) {//индекс регистра входа
-  case 0:
+  if(upravlYust!=0x1978) return 2;//флаг юстировки
+
+  int flag = 0;
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+yustbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+
+  switch(offset%(REGISTER_FOR_OBJ)) {//индекс регистра входа
   case 1:
   case 2:
   case 3:
   case 4:
-      ustuvannja[offset%(REGISTER_FOR_OBJ+1)] = tempWriteArray[offsetTempWriteArray+i];
-  break;
   case 5:
-   if(ustuvannja_measure_shift==-1) ustuvannja_measure_shift =0;
+      flag = 1;
+      changed_ustuvannja = CHANGED_ETAP_EXECUTION;
+      ustuvannja[offset%(REGISTER_FOR_OBJ)] = tempWriteArray[offsetTempWriteArray+i];
+  break;
+  case 6:
+      if(ustuvannja_measure_shift==-1) ustuvannja_measure_shift =0;
   break;
  }//switch
   }//for
 
-
-//  changed_ustuvannja = CHANGED_ETAP_EXECUTION;// (це блокує перевірку на достовірність ustuvannja_meas і ustuvannja)
-//  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-//  restart_timeout_idle_new_settings = true;
-//changed_ustuvannja = CHANGED_ETAP_EXECUTION;
-serial_number_dev = 100;//значення;
-changed_ustuvannja = CHANGED_ETAP_ENDED;
-_SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT);
+if(flag) {
+   changed_ustuvannja = CHANGED_ETAP_ENDED;
+   _SET_BIT(control_i2c_taskes, TASK_START_WRITE_USTUVANNJA_EEPROM_BIT);
+}//if
  return 0;
 }//
 
