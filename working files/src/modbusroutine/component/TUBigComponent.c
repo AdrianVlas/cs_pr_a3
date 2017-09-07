@@ -147,6 +147,7 @@ void preTUBigWriteAction(void) {
 int postTUBigWriteAction(void) {
 extern int upravlSetting;//флаг Setting
 extern int upravlSchematic;//флаг Shematic
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 //action после записи
   if(tubigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -216,6 +217,10 @@ extern int upravlSchematic;//флаг Shematic
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
   if(upravlSchematic)//флаг Shematic
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

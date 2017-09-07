@@ -269,7 +269,7 @@ extern int globalResetFlag;//флаг глобального сброса
     ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_LOG_BIT)) != 0)
    )
 {
-return 2;
+return 3;
 	//Повідомити, що операція тимчасово недоступна
 }
 else

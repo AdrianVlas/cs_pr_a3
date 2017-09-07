@@ -139,6 +139,7 @@ void preXORBigWriteAction(void) {
   xorbigcomponent->isActiveActualData = 1;
 }//
 int postXORBigWriteAction(void) {
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 //action после записи
   if(xorbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -204,6 +205,10 @@ int postXORBigWriteAction(void) {
   }//for
 
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

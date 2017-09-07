@@ -62,7 +62,7 @@ void inputPacketParserUSB(void)
   if(inputPacket[0]!=settings_fix_prt.address) return;
 
   if(inputPacketParser()==0) return;
-
+/*
   switch(inputPacket[1])  //номер ф-ции
     {
     case 5:
@@ -75,6 +75,7 @@ void inputPacketParserUSB(void)
     default:
       break;
     }//switch
+*/
 
   usb_transmiting_count = sizeOutputPacket;
   for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
@@ -120,7 +121,7 @@ void inputPacketParserRS485(void)
       restart_monitoring_RS485();
       return;
     }
-
+/*
   switch(inputPacket[1])  //номер ф-ции
     {
     case 5:
@@ -133,6 +134,7 @@ void inputPacketParserRS485(void)
     default:
       break;
     }//switch
+*/
 
   TxBuffer_RS485_count = sizeOutputPacket;
   for (int i = 0; i < TxBuffer_RS485_count; i++) TxBuffer_RS485[i] = outputPacket[i];
@@ -319,11 +321,13 @@ int outputFunc20PacketEncoderPro(int adrUnit, int recordNumber, int recordLen)
 //  int bazaRecord = (fileNumber-5)*10000;
   unsigned int number_record_of_log = recordNumber;
 
-  if(number_record_of_log>number_record_of_pr_err_into_USB)
-    return Error_modbus(adrUnit, // address,
-                        outputPacket[1],//function,
-                        2,//error,
-                        outputPacket);//output_data
+//  if(number_record_of_log>number_record_of_pr_err_into_USB)
+//    return Error_modbus(adrUnit, // address,
+//                        outputPacket[1],//function,
+//                        2,//error,
+//                        outputPacket);//output_data
+number_record_of_pr_err_into_USB = number_record_of_log;
+      _SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT);
   short dataRegister[130];
   int   idxDataRegister = 0;
   int idxOutputPacket = 0;
@@ -970,11 +974,19 @@ int superPostWriteAction(void)
   int i=0;
   for(; i<TOTAL_COMPONENT; i++)
     {
-      if(config_array[i].postWriteAction()==2)//invalid param
+      switch(config_array[i].postWriteAction())//invalid param
+      {
+        case 2:
         return Error_modbus(inputPacket[0], // address,
                             inputPacket[1],//function,
                             ERROR_ILLEGAL_DATA_VALUE,//error,
                             outputPacket);//output_data
+        case 3:
+        return Error_modbus(inputPacket[0], // address,
+                            inputPacket[1],//function,
+                            ERROR_SLAVE_DEVICE_BUSY,//error,
+                            outputPacket);//output_data
+      }//switch
     }//for
   return 0;
 }//superPostWriteAction
@@ -984,19 +996,19 @@ int superPostWriteAction(void)
 /**************************************/
 int superReader20Pro(int offsetRegister)
 {
-  uint32_t word = buffer_for_USB_read_record_log[8] | (buffer_for_USB_read_record_log[9] << 8);
+  uint32_t word = buffer_for_USB_read_record_pr_err[8] | (buffer_for_USB_read_record_pr_err[9] << 8);
   switch(offsetRegister)
     {
     case 0://статус событи€
-      return ((word >> 16) & 0x1);
+      return ((word >> 15) & 0x1);
     case 1://год мес€ц
-      return ((buffer_for_USB_read_record_log[7] << 8) | buffer_for_USB_read_record_log[6]);
+      return ((buffer_for_USB_read_record_pr_err[7] << 8) | buffer_for_USB_read_record_pr_err[6]);
     case 2://день часы
-      return ((buffer_for_USB_read_record_log[5] << 8) | buffer_for_USB_read_record_log[4]);
+      return ((buffer_for_USB_read_record_pr_err[5] << 8) | buffer_for_USB_read_record_pr_err[4]);
     case 3://минуты секунды
-      return ((buffer_for_USB_read_record_log[3] << 8) | buffer_for_USB_read_record_log[2]);
+      return ((buffer_for_USB_read_record_pr_err[3] << 8) | buffer_for_USB_read_record_pr_err[2]);
     case 4://миллисекунды
-      return ((buffer_for_USB_read_record_log[1] >> 4)*10 + (buffer_for_USB_read_record_log[1] &  0xf))*100;
+      return ((buffer_for_USB_read_record_pr_err[1] >> 4)*10 + (buffer_for_USB_read_record_pr_err[1] &  0xf))*100;
     case 5://идентификатор объекта
       return (word & 0x7fff);
     }//switch

@@ -23,7 +23,7 @@ int superControlParam_gi(int param);
 int superValidParam(unsigned int param);
 
 void constructorYustBigComponent(COMPONENT_OBJ *);
-void constructorRPOBigComponent(COMPONENT_OBJ *);
+//void constructorRPOBigComponent(COMPONENT_OBJ *);
 void constructorDVBigComponent(COMPONENT_OBJ *);
 void constructorDVSmallComponent(COMPONENT_OBJ *);
 void constructorDOUTSmallComponent(COMPONENT_OBJ *);

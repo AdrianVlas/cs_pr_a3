@@ -58,7 +58,7 @@ void loadPKVBigActualData(void) {
     case 0://Время активации пароля после простоя
     tempReadArray[i] = settings_fix.timeout_deactivation_password_interface_USB;
     break;
-    case 1://
+    case 1://Проверка/установка пароля
     tempReadArray[i] = 0;
     break;
     case 2://Тайм-аут применения изменений
@@ -438,7 +438,7 @@ int postPKVBigWriteAction(void) {
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
-    case 1://
+    case 1://Проверка/установка пароля
     //tempReadArray[i] = 0;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
@@ -493,8 +493,8 @@ int postPKVBigWriteAction(void) {
     case 11://
     case 12://
     // tempReadArray[i] = 0;
-    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-    restart_timeout_idle_new_settings = true;
+//    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+//    restart_timeout_idle_new_settings = true;
     break;
 
     case 13://Адрес устройства в сети
@@ -610,8 +610,8 @@ int postPKVBigWriteAction(void) {
     case 41://Синхронизация времени
     case 42://Время утраты синхронизации
     //tempReadArray[i] = 0;
-    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-    restart_timeout_idle_new_settings = true;
+//    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+//    restart_timeout_idle_new_settings = true;
     break;
  }//switch
   }//for
