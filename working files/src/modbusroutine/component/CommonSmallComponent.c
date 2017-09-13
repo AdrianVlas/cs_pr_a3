@@ -56,31 +56,35 @@ void loadCommonSmallActualData(void)
 
       switch(bit)
         {
-        case 0://Неисправность общая
+        case 0://Run
+//          if() 
+//                              tempReadArray[0] |= (1<<bit);
+          break;
+        case 1://Неисправность общая
           if(fix_block_active_state[FIX_BLOCK_DEFECT >> 3] & (1 << (FIX_BLOCK_DEFECT & ((1 << 3) - 1)))) 
                               tempReadArray[0] |= (1<<bit);
           break;
-        case 1://Неисправность аварийная
+        case 2://Неисправность аварийная
           if(fix_block_active_state[FIX_BLOCK_AVAR_DEFECT >> 3] & (1 << (FIX_BLOCK_AVAR_DEFECT & ((1 << 3) - 1))))
                               tempReadArray[0] |= (1<<bit);
           break;
-        case 2://Ошибка работы лог схемы
+        case 3://Ошибка работы лог схемы
           if(fix_block_active_state[FIX_BLOCK_SCHEME_INCORRECT >> 3 ] & (1 << (FIX_BLOCK_SCHEME_INCORRECT & ((1 << 3) - 1))))
                               tempReadArray[0] |= (1<<bit);
           break;
-        case 3://Ошибка работы триггеров
+        case 4://Ошибка работы триггеров
           if(fix_block_active_state[FIX_BLOCK_D_TRIGGER_STATE_INCORRECT >> 3 ] & (1 << (FIX_BLOCK_D_TRIGGER_STATE_INCORRECT & ((1 << 3) - 1))))
                               tempReadArray[0] |= (1<<bit);
           break;
-        case 4://Изменение конфигурации
+        case 5://Изменение конфигурации
           if(fix_block_active_state[FIX_BLOCK_SETTINGS_CHANGED >> 8] & (1 << (FIX_BLOCK_SETTINGS_CHANGED & ((1 << 3) - 1))))
                               tempReadArray[0] |= (1<<bit);
           break;
-        case 5://Пароль установлен - ти маєш це поле зробити
+        case 6://Пароль установлен - ти маєш це поле зробити
           if(fix_block_active_state[0] & 0x1)
                               tempReadArray[0] |= (1<<bit);
           break;
-        case 6://Запуск журнала
+        case 7://Запуск журнала
           {
           
           __LOG_INPUT *arr = (__LOG_INPUT*)(spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
@@ -89,41 +93,33 @@ void loadCommonSmallActualData(void)
           if (value) tempReadArray[0] |= (1<<bit);
           break;
           }
-        case 7://Запуск регистратора - немає
+        case 8://Запуск регистратора - немає
                               tempReadArray[0] |= 0;//(1<<bit);
           break;
-        case 8://Время синхронизировано
+        case 9://Время синхронизировано
           tempReadArray[0] |= 0;
           break;
-        case 9://Ключ управления местное\дистанционное -немає
-//          if(fix_block_active_state[0] & 0x1)
+        case 10://Ключ управления местное\дистанционное -немає
                               tempReadArray[0] |= 0;//(1<<bit);
           break;
-        case 10://Пропуск
         case 11://Пропуск
         case 12://Пропуск
         case 13://Пропуск
         case 14://Пропуск
-        case 15://Пропуск
           tempReadArray[0] |= 0;
           break;
+        case 15://Очистить журнал Событий
+        //  tempReadArray[0] |= 0;
+          break;
         case 16://Активация конфигурации (команда)
-          if(fix_block_active_state[0] & 0x1)
-                              tempReadArray[1] |= (1<<(bit-16));
           break;
         case 17://Сброс общий - покищо немає, якщо буде також буде командою
-          if(fix_block_active_state[0] & 0x1)
-                              tempReadArray[1] |= (1<<(bit-16));
           break;
         default:
           ;
         }//switch
 
     }//for
-  /*
-  1) Стан знаходяться у масиві uint8_t fix_block_active_state[DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8)];
-  2) Співвідношення між номерами бітів і їх назвами є у enum _FIX_BLOCK_output_signals
-  */
 }//loadActualData()
 
 int getCommonSmallModbusRegister(int adrReg)
@@ -136,6 +132,8 @@ int getCommonSmallModbusRegister(int adrReg)
 
   superSetOperativMarker(commonsmallcomponent, adrReg);
 
+  if((adrReg-BEGIN_ADR_REGISTER)==1) return MARKER_ERRORPERIMETR;//смещение 1 только запись
+
   return tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDVModbusRegister(int adrReg)
 int getCommonSmallModbusBit(int adrBit)
@@ -147,6 +145,13 @@ int getCommonSmallModbusBit(int adrBit)
   commonsmallcomponent->isActiveActualData = 0;
 
   superSetOperativMarker(commonsmallcomponent, adrBit);
+  switch(adrBit-BEGIN_ADR_BIT)
+  {
+   case 15:
+   case 16:
+   case 17:
+   return MARKER_ERRORPERIMETR;//смещение  только запись
+  }//switch
 
   short tmp   = tempReadArray[(adrBit-BEGIN_ADR_BIT)/16];
   short maska = 1<<((adrBit-BEGIN_ADR_BIT)%16);
@@ -167,7 +172,6 @@ int setCommonSmallModbusRegister(int adrReg, int dataReg)
     case 0:
       return MARKER_ERRORPERIMETR;
     case 1:
-      upravlFlag=1;//флаг пакетов управления 1-есть управление
    break; 
    default: return MARKER_OUTPERIMETR;
     }//switch
@@ -184,10 +188,13 @@ int setCommonSmallModbusBit(int adrBit, int dataBit)
 
   switch(adrBit-BEGIN_ADR_BIT)
     {
-    case 16:
+    case 15://Очистить журнал Событий
       upravlFlag=1;//флаг пакетов управления 1-есть управление
       return dataBit;
-    case 17:
+    case 16://Активация конфигурации
+      upravlFlag=1;//флаг пакетов управления 1-есть управление
+      return dataBit;
+    case 17://
       upravlFlag=1;//флаг пакетов управления 1-есть управление
       return dataBit;
     }//switch
@@ -216,6 +223,7 @@ void preCommonSmallWriteAction(void)
 int postCommonSmallWriteAction(void)
 {
 //action после записи
+extern int globalResetFlag;//флаг глобального сброса
   if(commonsmallcomponent->operativMarker[0]<0) return 0;//не было записи
   switch(commonsmallcomponent->operativMarker[0])
     {
@@ -236,20 +244,42 @@ int postCommonSmallWriteAction(void)
           break;
         case 3://Активация конфигурации
           //Общий сброс
-          //qDebug()<<"333333333333333333333333333333";
-//          fix_block_active_state[0] &= ~0x3;//Прорубить окно
-//          fix_block_active_state[0] |= tempWriteArray[0]&3;
           break;
         }//switch
     }//case (BEGIN_ADR_REGISTER+1):
     break;
+
+    case (BEGIN_ADR_BIT+15):
+    {
+     //Очистить журнал Событий
+  if (
+    (current_state_menu2.current_level == LOG_LIST_MENU2_LEVEL) ||
+    (current_state_menu2.current_level == LOG_DATA_MENU2_LEVEL)
+    ||  
+    (
+     (control_tasks_dataflash & (
+                                 MASKA_FOR_BIT(TASK_WRITE_LOG_RECORDS_INTO_DATAFLASH_BIT   ) |
+                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_USB_BIT  ) |
+                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_RS485_BIT) |
+                                 MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_LOG_MENU_BIT )
+                                )
+     ) != 0
+    )
+    ||
+    ((clean_rejestrators & MASKA_FOR_BIT(CLEAN_LOG_BIT)) != 0)
+   )
+{
+return 3;
+	//Повідомити, що операція тимчасово недоступна
+}
+else
+{
+    clean_rejestrators |= (unsigned int)(MASKA_FOR_BIT(CLEAN_LOG_BIT));
+}
+  }//case (BEGIN_ADR_REGISTER+1):
+    break;
     case (BEGIN_ADR_BIT+16):
     {
-    //      qDebug()<<"111111111111111111111111";
-      //Активация конфигурации
-//      fix_block_active_state[0] &= ~0x2;//Прорубить окно
-//      fix_block_active_state[0] |= tempWriteArray[0]&1;
-//int tt=0;
   extern int pointInterface;
   if(pointInterface==0) {//метка интерфейса 0-USB 1-RS485
 if(tempWriteArray[0]==1) 
@@ -263,15 +293,12 @@ if(tempWriteArray[0]==1)
 if(tempWriteArray[0]==0) 
        set_config_and_settings(0, RS485_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
 }//if
-                        //                   tt = 1;
     }//case (BEGIN_ADR_REGISTER+1):
     break;
     case (BEGIN_ADR_BIT+17):
     {
-  //        qDebug()<<"222222222222222222222222";
       //Общий сброс
-//      fix_block_active_state[0] &= ~0x2;//Прорубить окно
-//      fix_block_active_state[0] |= tempWriteArray[1]&1;
+      globalResetFlag=1;//флаг глобального сброса
     }//case (BEGIN_ADR_REGISTER+1):
     break;
     }//switch
@@ -280,7 +307,6 @@ if(tempWriteArray[0]==0)
     {
     case (BEGIN_ADR_BIT+17):
     {
-//          qDebug()<<"333333333333333333333333";
       //Общий сброс
       fix_block_active_state[0] &= ~0x2;//Прорубить окно
       fix_block_active_state[0] |= tempWriteArray[1]&1;

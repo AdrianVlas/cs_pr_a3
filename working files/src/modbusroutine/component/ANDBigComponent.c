@@ -19,7 +19,7 @@ void preANDBigReadAction(void);//action до чтения
 void postANDBigReadAction(void);//action после чтения
 void preANDBigWriteAction(void);//action до записи
 int postANDBigWriteAction(void);//action после записи
-//void loadANDBigActualData(void);
+void repairEditArrayAND(int countRegister, __settings_for_AND *arr, __settings_for_AND *arr1);
 
 COMPONENT_OBJ *andbigcomponent;
 
@@ -45,28 +45,6 @@ void constructorANDBigComponent(COMPONENT_OBJ *andbigcomp)
   andbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-/*
-void loadANDBigActualData(void) {
- setANDBigCountObject(); //записать к-во обектов
-
-  //ActualData
-   __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]);
-   for(int item=0; item<andbigcomponent->countObject; item++) {
-     
-     for (int i = 0; i < AND_SIGNALS_IN; i ++)
-     {
-        int value = arr[item].settings.param[i] & 0xffff;//
-        tempReadArray[item*REGISTER_FOR_OBJ+2*i+0] = value;
-        value = (arr[item].settings.param[i] >> 16) & 0x7fff;//
-        tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
-     }
-  }//for
-*/
-  /*
-  Для тих компонетів, де є не один однотипний вхід а декілька (ст. логіка і Журнал подій) після запису треба відсортувати щоб 0-і були вкінці, а числа(id;n; out) іншли в сторону зростання
-  */
-//}//loadActualData() 
-
 int getANDBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
@@ -77,18 +55,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateANDBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(andbigcomponent, adrReg);
-/*
-   __LN_AND *arr = (__LN_AND*)(spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]);
-  int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  int idxParam = (offset/2)%AND_SIGNALS_IN;//индекс param
-  switch(offset%2) {//индекс регистра 
-   case 0:
-        return  arr[idxSubObj].settings.param[idxParam] & 0xffff;//
-   case 1:
-        return  (arr[idxSubObj].settings.param[idxParam] >> 16) & 0x7fff;//
-  }//switch
-*/
+
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   int idxParam = (offset/2)%AND_SIGNALS_IN;//индекс param
@@ -175,6 +142,8 @@ int setANDBigModbusRegister(int adrReg, int dataReg)
     if(dataReg>MAXIMUMI) return MARKER_ERRORDIAPAZON;
    break; 
    case 15:
+    //контроль параметров ранжирования
+    if(superControlParam(dataReg)) return MARKER_ERRORDIAPAZON;
    break; 
    default: return MARKER_OUTPERIMETR;
   }//switch
@@ -217,6 +186,7 @@ void preANDBigWriteAction(void) {
 
 int postANDBigWriteAction(void) {
 //action после записи
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(andbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = andbigcomponent->operativMarker[1]-andbigcomponent->operativMarker[0]+1;
@@ -224,6 +194,43 @@ int postANDBigWriteAction(void) {
 
    __settings_for_AND *arr = (__settings_for_AND*)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR]);
    __settings_for_AND *arr1 = (__settings_for_AND*)(sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR]);
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+        arr1[idxSubObj].param[idx_SIGNALS_IN] &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[idx_SIGNALS_IN] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+  break;
+  case 1:
+        arr1[idxSubObj].param[idx_SIGNALS_IN]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[idx_SIGNALS_IN]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+  break;
+ }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+  case 1:
+        if(superValidParam(arr1[idxSubObj].param[idx_SIGNALS_IN]))
+                {//контроль валидности
+                repairEditArrayAND(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
   for(int i=0; i<countRegister; i++) {
   int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -239,13 +246,34 @@ int postANDBigWriteAction(void) {
         arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
   break;
  }//switch
-   superSortParam(AND_SIGNALS_IN, &(arr1[idxSubObj].param[0]));//сортировка
-   superSortParam(AND_SIGNALS_IN, &(arr[idxSubObj].param[0]));//сортировка
+        superSortParam(AND_SIGNALS_IN, &(arr1[idxSubObj].param[0]));//сортировка
+        superSortParam(AND_SIGNALS_IN, &(arr[idxSubObj].param[0]));//сортировка
   }//for
+
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//postANDBigWriteAction() 
+
+void repairEditArrayAND(int countRegister, __settings_for_AND *arr, __settings_for_AND *arr1) {
+  //восстановить edit массив
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+andbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  int idx_SIGNALS_IN = (offset%REGISTER_FOR_OBJ)/2;//индекс входа субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+  case 1:
+        arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN];
+  break;
+ }//switch
+  }//for
+}//repairEditArray(int countRegister, __settings_for_AND *arr, __settings_for_AND *arr1) 
 
 int privateANDBigGetReg1(int adrReg)
 {

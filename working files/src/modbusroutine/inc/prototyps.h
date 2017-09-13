@@ -2,7 +2,8 @@
 #define __PROTOTYPS_H
 
 void global_component_installation(void);
-//void global_component_prepared(void);
+int  superReader20(int);
+int  superReader20Pro(int);
 int  superReaderRegister(int);
 int  superWriterRegister(int, int);
 int  superReaderBit(int);
@@ -19,9 +20,10 @@ void finderDubl(int idx, int size, unsigned int *arr);
 void superSortParam(int size, unsigned int *param);
 int superControlParam(int param);
 int superControlParam_gi(int param);
+int superValidParam(unsigned int param);
 
 void constructorYustBigComponent(COMPONENT_OBJ *);
-void constructorRPOBigComponent(COMPONENT_OBJ *);
+//void constructorRPOBigComponent(COMPONENT_OBJ *);
 void constructorDVBigComponent(COMPONENT_OBJ *);
 void constructorDVSmallComponent(COMPONENT_OBJ *);
 void constructorDOUTSmallComponent(COMPONENT_OBJ *);
@@ -50,6 +52,7 @@ void constructorCommonSmallComponent(COMPONENT_OBJ *);
 void constructorCommonBigComponent(COMPONENT_OBJ *);
 void constructorMEBigComponent(COMPONENT_OBJ *);
 void constructorRegBigComponent(COMPONENT_OBJ *);
+void constructorRegProBigComponent(COMPONENT_OBJ *);
 void constructorRPRBigComponent(COMPONENT_OBJ *);
 void constructorRPRSmallComponent(COMPONENT_OBJ *);
 void constructorKEYSmallComponent(COMPONENT_OBJ *);

@@ -44,19 +44,6 @@ void constructorGIBigComponent(COMPONENT_OBJ *gibigcomp)
 
   gibigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadGIBigActualData(void) {
- setGIBigCountObject(); //записать к-во обектов
-  //ActualData
-   __LN_MEANDER *arr = (__LN_MEANDER*)(spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
-   for(int item=0; item<gibigcomponent->countObject; item++) {
-
-   int value = arr[item].settings.set_delay[0];
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   }//for
-
-}//loadActualData() 
-*/
 
 int getGIBigModbusRegister(int adrReg)
 {
@@ -68,15 +55,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateGIBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(gibigcomponent, adrReg);
-/*
-   __LN_MEANDER *arr = (__LN_MEANDER*)(spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
-  int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-   case 0:
-   return arr[idxSubObj].settings.set_delay[0]/100;
- }//switch
-*/
+
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   __settings_for_MEANDER *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_MEANDER*)(spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_MEANDER*)(sca_of_p[ID_FB_MEANDER - _ID_FB_FIRST_VAR])) + idxSubObj);
@@ -143,6 +122,7 @@ void preGIBigWriteAction(void) {
   gibigcomponent->isActiveActualData = 1;
 }//
 int postGIBigWriteAction(void) {
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 //action после записи
   if(gibigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -159,6 +139,10 @@ int postGIBigWriteAction(void) {
 
   }//for
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

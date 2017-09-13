@@ -20,7 +20,6 @@ void preDVBigReadAction(void);//action до чтения
 void postDVBigReadAction(void);//action после чтения
 void preDVBigWriteAction(void);//action до записи
 int postDVBigWriteAction(void);//action после записи
-//void loadDVBigActualData(void);
 
 COMPONENT_OBJ *dvbigcomponent;
 
@@ -45,42 +44,6 @@ void constructorDVBigComponent(COMPONENT_OBJ *dvbigcomp)
 
   dvbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadDVBigActualData(void) {
- setDVBigCountObject(); //записать к-во обектов
-
-  //ActualData
-   __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
-   for(int item=0; item<dvbigcomponent->countObject; item++) {
-   int value = (((arr[item].settings.control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) !=0) << 0) | (1 << 1) | ((V110_V220 != 0) << 2);
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   value = arr[item].settings.set_delay[INPUT_SET_DELAY_DOPUSK];
-   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
-  }//for
-*/
-  /*
-  1. Адресу потрібного елементу вибраного функціонального блоку визначаємо як і для Small
-  2. Якщо працюємо з структурою ***_prt, то тип береться __LN_XXX у всіх інших випадках тип береться __settings_for_ххх
-  __LN_XXX включає у себе _settings_for_ххх
-  
-  3. 
-  enum _XXX__output_signals - перечислення номерів виходів (починається з 0 але для параметрування зв'язків треба, щоб номер починався з 1, тобто додати 1 при встановлкенні зв'язку або відняти одиницію для розшифровки встановленого зв'язку)
-  enum _XXX_d_trigger  - тільки для логіки
-  enum _XXX_input_signal - перечислення номерів входів
-  enum _settings_delay_of_XXX - перечислення всіх витримок
-  enum __index_ctrl_xxx - перечислення всіх "ключів" управління
-  enum _settings_pickup_of_XXX перечислення всіх уставок
-  
-  4. Поля налаштуванння
-  uint32_t param[XXX_SIGNALS_IN] - адреса виходу, який заводиться на даний вхід. Кодується (id; N; out) id - з enum _id_fb; N і out починаються з 1-ці
-  
-  int32_t pickup[GROUP_ALARM_PICKUPS] - уставки (з точністю до мілі-величин)
-  int32_t set_delay[XXX_SET_DELAYS] - витримки (з точністю до мс)
-  uint32_t control - управліннгя
-  uint32_t analog_input_control - для ШГС вибір аналогових каналів
-  
-  */
-//}//loadActualData() 
 
 int getDVBigModbusRegister(int adrReg)
 {
@@ -92,17 +55,6 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateDVBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;//MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(dvbigcomponent, adrReg);
-/*
-   __LN_INPUT *arr = (__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
-  int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-   case 0:
-     return (((arr[idxSubObj].settings.control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) !=0) << 0) | (1 << 1) | ((V110_V220 != 0) << 2);
-   case 1:
-     return arr[idxSubObj].settings.set_delay[INPUT_SET_DELAY_DOPUSK];
- }//switch
-*/
 
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -111,10 +63,8 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
                         arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_RS485_LOCKS)) == 0 ) ? &(((__LN_INPUT*)(spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_INPUT*)(sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR])) + idxSubObj);
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0:
-//     return (((arr[idxSubObj].settings.control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) !=0) << 0) | (1 << 1) | ((V110_V220 != 0) << 2);
      return (((arr->control & (1 << INDEX_CTRL_INPUT_TYPE_SIGNAL)) !=0) << 0) | (1 << 1) | ((V110_V220 != 0) << 2);
    case 1:
-//     return arr[idxSubObj].settings.set_delay[INPUT_SET_DELAY_DOPUSK];
      return arr->set_delay[INPUT_SET_DELAY_DOPUSK];
  }//switch
 
@@ -179,6 +129,7 @@ void preDVBigWriteAction(void) {
   dvbigcomponent->isActiveActualData = 1;
 }//
 int postDVBigWriteAction(void) {
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 //action после записи
   if(dvbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -200,6 +151,10 @@ int postDVBigWriteAction(void) {
  }//switch
   }//for
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

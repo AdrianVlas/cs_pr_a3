@@ -34,8 +34,8 @@ inline void watchdog_routine(void)
     )   
   {
     //«м≥нюЇмо стан б≥ту зовн≥шнього Watchdog на протилежний
-    if (test_watchdogs != CMD_TEST_EXTERNAL_WATCHDOG)
-    {
+//    if (test_watchdogs != CMD_TEST_EXTERNAL_WATCHDOG)
+//    {
       GPIO_WriteBit(
                     GPIO_EXTERNAL_WATCHDOG,
                     GPIO_PIN_EXTERNAL_WATCHDOG,
@@ -47,7 +47,7 @@ inline void watchdog_routine(void)
       if (time_2_watchdog_output >= time_1_watchdog_output) delta_time = time_2_watchdog_output - time_1_watchdog_output;
       else delta_time = time_2_watchdog_output + 0xffff - time_1_watchdog_output;
       time_delta_watchdog_output = delta_time* 10;
-    }
+//    }
   
     control_word_of_watchdog =  0;
   }
@@ -445,7 +445,7 @@ int main(void)
     //¬иставл€Їмо под≥ю про програмний перезапуск пристрою
     if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_SOFT_RESTART_SYSTEM_BIT);
   }
-  else if (RCC_GetFlagStatus(RCC_FLAG_PORRST) != SET)
+  else if (RCC_GetFlagStatus(RCC_FLAG_BORRST/*RCC_FLAG_PORRST*/) != SET)
   {
     //¬иставл€Їмо под≥ю про перезапуск пристрою (бо не заф≥ксовано под≥ю Power-on/Power-down)
     if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_RESTART_SYSTEM_BIT);

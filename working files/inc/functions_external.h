@@ -225,13 +225,6 @@ extern void Usb_routines(void);
 extern void USART_RS485_Configure(void);
 extern void restart_monitoring_RS485(void);
 extern void start_transmint_data_via_RS_485(unsigned int);
-extern unsigned short int  AddCRC(unsigned char, unsigned short int);
-extern uint32_t bit_adr_to_reg_adr(uint32_t, uint32_t*, uint32_t*);
-//extern void modbus_rountines(unsigned int);
-//extern void Error_modbus(unsigned int, unsigned int, unsigned int, unsigned char*);
-//extern unsigned int Get_data(unsigned char *, unsigned int, unsigned in, __getting_data, __bit_byte);
-//extern unsigned int Set_data(unsigned short int, unsigned int, __settings_data, /*unsigned int,*/ unsigned int);
-//extern unsigned int Get_data_file(unsigned char*, unsigned char*, unsigned int*, unsigned int);
 
 extern ErrorStatus check_errors_i2c(void);
 extern unsigned int start_write_buffer_via_I2C(uint32_t, uint16_t, uint8_t *, uint32_t);

@@ -16,7 +16,6 @@ void preAISmallReadAction(void);//action до чтения
 void postAISmallReadAction(void);//action после чтения
 void preAISmallWriteAction(void);//action до записи
 int postAISmallWriteAction(void);//action после записи
-//void loadAISmallActualData(void);
 
 COMPONENT_OBJ *aismallcomponent;
 
@@ -41,47 +40,11 @@ void constructorAISmallComponent(COMPONENT_OBJ *aismallcomp)
 
   aismallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadAISmallActualData(void) {
-  //ActualData
-  for(int i=0; i<5; i++) 
-  switch(i) {
-   case 0://Напряжение Ucv
-    tempReadArray[i] = (short) measurement[IM_U];
-   break;
-   case 1://Ток Iin1
-    tempReadArray[i] = (short) measurement[IM_I1];
-   break;
-   case 2://Ток Iin2
-    tempReadArray[i] = (short) measurement[IM_I2];
-   break;
-   case 3://Ток Iin3
-    tempReadArray[i] = (short) measurement[IM_I3];
-   break;
-   case 4://Ток Iin4
-    tempReadArray[i] = (short) measurement[IM_I4];
-   break;
-  }//switch
-*/
-  /*
-  1) Всі вимірювання у unsigned int measurement[NUMBER_ANALOG_CANALES] Всі вимірювання приведені у мілі-величини
-  2) відповідність індексів до їх реальних каналів:
-#define IM_I1         0
-#define IM_I2         1
-#define IM_I3         2
-#define IM_I4         3
-#define IM_U          4
-
-  */
-//}//loadActualData() 
 
 int getAISmallModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateAISmallGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-
-//  if(aismallcomponent->isActiveActualData) loadAISmallActualData(); //ActualData
-//  aismallcomponent->isActiveActualData = 0;
 
   superSetOperativMarker(aismallcomponent, adrReg);
 

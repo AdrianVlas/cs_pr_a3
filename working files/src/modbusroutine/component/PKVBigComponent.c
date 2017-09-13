@@ -44,11 +44,6 @@ void constructorPKVBigComponent(COMPONENT_OBJ *pkvbigcomp)
 
 void loadPKVBigActualData(void) {
   //ActualData
-/*
-    unsigned char *label_to_time_array;
-    if (copying_time == 0) label_to_time_array = time;
-    else label_to_time_array = time_copy;
-*/
     unsigned char *label_to_time_array;
     if (copying_time == 2) label_to_time_array = time_copy;
     else label_to_time_array = time;
@@ -58,7 +53,7 @@ void loadPKVBigActualData(void) {
     case 0://Время активации пароля после простоя
     tempReadArray[i] = settings_fix.timeout_deactivation_password_interface_USB;
     break;
-    case 1://
+    case 1://Проверка/установка пароля
     tempReadArray[i] = 0;
     break;
     case 2://Тайм-аут применения изменений
@@ -79,9 +74,9 @@ void loadPKVBigActualData(void) {
     case 7://Паритет
     tempReadArray[i] = settings_fix.pare_bit_RS485;
     break;
-//    case 8://Задержка приёма
-//    tempReadArray[i] = settings_fix.time_out_1_RS485;
-//    break;
+    case 8://Задержка приёма
+    tempReadArray[i] = settings_fix.time_out_1_RS485;
+    break;
 //    case 9://Скорость порта связи 2
 //    tempReadArray[i] = settings_fix.baud_RS485;
 //    break;
@@ -93,7 +88,6 @@ void loadPKVBigActualData(void) {
 //    break;
 //    case 12://Задержка приёма 2
 //    tempReadArray[i] = settings_fix.time_out_1_RS485;
-    case 8://
     case 9://
     case 10://
     case 11://
@@ -180,29 +174,6 @@ void loadPKVBigActualData(void) {
   14200 - timeout_deactivation_password_interface_USB/timeout_deactivation_password_interface_RS485
   14201 - password_interface_USB/password_interface_RS485 (тільки запис. див. опис у ТЗ моєму)
   14202 - timeout_idle_new_settings (одиниці, як у карті пам'яті)
-  14203 - language
-  
-  14205 - baud_RS485
-  14206 - number_stop_bit_RS485
-  14207 - pare_bit_RS485
-  14208 - time_out_1_RS485
-  
-  14213 - address
-  
-  14216-14223 - name_of_cell
-  
-  14224-14225
-  ------------
-  uint8_t *label_to_time_array;
-  if (copying_time == 0) label_to_time_array = time;
-  else label_to_time_array = time_copy;
-  Формат BCD
-  0 - десяті і соті секунди (на запис тільки 0) (0x0-0x99)
-  1 - секунди (0x0-0x59)
-  2 - хвилини (0x0-0x59)
-  3 - година (0x0-0x23)
-  4 - день місяця (0x1-0x31)
-  5 - місяць (0x1-0x12)
   6 - рік (0x0-0x99)
   
    При записі по адресі 0 (присторою) є широкосмуговий запис дати і часу. Прийняти і обробити паакет без відповіді
@@ -310,33 +281,47 @@ int setPKVBigModbusRegister(int adrReg, int dataReg)
    case 22: //14015
    case 23: //14015
    break; 
-   case 24: //14024
-    if(dataReg>99) return MARKER_ERRORDIAPAZON;
+   case 24: //14224
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x99) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 25: //14025
-    if(dataReg>12) return MARKER_ERRORDIAPAZON;
-    if(dataReg<1) return MARKER_ERRORDIAPAZON;
+   case 25: //14225
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg==0) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x12) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
+//    if(dataReg==0xA || dataReg==0xB || dataReg==0xC || dataReg==0xD || dataReg==0xE || dataReg==0xF) return MARKER_ERRORDIAPAZON;
    break; 
-   case 26: //14026
-    if(dataReg>31) return MARKER_ERRORDIAPAZON;
-    if(dataReg<1) return MARKER_ERRORDIAPAZON;
+   case 26: //14226
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg==0) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x31) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 27: //14027
-    if(dataReg>23) return MARKER_ERRORDIAPAZON;
+   case 27: //14227
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x23) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 28: //14028
-   case 29: //14029
-    if(dataReg>59) return MARKER_ERRORDIAPAZON;
+   case 28: //14228
+   case 29: //14229
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x59) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 30: //14030
-    if(dataReg>99) return MARKER_ERRORDIAPAZON;
+   case 30: //14230
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
+    if(dataReg>0x99) return MARKER_ERRORDIAPAZON;
+    if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
    case 31: //14031
-    if(dataReg>32767) dataReg -=32768;
+//    if(dataReg>32767) dataReg -=32768;
     if(dataReg>720) return MARKER_ERRORDIAPAZON;
     if(dataReg<-720) return MARKER_ERRORDIAPAZON;
    break; 
    case 32: //14032
+    if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
     if(dataReg>1) return MARKER_ERRORDIAPAZON;
    break; 
    case 33: //14033
@@ -405,6 +390,7 @@ void prePKVBigWriteAction(void) {
 }//
 int postPKVBigWriteAction(void) {
 //action после записи
+int flag_time_array = 0;
   if(pkvbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = pkvbigcomponent->operativMarker[1]-pkvbigcomponent->operativMarker[0]+1;
@@ -424,7 +410,7 @@ int postPKVBigWriteAction(void) {
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
-    case 1://
+    case 1://Проверка/установка пароля
     //tempReadArray[i] = 0;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
@@ -459,9 +445,12 @@ int postPKVBigWriteAction(void) {
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
-//    case 8://Задержка приёма
+    case 8://Задержка приёма
 //    tempReadArray[i] = settings_fix.time_out_1_RS485;
-//    break;
+    arr1->time_out_1_RS485 = arr->time_out_1_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
+    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+    restart_timeout_idle_new_settings = true;
+    break;
 //    case 9://Скорость порта связи 2
 //    tempReadArray[i] = settings_fix.baud_RS485;
 //    break;
@@ -473,14 +462,13 @@ int postPKVBigWriteAction(void) {
 //    break;
 //    case 12://Задержка приёма 2
 //    tempReadArray[i] = settings_fix.time_out_1_RS485;
-    case 8://
     case 9://
     case 10://
     case 11://
     case 12://
     // tempReadArray[i] = 0;
-    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-    restart_timeout_idle_new_settings = true;
+//    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+//    restart_timeout_idle_new_settings = true;
     break;
 
     case 13://Адрес устройства в сети
@@ -490,97 +478,104 @@ int postPKVBigWriteAction(void) {
     break;
     case 14://Таймаут конца фрейма
     // tempReadArray[i] = 0;
-    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-    restart_timeout_idle_new_settings = true;
+//    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+//    restart_timeout_idle_new_settings = true;
     break;
     case 15://
     //tempReadArray[i] = 0;
-    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-    restart_timeout_idle_new_settings = true;
+//    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+//    restart_timeout_idle_new_settings = true;
     break;
     case 16://Символ 1 и 2
      arr1->name_of_cell[0] = arr->name_of_cell[0] = (tempWriteArray[offsetTempWriteArray+i]);
-// + ((settings_fix.name_of_cell[1]<<8)&0xFF00);
+     arr1->name_of_cell[1] = arr->name_of_cell[1] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 17://Символ 3 и 4
      arr1->name_of_cell[2] = arr->name_of_cell[2] = (tempWriteArray[offsetTempWriteArray+i]);
-//+ ((settings_fix.name_of_cell[3]<<8)&0xFF00);
+     arr1->name_of_cell[3] = arr->name_of_cell[3] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 18://Символ 5 и 6
      arr1->name_of_cell[4] = arr->name_of_cell[4] = (tempWriteArray[offsetTempWriteArray+i]);
-//+ ((settings_fix.name_of_cell[5]<<8)&0xFF00);
+     arr1->name_of_cell[5] = arr->name_of_cell[5] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 19://Символ 7 и 8
      arr1->name_of_cell[6] = arr->name_of_cell[6] = (tempWriteArray[offsetTempWriteArray+i]);
-//+ ((settings_fix.name_of_cell[7]<<8)&0xFF00);
+     arr1->name_of_cell[7] = arr->name_of_cell[7] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 20://Символ 9 и 10
      arr1->name_of_cell[8] = arr->name_of_cell[8] = (tempWriteArray[offsetTempWriteArray+i]);
-//+ ((settings_fix.name_of_cell[9]<<8)&0xFF00);
+     arr1->name_of_cell[9] = arr->name_of_cell[9] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 21://Символ 11 и 12
      arr1->name_of_cell[10] = arr->name_of_cell[10] = (tempWriteArray[offsetTempWriteArray+i]);
-//+ ((settings_fix.name_of_cell[11]<<8)&0xFF00);
+     arr1->name_of_cell[11] = arr->name_of_cell[11] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 22://Символ 13 и 14
      arr1->name_of_cell[12] = arr->name_of_cell[12] = (tempWriteArray[offsetTempWriteArray+i]);
-//+ ((settings_fix.name_of_cell[13]<<8)&0xFF00);
+     arr1->name_of_cell[13] = arr->name_of_cell[13] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 23://Символ 15 и 16
      arr1->name_of_cell[14] = arr->name_of_cell[14] = (tempWriteArray[offsetTempWriteArray+i]);
-//+ ((settings_fix.name_of_cell[15]<<8)&0xFF00);
+     arr1->name_of_cell[15] = arr->name_of_cell[15] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
 
     case 24://Год
      *(label_to_time_array + 6) = (tempWriteArray[offsetTempWriteArray+i]);
-    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+     flag_time_array = 1;
+//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
     case 25://Месяц
      *(label_to_time_array + 5) = (tempWriteArray[offsetTempWriteArray+i]);
-    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+     flag_time_array = 1;
+//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
     case 26://День
      *(label_to_time_array + 4) = (tempWriteArray[offsetTempWriteArray+i]);
-    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+     flag_time_array = 1;
+//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
     case 27://Час
      *(label_to_time_array + 3) = (tempWriteArray[offsetTempWriteArray+i]);
-    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+     flag_time_array = 1;
+//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
     case 28://Минуты
      *(label_to_time_array + 2) = (tempWriteArray[offsetTempWriteArray+i]);
-    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+     flag_time_array = 1;
+//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
     case 29://Секунды
      *(label_to_time_array + 1) = (tempWriteArray[offsetTempWriteArray+i]);
-    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+     flag_time_array = 1;
+//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
     case 30://Сотые секунды
      *(label_to_time_array + 0) = (tempWriteArray[offsetTempWriteArray+i]);
-    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+     flag_time_array = 1;
+//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
 
     case 31://Часовой пояс
@@ -596,11 +591,19 @@ int postPKVBigWriteAction(void) {
     case 41://Синхронизация времени
     case 42://Время утраты синхронизации
     //tempReadArray[i] = 0;
-    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-    restart_timeout_idle_new_settings = true;
+//    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+//    restart_timeout_idle_new_settings = true;
     break;
  }//switch
   }//for
+            if(flag_time_array)
+            if (check_data_for_data_time_menu() == 1)
+            {
+              //Дані достовірні
+    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
+           }//if
+           else return 2;
  return 0;
 }//
 

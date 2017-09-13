@@ -241,6 +241,7 @@ void preConfigBigWriteAction(void) {
   configbigcomponent->isActiveActualData = 1;
 }//
 int postConfigBigWriteAction(void) {
+extern int pointInterface;//ìåòêà èíòåğôåéñà 0-USB 1-RS485
 //action ïîñëå çàïèñè
   if(configbigcomponent->operativMarker[0]<0) return 0;//íå áûëî çàïèñè
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//íàéòè ñìåùåíèå TempWriteArray
@@ -306,6 +307,7 @@ int postConfigBigWriteAction(void) {
      Òîìó ïğèëàä ìîæå ïğîäîâæóâàòè ôóíêö³îíóâàòè, õî÷ öş çì³íó â³³ â³äêèíóâ
      */
 //    return SUPER_ERROR1;
+                return 2;//óéòè
    }
    else
    {
@@ -316,8 +318,13 @@ int postConfigBigWriteAction(void) {
      ÏĞÈËÀÄ ÒĞÅÁÀ Ï²ÑËß Â²ÄÏÎÂ²Ä² ÇÀÁËÎÊÓÂÀÒÈ ² ÏÅĞÅÇÀÏÓÑÒÈÒÈ!!!
      */
 //    return SUPER_ERROR1;
+                return 2;//óéòè
    }
  }
+  if(pointInterface)//ìåòêà èíòåğôåéñà 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
  return 0;
 }//
 

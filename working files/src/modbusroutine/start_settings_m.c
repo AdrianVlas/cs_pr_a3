@@ -35,6 +35,7 @@ void global_component_installation(void) {
   constructorCommonBigComponent(&(config_array[COMMONBIGCOMPONENT]));//подготовка компонента common
   constructorMEBigComponent(&(config_array[MEBIGCOMPONENT]));//подготовка компонента me
   constructorRegBigComponent(&(config_array[REGBIGCOMPONENT]));//подготовка компонента reg
+  constructorRegProBigComponent(&(config_array[REGPROBIGCOMPONENT]));//подготовка компонента regPro
   constructorRPRBigComponent(&(config_array[RPRBIGCOMPONENT]));//подготовка компонента rpr
   constructorRPRSmallComponent(&(config_array[RPRSMALLCOMPONENT]));//подготовка компонента rpr
   constructorKEYSmallComponent(&(config_array[KEYSMALLCOMPONENT]));//подготовка компонента key
@@ -42,40 +43,6 @@ void global_component_installation(void) {
   constructorPKVBigComponent(&(config_array[PKVBIGCOMPONENT]));//подготовка компонента pkv
   constructorIUSmallComponent(&(config_array[IUSMALLCOMPONENT]));//подготовка компонента iu
   constructorYustBigComponent(&(config_array[YUSTBIGCOMPONENT]));//подготовка компонента yust
-  constructorRPOBigComponent(&(config_array[RPOBIGCOMPONENT]));//подготовка компонента rpo
+//  constructorRPOBigComponent(&(config_array[RPOBIGCOMPONENT]));//подготовка компонента rpo
 }//global_vareiables_installation_bo(void)
 
-/**************************************/
-//Подготовка компонентов после конфигурации
-/**************************************/
-/*
-void global_component_prepared(void) {
-//  config_array[DVBIGCOMPONENT].setCountObject(128);//подготовка компонента ДВ
-//  config_array[DVSMALLCOMPONENT].setCountObject(128);//подготовка компонента ДВ
-
-//  config_array[DOUTBIGCOMPONENT].setCountObject(100);//подготовка компонента rele
-//  config_array[DOUTSMALLCOMPONENT].setCountObject(100);//подготовка компонента rele
-
-//  config_array[SDIBIGCOMPONENT].setCountObject(21);//подготовка компонента sdi
-//  config_array[SDISMALLCOMPONENT].setCountObject(21);//подготовка компонента sdi
-
-  config_array[TSBIGCOMPONENT].setCountObject(22);//подготовка компонента ts
-  config_array[TSSMALLCOMPONENT].setCountObject(22);//подготовка компонента ts
-
-  config_array[TUBIGCOMPONENT].setCountObject(23);//подготовка компонента tu
-  config_array[TUSMALLCOMPONENT].setCountObject(23);//подготовка компонента tu
-
-  config_array[GIBIGCOMPONENT].setCountObject(24);//подготовка компонента gi
-
-  config_array[SZSBIGCOMPONENT].setCountObject(25);//подготовка компонента szs
-
-  config_array[MFTBIGCOMPONENT].setCountObject(26);//подготовка компонента mft
-
-  config_array[DTRBIGCOMPONENT].setCountObject(27);//подготовка компонента dtr
-
-  config_array[ANDBIGCOMPONENT].setCountObject(28);//подготовка компонента and
-  config_array[ORBIGCOMPONENT].setCountObject(29);//подготовка компонента or
-  config_array[XORBIGCOMPONENT].setCountObject(30);//подготовка компонента xor
-  config_array[NOTBIGCOMPONENT].setCountObject(31);//подготовка компонента not
-}//global_vareiables_installation_bo(void)
-*/

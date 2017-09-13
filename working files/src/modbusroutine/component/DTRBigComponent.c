@@ -20,6 +20,7 @@ void postDTRBigReadAction(void);//action после чтения
 void preDTRBigWriteAction(void);//action до записи
 int postDTRBigWriteAction(void);//action после записи
 void loadDTRBigActualData(void);
+void repairEditArrayDTR(int countRegister, __settings_for_TRIGGER *arr, __settings_for_TRIGGER *arr1);
 
 COMPONENT_OBJ *dtrbigcomponent;
 
@@ -44,40 +45,6 @@ void constructorDTRBigComponent(COMPONENT_OBJ *dtrbigcomp)
 
   dtrbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadDTRBigActualData(void) {
- setDTRBigCountObject(); //записать к-во обектов
-  //ActualData
-   __LN_TRIGGER *arr = (__LN_TRIGGER*)(spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
-   for(int item=0; item<dtrbigcomponent->countObject; item++) {
-
-   //Set D-T 0  item
-   int value = arr[item].settings.param[INPUT_TRIGGER_SET] & 0xffff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+0] = value;
-   value = (arr[item].settings.param[INPUT_TRIGGER_SET] >> 16) & 0x7fff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+1] = value;
-
-   //CLR D-T 0  item
-   value = arr[item].settings.param[INPUT_TRIGGER_RESET] & 0xffff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+2] = value;
-   value = (arr[item].settings.param[INPUT_TRIGGER_RESET] >> 16) & 0x7fff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+3] = value;
-
-   //D D-T 0  item
-   value = arr[item].settings.param[INPUT_TRIGGER_D] & 0xffff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+4] = value;
-   value = (arr[item].settings.param[INPUT_TRIGGER_D] >> 16) & 0x7fff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+5] = value;
-
-   //C D-T 0  item
-   value = arr[item].settings.param[INPUT_TRIGGER_C] & 0xffff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+6] = value;
-   value = (arr[item].settings.param[INPUT_TRIGGER_C] >> 16) & 0x7fff;//
-   tempReadArray[item*REGISTER_FOR_OBJ+7] = value;
-
-   }//for
-}//loadActualData() 
-*/
 
 int getDTRBigModbusRegister(int adrReg)
 {
@@ -89,36 +56,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(privateDTRBigGetReg1(adrReg)==MARKER_OUTPERIMETR) return MARKER_ERRORPERIMETR;
 
   superSetOperativMarker(dtrbigcomponent, adrReg);
-/*
-   __LN_TRIGGER *arr = (__LN_TRIGGER*)(spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
-  int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-  case 0:
-   //Set D-T 0  item
-   return arr[idxSubObj].settings.param[INPUT_TRIGGER_SET] & 0xffff;//
-  case 1:
-   return (arr[idxSubObj].settings.param[INPUT_TRIGGER_SET] >> 16) & 0x7fff;//
 
-  case 2:
-   //CLR D-T 0  item
-   return arr[idxSubObj].settings.param[INPUT_TRIGGER_RESET] & 0xffff;//
-  case 3:
-   return (arr[idxSubObj].settings.param[INPUT_TRIGGER_RESET] >> 16) & 0x7fff;//
-
-  case 4:
-   //D D-T 0  item
-   return arr[idxSubObj].settings.param[INPUT_TRIGGER_D] & 0xffff;//
-  case 5:
-   return (arr[idxSubObj].settings.param[INPUT_TRIGGER_D] >> 16) & 0x7fff;//
-
-  case 6:
-   //C D-T 0  item
-   return arr[idxSubObj].settings.param[INPUT_TRIGGER_C] & 0xffff;//
-  case 7:
-   return (arr[idxSubObj].settings.param[INPUT_TRIGGER_C] >> 16) & 0x7fff;//
-  }//switch
-*/
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   __settings_for_TRIGGER *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_TRIGGER*)(spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_TRIGGER*)(sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR])) + idxSubObj);
@@ -234,15 +172,103 @@ void preDTRBigWriteAction(void) {
   dtrbigcomponent->isActiveActualData = 1;
 }//
 int postDTRBigWriteAction(void) {
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 //action после записи
   if(dtrbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = dtrbigcomponent->operativMarker[1]-dtrbigcomponent->operativMarker[0]+1;
   if(dtrbigcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LN_TRIGGER *arr = (__LN_TRIGGER*)(spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
    __settings_for_TRIGGER *arr  = (__settings_for_TRIGGER*)(sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
    __settings_for_TRIGGER *arr1 = (__settings_for_TRIGGER*)(sca_of_p_edit[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+dtrbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Set D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 1://Set D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 2://CLR D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 3://CLR D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 4://D D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_D]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_D]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 5://D D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_D]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_D]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 6://C D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_C]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[INPUT_TRIGGER_C]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break;
+   case 7://C D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_C]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[INPUT_TRIGGER_C]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+ }//switch
+  }//for
+
+  //контроль валидности
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+dtrbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Set D-T item
+   case 1://Set D-T item
+        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_SET]))
+                {//контроль валидности
+                repairEditArrayDTR(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 2://CLR D-T item
+   case 3://CLR D-T item
+        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_RESET])) 
+                {//контроль валидности
+                repairEditArrayDTR(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 4://D D-T item
+   case 5://D D-T item
+        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_D]))
+                {//контроль валидности
+                repairEditArrayDTR(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 6://C D-T item
+   case 7://C D-T item
+        if(superValidParam(arr1[idxSubObj].param[INPUT_TRIGGER_C]))
+                {//контроль валидности
+                repairEditArrayDTR(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
   for(int i=0; i<countRegister; i++) {
   int offset = i+dtrbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
@@ -285,10 +311,45 @@ int postDTRBigWriteAction(void) {
 
  }//switch
   }//for
-  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+
+  config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
+
+void repairEditArrayDTR(int countRegister, __settings_for_TRIGGER *arr, __settings_for_TRIGGER *arr1) {
+  //восстановить edit массив
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+dtrbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
+   case 0://Set D-T item
+   case 1://Set D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_SET] = arr[idxSubObj].param[INPUT_TRIGGER_SET];
+   break; 
+
+   case 2://CLR D-T item
+   case 3://CLR D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_RESET] = arr[idxSubObj].param[INPUT_TRIGGER_RESET];
+   break; 
+
+   case 4://D D-T item
+   case 5://D D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_D] = arr[idxSubObj].param[INPUT_TRIGGER_D];
+   break; 
+
+   case 6://C D-T item
+   case 7://C D-T item
+        arr1[idxSubObj].param[INPUT_TRIGGER_C] = arr[idxSubObj].param[INPUT_TRIGGER_C];
+   break; 
+
+ }//switch
+  }//for
+}//repairEditArray(int countRegister, __settings_for_TRIGGER *arr, __settings_for_TRIGGER *arr1) 
 
 int privateDTRBigGetReg1(int adrReg)
 {

@@ -23,6 +23,7 @@ COMPONENT_OBJ *rpobigcomponent;
 /**************************************/
 //подготовка компонента Регистратор Программных Ошибок
 /**************************************/
+
 void constructorRPOBigComponent(COMPONENT_OBJ *rpobigcomp)
 {
   rpobigcomponent = rpobigcomp;

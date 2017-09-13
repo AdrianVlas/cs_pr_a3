@@ -1,6 +1,14 @@
 #ifndef __CONST_INTERFACES__
 #define __CONST_INTERFACES__
 
+/*****************************************************/
+/* Регістри користувача */
+/*****************************************************/
+#define M_ADDRESS_FIRST_USER_REGISTER_DATA      16
+#define M_ADDRESS_LAST_USER_REGISTER_DATA       140
+/*****************************************************/
+
+
 #define USB_RECUEST           0
 #define RS485_RECUEST         1
 

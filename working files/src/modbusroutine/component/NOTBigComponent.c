@@ -20,6 +20,7 @@ void postNOTBigReadAction(void);//action после чтения
 void preNOTBigWriteAction(void);//action до записи
 int postNOTBigWriteAction(void);//action после записи
 void loadNOTBigActualData(void);
+void repairEditArrayNOT(int countRegister, __settings_for_NOT *arr, __settings_for_NOT *arr1);
 
 COMPONENT_OBJ *notbigcomponent;
 
@@ -160,6 +161,7 @@ void preNOTBigWriteAction(void) {
 }//
 int postNOTBigWriteAction(void) {
 //action после записи
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(notbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = notbigcomponent->operativMarker[1]-notbigcomponent->operativMarker[0]+1;
@@ -167,20 +169,82 @@ int postNOTBigWriteAction(void) {
 
    __settings_for_NOT *arr  = (__settings_for_NOT*)(sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR]);
    __settings_for_NOT *arr1 = (__settings_for_NOT*)(sca_of_p_edit[ID_FB_NOT - _ID_FB_FIRST_VAR]);
+//загрузка edit массва
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+notbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+
+        arr1[idxSubObj].param[0]  &= (uint32_t)~0xffff;
+        arr1[idxSubObj].param[0]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+  break;
+  case 1:
+
+        arr1[idxSubObj].param[0]  &= (uint32_t)~(0x7fff<<16);
+        arr1[idxSubObj].param[0]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+  break;
+  }//switch
+  }//for
+
+  //контроль валидности
   for(int i=0; i<countRegister; i++) {
   int offset = i+notbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
 
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+  case 1:
+        if(superValidParam(arr1[idxSubObj].param[0])) 
+                {//контроль валидности
+                repairEditArrayNOT(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+ }//switch
+  }//for
+
+//контроль пройден - редактирование
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+notbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+
         arr1[idxSubObj].param[0] = arr[idxSubObj].param[0] &= (uint32_t)~0xffff;
         arr1[idxSubObj].param[0] = arr[idxSubObj].param[0] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+  break;
+  case 1:
 
         arr1[idxSubObj].param[0] = arr[idxSubObj].param[0] &= (uint32_t)~(0x7fff<<16);
         arr1[idxSubObj].param[0] = arr[idxSubObj].param[0] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+  break;
+  }//switch
   }//for
+
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
+
+void repairEditArrayNOT(int countRegister, __settings_for_NOT *arr, __settings_for_NOT *arr1) {
+  //восстановить edit массив
+  for(int i=0; i<countRegister; i++) {
+  int offset = i+notbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
+  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
+
+  switch(offset%2) {//индекс регистра входа
+  case 0:
+  case 1:
+        arr1[idxSubObj].param[0] = arr[idxSubObj].param[0];
+  break;
+ }//switch
+  }//for
+}//repairEditArray(int countRegister, __settings_for_NOT *arr, __settings_for_NOT *arr1) 
 
 int privateNOTBigGetReg1(int adrReg)
 {
