@@ -438,44 +438,25 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         m_lIpMulUnom  = m_lIp*lU_NOM;
         m_lIyMulU     = m_BGSigSuit.lIust * measurement[4];
         
-        if (m_BGSigSuit.chCheckBgs == 0) {
-
-            m_lNNC = ( m_lIcMulUnom )/(m_lIyMulU);//(m_lKcDeltaIy);
-            m_lNNP = ( m_lIpMulUnom )/(m_lIyMulU);//(m_lKcDeltaIy);
-            
-            lRamainderNNC   = (m_lIcMulUnom) % m_lIyMulU;  //lRamainderNNC  = m_lIc % (m_lKcDeltaIy);
-            if(lRamainderNNC>=(m_lIyMulU>>1))              //if(lRamainderNNC>=(m_lKcDeltaIy>>1))
-                m_lNNC++;                                  //    m_lNNC++;
-            lRamainderNNP  =  (m_lIpMulUnom )%(m_lIyMulU); //lRamainderNNP = m_lIp % (m_lKcDeltaIy);
-            if(lRamainderNNP>=(m_lIyMulU>>1))              //if(lRamainderNNP>=(m_lKcDeltaIy>>1))
-                m_lNNP++;                                  //    m_lNNP++;
-
-            
-            
-        } else {
-            m_lNNC = (m_lIc ) / m_lKcDeltaIy;
-			
-            m_lNNP = (m_lIp ) / m_lKcDeltaIy;
-			
-            //lRamainderNNC   = (m_lIc - m_lKcDeltaIy) % m_lKcDeltaIy;
-            lRamainderNNC   = (m_lIc ) % m_lKcDeltaIy;
-			if(lRamainderNNC>0)
-				lRamainderNNC--;
-            if(lRamainderNNC>=(m_lKcDeltaIy>>1))
-                m_lNNC++;
-            //lRamainderNNP  = (m_lIp - m_lKcDeltaIy) % m_lKcDeltaIy;
-            lRamainderNNP  = (m_lIp ) % m_lKcDeltaIy;
-			if(lRamainderNNP>0)
-				lRamainderNNP--;
-            if(lRamainderNNP>=(m_lKcDeltaIy>>1))
-                m_lNNP++;
-			
+        m_lNNC = ( m_lIcMulUnom )/(m_lIyMulU);//(m_lKcDeltaIy);
+        m_lNNP = ( m_lIpMulUnom )/(m_lIyMulU);//(m_lKcDeltaIy);
+        
+        lRamainderNNC   = (m_lIcMulUnom) % m_lIyMulU;  //lRamainderNNC  = m_lIc % (m_lKcDeltaIy);
+        if(lRamainderNNC>=(m_lIyMulU>>1))              //if(lRamainderNNC>=(m_lKcDeltaIy>>1))
+            m_lNNC++;                                  //    m_lNNC++;
+        lRamainderNNP  =  (m_lIpMulUnom )%(m_lIyMulU); //lRamainderNNP = m_lIp % (m_lKcDeltaIy);
+        if(lRamainderNNP>=(m_lIyMulU>>1))              //if(lRamainderNNP>=(m_lKcDeltaIy>>1))
+            m_lNNP++;                                  //    m_lNNP++;
+        
+        if (m_BGSigSuit.chCheckBgs > 0) {
 			if(m_lNNC>0)
 				m_lNNC--;
 			//else{}
 			if(m_lNNP>0)
 				m_lNNP--;
-        }
+            
+            
+        }  
 
         m_chWRIp = 1;
 	
