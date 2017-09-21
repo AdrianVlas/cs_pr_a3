@@ -56,7 +56,7 @@ int getRegProBigModbusRegister(int adrReg)
     case 1://Очистить регистратор программных ошибок
       return MARKER_ERRORPERIMETR;
     case 2://номер запису для читання;
-      return number_record_of_pr_err_into_USB;
+      return info_rejestrator_pr_err.number_records;//number_record_of_pr_err_into_USB;
     }//switch
   return 0;
 }//getDOUTBigModbusRegister(int adrReg)

@@ -139,6 +139,7 @@ void preXORBigWriteAction(void) {
   xorbigcomponent->isActiveActualData = 1;
 }//
 int postXORBigWriteAction(void) {
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 //action после записи
   if(xorbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -199,11 +200,19 @@ int postXORBigWriteAction(void) {
         arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
   break;
  }//switch
-   superSortParam(2, &(arr1[idxSubObj].param[0]));//сортировка
-   superSortParam(2, &(arr[idxSubObj].param[0]));//сортировка
+  }//for
+
+  for(unsigned int i=0; i<current_config.n_xor; i++) 
+  {
+   superSortParam(2, &(arr1[i].param[0]));//сортировка
+   superSortParam(2, &(arr[i].param[0]));//сортировка
   }//for
 
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//

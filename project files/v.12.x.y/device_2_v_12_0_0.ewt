@@ -1641,9 +1641,6 @@
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\RMTKeySmallComponent.c</name>
             </file>
             <file>
-              <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\RPOBigComponent.c</name>
-            </file>
-            <file>
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\RPRBigComponent.c</name>
             </file>
             <file>

@@ -43,6 +43,6 @@ void global_component_installation(void) {
   constructorPKVBigComponent(&(config_array[PKVBIGCOMPONENT]));//подготовка компонента pkv
   constructorIUSmallComponent(&(config_array[IUSMALLCOMPONENT]));//подготовка компонента iu
   constructorYustBigComponent(&(config_array[YUSTBIGCOMPONENT]));//подготовка компонента yust
-  constructorRPOBigComponent(&(config_array[RPOBIGCOMPONENT]));//подготовка компонента rpo
+//  constructorRPOBigComponent(&(config_array[RPOBIGCOMPONENT]));//подготовка компонента rpo
 }//global_vareiables_installation_bo(void)
 

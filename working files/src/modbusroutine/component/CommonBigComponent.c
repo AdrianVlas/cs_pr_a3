@@ -53,22 +53,22 @@ int getCommonBigModbusRegister(int adrReg)
   int offset = adrReg-BEGIN_ADR_REGISTER;
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
   case 0:
-   //Тревога 0
-   return arr->param[FIX_BLOCK_ALARM] & 0xffff;//
-  case 1:
-   return (arr->param[FIX_BLOCK_ALARM] >> 16) & 0x7fff;//
-
-  case 2:
-   //Тишина 0
-   return arr->param[FIX_BLOCK_MUTE] & 0xffff;//
-  case 3:
-   return (arr->param[FIX_BLOCK_MUTE] >> 16) & 0x7fff;//
-
-  case 4:
    //Блок. 0
    return arr->param[FIX_BLOCK_BLOCK] & 0xffff;//
-  case 5:
+  case 1:
    return (arr->param[FIX_BLOCK_BLOCK] >> 16) & 0x7fff;//
+
+  case 2:
+   //Тревога 0
+   return arr->param[FIX_BLOCK_ALARM] & 0xffff;//
+  case 3:
+   return (arr->param[FIX_BLOCK_ALARM] >> 16) & 0x7fff;//
+
+  case 4:
+   //Тишина 0
+   return arr->param[FIX_BLOCK_MUTE] & 0xffff;//
+  case 5:
+   return (arr->param[FIX_BLOCK_MUTE] >> 16) & 0x7fff;//
 
   case 6:
    //Тест.Вход. 0
@@ -162,6 +162,7 @@ void preCommonBigWriteAction(void) {
 }//
 int postCommonBigWriteAction(void) {
 //action после записи
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   if(commonbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = commonbigcomponent->operativMarker[1]-commonbigcomponent->operativMarker[0]+1;
@@ -172,31 +173,31 @@ int postCommonBigWriteAction(void) {
   for(int i=0; i<countRegister; i++) {
   int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   switch(offset) {//индекс регистра 
-   case 0://Тревога 0
+   case 0://Блок. 0
+        arr1->param[FIX_BLOCK_BLOCK]  &= (uint32_t)~0xffff;
+        arr1->param[FIX_BLOCK_BLOCK]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break; 
+   case 1://Блок. 1
+        arr1->param[FIX_BLOCK_BLOCK]  &= (uint32_t)~(0x7fff<<16);
+        arr1->param[FIX_BLOCK_BLOCK]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 2://Тревога 0
         arr1->param[FIX_BLOCK_ALARM]  &= (uint32_t)~0xffff;
         arr1->param[FIX_BLOCK_ALARM]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break; 
-   case 1://Тревога 1
+   case 3://Тревога 1
         arr1->param[FIX_BLOCK_ALARM]  &= (uint32_t)~(0x7fff<<16);
         arr1->param[FIX_BLOCK_ALARM]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
    break; 
 
-   case 2://Тишина 0
+   case 4://Тишина 0
         arr1->param[FIX_BLOCK_MUTE]  &= (uint32_t)~0xffff;
         arr1->param[FIX_BLOCK_MUTE]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break; 
-   case 3://Тишина 1
+   case 5://Тишина 1
         arr1->param[FIX_BLOCK_MUTE]  &= (uint32_t)~(0x7fff<<16);
         arr1->param[FIX_BLOCK_MUTE]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
-   break; 
-
-   case 4://Блок. 0
-        arr1->param[FIX_BLOCK_BLOCK]  &= (uint32_t)~0xffff;
-        arr1->param[FIX_BLOCK_BLOCK]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
-   break; 
-   case 5://Блок. 1
-        arr1->param[FIX_BLOCK_BLOCK]  &= (uint32_t)~(0x7fff<<16);
-        arr1->param[FIX_BLOCK_BLOCK]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
    break; 
 
  }//switch
@@ -207,8 +208,16 @@ int postCommonBigWriteAction(void) {
   int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
 
   switch(offset) {//индекс регистра 
-   case 0://Тревога 0
-   case 1:
+   case 0://Блок. 0
+   case 1://Блок. 1
+        if(superValidParam(arr1->param[FIX_BLOCK_BLOCK]))
+                {//контроль валидности
+                repairEditArrayCommon(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+   case 2://Тревога 0
+   case 3:
         if(superValidParam(arr1->param[FIX_BLOCK_ALARM])) 
                 {//контроль валидности
                 repairEditArrayCommon(countRegister, arr, arr1);//восстановить edit массив
@@ -216,17 +225,9 @@ int postCommonBigWriteAction(void) {
         }//if
   break;
 
-   case 2://Тишина 0
-   case 3://Тишина 1
+   case 4://Тишина 0
+   case 5://Тишина 1
         if(superValidParam(arr1->param[FIX_BLOCK_MUTE]))
-                {//контроль валидности
-                repairEditArrayCommon(countRegister, arr, arr1);//восстановить edit массив
-                return 2;//уйти
-        }//if
-  break;
-   case 4://Блок. 0
-   case 5://Блок. 1
-        if(superValidParam(arr1->param[FIX_BLOCK_BLOCK]))
                 {//контроль валидности
                 repairEditArrayCommon(countRegister, arr, arr1);//восстановить edit массив
                 return 2;//уйти
@@ -239,31 +240,31 @@ int postCommonBigWriteAction(void) {
   for(int i=0; i<countRegister; i++) {
   int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   switch(offset) {//индекс регистра 
-   case 0://Тревога 0
+   case 0://Блок. 0
+        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK] &= (uint32_t)~0xffff;
+        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break; 
+   case 1://Блок. 1
+        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK] &= (uint32_t)~(0x7fff<<16);
+        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 2://Тревога 0
         arr1->param[FIX_BLOCK_ALARM] = arr->param[FIX_BLOCK_ALARM] &= (uint32_t)~0xffff;
         arr1->param[FIX_BLOCK_ALARM] = arr->param[FIX_BLOCK_ALARM] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break; 
-   case 1://Тревога 1
+   case 3://Тревога 1
         arr1->param[FIX_BLOCK_ALARM] = arr->param[FIX_BLOCK_ALARM] &= (uint32_t)~(0x7fff<<16);
         arr1->param[FIX_BLOCK_ALARM] = arr->param[FIX_BLOCK_ALARM] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
    break; 
 
-   case 2://Тишина 0
+   case 4://Тишина 0
         arr1->param[FIX_BLOCK_MUTE] = arr->param[FIX_BLOCK_MUTE] &= (uint32_t)~0xffff;
         arr1->param[FIX_BLOCK_MUTE] = arr->param[FIX_BLOCK_MUTE] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break; 
-   case 3://Тишина 1
+   case 5://Тишина 1
         arr1->param[FIX_BLOCK_MUTE] = arr->param[FIX_BLOCK_MUTE] &= (uint32_t)~(0x7fff<<16);
         arr1->param[FIX_BLOCK_MUTE] = arr->param[FIX_BLOCK_MUTE] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
-   break; 
-
-   case 4://Блок. 0
-        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK] &= (uint32_t)~0xffff;
-        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
-   break; 
-   case 5://Блок. 1
-        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK] &= (uint32_t)~(0x7fff<<16);
-        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
    break; 
 
    case 6://Тест.Вход. 0
@@ -278,6 +279,10 @@ int postCommonBigWriteAction(void) {
   }//for
 
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
@@ -287,19 +292,19 @@ void repairEditArrayCommon(int countRegister, __SETTINGS_FIX *arr, __SETTINGS_FI
   for(int i=0; i<countRegister; i++) {
   int offset = i+commonbigcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
   switch(offset) {//индекс регистра 
-   case 0://Тревога 0
-   case 1://Тревога 1
+   case 0://Блок. 0
+   case 1://Блок. 1
+        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK];
+   break; 
+
+   case 2://Тревога 0
+   case 3://Тревога 1
         arr1->param[FIX_BLOCK_ALARM] = arr->param[FIX_BLOCK_ALARM];
    break; 
 
-   case 2://Тишина 0
-   case 3://Тишина 1
+   case 4://Тишина 0
+   case 5://Тишина 1
         arr1->param[FIX_BLOCK_MUTE] = arr->param[FIX_BLOCK_MUTE];
-   break; 
-
-   case 4://Блок. 0
-   case 5://Блок. 1
-        arr1->param[FIX_BLOCK_BLOCK] = arr->param[FIX_BLOCK_BLOCK];
    break; 
 
  }//switch

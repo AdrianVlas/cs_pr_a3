@@ -127,6 +127,7 @@ void preRPRBigWriteAction(void)
 }//
 int postRPRBigWriteAction(void)
 {
+extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 //action после записи
   if(rprbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offset = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -159,6 +160,10 @@ int postRPRBigWriteAction(void)
   
   */
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+  if(pointInterface)//метка интерфейса 0-USB 1-RS485
+     config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
+  else 
+     config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
   restart_timeout_idle_new_settings = true;
  return 0;
 }//
