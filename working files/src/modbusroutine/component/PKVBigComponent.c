@@ -69,7 +69,7 @@ void loadPKVBigActualData(void) {
     tempReadArray[i] = settings_fix.baud_RS485;
     break;
     case 6://Количество стоп-бит
-    tempReadArray[i] = settings_fix.number_stop_bit_RS485;
+    tempReadArray[i] = 1+settings_fix.number_stop_bit_RS485;
     break;
     case 7://Паритет
     tempReadArray[i] = settings_fix.pare_bit_RS485;
@@ -436,7 +436,7 @@ int flag_time_array = 0;
     restart_timeout_idle_new_settings = true;
     break;
     case 6://Количество стоп-бит
-    arr1->number_stop_bit_RS485 = arr->number_stop_bit_RS485 = (tempWriteArray[offsetTempWriteArray+i]);
+    arr1->number_stop_bit_RS485 = arr->number_stop_bit_RS485 = (tempWriteArray[offsetTempWriteArray+i])-1;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;

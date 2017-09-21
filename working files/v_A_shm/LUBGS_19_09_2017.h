@@ -448,7 +448,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         if(lRamainderNNP>=(m_lIyMulU>>1))              //if(lRamainderNNP>=(m_lKcDeltaIy>>1))
             m_lNNP++;                                  //    m_lNNP++;
         
-        if (m_BGSigSuit.chCheckBgs > 0) {
+        if (m_BGSigSuit.chCheckBgs >= 0) {
 			if(m_lNNC>0)
 				m_lNNC--;
 			//else{}
