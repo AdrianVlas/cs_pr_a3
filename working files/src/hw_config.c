@@ -164,7 +164,7 @@ void Interrupts_Config(void)
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -178,7 +178,7 @@ void Interrupts_Config(void)
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -192,7 +192,7 @@ void Interrupts_Config(void)
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = SPI_DF_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -206,7 +206,7 @@ void Interrupts_Config(void)
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamSPI_DF_Rx_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -220,7 +220,7 @@ void Interrupts_Config(void)
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = USARTRS485_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -234,7 +234,7 @@ void Interrupts_Config(void)
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamRS485_Tx_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -248,7 +248,7 @@ void Interrupts_Config(void)
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamI2C_Tx_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 6;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -262,7 +262,7 @@ void Interrupts_Config(void)
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = DMA_StreamI2C_Rx_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 6;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -276,7 +276,7 @@ void Interrupts_Config(void)
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = EXITI_POWER_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 8;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -290,7 +290,7 @@ void Interrupts_Config(void)
   */
   /*******************************/
   NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 8;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);

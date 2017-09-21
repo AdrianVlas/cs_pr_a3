@@ -200,8 +200,12 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
         arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
   break;
  }//switch
-   superSortParam(2, &(arr1[idxSubObj].param[0]));//сортировка
-   superSortParam(2, &(arr[idxSubObj].param[0]));//сортировка
+  }//for
+
+  for(unsigned int i=0; i<current_config.n_xor; i++) 
+  {
+   superSortParam(2, &(arr1[i].param[0]));//сортировка
+   superSortParam(2, &(arr[i].param[0]));//сортировка
   }//for
 
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);

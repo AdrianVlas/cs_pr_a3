@@ -327,7 +327,36 @@ int outputFunc20PacketEncoderPro(int adrUnit, int recordNumber, int recordLen)
 //                        2,//error,
 //                        outputPacket);//output_data
 number_record_of_pr_err_into_USB = number_record_of_log;
-      _SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT);
+_SET_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT);
+
+      uint32_t delta_time = 0;
+      uint32_t time_start = TIM4->CNT;
+      while (
+        ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0) &&
+        (delta_time < MAX_TIMEOUT_WAITING_REQUESTED_DATA)
+      )
+        {
+          uint32_t current_time_tim4 = TIM4->CNT;
+
+          if (current_time_tim4 >= time_start)
+            delta_time = current_time_tim4 - time_start;
+          else
+            delta_time = current_time_tim4 + 0x10000 - time_start;
+
+          //Робота з Watchdog
+          watchdog_routine();
+        }//while
+
+      if ((control_tasks_dataflash &  MASKA_FOR_BIT(TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT )) != 0)
+        {
+          //Ми не дочекалися завершення читання з мікросхеми DataFalash
+          number_record_of_pr_err_into_USB = 0xffffffff;
+          _CLEAR_STATE(control_tasks_dataflash, TASK_MAMORY_READ_DATAFLASH_FOR_PR_ERR_USB_BIT);
+          return Error_modbus(adrUnit, // address,
+                              outputPacket[1],//function,
+                              2,//error,
+                              outputPacket);//output_data
+        }//if
   short dataRegister[130];
   int   idxDataRegister = 0;
   int idxOutputPacket = 0;

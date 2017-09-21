@@ -159,7 +159,7 @@ int setANDBigModbusBit(int x, int y)
 
 void setANDBigCountObject(void) {
 //записать к-во обектов
-  int cntObj = current_config.n_and;                       //Кількість елементів "І"
+  int cntObj = current_config.n_and; //Кількість елементів "І"
   if(cntObj<0) return;
   if(cntObj>TOTAL_OBJ) return;
   andbigcomponent->countObject = cntObj;
@@ -246,8 +246,12 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
         arr1[idxSubObj].param[idx_SIGNALS_IN] = arr[idxSubObj].param[idx_SIGNALS_IN] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
   break;
  }//switch
-        superSortParam(AND_SIGNALS_IN, &(arr1[idxSubObj].param[0]));//сортировка
-        superSortParam(AND_SIGNALS_IN, &(arr[idxSubObj].param[0]));//сортировка
+  }//for
+
+  for(unsigned int i=0; i<current_config.n_and; i++) 
+  {
+        superSortParam(AND_SIGNALS_IN, &(arr1[i].param[0]));//сортировка
+        superSortParam(AND_SIGNALS_IN, &(arr[i].param[0]));//сортировка
   }//for
 
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
