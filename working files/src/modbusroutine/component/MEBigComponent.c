@@ -242,8 +242,8 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
  }//switch
   }//for
 
-  superSortParam(current_config.n_log*LOG_SIGNALS_IN, &(arr1[0]));//сортировка
-  superSortParam(current_config.n_log*LOG_SIGNALS_IN, &(arr[0]));//сортировка
+  superSortParam(current_config.n_log*LOG_SIGNALS_IN, &(arr1[1]));//сортировка
+  superSortParam(current_config.n_log*LOG_SIGNALS_IN, &(arr[1]));//сортировка
 
   if(upravlSetting)//флаг Setting
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
