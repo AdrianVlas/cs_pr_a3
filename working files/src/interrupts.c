@@ -448,6 +448,12 @@ void TIM4_IRQHandler(void)
     
       if( RxBuffer_RS485_count != 0 )
       {
+        /***
+        Тест роботи RS-485 (приймається новий пакет)
+        ***/
+        test_answer_RS485 = 0;
+        /***/
+        
         if (RxBuffer_RS485_count_previous == RxBuffer_RS485_count)
         {
           //Прийнятий цілий фрейм
@@ -468,6 +474,12 @@ void TIM4_IRQHandler(void)
                (RxBuffer_RS485[0] == settings_fix_prt.address)
               )   
             {
+              /***
+              Тест роботи RS-485 (прийнято успішно пакет)
+              ***/
+              test_answer_RS485 |= (1 << 0);
+              /***/
+
               //Інакше прийнятий пакет буде стояти в очікуванні на подальшу обробку - якщо не виконувати більше тут ніяких дій (не перезапускати моніторинг)
 
               if (global_requect == 0) time_last_receive_byte = TIM4->CNT;
@@ -1849,6 +1861,12 @@ void USARTRS485_IRQHandler(void)
 
   if (USART_GetITStatus(USART_RS485, USART_IT_TC) != RESET)
   {
+    /***
+    Тест роботи RS-485 (відправлено останній байт)
+    ***/
+    test_answer_RS485 |= (1 << 3);
+    /***/
+    
     //Переводимо мікросхкму на прийом
     GPIO_485DE->BSRRH = GPIO_PIN_485DE;
 
@@ -1920,6 +1938,12 @@ void DMA_StreamRS485_Tx_IRQHandler(void)
   SEGGER_SYSVIEW_RecordEnterISR();
 #endif
 
+  /***
+  Тест роботи RS-485 (передані всі дані через DMA)
+  ***/
+  test_answer_RS485 |= (1 << 2);
+  /***/
+    
   //Дозволяємо генерацію переривань при завершенні передачі байту
   USART_ITConfig(USART_RS485, USART_IT_TC, ENABLE);
 

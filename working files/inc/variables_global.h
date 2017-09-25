@@ -337,6 +337,7 @@ SRAM1 uint16_t make_reconfiguration_RS_485/* = 0*/;
 SRAM1 uint16_t number_bits_rs_485_waiting/* = 0*/;
 SRAM1 uint16_t mark_current_tick_RS_485/* = 0*/;
 unsigned int timeout_idle_RS485;
+uint32_t test_answer_RS485 = 0;
 
 //USB
 uint8_t  USART_Rx_Buffer[USART_RX_DATA_SIZE]; 
