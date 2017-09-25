@@ -234,7 +234,7 @@ extern uint16_t number_bits_rs_485_waiting;
 extern uint16_t mark_current_tick_RS_485;
 extern unsigned int timeout_idle_RS485;
 extern uint32_t test_answer_RS485;
-
+extern uint32_t reason_of_restart_RS485;
 
 //USB
 extern uint8_t  USART_Rx_Buffer[USART_RX_DATA_SIZE]; 

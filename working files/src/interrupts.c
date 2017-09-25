@@ -452,6 +452,7 @@ void TIM4_IRQHandler(void)
         Тест роботи RS-485 (приймається новий пакет)
         ***/
         test_answer_RS485 = 0;
+        reason_of_restart_RS485 = 0;
         /***/
         
         if (RxBuffer_RS485_count_previous == RxBuffer_RS485_count)
@@ -489,12 +490,24 @@ void TIM4_IRQHandler(void)
             }
             else
             {
+              /***
+              Причина рестарту (не співпала адреса 1)
+              ***/
+              reason_of_restart_RS485 |= (1 << 1);
+              /***/
+              
               //Адреса не співпадає - відновити моніторинг лінії
               restart_monitoring_RS485();
             }
           }
           else
           {
+            /***
+            Причина рестарту (помилки при передачі)
+            ***/
+            reason_of_restart_RS485 |= (1 << 2);
+            /***/
+              
             //Зафіксовані помилки  - відновити моніторинг лінії
             restart_monitoring_RS485();
           }
@@ -1877,7 +1890,16 @@ void USARTRS485_IRQHandler(void)
     USART_ClearFlag(USART_RS485, USART_FLAG_TC);
 
     //Відновлюємо моніторинг каналу RS-485 , якщо не стоїть умова реконфігурувати інтерфейс
-    if (make_reconfiguration_RS_485 == 0) restart_monitoring_RS485();
+    if (make_reconfiguration_RS_485 == 0) 
+    {
+      /***
+      Причина рестарту (рестарт після відправки останнього байту)
+      ***/
+      reason_of_restart_RS485 |= (1 << 3);
+      /***/
+              
+      restart_monitoring_RS485();
+    }
   }
   
   if(USART_GetITStatus(USART_RS485, USART_IT_IDLE) != RESET)

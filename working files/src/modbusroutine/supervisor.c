@@ -107,18 +107,31 @@ void inputPacketParserRS485(void)
   if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2) ||//) return;
       (CRC_sum >> 8  ) != *(inputPacket+*received_count-1))
     {
+      /***
+      12345
+      Причина рестарту (не співпала контрольна сума)
+      ***/
+      reason_of_restart_RS485 |= (1 << 5);
+      /***/
+              
       restart_monitoring_RS485();
       return;
     }
   if(inputPacket[0]!=settings_fix_prt.address)
     {
+      /***
+      Причина рестарту (не співпала адреса 2)
+      ***/
+      reason_of_restart_RS485 |= (1 << 6);
+      /***/
+              
       restart_monitoring_RS485();
       return;
     }
 
   if(inputPacketParser()==0)
     {
-      restart_monitoring_RS485();
+//      restart_monitoring_RS485();
       return;
     }
 /*
