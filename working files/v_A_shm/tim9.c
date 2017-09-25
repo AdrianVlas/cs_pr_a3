@@ -24,6 +24,8 @@ void TIM9_Init(void)
 //uint8_t TIM_RepetitionCounter
 
 	RCC_APB2PeriphResetCmd(RCC_APB2Periph_TIM9, ENABLE);
+	RCC_APB2PeriphResetCmd(RCC_APB2Periph_TIM9, DISABLE);
+	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);
 	//-*Cycle value*-/
 	TIM_TimeBaseStructure.TIM_Period = 0xffff;  

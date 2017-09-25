@@ -65,11 +65,12 @@ long ChangeCfg(void* pv){
             lRes = (arrChangeCfgFnptr[i])(pv);
         } while (--lCtrElem > 0 && lRes == 0);
     }
-//TIM9Stop();
-//TIM9_Init();
-//
-//TIM9Start();
-//TIM9Stop();
+  TIM9Stop();
+  TIM9_Init();
+  
+  TIM9Start();
+  DoCalcWrp();
+  TIM9Stop();
     return lVl;
 }
 
