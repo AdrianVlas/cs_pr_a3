@@ -120,6 +120,7 @@ void inputPacketParserRS485(void)
   if(inputPacket[0]!=settings_fix_prt.address)
     {
       /***
+      12345
       Причина рестарту (не співпала адреса 2)
       ***/
       reason_of_restart_RS485 |= (1 << 6);
