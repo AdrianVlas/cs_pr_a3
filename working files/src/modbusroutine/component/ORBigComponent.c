@@ -20,6 +20,7 @@ void postORBigReadAction(void);//action после чтения
 void preORBigWriteAction(void);//action до записи
 int postORBigWriteAction(void);//action после записи
 void repairEditArrayOR(int countRegister, __settings_for_OR *arr, __settings_for_OR *arr1);
+void config_and_settingsORBig(void);//action активации
 
 COMPONENT_OBJ *orbigcomponent;
 
@@ -41,6 +42,7 @@ void constructorORBigComponent(COMPONENT_OBJ *orbigcomp)
   orbigcomponent->postReadAction  = postORBigReadAction;//action после чтения
   orbigcomponent->preWriteAction  = preORBigWriteAction;//action до записи
   orbigcomponent->postWriteAction = postORBigWriteAction;//action после записи
+  orbigcomponent->config_and_settings = config_and_settingsORBig;//action активации
 
   orbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -182,6 +184,7 @@ void preORBigWriteAction(void) {
 }//
 int postORBigWriteAction(void) {
 extern int pointInterface;//метка интерфейса 0-USB 1-RS485
+extern int upravlconfig_and_settings;//флаг активации компонента
 //action после записи
   if(orbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -244,11 +247,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
  }//switch
   }//for
 
-  for(unsigned int i=0; i<current_config.n_or; i++) 
-  {
-   superSortParam(OR_SIGNALS_IN, &(arr1[i].param[0]));//сортировка
-   superSortParam(OR_SIGNALS_IN, &(arr[i].param[0]));//сортировка
-  }//for
+  upravlconfig_and_settings=1;//флаг активации компонента
 
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   if(pointInterface)//метка интерфейса 0-USB 1-RS485
@@ -289,3 +288,18 @@ int privateORBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsORBig(void)
+{
+extern int upravlconfig_and_settings;//флаг активации компонента
+//action активации
+  if(upravlconfig_and_settings==0) return;//флаг активации компонента
+   __settings_for_OR *arr  = (__settings_for_OR*)(sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR]);
+   __settings_for_OR *arr1 = (__settings_for_OR*)(sca_of_p_edit[ID_FB_OR - _ID_FB_FIRST_VAR]);
+  for(unsigned int i=0; i<current_config.n_or; i++) 
+  {
+   superSortParam(OR_SIGNALS_IN, &(arr1[i].param[0]));//сортировка
+   superSortParam(OR_SIGNALS_IN, &(arr[i].param[0]));//сортировка
+  }//for
+}
+

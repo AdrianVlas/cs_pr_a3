@@ -20,6 +20,7 @@ void preMEBigReadAction(void);//action до чтения
 void postMEBigReadAction(void);//action после чтения
 void preMEBigWriteAction(void);//action до записи
 int postMEBigWriteAction(void);//action после записи
+void config_and_settingsMEBig(void);//action активации
 void repairEditArrayME(int countRegister, __LOG_INPUT *arr, __LOG_INPUT *arr1);
 
 COMPONENT_OBJ *mebigcomponent;
@@ -42,6 +43,7 @@ void constructorMEBigComponent(COMPONENT_OBJ *mebigcomp)
   mebigcomponent->postReadAction  = postMEBigReadAction;//action после чтения
   mebigcomponent->preWriteAction  = preMEBigWriteAction;//action до записи
   mebigcomponent->postWriteAction = postMEBigWriteAction;//action после записи
+  mebigcomponent->config_and_settings = config_and_settingsMEBig;//action активации
 
   mebigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -166,6 +168,7 @@ int postMEBigWriteAction(void) {
 extern int upravlSetting;//флаг Setting
 extern int upravlSchematic;//флаг Shematic
 extern int pointInterface;//метка интерфейса 0-USB 1-RS485
+extern int upravlconfig_and_settings;//флаг активации компонента
 //action после записи
   if(mebigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -242,8 +245,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
  }//switch
   }//for
 
-  superSortParam(current_config.n_log*LOG_SIGNALS_IN, &(arr1[1]));//сортировка
-  superSortParam(current_config.n_log*LOG_SIGNALS_IN, &(arr[1]));//сортировка
+  upravlconfig_and_settings=1;//флаг активации компонента
 
   if(upravlSetting)//флаг Setting
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
@@ -288,3 +290,15 @@ int privateMEBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsMEBig(void)
+{
+extern int upravlconfig_and_settings;//флаг активации компонента
+//action активации
+  if(upravlconfig_and_settings==0) return;//флаг активации компонента
+   __LOG_INPUT *arr  = (__LOG_INPUT*)(sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+   __LOG_INPUT *arr1 = (__LOG_INPUT*)(sca_of_p_edit[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+  superSortParam(current_config.n_log*LOG_SIGNALS_IN, &(arr1[0]));//сортировка
+  superSortParam(current_config.n_log*LOG_SIGNALS_IN, &(arr[0]));//сортировка
+}
+

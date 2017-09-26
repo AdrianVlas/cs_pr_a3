@@ -22,6 +22,7 @@ int postTSBigWriteAction(void);//action после записи
 void loadTSBigActualData(void);
 int getTSmallModbusBeginAdrRegister(void);
 void repairEditArrayTS(int countRegister, __settings_for_TS *arr, __settings_for_TS *arr1);
+void config_and_settingsTSBig(void);//action активации
 
 COMPONENT_OBJ *tsbigcomponent;
 
@@ -43,6 +44,7 @@ void constructorTSBigComponent(COMPONENT_OBJ *tsbigcomp)
   tsbigcomponent->postReadAction  = postTSBigReadAction;//action после чтения
   tsbigcomponent->preWriteAction  = preTSBigWriteAction;//action до записи
   tsbigcomponent->postWriteAction = postTSBigWriteAction;//action после записи
+  tsbigcomponent->config_and_settings = config_and_settingsTSBig;//action активации
 
   tsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -303,3 +305,9 @@ int privateTSBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsTSBig(void)
+{
+//action активации
+}
+

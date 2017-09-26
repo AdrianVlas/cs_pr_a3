@@ -24,6 +24,7 @@ void preTSSmallWriteAction(void);//action до записи
 int postTSSmallWriteAction(void);//action после записи
 void loadTSSmallActualData(int beginOffset, int endOffset);
 int getTSmallModbusBeginAdrRegister(void);
+void config_and_settingsTSSmall(void);//action активации
 
 COMPONENT_OBJ *tssmallcomponent;
 
@@ -51,6 +52,7 @@ void constructorTSSmallComponent(COMPONENT_OBJ *tssmallcomp)
   tssmallcomponent->postReadAction  = postTSSmallReadAction;//action после чтения
   tssmallcomponent->preWriteAction  = preTSSmallWriteAction;//action до записи
   tssmallcomponent->postWriteAction = postTSSmallWriteAction;//action после записи
+  tssmallcomponent->config_and_settings = config_and_settingsTSSmall;//action активации
 
   tssmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -208,3 +210,9 @@ int privateTSSmallGetBit2(int adrBit)
   if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsTSSmall(void)
+{
+//action активации
+}
+

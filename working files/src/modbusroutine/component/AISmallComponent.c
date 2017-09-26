@@ -16,6 +16,7 @@ void preAISmallReadAction(void);//action до чтения
 void postAISmallReadAction(void);//action после чтения
 void preAISmallWriteAction(void);//action до записи
 int postAISmallWriteAction(void);//action после записи
+void config_and_settingsAISmall(void);//action активации
 
 COMPONENT_OBJ *aismallcomponent;
 
@@ -37,6 +38,7 @@ void constructorAISmallComponent(COMPONENT_OBJ *aismallcomp)
   aismallcomponent->postReadAction  = postAISmallReadAction;//action после чтения
   aismallcomponent->preWriteAction  = preAISmallWriteAction;//action до записи
   aismallcomponent->postWriteAction = postAISmallWriteAction;//action после записи
+  aismallcomponent->config_and_settings = config_and_settingsAISmall;//action активации
 
   aismallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -114,3 +116,9 @@ int privateAISmallGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsAISmall(void)
+{
+//action активации
+}
+

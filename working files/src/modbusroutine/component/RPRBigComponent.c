@@ -21,6 +21,7 @@ void preRPRBigWriteAction(void);//action до записи
 int postRPRBigWriteAction(void);//action после записи
 void loadRPRBigActualData(void);
 int getRPRSmallModbusBeginAdrRegister(void);
+void config_and_settingsRPRBig(void);//action активации
 
 COMPONENT_OBJ *rprbigcomponent;
 
@@ -42,24 +43,10 @@ void constructorRPRBigComponent(COMPONENT_OBJ *rprbigcomp)
   rprbigcomponent->postReadAction  = postRPRBigReadAction;//action после чтения
   rprbigcomponent->preWriteAction  = preRPRBigWriteAction;//action до записи
   rprbigcomponent->postWriteAction = postRPRBigWriteAction;//action после записи
+  rprbigcomponent->config_and_settings = config_and_settingsRPRBig;//action активации
 
   rprbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-
-//void loadRPRBigActualData(void)
-//{
-  /*
-  Читання/запис здійснється з полів (коментарі додані у файлі type_definition.h для структури типу __CONFIG)
-  settings_fix_prt/settings_fix/settings_fix_edit->user_register[]
-  
-  */
-  //ActualData
-  //for(int i=0; i<100; i++) tempReadArray[i] = i;
-  /*
-  Читання/запис здійснється у 
-  settings_fix_prt/settings_fix/settings_fix_edit.user_register[номер регістру]
-*/
-//}//loadActualData()
 
 int getRPRBigModbusRegister(int adrReg)
 {
@@ -175,3 +162,9 @@ int privateRPRBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsRPRBig(void)
+{
+//action активации
+}
+

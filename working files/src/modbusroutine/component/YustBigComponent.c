@@ -17,6 +17,7 @@ void postYustBigReadAction(void);//action после чтения
 void preYustBigWriteAction(void);//action до записи
 int postYustBigWriteAction(void);//action после записи
 void loadYustBigActualData(void);
+void config_and_settingsYustBig(void);//action активации
 
 COMPONENT_OBJ *yustbigcomponent;
 
@@ -38,6 +39,7 @@ void constructorYustBigComponent(COMPONENT_OBJ *yustbigcomp)
   yustbigcomponent->postReadAction  = postYustBigReadAction;//action после чтения
   yustbigcomponent->preWriteAction  = preYustBigWriteAction;//action до записи
   yustbigcomponent->postWriteAction = postYustBigWriteAction;//action после записи
+  yustbigcomponent->config_and_settings = config_and_settingsYustBig;//action активации
 
   yustbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -159,3 +161,9 @@ int privateYustBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsYustBig(void)
+{
+//action активации
+}
+

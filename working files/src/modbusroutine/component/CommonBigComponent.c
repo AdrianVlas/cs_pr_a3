@@ -16,6 +16,7 @@ void preCommonBigReadAction(void);//action до чтения
 void postCommonBigReadAction(void);//action после чтения
 void preCommonBigWriteAction(void);//action до записи
 int postCommonBigWriteAction(void);//action после записи
+void config_and_settingsCommonBig(void);//action активации
 void repairEditArrayCommon(int countRegister, __SETTINGS_FIX *arr, __SETTINGS_FIX *arr1);
 
 COMPONENT_OBJ *commonbigcomponent;
@@ -38,6 +39,7 @@ void constructorCommonBigComponent(COMPONENT_OBJ *commonbigcomp)
   commonbigcomponent->postReadAction  = postCommonBigReadAction;//action после чтения
   commonbigcomponent->preWriteAction  = preCommonBigWriteAction;//action до записи
   commonbigcomponent->postWriteAction = postCommonBigWriteAction;//action после записи
+  commonbigcomponent->config_and_settings = config_and_settingsCommonBig;//action активации
 
   commonbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -318,3 +320,9 @@ int privateCommonBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsCommonBig(void)
+{
+//action активации
+}
+

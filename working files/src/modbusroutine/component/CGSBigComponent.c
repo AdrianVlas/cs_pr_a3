@@ -17,7 +17,7 @@ void preCGSBigReadAction(void);//action до чтения
 void postCGSBigReadAction(void);//action после чтения
 void preCGSBigWriteAction(void);//action до записи
 int postCGSBigWriteAction(void);//action после записи
-//void loadCGSBigActualData(void);
+void config_and_settingsCGSBig(void);//action активации
 
 COMPONENT_OBJ *cgsbigcomponent;
 /**************************************/
@@ -38,6 +38,7 @@ void constructorCGSBigComponent(COMPONENT_OBJ *cgsbigcomp)
   cgsbigcomponent->postReadAction  = postCGSBigReadAction;//action после чтения
   cgsbigcomponent->preWriteAction  = preCGSBigWriteAction;//action до записи
   cgsbigcomponent->postWriteAction = postCGSBigWriteAction;//action после записи
+  cgsbigcomponent->config_and_settings = config_and_settingsCGSBig;//action активации
 
   cgsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -182,3 +183,9 @@ int privateCGSBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsCGSBig(void)
+{
+//action активации
+}
+

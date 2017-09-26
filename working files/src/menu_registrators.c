@@ -138,7 +138,7 @@ void make_ekran_list_event_log(void)
             for (size_t j = 0; j < MAX_ROW_LCD; j++)
             {
               //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-              for (size_t k = 0; k < MAX_COL_LCD; j++) working_ekran[j][k] = (j < 2) ? information_timeout[index_language][j][k] : ' ';
+              for (size_t k = 0; k < MAX_COL_LCD; k++) working_ekran[j][k] = (j < 2) ? information_timeout[index_language][j][k] : ' ';
             }
             
             //Курсор по горизонталі відображається на першій позиції
@@ -494,7 +494,7 @@ void make_ekran_list_event_pr_err(void)
             for (size_t j = 0; j < MAX_ROW_LCD; j++)
             {
               //Наступні рядки треба перевірити, чи їх требе відображати у текучій коффігурації
-              for (size_t k = 0; k < MAX_COL_LCD; j++) working_ekran[j][k] = (j < 2) ? information_timeout[index_language][j][k] : ' ';
+              for (size_t k = 0; k < MAX_COL_LCD; k++) working_ekran[j][k] = (j < 2) ? information_timeout[index_language][j][k] : ' ';
             }
             
             //Курсор по горизонталі відображається на першій позиції

@@ -19,6 +19,7 @@ void preANDBigReadAction(void);//action до чтения
 void postANDBigReadAction(void);//action после чтения
 void preANDBigWriteAction(void);//action до записи
 int postANDBigWriteAction(void);//action после записи
+void config_and_settingsANDBig(void);//action активации
 void repairEditArrayAND(int countRegister, __settings_for_AND *arr, __settings_for_AND *arr1);
 
 COMPONENT_OBJ *andbigcomponent;
@@ -41,6 +42,7 @@ void constructorANDBigComponent(COMPONENT_OBJ *andbigcomp)
   andbigcomponent->postReadAction  = postANDBigReadAction;//action после чтения
   andbigcomponent->preWriteAction  = preANDBigWriteAction;//action до записи
   andbigcomponent->postWriteAction = postANDBigWriteAction;//action после записи
+  andbigcomponent->config_and_settings = config_and_settingsANDBig;//action активации
 
   andbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -187,6 +189,7 @@ void preANDBigWriteAction(void) {
 int postANDBigWriteAction(void) {
 //action после записи
 extern int pointInterface;//метка интерфейса 0-USB 1-RS485
+extern int upravlconfig_and_settings;//флаг активации компонента
   if(andbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
   int countRegister = andbigcomponent->operativMarker[1]-andbigcomponent->operativMarker[0]+1;
@@ -248,11 +251,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
  }//switch
   }//for
 
-  for(unsigned int i=0; i<current_config.n_and; i++) 
-  {
-        superSortParam(AND_SIGNALS_IN, &(arr1[i].param[0]));//сортировка
-        superSortParam(AND_SIGNALS_IN, &(arr[i].param[0]));//сортировка
-  }//for
+  upravlconfig_and_settings=1;//флаг активации компонента
 
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   if(pointInterface)//метка интерфейса 0-USB 1-RS485
@@ -293,3 +292,18 @@ int privateANDBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsANDBig(void)
+{
+extern int upravlconfig_and_settings;//флаг активации компонента
+//action активации
+  if(upravlconfig_and_settings==0) return;//флаг активации компонента
+   __settings_for_AND *arr = (__settings_for_AND*)(sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR]);
+   __settings_for_AND *arr1 = (__settings_for_AND*)(sca_of_p_edit[ID_FB_AND - _ID_FB_FIRST_VAR]);
+  for(unsigned int i=0; i<current_config.n_and; i++) 
+  {
+        superSortParam(AND_SIGNALS_IN, &(arr1[i].param[0]));//сортировка
+        superSortParam(AND_SIGNALS_IN, &(arr[i].param[0]));//сортировка
+  }//for
+}
+

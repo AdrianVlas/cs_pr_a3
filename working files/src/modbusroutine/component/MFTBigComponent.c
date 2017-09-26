@@ -19,6 +19,7 @@ void preMFTBigReadAction(void);//action до чтения
 void postMFTBigReadAction(void);//action после чтения
 void preMFTBigWriteAction(void);//action до записи
 int postMFTBigWriteAction(void);//action после записи
+void config_and_settingsMFTBig(void);//action активации
 void repairEditArrayMFT(int countRegister, __settings_for_TIMER *arr, __settings_for_TIMER *arr1);
 
 COMPONENT_OBJ *mftbigcomponent;
@@ -41,6 +42,7 @@ void constructorMFTBigComponent(COMPONENT_OBJ *mftbigcomp)
   mftbigcomponent->postReadAction  = postMFTBigReadAction;//action после чтения
   mftbigcomponent->preWriteAction  = preMFTBigWriteAction;//action до записи
   mftbigcomponent->postWriteAction = postMFTBigWriteAction;//action после записи
+  mftbigcomponent->config_and_settings = config_and_settingsMFTBig;//action активации
 
   mftbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -312,3 +314,9 @@ int privateMFTBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsMFTBig(void)
+{
+//action активации
+}
+

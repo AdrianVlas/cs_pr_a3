@@ -16,6 +16,7 @@ typedef struct
   void (*preReadAction)(void);//action до чтения
   void (*postReadAction)(void);//action после чтения
   void (*preWriteAction)(void);//action до записи
+  void (*config_and_settings)(void);//action активации
   int (*postWriteAction)(void);//action после записи
 
 } COMPONENT_OBJ;

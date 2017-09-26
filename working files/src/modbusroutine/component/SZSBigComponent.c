@@ -20,6 +20,7 @@ void postSZSBigReadAction(void);//action после чтения
 void preSZSBigWriteAction(void);//action до записи
 int postSZSBigWriteAction(void);//action после записи
 void repairEditArraySZS(int countRegister, __settings_for_ALARM *arr, __settings_for_ALARM *arr1);
+void config_and_settingsSZSBig(void);//action активации
 
 COMPONENT_OBJ *szsbigcomponent;
 
@@ -41,6 +42,7 @@ void constructorSZSBigComponent(COMPONENT_OBJ *szsbigcomp)
   szsbigcomponent->postReadAction  = postSZSBigReadAction;//action после чтения
   szsbigcomponent->preWriteAction  = preSZSBigWriteAction;//action до записи
   szsbigcomponent->postWriteAction = postSZSBigWriteAction;//action после записи
+  szsbigcomponent->config_and_settings = config_and_settingsSZSBig;//action активации
 
   szsbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -403,3 +405,9 @@ int privateSZSBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsSZSBig(void)
+{
+//action активации
+}
+

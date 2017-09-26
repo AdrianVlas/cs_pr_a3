@@ -23,6 +23,7 @@ void postDVSmallReadAction(void);//action после чтения
 void preDVSmallWriteAction(void);//action до записи
 int postDVSmallWriteAction(void);//action после записи
 void loadDVSmallActualData(void);
+void config_and_settingsDVSmall(void);//action активации
 
 COMPONENT_OBJ *dvsmallcomponent;
 
@@ -44,6 +45,7 @@ void constructorDVSmallComponent(COMPONENT_OBJ *dvsmallcomp)
   dvsmallcomponent->postReadAction  = postDVSmallReadAction;//action после чтения
   dvsmallcomponent->preWriteAction  = preDVSmallWriteAction;//action до записи
   dvsmallcomponent->postWriteAction = postDVSmallWriteAction;//action после записи
+  dvsmallcomponent->config_and_settings = config_and_settingsDVSmall;//action активации
 
   dvsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -168,3 +170,9 @@ int privateDVSmallGetBit2(int adrBit)
   if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsDVSmall(void)
+{
+//action активации
+}
+

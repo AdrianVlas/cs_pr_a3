@@ -25,6 +25,7 @@ void preRPRSmallWriteAction(void);//action до записи
 int postRPRSmallWriteAction(void);//action после записи
 void loadRPRSmallActualData(void);
 int getRPRSmallModbusBeginAdrRegister(void);
+void config_and_settingsRPRSmall(void);//action активации
 
 COMPONENT_OBJ *rprsmallcomponent;
 
@@ -52,6 +53,7 @@ void constructorRPRSmallComponent(COMPONENT_OBJ *rprsmallcomp)
   rprsmallcomponent->postReadAction  = postRPRSmallReadAction;//action после чтения
   rprsmallcomponent->preWriteAction  = preRPRSmallWriteAction;//action до записи
   rprsmallcomponent->postWriteAction = postRPRSmallWriteAction;//action после записи
+  rprsmallcomponent->config_and_settings = config_and_settingsRPRSmall;//action активации
 
   rprsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -153,3 +155,9 @@ int privateRPRSmallGetBit2(int adrBit)
   if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetBit2(int adrBit)
+
+void config_and_settingsRPRSmall(void)
+{
+//action активации
+}
+

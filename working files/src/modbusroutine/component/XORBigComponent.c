@@ -20,6 +20,7 @@ void postXORBigReadAction(void);//action после чтения
 void preXORBigWriteAction(void);//action до записи
 int postXORBigWriteAction(void);//action после записи
 void repairEditArrayXOR(int countRegister, __settings_for_XOR *arr, __settings_for_XOR *arr1);
+void config_and_settingsXORBig(void);//action активации
 
 COMPONENT_OBJ *xorbigcomponent;
 
@@ -41,6 +42,7 @@ void constructorXORBigComponent(COMPONENT_OBJ *xorbigcomp)
   xorbigcomponent->postReadAction  = postXORBigReadAction;//action после чтения
   xorbigcomponent->preWriteAction  = preXORBigWriteAction;//action до записи
   xorbigcomponent->postWriteAction = postXORBigWriteAction;//action после записи
+  xorbigcomponent->config_and_settings = config_and_settingsXORBig;//action активации
 
   xorbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -140,6 +142,7 @@ void preXORBigWriteAction(void) {
 }//
 int postXORBigWriteAction(void) {
 extern int pointInterface;//метка интерфейса 0-USB 1-RS485
+extern int upravlconfig_and_settings;//флаг активации компонента
 //action после записи
   if(xorbigcomponent->operativMarker[0]<0) return 0;//не было записи
   int offsetTempWriteArray = superFindTempWriteArrayOffset(BEGIN_ADR_REGISTER);//найти смещение TempWriteArray
@@ -202,11 +205,7 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
  }//switch
   }//for
 
-  for(unsigned int i=0; i<current_config.n_xor; i++) 
-  {
-   superSortParam(2, &(arr1[i].param[0]));//сортировка
-   superSortParam(2, &(arr[i].param[0]));//сортировка
-  }//for
+  upravlconfig_and_settings=1;//флаг активации компонента
 
   config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC);
   if(pointInterface)//метка интерфейса 0-USB 1-RS485
@@ -247,3 +246,18 @@ int privateXORBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsXORBig(void)
+{
+extern int upravlconfig_and_settings;//флаг активации компонента
+//action активации
+  if(upravlconfig_and_settings==0) return;//флаг активации компонента
+   __settings_for_XOR *arr  = (__settings_for_XOR*)(sca_of_p[ID_FB_XOR - _ID_FB_FIRST_VAR]);
+   __settings_for_XOR *arr1 = (__settings_for_XOR*)(sca_of_p_edit[ID_FB_XOR - _ID_FB_FIRST_VAR]);
+  for(unsigned int i=0; i<current_config.n_xor; i++) 
+  {
+   superSortParam(2, &(arr1[i].param[0]));//сортировка
+   superSortParam(2, &(arr[i].param[0]));//сортировка
+  }//for
+}
+

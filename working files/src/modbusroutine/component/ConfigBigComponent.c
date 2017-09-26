@@ -14,7 +14,7 @@ void preConfigBigReadAction(void);//action до чтения
 void postConfigBigReadAction(void);//action после чтения
 void preConfigBigWriteAction(void);//action до записи
 int postConfigBigWriteAction(void);//action после записи
-//void loadConfigBigActualData(void);
+void config_and_settingsConfigBig(void);//action активации
 
 COMPONENT_OBJ *configbigcomponent;
 
@@ -36,114 +36,15 @@ void constructorConfigBigComponent(COMPONENT_OBJ *configbigcomp)
   configbigcomponent->postReadAction  = postConfigBigReadAction;//action после чтения
   configbigcomponent->preWriteAction  = preConfigBigWriteAction;//action до записи
   configbigcomponent->postWriteAction = postConfigBigWriteAction;//action после записи
+  configbigcomponent->config_and_settings = config_and_settingsConfigBig;//action активации
 
   configbigcomponent->isActiveActualData = 0;
 }//constructorConfigBigComponent(COMPONENT_OBJ *configbigcomp)
-/*
-void loadConfigBigActualData(void) {
-  //ActualData
-//  if (
-//      (config_settings_modified &
-//     )
-  for(int i=0; i<REGISTER_FOR_OBJ; i++) {
-   switch(i) {
-   case 0: //AND
-    tempReadArray[i] = current_config.n_and;
-   break;
-   case 1: //OR
-    tempReadArray[i] = current_config.n_or;
-   break;
-   case 2: //XOR
-    tempReadArray[i] = current_config.n_xor;
-   break;
-   case 3: //NOT
-    tempReadArray[i] = current_config.n_not;
-   break;
-   case 4: //D-trg
-    tempReadArray[i] = current_config.n_trigger;
-   break;
-   case 5: //GI
-    tempReadArray[i] = current_config.n_meander;
-   break;
-   case 6: //MFT
-    tempReadArray[i] = current_config.n_timer;
-   break;
-   case 7: //SZS
-    tempReadArray[i] = current_config.n_alarm;
-   break;
-   case 8: //ШГС
-    tempReadArray[i] = current_config.n_group_alarm;
-   break;
-   case 9: //TS
-    tempReadArray[i] = current_config.n_ts;
-   break;
-   case 10: //TU
-    tempReadArray[i] = current_config.n_tu;
-   break;
-   case 11: //субмодули журнала
-    tempReadArray[i] = current_config.n_log;
-   break;
-   case 12: //GOOSE in
-    tempReadArray[i] = 0;
-   break;
-   case 13: //GOOSE out
-    tempReadArray[i] = 0;
-   break;
-   case 14: //MMS in
-    tempReadArray[i] = 0;
-   break;
-   case 15: //MMS out
-    tempReadArray[i] = 0;
-   break;
-   }//switch
-  }//for
-*/
-  /*
-unsigned int config_settings_modified  
-  
-#define BIT_CHANGED_CONFIGURATION       0 - відбулася зміна конфгурації (інформація, що треба буде акутивовувати)
-#define MASKA_CHANGED_CONFIGURATION     (1 << BIT_CHANGED_CONFIGURATION)
-#define BIT_CHANGED_SETTINGS            1 - відбулася зміна налаштувань встановлюється або окремо, або разом з конфігурацією (інформація, що треба буде акутивовувати)
-#define MASKA_CHANGED_SETTINGS          (1 << BIT_CHANGED_SETTINGS)
-#define BIT_MENU_LOCKS                  2 - меню захопило "монополію" на зміну налаштувань (встановлюється або перевіряється)
-#define MASKA_MENU_LOCKS                (1 << BIT_MENU_LOCKS)
-#define BIT_USB_LOCKS                   3 - USB-інтерфейс захопив "монополію" на зміну налаштувань (встановлюється або перевіряється)
-#define MASKA_USB_LOCKS                 (1 << BIT_USB_LOCKS)
-#define BIT_RS485_LOCKS                 4 RS485-інтерфейс захопив "монополію" на зміну налаштувань (встановлюється або перевіряється)
-#define MASKA_RS485_LOCKS               (1 << BIT_RS485_LOCKS)
-  
-  
-2
-  current_config_prt (логіка)
-  current_config (контейнер)
-  current_config_edit (для редагування)
-  
-3. Для того, щоб виконати зміну конфігурації треба
-3.1 внести зміни у current_config_edit
-3.2 якщо зміни допустимі. то виконати фунцію __result_dym_mem_select action_after_changing_of_configuration(void), яка вже сама внесе зміни у  current_config і виділить/аивільнить пам'ять у current_config і current_config_edit
-3.3 Можливі результати виконання цієї функції у 
-typedef enum _result_dyn_mem_select
-{
-  DYN_MEM_TOTAL_ERROR = 0, для відновлення роботи треба перезапкус
-  PRT_MEM_ERROR, для відновлення роботи треба перезапкус
-  DYN_MEM_NO_ENOUGH_MEM, перезапуску не потрібно
-  DYN_MEM_SELECT_OK успішне викуонання
-    
-} __result_dym_mem_select;
-
-3.4 якщо функція не змогла виконатися успішно, то у current_config_edit буде відновлено стан з  current_config  
-  
-  
-  */
-//}//loadActualData() 
 
 int getConfigBigModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateConfigBigGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
-
-//  if(configbigcomponent->isActiveActualData) loadConfigBigActualData(); //ActualData
-//  configbigcomponent->isActiveActualData = 0;
 
   superSetOperativMarker(configbigcomponent, adrReg);
 
@@ -198,7 +99,7 @@ int getConfigBigModbusRegister(int adrReg)
     return 0;
   }//switch
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  return 0;
 }//getDVModbusRegister(int adrReg)
 int getConfigBigModbusBit(int x)
 {
@@ -335,3 +236,9 @@ int privateConfigBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsConfigBig(void)
+{
+//action активации
+}
+

@@ -17,6 +17,7 @@ void postPKVBigReadAction(void);//action после чтения
 void prePKVBigWriteAction(void);//action до записи
 int postPKVBigWriteAction(void);//action после записи
 void loadPKVBigActualData(void);
+void config_and_settingsPKVBig(void);//action активации
 
 COMPONENT_OBJ *pkvbigcomponent;
 
@@ -38,6 +39,7 @@ void constructorPKVBigComponent(COMPONENT_OBJ *pkvbigcomp)
   pkvbigcomponent->postReadAction  = postPKVBigReadAction;//action после чтения
   pkvbigcomponent->preWriteAction  = prePKVBigWriteAction;//action до записи
   pkvbigcomponent->postWriteAction = postPKVBigWriteAction;//action после записи
+  pkvbigcomponent->config_and_settings = config_and_settingsPKVBig;//action активации
 
   pkvbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -614,3 +616,9 @@ int privatePKVBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsPKVBig(void)
+{
+//action активации
+}
+
