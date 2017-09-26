@@ -180,6 +180,12 @@ inline void periodical_operations(void)
       //Переконфігуровуємо USART для RS-485
       USART_RS485_Configure();
 
+      /***
+      Причина рестарту (рестарт після зміни налаштувань порта)
+      ***/
+      reason_of_restart_RS485 |= (1 << 4);
+      /***/
+              
       //Відновлюємо моніторинг каналу RS-485
       restart_monitoring_RS485();
       
