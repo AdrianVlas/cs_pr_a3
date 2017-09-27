@@ -13,7 +13,7 @@
 #include "header.h"
 
 //stm32f10x_tim.h и stm32f10x_tim.c.
-
+long lInterval = 0;
 void TIM9_Init(void)
 {
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -24,11 +24,13 @@ void TIM9_Init(void)
 //uint8_t TIM_RepetitionCounter
 
 	RCC_APB2PeriphResetCmd(RCC_APB2Periph_TIM9, ENABLE);
+	RCC_APB2PeriphResetCmd(RCC_APB2Periph_TIM9, DISABLE);
+	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);
 	//-*Cycle value*-/
 	TIM_TimeBaseStructure.TIM_Period = 0xffff;  
 	//-* Pre frequency value *-/
-	TIM_TimeBaseStructure.TIM_Prescaler = 2;//Max precision? or may 1 for extend diapason 
+	TIM_TimeBaseStructure.TIM_Prescaler = 10;//Max precision? or may 1 for extend diapason 
 	//-*Set the clock division: TDTS = Tck_tim*-/  
 	
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //Means 00: tDTS = tCK_INT
@@ -37,12 +39,14 @@ void TIM9_Init(void)
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; 
 	//-*According to the specified parameter initialization of TIMx time base unit*-/
 	TIM_TimeBaseInit(TIM9, &TIM_TimeBaseStructure); 
+	DBGMCU_APB2PeriphConfig(DBGMCU_TIM9_STOP, ENABLE);
 }
 void TIM9Start(void){
 TIM_Cmd(TIM9,ENABLE);/*Enable TIMx*/
 }
 void TIM9Stop(void){
 TIM_Cmd(TIM9,DISABLE);
+
 }
 /**
  * General purpose timer 3 interrupt initialization
