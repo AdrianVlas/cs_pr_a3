@@ -4009,6 +4009,7 @@ return sh.Init();;
 
 void DoCalcWrp(void){
 sh.DoCalc();
+//sh.DoCalcLUSources();
 }
 
 

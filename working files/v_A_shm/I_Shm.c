@@ -71,6 +71,11 @@ long ChangeCfg(void* pv){
   TIM9Start();
   DoCalcWrp();
   TIM9Stop();
+  i = TIM_GetCounter(TIM9);
+  //lCtrElem = i*417/10000;
+  lCtrElem = i*834/10000;
+  //lCtrElem = i*660/10000;
+  
     return lVl;
 }
 

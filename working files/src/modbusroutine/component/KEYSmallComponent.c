@@ -23,6 +23,8 @@ void preKEYSmallReadAction(void);//action до чтения
 void postKEYSmallReadAction(void);//action после чтения
 void preKEYSmallWriteAction(void);//action до записи
 int postKEYSmallWriteAction(void);//action после записи
+void config_and_settingsKEYSmall(void);//action активации
+
 void loadKEYSmallActualData(void);
 void loadRMTKeySmallActualData(void);
 
@@ -46,6 +48,7 @@ void constructorKEYSmallComponent(COMPONENT_OBJ *keysmallcomp)
   keysmallcomponent->postReadAction  = postKEYSmallReadAction;//action после чтения
   keysmallcomponent->preWriteAction  = preKEYSmallWriteAction;//action до записи
   keysmallcomponent->postWriteAction = postKEYSmallWriteAction;//action после записи
+  keysmallcomponent->config_and_settings = config_and_settingsKEYSmall;//action активации
 
   keysmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -186,3 +189,9 @@ int privateKEYSmallGetBit2(int adrBit)
   if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateDOUTSmallGetBit2(int adrBit)
+
+void config_and_settingsKEYSmall(void)
+{
+//action активации
+}
+

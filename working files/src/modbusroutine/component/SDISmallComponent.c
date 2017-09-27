@@ -23,6 +23,7 @@ void postSDISmallReadAction(void);//action после чтения
 void preSDISmallWriteAction(void);//action до записи
 int postSDISmallWriteAction(void);//action после записи
 void loadSDISmallActualData(void);
+void config_and_settingsSDISmall(void);//action активации
 
 COMPONENT_OBJ *sdismallcomponent;
 
@@ -44,6 +45,7 @@ void constructorSDISmallComponent(COMPONENT_OBJ *sdismallcomp)
   sdismallcomponent->postReadAction  = postSDISmallReadAction;//action после чтения
   sdismallcomponent->preWriteAction  = preSDISmallWriteAction;//action до записи
   sdismallcomponent->postWriteAction = postSDISmallWriteAction;//action после записи
+  sdismallcomponent->config_and_settings = config_and_settingsSDISmall;//action активации
 
   sdismallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -168,3 +170,9 @@ int privateSDISmallGetBit2(int adrBit)
   if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsSDISmall(void)
+{
+//action активации
+}
+

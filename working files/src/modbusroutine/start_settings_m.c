@@ -34,7 +34,7 @@ void global_component_installation(void) {
   constructorCommonSmallComponent(&(config_array[COMMONSMALLCOMPONENT]));//подготовка компонента common
   constructorCommonBigComponent(&(config_array[COMMONBIGCOMPONENT]));//подготовка компонента common
   constructorMEBigComponent(&(config_array[MEBIGCOMPONENT]));//подготовка компонента me
-  constructorRegBigComponent(&(config_array[REGBIGCOMPONENT]));//подготовка компонента reg
+//  constructorRegBigComponent(&(config_array[REGBIGCOMPONENT]));//подготовка компонента reg
   constructorRegProBigComponent(&(config_array[REGPROBIGCOMPONENT]));//подготовка компонента regPro
   constructorRPRBigComponent(&(config_array[RPRBIGCOMPONENT]));//подготовка компонента rpr
   constructorRPRSmallComponent(&(config_array[RPRSMALLCOMPONENT]));//подготовка компонента rpr

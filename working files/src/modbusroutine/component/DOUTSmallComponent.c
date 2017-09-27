@@ -23,6 +23,7 @@ void preDOUTSmallReadAction(void);//action до чтения
 void postDOUTSmallReadAction(void);//action после чтения
 void preDOUTSmallWriteAction(void);//action до записи
 int postDOUTSmallWriteAction(void);//action после записи
+void config_and_settingsDOUTSmall(void);//action активации
 void loadDOUTSmallActualData(void);
 
 COMPONENT_OBJ *doutsmallcomponent;
@@ -44,6 +45,7 @@ void constructorDOUTSmallComponent(COMPONENT_OBJ *doutcomp)
   doutsmallcomponent->postReadAction  = postDOUTSmallReadAction;//action после чтения
   doutsmallcomponent->preWriteAction  = preDOUTSmallWriteAction;//action до записи
   doutsmallcomponent->postWriteAction = postDOUTSmallWriteAction;//action после записи
+  doutsmallcomponent->config_and_settings = config_and_settingsDOUTSmall;//action активации
  
   doutsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -164,3 +166,9 @@ int privateDOUTSmallGetBit2(int adrBit)
   if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsDOUTSmall(void)
+{
+//action активации
+}
+

@@ -21,6 +21,7 @@ void preNOTBigWriteAction(void);//action до записи
 int postNOTBigWriteAction(void);//action после записи
 void loadNOTBigActualData(void);
 void repairEditArrayNOT(int countRegister, __settings_for_NOT *arr, __settings_for_NOT *arr1);
+void config_and_settingsNOTBig(void);//action активации
 
 COMPONENT_OBJ *notbigcomponent;
 
@@ -42,26 +43,10 @@ void constructorNOTBigComponent(COMPONENT_OBJ *notbigcomp)
   notbigcomponent->postReadAction  = postNOTBigReadAction;//action после чтения
   notbigcomponent->preWriteAction  = preNOTBigWriteAction;//action до записи
   notbigcomponent->postWriteAction = postNOTBigWriteAction;//action после записи
+  notbigcomponent->config_and_settings = config_and_settingsNOTBig;//action активации
 
   notbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
-/*
-void loadNOTBigActualData(void) {
- setNOTBigCountObject(); //записать к-во обектов
-  //ActualData
-   __LN_NOT *arr = (__LN_NOT*)(spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]);
-   for(int item=0; item<notbigcomponent->countObject; item++) {
-
-     for (int i = 0; i < 1; i ++)
-     {
-        int value = arr[item].settings.param[i] & 0xffff;//
-        tempReadArray[item*REGISTER_FOR_OBJ+2*i+0] = value;
-        value = (arr[item].settings.param[i] >> 16) & 0x7fff;//
-        tempReadArray[item*REGISTER_FOR_OBJ+2*i+1] = value;
-     }
-   }//for
-}//loadActualData() 
-*/
 
 int getNOTBigModbusRegister(int adrReg)
 {
@@ -74,17 +59,6 @@ extern int pointInterface;
 
   superSetOperativMarker(notbigcomponent, adrReg);
 
-/*
-   __LN_NOT *arr = (__LN_NOT*)(spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]);
-  int offset = adrReg-BEGIN_ADR_REGISTER;
-  int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
-  switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
-   case 0:
-        return arr[idxSubObj].settings.param[0] & 0xffff;//
-   case 1:
-        return (arr[idxSubObj].settings.param[0] >> 16) & 0x7fff;//
-  }//switch
-*/
   int offset = adrReg-BEGIN_ADR_REGISTER;
   int idxSubObj = offset/REGISTER_FOR_OBJ;//индекс субобъекта
   __settings_for_NOT *arr =  ((config_settings_modified & MASKA_FOR_BIT(BIT_USB_LOCKS)) == 0 ) ? &(((__LN_NOT*)(spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR])) + idxSubObj)->settings : (((__settings_for_NOT*)(sca_of_p[ID_FB_NOT - _ID_FB_FIRST_VAR])) + idxSubObj);
@@ -260,3 +234,9 @@ int privateNOTBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsNOTBig(void)
+{
+//action активации
+}
+

@@ -19,7 +19,7 @@ void preGIBigReadAction(void);//action до чтения
 void postGIBigReadAction(void);//action после чтения
 void preGIBigWriteAction(void);//action до записи
 int postGIBigWriteAction(void);//action после записи
-//void loadGIBigActualData(void);
+void config_and_settingsGIBig(void);//action активации
 
 COMPONENT_OBJ *gibigcomponent;
 
@@ -41,6 +41,7 @@ void constructorGIBigComponent(COMPONENT_OBJ *gibigcomp)
   gibigcomponent->postReadAction  = postGIBigReadAction;//action после чтения
   gibigcomponent->preWriteAction  = preGIBigWriteAction;//action до записи
   gibigcomponent->postWriteAction = postGIBigWriteAction;//action после записи
+  gibigcomponent->config_and_settings = config_and_settingsGIBig;//action активации
 
   gibigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -161,3 +162,9 @@ int privateGIBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsGIBig(void)
+{
+//action активации
+}
+

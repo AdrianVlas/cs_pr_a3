@@ -22,6 +22,7 @@ int postTUBigWriteAction(void);//action после записи
 void loadTUBigActualData(void);
 int getTUSmallModbusBeginAdrRegister(void);
 void repairEditArrayTU(int countRegister, __settings_for_TU *arr, __settings_for_TU *arr1);
+void config_and_settingsTUBig(void);//action активации
 
 COMPONENT_OBJ *tubigcomponent;
 
@@ -43,6 +44,7 @@ void constructorTUBigComponent(COMPONENT_OBJ *tubigcomp)
   tubigcomponent->postReadAction  = postTUBigReadAction;//action после чтения
   tubigcomponent->preWriteAction  = preTUBigWriteAction;//action до записи
   tubigcomponent->postWriteAction = postTUBigWriteAction;//action после записи
+  tubigcomponent->config_and_settings = config_and_settingsTUBig;//action активации
 
   tubigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -254,3 +256,9 @@ int privateTUBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsTUBig(void)
+{
+//action активации
+}
+

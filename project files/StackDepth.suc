@@ -83,7 +83,7 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          
 
 //Àíäð³ÿ ôóíêö³¿
-exclude  ChangeCfg, "Shematic::DoCalc()", SetHrdLed, "Null_OP(void*)", "SET_LED_Op(void *)", "LedAuxOp1", "LedAuxOp2", "LedAuxOp3", "LedAuxOp4", "PulseAlt_Op(void *)", "AND_Op_8_1(void *)", "NOT_Op(void *)", "BGSig_Op(void *)", "READ_DI_Op(void *)", "SET_OUT_Op(void *)", "FKey_Op(void *)", "LssOp(void *)", "NOT_Op_1_1(void *)", "DTRG_Op_4_2(void *)", "TU_Op(void *)", "Mft_Op(void *)", "OR_Op_8_1(void *)", "XOR_Op_8_1(void *)",  "Ts__2_1_Op(void *)";
+exclude  ChangeCfg, "Shematic::DoCalc()", SetHrdLed, "Null_OP(void*)", "SET_LED_Op(void *)", "LedAuxOp1", "LedAuxOp2", "LedAuxOp3", "LedAuxOp4", "PulseAlt_Op(void *)", "AND_Op_8_1(void *)", "NOT_Op(void *)", "BGSig_Op(void *)", "READ_DI_Op(void *)", "SET_OUT_Op(void *)", "FKey_Op(void *)", "LssOp(void *)", "NOT_Op_1_1(void *)", "DTRG_Op_4_2(void *)", "TU_Op(void *)", "Mft_Op(void *)", "OR_Op_8_1(void *)", "XOR_Op_8_1(void *)", "Ts__2_1_Op(void *)";
 
 //max recursion depth Get_data : 2;
 
@@ -94,7 +94,6 @@ call graph root [System]: SystemInit;
 exclude  superPreWriteAction, superPostWriteAction, superWriterRegister, superWriterBit, superPreReadAction, superPostReadAction, superReaderRegister, superReaderBit, 
 getAISmallModbusBit, getAISmallModbusRegister, postAISmallReadAction, postAISmallWriteAction, preAISmallReadAction, preAISmallWriteAction, setAISmallModbusBit, setAISmallModbusRegister, 
 getANDBigModbusBit, getANDBigModbusRegister, postANDBigReadAction, postANDBigWriteAction, preANDBigReadAction, preANDBigWriteAction, setANDBigModbusBit, setANDBigModbusRegister,
-
 getCGSBigModbusBit, getCGSBigModbusRegister, postCGSBigReadAction, postCGSBigWriteAction, preCGSBigReadAction, preCGSBigWriteAction, setCGSBigModbusBit, setCGSBigModbusRegister,
 getCommonSmallModbusBit, getCommonSmallModbusRegister, postCommonSmallReadAction, postCommonSmallWriteAction, preCommonSmallReadAction, preCommonSmallWriteAction, setCommonSmallModbusBit, setCommonSmallModbusRegister,
 getCommonBigModbusBit, getCommonBigModbusRegister, postCommonBigReadAction, postCommonBigWriteAction, preCommonBigReadAction, preCommonBigWriteAction, setCommonBigModbusBit, setCommonBigModbusRegister,
@@ -112,13 +111,9 @@ getMFTBigModbusBit, getMFTBigModbusRegister, postMFTBigReadAction, postMFTBigWri
 getNOTBigModbusBit, getNOTBigModbusRegister, postNOTBigReadAction, postNOTBigWriteAction, preNOTBigReadAction, preNOTBigWriteAction, setNOTBigModbusBit, setNOTBigModbusRegister,
 getORBigModbusBit, getORBigModbusRegister, postORBigReadAction, postORBigWriteAction, preORBigReadAction, preORBigWriteAction, setORBigModbusBit, setORBigModbusRegister,
 getPKVBigModbusBit, getPKVBigModbusRegister, postPKVBigReadAction, postPKVBigWriteAction, prePKVBigReadAction, prePKVBigWriteAction, setPKVBigModbusBit, setPKVBigModbusRegister,
-getRegBigModbusBit, getRegBigModbusRegister, postRegBigReadAction, postRegBigWriteAction, preRegBigReadAction, preRegBigWriteAction, setRegBigModbusBit, setRegBigModbusRegister,
-
 getRMTKeySmallModbusBit, getRMTKeySmallModbusRegister, postRMTKeySmallReadAction, postRMTKeySmallWriteAction, preRMTKeySmallReadAction, preRMTKeySmallWriteAction, setRMTKeySmallModbusBit, setRMTKeySmallModbusRegister,
-
 getRPRSmallModbusBit, getRPRSmallModbusRegister, postRPRSmallReadAction, postRPRSmallWriteAction, preRPRSmallReadAction, preRPRSmallWriteAction, setRPRSmallModbusBit, setRPRSmallModbusRegister,
 getRPRBigModbusBit, getRPRBigModbusRegister, postRPRBigReadAction, postRPRBigWriteAction, preRPRBigReadAction, preRPRBigWriteAction, setRPRBigModbusBit, setRPRBigModbusRegister,
- 
 getSDISmallModbusBit, getSDISmallModbusRegister, postSDISmallReadAction, postSDISmallWriteAction, preSDISmallReadAction, preSDISmallWriteAction, setSDISmallModbusBit, setSDISmallModbusRegister,
 getSDIBigModbusBit, getSDIBigModbusRegister, postSDIBigReadAction, postSDIBigWriteAction, preSDIBigReadAction, preSDIBigWriteAction, setSDIBigModbusBit, setSDIBigModbusRegister,
 getSZSBigModbusBit, getSZSBigModbusRegister, postSZSBigReadAction, postSZSBigWriteAction, preSZSBigReadAction, preSZSBigWriteAction, setSZSBigModbusBit, setSZSBigModbusRegister,
@@ -128,6 +123,11 @@ getTUSmallModbusBit, getTUSmallModbusRegister, postTUSmallReadAction, postTUSmal
 getTUBigModbusBit, getTUBigModbusRegister, postTUBigReadAction, postTUBigWriteAction, preTUBigReadAction, preTUBigWriteAction, setTUBigModbusBit, setTUBigModbusRegister,
 getXORBigModbusBit, getXORBigModbusRegister, postXORBigReadAction, postXORBigWriteAction, preXORBigReadAction, preXORBigWriteAction, setXORBigModbusBit, setXORBigModbusRegister,
 getYustBigModbusBit, getYustBigModbusRegister, postYustBigReadAction, postYustBigWriteAction, preYustBigReadAction, preYustBigWriteAction, setYustBigModbusBit, setYustBigModbusRegister,
-getRegProBigModbusBit, getRegProBigModbusRegister, postRegProBigReadAction, postRegProBigWriteAction, preRegProBigReadAction, preRegProBigWriteAction, setRegProBigModbusBit, setRegProBigModbusRegister;
+getRegProBigModbusBit, getRegProBigModbusRegister, postRegProBigReadAction, postRegProBigWriteAction, preRegProBigReadAction, preRegProBigWriteAction, setRegProBigModbusBit, setRegProBigModbusRegister,
+config_and_settingsAISmall, config_and_settingsANDBig, config_and_settingsCGSBig, config_and_settingsCommonBig, config_and_settingsCommonSmall, config_and_settingsConfigBig, config_and_settingsDOUTBig,
+config_and_settingsDOUTSmall, config_and_settingsDTRBig, config_and_settingsDVBig, config_and_settingsDVSmall, config_and_settingsGIBig, config_and_settingsIUSmall, config_and_settingsKEYSmall, config_and_settingsMEBig,
+config_and_settingsMFTBig, config_and_settingsNOTBig, config_and_settingsORBig, config_and_settingsPKVBig, config_and_settingsProBig, config_and_settingsRMTKey, config_and_settingsRPRBig, config_and_settingsRPRSmall,
+config_and_settingsSDIBig, config_and_settingsSDISmall, config_and_settingsSZSBig, config_and_settingsTSBig, config_and_settingsTSSmall, config_and_settingsTUBig, config_and_settingsTUSmall, config_and_settingsXORBig,
+config_and_settingsYustBig;
 
 exclude USBD_USR_DeviceConnected, USBD_USR_DeviceDisconnected;

@@ -21,6 +21,7 @@ void preSDIBigWriteAction(void);//action до записи
 int postSDIBigWriteAction(void);//action после записи
 void loadSDIBigActualData(void);
 void repairEditArraySDI(int countRegister, __settings_for_OUTPUT_LED *arr, __settings_for_OUTPUT_LED *arr1);
+void config_and_settingsSDIBig(void);//action активации
 
 COMPONENT_OBJ *sdibigcomponent;
 
@@ -42,6 +43,7 @@ void constructorSDIBigComponent(COMPONENT_OBJ *sdibigcomp)
   sdibigcomponent->postReadAction  = postSDIBigReadAction;//action после чтения
   sdibigcomponent->preWriteAction  = preSDIBigWriteAction;//action до записи
   sdibigcomponent->postWriteAction = postSDIBigWriteAction;//action после записи
+  sdibigcomponent->config_and_settings = config_and_settingsSDIBig;//action активации
 
   sdibigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -473,3 +475,9 @@ int privateSDIBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsSDIBig(void)
+{
+//action активации
+}
+

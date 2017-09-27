@@ -20,6 +20,7 @@ void postDTRBigReadAction(void);//action после чтения
 void preDTRBigWriteAction(void);//action до записи
 int postDTRBigWriteAction(void);//action после записи
 void loadDTRBigActualData(void);
+void config_and_settingsDTRBig(void);//action активации
 void repairEditArrayDTR(int countRegister, __settings_for_TRIGGER *arr, __settings_for_TRIGGER *arr1);
 
 COMPONENT_OBJ *dtrbigcomponent;
@@ -42,6 +43,7 @@ void constructorDTRBigComponent(COMPONENT_OBJ *dtrbigcomp)
   dtrbigcomponent->postReadAction  = postDTRBigReadAction;//action после чтения
   dtrbigcomponent->preWriteAction  = preDTRBigWriteAction;//action до записи
   dtrbigcomponent->postWriteAction = postDTRBigWriteAction;//action после записи
+  dtrbigcomponent->config_and_settings = config_and_settingsDTRBig;//action активации
 
   dtrbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -365,3 +367,9 @@ int privateDTRBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsDTRBig(void)
+{
+//action активации
+}
+

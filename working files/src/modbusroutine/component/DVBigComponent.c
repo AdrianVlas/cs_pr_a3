@@ -20,6 +20,7 @@ void preDVBigReadAction(void);//action до чтения
 void postDVBigReadAction(void);//action после чтения
 void preDVBigWriteAction(void);//action до записи
 int postDVBigWriteAction(void);//action после записи
+void config_and_settingsDVBig(void);//action активации
 
 COMPONENT_OBJ *dvbigcomponent;
 
@@ -41,6 +42,7 @@ void constructorDVBigComponent(COMPONENT_OBJ *dvbigcomp)
   dvbigcomponent->postReadAction  = postDVBigReadAction;//action после чтения
   dvbigcomponent->preWriteAction  = preDVBigWriteAction;//action до записи
   dvbigcomponent->postWriteAction = postDVBigWriteAction;//action после записи
+  dvbigcomponent->config_and_settings = config_and_settingsDVBig;//action активации
 
   dvbigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -173,3 +175,9 @@ int privateDVBigGetReg2(int adrReg)
   if(adrReg>=BEGIN_ADR_REGISTER && adrReg<(BEGIN_ADR_REGISTER+count_register)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsDVBig(void)
+{
+//action активации
+}
+

@@ -26,6 +26,7 @@ int getTUSmallModbusBeginAdrRegister(void);
 void setTUSmallActualData(int beginOffset, int endOffset, int *localArr);
 void postTUSmallWriteRegister(void);
 void postTUSmallWriteBit(void);
+void config_and_settingsTUSmall(void);//action активации
 
 COMPONENT_OBJ *tusmallcomponent;
 
@@ -47,6 +48,7 @@ void constructorTUSmallComponent(COMPONENT_OBJ *tusmallcomp)
   tusmallcomponent->postReadAction  = postTUSmallReadAction;//action после чтения
   tusmallcomponent->preWriteAction  = preTUSmallWriteAction;//action до записи
   tusmallcomponent->postWriteAction = postTUSmallWriteAction;//action после записи
+  tusmallcomponent->config_and_settings = config_and_settingsTUSmall;//action активации
 
   tusmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -243,3 +245,9 @@ void postTUSmallWriteRegister(void)
 
  setTUSmallActualData(beginOffset, endOffset, localArr);
 }//postTUSmallWriteRegister() 
+
+void config_and_settingsTUSmall(void)
+{
+//action активации
+}
+

@@ -21,6 +21,7 @@ void preCommonSmallReadAction(void);//action до чтения
 void postCommonSmallReadAction(void);//action после чтения
 void preCommonSmallWriteAction(void);//action до записи
 int postCommonSmallWriteAction(void);//action после записи
+void config_and_settingsCommonSmall(void);//action активации
 void loadCommonSmallActualData(void);
 
 COMPONENT_OBJ *commonsmallcomponent;
@@ -43,6 +44,7 @@ void constructorCommonSmallComponent(COMPONENT_OBJ *commonsmallcomp)
   commonsmallcomponent->postReadAction  = postCommonSmallReadAction;//action после чтения
   commonsmallcomponent->preWriteAction  = preCommonSmallWriteAction;//action до записи
   commonsmallcomponent->postWriteAction = postCommonSmallWriteAction;//action после записи
+  commonsmallcomponent->config_and_settings = config_and_settingsCommonSmall;//action активации
 
   commonsmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -282,14 +284,18 @@ else
     {
   extern int pointInterface;
   if(pointInterface==0) {//метка интерфейса 0-USB 1-RS485
-if(tempWriteArray[0]==1) 
+if(tempWriteArray[0]==1) {
+       superConfig_and_settings();//компонентная активация
        set_config_and_settings(1, USB_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+      }
 if(tempWriteArray[0]==0) 
        set_config_and_settings(0, USB_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
 }//if
   if(pointInterface==1) {//метка интерфейса 0-USB 1-RS485
-if(tempWriteArray[0]==1) 
+if(tempWriteArray[0]==1) {
+       superConfig_and_settings();//компонентная активация
        set_config_and_settings(1, RS485_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+    }//if
 if(tempWriteArray[0]==0) 
        set_config_and_settings(0, RS485_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
 }//if
@@ -330,3 +336,9 @@ int privateCommonSmallGetBit2(int adrBit)
   if(adrBit>=BEGIN_ADR_BIT && adrBit<(BEGIN_ADR_BIT+count_bit)) return 0;
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
+
+void config_and_settingsCommonSmall(void)
+{
+//action активации
+}
+

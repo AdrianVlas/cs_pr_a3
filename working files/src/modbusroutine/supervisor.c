@@ -36,6 +36,8 @@ int upravlFlag=0;//флаг пакетов управления 1-есть управление
 int upravlSetting=0;//флаг Setting
 int upravlSchematic=0;//флаг Shematic
 int upravlYust=0;//флаг юстировки
+int upravlBroadcast=0;//флаг общей записи времени
+int upravlconfig_and_settings=0;//флаг активации компонента
 int globalResetFlag=0;//флаг глобального сброса
 
 /**************************************/
@@ -48,6 +50,7 @@ void inputPacketParserUSB(void)
   upravlSetting=0;//флаг Setting
   upravlSchematic=0;//флаг Shematic
   globalResetFlag=0;//флаг глобального сброса
+  upravlBroadcast=0;//флаг общей записи времени
 
   received_count = &usb_received_count;
 
@@ -59,23 +62,17 @@ void inputPacketParserUSB(void)
   for (int index = 0; index < (*received_count-2); index++) CRC_sum = AddCRC(*(inputPacket + index),CRC_sum);
   if((CRC_sum & 0xff)  != *(inputPacket+*received_count-2)) return;
   if ((CRC_sum >> 8  ) != *(inputPacket+*received_count-1)) return;
-  if(inputPacket[0]!=settings_fix_prt.address) return;
+
+  if(inputPacket[0]==0)//глоб адрес
+  if(inputPacket[1]==16)//номер ф-ции
+  if(((unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2])==14224)
+  if(((unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4])==7) upravlBroadcast=1;//флаг общей записи времени
+
+  if(!(inputPacket[0]==settings_fix_prt.address||upravlBroadcast==1)) return;
 
   if(inputPacketParser()==0) return;
-/*
-  switch(inputPacket[1])  //номер ф-ции
-    {
-    case 5:
-    case 6:
-    case 15:
-    case 16:
-      if(!(outputPacket[1]&0x80))//function
-        config_settings_modified |= MASKA_FOR_BIT(BIT_USB_LOCKS);
-      break;
-    default:
-      break;
-    }//switch
-*/
+
+  if(upravlBroadcast) return;//флаг общей записи времени
 
   usb_transmiting_count = sizeOutputPacket;
   for (int i = 0; i < usb_transmiting_count; i++) usb_transmiting[i] = outputPacket[i];
@@ -95,6 +92,7 @@ void inputPacketParserRS485(void)
   upravlFlag=0;//флаг пакетов управления 1-есть управление
   upravlSetting=0;//флаг Setting
   upravlSchematic=0;//флаг Shematic
+  upravlBroadcast=0;//флаг общей записи времени
 
   inputPacket = RxBuffer_RS485;
 
@@ -117,7 +115,14 @@ void inputPacketParserRS485(void)
       restart_monitoring_RS485();
       return;
     }
-  if(inputPacket[0]!=settings_fix_prt.address)
+
+//  if(inputPacket[0]!=settings_fix_prt.address)
+  if(inputPacket[0]==0)//глоб адрес
+  if(inputPacket[1]==16)//номер ф-ции
+  if(((unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2])==14224)
+  if(((unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4])==7) upravlBroadcast=1;//флаг общей записи времени
+
+  if(!(inputPacket[0]==settings_fix_prt.address||upravlBroadcast==1)) 
     {
       /***
       12345
@@ -132,23 +137,29 @@ void inputPacketParserRS485(void)
 
   if(inputPacketParser()==0)
     {
-//      restart_monitoring_RS485();
+      /***
+      12345
+      Причина рестарту (запит пакету відповіді завеликого розміру)
+      ***/
+      reason_of_restart_RS485 |= (1 << 7);
+      /***/
+              
+      restart_monitoring_RS485();
       return;
     }
-/*
-  switch(inputPacket[1])  //номер ф-ции
-    {
-    case 5:
-    case 6:
-    case 15:
-    case 16:
-      if(!(outputPacket[1]&0x80))//function
-        config_settings_modified |= MASKA_FOR_BIT(BIT_RS485_LOCKS);
-      break;
-    default:
-      break;
-    }//switch
-*/
+
+  if(upravlBroadcast)//флаг общей записи времени
+   {
+      /***
+      12345
+      Причина рестарту (широкосмугова команда)
+      ***/
+      reason_of_restart_RS485 |= (1 << 7);
+      /***/
+              
+      restart_monitoring_RS485();
+      return;
+   }//if
 
   TxBuffer_RS485_count = sizeOutputPacket;
   for (int i = 0; i < TxBuffer_RS485_count; i++) TxBuffer_RS485[i] = outputPacket[i];
@@ -177,7 +188,7 @@ int inputPacketParser(void)
     {
       globalbeginAdrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       globalcntBit      = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
-      if(globalcntBit>125) return 0;//слишком длинный пакет
+      if(globalcntBit>1000) return 0;//слишком длинный пакет
       //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit<<" cntBit="<<cntBit;
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc1PacketEncoder(adrUnit, globalbeginAdrBit, globalcntBit);
@@ -1153,12 +1164,22 @@ int superWriterRegister(int adrReg, int dataReg)
     {
       result = config_array[i].setModbusRegister(adrReg, dataReg);
       if(!(result==MARKER_OUTPERIMETR)) break;
-//      if(result==MARKER_ERRORPERIMETR) break;
-//      if(result==MARKER_ERRORDIAPAZON) break;
     }//for
   if(i==TOTAL_COMPONENT) result = MARKER_OUTPERIMETR;
   return result;
 }//superWriterRegister(int adrReg, int dataReg)
+
+/**************************************/
+//компонентная активация
+/**************************************/
+void superConfig_and_settings(void)
+{
+  for(int i=0; i<TOTAL_COMPONENT; i++)
+    {
+      config_array[i].config_and_settings();//action активации
+    }//for
+  upravlconfig_and_settings=0;//флаг активации компонента
+}//superConfig_and_settings
 
 /**************************************/
 //bit читатель
@@ -1284,7 +1305,8 @@ void finderDubl(int idx, int size, unsigned int *arr)
 
 void superSortParam(int size, unsigned int *prm)
 {
-  unsigned int tmparr[10];//
+  unsigned int tmparr[150];//
+  if(size>130) return;
   for(int i=0; i<size; i++)tmparr[i]=0;
 //устранение повторов
   for(int i=0; i<size; i++) finderDubl(i, size, prm);
