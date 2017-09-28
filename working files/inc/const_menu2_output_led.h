@@ -32,7 +32,7 @@
   "Выход           "
 
 #define NAME_OUTPUT_LED_OUT_SIGNALS_UA  \
-  "Выхід           "
+  "Вихід           "
 
 #define NAME_OUTPUT_LED_OUT_SIGNALS_EN  \
   "Output          "
