@@ -489,50 +489,50 @@ int flag_time_array = 0;
 //    restart_timeout_idle_new_settings = true;
     break;
     case 16://Символ 1 и 2
-     arr1->name_of_cell[1] = arr->name_of_cell[1] = (tempWriteArray[offsetTempWriteArray+i]);
-     arr1->name_of_cell[0] = arr->name_of_cell[0] = (tempWriteArray[offsetTempWriteArray+i])>>8;
+     arr1->name_of_cell[0] = arr->name_of_cell[0] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[1] = arr->name_of_cell[1] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 17://Символ 3 и 4
-     arr1->name_of_cell[3] = arr->name_of_cell[3] = (tempWriteArray[offsetTempWriteArray+i]);
-     arr1->name_of_cell[2] = arr->name_of_cell[2] = (tempWriteArray[offsetTempWriteArray+i])>>8;
+     arr1->name_of_cell[2] = arr->name_of_cell[2] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[3] = arr->name_of_cell[3] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 18://Символ 5 и 6
-     arr1->name_of_cell[5] = arr->name_of_cell[5] = (tempWriteArray[offsetTempWriteArray+i]);
-     arr1->name_of_cell[4] = arr->name_of_cell[4] = (tempWriteArray[offsetTempWriteArray+i])>>8;
+     arr1->name_of_cell[4] = arr->name_of_cell[4] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[5] = arr->name_of_cell[5] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 19://Символ 7 и 8
-     arr1->name_of_cell[7] = arr->name_of_cell[7] = (tempWriteArray[offsetTempWriteArray+i]);
-     arr1->name_of_cell[6] = arr->name_of_cell[6] = (tempWriteArray[offsetTempWriteArray+i])>>8;
+     arr1->name_of_cell[6] = arr->name_of_cell[6] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[7] = arr->name_of_cell[7] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 20://Символ 9 и 10
-     arr1->name_of_cell[9] = arr->name_of_cell[9] = (tempWriteArray[offsetTempWriteArray+i]);
-     arr1->name_of_cell[8] = arr->name_of_cell[8] = (tempWriteArray[offsetTempWriteArray+i])>>8;
+     arr1->name_of_cell[8] = arr->name_of_cell[8] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[9] = arr->name_of_cell[9] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 21://Символ 11 и 12
-     arr1->name_of_cell[11] = arr->name_of_cell[11] = (tempWriteArray[offsetTempWriteArray+i]);
-     arr1->name_of_cell[10] = arr->name_of_cell[10] = (tempWriteArray[offsetTempWriteArray+i])>>8;
+     arr1->name_of_cell[10] = arr->name_of_cell[10] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[11] = arr->name_of_cell[11] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 22://Символ 13 и 14
-     arr1->name_of_cell[13] = arr->name_of_cell[13] = (tempWriteArray[offsetTempWriteArray+i]);
-     arr1->name_of_cell[12] = arr->name_of_cell[12] = (tempWriteArray[offsetTempWriteArray+i])>>8;
+     arr1->name_of_cell[12] = arr->name_of_cell[12] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[13] = arr->name_of_cell[13] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
     case 23://Символ 15 и 16
-     arr1->name_of_cell[15] = arr->name_of_cell[15] = (tempWriteArray[offsetTempWriteArray+i]);
-     arr1->name_of_cell[14] = arr->name_of_cell[14] = (tempWriteArray[offsetTempWriteArray+i])>>8;
+     arr1->name_of_cell[14] = arr->name_of_cell[14] = (tempWriteArray[offsetTempWriteArray+i]);
+     arr1->name_of_cell[15] = arr->name_of_cell[15] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
