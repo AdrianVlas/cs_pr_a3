@@ -83,10 +83,10 @@ long l;
     }
     
     if(l&(1<<(FIX_BLOCK_RUN))){
-        rCFixBlockWrp.arrOut[RUN_CMD]              = 0;
+        rCFixBlockWrp.arrOut[RUN_CMD]              = 1;
     }
     else{
-        rCFixBlockWrp.arrOut[RUN_CMD]              = 1;
+        rCFixBlockWrp.arrOut[RUN_CMD]              = 0;
     }
     if(l&(1<<FIX_BLOCK_SETTINGS_CHANGED)){
         rCFixBlockWrp.arrOut[CHANGE_SETTING_CMD]          = 1;
