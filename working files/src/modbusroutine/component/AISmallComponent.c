@@ -64,7 +64,7 @@ int getAISmallModbusRegister(int adrReg)
     return measurement[IM_I4];
   }//switch
 
-  return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
+  return 0;
 }//getDOUTModbusRegister(int adrReg)
 int getAISmallModbusBit(int x)
 {

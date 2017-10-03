@@ -915,7 +915,7 @@ void control_trg_func(void)
     }
   }
   
-  if (crc_trg_func == crc_trg_func_tmp)
+  if (crc_trg_func_ctrl == crc_trg_func_tmp)
   {
     //Контроль достовірності юстування пройшов успішно
     

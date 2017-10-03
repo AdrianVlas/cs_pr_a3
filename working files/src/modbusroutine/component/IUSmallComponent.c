@@ -55,31 +55,31 @@ int getIUModbusRegister(int adrReg)
         return serial_number_dev;//serial_number_dev;
 
     case 1://MA_NAME_CHAR_1_2:
-        return ('i' << 8) + 'K';
+        return ('K' << 8) + 'i';
 
     case 2://MA_NAME_CHAR_3_4:
-        return ('v' << 8) + 'e';
+        return ('e' << 8) + 'v';
 
     case 3://MA_NAME_CHAR_5_6:
-        return ('r' << 8) + 'p';
+        return ('p' << 8) + 'r';
 
     case 4://MA_NAME_CHAR_7_8:
-        return ('b' << 8) + 'i';
+        return ('i' << 8) + 'b';
 
     case 5://MA_NAME_CHAR_9_10:
-        return ('r' << 8) + 'o';
+        return ('o' << 8) + 'r';
 
     case 6://MA_NAME_CHAR_11_12:
-        return ('R' << 8) + 'M';
+        return ('M' << 8) + 'R';
 
     case 7://MA_NAME_CHAR_13_14:
-        return ('S' << 8) + 'Z';
+        return ('Z' << 8) + 'S';
 
     case 8://MA_NAME_CHAR_15_16:
-        return ('5' << 8) + '0';
+        return ('0' << 8) + '5';
 
     case 9://MA_NAME_CHAR_17_18:
-        return ('_' << 8) + 'L';
+        return ('L' << 8) + '_';
 
     case 10://MA_VERSION_SW:
         return (VERSIA_PZ << 8) + MODYFIKACIA_VERSII_PZ;
