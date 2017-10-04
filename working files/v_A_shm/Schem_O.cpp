@@ -148,7 +148,7 @@ CBGSig::chAlreadyCalculated = 1;
 void Shematic::LUSelector( long lIdxLU){
 register void* pv;
 register LUAreaListElem*pLUAreaListElem;
-
+#pragma calls=  Mft_Op, XOR_Op_8_1,TU_Op,DTRG_Op_4_2,OR_Op_8_1,NOT_Op_1_1,LssOp,Log_Op,SET_LED_Op,FKey_Op,SET_OUT_Op,READ_DI_Op,BGSig_Op,AND_Op_8_1,PulseAlt_Op
 pLUAreaListElem = static_cast<LUAreaListElem*>(this->pLUAreaList);
 pv = (pLUAreaListElem[lIdxLU]).pvLU;
 (static_cast<CLUBase*>( pv))->LogicFunc( pv);
@@ -171,7 +171,7 @@ pLUAreaListElem = static_cast<LUAreaListElem*>(this->pLUAreaList);
 //parIdxLUAreaListElem = arIdxLUAreaListElem;
     while (AmountCalcLU--) {
         pv = (pLUAreaListElem[lIdxLU++]).pvLU;
-      #pragma calls=  FBWrp_Op             
+      #pragma calls=  FBWrp_Op, Mft_Op, XOR_Op_8_1,TU_Op,DTRG_Op_4_2,OR_Op_8_1,NOT_Op_1_1,LssOp,Log_Op,SET_LED_Op,FKey_Op,SET_OUT_Op,READ_DI_Op,BGSig_Op,AND_Op_8_1,PulseAlt_Op             
         (static_cast<CLUBase*>( pv))->LogicFunc( pv);
     }
 }

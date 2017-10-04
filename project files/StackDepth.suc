@@ -83,12 +83,42 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          
 
 //Андрія функції
-exclude  ChangeCfg, "Shematic::DoCalc()", SetHrdLed, "Null_OP(void*)", "SET_LED_Op(void *)", "LedAuxOp1", "LedAuxOp2", "LedAuxOp3", "LedAuxOp4", "PulseAlt_Op(void *)", "AND_Op_8_1(void *)", "NOT_Op(void *)", "BGSig_Op(void *)", "READ_DI_Op(void *)", "SET_OUT_Op(void *)", "FKey_Op(void *)", "LssOp(void *)", "NOT_Op_1_1(void *)", "DTRG_Op_4_2(void *)", "TU_Op(void *)", "Mft_Op(void *)", "OR_Op_8_1(void *)", "XOR_Op_8_1(void *)", "Ts__2_1_Op(void *)";
+//function ChangeCfg :  16;
+possible calls ChangeCfg: ;
+possible calls "Shematic::Init2()": "FBWrp_Op(void*)";
+possible calls "Shematic::SetupCLUAnd_8_1StngParam(void *)"    : "AND_Op_8_1(void *)";
+possible calls "Shematic::SetupCLUOr_8_1StngParam(void *)"     : "OR_Op_8_1(void *)";
+possible calls "Shematic::SetupCLUXor_8_1StngParam(void *)"    : "XOR_Op_8_1(void *)";
+possible calls "Shematic::SetupCLUNot_1_1StngParam(void *)"    : "NOT_Op_1_1(void *)";
+possible calls "Shematic::SetupCLUFKeyStngParam(void *)"       : "FKey_Op(void *)"   ;
+possible calls "Shematic::SetupCLULssStngParam(void *)"        : "LssOp(void *)";
+possible calls "Shematic::SetupCBGSigStngParam(void *)"        : "BGSig_Op(void *)"    ;
+possible calls "Shematic::SetupCLUTrigStngParam(void *)"       :    "DTRG_Op_4_2(void *)";
+possible calls "Shematic::SetupCLULogStngParam(void *)"        : "Log_Op(void *)";
+possible calls "Shematic::SetupCLUTsStngParam(void *)"         : "Ts__2_1_Op(void *)";
+possible calls "Shematic::SetupCLUTuStngParam(void *)"         : "TU_Op(void *)";
 
+possible calls "Shematic::LUSelector(long)": "SET_OUT_Op(void *)", "READ_DI_Op(void *)", "SET_LED_Op(void *)",
+ "AND_Op_8_1(void *)", "OR_Op_8_1(void *)" , "XOR_Op_8_1(void *)", "NOT_Op_1_1(void *)",
+ "FKey_Op(void *)"   , "LssOp(void *)", "BGSig_Op(void *)", "DTRG_Op_4_2(void *)","Null_OP(void*)",
+ "Log_Op(void *)", "Ts__2_1_Op(void *)", "TU_Op(void *)", "Mft_Op(void *)", "NOT_Op(void *)","PulseAlt_Op(void *)";
+ 
+possible calls "Shematic::LUIterator(long, long)": "SET_OUT_Op(void *)", "READ_DI_Op(void *)", "SET_LED_Op(void *)",
+ "AND_Op_8_1(void *)", "OR_Op_8_1(void *)" , "XOR_Op_8_1(void *)", "NOT_Op_1_1(void *)",
+ "FKey_Op(void *)"   , "LssOp(void *)", "BGSig_Op(void *)", "DTRG_Op_4_2(void *)","Null_OP(void*)",
+ "Log_Op(void *)", "Ts__2_1_Op(void *)", "TU_Op(void *)", "Mft_Op(void *)", "NOT_Op(void *)","PulseAlt_Op(void *)";
+
+possible calls SetHrdLed: "LedAuxOp1", "LedAuxOp2", "LedAuxOp3", "LedAuxOp4" ;
+
+possible calls "Shematic::DoCalc()" : ;
+//exclude  ChangeCfg, "Shematic::DoCalc()", SetHrdLed, "Null_OP(void*)", "SET_LED_Op(void *)", "LedAuxOp1", "LedAuxOp2", "LedAuxOp3", "LedAuxOp4", "PulseAlt_Op(void *)", "AND_Op_8_1(void *)", "NOT_Op(void *)", "BGSig_Op(void *)", "READ_DI_Op(void *)", "SET_OUT_Op(void *)", "FKey_Op(void *)", "LssOp(void *)", "NOT_Op_1_1(void *)", "DTRG_Op_4_2(void *)", "TU_Op(void *)", "Mft_Op(void *)", "OR_Op_8_1(void *)", "XOR_Op_8_1(void *)", "Ts__2_1_Op(void *)";
+//exclude    "Null_OP(void*)",  
 //max recursion depth Get_data : 2;
 
 call graph root [Interrupt]: NMI_Handler, HardFault_Handler, MemManage_Handler, BusFault_Handler, UsageFault_Handler, SVC_Handler, DebugMon_Handler, PendSV_Handler, SysTick_Handler, TIM2_IRQHandler, TIM4_IRQHandler, TIM3_IRQHandler, TIM5_IRQHandler, I2C1_EV_IRQHandler, I2C1_ER_IRQHandler, DMA1_Stream7_IRQHandler, DMA1_Stream0_IRQHandler, SPI2_IRQHandler, DMA2_Stream0_IRQHandler, SPI1_IRQHandler, USART2_IRQHandler, DMA1_Stream6_IRQHandler, EXTI0_IRQHandler, OTG_FS_IRQHandler;
 call graph root [System]: SystemInit;
+
+//call graph root[]:
 
 //Ігоря функції
 exclude  superPreWriteAction, superPostWriteAction, superWriterRegister, superWriterBit, superPreReadAction, superPostReadAction, superReaderRegister, superReaderBit, 
