@@ -74,12 +74,15 @@ int getCommonBigModbusRegister(int adrReg)
 
   case 6:
    //Тест.Вход. 0
+   return arr->param[FIX_BLOCK_TEST_INPUT] & 0xffff;//
   case 7:
+   return (arr->param[FIX_BLOCK_TEST_INPUT] >> 16) & 0x7fff;//
 
   case 8:
    //Тест.Сброс. 0
+   return arr->param[FIX_BLOCK_TEST_RESET] & 0xffff;//
   case 9:
-    break;
+   return (arr->param[FIX_BLOCK_TEST_RESET] >> 16) & 0x7fff;//
   }//switch
 
   return 0;
@@ -202,6 +205,24 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
         arr1->param[FIX_BLOCK_MUTE]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
    break; 
 
+   case 6://Тест.Вход. 0
+        arr1->param[FIX_BLOCK_TEST_INPUT]  &= (uint32_t)~0xffff;
+        arr1->param[FIX_BLOCK_TEST_INPUT]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break; 
+   case 7://Тест.Вход. 1
+        arr1->param[FIX_BLOCK_TEST_INPUT]  &= (uint32_t)~(0x7fff<<16);
+        arr1->param[FIX_BLOCK_TEST_INPUT]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
+   case 8://Тест.Сброс. 0
+        arr1->param[FIX_BLOCK_TEST_RESET]  &= (uint32_t)~0xffff;
+        arr1->param[FIX_BLOCK_TEST_RESET]  |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
+   break; 
+   case 9://Тест.Сброс. 1
+        arr1->param[FIX_BLOCK_TEST_RESET]  &= (uint32_t)~(0x7fff<<16);
+        arr1->param[FIX_BLOCK_TEST_RESET]  |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
+
  }//switch
   }//for
 
@@ -230,6 +251,24 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
    case 4://Тишина 0
    case 5://Тишина 1
         if(superValidParam(arr1->param[FIX_BLOCK_MUTE]))
+                {//контроль валидности
+                repairEditArrayCommon(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 6://Тест.Вход. 0
+   case 7://Тест.Вход. 1
+        if(superValidParam(arr1->param[FIX_BLOCK_TEST_INPUT]))
+                {//контроль валидности
+                repairEditArrayCommon(countRegister, arr, arr1);//восстановить edit массив
+                return 2;//уйти
+        }//if
+  break;
+
+   case 8://Тест.Сброс. 0
+   case 9://Тест.Сброс. 1
+        if(superValidParam(arr1->param[FIX_BLOCK_TEST_RESET]))
                 {//контроль валидности
                 repairEditArrayCommon(countRegister, arr, arr1);//восстановить edit массив
                 return 2;//уйти
@@ -270,12 +309,21 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
    break; 
 
    case 6://Тест.Вход. 0
+        arr1->param[FIX_BLOCK_TEST_INPUT] = arr->param[FIX_BLOCK_TEST_INPUT] &= (uint32_t)~0xffff;
+        arr1->param[FIX_BLOCK_TEST_INPUT] = arr->param[FIX_BLOCK_TEST_INPUT] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break; 
    case 7://Тест.Вход. 1
+        arr1->param[FIX_BLOCK_TEST_INPUT] = arr->param[FIX_BLOCK_TEST_INPUT] &= (uint32_t)~(0x7fff<<16);
+        arr1->param[FIX_BLOCK_TEST_INPUT] = arr->param[FIX_BLOCK_TEST_INPUT] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
+   break; 
 
    case 8://Тест.Сброс. 0
+        arr1->param[FIX_BLOCK_TEST_RESET] = arr->param[FIX_BLOCK_TEST_RESET] &= (uint32_t)~0xffff;
+        arr1->param[FIX_BLOCK_TEST_RESET] = arr->param[FIX_BLOCK_TEST_RESET] |= (tempWriteArray[offsetTempWriteArray+i] & 0xffff);
    break; 
    case 9://Тест.Сброс. 1
+        arr1->param[FIX_BLOCK_TEST_RESET] = arr->param[FIX_BLOCK_TEST_RESET] &= (uint32_t)~(0x7fff<<16);
+        arr1->param[FIX_BLOCK_TEST_RESET] = arr->param[FIX_BLOCK_TEST_RESET] |= ((tempWriteArray[offsetTempWriteArray+i] & 0x7fff)<<16);//
    break; 
  }//switch
   }//for
@@ -307,6 +355,16 @@ void repairEditArrayCommon(int countRegister, __SETTINGS_FIX *arr, __SETTINGS_FI
    case 4://Тишина 0
    case 5://Тишина 1
         arr1->param[FIX_BLOCK_MUTE] = arr->param[FIX_BLOCK_MUTE];
+   break; 
+
+   case 6://Тест.Вход. 0
+   case 7://Тест.Вход. 1
+        arr1->param[FIX_BLOCK_TEST_INPUT] = arr->param[FIX_BLOCK_TEST_INPUT];
+   break; 
+
+   case 8://Тест.Сброс. 0
+   case 9://Тест.Сброс. 1
+        arr1->param[FIX_BLOCK_TEST_RESET] = arr->param[FIX_BLOCK_TEST_RESET];
    break; 
 
  }//switch
