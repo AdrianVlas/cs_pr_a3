@@ -11,7 +11,8 @@ const short shCLUTimer_x_y_AmtIn  = 0;
 #include "../inc/const_global.h"
 
 
-
+const long l_0D80_UNOM = 176000;
+const long l_1D15_UNOM = 253000;
 
 
 

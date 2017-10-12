@@ -68,7 +68,7 @@ extern long InitSchematic(void);
 extern long ReInitSchematic(void);
 
 extern void DoCalcWrp(void);
-
+extern void DoCalcStatInfoWrp(void);
 #ifdef __cplusplus
 }
 #endif
@@ -94,10 +94,13 @@ public:
     Shematic(void);
     ~Shematic(void);
     void DoCalc(void);
+    void DoCalcStatInfo(void);
     void DoCalcLU(void);
     void DoCalcLUSources(void);
+    void DoCalcLUSourcesStatInfo(void);
     void LUSelector( long lIdxLU);
     void LUIterator(long AmountCalcLU, long lIdxLU);
+    void LUIteratorStatInfo(long AmountCalcLU, long lIdxLU);
     void Init_(void);
     long Init(void);
     void Init1(void);
@@ -143,6 +146,7 @@ public:
 	friend long InitSchematic(void);
 	friend long ReInitSchematic(void);
 	friend void DoCalcWrp(void);
+	friend void DoCalcStatInfoWrp(void);
 	friend void GetLssMuteAlarmBlockAddr(void* pv);
     friend void GetLUTestLedInDataAddr(void* pv);
 };

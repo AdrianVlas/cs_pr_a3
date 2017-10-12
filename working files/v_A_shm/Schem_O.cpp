@@ -3,7 +3,7 @@
 #endif
 #include <stdlib.h>
 #include "Shematic.h"
-//#include "StructElem.h"
+#include "stm32f2xx.h"
 #include "BaseInPoint.h"
 #include "InPoint.h"
 #include "ExtPoint.h"
@@ -35,6 +35,7 @@
 #include "LUTestLed.h"
 #include "LULog.hpp"
 #include "FixblWrp.hpp"
+#include "StatInfo.h"
 //#include "../inc/variables_external.h"
 //#include "../inc/libraries.h"
 
@@ -175,6 +176,31 @@ pLUAreaListElem = static_cast<LUAreaListElem*>(this->pLUAreaList);
         (static_cast<CLUBase*>( pv))->LogicFunc( pv);
     }
 }
+void Shematic::LUIteratorStatInfo(long AmountCalcLU, long lIdxLU){
+register void* pv;
+register LUAreaListElem*pLUAreaListElem;
+
+ CLUBase *pCLUBase;
+ UNN_LUExecRec *pUNN_LUExecRec;
+ long lVl;
+
+pLUAreaListElem = static_cast<LUAreaListElem*>(this->pLUAreaList);
+//parIdxLUAreaListElem = arIdxLUAreaListElem;
+    while (AmountCalcLU--) {
+        pv = (pLUAreaListElem[lIdxLU++]).pvLU;
+        
+        pCLUBase = static_cast<CLUBase*>(pv );//pLUAreaListElem[j].pvLU
+        lVl = CLUBase::m_AuxInfo.ch;//pCLUBase ->chIteration;
+        pUNN_LUExecRec = &(pCLUBase ->unnLUStatInfoData.arLUExecInfo[lVl]);
+        
+        pUNN_LUExecRec->hldrLUExecInfo.shTIMStartedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;//TIM_GetCounter(TIM9);
+      #pragma calls=  FBWrp_Op, Mft_Op, XOR_Op_8_1,TU_Op,DTRG_Op_4_2,OR_Op_8_1,NOT_Op_1_1,LssOp,Log_Op,SET_LED_Op,FKey_Op,SET_OUT_Op,READ_DI_Op,BGSig_Op,AND_Op_8_1,PulseAlt_Op             
+        (static_cast<CLUBase*>( pv))->LogicFunc( pv);
+        pUNN_LUExecRec->hldrLUExecInfo.shTIMTerminatedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;  
+    
+    }
+}
+
 #include "Sch_Aux.cpp"
 extern char chStateOptimisation;
 void Shematic::DoCalcLU(void){
@@ -220,6 +246,111 @@ if(chStateOptimisation == 2)
 //`    else
 //`        pCLUDInput_0_1->arrOut[0] = 0;
 //`}
+extern const long TIM9_BASE_CPP;// = TIM9_BASE;
+//#pragma inline
+void Shematic::DoCalcLUSourcesStatInfo(void){
+
+ register long i,j,lAmtProcessObj;
+ void* pv;
+register LUAreaListElem*pLUAreaListElem;
+short *parIdxLUAreaListElem;
+ CLUBase *pCLUBase;
+ UNN_LUExecRec *pUNN_LUExecRec;
+ long lVl;
+
+    pLUAreaListElem = static_cast<LUAreaListElem*>(pLUAreaList);
+
+    parIdxLUAreaListElem = arIdxLUAreaListElem;
+
+    lAmtProcessObj = (static_cast<__CONFIG* >(p_current_config_prt))->n_input; //current_config_prt.n_input;
+//////////////////////////////////////////////////////////////////
+    short shCounterInitCLUDout = 0;
+    i = parIdxLUAreaListElem[LU_INPUT-1];//Get Obj List Index
+    
+    while (shCounterInitCLUDout < lAmtProcessObj ) {
+            j = i + shCounterInitCLUDout;
+
+            
+            pCLUBase = static_cast<CLUBase*>(pLUAreaListElem[j].pvLU );
+            lVl = pCLUBase ->chIteration;
+            pUNN_LUExecRec = &(pCLUBase ->unnLUStatInfoData.arLUExecInfo[lVl]);
+            
+            pUNN_LUExecRec->hldrLUExecInfo.shTIMStartedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;//TIM_GetCounter(TIM9);
+            
+            READ_DI_Op( pLUAreaListElem[j].pvLU );//DiOp
+            pUNN_LUExecRec->hldrLUExecInfo.shTIMTerminatedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;  
+            
+            shCounterInitCLUDout++;
+    } 
+/////////////////////////////////////////////////////////////////
+    lAmtProcessObj = (static_cast<__CONFIG* >(p_current_config_prt))->n_button;
+    shCounterInitCLUDout = 0;
+    i = parIdxLUAreaListElem[LU_FKEY-1];        
+    do {
+            j = i + shCounterInitCLUDout;
+            pv = (pLUAreaListElem[j]).pvLU;
+            pCLUBase = static_cast<CLUBase*>(pLUAreaListElem[j].pvLU );
+            lVl = pCLUBase ->chIteration;
+            pUNN_LUExecRec = &(pCLUBase ->unnLUStatInfoData.arLUExecInfo[lVl]);
+            
+            pUNN_LUExecRec->hldrLUExecInfo.shTIMStartedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;//TIM_GetCounter(TIM9);
+                      
+            ButtonOp(pv);
+            pUNN_LUExecRec->hldrLUExecInfo.shTIMTerminatedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;  
+    } while (++shCounterInitCLUDout < lAmtProcessObj );
+//////////////////////////////////////////////////////////////////
+    lAmtProcessObj = (static_cast<__CONFIG* >(p_current_config_prt))-> n_meander;   
+    shCounterInitCLUDout = 0;
+    i = parIdxLUAreaListElem[LU_MEANDERS-1];
+    while (shCounterInitCLUDout < lAmtProcessObj ) {
+            j = i + shCounterInitCLUDout;
+            pv = (pLUAreaListElem[j]).pvLU;
+            pCLUBase = static_cast<CLUBase*>(pLUAreaListElem[j].pvLU );
+            lVl = pCLUBase ->chIteration;
+            pUNN_LUExecRec = &(pCLUBase ->unnLUStatInfoData.arLUExecInfo[lVl]);
+            pUNN_LUExecRec->hldrLUExecInfo.shTIMStartedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;//TIM_GetCounter(TIM9);
+            
+            AltOp(pv);
+            pUNN_LUExecRec->hldrLUExecInfo.shTIMTerminatedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;  
+            shCounterInitCLUDout++;
+            
+    } 
+//////////////////////////////////////////////////////////////////  
+    lAmtProcessObj = (static_cast<__CONFIG* >(p_current_config_prt))-> n_group_alarm;
+    shCounterInitCLUDout = 0;
+    CBGSig::chAlreadyCalculated = 0;
+    i = parIdxLUAreaListElem[LU_BGS-1];
+    while (shCounterInitCLUDout < lAmtProcessObj ) {
+            j = i + shCounterInitCLUDout;
+            pv = (pLUAreaListElem[j]).pvLU;
+            pCLUBase = static_cast<CLUBase*>(pLUAreaListElem[j].pvLU );
+            lVl = pCLUBase ->chIteration;
+            pUNN_LUExecRec = &(pCLUBase ->unnLUStatInfoData.arLUExecInfo[lVl]);
+            
+            pUNN_LUExecRec->hldrLUExecInfo.shTIMStartedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;//TIM_GetCounter(TIM9);
+                  
+            BGSig_Op(pv);
+            pUNN_LUExecRec->hldrLUExecInfo.shTIMTerminatedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;              
+            shCounterInitCLUDout++;
+            
+    }
+CBGSig::chAlreadyCalculated = 1;    
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////  
+    i = parIdxLUAreaListElem[LU_LOG-1];
+    // j = i + shCounterInitCLUDout;
+    pv = (pLUAreaListElem[i]).pvLU;
+    pCLUBase = static_cast<CLUBase*>(pv );//pLUAreaListElem[j].pvLU
+    lVl = pCLUBase ->chIteration;
+    pUNN_LUExecRec = &(pCLUBase ->unnLUStatInfoData.arLUExecInfo[lVl]);
+    pUNN_LUExecRec->hldrLUExecInfo.shTIMStartedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;//TIM_GetCounter(TIM9);
+        
+    Log_Op(pv);  
+    pUNN_LUExecRec->hldrLUExecInfo.shTIMTerminatedVal = (reinterpret_cast<TIM_TypeDef *>( TIM9_BASE_CPP))->CNT;  
+
+
+}
 
 void DoOp(void *pObj){
     CLUDout_1_0& refCLUDout_1_0 = *(static_cast<CLUDout_1_0*> (pObj));

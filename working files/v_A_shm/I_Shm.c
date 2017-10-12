@@ -25,6 +25,8 @@
 extern __CONFIG current_config_prt; 
  __CONFIG ccfg;
 */
+
+
 char chGlb_ActivatorWREeprom = 0;
 
 char chGlbAmountRegisteredElem = 0;
@@ -75,12 +77,17 @@ long ChangeCfg(void* pv){
   //lCtrElem = i*417/10000;
   lCtrElem = i*834/10000;
   //lCtrElem = i*660/10000;
+  TIM_SetCounter(TIM9,0);
+    TIM9Start();
+  DoCalcStatInfoWrp();
+  TIM9Stop();
+  //Out Param in Terminal
   
     return lVl;
 }
 
 // long RegisterHundlerLUCfg(void* pv){
-
+ const long TIM9_BASE_CPP = TIM9_BASE;
 
 // return 0;
 

@@ -44,7 +44,7 @@ enum {
 };
 
 //макс к-во входов у субобекта
-#define MAXIMUMI 5
+#define MAXIMUMI 7
 //макс размер буфера записи
 #define MAXIMUMTW 128
 

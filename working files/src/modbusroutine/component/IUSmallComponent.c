@@ -4,10 +4,10 @@
 #define BEGIN_ADR_REGISTER 0
 #define REGISTER_FOR_OBJ 16
 
-int getIUModbusRegister(int);//получить содержимое регистра
-int getIUModbusBit(int);//получить содержимое бита
-int setIUModbusRegister(int, int);//получить содержимое регистра
-int setIUModbusBit(int, int);//получить содержимое бита
+int getIUSmallModbusRegister(int);//получить содержимое регистра
+int getIUSmallModbusBit(int);//получить содержимое бита
+int setIUSmallModbusRegister(int, int);//получить содержимое регистра
+int setIUSmallModbusBit(int, int);//получить содержимое бита
 
 void preIUSmallReadAction(void);//action до чтения
 void postIUSmallReadAction(void);//action после чтения
@@ -28,10 +28,10 @@ void constructorIUSmallComponent(COMPONENT_OBJ *iucomp)
 
   iucomponent->countObject = 1;//к-во обектов
 
-  iucomponent->getModbusRegister = getIUModbusRegister;//получить содержимое регистра
-  iucomponent->getModbusBit      = getIUModbusBit;//получить содержимое бита
-  iucomponent->setModbusRegister = setIUModbusRegister;//получить содержимое регистра
-  iucomponent->setModbusBit      = setIUModbusBit;//получить содержимое бита
+  iucomponent->getModbusRegister = getIUSmallModbusRegister;//получить содержимое регистра
+  iucomponent->getModbusBit      = getIUSmallModbusBit;//получить содержимое бита
+  iucomponent->setModbusRegister = setIUSmallModbusRegister;//получить содержимое регистра
+  iucomponent->setModbusBit      = setIUSmallModbusBit;//получить содержимое бита
 
   iucomponent->preReadAction   = preIUSmallReadAction;//action до чтения
   iucomponent->postReadAction  = postIUSmallReadAction;//action после чтения
@@ -42,7 +42,7 @@ void constructorIUSmallComponent(COMPONENT_OBJ *iucomp)
   iucomponent->isActiveActualData = 0;
 }//prepareDVinConfig
 
-int getIUModbusRegister(int adrReg)
+int getIUSmallModbusRegister(int adrReg)
 {
   //получить содержимое регистра
   if(privateIUGetReg2(adrReg)==MARKER_OUTPERIMETR) return MARKER_OUTPERIMETR;
@@ -102,18 +102,18 @@ int getIUModbusRegister(int adrReg)
 
   return 0;//tempReadArray[adrReg-BEGIN_ADR_REGISTER];
 }//getDVModbusRegister(int adrReg)
-int getIUModbusBit(int x) {
+int getIUSmallModbusBit(int x) {
   //получить содержимое bit
   UNUSED(x);
   return MARKER_OUTPERIMETR;
 }//getIUModbusBit(int )
-int setIUModbusRegister(int x, int y) {
+int setIUSmallModbusRegister(int x, int y) {
   UNUSED(x);
   UNUSED(y);
   //записать содержимое регистра
   return MARKER_OUTPERIMETR;
 }//setIUModbusRegister(int, int)
-int setIUModbusBit(int x, int y) {
+int setIUSmallModbusBit(int x, int y) {
   UNUSED(x);
   UNUSED(y);
   //записать содержимое bit

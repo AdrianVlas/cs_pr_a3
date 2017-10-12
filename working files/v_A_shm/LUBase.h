@@ -1,5 +1,5 @@
 #pragma once
-
+#include "StatInfo.h"
 
 #ifndef LU_CFG_INFO
 #define LU_CFG_INFO
@@ -105,7 +105,7 @@ public:
 	//long lOut;
 	logicfnptr LogicFunc;
 		//In Reference
-	
+	UNN_LUStatInfoData unnLUStatInfoData;
 	//Out Reference
 	void* pOut;//List Addr//BaseInPoint* pOut;//List Addr
     void* pvCfgLN;
