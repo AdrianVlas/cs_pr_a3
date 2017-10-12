@@ -25,6 +25,8 @@ CLUBase::CLUBase(void) {
     pOut = static_cast<void*> (0); //(void*)0;
     pIn = static_cast<void*> (0); //(void*)0;
     pvCfgLN = static_cast<void*> (0); 
+    memset(static_cast<void*>(&unnLUStatInfoData),0,sizeof(UNN_LUStatInfoData));
+    
 } 
 extern LUAreaAuxVar gblLUAreaAuxVar;
 

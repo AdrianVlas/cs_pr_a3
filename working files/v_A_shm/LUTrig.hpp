@@ -31,6 +31,7 @@ public:
     char chError;
     char chQ;
     char chIn_C;
+  
 	friend void DTRG_Op_4_2    (void *pObj);
 };
 

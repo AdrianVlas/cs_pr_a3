@@ -36,6 +36,7 @@
 #include "LUTestLed.h"
 #include "LULog.hpp"
 #include "FixblWrp.hpp"
+#include "StatInfo.h"
 //#include "../inc/variables_external.h"
 //#include "../inc/libraries.h"
 
@@ -3804,8 +3805,101 @@ lRes = Init2();
 chInitTerminated = 1;
 return lRes;
 }
+void Shematic::DoCalcStatInfo(void) {
+    register long i, j;
+    register long lDwnCtr;
+i = 0;
+    if(chInitTerminated == 0)
+        return;
+    TmrCalls();
+    j = CBGSig::m_chCounterCall;    
+    if(j >= 8)//100
+        CBGSig::m_chCounterCall = 0;
+    else
+        CBGSig::m_chCounterCall = ++j;
+    j = CBGSig::chMeasUpdateInterval;    
+    if(j >= 20)//100
+        CBGSig::chMeasUpdateInterval = 0;
+    else
+        CBGSig::chMeasUpdateInterval = ++j;
+    
+    //if(CBGSig::chMeasUpdateInterval == 0){
+        for (long lIdChanell, ii = 0 ; ii < I_U ; ii++)    {
+            lIdChanell  = CBGSig::ChanelsNames[ii];
+            
+            if(CBGSig::meas[lIdChanell] > measurement[lIdChanell])
+                CBGSig::DMeas[lIdChanell] = i = 
+                CBGSig::meas[lIdChanell] - measurement[lIdChanell];
+            else
+                CBGSig::DMeas[lIdChanell] = i =
+                measurement[lIdChanell] - CBGSig::meas[lIdChanell];
+             j = CBGSig::PickUPs[ii];    
+            //if (CBGSig::DMeas[lIdChanell] > static_cast<unsigned long>(j)  )
+            
+                ;
+            if (i > j  )//static_cast<unsigned long>(j)
+                CBGSig::m_chCounterCall = 0;
+            //else
+                
+            }
+        if(CBGSig::chMeasUpdateInterval == 0){
+            
+             memcpy(reinterpret_cast<void*>(CBGSig::meas),
+            reinterpret_cast<void*>(measurement), I_U*sizeof(long));
+            i = CBGSig::m_chIdxGrupSamples;
+            j = I_U*1;//sizeof(long)
+//            lDwnCtr = reinterpret_cast<long>(&(CBGSig::measbuf[i][0]));
+            
+            memcpy(reinterpret_cast<void*>(&(CBGSig::measbuf[i][0])),
+            //reinterpret_cast<void*>(PMeas), I_U*sizeof(long));
+            reinterpret_cast<void*>(measurement), I_U*sizeof(long));
+            i++;
+            if(i > 2)
+            i = 0;
+            CBGSig::m_chIdxGrupSamples = i;
+        
+        }        
+    //}    
+    if(CBGSig::chNeedTimerCalculated >0)    
+         CBGSig::m_chCounterCall = 0;//It`s initiated Recalc when Timer work    
+   
+//    CBGSig::chNeedRefrash = 1;        
+        
+    i = 0;    
+//    UpdateStateDI();
+    if( (chErrorState&1) != 0){
+        //Set to 0 DOState
 
-
+        eRunErrorLed.EvalRunErrorLed();
+        return;
+    }
+    
+    DoCalcLUSourcesStatInfo();
+    FBWrp_Op(pCFixBlockWrp);
+    lDwnCtr = chIteration;
+    CLUBase::m_AuxInfo.ch = 0;
+    do{
+        //Startovyi Iterator
+        //i = arIdxLUAreaListElem[LU_LSS-1];
+        i = arIdxLUAreaListElem[LU_LSS-1];
+        j = shSum8Elem;//kolichestvo elementov
+        LUIteratorStatInfo(j,i);    
+        //Startovyi Iterator    
+        i = arIdxLUAreaListElem[LU_OUTPUT-1];
+        //kolichestvo elementov
+        j = chSumNLedPlusNOut;
+        LUIteratorStatInfo(j,i);// LUIterator(j,i);//
+        i = arIdxLUAreaListElem[LU_TU-1];
+        j = chSumNTUPlusNTS;
+        LUIteratorStatInfo(j,i);//
+        CLUBase::m_AuxInfo.ch++;
+    //Predpolagaemyi uroven` vlozenosti
+    }while(--lDwnCtr);
+    
+    eMuteAlarmLed.EvalMuteAlarmLed();
+    eRunErrorLed.EvalRunErrorLed();
+    eLUTestLed.CalCLUTestLedSchematic();
+}
 
 
 
@@ -4012,7 +4106,14 @@ sh.DoCalc();
 //sh.DoCalcLUSources();
 }
 
+void DoCalcStatInfoWrp(void){
+sh.DoCalcStatInfo();
+//sh.DoCalcLUSources();
+}
 
+
+
+CStatInfoStore hldrCStatInfoStore;
 
 
 

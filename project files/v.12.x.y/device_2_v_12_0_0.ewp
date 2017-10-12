@@ -7053,6 +7053,9 @@
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.h</name>
       </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\StatInfo.cpp</name>
+      </file>
       <configuration>
         <name>Flash-Debug</name>
         <settings>

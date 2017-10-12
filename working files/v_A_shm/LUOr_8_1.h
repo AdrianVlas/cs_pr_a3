@@ -12,6 +12,7 @@ public:
     CLUOr_8_1(char chM, char chI);
     char* arrPchIn[shCLUOr_8_1_AmtIn ]; // 
     char   arrOut [shCLUOr_8_1_AmtOut]; // 
+
     friend void OR_Op_8_1(void *pObj);
 };
 extern void OR_Op_8_1(void *pObj);

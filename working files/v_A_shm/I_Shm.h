@@ -39,12 +39,13 @@ extern long InitSchematic(void);
 extern long ReInitSchematic(void);
 
 extern void DoCalcWrp(void);
+extern void DoCalcStatInfoWrp(void);
 extern void  TmrCalls(void);
 extern long RegisterHundlerLUCfg(void* pv);
 
 extern void  CheckingDIRegs(void);
 
 extern char chGlb_ActivatorWREeprom;
-
+extern const long TIM9_BASE_CPP;
 
 #endif
