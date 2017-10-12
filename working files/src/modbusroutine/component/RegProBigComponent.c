@@ -16,7 +16,7 @@ void preRegProBigReadAction(void);//action до чтения
 void postRegProBigReadAction(void);//action после чтения
 void preRegProBigWriteAction(void);//action до записи
 int  postRegProBigWriteAction(void);//action после записи
-void config_and_settingsProBig(void);//action активации
+void config_and_settingsRegProBig(void);//action активации
 
 COMPONENT_OBJ *regprobigcomponent;
 
@@ -38,7 +38,7 @@ void constructorRegProBigComponent(COMPONENT_OBJ *regprobigcomp)
   regprobigcomponent->postReadAction  = postRegProBigReadAction;//action после чтения
   regprobigcomponent->preWriteAction  = preRegProBigWriteAction;//action до записи
   regprobigcomponent->postWriteAction = postRegProBigWriteAction;//action после записи
-  regprobigcomponent->config_and_settings = config_and_settingsProBig;//action активации
+  regprobigcomponent->config_and_settings = config_and_settingsRegProBig;//action активации
 
   regprobigcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -181,7 +181,7 @@ int privateRegProBigGetReg2(int adrReg)
   return MARKER_OUTPERIMETR;
 }//privateGetReg2(int adrReg)
 
-void config_and_settingsProBig(void)
+void config_and_settingsRegProBig(void)
 {
 //action активации
 }

@@ -21,7 +21,7 @@ void postRMTKeySmallReadAction(void);//action после чтения
 void preRMTKeySmallWriteAction(void);//action до записи
 int postRMTKeySmallWriteAction(void);//action после записи
 void loadRMTKeySmallActualData(void);
-void config_and_settingsRMTKey(void);//action активации
+void config_and_settingsRMTKeySmall(void);//action активации
 
 COMPONENT_OBJ *rmtkeysmallcomponent;
 
@@ -43,7 +43,7 @@ void constructorRMTKeySmallComponent(COMPONENT_OBJ *rmtkeysmallcomp)
   rmtkeysmallcomponent->postReadAction  = postRMTKeySmallReadAction;//action после чтения
   rmtkeysmallcomponent->preWriteAction  = preRMTKeySmallWriteAction;//action до записи
   rmtkeysmallcomponent->postWriteAction = postRMTKeySmallWriteAction;//action после записи
-  rmtkeysmallcomponent->config_and_settings = config_and_settingsRMTKey;//action активации
+  rmtkeysmallcomponent->config_and_settings = config_and_settingsRMTKeySmall;//action активации
 
   rmtkeysmallcomponent->isActiveActualData = 0;
 }//prepareDVinConfig
@@ -155,7 +155,7 @@ int privateRMTKeySmallGetBit2(int adrBit)
   return MARKER_OUTPERIMETR;
 }//privateDOUTSmallGetBit2(int adrBit)
 
-void config_and_settingsRMTKey(void)
+void config_and_settingsRMTKeySmall(void)
 {
 //action активации
 }
