@@ -108,10 +108,17 @@ long l;
     }
     if(
     (measurement[4] >= l_1D15_UNOM) || (measurement[4] <= l_0D80_UNOM)
-    )
+    ){
         rCFixBlockWrp.arrOut[VCE_CMD]         = 1;
-    else
+        //l |= 1<< FIX_BLOCK_VCE;
+        *(reinterpret_cast<unsigned char*>(fix_block_active_state)) |= 1<< FIX_BLOCK_VCE;
+    }    
+    else{
         rCFixBlockWrp.arrOut[VCE_CMD]         = 0;
+         //l &= ~(1<<FIX_BLOCK_VCE);
+        *(reinterpret_cast<unsigned char*>(fix_block_active_state))   &= ~(1<<FIX_BLOCK_VCE); 
+    }    
+    
 
 
 
