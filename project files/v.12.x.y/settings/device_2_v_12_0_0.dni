@@ -29,6 +29,23 @@ Fmt0=__SETTINGS_FIX-password_2	3	0
 [Trace1]
 Enabled=0
 ShowSource=1
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
+[DriverProfiling]
+Enabled=0
+Mode=1
+Graph=0
+Symbiont=0
+Exclusions=
+[CallStackLog]
+Enabled=0
+[CallStackStripe]
+ShowTiming=1
 [Disassemble mode]
 mode=0
 [Breakpoints2]
@@ -51,23 +68,6 @@ Bp15=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\I_Shm.c}.80.3" 0 0
 Bp16=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Shematic.cpp}.3899.5" 0 0 1 "" 0 "" 0
 Bp17=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\working files\v_A_shm\Schem_O.cpp}.193.9" 0 0 1 "" 0 "" 0
 Count=18
-[Log file]
-LoggingEnabled=_ 0
-LogFile=_ ""
-Category=_ 0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
 [Aliases]
 Count=0
 SuppressDialog=0
-[DriverProfiling]
-Enabled=0
-Mode=1
-Graph=0
-Symbiont=0
-Exclusions=
-[CallStackLog]
-Enabled=0
-[CallStackStripe]
-ShowTiming=1
