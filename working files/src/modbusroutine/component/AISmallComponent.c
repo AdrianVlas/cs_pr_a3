@@ -53,7 +53,7 @@ int getAISmallModbusRegister(int adrReg)
   int offset = adrReg-BEGIN_ADR_REGISTER;
   switch(offset%REGISTER_FOR_OBJ) {//индекс регистра 
    case 0://Напряжение Ucv
-    return 4*measurement[IM_U];
+    return measurement[IM_U]/4;
    case 1://Ток Iin1
     return measurement[IM_I1];
    case 2://Ток Iin2
