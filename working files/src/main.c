@@ -152,9 +152,9 @@ inline void periodical_operations(void)
     if ((timeout != 0) && (timeout_idle_RS485 >= timeout) && ((restart_timeout_interface & (1 << RS485_RECUEST)) == 0)) password_set_RS485 = 1;
   }
   if(
-     ((DMA_StreamRS485_Rx->CR & (uint32_t)DMA_SxCR_EN) == 0) &&
      (RxBuffer_RS485_count != 0) &&
-     (make_reconfiguration_RS_485 == 0)
+     (make_reconfiguration_RS_485 == 0) &&
+     ((DMA_StreamRS485_Rx->CR & (uint32_t)DMA_SxCR_EN) == 0)
     )
   {
     //Це є умовою, що дані стоять у черзі  на обробку

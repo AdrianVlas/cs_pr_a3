@@ -154,7 +154,7 @@ void inputPacketParserRS485(void)
       12345
       ѕричина рестарту (широкосмугова команда)
       ***/
-      reason_of_restart_RS485 |= (1 << 7);
+      reason_of_restart_RS485 |= (1 << 8);
       /***/
               
       restart_monitoring_RS485();

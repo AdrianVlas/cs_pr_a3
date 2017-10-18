@@ -12,7 +12,10 @@ const short shCLUTimer_x_y_AmtIn  = 0;
 
 
 const long l_0D80_UNOM = 176000;
+const long l_0D80_UNOM_X_1D1 = 194000;
+
 const long l_1D15_UNOM = 253000;
+const long l_1D15_UNOM_X_0D9 = 228000;
 
 
 
