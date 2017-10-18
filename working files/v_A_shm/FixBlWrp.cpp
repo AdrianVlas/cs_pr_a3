@@ -59,7 +59,8 @@ void CFixBlockWrp::EvalCFixBlockWrpCmd(void){
 // };
 // enum _FIX_BLOCK_input_signals
 
-
+long stdpUminL = 0;
+long stdpUminH = 0;
 
 //#pragma call_graph_root= "Shematic::Init2"
 void FBWrp_Op(void *pObj){
@@ -106,11 +107,51 @@ long l;
     else{
         rCFixBlockWrp.arrOut[SHCEMATIC_FAULT_CMD]          = 0;
     }
+    
+	if(  measurement[4] < l_0D80_UNOM){
+	 	stdpUminL = 1;
+	 	goto Ret0_lab;
+	}
+	else
+	{
+		if( ( measurement[4] < l_0D80_UNOM_X_1D1 )  //
+			&& (stdpUminL == 1)){   
+
+			stdpUminL = 1;
+	 		goto Ret0_lab;
+		}
+		else{
+			stdpUminL = 0;
+		}
+	}    
+Ret0_lab:
+    if(  measurement[4] > l_1D15_UNOM ){
+		 	stdpUminH = 1;//
+		 	goto Ret1_lab;
+		}
+		else{
+			if( ( measurement[4] > l_1D15_UNOM_X_0D9 )
+				&& (stdpUminH == 1)){   
+				stdpUminH = 1;
+		 		goto Ret1_lab;
+			}
+			else{
+				stdpUminH = 0;
+			}
+		}
+Ret1_lab:
+    
+    
+    
+    
+    
+    
+    
     if(
-    (measurement[4] >= l_1D15_UNOM) || (measurement[4] <= l_0D80_UNOM)
+    //(measurement[4] >= l_1D15_UNOM) || (measurement[4] <= l_0D80_UNOM)
+        (stdpUminL == 1) || (stdpUminH == 1)
     ){
         rCFixBlockWrp.arrOut[VCE_CMD]         = 1;
-        //l |= 1<< FIX_BLOCK_VCE;
         *(reinterpret_cast<unsigned char*>(fix_block_active_state)) |= 1<< FIX_BLOCK_VCE;
     }    
     else{
