@@ -105,7 +105,7 @@ NUMBER_ODYNYCI_VYMIRJUVANNJA
 /*****************************************/
 #define VERSIA_PZ                                             12
 #define MODYFIKACIA_VERSII_PZ                                 0
-#define ZBIRKA_VERSII_PZ                                      0
+#define ZBIRKA_VERSII_PZ                                      1
 /*****************************************/
 
 /*****************************************/
