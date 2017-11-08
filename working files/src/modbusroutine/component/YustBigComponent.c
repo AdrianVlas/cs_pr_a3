@@ -139,7 +139,7 @@ extern int upravlYust;//флаг юстировки
   case 5:
       flag = 1;
       changed_ustuvannja = CHANGED_ETAP_EXECUTION;
-      ustuvannja[offset%(REGISTER_FOR_OBJ)] = tempWriteArray[offsetTempWriteArray+i];
+      ustuvannja[(offset%(REGISTER_FOR_OBJ))-1] = tempWriteArray[offsetTempWriteArray+i];
   break;
   case 6:
       if(ustuvannja_measure_shift==-1) ustuvannja_measure_shift =0;

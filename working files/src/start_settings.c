@@ -1498,7 +1498,7 @@ void scheme2_config(__CONFIG *target_label)
                                        3/*"Несправність загальна" + "Несправність аварійна" + "НКНОП"*/ + 
                                        ((target_label->n_input > 4/*Reset, Mute, Block, Test*/) ? (target_label->n_input - 4) : 0) + 
                                        ((target_label->n_output >= 4/*Ав.звукова, Ав.світлова, Поп.звукова, Поп.світлова*/) ? 4 : target_label->n_output) +
-                                       target_label->n_led + 
+                                       ((target_label->n_led >= (n_group_alarm + n_binary_chanal)) ? (n_group_alarm + n_binary_chanal) : target_label->n_led) +
                                        target_label->n_group_alarm*GROUP_ALARM_SIGNALS_OUT
                                       ), LOG_SIGNALS_IN);
                          
