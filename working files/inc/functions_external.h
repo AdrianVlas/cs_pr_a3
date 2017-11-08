@@ -23,7 +23,7 @@ extern void start_tim4_canal3_for_interrupt_10mkc(void);
 extern void min_config(__CONFIG *);
 extern void scheme2_config(__CONFIG *);
 extern void min_settings(__SETTINGS_FIX *);
-void scheme2_settings(__CONFIG *, __SETTINGS_FIX *, uintptr_t *[]);
+extern void scheme2_settings(__CONFIG *, __SETTINGS_FIX *, uintptr_t *[]);
 extern void min_settings_INPUT(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_INPUT(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_OUTPUT_LED(unsigned int, uintptr_t *, size_t, size_t);
