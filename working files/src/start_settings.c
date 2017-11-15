@@ -1655,11 +1655,8 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
       else break;
 
       if (target_config->n_or >= 1) ((__settings_for_ALARM*)target_sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + i)->param[ALARM_RESET]    = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-      else continue;
       if (target_config->n_or >= 2) ((__settings_for_ALARM*)target_sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + i)->param[ALARM_IN_MUTE]  = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((2 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-      else continue;
       if (target_config->n_trigger >= 1) ((__settings_for_ALARM*)target_sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + i)->param[ALARM_IN_BLOCK] = ((ID_FB_TRIGGER & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((TRIGGER_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-      else continue;
     } 
     /***/
     
@@ -1826,7 +1823,7 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
       {
         ((__settings_for_TIMER*)target_sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR] + i)->param[TIMER_LOGIC_INPUT] = ((ID_FB_GROUP_ALARM & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((GROUP_ALARM_OUT_NNP + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
       }
-      else if (target_config->n_input >= (i + 1 - target_config->n_group_alarm)) 
+      else if (target_config->n_input >= (i - target_config->n_group_alarm + 4 + 1)) 
       {
         ((__settings_for_TIMER*)target_sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR] + i)->param[TIMER_LOGIC_INPUT] = ((ID_FB_INPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((i - target_config->n_group_alarm + 4 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((INPUT_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
       }
