@@ -1857,12 +1857,12 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
       size_t _n = 4/*Reset, Mute, Block, Test*/ + 
       DIV_TO_HIGHER(2*target_config->n_group_alarm, OR_SIGNALS_IN)/*Контрольні сигнали всіх ШГС*/ + 
       DIV_TO_HIGHER(target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN) + (((target_config->n_alarm % OR_SIGNALS_IN) != 0) && ((target_config->n_alarm / OR_SIGNALS_IN) != ((target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання MUTE-виходів всіх СЗС*/;
-      if (target_config->n_or >= (_n + 1)) target_fix_settings->param[FIX_BLOCK_MUTE] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((_n - 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      if (target_config->n_or >= ((_n - 1) + 1)) target_fix_settings->param[FIX_BLOCK_MUTE] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((_n - 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
 
       _n += DIV_TO_HIGHER((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) + ((((target_config->n_alarm - (target_config->n_alarm >> 1)) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) != (((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для аварійної сигналізації*/ + 
             DIV_TO_HIGHER((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN) + ((((target_config->n_alarm >> 1) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm >> 1) / OR_SIGNALS_IN) != (((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для попереджувальної сигналізації*/ + 
             1;
-      if (target_config->n_or >= (_n + 1)) target_fix_settings->param[FIX_BLOCK_ALARM] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((_n - 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      if (target_config->n_or >= ((_n - 1) + 1)) target_fix_settings->param[FIX_BLOCK_ALARM] = ((ID_FB_OR  & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((((_n - 1) + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
     }
     /***/
     
