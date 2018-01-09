@@ -40,6 +40,7 @@ void Set_System(void)
                          RCC_AHB1Periph_GPIO_I2C                |
                          RCC_AHB1Periph_GPIO_SPI_DF             |
                          RCC_AHB1Periph_GPIO_SPI_DF_TOGGLE      |
+                         RCC_AHB1Periph_GPIO_SPI_EDF_A1         |
                          RCC_AHB1Periph_GPIO_CON_OUTPUTS        |
                          RCC_AHB1Periph_GPIO_USART_RS485        |
                          RCC_AHB1Periph_GPIO_485DE              |

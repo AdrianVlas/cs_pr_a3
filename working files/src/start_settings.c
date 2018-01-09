@@ -734,6 +734,12 @@ void start_settings_peripherals(void)
   /*Вибираємо мікросхему з 1МБ*/
   GPIO_SetBits(GPIO_SPI_DF_TOGGLE, GPIO_SPI_DF_TOGGLE_Pin);
 
+  /*GPIO_SPI_EDF_A1 - вибір мікросхеми DataFlash*/
+  GPIO_InitStructure.GPIO_Pin = GPIO_SPI_EDF_A1_Pin;
+  GPIO_Init(GPIO_SPI_EDF_A1, &GPIO_InitStructure);
+  //Вибираємо EEPROM
+  GPIO_ResetBits(GPIO_SPI_EDF_A1, GPIO_SPI_EDF_A1_Pin);
+  
   /* Пін 485DE*/
   GPIO_InitStructure.GPIO_Pin = GPIO_PIN_485DE;
   GPIO_Init(GPIO_485DE, &GPIO_InitStructure);
