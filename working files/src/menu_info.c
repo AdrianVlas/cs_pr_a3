@@ -51,6 +51,16 @@ void make_ekran_info()
 #else
           value_str[index_tmp++] = ZBIRKA_VERSII_PZ + 0x30;
 #endif
+
+          value_str[index_tmp++] = '.';
+          
+#if ZBIRKA_PIDVERSII_PZ > 9
+          value_str[index_tmp++] = (ZBIRKA_PIDVERSII_PZ / 10) + 0x30;
+          value_str[index_tmp++] = (ZBIRKA_PIDVERSII_PZ % 10) + 0x30;
+#else
+          value_str[index_tmp++] = ZBIRKA_PIDVERSII_PZ + 0x30;
+#endif
+
           unsigned int shift = (MAX_COL_LCD - index_tmp) >> 1;
           first_char_row1 = shift;
           last_chat_row1 = first_char_row1 + index_tmp;
@@ -64,22 +74,28 @@ void make_ekran_info()
         }
         else if ((index_in_ekran>>1) == INDEX_INFO_M2_MEMORY_MAP)
         {
-#if VERSIA_GMM > 9
-          value_str[COL_INFO_BEGIN_2 + 0] = (VERSIA_GMM / 10) + 0x30;
-          value_str[COL_INFO_BEGIN_2 + 1] = (VERSIA_GMM % 10) + 0x30;
+#if VERSIA_GMM > 99
+          value_str[COL_INFO_BEGIN_2 + 0] = (VERSIA_GMM / 100) + 0x30;
+          value_str[COL_INFO_BEGIN_2 + 1] = ((VERSIA_GMM % 100) / 10) + 0x30;
+          value_str[COL_INFO_BEGIN_2 + 2] = (VERSIA_GMM % 10) + 0x30;
+#elif VERSIA_GMM > 9
+          value_str[COL_INFO_BEGIN_2 + 0] = ' ';
+          value_str[COL_INFO_BEGIN_2 + 1] = (VERSIA_GMM / 10) + 0x30;
+          value_str[COL_INFO_BEGIN_2 + 2] = (VERSIA_GMM % 10) + 0x30;
 #else
           value_str[COL_INFO_BEGIN_2 + 0] = ' ';
-          value_str[COL_INFO_BEGIN_2 + 1] = VERSIA_GMM + 0x30;
+          value_str[COL_INFO_BEGIN_2 + 1] = ' ';
+          value_str[COL_INFO_BEGIN_2 + 2] = VERSIA_GMM + 0x30;
 #endif
 
-          value_str[COL_INFO_BEGIN_2 + 2] = '.';
+          value_str[COL_INFO_BEGIN_2 + 3] = '.';
           
 #if MODYFIKACIA_VERSII_GMM > 9
-          value_str[COL_INFO_BEGIN_2 + 3] = (MODYFIKACIA_VERSII_GMM / 10) + 0x30;
-          value_str[COL_INFO_BEGIN_2 + 4] = (MODYFIKACIA_VERSII_GMM % 10) + 0x30;
+          value_str[COL_INFO_BEGIN_2 + 4] = (MODYFIKACIA_VERSII_GMM / 10) + 0x30;
+          value_str[COL_INFO_BEGIN_2 + 5] = (MODYFIKACIA_VERSII_GMM % 10) + 0x30;
 #else
-          value_str[COL_INFO_BEGIN_2 + 3] = MODYFIKACIA_VERSII_GMM + 0x30;
-          value_str[COL_INFO_BEGIN_2 + 4] = ' ';
+          value_str[COL_INFO_BEGIN_2 + 4] = MODYFIKACIA_VERSII_GMM + 0x30;
+          value_str[COL_INFO_BEGIN_2 + 5] = ' ';
 #endif
         }
         
