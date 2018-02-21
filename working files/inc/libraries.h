@@ -14,6 +14,7 @@
 #include "usb_conf.h"
 #include "usbd_desc.h"
 
+#include  <intrinsics.h>
 #include <stdbool.h>
 #include <math.h>
 #include <arm_math.h>

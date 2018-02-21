@@ -77,11 +77,11 @@
         </option>
         <option>
           <name>OCDownloadVerifyAll</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>OCProductVersion</name>
-          <state>7.40.3.8937</state>
+          <state>7.50.2.10499</state>
         </option>
         <option>
           <name>OCDynDriverList</name>
@@ -607,7 +607,7 @@
         </option>
         <option>
           <name>IjetCpuClockEdit</name>
-          <state>120.0</state>
+          <state>72.0</state>
         </option>
         <option>
           <name>IjetSwoPrescalerList</name>
@@ -712,7 +712,7 @@
         </option>
         <option>
           <name>IjetSelectedCPUBehaviour</name>
-          <state></state>
+          <state>0</state>
         </option>
         <option>
           <name>ICpuName</name>
@@ -724,7 +724,7 @@
         </option>
         <option>
           <name>IjetPreferETB</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IjetTraceSettingsList</name>
@@ -791,11 +791,11 @@
         </option>
         <option>
           <name>CCJLinkCommRadio</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCJLinkTCPIP</name>
-          <state>176.36.1.5</state>
+          <state>aaa.bbb.ccc.ddd</state>
         </option>
         <option>
           <name>CCJLinkSpeedRadioV2</name>
@@ -910,7 +910,7 @@
         <option>
           <name>CCTcpIpAlt</name>
           <version>0</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCJLinkTcpIpSerialNo</name>
@@ -1425,7 +1425,7 @@
         </option>
         <option>
           <name>CCXds100InterfaceRadio</name>
-          <state>0</state>
+          <state>2</state>
         </option>
         <option>
           <name>CCXds100InterfaceCmdLine</name>
@@ -1434,7 +1434,7 @@
         <option>
           <name>CCXds100ProbeList</name>
           <version>0</version>
-          <state>0</state>
+          <state>2</state>
         </option>
       </data>
     </settings>
