@@ -34,6 +34,7 @@ public:
     friend void PUT_Op_1_0(void *pObj);
     friend void SET_OUT_Op(void *pObj);
 };
+void UpdateOutDiagn(void);
 extern const LedShcemasDscRecord* const arPReleShcemasDscRecords[];
 extern const LedShcemasDscRecord* const arPDOShcemasStableDirectDscRecords[]; 
 extern const LedShcemasDscRecord* const arPDOShcemasStableTriggerDscRecords[]; 
