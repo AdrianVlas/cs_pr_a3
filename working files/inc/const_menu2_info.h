@@ -12,6 +12,6 @@ enum __index_info_m2
 #define MAX_ROW_FOR_DATE_TIME_PZ             1 
 
 #define COL_INFO_BEGIN_2                     5
-#define COL_END_END_2                        9
+#define COL_END_END_2                        10
 
 #endif

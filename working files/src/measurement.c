@@ -309,7 +309,7 @@ void SPI_ADC_IRQHandler(void)
     unsigned int command_word = 0;
     if ((status_adc_read_work & DATA_VAL_READ) != 0)
     {
-      command_word |= (1 << I_I1 ) | (1 << I_I2 ) | (1 << I_I3 )/*  | (1 << I_I4 )*/  | (1 << I_U);
+      command_word |= (1 << I_I1 ) | (1 << I_I2 ) | (1 << I_I3 )  | (1 << I_I4 )  | (1 << I_U);
 
       uint32_t _x1, _x2, _DX, _dx;
       int _y1, _y2;
@@ -471,6 +471,56 @@ void SPI_ADC_IRQHandler(void)
       
         ADCs_data_raw[I_I3].tick = _x2;
         ADCs_data_raw[I_I3].value = _y2;
+      }
+      /*****/
+    
+      /*****/
+      //Формуємо значення I4
+      /*****/
+      if ((command_word & (1 << I_I4)) != 0)
+      {
+        _x1 = ADCs_data_raw[I_I4].tick;
+        _y1 = ADCs_data_raw[I_I4].value;
+        
+        _y2 = output_adc[C_I4_1].value - ustuvannja_shift_meas[C_I4_1] - gnd_adc_tmp - vref_adc_tmp;
+        if (ustuvannja_measure_shift >= 0) ustuvannja_shift_work[C_I4_1] += _y2;
+        if (abs(_y2) > 87)
+        {
+          _x2 = output_adc[C_I4_1].tick;
+          _y2 = (int)(_y2*ustuvannja_meas[I_I4])>>(USTUVANNJA_VAGA - 4);
+        }
+        else
+        {
+          _y2 = output_adc[C_I4_16].value - ustuvannja_shift_meas[C_I4_16] - gnd_adc_tmp - vref_adc_tmp;
+          if (ustuvannja_measure_shift >= 0) ustuvannja_shift_work[C_I4_16] += _y2;
+
+          _x2 = output_adc[C_I4_16].tick;
+          _y2 = (int)((-_y2)*ustuvannja_meas[I_I4])>>(USTUVANNJA_VAGA);
+        }
+      
+        if (_x2 > _x1) _DX = _x2 - _x1;
+        else
+        {
+          uint64_t _DX_64 = _x2 + 0x100000000 - _x1;
+          _DX = _DX_64;
+        }
+        if (_x >= _x1) _dx = _x - _x1;
+        else
+        {
+          uint64_t _dx_64 = _x + 0x100000000 - _x1;
+          _dx = _dx_64;
+        }
+        _y = ((long long)_y1) + ((long long)(_y2 - _y1))*((long long)_dx)/((long long)_DX);
+
+        data = _y;
+        ADCs_data[I_I4] = data;
+        square_data = data*data;
+        sum_sqr_data_irq[I_I4] += square_data;
+        sum_sqr_data[bank_sum_sqr_data_tmp][I_I4] = sum_sqr_data_irq[I_I4] -= sqr_current_data[index_array_of_sqr_current_data_tmp][I_I4];
+        sqr_current_data[index_array_of_sqr_current_data_tmp][I_I4] = square_data;
+      
+        ADCs_data_raw[I_I4].tick = _x2;
+        ADCs_data_raw[I_I4].value = _y2;
       }
       /*****/
 

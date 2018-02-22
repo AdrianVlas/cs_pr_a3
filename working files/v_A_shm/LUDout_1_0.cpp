@@ -447,3 +447,14 @@ pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
     } 
     
 }
+void UpdateOutDiagn(void){
+    for(long i = 0, lAmtOut = current_config_prt.n_output; i< lAmtOut;i++){
+        if(DoCheckUI32Bit.ul_val &((1) << i) ){
+            if (set_diagnostyka != NULL){
+                set_diagnostyka[(ERROR_DIGITAL_OUTPUTS_BIT+i)>>5] |= 
+                static_cast<unsigned int>(1 << ((ERROR_DIGITAL_OUTPUTS_BIT+i) & 0x1f)); 
+            }
+        }
+    }
+
+}
