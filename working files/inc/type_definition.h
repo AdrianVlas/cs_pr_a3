@@ -160,6 +160,8 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
   
   int32_t set_delay[INPUT_SET_DELAYS];
   uint32_t control;
@@ -181,6 +183,8 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
   
   uint32_t control;
   uint32_t param[OUTPUT_LED_SIGNALS_IN_TOTAL];
@@ -204,6 +208,15 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
+  
+} __settings_for_BUTTON;
+
+typedef struct
+{
+  __settings_for_BUTTON settings;
+  
   uint8_t active_state[DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8)];
   
   uint8_t internal_input[DIV_TO_HIGHER(BUTTON_SIGNALS_INT_IN, 8)];
@@ -216,6 +229,9 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
+  
   int32_t set_delay[ALARM_SET_DELAYS];
   uint32_t control;
   uint32_t param[ALARM_SIGNALS_IN];
@@ -240,6 +256,9 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
+  
   int32_t pickup[GROUP_ALARM_PICKUPS];
   int32_t set_delay[GROUP_ALARM_SET_DELAYS];
   uint32_t control;
@@ -265,6 +284,8 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
   
   uint32_t param[AND_SIGNALS_IN];
   
@@ -284,6 +305,8 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
   
   uint32_t param[OR_SIGNALS_IN];
   
@@ -304,6 +327,8 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
   
   uint32_t param[2];
   
@@ -323,6 +348,8 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
   
   uint32_t param[1];
   
@@ -343,6 +370,8 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
   
   int32_t set_delay[TIMER_SET_DELAYS];
   uint32_t param[TIMER_SIGNALS_IN];
@@ -365,6 +394,8 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
   
   uint32_t param[TRIGGER_SIGNALS_IN];
   
@@ -388,6 +419,8 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
   
   int32_t set_delay[MEANDER_SET_DELAYS];
   
@@ -409,6 +442,9 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
+  
   uint32_t param[TU_SIGNALS_IN];
   
 } __settings_for_TU;
@@ -430,6 +466,9 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
+  
   uint32_t param[TS_SIGNALS_IN];
   
 } __settings_for_TS;

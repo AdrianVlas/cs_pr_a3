@@ -29,6 +29,7 @@ extern void copy_settings_INPUT(unsigned int, unsigned int, uintptr_t *, uintptr
 extern void min_settings_OUTPUT_LED(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_OUTPUT_LED(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_BUTTON(unsigned int, uintptr_t *, size_t, size_t);
+extern void copy_settings_BUTTON(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_ALARM(unsigned int, uintptr_t *, size_t, size_t);
 extern void copy_settings_ALARM(unsigned int, unsigned int, uintptr_t *, uintptr_t *, size_t, size_t);
 extern void min_settings_GROUP_ALARM(unsigned int, uintptr_t *, size_t, size_t);

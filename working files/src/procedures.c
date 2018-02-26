@@ -542,12 +542,12 @@ void control_settings(unsigned int modified)
         {
           if (item == 0)
           {
-            size_of_block = 0;
+            size_of_block = sizeof(__settings_for_BUTTON);
             n_item = current_config_prt.n_button;
           }
 
-          if  (modified == 0) point_2 = NULL;
-          point_1 = NULL;
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_BUTTON*)sca_of_p[block - _ID_FB_FIRST_VAR]) + item);
+          point_1 = (uint8_t *)(&(((__LN_BUTTON*)spca_of_p_prt[block - _ID_FB_FIRST_VAR]) + item)->settings);
 
           break;
         }
@@ -1129,7 +1129,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           n_cur = edited->n_button;
           
           min_param = min_settings_BUTTON;
-          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_BUTTON) : 0);
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_BUTTON) : sizeof(__settings_for_BUTTON));
           break;
         }
       case ID_FB_ALARM:
@@ -1424,8 +1424,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         n_cur  = current->n_button;
         current->n_button = n_prev = control->n_button;
         
-        copy_settings_LN = NULL;
-        size = n_prev*0;
+        copy_settings_LN = copy_settings_BUTTON;
+        size = n_prev*sizeof(__settings_for_BUTTON);
         break;
       }
     case ID_FB_ALARM:
@@ -1608,11 +1608,17 @@ void min_settings_INPUT(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
   {
     if (mem_to_prt == true) 
     {
+      ((__LN_INPUT *)(base) + shift)->settings._n = -1;
+      ((__LN_INPUT *)(base) + shift)->settings._link = -1;
+      
       ((__LN_INPUT *)(base) + shift)->settings.set_delay[INPUT_SET_DELAY_DOPUSK] = KOEF_DOPUSK_DV_POST_MIN;
       ((__LN_INPUT *)(base) + shift)->settings.control = 0;
     }
     else 
     {
+      ((__settings_for_INPUT *)(base) + shift)->_n = -1;
+      ((__settings_for_INPUT *)(base) + shift)->_link = -1;
+
       ((__settings_for_INPUT *)(base) + shift)->set_delay[INPUT_SET_DELAY_DOPUSK] = KOEF_DOPUSK_DV_POST_MIN;
       ((__settings_for_INPUT *)(base) + shift)->control = 0;
     }
@@ -1638,16 +1644,25 @@ void copy_settings_INPUT(unsigned int mem_to_prt, unsigned int mem_from_prt, uin
   {
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
+      ((__settings_for_INPUT *)(base_target) + shift)->_n = ((__LN_INPUT *)(base_source) + shift)->settings._n;
+      ((__settings_for_INPUT *)(base_target) + shift)->_link = ((__LN_INPUT *)(base_source) + shift)->settings._link;
+
       ((__settings_for_INPUT *)(base_target) + shift)->control = ((__LN_INPUT *)(base_source) + shift)->settings.control;
       for (size_t i = 0; i < INPUT_SET_DELAYS; i++) ((__settings_for_INPUT *)(base_target) + shift)->set_delay[i] = ((__LN_INPUT *)(base_source) + shift)->settings.set_delay[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
+      ((__LN_INPUT *)(base_target) + shift)->settings._n = ((__settings_for_INPUT *)(base_source) + shift)->_n;
+      ((__LN_INPUT *)(base_target) + shift)->settings._link = ((__settings_for_INPUT *)(base_source) + shift)->_link;
+      
       ((__LN_INPUT *)(base_target) + shift)->settings.control = ((__settings_for_INPUT *)(base_source) + shift)->control;
       for (size_t i = 0; i < INPUT_SET_DELAYS; i++) ((__LN_INPUT *)(base_target) + shift)->settings.set_delay[i] = ((__settings_for_INPUT *)(base_source) + shift)->set_delay[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
+      ((__settings_for_INPUT *)(base_target) + shift)->_n = ((__settings_for_INPUT *)(base_source) + shift)->_n;
+      ((__settings_for_INPUT *)(base_target) + shift)->_link = ((__settings_for_INPUT *)(base_source) + shift)->_link;
+      
       ((__settings_for_INPUT *)(base_target) + shift)->control = ((__settings_for_INPUT *)(base_source) + shift)->control;
       for (size_t i = 0; i < INPUT_SET_DELAYS; i++) ((__settings_for_INPUT *)(base_target) + shift)->set_delay[i] = ((__settings_for_INPUT *)(base_source) + shift)->set_delay[i];
     }
@@ -1669,11 +1684,17 @@ void min_settings_OUTPUT_LED(unsigned int mem_to_prt, uintptr_t *base, size_t in
   {
     if (mem_to_prt == true) 
     {
+      ((__LN_OUTPUT_LED *)(base) + shift)->settings._n = -1;
+      ((__LN_OUTPUT_LED *)(base) + shift)->settings._link = -1;
+      
       ((__LN_OUTPUT_LED *)(base) + shift)->settings.control = 0;
       for (size_t i = 0; i < OUTPUT_LED_SIGNALS_IN_TOTAL; i++) ((__LN_OUTPUT_LED *)(base) + shift)->settings.param[i] = 0;
     }
     else 
     {
+      ((__settings_for_OUTPUT_LED *)(base) + shift)->_n = -1;
+      ((__settings_for_OUTPUT_LED *)(base) + shift)->_link = -1;
+      
       ((__settings_for_OUTPUT_LED *)(base) + shift)->control = 0;
       for (size_t i = 0; i < OUTPUT_LED_SIGNALS_IN_TOTAL; i++) ((__settings_for_OUTPUT_LED *)(base) + shift)->param[i] = 0;
     }
@@ -1703,16 +1724,25 @@ void copy_settings_OUTPUT_LED(unsigned int mem_to_prt, unsigned int mem_from_prt
   {
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
+      ((__settings_for_OUTPUT_LED *)(base_target) + shift)->_n = ((__LN_OUTPUT_LED *)(base_source) + shift)->settings._n;
+      ((__settings_for_OUTPUT_LED *)(base_target) + shift)->_link = ((__LN_OUTPUT_LED *)(base_source) + shift)->settings._link;
+
       ((__settings_for_OUTPUT_LED *)(base_target) + shift)->control = ((__LN_OUTPUT_LED *)(base_source) + shift)->settings.control;
       for (size_t i = 0; i < OUTPUT_LED_SIGNALS_IN_TOTAL; i++) ((__settings_for_OUTPUT_LED *)(base_target) + shift)->param[i] = ((__LN_OUTPUT_LED *)(base_source) + shift)->settings.param[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
+      ((__LN_OUTPUT_LED *)(base_target) + shift)->settings._n = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->_n;
+      ((__LN_OUTPUT_LED *)(base_target) + shift)->settings._link = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->_link;
+      
       ((__LN_OUTPUT_LED *)(base_target) + shift)->settings.control = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->control;
       for (size_t i = 0; i < OUTPUT_LED_SIGNALS_IN_TOTAL; i++) ((__LN_OUTPUT_LED *)(base_target) + shift)->settings.param[i] = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->param[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
+      ((__settings_for_OUTPUT_LED *)(base_target) + shift)->_n = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->_n;
+      ((__settings_for_OUTPUT_LED *)(base_target) + shift)->_link = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->_link;
+      
       ((__settings_for_OUTPUT_LED *)(base_target) + shift)->control = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->control;
       for (size_t i = 0; i < OUTPUT_LED_SIGNALS_IN_TOTAL; i++) ((__settings_for_OUTPUT_LED *)(base_target) + shift)->param[i] = ((__settings_for_OUTPUT_LED *)(base_source) + shift)->param[i];
     }
@@ -1732,6 +1762,17 @@ void min_settings_BUTTON(unsigned int mem_to_prt, uintptr_t *base, size_t index_
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
+    if (mem_to_prt == true) 
+    {
+      ((__LN_BUTTON *)(base) + shift)->settings._n = -1;
+      ((__LN_BUTTON *)(base) + shift)->settings._link = -1;
+    }
+    else 
+    {
+      ((__settings_for_BUTTON *)(base) + shift)->_n = -1;
+      ((__settings_for_BUTTON *)(base) + shift)->_link = -1;
+    }
+    
     if (mem_to_prt == true)
     {
       for (size_t i = 0; i < DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8); i++)
@@ -1749,6 +1790,37 @@ void min_settings_BUTTON(unsigned int mem_to_prt, uintptr_t *base, size_t index_
 /*****************************************************/
 
 /*****************************************************/
+//¬≥дновленн€ попередн≥х параметр≥в дл€ ‘ 
+/*****************************************************/
+void copy_settings_BUTTON(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    if ((mem_to_prt == false) && (mem_from_prt == true))
+    {
+      ((__settings_for_BUTTON *)(base_target) + shift)->_n = ((__LN_BUTTON *)(base_source) + shift)->settings._n;
+      ((__settings_for_BUTTON *)(base_target) + shift)->_link = ((__LN_BUTTON *)(base_source) + shift)->settings._link;
+    }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_BUTTON *)(base_target) + shift)->settings._n = ((__settings_for_BUTTON *)(base_source) + shift)->_n;
+      ((__LN_BUTTON *)(base_target) + shift)->settings._link = ((__settings_for_BUTTON *)(base_source) + shift)->_link;
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_BUTTON *)(base_target) + shift)->_n = ((__settings_for_BUTTON *)(base_source) + shift)->_n;
+      ((__settings_for_BUTTON *)(base_target) + shift)->_link = ((__settings_for_BUTTON *)(base_source) + shift)->_link;
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(15);
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
 //¬становленн€ м≥н≥мальних параметр≥в дл€ елементу "—«—"
 /*****************************************************/
 void min_settings_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
@@ -1757,12 +1829,18 @@ void min_settings_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
   {
     if (mem_to_prt == true) 
     {
+      ((__LN_ALARM *)(base) + shift)->settings._n = -1;
+      ((__LN_ALARM *)(base) + shift)->settings._link = -1;
+
       ((__LN_ALARM *)(base) + shift)->settings.set_delay[ALARM_SET_DELAY_PERIOD] = TIMEOUT_ALARM_PERIOD_MIN;
       ((__LN_ALARM *)(base) + shift)->settings.control = 0;
       for (size_t i = 0; i < ALARM_SIGNALS_IN; i++) ((__LN_ALARM *)(base) + shift)->settings.param[i] = 0;
     }
     else 
     {
+      ((__settings_for_ALARM *)(base) + shift)->_n = -1;
+      ((__settings_for_ALARM *)(base) + shift)->_link = -1;
+      
       ((__settings_for_ALARM *)(base) + shift)->set_delay[ALARM_SET_DELAY_PERIOD] = TIMEOUT_ALARM_PERIOD_MIN;
       ((__settings_for_ALARM *)(base) + shift)->control = 0;
       for (size_t i = 0; i < ALARM_SIGNALS_IN; i++) ((__settings_for_ALARM *)(base) + shift)->param[i] = 0;
@@ -1794,18 +1872,27 @@ void copy_settings_ALARM(unsigned int mem_to_prt, unsigned int mem_from_prt, uin
   {
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
+      ((__settings_for_ALARM *)(base_target) + shift)->_n = ((__LN_ALARM *)(base_source) + shift)->settings._n;
+      ((__settings_for_ALARM *)(base_target) + shift)->_link = ((__LN_ALARM *)(base_source) + shift)->settings._link;
+      
       for (size_t i = 0; i < ALARM_SET_DELAYS; i++) ((__settings_for_ALARM *)(base_target) + shift)->set_delay[i] = ((__LN_ALARM *)(base_source) + shift)->settings.set_delay[i];
       ((__settings_for_ALARM *)(base_target) + shift)->control = ((__LN_ALARM *)(base_source) + shift)->settings.control;
       for (size_t i = 0; i < ALARM_SIGNALS_IN; i++) ((__settings_for_ALARM *)(base_target) + shift)->param[i] = ((__LN_ALARM *)(base_source) + shift)->settings.param[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
+      ((__LN_ALARM *)(base_target) + shift)->settings._n = ((__settings_for_ALARM *)(base_source) + shift)->_n;
+      ((__LN_ALARM *)(base_target) + shift)->settings._link = ((__settings_for_ALARM *)(base_source) + shift)->_link;
+      
       for (size_t i = 0; i < ALARM_SET_DELAYS; i++)((__LN_ALARM *)(base_target) + shift)->settings.set_delay[i] = ((__settings_for_ALARM *)(base_source) + shift)->set_delay[i];
       ((__LN_ALARM *)(base_target) + shift)->settings.control = ((__settings_for_ALARM *)(base_source) + shift)->control;
       for (size_t i = 0; i < ALARM_SIGNALS_IN; i++) ((__LN_ALARM *)(base_target) + shift)->settings.param[i] = ((__settings_for_ALARM *)(base_source) + shift)->param[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
+      ((__settings_for_ALARM *)(base_target) + shift)->_n = ((__settings_for_ALARM *)(base_source) + shift)->_n;
+      ((__settings_for_ALARM *)(base_target) + shift)->_link = ((__settings_for_ALARM *)(base_source) + shift)->_link;
+      
       for (size_t i = 0; i < ALARM_SET_DELAYS; i++)((__settings_for_ALARM *)(base_target) + shift)->set_delay[i] = ((__settings_for_ALARM *)(base_source) + shift)->set_delay[i];
       ((__settings_for_ALARM *)(base_target) + shift)->control = ((__settings_for_ALARM *)(base_source) + shift)->control;
       for (size_t i = 0; i < ALARM_SIGNALS_IN; i++) ((__settings_for_ALARM *)(base_target) + shift)->param[i] = ((__settings_for_ALARM *)(base_source) + shift)->param[i];
@@ -1828,6 +1915,9 @@ void min_settings_GROUP_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t i
   {
     if (mem_to_prt == true) 
     {
+      ((__LN_GROUP_ALARM *)(base) + shift)->settings._n = -1;
+      ((__LN_GROUP_ALARM *)(base) + shift)->settings._link = -1;
+      
       ((__LN_GROUP_ALARM *)(base) + shift)->settings.pickup[GROUP_ALARM_PICKUP_DELTA_I] = PICKUP_ALARM_DELTA_I_MIN;
       ((__LN_GROUP_ALARM *)(base) + shift)->settings.set_delay[GROUP_ALARM_SET_DELAY_DELAY] = TIMEOUT_GROUP_ALARM_DELAY_MIN;
       ((__LN_GROUP_ALARM *)(base) + shift)->settings.control = 0;
@@ -1835,6 +1925,9 @@ void min_settings_GROUP_ALARM(unsigned int mem_to_prt, uintptr_t *base, size_t i
     }
     else 
     {
+      ((__settings_for_GROUP_ALARM *)(base) + shift)->_n = -1;
+      ((__settings_for_GROUP_ALARM *)(base) + shift)->_link = -1;
+      
       ((__settings_for_GROUP_ALARM *)(base) + shift)->pickup[GROUP_ALARM_PICKUP_DELTA_I] = PICKUP_ALARM_DELTA_I_MIN;
       ((__settings_for_GROUP_ALARM *)(base) + shift)->set_delay[GROUP_ALARM_SET_DELAY_DELAY] = TIMEOUT_GROUP_ALARM_DELAY_MIN;
       ((__settings_for_GROUP_ALARM *)(base) + shift)->control = 0;
@@ -1863,6 +1956,9 @@ void copy_settings_GROUP_ALARM(unsigned int mem_to_prt, unsigned int mem_from_pr
   {
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
+      ((__settings_for_GROUP_ALARM *)(base_target) + shift)->_n = ((__LN_GROUP_ALARM *)(base_source) + shift)->settings._n;
+      ((__settings_for_GROUP_ALARM *)(base_target) + shift)->_link = ((__LN_GROUP_ALARM *)(base_source) + shift)->settings._link;
+      
       for (size_t i = 0; i < GROUP_ALARM_PICKUPS; i++) ((__settings_for_GROUP_ALARM *)(base_target) + shift)->pickup[i] = ((__LN_GROUP_ALARM *)(base_source) + shift)->settings.pickup[i];
       for (size_t i = 0; i < GROUP_ALARM_SET_DELAYS; i++) ((__settings_for_GROUP_ALARM *)(base_target) + shift)->set_delay[i] = ((__LN_GROUP_ALARM *)(base_source) + shift)->settings.set_delay[i];
       ((__settings_for_GROUP_ALARM *)(base_target) + shift)->control = ((__LN_GROUP_ALARM *)(base_source) + shift)->settings.control;
@@ -1870,6 +1966,9 @@ void copy_settings_GROUP_ALARM(unsigned int mem_to_prt, unsigned int mem_from_pr
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
+      ((__LN_GROUP_ALARM *)(base_target) + shift)->settings._n = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->_n;
+      ((__LN_GROUP_ALARM *)(base_target) + shift)->settings._link = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->_link;
+      
       for (size_t i = 0; i < GROUP_ALARM_PICKUPS; i++)((__LN_GROUP_ALARM *)(base_target) + shift)->settings.pickup[i] = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->pickup[i];
       for (size_t i = 0; i < GROUP_ALARM_SET_DELAYS; i++)((__LN_GROUP_ALARM *)(base_target) + shift)->settings.set_delay[i] = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->set_delay[i];
       ((__LN_GROUP_ALARM *)(base_target) + shift)->settings.control = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->control;
@@ -1877,6 +1976,9 @@ void copy_settings_GROUP_ALARM(unsigned int mem_to_prt, unsigned int mem_from_pr
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
+      ((__settings_for_GROUP_ALARM *)(base_target) + shift)->_n = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->_n;
+      ((__settings_for_GROUP_ALARM *)(base_target) + shift)->_link = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->_link;
+      
       for (size_t i = 0; i < GROUP_ALARM_PICKUPS; i++)((__settings_for_GROUP_ALARM *)(base_target) + shift)->pickup[i] = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->pickup[i];
       for (size_t i = 0; i < GROUP_ALARM_SET_DELAYS; i++)((__settings_for_GROUP_ALARM *)(base_target) + shift)->set_delay[i] = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->set_delay[i];
       ((__settings_for_GROUP_ALARM *)(base_target) + shift)->control = ((__settings_for_GROUP_ALARM *)(base_source) + shift)->control;
@@ -1898,10 +2000,19 @@ void min_settings_AND(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < AND_SIGNALS_IN; i++)
+    if (mem_to_prt == true) 
     {
-      if (mem_to_prt == true) ((__LN_AND *)(base) + shift)->settings.param[i] = 0;
-      else ((__settings_for_AND *)(base) + shift)->param[i] = 0;
+      ((__LN_AND *)(base) + shift)->settings._n = -1;
+      ((__LN_AND *)(base) + shift)->settings._link = -1;
+      
+      for (size_t i = 0; i < AND_SIGNALS_IN; i++) ((__LN_AND *)(base) + shift)->settings.param[i] = 0;
+    }
+    else 
+    {
+      ((__settings_for_AND *)(base) + shift)->_n = -1;
+      ((__settings_for_AND *)(base) + shift)->_link = -1;
+      
+      for (size_t i = 0; i < AND_SIGNALS_IN; i++) ((__settings_for_AND *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
@@ -1922,25 +2033,31 @@ void copy_settings_AND(unsigned int mem_to_prt, unsigned int mem_from_prt, uintp
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < AND_SIGNALS_IN; i++)
+    if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      if ((mem_to_prt == false) && (mem_from_prt == true))
-      {
-        ((__settings_for_AND *)(base_target) + shift)->param[i] = ((__LN_AND *)(base_source) + shift)->settings.param[i];
-      }
-      else if ((mem_to_prt == true) && (mem_from_prt == false))
-      {
-        ((__LN_AND *)(base_target) + shift)->settings.param[i] = ((__settings_for_AND *)(base_source) + shift)->param[i];
-      }
-      else if ((mem_to_prt == false) && (mem_from_prt == false))
-      {
-        ((__settings_for_AND *)(base_target) + shift)->param[i] = ((__settings_for_AND *)(base_source) + shift)->param[i];
-      }
-      else
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(93);
-      }
+      ((__settings_for_AND *)(base_target) + shift)->_n = ((__LN_AND *)(base_source) + shift)->settings._n;
+      ((__settings_for_AND *)(base_target) + shift)->_link = ((__LN_AND *)(base_source) + shift)->settings._link;
+      
+      for (size_t i = 0; i < AND_SIGNALS_IN; i++) ((__settings_for_AND *)(base_target) + shift)->param[i] = ((__LN_AND *)(base_source) + shift)->settings.param[i];
+    }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_AND *)(base_target) + shift)->settings._n = ((__settings_for_AND *)(base_source) + shift)->_n;
+      ((__LN_AND *)(base_target) + shift)->settings._link = ((__settings_for_AND *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < AND_SIGNALS_IN; i++) ((__LN_AND *)(base_target) + shift)->settings.param[i] = ((__settings_for_AND *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_AND *)(base_target) + shift)->_n = ((__settings_for_AND *)(base_source) + shift)->_n;
+      ((__settings_for_AND *)(base_target) + shift)->_link = ((__settings_for_AND *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < AND_SIGNALS_IN; i++) ((__settings_for_AND *)(base_target) + shift)->param[i] = ((__settings_for_AND *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(93);
     }
   }
 }
@@ -1953,10 +2070,19 @@ void min_settings_OR(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < OR_SIGNALS_IN; i++)
+    if (mem_to_prt == true) 
     {
-      if (mem_to_prt == true) ((__LN_OR *)(base) + shift)->settings.param[i] = 0;
-      else ((__settings_for_OR *)(base) + shift)->param[i] = 0;
+      ((__LN_OR *)(base) + shift)->settings._n = -1;
+      ((__LN_OR *)(base) + shift)->settings._link = -1;
+      
+      for (size_t i = 0; i < OR_SIGNALS_IN; i++) ((__LN_OR *)(base) + shift)->settings.param[i] = 0;
+    }
+    else 
+    {
+      ((__settings_for_OR *)(base) + shift)->_n = -1;
+      ((__settings_for_OR *)(base) + shift)->_link = -1;
+      
+      for (size_t i = 0; i < OR_SIGNALS_IN; i++) ((__settings_for_OR *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
@@ -1977,25 +2103,31 @@ void copy_settings_OR(unsigned int mem_to_prt, unsigned int mem_from_prt, uintpt
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < OR_SIGNALS_IN; i++)
+    if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      if ((mem_to_prt == false) && (mem_from_prt == true))
-      {
-        ((__settings_for_OR *)(base_target) + shift)->param[i] = ((__LN_OR *)(base_source) + shift)->settings.param[i];
-      }
-      else if ((mem_to_prt == true) && (mem_from_prt == false))
-      {
-        ((__LN_OR *)(base_target) + shift)->settings.param[i] = ((__settings_for_OR *)(base_source) + shift)->param[i];
-      }
-      else if ((mem_to_prt == false) && (mem_from_prt == false))
-      {
-        ((__settings_for_OR *)(base_target) + shift)->param[i] = ((__settings_for_OR *)(base_source) + shift)->param[i];
-      }
-      else
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(94);
-      }
+      ((__settings_for_OR *)(base_target) + shift)->_n = ((__LN_OR *)(base_source) + shift)->settings._n;
+      ((__settings_for_OR *)(base_target) + shift)->_link = ((__LN_OR *)(base_source) + shift)->settings._link;
+      
+      for (size_t i = 0; i < OR_SIGNALS_IN; i++) ((__settings_for_OR *)(base_target) + shift)->param[i] = ((__LN_OR *)(base_source) + shift)->settings.param[i];
+    }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_OR *)(base_target) + shift)->settings._n = ((__settings_for_OR *)(base_source) + shift)->_n;
+      ((__LN_OR *)(base_target) + shift)->settings._link = ((__settings_for_OR *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < OR_SIGNALS_IN; i++) ((__LN_OR *)(base_target) + shift)->settings.param[i] = ((__settings_for_OR *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_OR *)(base_target) + shift)->_n = ((__settings_for_OR *)(base_source) + shift)->_n;
+      ((__settings_for_OR *)(base_target) + shift)->_link = ((__settings_for_OR *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < OR_SIGNALS_IN; i++) ((__settings_for_OR *)(base_target) + shift)->param[i] = ((__settings_for_OR *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(94);
     }
   }
 }
@@ -2008,10 +2140,19 @@ void min_settings_XOR(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < 2; i++)
+    if (mem_to_prt == true) 
     {
-      if (mem_to_prt == true) ((__LN_XOR *)(base) + shift)->settings.param[i] = 0;
-      else ((__settings_for_XOR *)(base) + shift)->param[i] = 0;
+      ((__LN_XOR *)(base) + shift)->settings._n = -1;
+      ((__LN_XOR *)(base) + shift)->settings._link = -1;
+      
+      for (size_t i = 0; i < 2; i++) ((__LN_XOR *)(base) + shift)->settings.param[i] = 0;
+    }
+    else 
+    {
+      ((__settings_for_XOR *)(base) + shift)->_n = -1;
+      ((__settings_for_XOR *)(base) + shift)->_link = -1;
+      
+      for (size_t i = 0; i < 2; i++) ((__settings_for_XOR *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
@@ -2032,25 +2173,31 @@ void copy_settings_XOR(unsigned int mem_to_prt, unsigned int mem_from_prt, uintp
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < 2; i++)
+    if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      if ((mem_to_prt == false) && (mem_from_prt == true))
-      {
-        ((__settings_for_XOR *)(base_target) + shift)->param[i] = ((__LN_XOR *)(base_source) + shift)->settings.param[i];
-      }
-      else if ((mem_to_prt == true) && (mem_from_prt == false))
-      {
-        ((__LN_XOR *)(base_target) + shift)->settings.param[i] = ((__settings_for_XOR *)(base_source) + shift)->param[i];
-      }
-      else if ((mem_to_prt == false) && (mem_from_prt == false))
-      {
-        ((__settings_for_XOR *)(base_target) + shift)->param[i] = ((__settings_for_XOR *)(base_source) + shift)->param[i];
-      }
-      else
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(95);
-      }
+      ((__settings_for_XOR *)(base_target) + shift)->_n = ((__LN_XOR *)(base_source) + shift)->settings._n;
+      ((__settings_for_XOR *)(base_target) + shift)->_link = ((__LN_XOR *)(base_source) + shift)->settings._link;
+      
+      for (size_t i = 0; i < 2; i++) ((__settings_for_XOR *)(base_target) + shift)->param[i] = ((__LN_XOR *)(base_source) + shift)->settings.param[i];
+    }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_XOR *)(base_target) + shift)->settings._n = ((__settings_for_XOR *)(base_source) + shift)->_n;
+      ((__LN_XOR *)(base_target) + shift)->settings._link = ((__settings_for_XOR *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < 2; i++) ((__LN_XOR *)(base_target) + shift)->settings.param[i] = ((__settings_for_XOR *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_XOR *)(base_target) + shift)->_n = ((__settings_for_XOR *)(base_source) + shift)->_n;
+      ((__settings_for_XOR *)(base_target) + shift)->_link = ((__settings_for_XOR *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < 2; i++) ((__settings_for_XOR *)(base_target) + shift)->param[i] = ((__settings_for_XOR *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(95);
     }
   }
 }
@@ -2063,10 +2210,19 @@ void min_settings_NOT(unsigned int mem_to_prt, uintptr_t *base, size_t index_fir
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < 1; i++)
+    if (mem_to_prt == true) 
     {
-      if (mem_to_prt == true) ((__LN_NOT *)(base) + shift)->settings.param[i] = 0;
-      else ((__settings_for_NOT *)(base) + shift)->param[i] = 0;
+      ((__LN_NOT *)(base) + shift)->settings._n = -1;
+      ((__LN_NOT *)(base) + shift)->settings._link = -1;
+      
+      for (size_t i = 0; i < 1; i++) ((__LN_NOT *)(base) + shift)->settings.param[i] = 0;
+    }
+    else 
+    {
+      ((__settings_for_NOT *)(base) + shift)->_n = -1;
+      ((__settings_for_NOT *)(base) + shift)->_link = -1;
+      
+      for (size_t i = 0; i < 1; i++) ((__settings_for_NOT *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
@@ -2087,25 +2243,31 @@ void copy_settings_NOT(unsigned int mem_to_prt, unsigned int mem_from_prt, uintp
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < 1; i++)
+    if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      if ((mem_to_prt == false) && (mem_from_prt == true))
-      {
-        ((__settings_for_NOT *)(base_target) + shift)->param[i] = ((__LN_NOT *)(base_source) + shift)->settings.param[i];
-      }
-      else if ((mem_to_prt == true) && (mem_from_prt == false))
-      {
-        ((__LN_NOT *)(base_target) + shift)->settings.param[i] = ((__settings_for_NOT *)(base_source) + shift)->param[i];
-      }
-      else if ((mem_to_prt == false) && (mem_from_prt == false))
-      {
-        ((__settings_for_NOT *)(base_target) + shift)->param[i] = ((__settings_for_NOT *)(base_source) + shift)->param[i];
-      }
-      else
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(96);
-      }
+      ((__settings_for_NOT *)(base_target) + shift)->_n = ((__LN_NOT *)(base_source) + shift)->settings._n;
+      ((__settings_for_NOT *)(base_target) + shift)->_link = ((__LN_NOT *)(base_source) + shift)->settings._link;
+      
+      for (size_t i = 0; i < 1; i++) ((__settings_for_NOT *)(base_target) + shift)->param[i] = ((__LN_NOT *)(base_source) + shift)->settings.param[i];
+    }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_NOT *)(base_target) + shift)->settings._n = ((__settings_for_NOT *)(base_source) + shift)->_n;
+      ((__LN_NOT *)(base_target) + shift)->settings._link = ((__settings_for_NOT *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < 1; i++) ((__LN_NOT *)(base_target) + shift)->settings.param[i] = ((__settings_for_NOT *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_NOT *)(base_target) + shift)->_n = ((__settings_for_NOT *)(base_source) + shift)->_n;
+      ((__settings_for_NOT *)(base_target) + shift)->_link = ((__settings_for_NOT *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < 1; i++) ((__settings_for_NOT *)(base_target) + shift)->param[i] = ((__settings_for_NOT *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(96);
     }
   }
 }
@@ -2120,12 +2282,18 @@ void min_settings_TIMER(unsigned int mem_to_prt, uintptr_t *base, size_t index_f
   {
     if (mem_to_prt == true) 
     {
+      ((__LN_TIMER *)(base) + shift)->settings._n = -1;
+      ((__LN_TIMER *)(base) + shift)->settings._link = -1;
+      
       for (size_t i = 0; i < TIMER_SIGNALS_IN; i++) ((__LN_TIMER *)(base) + shift)->settings.param[i] = 0;
       ((__LN_TIMER *)(base) + shift)->settings.set_delay[TIMER_SET_DELAY_PAUSE] = TIMEOUT_TIMER_PAUSE_MIN;
       ((__LN_TIMER *)(base) + shift)->settings.set_delay[TIMER_SET_DELAY_WORK]  = TIMEOUT_TIMER_WORK_MIN;
     }
     else 
     {
+      ((__settings_for_TIMER *)(base) + shift)->_n = -1;
+      ((__settings_for_TIMER *)(base) + shift)->_link = -1;
+
       for (size_t i = 0; i < TIMER_SIGNALS_IN; i++) ((__settings_for_TIMER *)(base) + shift)->param[i] = 0;
       ((__settings_for_TIMER *)(base) + shift)->set_delay[TIMER_SET_DELAY_PAUSE] = TIMEOUT_TIMER_PAUSE_MIN;
       ((__settings_for_TIMER *)(base) + shift)->set_delay[TIMER_SET_DELAY_WORK]  = TIMEOUT_TIMER_WORK_MIN;
@@ -2152,16 +2320,25 @@ void copy_settings_TIMER(unsigned int mem_to_prt, unsigned int mem_from_prt, uin
   {
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
+      ((__settings_for_TIMER *)(base_target) + shift)->_n = ((__LN_TIMER *)(base_source) + shift)->settings._n;
+      ((__settings_for_TIMER *)(base_target) + shift)->_link = ((__LN_TIMER *)(base_source) + shift)->settings._link;
+      
       for (size_t i = 0; i < TIMER_SIGNALS_IN; i++) ((__settings_for_TIMER *)(base_target) + shift)->param[i] = ((__LN_TIMER *)(base_source) + shift)->settings.param[i];
       for (size_t i = 0; i < TIMER_SET_DELAYS; i++) ((__settings_for_TIMER *)(base_target) + shift)->set_delay[i] = ((__LN_TIMER *)(base_source) + shift)->settings.set_delay[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
+      ((__LN_TIMER *)(base_target) + shift)->settings._n = ((__settings_for_TIMER *)(base_source) + shift)->_n;
+      ((__LN_TIMER *)(base_target) + shift)->settings._link = ((__settings_for_TIMER *)(base_source) + shift)->_link;
+      
       for (size_t i = 0; i < TIMER_SIGNALS_IN; i++) ((__LN_TIMER *)(base_target) + shift)->settings.param[i] = ((__settings_for_TIMER *)(base_source) + shift)->param[i];
       for (size_t i = 0; i < TIMER_SET_DELAYS; i++)((__LN_TIMER *)(base_target) + shift)->settings.set_delay[i] = ((__settings_for_TIMER *)(base_source) + shift)->set_delay[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
+      ((__settings_for_TIMER *)(base_target) + shift)->_n = ((__settings_for_TIMER *)(base_source) + shift)->_n;
+      ((__settings_for_TIMER *)(base_target) + shift)->_link = ((__settings_for_TIMER *)(base_source) + shift)->_link;
+      
       for (size_t i = 0; i < TIMER_SIGNALS_IN; i++) ((__settings_for_TIMER *)(base_target) + shift)->param[i] = ((__settings_for_TIMER *)(base_source) + shift)->param[i];
       for (size_t i = 0; i < TIMER_SET_DELAYS; i++)((__settings_for_TIMER *)(base_target) + shift)->set_delay[i] = ((__settings_for_TIMER *)(base_source) + shift)->set_delay[i];
     }
@@ -2181,12 +2358,21 @@ void min_settings_TRIGGER(unsigned int mem_to_prt, uintptr_t *base, size_t index
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < TRIGGER_SIGNALS_IN; i++)
+    if (mem_to_prt == true) 
     {
-      if (mem_to_prt == true) ((__LN_TRIGGER *)(base) + shift)->settings.param[i] = 0;
-      else ((__settings_for_TRIGGER *)(base) + shift)->param[i] = 0;
+      ((__LN_TRIGGER *)(base) + shift)->settings._n = -1;
+      ((__LN_TRIGGER *)(base) + shift)->settings._link = -1;
+      
+      for (size_t i = 0; i < TRIGGER_SIGNALS_IN; i++) ((__LN_TRIGGER *)(base) + shift)->settings.param[i] = 0;
     }
-    
+    else 
+    {
+      ((__settings_for_TRIGGER *)(base) + shift)->_n = -1;
+      ((__settings_for_TRIGGER *)(base) + shift)->_link = -1;
+
+      for (size_t i = 0; i < TRIGGER_SIGNALS_IN; i++) ((__settings_for_TRIGGER *)(base) + shift)->param[i] = 0;
+    }
+
     if (mem_to_prt == true)
     {
       for (size_t i = 0; i < DIV_TO_HIGHER(TRIGGER_SIGNALS_OUT, 8); i++)
@@ -2210,26 +2396,33 @@ void copy_settings_TRIGGER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < TRIGGER_SIGNALS_IN; i++)
+    if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      if ((mem_to_prt == false) && (mem_from_prt == true))
-      {
-        ((__settings_for_TRIGGER *)(base_target) + shift)->param[i] = ((__LN_TRIGGER *)(base_source) + shift)->settings.param[i];
-      }
-      else if ((mem_to_prt == true) && (mem_from_prt == false))
-      {
-        ((__LN_TRIGGER *)(base_target) + shift)->settings.param[i] = ((__settings_for_TRIGGER *)(base_source) + shift)->param[i];
-      }
-      else if ((mem_to_prt == false) && (mem_from_prt == false))
-      {
-        ((__settings_for_TRIGGER *)(base_target) + shift)->param[i] = ((__settings_for_TRIGGER *)(base_source) + shift)->param[i];
-      }
-      else
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(98);
-      }
+      ((__settings_for_TRIGGER *)(base_target) + shift)->_n = ((__LN_TRIGGER *)(base_source) + shift)->settings._n;
+      ((__settings_for_TRIGGER *)(base_target) + shift)->_link = ((__LN_TRIGGER *)(base_source) + shift)->settings._link;
+      
+      for (size_t i = 0; i < TRIGGER_SIGNALS_IN; i++) ((__settings_for_TRIGGER *)(base_target) + shift)->param[i] = ((__LN_TRIGGER *)(base_source) + shift)->settings.param[i];
     }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_TRIGGER *)(base_target) + shift)->settings._n = ((__settings_for_TRIGGER *)(base_source) + shift)->_n;
+      ((__LN_TRIGGER *)(base_target) + shift)->settings._link = ((__settings_for_TRIGGER *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < TRIGGER_SIGNALS_IN; i++) ((__LN_TRIGGER *)(base_target) + shift)->settings.param[i] = ((__settings_for_TRIGGER *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_TRIGGER *)(base_target) + shift)->_n = ((__settings_for_TRIGGER *)(base_source) + shift)->_n;
+      ((__settings_for_TRIGGER *)(base_target) + shift)->_link = ((__settings_for_TRIGGER *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < TRIGGER_SIGNALS_IN; i++) ((__settings_for_TRIGGER *)(base_target) + shift)->param[i] = ((__settings_for_TRIGGER *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(98);
+    }
+    
   }
 }
 /*****************************************************/
@@ -2243,10 +2436,16 @@ void min_settings_MEANDER(unsigned int mem_to_prt, uintptr_t *base, size_t index
   {
     if (mem_to_prt == true) 
     {
+      ((__LN_MEANDER *)(base) + shift)->settings._n = -1;
+      ((__LN_MEANDER *)(base) + shift)->settings._link = -1;
+      
       ((__LN_MEANDER *)(base) + shift)->settings.set_delay[MEANDER_SET_DELAY_PERIOD] = TIMEOUT_MEANDER_PERIOD_MIN;
     }
     else 
     {
+      ((__settings_for_MEANDER *)(base) + shift)->_n = -1;
+      ((__settings_for_MEANDER *)(base) + shift)->_link = -1;
+      
       ((__settings_for_MEANDER *)(base) + shift)->set_delay[MEANDER_SET_DELAY_PERIOD] = TIMEOUT_MEANDER_PERIOD_MIN;
     }
     
@@ -2271,14 +2470,23 @@ void copy_settings_MEANDER(unsigned int mem_to_prt, unsigned int mem_from_prt, u
   {
     if ((mem_to_prt == false) && (mem_from_prt == true))
     {
+      ((__settings_for_MEANDER *)(base_target) + shift)->_n = ((__LN_MEANDER *)(base_source) + shift)->settings._n;
+      ((__settings_for_MEANDER *)(base_target) + shift)->_link = ((__LN_MEANDER *)(base_source) + shift)->settings._link;
+      
       for (size_t i = 0; i < MEANDER_SET_DELAYS; i++) ((__settings_for_MEANDER *)(base_target) + shift)->set_delay[i] = ((__LN_MEANDER *)(base_source) + shift)->settings.set_delay[i];
     }
     else if ((mem_to_prt == true) && (mem_from_prt == false))
     {
+      ((__LN_MEANDER *)(base_target) + shift)->settings._n = ((__settings_for_MEANDER *)(base_source) + shift)->_n;
+      ((__LN_MEANDER *)(base_target) + shift)->settings._link = ((__settings_for_MEANDER *)(base_source) + shift)->_link;
+      
       for (size_t i = 0; i < MEANDER_SET_DELAYS; i++) ((__LN_MEANDER *)(base_target) + shift)->settings.set_delay[i] = ((__settings_for_MEANDER *)(base_source) + shift)->set_delay[i];
     }
     else if ((mem_to_prt == false) && (mem_from_prt == false))
     {
+      ((__settings_for_MEANDER *)(base_target) + shift)->_n = ((__settings_for_MEANDER *)(base_source) + shift)->_n;
+      ((__settings_for_MEANDER *)(base_target) + shift)->_link = ((__settings_for_MEANDER *)(base_source) + shift)->_link;
+      
       for (size_t i = 0; i < MEANDER_SET_DELAYS; i++) ((__settings_for_MEANDER *)(base_target) + shift)->set_delay[i] = ((__settings_for_MEANDER *)(base_source) + shift)->set_delay[i];
     }
     else
@@ -2297,12 +2505,21 @@ void min_settings_TU(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < TU_SIGNALS_IN; i++)
+    if (mem_to_prt == true) 
     {
-      if (mem_to_prt == true) ((__LN_TU *)(base) + shift)->settings.param[i] = 0;
-      else ((__settings_for_TU *)(base) + shift)->param[i] = 0;
+      ((__LN_TU *)(base) + shift)->settings._n = -1;
+      ((__LN_TU *)(base) + shift)->settings._link = -1;
+      
+      for (size_t i = 0; i < TU_SIGNALS_IN; i++) ((__LN_TU *)(base) + shift)->settings.param[i] = 0;
     }
-    
+    else 
+    {
+      ((__settings_for_TU *)(base) + shift)->_n = -1;
+      ((__settings_for_TU *)(base) + shift)->_link = -1;
+
+      for (size_t i = 0; i < TU_SIGNALS_IN; i++) ((__settings_for_TU *)(base) + shift)->param[i] = 0;
+    }
+
     if (mem_to_prt == true)
     {
       for (size_t i = 0; i < DIV_TO_HIGHER(TU_SIGNALS_OUT, 8); i++)
@@ -2326,26 +2543,33 @@ void copy_settings_TU(unsigned int mem_to_prt, unsigned int mem_from_prt, uintpt
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < TU_SIGNALS_IN; i++)
+    if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      if ((mem_to_prt == false) && (mem_from_prt == true))
-      {
-        ((__settings_for_TU *)(base_target) + shift)->param[i] = ((__LN_TU *)(base_source) + shift)->settings.param[i];
-      }
-      else if ((mem_to_prt == true) && (mem_from_prt == false))
-      {
-        ((__LN_TU *)(base_target) + shift)->settings.param[i] = ((__settings_for_TU *)(base_source) + shift)->param[i];
-      }
-      else if ((mem_to_prt == false) && (mem_from_prt == false))
-      {
-        ((__settings_for_TU *)(base_target) + shift)->param[i] = ((__settings_for_TU *)(base_source) + shift)->param[i];
-      }
-      else
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(39);
-      }
+      ((__settings_for_TU *)(base_target) + shift)->_n = ((__LN_TU *)(base_source) + shift)->settings._n;
+      ((__settings_for_TU *)(base_target) + shift)->_link = ((__LN_TU *)(base_source) + shift)->settings._link;
+      
+      for (size_t i = 0; i < TU_SIGNALS_IN; i++) ((__settings_for_TU *)(base_target) + shift)->param[i] = ((__LN_TU *)(base_source) + shift)->settings.param[i];
     }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_TU *)(base_target) + shift)->settings._n = ((__settings_for_TU *)(base_source) + shift)->_n;
+      ((__LN_TU *)(base_target) + shift)->settings._link = ((__settings_for_TU *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < TU_SIGNALS_IN; i++) ((__LN_TU *)(base_target) + shift)->settings.param[i] = ((__settings_for_TU *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_TU *)(base_target) + shift)->_n = ((__settings_for_TU *)(base_source) + shift)->_n;
+      ((__settings_for_TU *)(base_target) + shift)->_link = ((__settings_for_TU *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < TU_SIGNALS_IN; i++) ((__settings_for_TU *)(base_target) + shift)->param[i] = ((__settings_for_TU *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(39);
+    }
+
   }
 }
 /*****************************************************/
@@ -2357,12 +2581,21 @@ void min_settings_TS(unsigned int mem_to_prt, uintptr_t *base, size_t index_firs
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < TS_SIGNALS_IN; i++)
+    if (mem_to_prt == true) 
     {
-      if (mem_to_prt == true) ((__LN_TS *)(base) + shift)->settings.param[i] = 0;
-      else ((__settings_for_TS *)(base) + shift)->param[i] = 0;
+      ((__LN_TS *)(base) + shift)->settings._n = -1;
+      ((__LN_TS *)(base) + shift)->settings._link = -1;
+      
+      for (size_t i = 0; i < TS_SIGNALS_IN; i++) ((__LN_TS *)(base) + shift)->settings.param[i] = 0;
     }
-    
+    else 
+    {
+      ((__settings_for_TS *)(base) + shift)->_n = -1;
+      ((__settings_for_TS *)(base) + shift)->_link = -1;
+
+      for (size_t i = 0; i < TS_SIGNALS_IN; i++) ((__settings_for_TS *)(base) + shift)->param[i] = 0;
+    }
+
     if (mem_to_prt == true)
     {
       for (size_t i = 0; i < DIV_TO_HIGHER(TS_SIGNALS_OUT, 8); i++)
@@ -2391,26 +2624,33 @@ void copy_settings_TS(unsigned int mem_to_prt, unsigned int mem_from_prt, uintpt
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < TS_SIGNALS_IN; i++)
+    if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      if ((mem_to_prt == false) && (mem_from_prt == true))
-      {
-        ((__settings_for_TS *)(base_target) + shift)->param[i] = ((__LN_TS *)(base_source) + shift)->settings.param[i];
-      }
-      else if ((mem_to_prt == true) && (mem_from_prt == false))
-      {
-        ((__LN_TS *)(base_target) + shift)->settings.param[i] = ((__settings_for_TS *)(base_source) + shift)->param[i];
-      }
-      else if ((mem_to_prt == false) && (mem_from_prt == false))
-      {
-        ((__settings_for_TS *)(base_target) + shift)->param[i] = ((__settings_for_TS *)(base_source) + shift)->param[i];
-      }
-      else
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(40);
-      }
+      ((__settings_for_TS *)(base_target) + shift)->_n = ((__LN_TS *)(base_source) + shift)->settings._n;
+      ((__settings_for_TS *)(base_target) + shift)->_link = ((__LN_TS *)(base_source) + shift)->settings._link;
+      
+      for (size_t i = 0; i < TS_SIGNALS_IN; i++) ((__settings_for_TS *)(base_target) + shift)->param[i] = ((__LN_TS *)(base_source) + shift)->settings.param[i];
     }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_TS *)(base_target) + shift)->settings._n = ((__settings_for_TS *)(base_source) + shift)->_n;
+      ((__LN_TS *)(base_target) + shift)->settings._link = ((__settings_for_TS *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < TS_SIGNALS_IN; i++) ((__LN_TS *)(base_target) + shift)->settings.param[i] = ((__settings_for_TS *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_TS *)(base_target) + shift)->_n = ((__settings_for_TS *)(base_source) + shift)->_n;
+      ((__settings_for_TS *)(base_target) + shift)->_link = ((__settings_for_TS *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < TS_SIGNALS_IN; i++) ((__settings_for_TS *)(base_target) + shift)->param[i] = ((__settings_for_TS *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(40);
+    }
+
   }
 }
 /*****************************************************/
@@ -2488,7 +2728,7 @@ size_t size_all_settings(void)
       }
     case ID_FB_BUTTON:
       {
-        size_block = current_config.n_button*0;
+        size_block = current_config.n_button*sizeof(__settings_for_BUTTON);
         break;
       }
     case ID_FB_ALARM:
@@ -2609,7 +2849,7 @@ void copy_settings(
           {
             //‘ 
             n_prev = source_conf->n_button;
-            copy_settings_LN = NULL;
+            copy_settings_LN = copy_settings_BUTTON;
 
             break;
           }
