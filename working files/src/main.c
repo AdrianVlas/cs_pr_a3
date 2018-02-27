@@ -647,7 +647,7 @@ int main(void)
 void total_error_sw_fixed(unsigned int number)
 {
   total_error = number;
-  while (1);
+  while(1);
 }
 /*******************************************************************************/
 

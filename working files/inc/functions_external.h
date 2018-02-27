@@ -61,13 +61,13 @@ extern void error_reading_with_eeprom(void);
 extern void move_into_editor_list_logical_nodes(unsigned int, int);
 extern void make_ekran_editor_list_logical_node(void);
 extern enum _result_pressed_enter_during_edition  press_enter_in_editor_list_logical_node(void);
-extern void press_esc_in_editor_list_logical_node(void);
+//extern void press_esc_in_editor_list_logical_node(void);
 extern void make_ekran_editor_list_inputs_of_selected_logical_node(void);
 extern void move_into_editor_view_chosen_of_selected_logical_node(unsigned int, int);
 extern void make_ekran_editor_view_chosen_of_selected_logical_node(void);
-extern void change_set_signal(unsigned int);
-extern void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void);
-extern void select_input_signal_ln(void);
+//extern void change_set_signal(unsigned int);
+//extern void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void);
+//extern void select_input_signal_ln(void);
 
 extern void Interrupts_Config(void);
 

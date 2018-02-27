@@ -60,9 +60,9 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          move_into_list_settings_param, make_ekran_list_settings_param,
                                          make_ekran_delay_input, press_enter_in_delay_input, press_esc_in_delay_input, change_delay_input, make_ekran_control_input, press_enter_in_control_input, press_esc_in_control_input, change_control_input,
                                          make_ekran_control_output_led, press_enter_in_control_output_led, press_esc_in_control_output_led, change_control_output_led,
-                                         move_into_editor_list_logical_nodes, make_ekran_editor_list_logical_node, press_enter_in_editor_list_logical_node, press_esc_in_editor_list_logical_node,
+                                         move_into_editor_list_logical_nodes, make_ekran_editor_list_logical_node, press_enter_in_editor_list_logical_node, /*press_esc_in_editor_list_logical_node,*/
                                          make_ekran_editor_list_inputs_of_selected_logical_node, 
-                                         make_ekran_editor_edit_list_outputs_of_selected_logical_node, change_set_signal,
+                                         /*make_ekran_editor_edit_list_outputs_of_selected_logical_node, change_set_signal,*/
                                          move_into_editor_view_chosen_of_selected_logical_node, make_ekran_editor_view_chosen_of_selected_logical_node, press_enter_in_ekran_with_request,
                                          make_ekran_setting_language, press_enter_in_setting_language, press_esc_in_setting_language, change_setting_language,
                                          make_ekran_choose_communication_parameters, 

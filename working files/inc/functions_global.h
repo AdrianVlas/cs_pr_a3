@@ -103,13 +103,13 @@ void make_ekran_password(void);
 void move_into_editor_list_logical_nodes(unsigned int, int);
 void make_ekran_editor_list_logical_node(void);
 enum _result_pressed_enter_during_edition  press_enter_in_editor_list_logical_node(void);
-void press_esc_in_editor_list_logical_node(void);
+//void press_esc_in_editor_list_logical_node(void);
 void make_ekran_editor_list_inputs_of_selected_logical_node(void);
 void move_into_editor_view_chosen_of_selected_logical_node(unsigned int, int);
 void make_ekran_editor_view_chosen_of_selected_logical_node(void);
-void change_set_signal(unsigned int);
-void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void);
-void select_input_signal_ln(void);
+//void change_set_signal(unsigned int);
+//void make_ekran_editor_edit_list_outputs_of_selected_logical_node(void);
+//void select_input_signal_ln(void);
 
 void inc_or_dec_value(unsigned int *, unsigned int);
 unsigned int bcd_to_int(unsigned char);
