@@ -47,7 +47,7 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          move_into_ekran_event_registraqtors, 
                                          make_ekran_list_event_log, make_ekran_list_event_pr_err, make_ekran_data_reg,
                                          move_into_list_settings, make_ekran_list_settings, press_esc_in_list_settings,
-                                         make_ekran_configuration, press_enter_in_configuration, press_esc_in_configuration, change_configuration,
+                                         make_ekran_configuration, /*press_enter_in_configuration, press_esc_in_configuration, change_configuration,*/
                                          make_ekran_list_logical_nodes,
                                          make_ekran_choose_pickup_delay_control,
                                          make_ekran_choose_delay_control,

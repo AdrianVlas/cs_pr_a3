@@ -594,6 +594,7 @@ void main_manu_function_ver2(void)
     case PR_ERR_LIST_MENU2_LEVEL:
     case PR_ERR_DATA_MENU2_LEVEL:
     case LIST_SETTINGS_MENU2_LEVEL:
+    case CONFIGURATION_MENU2_LEVEL:
     case LIST_SETTINGS_PARAM_MENU2_LEVEL:
     case LIST_INPUTS_MENU2_LEVEL:
     case LIST_SETTINGS_INPUT_MENU2_LEVEL:
@@ -1349,7 +1350,7 @@ void main_manu_function_ver2(void)
         }
         break;
       }
-    case CONFIGURATION_MENU2_LEVEL:
+//    case CONFIGURATION_MENU2_LEVEL:
     case DELAY_ALARM_MENU2_LEVEL:
     case CTRL_ALARM_MENU2_LEVEL:
     case PICKUP_GROUP_ALARM_MENU2_LEVEL:
@@ -1581,7 +1582,10 @@ void main_manu_function_ver2(void)
           else if ( (action = (new_state_keyboard & (1<<BIT_KEY_ESC))) !=0)
           {
             //Натиснута кнопка ESC
-            if (current_state_menu2.func_press_esc != NULL) current_state_menu2.func_press_esc();
+            if (current_state_menu2.edition != ED_VIEWING)
+            {
+              if (current_state_menu2.func_press_esc != NULL) current_state_menu2.func_press_esc();
+            }
 
             if (current_state_menu2.edition <= ED_CAN_BE_EDITED)
             {
@@ -2142,14 +2146,15 @@ void new_level_menu(void)
       current_state_menu2.max_row = MAX_ROW_FOR_CONFIGURATION;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_configuration;
-      current_state_menu2.func_press_enter = press_enter_in_configuration;
-      current_state_menu2.func_press_esc = press_esc_in_configuration;
-      current_state_menu2.func_change = change_configuration;
+      current_state_menu2.func_press_enter = /*press_enter_in_configuration*/NULL;
+      current_state_menu2.func_press_esc = /*press_esc_in_configuration*/NULL;
+      current_state_menu2.func_change = /*change_configuration*/NULL;
       current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
+//      /*
+//      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+//      відкритого вікна
+//      */
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
   case LIST_INPUTS_MENU2_LEVEL:
