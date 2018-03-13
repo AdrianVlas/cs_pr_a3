@@ -14,9 +14,6 @@ void global_component_installation(void) {
   constructorSDISmallComponent(&(config_array[SDISMALLCOMPONENT]));//подготовка компонента sdi
   constructorSDIBigComponent(&(config_array[SDIBIGCOMPONENT]));//подготовка компонента sdi
   constructorRMTKeySmallComponent(&(config_array[RMTKEYSMALLCOMPONENT]));//подготовка компонента rmt key
-//  constructorSDI3ColorSmallComponent(&(config_array[SDI3COLORSMALLCOMPONENT]));//подготовка компонента sdi
- // constructorRESDBigComponent(&(config_array[RESDBIGCOMPONENT]));//подготовка компонента esd
-//  constructorBASDBigComponent(&(config_array[BASDBIGCOMPONENT]));//подготовка компонента esd
   constructorConfigBigComponent(&(config_array[CONFIGBIGCOMPONENT]));//подготовка компонента config
   constructorGIBigComponent(&(config_array[GIBIGCOMPONENT]));//подготовка компонента gi
   constructorSZSBigComponent(&(config_array[SZSBIGCOMPONENT]));//подготовка компонента szs
@@ -27,6 +24,8 @@ void global_component_installation(void) {
   constructorTSBigComponent(&(config_array[TSBIGCOMPONENT]));//подготовка компонента ts
   constructorTUSmallComponent(&(config_array[TUSMALLCOMPONENT]));//подготовка компонента tu
   constructorTUBigComponent(&(config_array[TUBIGCOMPONENT]));//подготовка компонента tu
+  constructorT1SmallComponent(&(config_array[T1SMALLCOMPONENT]));//подготовка компонента T1
+  constructorT2SmallComponent(&(config_array[T2SMALLCOMPONENT]));//подготовка компонента T2
   constructorANDBigComponent(&(config_array[ANDBIGCOMPONENT]));//подготовка компонента and
   constructorORBigComponent(&(config_array[ORBIGCOMPONENT]));//подготовка компонента or
   constructorXORBigComponent(&(config_array[XORBIGCOMPONENT]));//подготовка компонента xor
@@ -34,7 +33,6 @@ void global_component_installation(void) {
   constructorCommonSmallComponent(&(config_array[COMMONSMALLCOMPONENT]));//подготовка компонента common
   constructorCommonBigComponent(&(config_array[COMMONBIGCOMPONENT]));//подготовка компонента common
   constructorMEBigComponent(&(config_array[MEBIGCOMPONENT]));//подготовка компонента me
-//  constructorRegBigComponent(&(config_array[REGBIGCOMPONENT]));//подготовка компонента reg
   constructorRegProBigComponent(&(config_array[REGPROBIGCOMPONENT]));//подготовка компонента regPro
   constructorRPRBigComponent(&(config_array[RPRBIGCOMPONENT]));//подготовка компонента rpr
   constructorRPRSmallComponent(&(config_array[RPRSMALLCOMPONENT]));//подготовка компонента rpr
@@ -43,6 +41,5 @@ void global_component_installation(void) {
   constructorPKVBigComponent(&(config_array[PKVBIGCOMPONENT]));//подготовка компонента pkv
   constructorIUSmallComponent(&(config_array[IUSMALLCOMPONENT]));//подготовка компонента iu
   constructorYustBigComponent(&(config_array[YUSTBIGCOMPONENT]));//подготовка компонента yust
-//  constructorRPOBigComponent(&(config_array[RPOBIGCOMPONENT]));//подготовка компонента rpo
 }//global_vareiables_installation_bo(void)
 
