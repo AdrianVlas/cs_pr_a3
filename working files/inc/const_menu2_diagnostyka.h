@@ -66,6 +66,8 @@ ERROR_SPI_DF_BIT,
 ERROR_EXTERNAL_SRAM_BIT,
 ERROR_INTERNAL_FLASH_BIT,
 
+ERROR_SCHEMATIC_BIT,
+
 ERROR_DIGITAL_OUTPUTS_BIT,
 
 _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
@@ -108,6 +110,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   | (1 << (ERROR_VDD_ADC_TEST_COARSE_BIT - 32))                 \
   | (1 << (ERROR_EXTERNAL_SRAM_BIT - 32))                       \
   | (1 << (ERROR_INTERNAL_FLASH_BIT - 32))                      \
+  | (1 << (ERROR_SCHEMATIC_BIT - 32))                           \
 )
 
 #define MASKA_AVAR_ERROR_2              0
@@ -169,6 +172,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
+  " Ош.схемы       ",   \
   " Ош.вых.реле    "
 
 # define NAME_DIAGN_UA  \
@@ -227,6 +231,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " Пом.SPI_DF     ",   \
   " Пом.зовн.SRAM  ",   \
   " Пом.внутр.FLASH",   \
+  " Пом.схеми      ",   \
   " Пом.вих.реле   "
 
 # define NAME_DIAGN_EN  \
@@ -285,6 +290,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " DF SPI Err.    ",   \
   " Ext.SRAM Err.  ",   \
   " Int.FLASH Err. ",   \
+  " Ош.схемы       ",   \
   " DO Ctrl.Err.   "
 
 # define NAME_DIAGN_KZ  \
@@ -343,6 +349,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
+  " Ош.схемы       ",   \
   " Ош.вых.реле    "
 
 
