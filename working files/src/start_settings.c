@@ -1444,6 +1444,10 @@ void min_config(__CONFIG *target_label)
   target_label->n_tu = 0;
   target_label->n_ts = 0;
 
+  target_label->n_input_GOOSE_block = 0;
+  target_label->n_input_MMS_block = 0;
+  target_label->n_network_output_block = 0;
+  
   target_label->n_log = 0;
   
   uint8_t *label_to_time_array;
@@ -1499,6 +1503,10 @@ void scheme2_config(__CONFIG *target_label)
 
   target_label->n_tu = 0;
   target_label->n_ts = 0;
+  
+  target_label->n_input_GOOSE_block = 0;
+  target_label->n_input_MMS_block = 0;
+  target_label->n_network_output_block = 0;
   
   target_label->n_log = DIV_TO_HIGHER((
                                        3/*"Несправність загальна" + "Несправність аварійна" + "НКНОП"*/ + 

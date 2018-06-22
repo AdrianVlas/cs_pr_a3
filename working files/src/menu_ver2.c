@@ -2239,6 +2239,9 @@ void new_level_menu(void)
           (int*)&p_config->n_meander,
           (int*)&p_config->n_tu,
           (int*)&p_config->n_ts,
+          (int*)&p_config->n_input_GOOSE_block,
+          (int*)&p_config->n_input_MMS_block,
+          (int*)&p_config->n_network_output_block,
           (int*)&p_config->n_log
         };
 
@@ -2677,6 +2680,9 @@ void new_level_menu(void)
           (int*)&p_config->n_meander,
           (int*)&p_config->n_tu,
           (int*)&p_config->n_ts,
+          (int*)&p_config->n_input_GOOSE_block,
+          (int*)&p_config->n_input_MMS_block,
+          (int*)&p_config->n_network_output_block,
           (int*)&p_config->n_log
         };
   
@@ -2747,6 +2753,9 @@ void new_level_menu(void)
           (int*)&p_config->n_meander,
           (int*)&p_config->n_tu,
           (int*)&p_config->n_ts,
+          (int*)&p_config->n_input_GOOSE_block,
+          (int*)&p_config->n_input_MMS_block,
+          (int*)&p_config->n_network_output_block,
           (int*)&p_config->n_log
         };
   
@@ -2827,6 +2836,9 @@ void new_level_menu(void)
           (int*)&p_config->n_meander,
           (int*)&p_config->n_tu,
           (int*)&p_config->n_ts,
+          (int*)&p_config->n_input_GOOSE_block,
+          (int*)&p_config->n_input_MMS_block,
+          (int*)&p_config->n_network_output_block,
           (int*)&p_config->n_log
         };
   

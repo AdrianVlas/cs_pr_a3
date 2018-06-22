@@ -1281,6 +1281,57 @@ uint32_t event_log_handler(void)
           state_now = ((((__LN_TS*)spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
           break;
         }
+      case ID_FB_INPUT_GOOSE_BLOCK:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_INPUT_GOOSE_BLOCK*)(address) + 1);
+//          }
+//          state_now = ((((__LN_INPUT_GOOSE_BLOCK*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_INPUT_MMS_BLOCK:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_INPUT_MMS_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_INPUT_MMS_BLOCK*)(address) + 1);
+//          }
+//          state_now = ((((__LN_INPUT_MMS_BLOCK*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_INPUT_MMS_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
+      case ID_FB_NETWORK_OUTPUT_BLOCK:
+        {
+//          if (id_input_prev != id_input)
+//          {
+//            id_input_prev = id_input;
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_NETWORK_OUTPUT_BLOCK*)spca_of_p_prt[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR] + n_input);
+//          }
+//          else if (n_input_before != n_input) 
+//          {
+//            n_input_before = n_input;
+//            address = (uintptr_t*)((__LN_NETWORK_OUTPUT_BLOCK*)(address) + 1);
+//          }
+//          state_now = ((((__LN_NETWORK_OUTPUT_BLOCK*)address)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          state_now = ((((__LN_NETWORK_OUTPUT_BLOCK*)spca_of_p_prt[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR] + n_input)->active_state[out_input >> 3] &  (1 << (out_input & ((1 << 3) - 1)))) != 0);
+          break;
+        }
       case ID_FB_EVENT_LOG:
         {
 //          if (id_input_prev != id_input)

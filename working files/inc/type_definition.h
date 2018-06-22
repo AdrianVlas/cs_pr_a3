@@ -70,6 +70,10 @@ typedef struct
 
   uint32_t n_tu;                        //Кількість ТУ
   uint32_t n_ts;                        //Кількість ТС
+
+  uint32_t n_input_GOOSE_block;         //Кількість Вх.GOOSE блоків
+  uint32_t n_input_MMS_block;           //Кількість Вх.MMS блоків
+  uint32_t n_network_output_block;      //Кількість Мережевих вихідних блоків
   
   uint32_t n_log;                       //Кількість субмодулів Журналу подій
 

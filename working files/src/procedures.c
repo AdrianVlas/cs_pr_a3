@@ -694,6 +694,45 @@ void control_settings(unsigned int modified)
 
           break;
         }
+      case ID_FB_INPUT_GOOSE_BLOCK:
+        {
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_INPUT_GOOSE_BLOCK);
+            n_item = current_config_prt.n_input_GOOSE_block;
+          }
+
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_INPUT_GOOSE_BLOCK*)sca_of_p[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR]) + item);
+          point_1 = (uint8_t *)(&(((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR]) + item)->settings) ;
+
+          break;
+        }
+      case ID_FB_INPUT_MMS_BLOCK:
+        {
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_INPUT_MMS_BLOCK);
+            n_item = current_config_prt.n_input_MMS_block;
+          }
+
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_INPUT_MMS_BLOCK*)sca_of_p[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR]) + item);
+          point_1 = (uint8_t *)(&(((__LN_INPUT_MMS_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR]) + item)->settings) ;
+
+          break;
+        }
+      case ID_FB_NETWORK_OUTPUT_BLOCK:
+        {
+          if (item == 0)
+          {
+            size_of_block = sizeof(__settings_for_NETWORK_OUTPUT_BLOCK);
+            n_item = current_config_prt.n_network_output_block;
+          }
+
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_NETWORK_OUTPUT_BLOCK)sca_of_p[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR]) + item);
+          point_1 = (uint8_t *)(&(((__LN_NETWORK_OUTPUT_BLOCK*)spca_of_p_prt[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR]) + item)->settings) ;
+
+          break;
+        }
       case ID_FB_EVENT_LOG:
         {
           if (item == 0)
@@ -1253,6 +1292,39 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           size = n_cur*((mem_for_prt == true) ? sizeof(__LN_TS) : sizeof(__settings_for_TS));
           break;
         }
+      case ID_FB_INPUT_GOOSE_BLOCK:
+        {
+          //Елемент "Вх.GOOSE блок"
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_input_GOOSE_block : 0;
+          p_current_field = &current->n_input_GOOSE_block;
+          n_cur = edited->n_input_GOOSE_block;
+          
+          min_param = min_settings_INPUT_GOOSE_BLOCK;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_INPUT_GOOSE_BLOCK) : sizeof(__settings_for_INPUT_GOOSE_BLOCK));
+          break;
+        }
+      case ID_FB_INPUT_MMS_BLOCK:
+        {
+          //Елемент "Вх.MMS блок"
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_input_MMS_block : 0;
+          p_current_field = &current->n_input_MMS_block;
+          n_cur = edited->n_input_MMS_block;
+          
+          min_param = min_settings_INPUT_MMS_BLOCK;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_INPUT_MMS_BLOCK) : sizeof(__settings_for_INPUT_MMS_BLOCK));
+          break;
+        }
+      case ID_FB_NETWORK_OUTPUT_BLOCK:
+        {
+          //Елемент "Мережевий вихідний блок"
+          n_prev = (make_remake_restore != MAKE_DYN_MEM) ? current->n_network_output_block : 0;
+          p_current_field = &current->n_network_output_block;
+          n_cur = edited->n_network_output_block;
+          
+          min_param = min_settings_NETWORK_OUTPUT_BLOCK;
+          size = n_cur*((mem_for_prt == true) ? sizeof(__LN_NETWORK_OUTPUT_BLOCK) : sizeof(__settings_for_NETWORK_OUTPUT_BLOCK));
+          break;
+        }
       case ID_FB_EVENT_LOG:
         {
           //Елемент "Журнал подій"
@@ -1536,6 +1608,36 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         
         copy_settings_LN = copy_settings_TS;
         size = n_prev*sizeof(__settings_for_TS);
+        break;
+      }
+    case ID_FB_INPUT_GOOSE_BLOCK:
+      {
+        //Елемент "Вх.GOOSE блок"
+        n_cur  = current->n_input_GOOSE_block;
+        current->n_or = n_prev = control->n_input_GOOSE_block;
+        
+        copy_settings_LN = copy_settings_INPUT_GOOSE_BLOCK;
+        size = n_prev*sizeof(__settings_for_INPUT_GOOSE_BLOCK);
+        break;
+      }
+    case ID_FB_INPUT_MMS_BLOCK:
+      {
+        //Елемент "Вх.MMS блок"
+        n_cur  = current->n_input_MMS_block;
+        current->n_or = n_prev = control->n_input_MMS_block;
+        
+        copy_settings_LN = copy_settings_INPUT_MMS_BLOCK;
+        size = n_prev*sizeof(__settings_for_INPUT_MMS_BLOCK);
+        break;
+      }
+    case ID_FB_NETWORK_OUTPUT_BLOCK:
+      {
+        //Елемент "Мережевий вихідний блок"
+        n_cur  = current->n_network_output_block;
+        current->n_or = n_prev = control->n_network_output_block;
+        
+        copy_settings_LN = copy_settings_NETWORK_OUTPUT_BLOCK;
+        size = n_prev*sizeof(__settings_for_NETWORK_OUTPUT_BLOCK);
         break;
       }
     case ID_FB_EVENT_LOG:
@@ -2546,6 +2648,21 @@ size_t size_all_settings(void)
         size_block = current_config.n_ts*sizeof(__settings_for_TS);
         break;
       }
+    case ID_FB_INPUT_GOOSE_BLOCK:
+      {
+        size_block = current_config.n_input_GOOSE_block*sizeof(__settings_for_INPUT_GOOSE_BLOCK);
+        break;
+      }
+    case ID_FB_INPUT_MMS_BLOCK:
+      {
+        size_block = current_config.n_input_MMS_block*sizeof(__settings_for_INPUT_MMS_BLOCK);
+        break;
+      }
+    case ID_FB_NETWORK_OUTPUT_BLOCK:
+      {
+        size_block = current_config.n_network_output_block*sizeof(__settings_for_NETWORK_OUTPUT_BLOCK);
+        break;
+      }
     case ID_FB_EVENT_LOG:
       {
         size_block = current_config.n_log*sizeof(__LOG_INPUT)*LOG_SIGNALS_IN;
@@ -2698,6 +2815,30 @@ void copy_settings(
             //ТС
             n_prev = source_conf->n_ts;
             copy_settings_LN = copy_settings_TS;
+
+            break;
+          }
+        case ID_FB_INPUT_GOOSE_BLOCK:
+          {
+            //Елемент "Вх.GOOSE блок"
+            n_prev = source_conf->n_input_GOOSE_block;
+            copy_settings_LN = copy_settings_INPUT_GOOSE_BLOCK;
+
+            break;
+          }
+        case ID_FB_INPUT_MMS_BLOCK:
+          {
+            //Елемент "Вх.MMS блок"
+            n_prev = source_conf->n_input_MMS_block;
+            copy_settings_LN = copy_settings_INPUT_MMS_BLOCK;
+
+            break;
+          }
+        case ID_FB_NETWORK_OUTPUT_BLOCK:
+          {
+            //Елемент "Мережевий вихідний блок"
+            n_prev = source_conf->n_input_network_output_block;
+            copy_settings_LN = copy_settings_NETWORK_OUTPUT_BLOCK;
 
             break;
           }
@@ -3058,6 +3199,9 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_meander,
                                           current_config.n_tu,
                                           current_config.n_ts,
+                                          current_config.n_input_GOOSE_block,
+                                          current_config.n_input_MMS_block,
+                                          current_config.n_network_output_block,
                                           (current_config.n_log != 0) ? 1 : 0,
                                          };  
     for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
@@ -3148,6 +3292,27 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
               _n = TS_SIGNALS_IN;
               p_param      = (((__settings_for_TS*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
               p_param_edit = (((__settings_for_TS*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_INPUT_GOOSE_BLOCK:
+            {
+              _n = INPUT_GOOSE_BLOCK_SIGNALS_IN;
+              p_param      = (((__settings_for_INPUT_GOOSE_BLOCK*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_INPUT_GOOSE_BLOCK*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_INPUT_MMS_BLOCK:
+            {
+              _n = INPUT_MMS_BLOCK_SIGNALS_IN;
+              p_param      = (((__settings_for_INPUT_MMS_BLOCK*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_INPUT_MMS_BLOCK*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
+              break;
+            }
+          case ID_FB_NETWORK_OUTPUT_BLOCK:
+            {
+              _n = NETWORK_OUTPUT_BLOCK_SIGNALS_IN;
+              p_param      = (((__settings_for_NETWORK_OUTPUT_BLOCK*)sca_of_p[i - _ID_FB_FIRST_VAR])[j].param);
+              p_param_edit = (((__settings_for_NETWORK_OUTPUT_BLOCK*)sca_of_p_edit[i - _ID_FB_FIRST_VAR])[j].param);
               break;
             }
           case ID_FB_EVENT_LOG:

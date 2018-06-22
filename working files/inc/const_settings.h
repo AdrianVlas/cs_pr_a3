@@ -38,13 +38,17 @@ enum _id_fb
         ID_FB_TU,                                                       /*15*/
         ID_FB_TS,                                                       /*16*/
 
-        ID_FB_EVENT_LOG,                                                /*17*/
+        ID_FB_INPUT_GOOSE_BLOCK,                                        /*17*/
+        ID_FB_INPUT_MMS_BLOCK,                                          /*18*/
+        ID_FB_NETWORK_OUTPUT_BLOCK,                                     /*19*/
         
-      _ID_FB_LAST_VAR_CHANGED,                                          /*18*/
+        ID_FB_EVENT_LOG,                                                /*20*/
+        
+      _ID_FB_LAST_VAR_CHANGED,                                          /*21*/
       
-    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*18*/
+    _ID_FB_LAST_VAR = _ID_FB_LAST_VAR_CHANGED,                          /*21*/
 
-  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*18*/
+  _ID_FB_LAST_ALL = _ID_FB_LAST_VAR                                     /*21*/
 };
 
 enum _action_on_settings

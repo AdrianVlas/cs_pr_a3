@@ -429,6 +429,9 @@ const uint8_t name_string_configuration[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGU
     "      ГПС       ",
     "       ТУ       ",
     "       ТС       ",
+    " Вх.GOOSE блок  ",
+    "  Вх.MMS блок   ",
+    "Сетевой вых.блок",
     " Журнал событий "
   },
   {
@@ -443,6 +446,9 @@ const uint8_t name_string_configuration[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGU
     "      ГПС       ",
     "       ТУ       ",
     "       ТС       ",
+    " Вх.GOOSE блок  ",
+    "  Вх.MMS блок   ",
+    "  Мер.вих.блок  ",
     "  Журнал подій  "
 },
   {
@@ -457,6 +463,9 @@ const uint8_t name_string_configuration[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGU
     "      PSG       ",
     "       TC       ",
     "       TS       ",
+    " In.GOOSE block ",
+    "  In.MMS block  ",
+    " Network Out.bl.",
     "   Event Log    "
   },
   {
@@ -471,6 +480,9 @@ const uint8_t name_string_configuration[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_CONFIGU
     "      ГПС       ",
     "       ТУ       ",
     "       ТС       ",
+    " Вх.GOOSE блок  ",
+    "  Вх.MMS блок   ",
+    "Сетевой вых.блок",
     " Журнал событий "
   }
 };
