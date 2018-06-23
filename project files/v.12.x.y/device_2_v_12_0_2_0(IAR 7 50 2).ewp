@@ -17,15 +17,15 @@
         <debug>1</debug>
         <option>
           <name>ExePath</name>
-          <state>Flash-Debug\Exe</state>
+          <state>Flash-Debug\IAR old\Exe</state>
         </option>
         <option>
           <name>ObjPath</name>
-          <state>Flash-Debug\Obj</state>
+          <state>Flash-Debug\IAR old\Obj</state>
         </option>
         <option>
           <name>ListPath</name>
-          <state>Flash-Debug\List</state>
+          <state>Flash-Debug\IAR old\List</state>
         </option>
         <option>
           <name>GEndianMode</name>
@@ -619,7 +619,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>device_2_v_12_0_0_1.bin</state>
+          <state>device_2_v_12_0_2_0(IAR 7 50 2).bin</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -674,7 +674,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>device_2_v_12_0_0_1.out</state>
+          <state>device_2_v_12_0_2_0(IAR 7 50 2).out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
