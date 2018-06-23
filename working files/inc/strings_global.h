@@ -506,9 +506,9 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "ГПС             ",
     "ТУ              ",
     "ТС              ",
-    "Вх.GOOSE блок   ",
-    "Вх.MMS блок     ",
-    "Сетевой вых.блок",
+    "GOOSE           ",
+    "MMS             ",
+    "СВБ             ",
     "Ж.Cобытий       "
   },
   {
@@ -528,9 +528,9 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "ГПС             ",
     "ТУ              ",
     "ТС              ",
-    "Вх.GOOSE блок   ",
-    "Вх.MMS блок     ",
-    "Мер.вих.блок    ",
+    "GOOSE           ",
+    "MMS             ",
+    "МВБ             ",
     "Ж.Подій         "
   },
   {
@@ -550,9 +550,9 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "PSG             ",
     "TC              ",
     "TS              ",
-    "In.GOOSE block  ",
-    "In.MMS block    ",
-    "Network Out.bl. ",
+    "GOOSE           ",
+    "MMS             ",
+    "NOB             ",
     "Ev.Log          "
   },
   {
@@ -572,9 +572,9 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "ГПС             ",
     "ТУ              ",
     "ТС              ",
-    "Вх.GOOSE блок   ",
-    "Вх.MMS блок     ",
-    "Сетевой вых.блок",
+    "GOOSE           ",
+    "MMS             ",
+    "СВБ             ",
     "Ж.Событий       "
   }
 };
@@ -598,9 +598,9 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " ГПС            ",
     " ТУ             ",
     " ТС             ",
-    " Вх.GOOSE блок  ",
-    " Вх.MMS блок    ",
-    " Сетевой вых.бл.",
+    " Вх.GOOSE бл.   ",
+    " Вх.MMS бл.     ",
+    " С.Вых.Бл.      ",
     " Ж.Событий      "
   },
   {
@@ -620,9 +620,9 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " ГПС            ",
     " ТУ             ",
     " ТС             ",
-    " Вх.GOOSE блок  ",
-    " Вх.MMS блок    ",
-    " Мер.вих.блок   ",
+    " Вх.GOOSE бл.   ",
+    " Вх.MMS бл.     ",
+    " Мер.Вих.Бл.    ",
     " Ж.Подій        "
   },
   {
@@ -642,9 +642,9 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " PSG            ",
     " TC             ",
     " TS             ",
-    " In.GOOSE block ",
-    " In.MMS block   ",
-    " Network Out.bl.",
+    " In.GOOSE b.    ",
+    " In.MMS b.      ",
+    " Net.Out.b.     ",
     " Ev.Log         "
   },
   {
@@ -664,9 +664,9 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " ГПС            ",
     " ТУ             ",
     " ТС             ",
-    " Вх.GOOSE блок  ",
-    " Вх.MMS блок    ",
-    " Сетевой вых.бл.",
+    "Вх.GOOSE бл.    ",
+    "Вх.MMS бл.      ",
+    "С.Вых.Бл.       ",
     " Ж.Событий      "
   }
 };
@@ -1552,7 +1552,7 @@ const uint8_t name_input_GOOSE_block[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] =
  " Вх.GOOSE бл.   ",
  " Вх.GOOSE бл.   ",
  " In.GOOSE b.    ",
- " Вх.GOOSE бл.   ",
+ " Вх.GOOSE бл.   "
 };
 const uint32_t first_index_number_input_GOOSE_block[MAX_NAMBER_LANGUAGE] = {13, 13, 12, 13};
 
@@ -1577,7 +1577,7 @@ const uint8_t name_input_MMS_block[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] =
  " Вх.MMS бл.     ",
  " Вх.MMS бл.     ",
  " In.MMS b.      ",
- " Вх.MMS бл.     ",
+ " Вх.MMS бл.     "
 };
 const uint32_t first_index_number_input_MMS_block[MAX_NAMBER_LANGUAGE] = {11, 11, 10, 11};
 
@@ -1599,11 +1599,11 @@ const uint8_t name_network_output_block_out_signals[MAX_NAMBER_LANGUAGE][NETWORK
 
 const uint8_t name_network_output_block[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
 {
- " С.вых.бл.      ",
- " Мер.вих.бл.    ",
- " N.Output b.    ",
- " С.вых.бл.      ",
+ " С.Вых.Бл.      ",
+ " Мер.Вих.Бл.    ",
+ " Net.Out.B.     ",
+ " С.Вых.Бл.      ",
 };
-const uint32_t first_index_number_network_output_block[MAX_NAMBER_LANGUAGE] = {10, 12, 12, 10};
+const uint32_t first_index_number_network_output_block[MAX_NAMBER_LANGUAGE] = {10, 12, 11, 10};
 
 #endif

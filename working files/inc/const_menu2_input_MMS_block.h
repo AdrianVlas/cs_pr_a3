@@ -2,21 +2,21 @@
 #define __CONST_INPUT_MMS_BLOCK_MENU2__
 
 #define NAME_INPUT_MMS_BLOCK_IN_SIGNALS_RU           \
-  "Ѕлок-G.         ",                   \
-  "Ѕлок-L/R        "
+  "Ѕл-G.           ",                   \
+  "Ѕл-LR           "
 
 #define NAME_INPUT_MMS_BLOCK_IN_SIGNALS_UA           \
-  "Ѕлок-G.         ",                   \
-  "Ѕлок-L/R        "
+  "Ѕл-G.           ",                   \
+  "Ѕл-LR           "
 
 
 #define NAME_INPUT_MMS_BLOCK_IN_SIGNALS_EN           \
-  "Block-G         ",                   \
-  "Block-L/R       "
+  "Bl-G            ",                   \
+  "Bl-LR           "
 
 #define NAME_INPUT_MMS_BLOCK_IN_SIGNALS_KZ           \
-  "Ѕлок-G.         ",                   \
-  "Ѕлок-L/R        "
+  "Ѕл-G.           ",                   \
+  "Ѕл-LR           "
     
 #define NAME_INPUT_MMS_BLOCK_OUT_SIGNALS_RU          \
   "¬ыход1          ",   \

@@ -2,16 +2,16 @@
 #define __CONST_INPUT_GOOSE_BLOCK_MENU2__
 
 #define NAME_INPUT_GOOSE_BLOCK_IN_SIGNALS_RU           \
-  "Блок-G.         "
+  "Бл-G.           "
 
 #define NAME_INPUT_GOOSE_BLOCK_IN_SIGNALS_UA           \
-  "Блок-G.         "
+  "Бл-G.           "
 
 #define NAME_INPUT_GOOSE_BLOCK_IN_SIGNALS_EN           \
-  "Block-G         "
+  "Bl-G            "
 
 #define NAME_INPUT_GOOSE_BLOCK_IN_SIGNALS_KZ           \
-  "Блок-G.         "
+  "Бл-G.           "
     
 #define NAME_INPUT_GOOSE_BLOCK_OUT_SIGNALS_RU          \
   "Выход1          ",   \

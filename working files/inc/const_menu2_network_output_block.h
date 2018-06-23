@@ -10,7 +10,7 @@
   "Ћ.¬х6.          ",                   \
   "Ћ.¬х7.          ",                   \
   "Ћ.¬х8.          ",                   \
-  "Ѕлок-G.         "
+  "Ѕл-M.           "
 
 #define NAME_NETWORK_OUTPUT_BLOCK_IN_SIGNALS_UA           \
   "Ћ.¬х1.          ",                   \
@@ -21,7 +21,7 @@
   "Ћ.¬х6.          ",                   \
   "Ћ.¬х7.          ",                   \
   "Ћ.¬х8.          ",                   \
-  "Ѕлок-G.         "
+  "Ѕл-M.           "
 
 
 #define NAME_NETWORK_OUTPUT_BLOCK_IN_SIGNALS_EN           \
@@ -33,7 +33,7 @@
   "L.In6.          ",                   \
   "L.In7.          ",                   \
   "L.In8.          ",                   \
-  "Block-G         "
+  "Bl-M            "
 
 #define NAME_NETWORK_OUTPUT_BLOCK_IN_SIGNALS_KZ           \
   "Ћ.¬х1.          ",                   \
@@ -44,7 +44,7 @@
   "Ћ.¬х6.          ",                   \
   "Ћ.¬х7.          ",                   \
   "Ћ.¬х8.          ",                   \
-  "Ѕлок-G.         "
+  "Ѕл-M.           "
     
 #define NAME_NETWORK_OUTPUT_BLOCK_OUT_SIGNALS_RU          \
   "¬ыход1          ",   \
