@@ -1111,7 +1111,7 @@ void main_routines_for_i2c(void)
             }
           case ID_FB_NETWORK_OUTPUT_BLOCK:
             {
-              size_of_block = current_config.network_output_block*sizeof(__settings_for_NETWORK_OUTPUT_BLOCK);
+              size_of_block = current_config.n_network_output_block*sizeof(__settings_for_NETWORK_OUTPUT_BLOCK);
               break;
             }
           case ID_FB_EVENT_LOG:

@@ -18,6 +18,9 @@ const uint8_t * const array_p_name_in[NUMBER_ALL_BLOCKS] =
   NULL, 
   (const uint8_t*)name_tu_in_signals,
   (const uint8_t*)name_ts_in_signals,
+  (const uint8_t*)name_input_GOOSE_block_in_signals,
+  (const uint8_t*)name_input_MMS_block_in_signals,
+  (const uint8_t*)name_network_output_block_in_signals,
   NULL
 };
 
@@ -37,7 +40,10 @@ const enum _menu2_levels levels_tmp[__NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGIC
   EDITOR_LIST_TRIGGERS_FOR_OUTPUT_MENU2_LEVEL,
   EDITOR_LIST_MEANDERS_FOR_OUTPUT_MENU2_LEVEL,
   EDITOR_LIST_TUS_FOR_OUTPUT_MENU2_LEVEL,
-  EDITOR_LIST_TSS_FOR_OUTPUT_MENU2_LEVEL
+  EDITOR_LIST_TSS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_INPUT_GOOSE_BLOCKS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_INPUT_MMS_BLOCKS_FOR_OUTPUT_MENU2_LEVEL,
+  EDITOR_LIST_NETWORK_OUTPUT_BLOCKS_FOR_OUTPUT_MENU2_LEVEL,
 };
 /*****************************************************/
 /*
@@ -75,25 +81,25 @@ void move_into_editor_list_logical_nodes(unsigned int action, int max_row)
   {
     
     logical_node_shown[ 0] = (FIX_BLOCK_SIGNALS_IN > 0) ? true: false;
-    logical_node_shown[ 1] = ((p_config->n_input*0                                                   ) != 0);
-    logical_node_shown[ 2] = ((p_config->n_output*OUTPUT_LED_SIGNALS_IN                              ) != 0);
-    logical_node_shown[ 3] = ((p_config->n_led*OUTPUT_LED_SIGNALS_IN                                 ) != 0);
-    logical_node_shown[ 4] = ((p_config->n_button*0                                                  ) != 0);
-    logical_node_shown[ 5] = ((p_config->n_alarm*ALARM_SIGNALS_IN                                    ) != 0);
-    logical_node_shown[ 6] = ((p_config->n_group_alarm*0                                             ) != 0);
-    logical_node_shown[ 7] = ((p_config->n_and*AND_SIGNALS_IN                                        ) != 0);
-    logical_node_shown[ 8] = ((p_config->n_or*OR_SIGNALS_IN                                          ) != 0);
-    logical_node_shown[ 9] = ((p_config->n_xor*2                                                     ) != 0);
-    logical_node_shown[10] = ((p_config->n_not*1                                                     ) != 0);
-    logical_node_shown[11] = ((p_config->n_timer*TIMER_SIGNALS_IN                                    ) != 0);
-    logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN                                ) != 0);
-    logical_node_shown[13] = ((p_config->n_meander*0                                                 ) != 0);
-    logical_node_shown[14] = ((p_config->n_tu*TU_SIGNALS_IN                                          ) != 0);
-    logical_node_shown[15] = ((p_config->n_ts*TS_SIGNALS_IN                                          ) != 0);
-    logical_node_shown[16] = ((p_config->n_input_GOOSE_block*INPUT_GOOSE_BLOCK_SIGNALS_IN            ) != 0);
-    logical_node_shown[17] = ((p_config->n_input_MMS_block*INPUT_MMS_BLOCK_SIGNALS_IN                ) != 0);
-    logical_node_shown[18] = ((p_config->n_input_network_output_block*NETWORK_OUTPUT_BLOCK_SIGNALS_IN) != 0);
-    logical_node_shown[19] = ((p_config->n_log*LOG_SIGNALS_IN                                        ) != 0);
+    logical_node_shown[ 1] = ((p_config->n_input*0                                             ) != 0);
+    logical_node_shown[ 2] = ((p_config->n_output*OUTPUT_LED_SIGNALS_IN                        ) != 0);
+    logical_node_shown[ 3] = ((p_config->n_led*OUTPUT_LED_SIGNALS_IN                           ) != 0);
+    logical_node_shown[ 4] = ((p_config->n_button*0                                            ) != 0);
+    logical_node_shown[ 5] = ((p_config->n_alarm*ALARM_SIGNALS_IN                              ) != 0);
+    logical_node_shown[ 6] = ((p_config->n_group_alarm*0                                       ) != 0);
+    logical_node_shown[ 7] = ((p_config->n_and*AND_SIGNALS_IN                                  ) != 0);
+    logical_node_shown[ 8] = ((p_config->n_or*OR_SIGNALS_IN                                    ) != 0);
+    logical_node_shown[ 9] = ((p_config->n_xor*2                                               ) != 0);
+    logical_node_shown[10] = ((p_config->n_not*1                                               ) != 0);
+    logical_node_shown[11] = ((p_config->n_timer*TIMER_SIGNALS_IN                              ) != 0);
+    logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN                          ) != 0);
+    logical_node_shown[13] = ((p_config->n_meander*0                                           ) != 0);
+    logical_node_shown[14] = ((p_config->n_tu*TU_SIGNALS_IN                                    ) != 0);
+    logical_node_shown[15] = ((p_config->n_ts*TS_SIGNALS_IN                                    ) != 0);
+    logical_node_shown[16] = ((p_config->n_input_GOOSE_block*INPUT_GOOSE_BLOCK_SIGNALS_IN      ) != 0);
+    logical_node_shown[17] = ((p_config->n_input_MMS_block*INPUT_MMS_BLOCK_SIGNALS_IN          ) != 0);
+    logical_node_shown[18] = ((p_config->n_network_output_block*NETWORK_OUTPUT_BLOCK_SIGNALS_IN) != 0);
+    logical_node_shown[19] = ((p_config->n_log*LOG_SIGNALS_IN                                  ) != 0);
   }
   else
   {
@@ -186,25 +192,25 @@ void make_ekran_editor_list_logical_node(void)
     if (current_state_menu2.current_level == EDITOR_LIST_LOGICAL_NODES_FOR_INPUT_MENU2_LEVEL)
     {
       logical_node_shown[ 0] = (FIX_BLOCK_SIGNALS_IN > 0) ? true: false;
-      logical_node_shown[ 1] = ((p_config->n_input*0                                                   ) != 0);
-      logical_node_shown[ 2] = ((p_config->n_output*OUTPUT_LED_SIGNALS_IN                              ) != 0);
-      logical_node_shown[ 3] = ((p_config->n_led*OUTPUT_LED_SIGNALS_IN                                 ) != 0);
-      logical_node_shown[ 4] = ((p_config->n_button*0                                                  ) != 0);
-      logical_node_shown[ 5] = ((p_config->n_alarm*ALARM_SIGNALS_IN                                    ) != 0);
-      logical_node_shown[ 6] = ((p_config->n_group_alarm*0                                             ) != 0);
-      logical_node_shown[ 7] = ((p_config->n_and*AND_SIGNALS_IN                                        ) != 0);
-      logical_node_shown[ 8] = ((p_config->n_or*OR_SIGNALS_IN                                          ) != 0);
-      logical_node_shown[ 9] = ((p_config->n_xor*2                                                     ) != 0);
-      logical_node_shown[10] = ((p_config->n_not*1                                                     ) != 0);
-      logical_node_shown[11] = ((p_config->n_timer*TIMER_SIGNALS_IN                                    ) != 0);
-      logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN                                ) != 0);
-      logical_node_shown[13] = ((p_config->n_meander*0                                                 ) != 0);
-      logical_node_shown[14] = ((p_config->n_tu*TU_SIGNALS_IN                                          ) != 0);
-      logical_node_shown[15] = ((p_config->n_ts*TS_SIGNALS_IN                                          ) != 0);
-      logical_node_shown[16] = ((p_config->n_input_GOOSE_block*INPUT_GOOSE_BLOCK_SIGNALS_IN            ) != 0);
-      logical_node_shown[17] = ((p_config->n_input_MMS_block*INPUT_MMS_BLOCK_SIGNALS_IN                ) != 0);
-      logical_node_shown[18] = ((p_config->n_input_network_output_block*NETWORK_OUTPUT_BLOCK_SIGNALS_IN) != 0);
-      logical_node_shown[19] = ((p_config->n_log*LOG_SIGNALS_IN                                        ) != 0);
+      logical_node_shown[ 1] = ((p_config->n_input*0                                             ) != 0);
+      logical_node_shown[ 2] = ((p_config->n_output*OUTPUT_LED_SIGNALS_IN                        ) != 0);
+      logical_node_shown[ 3] = ((p_config->n_led*OUTPUT_LED_SIGNALS_IN                           ) != 0);
+      logical_node_shown[ 4] = ((p_config->n_button*0                                            ) != 0);
+      logical_node_shown[ 5] = ((p_config->n_alarm*ALARM_SIGNALS_IN                              ) != 0);
+      logical_node_shown[ 6] = ((p_config->n_group_alarm*0                                       ) != 0);
+      logical_node_shown[ 7] = ((p_config->n_and*AND_SIGNALS_IN                                  ) != 0);
+      logical_node_shown[ 8] = ((p_config->n_or*OR_SIGNALS_IN                                    ) != 0);
+      logical_node_shown[ 9] = ((p_config->n_xor*2                                               ) != 0);
+      logical_node_shown[10] = ((p_config->n_not*1                                               ) != 0);
+      logical_node_shown[11] = ((p_config->n_timer*TIMER_SIGNALS_IN                              ) != 0);
+      logical_node_shown[12] = ((p_config->n_trigger*TRIGGER_SIGNALS_IN                          ) != 0);
+      logical_node_shown[13] = ((p_config->n_meander*0                                           ) != 0);
+      logical_node_shown[14] = ((p_config->n_tu*TU_SIGNALS_IN                                    ) != 0);
+      logical_node_shown[15] = ((p_config->n_ts*TS_SIGNALS_IN                                    ) != 0);
+      logical_node_shown[16] = ((p_config->n_input_GOOSE_block*INPUT_GOOSE_BLOCK_SIGNALS_IN      ) != 0);
+      logical_node_shown[17] = ((p_config->n_input_MMS_block*INPUT_MMS_BLOCK_SIGNALS_IN          ) != 0);
+      logical_node_shown[18] = ((p_config->n_network_output_block*NETWORK_OUTPUT_BLOCK_SIGNALS_IN) != 0);
+      logical_node_shown[19] = ((p_config->n_log*LOG_SIGNALS_IN                                  ) != 0);
     }     
     else
     {
@@ -584,6 +590,12 @@ enum _result_pressed_enter_during_edition press_enter_in_editor_list_logical_nod
         {
           p_param_cont = &(((__settings_for_INPUT_MMS_BLOCK*)sca_of_p[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           p_param_edit = &(((__settings_for_INPUT_MMS_BLOCK*)sca_of_p_edit[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          break;
+        }
+      case ID_FB_NETWORK_OUTPUT_BLOCK:
+        {
+          p_param_cont = &(((__settings_for_NETWORK_OUTPUT_BLOCK*)sca_of_p[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
+          p_param_edit = &(((__settings_for_NETWORK_OUTPUT_BLOCK*)sca_of_p_edit[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index*n_similar_input_signals]);
           break;
         }
       case ID_FB_EVENT_LOG:

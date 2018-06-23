@@ -132,6 +132,9 @@ const size_t array_n_similar_input_signals[NUMBER_ALL_BLOCKS] =
   0,
   1,
   1,
+  1,
+  1,
+  1,
   LOG_SIGNALS_IN
 };
 const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] = 
@@ -152,6 +155,9 @@ const unsigned int number_output_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   MEANDER_SIGNALS_OUT,
   TU_SIGNALS_OUT,
   TS_SIGNALS_OUT,
+  INPUT_GOOSE_BLOCK_SIGNALS_OUT,
+  INPUT_MMS_BLOCK_SIGNALS_OUT,
+  NETWORK_OUTPUT_BLOCK_SIGNALS_OUT,
   EVENT_LOG_SIGNALS_OUT
 };
 
@@ -173,6 +179,9 @@ const uint8_t * const array_p_name_out[NUMBER_ALL_BLOCKS] =
   (const uint8_t*)name_meander_out_signals,
   (const uint8_t*)name_tu_out_signals,
   (const uint8_t*)name_ts_out_signals,
+  (const uint8_t*)name_input_GOOSE_block_out_signals,
+  (const uint8_t*)name_input_MMS_block_out_signals,
+  (const uint8_t*)name_network_output_block_out_signals,
   (const uint8_t*)name_event_log_out_signals
 };
 
@@ -195,6 +204,9 @@ const unsigned int number_input_signals_logical_nodes[NUMBER_ALL_BLOCKS] =
   0,
   TU_SIGNALS_IN,
   TS_SIGNALS_IN,
+  INPUT_GOOSE_BLOCK_SIGNALS_IN,
+  INPUT_MMS_BLOCK_SIGNALS_IN,
+  NETWORK_OUTPUT_BLOCK_SIGNALS_IN,
   0
 };
 

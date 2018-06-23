@@ -17,6 +17,9 @@ const uint8_t (* const array_p_name[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE][MAX
   &name_meander,
   &name_tu,
   &name_ts,
+  &name_input_GOOSE_block,
+  &name_input_MMS_block,
+  &name_network_output_block,
   &name_log
 };
 const unsigned int (* const array_p_first_index_number[NUMBER_VAR_BLOCKS])[MAX_NAMBER_LANGUAGE] = 
@@ -36,6 +39,9 @@ const unsigned int (* const array_p_first_index_number[NUMBER_VAR_BLOCKS])[MAX_N
   &first_index_number_meander,
   &first_index_number_tu,
   &first_index_number_ts,
+  &first_index_number_input_GOOSE_block,
+  &first_index_number_input_MMS_block,
+  &first_index_number_network_output_block,
   &first_index_number_log
 };
 

@@ -728,7 +728,7 @@ void control_settings(unsigned int modified)
             n_item = current_config_prt.n_network_output_block;
           }
 
-          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_NETWORK_OUTPUT_BLOCK)sca_of_p[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR]) + item);
+          if  (modified == 0) point_2 = (uint8_t *)(((__settings_for_NETWORK_OUTPUT_BLOCK*)sca_of_p[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR]) + item);
           point_1 = (uint8_t *)(&(((__LN_NETWORK_OUTPUT_BLOCK*)spca_of_p_prt[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR]) + item)->settings) ;
 
           break;
@@ -2518,6 +2518,181 @@ void copy_settings_TS(unsigned int mem_to_prt, unsigned int mem_from_prt, uintpt
 /*****************************************************/
 
 /*****************************************************/
+//Встановлення мінімальних параметрів для функціоанльного блоку "Вх.GOOSE блок"
+/*****************************************************/
+void min_settings_INPUT_GOOSE_BLOCK(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    for (size_t i = 0; i < INPUT_GOOSE_BLOCK_SIGNALS_IN; i++)
+    {
+      if (mem_to_prt == true) ((__LN_INPUT_GOOSE_BLOCK *)(base) + shift)->settings.param[i] = 0;
+      else ((__settings_for_INPUT_GOOSE_BLOCK *)(base) + shift)->param[i] = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_OUT, 8); i++)
+      {
+        ((__LN_INPUT_GOOSE_BLOCK *)(base) + shift)->active_state[i] = 0;
+      }
+
+      for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_INT_IN, 8); i++)
+      {
+        ((__LN_INPUT_GOOSE_BLOCK *)(base) + shift)->internal_input[i] = 0;
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для функціоанльного блоку "Вх.GOOSE блок"
+/*****************************************************/
+void copy_settings_INPUT_GOOSE_BLOCK(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    for (size_t i = 0; i < INPUT_GOOSE_BLOCK_SIGNALS_IN; i++)
+    {
+      if ((mem_to_prt == false) && (mem_from_prt == true))
+      {
+        ((__settings_for_INPUT_GOOSE_BLOCK *)(base_target) + shift)->param[i] = ((__LN_INPUT_GOOSE_BLOCK *)(base_source) + shift)->settings.param[i];
+      }
+      else if ((mem_to_prt == true) && (mem_from_prt == false))
+      {
+        ((__LN_INPUT_GOOSE_BLOCK *)(base_target) + shift)->settings.param[i] = ((__settings_for_INPUT_GOOSE_BLOCK *)(base_source) + shift)->param[i];
+      }
+      else if ((mem_to_prt == false) && (mem_from_prt == false))
+      {
+        ((__settings_for_INPUT_GOOSE_BLOCK *)(base_target) + shift)->param[i] = ((__settings_for_INPUT_GOOSE_BLOCK *)(base_source) + shift)->param[i];
+      }
+      else
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(17);
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для функціоанльного блоку "Вх.MMS блок"
+/*****************************************************/
+void min_settings_INPUT_MMS_BLOCK(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    for (size_t i = 0; i < INPUT_MMS_BLOCK_SIGNALS_IN; i++)
+    {
+      if (mem_to_prt == true) ((__LN_INPUT_MMS_BLOCK *)(base) + shift)->settings.param[i] = 0;
+      else ((__settings_for_INPUT_MMS_BLOCK *)(base) + shift)->param[i] = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_OUT, 8); i++)
+      {
+        ((__LN_INPUT_MMS_BLOCK *)(base) + shift)->active_state[i] = 0;
+      }
+
+      for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_INT_IN, 8); i++)
+      {
+        ((__LN_INPUT_MMS_BLOCK *)(base) + shift)->internal_input[i] = 0;
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для функціоанльного блоку "Вх.MMS блок"
+/*****************************************************/
+void copy_settings_INPUT_MMS_BLOCK(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    for (size_t i = 0; i < INPUT_MMS_BLOCK_SIGNALS_IN; i++)
+    {
+      if ((mem_to_prt == false) && (mem_from_prt == true))
+      {
+        ((__settings_for_INPUT_MMS_BLOCK *)(base_target) + shift)->param[i] = ((__LN_INPUT_MMS_BLOCK *)(base_source) + shift)->settings.param[i];
+      }
+      else if ((mem_to_prt == true) && (mem_from_prt == false))
+      {
+        ((__LN_INPUT_MMS_BLOCK *)(base_target) + shift)->settings.param[i] = ((__settings_for_INPUT_MMS_BLOCK *)(base_source) + shift)->param[i];
+      }
+      else if ((mem_to_prt == false) && (mem_from_prt == false))
+      {
+        ((__settings_for_INPUT_MMS_BLOCK *)(base_target) + shift)->param[i] = ((__settings_for_INPUT_MMS_BLOCK *)(base_source) + shift)->param[i];
+      }
+      else
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(18);
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Встановлення мінімальних параметрів для функціоанльного блоку "Мережевий вхідний блок"
+/*****************************************************/
+void min_settings_NETWORK_OUTPUT_BLOCK(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
+{
+  for (size_t shift = index_first; shift < index_last; shift++)
+  {
+    for (size_t i = 0; i < NETWORK_OUTPUT_BLOCK_SIGNALS_IN; i++)
+    {
+      if (mem_to_prt == true) ((__LN_NETWORK_OUTPUT_BLOCK *)(base) + shift)->settings.param[i] = 0;
+      else ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base) + shift)->param[i] = 0;
+    }
+    
+    if (mem_to_prt == true)
+    {
+      for (size_t i = 0; i < DIV_TO_HIGHER(NETWORK_OUTPUT_BLOCK_SIGNALS_OUT, 8); i++)
+      {
+        ((__LN_NETWORK_OUTPUT_BLOCK *)(base) + shift)->active_state[i] = 0;
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Відновлення попередніх параметрів для функціоанльного блоку "ережевий вхідний блок"
+/*****************************************************/
+void copy_settings_NETWORK_OUTPUT_BLOCK(unsigned int mem_to_prt, unsigned int mem_from_prt, uintptr_t *base_target, uintptr_t *base_source, size_t index_target, size_t index_source)
+{
+  for (size_t shift = index_target; shift < index_source; shift++)
+  {
+    for (size_t i = 0; i < NETWORK_OUTPUT_BLOCK_SIGNALS_IN; i++)
+    {
+      if ((mem_to_prt == false) && (mem_from_prt == true))
+      {
+        ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->param[i] = ((__LN_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->settings.param[i];
+      }
+      else if ((mem_to_prt == true) && (mem_from_prt == false))
+      {
+        ((__LN_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->settings.param[i] = ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->param[i];
+      }
+      else if ((mem_to_prt == false) && (mem_from_prt == false))
+      {
+        ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->param[i] = ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->param[i];
+      }
+      else
+      {
+        //Якщо сюди дійшла програма, значить відбулася недопустива помилка, тому треба зациклити програму, щоб вона пішла на перезагрузку
+        total_error_sw_fixed(19);
+      }
+    }
+  }
+}
+/*****************************************************/
+
+/*****************************************************/
 //Встановлення мінімальних параметрів для елементу "Журнал подій"
 /*****************************************************/
 void min_settings_LOG(unsigned int mem_to_prt, uintptr_t *base, size_t index_first, size_t index_last)
@@ -2837,7 +3012,7 @@ void copy_settings(
         case ID_FB_NETWORK_OUTPUT_BLOCK:
           {
             //Елемент "Мережевий вихідний блок"
-            n_prev = source_conf->n_input_network_output_block;
+            n_prev = source_conf->n_network_output_block;
             copy_settings_LN = copy_settings_NETWORK_OUTPUT_BLOCK;
 
             break;

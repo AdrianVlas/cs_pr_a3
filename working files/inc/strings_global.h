@@ -1507,4 +1507,79 @@ const uint8_t name_ts[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] =
 };
 const uint32_t first_index_number_ts[MAX_NAMBER_LANGUAGE] = {3, 3, 3, 3};
 
+const uint8_t name_input_GOOSE_block_in_signals[MAX_NAMBER_LANGUAGE][INPUT_GOOSE_BLOCK_SIGNALS_IN][MAX_COL_LCD + 1] =
+{
+  {NAME_INPUT_GOOSE_BLOCK_IN_SIGNALS_RU},  
+  {NAME_INPUT_GOOSE_BLOCK_IN_SIGNALS_UA},  
+  {NAME_INPUT_GOOSE_BLOCK_IN_SIGNALS_EN},  
+  {NAME_INPUT_GOOSE_BLOCK_IN_SIGNALS_KZ}
+};
+
+const uint8_t name_input_GOOSE_block_out_signals[MAX_NAMBER_LANGUAGE][INPUT_GOOSE_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_INPUT_GOOSE_BLOCK_OUT_SIGNALS_RU},  
+  {NAME_INPUT_GOOSE_BLOCK_OUT_SIGNALS_UA},  
+  {NAME_INPUT_GOOSE_BLOCK_OUT_SIGNALS_EN},  
+  {NAME_INPUT_GOOSE_BLOCK_OUT_SIGNALS_KZ}
+};
+
+const uint8_t name_input_GOOSE_block[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+{
+ " ¬х.GOOSE бл.   ",
+ " ¬х.GOOSE бл.   ",
+ " In.GOOSE b.    ",
+ " ¬х.GOOSE бл.   ",
+};
+const uint32_t first_index_number_input_GOOSE_block[MAX_NAMBER_LANGUAGE] = {13, 13, 12, 13};
+
+const uint8_t name_input_MMS_block_in_signals[MAX_NAMBER_LANGUAGE][INPUT_MMS_BLOCK_SIGNALS_IN][MAX_COL_LCD + 1] =
+{
+  {NAME_INPUT_MMS_BLOCK_IN_SIGNALS_RU},  
+  {NAME_INPUT_MMS_BLOCK_IN_SIGNALS_UA},  
+  {NAME_INPUT_MMS_BLOCK_IN_SIGNALS_EN},  
+  {NAME_INPUT_MMS_BLOCK_IN_SIGNALS_KZ}
+};
+
+const uint8_t name_input_MMS_block_out_signals[MAX_NAMBER_LANGUAGE][INPUT_MMS_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_INPUT_MMS_BLOCK_OUT_SIGNALS_RU},  
+  {NAME_INPUT_MMS_BLOCK_OUT_SIGNALS_UA},  
+  {NAME_INPUT_MMS_BLOCK_OUT_SIGNALS_EN},  
+  {NAME_INPUT_MMS_BLOCK_OUT_SIGNALS_KZ}
+};
+
+const uint8_t name_input_MMS_block[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+{
+ " ¬х.MMS бл.     ",
+ " ¬х.MMS бл.     ",
+ " In.MMS b.      ",
+ " ¬х.MMS бл.     ",
+};
+const uint32_t first_index_number_input_MMS_block[MAX_NAMBER_LANGUAGE] = {11, 11, 10, 11};
+
+const uint8_t name_network_output_block_in_signals[MAX_NAMBER_LANGUAGE][NETWORK_OUTPUT_BLOCK_SIGNALS_IN][MAX_COL_LCD + 1] =
+{
+  {NAME_NETWORK_OUTPUT_BLOCK_IN_SIGNALS_RU},  
+  {NAME_NETWORK_OUTPUT_BLOCK_IN_SIGNALS_UA},  
+  {NAME_NETWORK_OUTPUT_BLOCK_IN_SIGNALS_EN},  
+  {NAME_NETWORK_OUTPUT_BLOCK_IN_SIGNALS_KZ}
+};
+
+const uint8_t name_network_output_block_out_signals[MAX_NAMBER_LANGUAGE][NETWORK_OUTPUT_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1] =
+{
+  {NAME_NETWORK_OUTPUT_BLOCK_OUT_SIGNALS_RU},  
+  {NAME_NETWORK_OUTPUT_BLOCK_OUT_SIGNALS_UA},  
+  {NAME_NETWORK_OUTPUT_BLOCK_OUT_SIGNALS_EN},  
+  {NAME_NETWORK_OUTPUT_BLOCK_OUT_SIGNALS_KZ}
+};
+
+const uint8_t name_network_output_block[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+{
+ " —.вых.бл.      ",
+ " ћер.вих.бл.    ",
+ " N.Output b.    ",
+ " —.вых.бл.      ",
+};
+const uint32_t first_index_number_network_output_block[MAX_NAMBER_LANGUAGE] = {10, 12, 12, 10};
+
 #endif

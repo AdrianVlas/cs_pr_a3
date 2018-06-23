@@ -4706,6 +4706,12 @@
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_input.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_input_GOOSE_block.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_input_MMS_block.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_labels.h</name>
         </file>
         <file>
@@ -4725,6 +4731,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_measurement.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_network_output_block.h</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_menu2_output_led.h</name>

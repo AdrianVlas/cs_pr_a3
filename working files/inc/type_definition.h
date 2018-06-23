@@ -452,6 +452,67 @@ typedef struct
 /**********/
 
 /**********
+‘ункц≥ональний блок "¬х.GOOSE блок"
+**********/
+typedef struct
+{
+  uint32_t param[INPUT_GOOSE_BLOCK_SIGNALS_IN];
+  
+} __settings_for_INPUT_GOOSE_BLOCK;
+
+typedef struct
+{
+  
+  __settings_for_INPUT_GOOSE_BLOCK settings;
+  
+  uint8_t active_state[DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_OUT, 8)];
+
+  uint8_t internal_input[DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_INT_IN, 8)];
+
+} __LN_INPUT_GOOSE_BLOCK;
+/**********/
+
+/**********
+‘ункц≥ональний блок "¬х.MMS блок"
+**********/
+typedef struct
+{
+  uint32_t param[INPUT_MMS_BLOCK_SIGNALS_IN];
+  
+} __settings_for_INPUT_MMS_BLOCK;
+
+typedef struct
+{
+  
+  __settings_for_INPUT_MMS_BLOCK settings;
+  
+  uint8_t active_state[DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_OUT, 8)];
+
+  uint8_t internal_input[DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_INT_IN, 8)];
+
+} __LN_INPUT_MMS_BLOCK;
+/**********/
+
+/**********
+‘ункц≥ональний блок "ћережевий вих≥дний блок"
+**********/
+typedef struct
+{
+  uint32_t param[NETWORK_OUTPUT_BLOCK_SIGNALS_IN];
+  
+} __settings_for_NETWORK_OUTPUT_BLOCK;
+
+typedef struct
+{
+  
+  __settings_for_NETWORK_OUTPUT_BLOCK settings;
+  
+  uint8_t active_state[DIV_TO_HIGHER(NETWORK_OUTPUT_BLOCK_SIGNALS_OUT, 8)];
+
+} __LN_NETWORK_OUTPUT_BLOCK;
+/**********/
+
+/**********
 ∆урнал под≥й
 **********/
 typedef uint32_t __LOG_INPUT;

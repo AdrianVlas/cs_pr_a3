@@ -166,4 +166,19 @@ extern const uint8_t name_ts_out_signals[MAX_NAMBER_LANGUAGE][TS_SIGNALS_OUT][MA
 extern const uint8_t name_ts[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint32_t first_index_number_ts[MAX_NAMBER_LANGUAGE];
 
+extern const uint8_t name_input_GOOSE_block_in_signals[MAX_NAMBER_LANGUAGE][INPUT_GOOSE_BLOCK_SIGNALS_IN][MAX_COL_LCD + 1];
+extern const uint8_t name_input_GOOSE_block_out_signals[MAX_NAMBER_LANGUAGE][INPUT_GOOSE_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1];
+extern const uint8_t name_input_GOOSE_block[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
+extern const uint32_t first_index_number_input_GOOSE_block[MAX_NAMBER_LANGUAGE];
+
+extern const uint8_t name_input_MMS_block_in_signals[MAX_NAMBER_LANGUAGE][INPUT_MMS_BLOCK_SIGNALS_IN][MAX_COL_LCD + 1];
+extern const uint8_t name_input_MMS_block_out_signals[MAX_NAMBER_LANGUAGE][INPUT_MMS_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1];
+extern const uint8_t name_input_MMS_block[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
+extern const uint32_t first_index_number_input_MMS_block[MAX_NAMBER_LANGUAGE];
+
+extern const uint8_t name_network_output_block_in_signals[MAX_NAMBER_LANGUAGE][NETWORK_OUTPUT_BLOCK_SIGNALS_IN][MAX_COL_LCD + 1];
+extern const uint8_t name_network_output_block_out_signals[MAX_NAMBER_LANGUAGE][NETWORK_OUTPUT_BLOCK_SIGNALS_OUT][MAX_COL_LCD + 1];
+extern const uint8_t name_network_output_block[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
+extern const uint32_t first_index_number_network_output_block[MAX_NAMBER_LANGUAGE];
+
 #endif
