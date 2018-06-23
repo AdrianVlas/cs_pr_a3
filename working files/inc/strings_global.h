@@ -506,6 +506,9 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "ГПС             ",
     "ТУ              ",
     "ТС              ",
+    "Вх.GOOSE блок   ",
+    "Вх.MMS блок     ",
+    "Сетевой вых.блок",
     "Ж.Cобытий       "
   },
   {
@@ -525,6 +528,9 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "ГПС             ",
     "ТУ              ",
     "ТС              ",
+    "Вх.GOOSE блок   ",
+    "Вх.MMS блок     ",
+    "Мер.вих.блок    ",
     "Ж.Подій         "
   },
   {
@@ -544,6 +550,9 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "PSG             ",
     "TC              ",
     "TS              ",
+    "In.GOOSE block  ",
+    "In.MMS block    ",
+    "Network Out.bl. ",
     "Ev.Log          "
   },
   {
@@ -563,6 +572,9 @@ const uint8_t name_f_blocks[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_EDITOR_LIST_LOGICAL
     "ГПС             ",
     "ТУ              ",
     "ТС              ",
+    "Вх.GOOSE блок   ",
+    "Вх.MMS блок     ",
+    "Сетевой вых.блок",
     "Ж.Событий       "
   }
 };
@@ -586,6 +598,9 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " ГПС            ",
     " ТУ             ",
     " ТС             ",
+    " Вх.GOOSE блок  ",
+    " Вх.MMS блок    ",
+    " Сетевой вых.бл.",
     " Ж.Событий      "
   },
   {
@@ -605,6 +620,9 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " ГПС            ",
     " ТУ             ",
     " ТС             ",
+    " Вх.GOOSE блок  ",
+    " Вх.MMS блок    ",
+    " Мер.вих.блок   ",
     " Ж.Подій        "
   },
   {
@@ -624,6 +642,9 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " PSG            ",
     " TC             ",
     " TS             ",
+    " In.GOOSE block ",
+    " In.MMS block   ",
+    " Network Out.bl.",
     " Ev.Log         "
   },
   {
@@ -643,6 +664,9 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " ГПС            ",
     " ТУ             ",
     " ТС             ",
+    " Вх.GOOSE блок  ",
+    " Вх.MMS блок    ",
+    " Сетевой вых.бл.",
     " Ж.Событий      "
   }
 };
