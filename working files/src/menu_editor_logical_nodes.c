@@ -2234,7 +2234,7 @@ void select_input_signal_ln(void)
         }
       case ID_FB_INPUT_MMS_BLOCK:
         {
-          param = ((__settings_for_INPUT_MMS_BLOCK*)sca_of_p_edit[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
+          param = ((__settings_for_INPUT_MMS_BLOCK*)sca_of_p_edit[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR] + (number_logical_node - 1))->param[index*n_similar_input_signals + position];
           break;
         }
       case ID_FB_NETWORK_OUTPUT_BLOCK:
