@@ -765,19 +765,27 @@ const uint8_t name_string_info[MAX_NAMBER_LANGUAGE][MAX_ROW_INFO_M2][MAX_COL_LCD
 {
   {
     "   Версия ПО    ",
-    "   Версия КП    "
+    "   Версия КП    ",
+    " Серийный номер ",
+    "   MAC-адрес    "
   },
   {
     "   Версія ПЗ    ",
-    "   Версія КП    "
+    "   Версія КП    ",
+    " Серійний номер ",
+    "   MAC-адреса   "
   },
   {
     "   VER.of F/W   ",
-    "   VER.of MM    "
+    "   VER.of MM    ",
+    " Serial number  ",
+    "  MAC address   "
   },
   {
     "   Версия ПО    ",
-    "   Версия КП    "
+    "   Версия КП    ",
+    " Серийный номер ",
+    "   MAC-адрес    "
   }
 };
 
@@ -984,7 +992,7 @@ const uint8_t name_string_main[MAX_NAMBER_LANGUAGE][MAX_ROW_MAIN_M2][MAX_COL_LCD
    " Настройки      ",
    " Диагностика    ",
    " Метка настроек ",
-   " Версия ПО и КП "
+   " Инфо.          "
   },
   {
    " Годинник       ",
@@ -994,7 +1002,7 @@ const uint8_t name_string_main[MAX_NAMBER_LANGUAGE][MAX_ROW_MAIN_M2][MAX_COL_LCD
    " Налаштування   ",
    " Діагностика    ",
    " Мітка налашт.  ",
-   " Версія ПЗ і КП "
+   " Інфо.          "
   },
   {
    " Clock          ",
@@ -1004,7 +1012,7 @@ const uint8_t name_string_main[MAX_NAMBER_LANGUAGE][MAX_ROW_MAIN_M2][MAX_COL_LCD
    " Settings       ",
    " Diagnostic     ",
    " Settings Mark  ",
-   " VER.of F/W & MM"
+   " Info.          "
   },
   {
    " Саfат          ",
@@ -1014,7 +1022,7 @@ const uint8_t name_string_main[MAX_NAMBER_LANGUAGE][MAX_ROW_MAIN_M2][MAX_COL_LCD
    " Реттегіш       ",
    " Диагностика    ",
    " Метка настроек ",
-   " Версия ПО и КП "
+   " Инфо.          "
   }
 };
 

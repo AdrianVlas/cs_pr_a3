@@ -98,6 +98,45 @@ void make_ekran_info()
           value_str[COL_INFO_BEGIN_2 + 5] = ' ';
 #endif
         }
+        else if ((index_in_ekran>>1) == INDEX_ML_INFO_SERIAL_NUMBER)
+        {
+          uint32_t value = serial_number_dev;
+          uint32_t value_tmp = value;
+          uint32_t number_digits = 0;
+          do
+          {
+            number_digits++;
+            value_tmp /= 10;
+          }
+          while(value_tmp != 0);
+          
+          first_char_row1 = (MAX_COL_LCD - number_digits) >> 1;
+          last_chat_row1 = first_char_row1 + number_digits;
+          uint32_t index = last_chat_row1 - 1;
+          for (uint32_t j = 0; j < number_digits; j++)
+          {
+            value_tmp = value % 10;
+            value_str[index--] = value_tmp + 0x30;
+            value /= 10;
+          }
+        }
+        else if ((index_in_ekran>>1) == INDEX_ML_INFO_MAC_ADDRESS)
+        {
+          uint16_t MAC_address_tmp[3] = {0x0080, 0xE100, serial_number_dev};
+          const uint8_t string[] = "0123456789ABCDEF";
+          
+          value_str[5] = value_str[10] = ':';
+          uint32_t index = 4;
+          for (size_t k1 = 0; k1 < 3; k1++)
+          {
+            for (size_t k2 = 0; k2 < 4; k2++)
+            {
+              value_str[index--] = string[MAC_address_tmp[k1] & 0xf];
+              MAC_address_tmp[k1] >>= 4;
+            }
+            index += (4 + 1 + 4);
+          }
+        }
         
       }
       else
@@ -116,15 +155,23 @@ void make_ekran_info()
   current_state_menu2.position_cursor_y = ((position_temp << 1) + 1) & (MAX_ROW_LCD - 1);
   int last_position_cursor_x = MAX_COL_LCD;
 
-  if (current_state_menu2.index_position == INDEX_INFO_M2_FIWMWARE)
+  if (
+      (current_state_menu2.index_position == INDEX_INFO_M2_FIWMWARE) ||
+      (current_state_menu2.index_position == INDEX_ML_INFO_SERIAL_NUMBER)
+     )   
   {
     current_state_menu2.position_cursor_x = first_char_row1;
     last_position_cursor_x = last_chat_row1;
   }
-  else
+  else if (current_state_menu2.index_position == INDEX_INFO_M2_MEMORY_MAP)
   {
     current_state_menu2.position_cursor_x = COL_INFO_BEGIN_2;
     last_position_cursor_x = COL_END_END_2;
+  }
+  else 
+  {
+    current_state_menu2.position_cursor_x = 0;
+    last_position_cursor_x = MAX_COL_LCD;
   }
 
   //Підтягуємо курсор до першого символу
