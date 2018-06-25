@@ -79,8 +79,10 @@ const enum _menu2_levels next_for_list_timers_menu2 = LIST_SETTINGS_TIMER_MENU2_
 const enum _menu2_levels next_for_list_settings_timer_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_TIMER_MENU2_LEVEL};
 const enum _menu2_levels next_for_list_meanders_menu2 = LIST_SETTINGS_MEANDER_MENU2_LEVEL;
 const enum _menu2_levels next_for_list_settings_meander_menu2[MAX_ROW_LIST_SETTINGS_D_M2] = {DELAY_MEANDER_MENU2_LEVEL};
-const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, ADDRESS_MENU2_LEVEL, SETTINGS_RS485_MENU2_LEVEL};
-const enum _menu2_levels next_for_list_settings_RS485_menu2[MAX_ROW_SETTING_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_settings_communication_parameters_menu2[MAX_ROW_CHCP_M2] = {NAME_OF_CELL_MENU2_LEVEL, LIST_CHOOSE_SETTING_RS485_MENU2_LEVEL, LIST_CHOOSE_SETTING_ETHERNET_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_choose_settings_RS485_menu2[MAX_ROW_CHSRS485_M2] = {LIST_PHY_LAYER_RS485_MENU2_LEVEL, LIST_PROTOCOL_RS485_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_phy_layer_RS485_menu2[MAX_ROW_PHY_LAYER_RS485_M2] = {BAUD_RS485_MENU2_LEVEL, PARE_RS485_MENU2_LEVEL, STOP_BITS_RS485_MENU2_LEVEL, TIMEOUT_RS485_MENU2_LEVEL};
+const enum _menu2_levels next_for_list_protocol_RS485_menu2[MAX_ROW_PROTOCOL_RS485_M2] = {ADDRESS_MENU2_LEVEL};
 const enum _menu2_levels next_for_list_passwords_menu2[MAX_ROW_LIST_PASSWORDS_M2] = {SET_NEW_PASSWORD_MENU2_LEVEL, SET_NEW_PASSWORD_MENU2_LEVEL};
 const enum _menu2_levels next_for_editor_list_logical_nodes_for_input[MAX_ROW_EDITOR_LIST_LOGICAL_NODES_M2] = {EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL, EDITOR_LIST_INPUTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_OUTPUTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_LEDS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ALARMS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_GROUP_ALARMS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ANDS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_ORS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_XORS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_NOTS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TIMERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TRIGGERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_MEANDERS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TUS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_TSS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_INPUT_GOOSE_BLOCKS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_INPUT_MMS_BLOCKS_FOR_INPUT_MENU2_LEVEL, EDITOR_LIST_NETWORK_OUTPUT_BLOCKS_FOR_INPUT_MENU2_LEVEL, EDITOR_VIEW_CHOSEN_SIGNAL_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL};
 const enum _menu2_levels next_for_editor_list_selcted_logical_node_type_for_input = EDITOR_LIST_INPUTS_OF_SELECTED_LOGICAL_NODE_MENU2_LEVEL;
@@ -651,7 +653,9 @@ void main_manu_function_ver2(void)
     case EDITOR_LIST_NETWORK_OUTPUT_BLOCKS_FOR_OUTPUT_MENU2_LEVEL:
     case LIST_SETTINGS_COMMUNIACATION_PARAMETERS_MENU2_LEVEL:
     case NAME_OF_CELL_MENU2_LEVEL:
-    case SETTINGS_RS485_MENU2_LEVEL:
+    case LIST_CHOOSE_SETTING_RS485_MENU2_LEVEL:
+    case LIST_PHY_LAYER_RS485_MENU2_LEVEL:
+    case LIST_PROTOCOL_RS485_MENU2_LEVEL:
     case LIST_PASSWORDS_MENU2_LEVEL:
     case DIAGNOSTICS_MENU2_LEVEL:
     case LABELS_MENU2_LEVEL:
@@ -1074,9 +1078,19 @@ void main_manu_function_ver2(void)
                   p = &next_for_list_settings_communication_parameters_menu2[current_state_menu2.index_position];
                   break;
                 }
-              case SETTINGS_RS485_MENU2_LEVEL:
+              case LIST_CHOOSE_SETTING_RS485_MENU2_LEVEL:
                 {
-                  p = &next_for_list_settings_RS485_menu2[current_state_menu2.index_position];
+                  p = &next_for_list_choose_settings_RS485_menu2[current_state_menu2.index_position];
+                  break;
+                }
+              case LIST_PHY_LAYER_RS485_MENU2_LEVEL:
+                {
+                  p = &next_for_list_phy_layer_RS485_menu2[current_state_menu2.index_position];
+                  break;
+                }
+              case LIST_PROTOCOL_RS485_MENU2_LEVEL:
+                {
+                  p = &next_for_list_protocol_RS485_menu2[current_state_menu2.index_position];
                   break;
                 }
               case LIST_PASSWORDS_MENU2_LEVEL:
@@ -1374,11 +1388,11 @@ void main_manu_function_ver2(void)
     case CTRL_OUTPUT_MENU2_LEVEL:
     case CTRL_LED_MENU2_LEVEL:
     case LANGUAGE_MENU2_LEVEL:
-    case ADDRESS_MENU2_LEVEL:
     case BAUD_RS485_MENU2_LEVEL:
     case PARE_RS485_MENU2_LEVEL:
     case STOP_BITS_RS485_MENU2_LEVEL:
     case TIMEOUT_RS485_MENU2_LEVEL:
+    case ADDRESS_MENU2_LEVEL:
       {
         //Формуємо маску кнопок, які можуть бути натиснутими
         unsigned int maska_keyboard_bits = (1<<BIT_REWRITE) | (1<<BIT_KEY_ENTER);
@@ -2924,28 +2938,25 @@ void new_level_menu(void)
       if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
       break;
     }
-  case ADDRESS_MENU2_LEVEL:
+  case LIST_CHOOSE_SETTING_RS485_MENU2_LEVEL:
     {
       current_state_menu2.p_max_row = NULL;
-      current_state_menu2.max_row = MAX_ROW_ADDRESS_M2;
-      current_state_menu2.func_move = move_into_ekran_simple;
-      current_state_menu2.func_show = make_ekran_address;
-      current_state_menu2.func_press_enter = press_enter_in_address;
-      current_state_menu2.func_press_esc = press_esc_in_address;
-      current_state_menu2.func_change = change_address;
-      current_state_menu2.binary_data = false;
-      /*
-      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
-      відкритого вікна
-      */
-      break;
-    }
-  case SETTINGS_RS485_MENU2_LEVEL:
-    {
-      current_state_menu2.p_max_row = NULL;
-      current_state_menu2.max_row = MAX_ROW_SETTING_RS485_M2;
+      current_state_menu2.max_row = MAX_ROW_CHSRS485_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
       current_state_menu2.func_show = make_ekran_choose_setting_RS485;
+      current_state_menu2.func_press_enter = NULL;
+      current_state_menu2.func_press_esc = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
+      break;
+    }
+  case LIST_PHY_LAYER_RS485_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_PHY_LAYER_RS485_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_phy_layer_RS485;
       current_state_menu2.func_press_enter = NULL;
       current_state_menu2.func_press_esc = NULL;
       current_state_menu2.func_change = NULL;
@@ -3010,6 +3021,35 @@ void new_level_menu(void)
       current_state_menu2.func_press_enter = press_enter_in_timeout_RS485;
       current_state_menu2.func_press_esc = press_esc_in_timeout_RS485;
       current_state_menu2.func_change = change_timeout_RS485;
+      current_state_menu2.binary_data = false;
+      /*
+      current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
+      відкритого вікна
+      */
+      break;
+    }
+  case LIST_PROTOCOL_RS485_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_PROTOCOL_RS485_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_protocol_RS485;
+      current_state_menu2.func_press_enter = NULL;
+      current_state_menu2.func_press_esc = NULL;
+      current_state_menu2.func_change = NULL;
+      current_state_menu2.binary_data = false;
+      if (current_state_menu2.edition == ED_EDITION) current_state_menu2.edition = ED_CAN_BE_EDITED;
+      break;
+    }
+  case ADDRESS_MENU2_LEVEL:
+    {
+      current_state_menu2.p_max_row = NULL;
+      current_state_menu2.max_row = MAX_ROW_ADDRESS_M2;
+      current_state_menu2.func_move = move_into_ekran_simple;
+      current_state_menu2.func_show = make_ekran_address;
+      current_state_menu2.func_press_enter = press_enter_in_address;
+      current_state_menu2.func_press_esc = press_esc_in_address;
+      current_state_menu2.func_change = change_address;
       current_state_menu2.binary_data = false;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 

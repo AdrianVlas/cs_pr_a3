@@ -212,35 +212,47 @@ const uint8_t name_string_choose_communication_parameters[MAX_NAMBER_LANGUAGE][M
 {
   {
     " Имя ячейки     ",
-    " Адрес ячейки   ",
-    " Настр.RS-485   "
+    " RS-485         ",
+    " Ethrenet       "
   },
   {
     " Ім'я комірки   ",
-    " Адреса комірки ",
-    " Налашт.RS-485  "
+    " RS-485         ",
+    " Ethrenet       "
   },
   {
     " Bay name       ",
-    " Bay Address    ",
-    " RS-485 Settings"
+    " RS-485         ",
+    " Ethrenet       "
   },
   {
     " Имя ячейки     ",
-    " Адрес ячейки   ",
-    " Настр.RS-485   "
+    " RS-485         ",
+    " Ethrenet       "
   }
 };
 
-const uint8_t name_string_choose_communication_parameters_address[MAX_NAMBER_LANGUAGE][MAX_ROW_ADDRESS_M2][MAX_COL_LCD + 1] = 
+const uint8_t name_string_choose_settings_RS485[MAX_NAMBER_LANGUAGE][MAX_ROW_CHSRS485_M2][MAX_COL_LCD + 1] = 
 {
-  "     Адрес      ",
-  "     Адреса     ",
-  "    Address     ",
-  "     Адрес      "
+  {
+    " Физический ур. ",
+    " Протокол       "
+  },
+  {
+    " Фізичний рівень",
+    " Протокол       "
+  },
+  {
+    " Physical layer ",
+    " Protocol       "
+  },
+  {
+    " Физический ур. ",
+    " Протокол       "
+  }
 };
 
-const uint8_t name_string_choose_communication_parameters_RS485[MAX_NAMBER_LANGUAGE][MAX_ROW_SETTING_RS485_M2][MAX_COL_LCD + 1] = 
+const uint8_t name_string_choose_phy_layer_RS485[MAX_NAMBER_LANGUAGE][MAX_ROW_PHY_LAYER_RS485_M2][MAX_COL_LCD + 1] = 
 {
   {
     " Скорость обмена",
@@ -268,14 +280,14 @@ const uint8_t name_string_choose_communication_parameters_RS485[MAX_NAMBER_LANGU
   }
 };
 
-const uint8_t name_string_choose_communication_parameters_speed[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_BAUD_RS485][MAX_COL_LCD + 1] = 
+const uint8_t name_string_choose_RS485_speed[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_BAUD_RS485][MAX_COL_LCD + 1] = 
 {
   " Скорость обмена",
   " Швидкість обм. ",
   "   Baud rate    ",
   " Скорость обмена"
 };
-const uint8_t information_speed[MAX_NUMBER_BAUD_RS485][MAX_COL_LCD + 1] = 
+const uint8_t information_RS485_speed[MAX_NUMBER_BAUD_RS485][MAX_COL_LCD + 1] = 
 {
   "      9600      ",
   "     14400      ",
@@ -285,23 +297,23 @@ const uint8_t information_speed[MAX_NUMBER_BAUD_RS485][MAX_COL_LCD + 1] =
   "     57600      ",
   "     115200     "
 };
+const uint32_t cursor_x_RS485_speed[MAX_NUMBER_BAUD_RS485] = {5, 4, 4, 4, 4, 4, 4};
 
-const uint8_t name_stringe_communication_parameters_pare[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_PARE_RS485][MAX_COL_LCD + 1] = 
+const uint8_t name_stringe_RS485_pare[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_PARE_RS485][MAX_COL_LCD + 1] = 
 {
   " Контр.четности ",
   " Контр.парності ",
   "     Parity     ",
   " Контр.четности "
 };
-const uint32_t cursor_x_communication_parameters_pare[MAX_NUMBER_BAUD_RS485] = {5, 4, 4, 4, 4, 4, 4};
-const uint8_t information_pare[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485][MAX_COL_LCD + 1] = 
+const uint8_t information_RS485_pare[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485][MAX_COL_LCD + 1] = 
 {
   {"      Нет       ", "     Нечет.     ", "      Чет.      "},
   {"      Нема      ", "    Непарн.     ", "      Парн.     "},
   {"      None      ", "      Odd       ", "      Even      "},
   {"      Нет       ", "     Нечет.     ", "      Чет.      "}
 };
-const uint32_t cursor_x_pare[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485 + 1] = 
+const uint32_t cursor_x_RS485_pare[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485 + 1] = 
 {
   {5, 4, 5, 4},
   {5, 3, 5, 3},
@@ -309,21 +321,21 @@ const uint32_t cursor_x_pare[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485 + 1] =
   {5, 4, 5, 4}
 };
 
-const uint8_t name_stringe_communication_parameters_stopbits[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_STOP_BITS_RS485][MAX_COL_LCD + 1] = 
+const uint8_t name_stringe_RS485_stopbits[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_STOP_BITS_RS485][MAX_COL_LCD + 1] = 
 {
   " Колич.стоп-бит ",
   "Кільк.стоп-біт  ",
   "   Stop Bits    ",
   " Колич.стоп-бит "
 };
-const uint8_t information_stopbits[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485][MAX_COL_LCD + 1] = 
+const uint8_t information_RS485_stopbits[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485][MAX_COL_LCD + 1] = 
 {
   {"      Один      ", "      Два       "},
   {"      Один      ", "      Два       "},
   {"      One       ", "      Two       "},
   {"      Один      ", "      Два       "}
 };
-const uint32_t cursor_x_stopbits[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485] = 
+const uint32_t cursor_x_RS485_stopbits[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485] = 
 {
   {5, 5},
   {5, 5},
@@ -331,12 +343,36 @@ const uint32_t cursor_x_stopbits[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485
   {5, 5}
 };
 
-const uint8_t name_stringe_communication_parameters_timeout[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_TIMEOUT_RS485][MAX_COL_LCD + 1] = 
+const uint8_t name_stringe_RS485_timeout[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_TIMEOUT_RS485][MAX_COL_LCD + 1] = 
 {
   "  Конец приёма  ",
   "Кінець приймання",
   "End of Reception",
   "  Конец приёма  "
+};
+
+const uint8_t name_string_choose_protocol_RS485[MAX_NAMBER_LANGUAGE][MAX_ROW_PROTOCOL_RS485_M2][MAX_COL_LCD + 1] = 
+{
+  {
+    " Адрес Modbus   "
+  },
+  {
+    " Адреса Modbus  "
+  },
+  {
+    " Address Modbus "
+  },
+  {
+    " Адрес Modbus   "
+  }
+};
+
+const uint8_t name_string_Modbus_address[MAX_NAMBER_LANGUAGE][MAX_ROW_ADDRESS_M2][MAX_COL_LCD + 1] = 
+{
+  "     Адрес      ",
+  "     Адреса     ",
+  "    Address     ",
+  "     Адрес      "
 };
 
 const uint8_t name_string_choose_settings_logical_nodes_delay[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_D_M2][MAX_COL_LCD + 1] = 

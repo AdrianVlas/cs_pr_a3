@@ -110,7 +110,7 @@ void make_ekran_address(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_choose_communication_parameters_address[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_Modbus_address[index_language][index_in_ekran_tmp][j];
 
           first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
           vaga = 100; //максимальний ваговий коефіцієнт
@@ -287,7 +287,40 @@ void make_ekran_choose_setting_RS485(void)
   {
     for (size_t j = 0; j < MAX_COL_LCD; j++) 
     {
-      working_ekran[i][j] = (index_in_ekran < MAX_ROW_SETTING_RS485_M2) ? name_string_choose_communication_parameters_RS485[index_language][index_in_ekran][j] : ' ';
+      working_ekran[i][j] = (index_in_ekran < MAX_ROW_CHSRS485_M2) ? name_string_choose_settings_RS485[index_language][index_in_ekran][j] : ' ';
+    }
+    index_in_ekran++;
+  }
+
+  //Курсор по горизонталі відображається на першій позиції
+  current_state_menu2.position_cursor_x = 0;
+  //Відображення курору по вертикалі
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  //Курсор видимий
+  current_state_menu2.cursor_on = 1;
+  //Курсор не мигає
+  current_state_menu2.cursor_blinking_on = 0;
+  //Обновити повністю весь екран
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
+}
+/*****************************************************/
+
+/*****************************************************/
+//Формуємо екран відображення заголовків налаштувань фізичного рівня RS-485
+/*****************************************************/
+void make_ekran_phy_layer_RS485(void)
+{
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
+  
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  
+  //Копіюємо  рядки у робочий екран
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
+  {
+    for (size_t j = 0; j < MAX_COL_LCD; j++) 
+    {
+      working_ekran[i][j] = (index_in_ekran < MAX_ROW_PHY_LAYER_RS485_M2) ? name_string_choose_phy_layer_RS485[index_language][index_in_ekran][j] : ' ';
     }
     index_in_ekran++;
   }
@@ -339,17 +372,17 @@ void make_ekran_baud_RS485(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_choose_communication_parameters_speed[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_string_choose_RS485_speed[index_language][index_in_ekran_tmp][j];
         }
         else
         {
           //У парному номері рядку виводимо значення уставки
           if (value < MAX_NUMBER_BAUD_RS485)
           {
-            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_speed[value][j];
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_RS485_speed[value][j];
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x_communication_parameters_pare[value];
+              current_state_menu2.position_cursor_x = cursor_x_RS485_speed[value];
             }
           }
           else
@@ -497,16 +530,16 @@ void make_ekran_pare_RS485()
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_stringe_communication_parameters_pare[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_stringe_RS485_pare[index_language][index_in_ekran_tmp][j];
         }
         else
         {
           if (value < MAX_NUMBER_PARE_RS485)
           {
-            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_pare[index_language][value][j];
+            for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = information_RS485_pare[index_language][value][j];
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x_pare[index_language][value];
+              current_state_menu2.position_cursor_x = cursor_x_RS485_pare[index_language][value];
             }
           }
           else
@@ -654,16 +687,16 @@ void make_ekran_stopbits_RS485()
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_stringe_communication_parameters_stopbits[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_stringe_RS485_stopbits[index_language][index_in_ekran_tmp][j];
         }
         else
         {
           if (value < MAX_NUMBER_STOP_BITS_RS485)
           {
-            for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information_stopbits[index_language][value][j];
+            for (unsigned int j = 0; j<MAX_COL_LCD; j++) working_ekran[i][j] = information_RS485_stopbits[index_language][value][j];
             if (position_temp == index_in_ekran_tmp)
             {
-              current_state_menu2.position_cursor_x = cursor_x_stopbits[index_language][value];
+              current_state_menu2.position_cursor_x = cursor_x_RS485_stopbits[index_language][value];
             }
           }
           else
@@ -813,7 +846,7 @@ void make_ekran_timeout_RS485(void)
         if ((i & 0x1) == 0)
         {
           //У непарному номері рядку виводимо заголовок
-          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_stringe_communication_parameters_timeout[index_language][index_in_ekran_tmp][j];
+          for (size_t j = 0; j < MAX_COL_LCD; j++) working_ekran[i][j] = name_stringe_RS485_timeout[index_language][index_in_ekran_tmp][j];
 
           first_symbol = 0; //помічаємо, що ще ніодин значущий символ не виведений
           vaga = 100; //максимальний ваговий коефіцієнт для вилілення старшого розряду
@@ -975,6 +1008,39 @@ void change_timeout_RS485(unsigned int action)
     }
     
   }
+}
+/*****************************************************/
+
+/*****************************************************/
+//Формуємо екран відображення заголовків налаштувань протоколів для RS-485
+/*****************************************************/
+void make_ekran_protocol_RS485(void)
+{
+  int index_language = index_language_in_array(select_struct_settings_fix()->language);
+  
+  unsigned int position_temp = current_state_menu2.index_position;
+  unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
+  
+  //Копіюємо  рядки у робочий екран
+  for (size_t i = 0; i < MAX_ROW_LCD; i++)
+  {
+    for (size_t j = 0; j < MAX_COL_LCD; j++) 
+    {
+      working_ekran[i][j] = (index_in_ekran < MAX_ROW_PROTOCOL_RS485_M2) ? name_string_choose_protocol_RS485[index_language][index_in_ekran][j] : ' ';
+    }
+    index_in_ekran++;
+  }
+
+  //Курсор по горизонталі відображається на першій позиції
+  current_state_menu2.position_cursor_x = 0;
+  //Відображення курору по вертикалі
+  current_state_menu2.position_cursor_y = position_temp & (MAX_ROW_LCD - 1);
+  //Курсор видимий
+  current_state_menu2.cursor_on = 1;
+  //Курсор не мигає
+  current_state_menu2.cursor_blinking_on = 0;
+  //Обновити повністю весь екран
+  current_state_menu2.current_action = ACTION_WITH_CARRENT_EKRANE_FULL_UPDATE;
 }
 /*****************************************************/
 

@@ -38,18 +38,20 @@ extern const uint8_t name_event_log_out_signals[MAX_NAMBER_LANGUAGE][EVENT_LOG_S
 
 
 extern const uint8_t name_string_choose_communication_parameters[MAX_NAMBER_LANGUAGE][MAX_ROW_CHCP_M2][MAX_COL_LCD + 1];
-extern const uint8_t name_string_choose_communication_parameters_address[MAX_NAMBER_LANGUAGE][MAX_ROW_ADDRESS_M2][MAX_COL_LCD + 1];
-extern const uint8_t name_string_choose_communication_parameters_RS485[MAX_NAMBER_LANGUAGE][MAX_ROW_SETTING_RS485_M2][MAX_COL_LCD + 1];
-extern const uint8_t name_string_choose_communication_parameters_speed[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_BAUD_RS485][MAX_COL_LCD + 1];
-extern const uint8_t information_speed[MAX_NUMBER_BAUD_RS485][MAX_COL_LCD + 1];
-extern const uint8_t name_stringe_communication_parameters_pare[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_PARE_RS485][MAX_COL_LCD + 1];
-extern const uint32_t cursor_x_communication_parameters_pare[MAX_NUMBER_BAUD_RS485];
-extern const uint8_t information_pare[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485][MAX_COL_LCD + 1];
-extern const uint32_t cursor_x_pare[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485 + 1];
-extern const uint8_t name_stringe_communication_parameters_stopbits[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_STOP_BITS_RS485][MAX_COL_LCD + 1];
-extern const uint8_t information_stopbits[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485][MAX_COL_LCD + 1];
-extern const uint32_t cursor_x_stopbits[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485];
-extern const uint8_t name_stringe_communication_parameters_timeout[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_TIMEOUT_RS485][MAX_COL_LCD + 1];
+extern const uint8_t name_string_choose_settings_RS485[MAX_NAMBER_LANGUAGE][MAX_ROW_CHSRS485_M2][MAX_COL_LCD + 1];
+extern const uint8_t name_string_choose_phy_layer_RS485[MAX_NAMBER_LANGUAGE][MAX_ROW_PHY_LAYER_RS485_M2][MAX_COL_LCD + 1];
+extern const uint8_t name_string_choose_RS485_speed[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_BAUD_RS485][MAX_COL_LCD + 1];
+extern const uint8_t information_RS485_speed[MAX_NUMBER_BAUD_RS485][MAX_COL_LCD + 1];
+extern const uint32_t cursor_x_RS485_speed[MAX_NUMBER_BAUD_RS485];
+extern const uint8_t name_stringe_RS485_pare[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_PARE_RS485][MAX_COL_LCD + 1];
+extern const uint8_t information_RS485_pare[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485][MAX_COL_LCD + 1];
+extern const uint32_t cursor_x_RS485_pare[MAX_NAMBER_LANGUAGE][MAX_NUMBER_PARE_RS485 + 1];
+extern const uint8_t name_stringe_RS485_stopbits[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_STOP_BITS_RS485][MAX_COL_LCD + 1];
+extern const uint8_t information_RS485_stopbits[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485][MAX_COL_LCD + 1];
+extern const uint32_t cursor_x_RS485_stopbits[MAX_NAMBER_LANGUAGE][MAX_NUMBER_STOP_BITS_RS485];
+extern const uint8_t name_stringe_RS485_timeout[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_TIMEOUT_RS485][MAX_COL_LCD + 1];
+extern const uint8_t name_string_choose_protocol_RS485[MAX_NAMBER_LANGUAGE][MAX_ROW_PROTOCOL_RS485_M2][MAX_COL_LCD + 1];
+extern const uint8_t name_string_Modbus_address[MAX_NAMBER_LANGUAGE][MAX_ROW_ADDRESS_M2][MAX_COL_LCD + 1];
 
 extern const uint8_t name_string_choose_settings_logical_nodes_delay[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_D_M2][MAX_COL_LCD + 1];
 extern const uint8_t name_string_choose_settings_logical_nodes_control[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_C_M2][MAX_COL_LCD + 1];
