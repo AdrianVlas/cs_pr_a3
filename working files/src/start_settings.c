@@ -1561,6 +1561,18 @@ void min_settings(__SETTINGS_FIX *target_label)
   
   target_label->language = LANGUAGE_EN;
   
+  target_label->IP4[0] = 192;
+  target_label->IP4[1] = 168;
+  target_label->IP4[2] = 0;
+  target_label->IP4[3] = 11;
+
+  target_label->mask = NETWORK_MASK_DEFAULT;
+
+  target_label->gateway[0] = 0;
+  target_label->gateway[1] = 0;
+  target_label->gateway[2] = 0;
+  target_label->gateway[3] = 0;
+
   target_label->schematic = 0; /*признак мінімальних налаштувань*/
 
   uint8_t *label_to_time_array;
