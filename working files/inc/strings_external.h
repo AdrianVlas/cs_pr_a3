@@ -52,6 +52,8 @@ extern const uint32_t cursor_x_RS485_stopbits[MAX_NAMBER_LANGUAGE][MAX_NUMBER_ST
 extern const uint8_t name_stringe_RS485_timeout[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_VIEW_TIMEOUT_RS485][MAX_COL_LCD + 1];
 extern const uint8_t name_string_choose_protocol_RS485[MAX_NAMBER_LANGUAGE][MAX_ROW_PROTOCOL_RS485_M2][MAX_COL_LCD + 1];
 extern const uint8_t name_string_Modbus_address[MAX_NAMBER_LANGUAGE][MAX_ROW_ADDRESS_M2][MAX_COL_LCD + 1];
+extern const uint8_t name_string_choose_settings_Ethernet[MAX_NAMBER_LANGUAGE][MAX_ROW_CHSETH_M2][MAX_COL_LCD + 1];
+extern const uint8_t name_string_settings_network_layer_Ethernet[MAX_NAMBER_LANGUAGE][MAX_ROW_SNLETH_M2][MAX_COL_LCD + 1];
 
 extern const uint8_t name_string_choose_settings_logical_nodes_delay[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_D_M2][MAX_COL_LCD + 1];
 extern const uint8_t name_string_choose_settings_logical_nodes_control[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_C_M2][MAX_COL_LCD + 1];

@@ -52,4 +52,26 @@ enum __index_protocol_RS485
 #define COL_ADDRESS_BEGIN                6
 #define COL_ADDRESS_END                  8
 
+enum __index_choose_settings_Ethernet
+{
+  INDEX_CHSETH_M2_NETWORK_LAYER = 0,
+  
+  MAX_ROW_CHSETH_M2
+};
+
+enum __index_settings_network_layer_Ethernet
+{
+  INDEX_SNLETH_M2_IPV4 = 0,
+  INDEX_SNLETH_M2_MASK,
+  INDEX_SNLETH_M2_GATEWAY,
+  
+  MAX_ROW_SNLETH_M2
+};
+
+#define COL_IP4_GATEWAY_BEGIN           1
+#define COL_IP4_GATEWAY_END             MAX_COL_LCD
+
+#define COL_MASK_BEGIN                 7
+#define COL_MASK_END                   8
+
 #endif

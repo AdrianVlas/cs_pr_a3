@@ -115,6 +115,11 @@ extern enum _result_pressed_enter_during_edition press_enter_in_timeout_RS485(vo
 extern void press_esc_in_timeout_RS485(void);
 extern void change_timeout_RS485(unsigned int);
 extern void make_ekran_protocol_RS485(void);
+extern void make_ekran_choose_setting_Ethernet(void);
+extern void make_ekran_settings_network_layer_Ethrenet(void);
+extern enum _result_pressed_enter_during_edition press_enter_in_settings_network_layer_Ethrenet(void);
+extern void press_esc_in_settings_network_layer_Ethrenet(void);
+extern void change_settings_network_layer_Ethrenet(unsigned int);
 extern void make_ekran_choose_passwords(void);
 extern void make_ekran_password(void);
 extern void inc_or_dec_value(unsigned int *, unsigned int);

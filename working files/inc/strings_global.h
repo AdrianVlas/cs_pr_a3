@@ -375,6 +375,50 @@ const uint8_t name_string_Modbus_address[MAX_NAMBER_LANGUAGE][MAX_ROW_ADDRESS_M2
   "     Адрес      "
 };
 
+const uint8_t name_string_choose_settings_Ethernet[MAX_NAMBER_LANGUAGE][MAX_ROW_CHSETH_M2][MAX_COL_LCD + 1] = 
+{
+  {
+    " Сетевой ур.    "/*,
+    " Протокол       "*/
+  },
+  {
+    " Мережевий р-нь "/*,
+    " Протокол       "*/
+  },
+  {
+    " Network layer  "/*,
+    " Protocol       "*/
+  },
+  {
+    " Сетевой ур.    "/*,
+    " Протокол       "*/
+  }
+};
+
+const uint8_t name_string_settings_network_layer_Ethernet[MAX_NAMBER_LANGUAGE][MAX_ROW_SNLETH_M2][MAX_COL_LCD + 1] = 
+{
+  {
+    "      IPv4      ",
+    "     Маска      ",
+    "      Шлюз      "
+  }, 
+  {
+    "      IPv4      ",
+    "     Маска      ",
+    "      Шлюз      "
+  }, 
+  {
+    "      IPv4      ",
+    "      Mask      ",
+    "    Geteway     "
+  },
+  {
+    "      IPv4      ",
+    "     Маска      ",
+    "      Шлюз      "
+  }  
+};
+
 const uint8_t name_string_choose_settings_logical_nodes_delay[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_SETTINGS_D_M2][MAX_COL_LCD + 1] = 
 {
   {

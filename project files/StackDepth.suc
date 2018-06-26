@@ -74,6 +74,8 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          make_ekran_stopbits_RS485, press_enter_in_stopbits_RS485, press_esc_in_stopbits_RS485, change_stopbits_RS485,
                                          make_ekran_timeout_RS485, press_enter_in_timeout_RS485, press_esc_in_timeout_RS485, change_timeout_RS485,
                                          make_ekran_protocol_RS485,
+                                         make_ekran_settings_network_layer_Ethrenet, press_enter_in_settings_network_layer_Ethrenet, press_esc_in_settings_network_layer_Ethrenet, change_settings_network_layer_Ethrenet,
+                                         make_ekran_choose_setting_Ethernet,
                                          make_ekran_address, press_enter_in_address, press_esc_in_address, change_address,
                                          make_ekran_choose_passwords, press_enter_in_ekran_with_request,
                                          move_into_diagnostics, make_ekran_diagnostics,
