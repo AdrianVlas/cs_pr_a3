@@ -1527,6 +1527,9 @@
         </file>
       </group>
       <group>
+        <name>MO</name>
+      </group>
+      <group>
         <name>protection</name>
         <file>
           <name>$PROJ_DIR$\..\..\working files\inc\const_df.h</name>

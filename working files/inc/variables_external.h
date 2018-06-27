@@ -285,6 +285,21 @@ extern unsigned int edit_serial_number_dev;
 extern unsigned int control_word_of_watchdog;
 extern unsigned int test_watchdogs;
 
+//Міжпроцесорний обмін
+extern uint8_t Canal1_MO_Transmit[BUFFER_CANAL1_MO];
+extern uint8_t Canal1_MO_Received[BUFFER_CANAL1_MO];
+extern uint32_t confirm_diagnostyka_mo;
+extern uint8_t Canal2_MO_Transmit[BUFFER_CANAL2_MO];
+extern uint8_t Canal2_MO_Received[BUFFER_CANAL2_MO];
+extern unsigned int Canal1, Canal2;
+extern const uint8_t my_address_mo;
+extern uint32_t IEC_board_present;
+extern uint32_t IEC_board_address;
+extern uint32_t queue_mo, queue_mo_irq;
+extern uint32_t state_array_control_state;
+extern uint8_t IEC_time_edit[7]; 
+extern uint32_t IEC_save_time; 
+
 //Змінна глобальної помилки
 extern unsigned int total_error;
 

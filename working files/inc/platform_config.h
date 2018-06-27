@@ -272,6 +272,89 @@
   /********************************************/
 
   /********************************************/
+  /*CANAL1 для міжпроцесорного зв'язкуц*/
+  /********************************************/
+#define GPIO_CANAL1_MO                    GPIOA
+#define RCC_AHB1Periph_GPIO_CANAL1_MO     RCC_AHB1Periph_GPIOA
+
+#define GPIO_TxPin_CANAL1_MO             GPIO_Pin_9
+#define GPIO_TxPin_CANAL1_MOSource       GPIO_PinSource9
+#define GPIO_RxPin_CANAL1_MO             GPIO_Pin_10
+#define GPIO_RxPin_CANAL1_MOSource       GPIO_PinSource10
+
+#define CANAL1_MO                        USART1
+#define RCC_CANAL1_MO                    RCC_APB2Periph_USART1
+#define CANAL1_MO_DR_Base                ((uint32_t)0x40011004)
+
+#define GPIO_AF_CANAL1_MO                GPIO_AF_USART1
+
+//#define CANAL1_MO_IRQn                   USART1_IRQn
+//#define CANAL1_MO_IRQHandler             USART1_IRQHandler
+
+//#define DMA_StreamCANAL1_MO_Tx_IRQn       DMA2_Stream7_IRQn
+//#define DMA_StreamCANAL1_MO_Tx_IRQHandler DMA2_Stream7_IRQHandler
+#define DMA_ChannelCANAL1_MO_Tx           DMA_Channel_4
+#define DMA_StreamCANAL1_MO_Tx            DMA2_Stream7
+#define DMA_FLAG_TCCANAL1_MO_Tx           DMA_FLAG_TCIF7
+#define DMA_FLAG_HTCANAL1_MO_Tx           DMA_FLAG_HTIF7
+#define DMA_FLAG_TEICANAL1_MO_Tx          DMA_FLAG_TEIF7
+#define DMA_FLAG_DMEICANAL1_MO_Tx         DMA_FLAG_DMEIF7
+#define DMA_FLAG_FEICANAL1_MO_Tx          DMA_FLAG_FEIF7
+
+#define DMA_ChannelCANAL1_MO_Rx           DMA_Channel_4
+#define DMA_StreamCANAL1_MO_Rx            DMA2_Stream2
+#define DMA_FLAG_TCCANAL1_MO_Rx           DMA_FLAG_TCIF2
+#define DMA_FLAG_HTCANAL1_MO_Rx           DMA_FLAG_HTIF2
+#define DMA_FLAG_TEICANAL1_MO_Rx          DMA_FLAG_TEIF2
+#define DMA_FLAG_DMEICANAL1_MO_Rx         DMA_FLAG_DMEIF2
+#define DMA_FLAG_FEICANAL1_MO_Rx          DMA_FLAG_FEIF2
+
+#define GPIO_CANAL1_MO_Out1               GPIOB
+#define GPIO_PIN_CANAL1_MO_Out1           GPIO_Pin_1
+#define RCC_AHB1Periph_GPIO_CANAL1_MO_Out1 RCC_AHB1Periph_GPIOB
+
+  /********************************************/
+
+  /********************************************/
+  /*CANAL2 для міжпроцесорного зв'язкуц*/
+  /********************************************/
+#define GPIO_CANAL2_MO                    GPIOC
+#define RCC_AHB1Periph_GPIO_CANAL2_MO     RCC_AHB1Periph_GPIOC
+
+#define GPIO_TxPin_CANAL2_MO             GPIO_Pin_6
+#define GPIO_TxPin_CANAL2_MOSource       GPIO_PinSource6
+#define GPIO_RxPin_CANAL2_MO             GPIO_Pin_7
+#define GPIO_RxPin_CANAL2_MOSource       GPIO_PinSource7
+
+#define CANAL2_MO                        USART6
+#define RCC_CANAL2_MO                    RCC_APB2Periph_USART6
+#define CANAL2_MO_DR_Base                ((uint32_t)0x40011404)
+
+#define GPIO_AF_CANAL2_MO                GPIO_AF_USART6
+
+//#define CANAL2_MO_IRQn                   USART6_IRQn
+//#define CANAL2_MO_IRQHandler             USART6_IRQHandler
+
+//#define DMA_StreamCANAL2_MO_Tx_IRQn       DMA2_Stream6_IRQn
+//#define DMA_StreamCANAL2_MO_Tx_IRQHandler DMA2_Stream6_IRQHandler
+#define DMA_ChannelCANAL2_MO_Tx           DMA_Channel_5
+#define DMA_StreamCANAL2_MO_Tx            DMA2_Stream6
+#define DMA_FLAG_TCCANAL2_MO_Tx           DMA_FLAG_TCIF6
+#define DMA_FLAG_HTCANAL2_MO_Tx           DMA_FLAG_HTIF6
+#define DMA_FLAG_TEICANAL2_MO_Tx          DMA_FLAG_TEIF6
+#define DMA_FLAG_DMEICANAL2_MO_Tx         DMA_FLAG_DMEIF6
+#define DMA_FLAG_FEICANAL2_MO_Tx          DMA_FLAG_FEIF6
+
+#define DMA_ChannelCANAL2_MO_Rx           DMA_Channel_5
+#define DMA_StreamCANAL2_MO_Rx            DMA2_Stream1
+#define DMA_FLAG_TCCANAL2_MO_Rx           DMA_FLAG_TCIF1
+#define DMA_FLAG_HTCANAL2_MO_Rx           DMA_FLAG_HTIF1
+#define DMA_FLAG_TEICANAL2_MO_Rx          DMA_FLAG_TEIF1
+#define DMA_FLAG_DMEICANAL2_MO_Rx         DMA_FLAG_DMEIF1
+#define DMA_FLAG_FEICANAL2_MO_Rx          DMA_FLAG_FEIF1
+  /********************************************/
+
+  /********************************************/
   /* Зовнішній Watchdog*/
   /********************************************/
 #define GPIO_EXTERNAL_WATCHDOG                  GPIOC  

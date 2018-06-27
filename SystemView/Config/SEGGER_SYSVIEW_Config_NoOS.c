@@ -132,11 +132,13 @@ static void _cbSendSystemDesc(void) {
   SEGGER_SYSVIEW_SendSysDesc("I#48=I2C_ER");
   SEGGER_SYSVIEW_SendSysDesc("I#51=SPI_DF");
   SEGGER_SYSVIEW_SendSysDesc("I#52=SPI_Meas.");
+  SEGGER_SYSVIEW_SendSysDesc("I#53=CANAL1_MO");
   SEGGER_SYSVIEW_SendSysDesc("I#54=USART_RS485");
   SEGGER_SYSVIEW_SendSysDesc("I#63=DMA_I2C_Tx");
   SEGGER_SYSVIEW_SendSysDesc("I#66=TIM_Meas.");
   SEGGER_SYSVIEW_SendSysDesc("I#72=DMA_DF_Rx");
   SEGGER_SYSVIEW_SendSysDesc("I#83=USB_OTG_FS");
+  SEGGER_SYSVIEW_SendSysDesc("I#87=CANAL2_MO");
 }
 
 /*********************************************************************

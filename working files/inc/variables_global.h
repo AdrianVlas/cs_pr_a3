@@ -401,6 +401,21 @@ unsigned int edit_serial_number_dev;
 unsigned int control_word_of_watchdog = 0;
 unsigned int test_watchdogs = 0;
 
+//Міжпроцесорний обмін
+uint8_t Canal1_MO_Transmit[BUFFER_CANAL1_MO];
+uint8_t Canal1_MO_Received[BUFFER_CANAL1_MO];
+uint32_t confirm_diagnostyka_mo;
+uint8_t Canal2_MO_Transmit[BUFFER_CANAL2_MO];
+uint8_t Canal2_MO_Received[BUFFER_CANAL2_MO];
+unsigned int Canal1, Canal2;
+const uint8_t my_address_mo = 0;
+uint32_t IEC_board_present = false;
+uint32_t IEC_board_address;
+uint32_t queue_mo, queue_mo_irq;
+uint32_t state_array_control_state;
+uint8_t IEC_time_edit[7]; 
+uint32_t IEC_save_time; 
+
 //Змінна глобальної помилки
 unsigned int total_error;
 

@@ -745,6 +745,12 @@ void start_settings_peripherals(void)
   GPIO_Init(GPIO_485DE, &GPIO_InitStructure);
   /* Знімаємо пін 485DE */
   GPIO_ResetBits(GPIO_485DE, GPIO_PIN_485DE);
+
+  /* Canal1_MO_Out1*/
+  GPIO_InitStructure.GPIO_Pin = GPIO_PIN_CANAL1_MO_Out1;
+  GPIO_Init(GPIO_CANAL1_MO_Out1, &GPIO_InitStructure);
+  /* Знімаємо пін Canal1_MO_Out */
+  GPIO_ResetBits(GPIO_CANAL1_MO_Out1, GPIO_PIN_CANAL1_MO_Out1);
   /**************/
 
   /**************/
@@ -805,6 +811,22 @@ void start_settings_peripherals(void)
   /* Configure USART_RS485 Rx/Tx as alternate function push-pull */
   GPIO_InitStructure.GPIO_Pin = GPIO_TxPin_RS485 | GPIO_RxPin_RS485;
   GPIO_Init(GPIO_USART_RS485, &GPIO_InitStructure);
+
+  //Перекидаємо піни PA9/Tx_CANAL1_MO, PA10/Rx_CANAL1_MO
+  GPIO_PinAFConfig(GPIO_CANAL1_MO, GPIO_TxPin_CANAL1_MOSource, GPIO_AF_CANAL1_MO);
+  GPIO_PinAFConfig(GPIO_CANAL1_MO, GPIO_RxPin_CANAL1_MOSource, GPIO_AF_CANAL1_MO);
+
+  /* Configure CANAL1_MO Rx/Tx as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = GPIO_TxPin_CANAL1_MO | GPIO_RxPin_CANAL1_MO;
+  GPIO_Init(GPIO_CANAL1_MO, &GPIO_InitStructure);
+
+  //Перекидаємо піни PA9/Tx_CANAL2_MO, PA10/Rx_CANAL2_MO
+  GPIO_PinAFConfig(GPIO_CANAL2_MO, GPIO_TxPin_CANAL2_MOSource, GPIO_AF_CANAL2_MO);
+  GPIO_PinAFConfig(GPIO_CANAL2_MO, GPIO_RxPin_CANAL2_MOSource, GPIO_AF_CANAL2_MO);
+
+  /* Configure CANAL2_MO Rx/Tx as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = GPIO_TxPin_CANAL2_MO | GPIO_RxPin_CANAL2_MO;
+  GPIO_Init(GPIO_CANAL2_MO, &GPIO_InitStructure);
   /**********************/
 
   /* Під'єднання EXTI Line0 to POWER_CTRL_PIN піну */
@@ -910,6 +932,58 @@ void start_settings_peripherals(void)
   DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
   DMA_Init(DMA_StreamRS485_Tx, &DMA_InitStructure);
   DMA_ClearFlag(DMA_StreamRS485_Tx, DMA_FLAG_TCRS485_Tx | DMA_FLAG_HTRS485_Tx | DMA_FLAG_TEIRS485_Tx | DMA_FLAG_DMEIRS485_Tx | DMA_FLAG_FEIRS485_Tx);
+
+  /* Прийом по CANAL1_MO*/
+  DMA_DeInit(DMA_StreamCANAL1_MO_Rx);
+  while (DMA_GetCmdStatus(DMA_StreamCANAL1_MO_Rx) != DISABLE);
+  
+  DMA_InitStructure.DMA_Channel = DMA_ChannelCANAL1_MO_Rx;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = CANAL1_MO_DR_Base;
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)Canal1_MO_Received;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+  DMA_InitStructure.DMA_BufferSize = BUFFER_CANAL1_MO;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh; /*Так як № потоку DMA_ChannelCANAL1_MO_Tx > за № потоку DMA_ChannelCANAL1_MO_Rx, то DMA_ChannelCANAL1_MO_Rx має пріориет над DMA_ChannelCANAL1_MO_Tx при однаковому програмному пріоритеті*/
+  DMA_Init(DMA_StreamCANAL1_MO_Rx, &DMA_InitStructure);
+  DMA_ClearFlag(DMA_StreamCANAL1_MO_Rx, DMA_FLAG_TCCANAL1_MO_Rx | DMA_FLAG_HTCANAL1_MO_Rx | DMA_FLAG_TEICANAL1_MO_Rx | DMA_FLAG_DMEICANAL1_MO_Rx | DMA_FLAG_FEICANAL1_MO_Rx);
+  
+  /* Передача по CANAL1_MO*/
+  DMA_DeInit(DMA_StreamCANAL1_MO_Tx);
+  while (DMA_GetCmdStatus(DMA_StreamCANAL1_MO_Tx) != DISABLE);
+
+  DMA_InitStructure.DMA_Channel = DMA_ChannelCANAL1_MO_Tx;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = CANAL1_MO_DR_Base;
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)Canal1_MO_Transmit;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+  DMA_InitStructure.DMA_BufferSize = 0;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh; /*Так як № потоку DMA_ChannelCANAL1_MO_Tx > за № потоку DMA_ChannelCANAL1_MO_Rx, то DMA_ChannelCANAL1_MO_Rx має пріориет над DMA_ChannelCANAL1_MO_Tx при однаковому програмному пріоритеті*/;
+  DMA_Init(DMA_StreamCANAL1_MO_Tx, &DMA_InitStructure);
+  DMA_ClearFlag(DMA_StreamCANAL1_MO_Tx, DMA_FLAG_TCCANAL1_MO_Tx | DMA_FLAG_HTCANAL1_MO_Tx | DMA_FLAG_TEICANAL1_MO_Tx | DMA_FLAG_DMEICANAL1_MO_Tx | DMA_FLAG_FEICANAL1_MO_Tx);
+
+  /* Прийом по CANAL2_MO*/
+  DMA_DeInit(DMA_StreamCANAL2_MO_Rx);
+  while (DMA_GetCmdStatus(DMA_StreamCANAL2_MO_Rx) != DISABLE);
+  
+  DMA_InitStructure.DMA_Channel = DMA_ChannelCANAL2_MO_Rx;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = CANAL2_MO_DR_Base;
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)Canal2_MO_Received;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+  DMA_InitStructure.DMA_BufferSize = BUFFER_CANAL2_MO;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh; /*Так як № потоку DMA_ChannelCANAL2_MO_Tx > за № потоку DMA_ChannelCANAL2_MO_Rx, то DMA_ChannelCANAL2_MO_Rx має пріориет над DMA_ChannelCANAL2_MO_Tx при однаковому програмному пріоритеті*/
+  DMA_Init(DMA_StreamCANAL2_MO_Rx, &DMA_InitStructure);
+  DMA_ClearFlag(DMA_StreamCANAL2_MO_Rx, DMA_FLAG_TCCANAL2_MO_Rx | DMA_FLAG_HTCANAL2_MO_Rx | DMA_FLAG_TEICANAL2_MO_Rx | DMA_FLAG_DMEICANAL2_MO_Rx | DMA_FLAG_FEICANAL2_MO_Rx);
+  
+  /* Передача по CANAL2_MO*/
+  DMA_DeInit(DMA_StreamCANAL2_MO_Tx);
+  while (DMA_GetCmdStatus(DMA_StreamCANAL2_MO_Tx) != DISABLE);
+
+  DMA_InitStructure.DMA_Channel = DMA_ChannelCANAL2_MO_Tx;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = CANAL2_MO_DR_Base;
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)Canal2_MO_Transmit;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+  DMA_InitStructure.DMA_BufferSize = 0;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh; /*Так як № потоку DMA_ChannelCANAL2_MO_Tx > за № потоку DMA_ChannelCANAL2_MO_Rx, то DMA_ChannelCANAL2_MO_Rx має пріориет над DMA_ChannelCANAL2_MO_Tx при однаковому програмному пріоритеті*/;
+  DMA_Init(DMA_StreamCANAL2_MO_Tx, &DMA_InitStructure);
+  DMA_ClearFlag(DMA_StreamCANAL2_MO_Tx, DMA_FLAG_TCCANAL2_MO_Tx | DMA_FLAG_HTCANAL2_MO_Tx | DMA_FLAG_TEICANAL2_MO_Tx | DMA_FLAG_DMEICANAL2_MO_Tx | DMA_FLAG_FEICANAL2_MO_Tx);  /**********************/
   /**********************/
 
   /**********************/
@@ -1263,6 +1337,55 @@ void start_settings_peripherals(void)
   //Переконфігуровуємо I2C
   low_speed_i2c = 0xff;
   Configure_I2C(I2C);
+
+  /**********************/
+  //Ініціалізація CANAL1_MO і CANAL2_MO: 6.75Мбіт/с, контроль парності, один стоп біт
+  /**********************/
+  USART_InitTypeDef USART_InitStructure;
+
+  //Заповняємо структуру
+  USART_InitStructure.USART_BaudRate = 6750000;
+  USART_InitStructure.USART_WordLength = USART_WordLength_9b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_Even;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+  
+  //Виконуємо конфігупацію CANAL1_MO
+  USART_OverSampling8Cmd(CANAL1_MO, ENABLE);
+  USART_Init(CANAL1_MO, &USART_InitStructure);
+  //Виконуємо конфігупацію CANAL2_MO
+  USART_OverSampling8Cmd(CANAL2_MO, ENABLE);
+  USART_Init(CANAL2_MO, &USART_InitStructure);
+
+  //Дозволяємо передачу через DMA
+  CANAL1_MO->CR3 |= USART_DMAReq_Rx;
+  CANAL1_MO->CR3 |= USART_DMAReq_Tx;
+  /*------------------------------*/
+  CANAL2_MO->CR3 |= USART_DMAReq_Rx;
+  CANAL2_MO->CR3 |= USART_DMAReq_Tx;
+
+//  //Дозволяємо переривання від CANAL1_MO при фіксації помикли
+//  USART_ITConfig(CANAL1_MO, USART_IT_IDLE, ENABLE);
+//  USART_ITConfig(CANAL1_MO, USART_IT_LBD, ENABLE);
+//  USART_ITConfig(CANAL1_MO, USART_IT_PE, ENABLE);
+//  USART_ITConfig(CANAL1_MO, USART_IT_ERR, ENABLE);
+//  //Дозволяємо переривання від CANAL2_MO при фіксації помикли
+//  USART_ITConfig(CANAL2_MO, USART_IT_IDLE, ENABLE);
+//  USART_ITConfig(CANAL2_MO, USART_IT_LBD, ENABLE);
+//  USART_ITConfig(CANAL2_MO, USART_IT_PE, ENABLE);
+//  USART_ITConfig(CANAL2_MO, USART_IT_ERR, ENABLE);
+
+  //Дозволяємо CANAL1_MO
+  CANAL1_MO->CR1 |= USART_CR1_UE;
+  //Дозволяємо CANAL2_MO
+  CANAL2_MO->CR1 |= USART_CR1_UE;
+  
+  //Запускаэмо канали DMA  на приймання
+  DMA_StreamCANAL1_MO_Rx->CR |= (uint32_t)DMA_SxCR_EN;
+  /*------------------------------*/
+  DMA_StreamCANAL2_MO_Rx->CR |= (uint32_t)DMA_SxCR_EN;
+  /**********************/
 
 
   /**********************/

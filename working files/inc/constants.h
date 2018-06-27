@@ -58,4 +58,7 @@
 
 #include "const_interfaces.h"
 
+#include "const_MO.h"
+#include "diagnostyka_mo.h"
+
 #endif 

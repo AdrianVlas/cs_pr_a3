@@ -43,17 +43,21 @@ void Set_System(void)
                          RCC_AHB1Periph_GPIO_SPI_EDF_A1         |
                          RCC_AHB1Periph_GPIO_CON_OUTPUTS        |
                          RCC_AHB1Periph_GPIO_USART_RS485        |
+                         RCC_AHB1Periph_GPIO_CANAL1_MO          |
+                         RCC_AHB1Periph_GPIO_CANAL2_MO          |
                          RCC_AHB1Periph_GPIO_485DE              |
                          RCC_AHB1Periph_GPIO_EXTERNAL_WATCHDOG  |
-                         RCC_AHB1Periph_GPIO_POWER_CTRL,
+                         RCC_AHB1Periph_GPIO_POWER_CTRL         |
+                         RCC_AHB1Periph_GPIO_CANAL1_MO_Out1,
                          
                          ENABLE);
 
   //APB2
   RCC_APB2PeriphClockCmd(
                          RCC_APB2Periph_SYSCFG  |
-                         RCC_APB2Periph_SPI_DF/*  |
-                         RCC_USARTRS_485*/,
+                         RCC_APB2Periph_SPI_DF  |
+                         RCC_CANAL1_MO          |
+                         RCC_CANAL2_MO,
                          ENABLE);
   
   //APB1
