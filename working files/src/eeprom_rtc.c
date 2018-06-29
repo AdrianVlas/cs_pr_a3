@@ -1620,6 +1620,7 @@ void main_routines_for_i2c(void)
 
       copying_time = 2; //Помічаємо, що зараз  ще також обновляємо масив часу
       //Запускаємо процес запису часу в RTC
+      thousandths_time = 0;
       read_write_i2c_buffer[0] = time[0] = 0;
       read_write_i2c_buffer[1] = time[1] = time_edit[1] & 0x7F;
       read_write_i2c_buffer[2] = time[2] = time_edit[2] & 0x7F;
@@ -1635,6 +1636,7 @@ void main_routines_for_i2c(void)
       copying_time = 1;
 
       //Робимо копію масиву часу для того, щоб коли основний масив буде обновлятися можна було іншим модулям взяти попереднє, але достовірне значення часу і дати з цього масиву
+      thousandths_time_copy = thousandths_time;
       for(unsigned int i = 0; i < 7; i++) time_copy[i] = time[i];
       calibration_copy = calibration;
 
@@ -3338,7 +3340,13 @@ void main_routines_for_i2c(void)
 
       //Обновлюємо час
       copying_time = 2; //Помічаємо, що зараз обновляємо масив часу
-      time[0] = read_write_i2c_buffer[0] & 0xff;
+      
+      uint8_t temp_val = read_write_i2c_buffer[0] & 0xff; 
+      if (time[0] < temp_val) thousandths_time = 0; //Вваджаємо, що починаємо нову десятку тисячних секунди
+      else if (time[0] > temp_val) thousandths_time = 9; //Вваджаємо, що мікросхема вже б зараз мала переходити на нву десятку тисячних секунди, тому "притискаємося до верхньої межі" попередньої десятки
+      //Інакше десяті і соті у пам'яті спаівпадають з десятими і стотими на мікосхемі, тому припускаємо, що і тисячні секунди ідуть правильно, тобто їх коректувати не потрібно
+      
+      time[0] = temp_val;
       time[1] = read_write_i2c_buffer[1] & 0x7f;
       time[2] = read_write_i2c_buffer[2] & 0x7f;
       time[3] = read_write_i2c_buffer[3] & 0x3f;
@@ -3351,6 +3359,7 @@ void main_routines_for_i2c(void)
       copying_time = 1;
       
       //Робимо копію масиву часу для того, щоб коли основний масив буде обновлятися можна було іншим модулям взяти попереднє, але достовірне значення часу і дати з цього масиву
+      thousandths_time_copy = thousandths_time;
       for(unsigned int i = 0; i < 7; i++) time_copy[i] = time[i];
       calibration_copy = calibration;
 

@@ -1812,6 +1812,12 @@
         </file>
       </group>
       <group>
+        <name>MO</name>
+        <file>
+          <name>$PROJ_DIR$\..\..\working files\src\mo.c</name>
+        </file>
+      </group>
+      <group>
         <name>protection</name>
         <file>
           <name>$PROJ_DIR$\..\..\working files\src\measurement.c</name>

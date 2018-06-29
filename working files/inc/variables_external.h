@@ -109,8 +109,8 @@ extern unsigned int periodical_tasks_TEST_FLASH_MEMORY;
 extern const unsigned char odynyci_vymirjuvannja[MAX_NAMBER_LANGUAGE][NUMBER_ODYNYCI_VYMIRJUVANNJA];
 
 extern uint16_t fixed_power_down_into_RTC; 
-extern unsigned char time[7]; 
-extern unsigned char time_copy[7]; 
+extern unsigned char time[7], thousandths_time; 
+extern unsigned char time_copy[7], thousandths_time_copy; 
 extern unsigned char calibration;
 extern unsigned char calibration_copy;
 extern uint16_t copying_time;

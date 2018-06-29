@@ -231,8 +231,8 @@ const unsigned char odynyci_vymirjuvannja[MAX_NAMBER_LANGUAGE][NUMBER_ODYNYCI_VY
 };
 
 SRAM1 uint16_t fixed_power_down_into_RTC/* = 0*/; 
-SRAM1 unsigned char time[7]; 
-SRAM1 unsigned char time_copy[7]; 
+SRAM1 unsigned char time[7], thousandths_time; 
+SRAM1 unsigned char time_copy[7], thousandths_time_copy; 
 SRAM1 unsigned char calibration;
 SRAM1 unsigned char calibration_copy;
 SRAM1 uint16_t copying_time/* = 0*/;
