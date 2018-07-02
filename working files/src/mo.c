@@ -150,10 +150,13 @@ void start_transmint_data_via_CANAL1_MO(void)
       }
     case ID_FB_EVENT_LOG:
       {
-        n = 1;
-        size_block = DIV_TO_HIGHER(NETWORK_OUTPUT_BLOCK_SIGNALS_OUT, 8);
-        p_buffer = (uint8_t*)((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
-        size_struct = 0;/*ц€ зм≥нна не мала б використовуватис€ дл€ "∆урналу под≥й"*/
+        n = (current_config_prt.n_log != 0)*1;
+        if (n != 0)
+        {
+          size_block = DIV_TO_HIGHER(NETWORK_OUTPUT_BLOCK_SIGNALS_OUT, 8);
+          p_buffer = (uint8_t*)((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+          size_struct = 0;/*ц€ зм≥нна не мала б використовуватис€ дл€ "∆урналу под≥й"*/
+        }
         break;
       }
     default: break;
@@ -161,36 +164,41 @@ void start_transmint_data_via_CANAL1_MO(void)
     
     if (n != 0)
     {
-      size_t size_full_block = size_block + size_add_data;
-      for (size_t n_tmp = 0; n_tmp < n; n_tmp++)
+      size_t size_full_block = n*(size_block + size_add_data);
+      if ((index + 1 + 1 + 2 + 2 + size_full_block) < BUFFER_CANAL1_MO)
       {
-        if ((index + 1 + 1 + 2 + 2 + size_full_block) < BUFFER_CANAL1_MO)
-        {
-          sum += Canal1_MO_Transmit[index++] = START_LABEL_NEW_TM;
+        sum += Canal1_MO_Transmit[index++] = START_LABEL_NEW_TM;
     
-          sum += Canal1_MO_Transmit[index++] = index_ln++;
+        sum += Canal1_MO_Transmit[index++] = index_ln++;
     
-          sum += Canal1_MO_Transmit[index++] = 0;
-          sum += Canal1_MO_Transmit[index++] = 0;
+        sum += Canal1_MO_Transmit[index++] = 0;
+        sum += Canal1_MO_Transmit[index++] = 0;
           
-          sum += Canal1_MO_Transmit[index++] = (size_full_block  & 0xff);
-          sum += Canal1_MO_Transmit[index++] = ((size_full_block >> 8) & 0xff);
-    
+        sum += Canal1_MO_Transmit[index++] = (size_full_block  & 0xff);
+        sum += Canal1_MO_Transmit[index++] = ((size_full_block >> 8) & 0xff);
+
+        for (size_t n_tmp = 0; n_tmp < n; n_tmp++)
+        {
           for (uint32_t i = 0; i < size_block; i++) 
           {
             sum += Canal1_MO_Transmit[index++] = p_buffer[i];
           }
-          for (uint32_t i = 0; i < size_add_data; i++) 
+          //ѕереводимо вказ≥вник на наступний елемент
+          p_buffer += size_struct;
+          
+          if (size_add_data != 0)
           {
-            sum += Canal1_MO_Transmit[index++] = p_add_data[i];
+            for (uint32_t i = 0; i < size_add_data; i++) 
+            {
+              sum += Canal1_MO_Transmit[index++] = p_add_data[i];
+            }
+
+            //ѕереводимо вказ≥вник на наступний елемент
+            p_add_data +=size_struct;
           }
         }
-        else break;
-
-        //ѕереводимо вказ≥вник на наступний елемент
-        p_buffer += size_struct;
-        p_add_data +=size_struct;
       }
+      else break;
     }
 
   }
