@@ -32,9 +32,10 @@ void start_transmint_data_via_CANAL1_MO(void)
   
   //ќперативн≥ дан≥
   uint32_t index_ln = 0;
-  size_t size_block, size_add_data = 0;
   for (size_t id = _ID_FB_FIRST_ALL; id < _ID_FB_LAST_ALL; id++)
   {
+    size_t size_block = 0, size_add_data = 0, size_struct = 0;
+    uint8_t *p_buffer = NULL, *p_add_data = NULL;
     uint32_t n = 0;
     switch (id)
     {
@@ -42,67 +43,117 @@ void start_transmint_data_via_CANAL1_MO(void)
       {
         n = 1;
         size_block = DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8);
+        p_buffer = fix_block_active_state;
+        size_struct = 0; /*ц€ зм≥нна не мала б використовуватис€ дл€ "«агального блоку"*/
         break;
       }
     case ID_FB_INPUT:
       {
         n = current_config_prt.n_input;
-        size_block = DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8);
+        if (n != 0)
+        {
+          size_block = DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8);
+          p_buffer = ((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR])->active_state;
+          size_struct = sizeof(__LN_INPUT);
+        }
         break;
       }
     case ID_FB_OUTPUT:
       {
         n = current_config_prt.n_output;
-        size_block = DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8);
+        if (n != 0)
+        {
+          size_block = DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8);
+          p_buffer = ((__LN_OUTPUT_LED*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR])->active_state;
+          size_struct = sizeof(__LN_OUTPUT_LED);
+        }
         break;
       }
     case ID_FB_LED:
       {
         n = current_config_prt.n_led;
-        size_block = DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8);
+        if (n != 0)
+        {
+          size_block = DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8);
+          p_buffer = ((__LN_OUTPUT_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR])->active_state;
+          size_struct = sizeof(__LN_OUTPUT_LED);
+        }
         break;
       }
     case ID_FB_BUTTON:
       {
         n = current_config_prt.n_button;
-        size_block = DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8);
+        if (n != 0)
+        {
+          size_block = DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8);
+          p_buffer = ((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR])->active_state;
+          size_struct = sizeof(__LN_BUTTON);
+        }
         break;
       }
     case ID_FB_ALARM:
       {
         n = current_config_prt.n_alarm;
-        size_block = DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8);
+        if (n != 0)
+        {
+          size_block = DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8);
+          p_buffer = ((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR])->active_state;
+          size_struct = sizeof(__LN_ALARM);
+        }
         break;
       }
     case ID_FB_GROUP_ALARM:
       {
         n = current_config_prt.n_group_alarm;
-        size_block = DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8);
-        size_add_data = sizeof(uint32_t);
+        if (n != 0)
+        {
+          size_block = DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8);
+          size_add_data = sizeof(uint32_t);
+          p_buffer = ((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR])->active_state;
+          p_add_data = (uint8_t*)(&(((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR])->NNC));
+          size_struct = sizeof(__LN_GROUP_ALARM);
+        }
         break;
       }
     case ID_FB_INPUT_GOOSE_BLOCK:
       {
         n = current_config_prt.n_input_GOOSE_block;
-        size_block = DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_OUT, 8);
+        if (n != 0)
+        {
+          size_block = DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_OUT, 8);
+          p_buffer = ((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR])->active_state;
+          size_struct = sizeof(__LN_INPUT_GOOSE_BLOCK);
+        }
         break;
       }
     case ID_FB_INPUT_MMS_BLOCK:
       {
         n = current_config_prt.n_input_MMS_block;
-        size_block = DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8);
+        if (n != 0)
+        {
+          size_block = DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8);
+          p_buffer = ((__LN_INPUT_MMS_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR])->active_state;
+          size_struct = sizeof(__LN_INPUT_MMS_BLOCK);
+        }
         break;
       }
     case ID_FB_NETWORK_OUTPUT_BLOCK:
       {
         n = current_config_prt.n_network_output_block;
-        size_block = DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_OUT, 8);
+        if (n != 0)
+        {
+          size_block = DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_OUT, 8);
+          p_buffer = ((__LN_NETWORK_OUTPUT_BLOCK*)spca_of_p_prt[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR])->active_state;
+          size_struct = sizeof(__LN_NETWORK_OUTPUT_BLOCK);
+        }
         break;
       }
     case ID_FB_EVENT_LOG:
       {
         n = 1;
         size_block = DIV_TO_HIGHER(NETWORK_OUTPUT_BLOCK_SIGNALS_OUT, 8);
+        p_buffer = (uint8_t*)((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+        size_struct = 0;/*ц€ зм≥нна не мала б використовуватис€ дл€ "∆урналу под≥й"*/
         break;
       }
     default: break;
@@ -125,68 +176,6 @@ void start_transmint_data_via_CANAL1_MO(void)
           sum += Canal1_MO_Transmit[index++] = (size_full_block  & 0xff);
           sum += Canal1_MO_Transmit[index++] = ((size_full_block >> 8) & 0xff);
     
-          uint8_t *p_buffer, *p_add_data;
-          switch (id)
-          {
-          case ID_FB_CONTROL_BLOCK:
-            {
-              p_buffer = fix_block_active_state;
-              break;
-            }
-          case ID_FB_INPUT:
-            {
-              p_buffer = ((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR] + n_tmp)->active_state;
-              break;
-            }
-          case ID_FB_OUTPUT:
-            {
-              p_buffer = ((__LN_OUTPUT_LED*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + n_tmp)->active_state;
-              break;
-            }
-          case ID_FB_LED:
-            {
-              p_buffer = ((__LN_OUTPUT_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR] + n_tmp)->active_state;
-              break;
-            }
-          case ID_FB_BUTTON:
-            {
-              p_buffer = ((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + n_tmp)->active_state;
-              break;
-            }
-          case ID_FB_ALARM:
-            {
-              p_buffer = ((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR] + n_tmp)->active_state;
-              break;
-            }
-          case ID_FB_GROUP_ALARM:
-            {
-              p_buffer = ((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + n_tmp)->active_state;
-              p_add_data = (uint8_t*)(&(((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + n_tmp)->NNC));
-              break;
-            }
-          case ID_FB_INPUT_GOOSE_BLOCK:
-            {
-              p_buffer = ((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR] + n_tmp)->active_state;
-              break;
-            }
-          case ID_FB_INPUT_MMS_BLOCK:
-            {
-              p_buffer = ((__LN_INPUT_MMS_BLOCK*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR] + n_tmp)->active_state;
-              break;
-            }
-          case ID_FB_NETWORK_OUTPUT_BLOCK:
-            {
-              p_buffer = ((__LN_NETWORK_OUTPUT_BLOCK*)spca_of_p_prt[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR] + n_tmp)->active_state;
-              break;
-            }
-          case ID_FB_EVENT_LOG:
-            {
-              p_buffer = (uint8_t*)((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + 0);
-              break;
-            }
-          default: break;
-          }
-          
           for (uint32_t i = 0; i < size_block; i++) 
           {
             sum += Canal1_MO_Transmit[index++] = p_buffer[i];
@@ -197,6 +186,10 @@ void start_transmint_data_via_CANAL1_MO(void)
           }
         }
         else break;
+
+        //ѕереводимо вказ≥вник на наступний елемент
+        p_buffer += size_struct;
+        p_add_data +=size_struct;
       }
     }
 
