@@ -56,24 +56,7 @@
 
 #else
 
-#define KEYBOARD                        GPIOC  
-#define KEYBOARD_SW_1_PIN               GPIO_Pin_7
-#define KEYBOARD_SW_2_PIN               GPIO_Pin_8
-#define KEYBOARD_SW_3_PIN               GPIO_Pin_9
-#define KEYBOARD_SW_4_PIN               GPIO_Pin_6
-#define RCC_AHB1Periph_GPIO_KEYBOARD    RCC_AHB1Periph_GPIOC
-
-#define KEYBOARD_SW_A                           GPIOC
-#define KEYBOARD_SW_A_PIN                       GPIO_Pin_10
-#define RCC_AHB1Periph_GPIO_KEYBOARD_SW_A       RCC_AHB1Periph_GPIOC
-
-#define KEYBOARD_SW_B                           GPIOC
-#define KEYBOARD_SW_B_PIN                       GPIO_Pin_11
-#define RCC_AHB1Periph_GPIO_KEYBOARD_SW_B       RCC_AHB1Periph_GPIOC
-
-#define KEYBOARD_SW_C                           GPIOC
-#define KEYBOARD_SW_C_PIN                       GPIO_Pin_12
-#define RCC_AHB1Periph_GPIO_KEYBOARD_SW_C       RCC_AHB1Periph_GPIOC
+#error  "It is impossible to use old keyboard with communication board"
 
 
 #endif
@@ -272,6 +255,15 @@
   /********************************************/
 
   /********************************************/
+  /* Зовнішній Watchdog*/
+  /********************************************/
+#define GPIO_EXTERNAL_WATCHDOG                  GPIOC  
+#define GPIO_PIN_EXTERNAL_WATCHDOG              GPIO_Pin_13
+#define RCC_AHB1Periph_GPIO_EXTERNAL_WATCHDOG   RCC_AHB1Periph_GPIOC
+
+  /********************************************/
+
+  /********************************************/
   /*CANAL1 для міжпроцесорного зв'язкуц*/
   /********************************************/
 #define GPIO_CANAL1_MO                    GPIOA
@@ -354,14 +346,6 @@
 #define DMA_FLAG_FEICANAL2_MO_Rx          DMA_FLAG_FEIF1
   /********************************************/
 
-  /********************************************/
-  /* Зовнішній Watchdog*/
-  /********************************************/
-#define GPIO_EXTERNAL_WATCHDOG                  GPIOC  
-#define GPIO_PIN_EXTERNAL_WATCHDOG              GPIO_Pin_13
-#define RCC_AHB1Periph_GPIO_EXTERNAL_WATCHDOG   RCC_AHB1Periph_GPIOC
-
-  /********************************************/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 

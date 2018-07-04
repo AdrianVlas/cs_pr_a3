@@ -473,6 +473,7 @@ typedef struct
   uint8_t active_state[DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_OUT, 8)];
 
   uint8_t internal_input[DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_INT_IN, 8)];
+  uint8_t internal_input_ctrl[DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_INT_IN, 8)];
 
 } __LN_INPUT_GOOSE_BLOCK;
 /**********/
@@ -494,6 +495,7 @@ typedef struct
   uint8_t active_state[DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_OUT, 8)];
 
   uint8_t internal_input[DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_INT_IN, 8)];
+  uint8_t internal_input_ctrl[DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_INT_IN, 8)];
 
 } __LN_INPUT_MMS_BLOCK;
 /**********/
@@ -649,5 +651,24 @@ typedef enum _bit_byte
   BYTE_REQUEST
     
 } __bit_byte;
+
+typedef struct _control_struct
+{
+  uint32_t off_on;
+  
+  uint32_t n;
+  uintptr_t size_struct;
+  
+  uint8_t *p_buffer_tx;
+  uintptr_t size_block_tx;
+  uint8_t *p_add_data_tx;
+  uintptr_t size_add_data_tx;
+  
+  uint8_t *p_buffer_rx;
+  uint8_t *p_buffer_ctrl_rx;
+  uintptr_t size_block_rx;
+  
+} __control_struct;
+
 
 #endif

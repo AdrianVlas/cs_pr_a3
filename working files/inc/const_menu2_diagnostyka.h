@@ -66,6 +66,22 @@ ERROR_SPI_DF_BIT,
 ERROR_EXTERNAL_SRAM_BIT,
 ERROR_INTERNAL_FLASH_BIT,
 
+ERROR_CPU_RECEIVING_CANAL_1,
+ERROR_CPU_RECEIVED_PACKET_CANAL_1,
+ERROR_CPU_ANSWER_CANAL_1,
+ERROR_CPU_NO_ANSWER_CANAL_1,
+ERROR_IEC_RECEIVING_CANAL_1,
+ERROR_IEC_RECEIVED_PACKET_CANAL_1,
+ERROR_IEC_REQUEST_CANAL_1,
+
+ERROR_CPU_RECEIVING_CANAL_2,
+ERROR_CPU_RECEIVED_PACKET_CANAL_2,
+ERROR_CPU_ANSWER_CANAL_2,
+ERROR_CPU_NO_ANSWER_CANAL_2,
+ERROR_IEC_RECEIVING_CANAL_2,
+ERROR_IEC_RECEIVED_PACKET_CANAL_2,
+ERROR_IEC_REQUEST_CANAL_2,
+
 ERROR_DIGITAL_OUTPUTS_BIT,
 
 _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
@@ -75,6 +91,37 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
 
 
 #define NUMBER_ERRORS (_NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS + current_config_prt.n_output)
+
+#define WORD_0_MASKA_ERRORS_FROM_CANAL_1 0
+#define WORD_1_MASKA_ERRORS_FROM_CANAL_1 (unsigned int)       \
+          (                                                   \
+           (1 << (ERROR_CPU_RECEIVING_CANAL_1 - 32))         |\
+           (1 << (ERROR_CPU_RECEIVED_PACKET_CANAL_1 - 32))   |\
+           (1 << (ERROR_CPU_ANSWER_CANAL_1 - 32))            |\
+           (1 << (ERROR_CPU_NO_ANSWER_CANAL_1 - 32))         |\
+           (1 << (ERROR_IEC_RECEIVING_CANAL_1 - 32))         |\
+           (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_1 - 32))   |\
+           (1 << (ERROR_IEC_REQUEST_CANAL_1 - 32))            \
+          )   
+#define WORD_2_MASKA_ERRORS_FROM_CANAL_1 (unsigned int)       \
+          (                                                   \
+           (1 << (ERROR_IEC_RECEIVING_CANAL_2 - 64))         |\
+           (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_2 - 64))   |\
+           (1 << (ERROR_IEC_REQUEST_CANAL_2 - 64))            \
+          )   
+
+
+#define WORD_0_MASKA_RECEIVING_ERRORS_CANAL_2 0
+#define WORD_1_MASKA_RECEIVING_ERRORS_CANAL_2 (unsigned int)  \
+          (                                                   \
+           (1 << (ERROR_CPU_RECEIVING_CANAL_2 - 32))         |\
+           (1 << (ERROR_CPU_RECEIVED_PACKET_CANAL_2 - 32))    \
+          ) 
+#define WORD_2_MASKA_RECEIVING_ERRORS_CANAL_2 (unsigned int)  \
+          (                                                   \
+           (1 << (ERROR_CPU_ANSWER_CANAL_2 - 64))            |\
+           (1 << (ERROR_CPU_NO_ANSWER_CANAL_2 - 64))          \
+          ) 
 
 #define MASKA_AVAR_ERROR_0        (unsigned int)(               \
     (1 << (ERROR_CONFIG_EEPROM_DEVICE_ID_FAIL_BIT))             \
@@ -108,9 +155,29 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   | (1 << (ERROR_VDD_ADC_TEST_COARSE_BIT - 32))                 \
   | (1 << (ERROR_EXTERNAL_SRAM_BIT - 32))                       \
   | (1 << (ERROR_INTERNAL_FLASH_BIT - 32))                      \
+  | (1 << (ERROR_CPU_RECEIVING_CANAL_1 - 32))                   \
+  | (1 << (ERROR_CPU_RECEIVED_PACKET_CANAL_1 - 32))             \
+  | (1 << (ERROR_CPU_ANSWER_CANAL_1 - 32))                      \
+  | (1 << (ERROR_CPU_NO_ANSWER_CANAL_1 - 32))                   \
+  | (1 << (ERROR_IEC_RECEIVING_CANAL_1 - 32))                   \
+  | (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_1 - 32))             \
+  | (1 << (ERROR_IEC_REQUEST_CANAL_1 - 32))                     \
+  | (1 << (ERROR_CPU_RECEIVING_CANAL_2 - 32))                   \
+  | (1 << (ERROR_CPU_RECEIVED_PACKET_CANAL_2 - 32))             \
+  | (1 << (ERROR_CPU_ANSWER_CANAL_2 - 64))                      \
+  | (1 << (ERROR_CPU_NO_ANSWER_CANAL_2 - 64))                   \
+  | (1 << (ERROR_IEC_RECEIVING_CANAL_2 - 64))                   \
+  | (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_2 - 64))             \
+  | (1 << (ERROR_IEC_REQUEST_CANAL_2 - 64))                     \
 )
 
-#define MASKA_AVAR_ERROR_2              0
+#define MASKA_AVAR_ERROR_2        (unsigned int)(               \
+    (1 << (ERROR_CPU_ANSWER_CANAL_2 - 64))                      \
+  | (1 << (ERROR_CPU_NO_ANSWER_CANAL_2 - 64))                   \
+  | (1 << (ERROR_IEC_RECEIVING_CANAL_2 - 64))                   \
+  | (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_2 - 64))             \
+  | (1 << (ERROR_IEC_REQUEST_CANAL_2 - 64))                     \
+)
 
 
 # define NAME_DIAGN_RU  \
@@ -169,6 +236,20 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
+  "ЦП:Ош.приема к.1",   \
+  "ЦП:Ош.пакета к.1",   \
+  "ЦП:Ош.ответа к.1",   \
+  " ЦП:Нет отв.к.1 ",   \
+  "КП:Ош.приема к.1",   \
+  "КП:Ош.пакета к.1",   \
+  " КП:Ош.запр.к.1 ",   \
+  "ЦП:Ош.приема к.2",   \
+  "ЦП:Ош.пакета к.2",   \
+  "ЦП:Ош.ответа к.2",   \
+  " ЦП:Нет отв.к.2 ",   \
+  "КП:Ош.приема к.2",   \
+  "КП:Ош.пакета к.2",   \
+  " КП:Ош.запр.к.2 ",   \
   " Ош.вых.реле    "
 
 # define NAME_DIAGN_UA  \
@@ -227,6 +308,20 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " Пом.SPI_DF     ",   \
   " Пом.зовн.SRAM  ",   \
   " Пом.внутр.FLASH",   \
+  "ЦП:Пом.прийм.к.1",   \
+  " ЦП:Пом.п-ту к.1",   \
+  " ЦП:Пом.відп.к.1",   \
+  " ЦП:Нема в.к.1  ",   \
+  "КП:Пом.прийм.к.1",   \
+  " КП:Пом.п-ту к.1",   \
+  " КП:Пом.зап.к.1 ",   \
+  "ЦП:Пом.прийм.к.2",   \
+  " ЦП:Пом.п-ту к.2",   \
+  " ЦП:Пом.відп.к.2",   \
+  " ЦП:Нема в.к.2  ",   \
+  "КП:Пом.прийм.к.2",   \
+  " КП:Пом.п-ту к.2",   \
+  " КП:Пом.зап.к.2 ",   \
   " Пом.вих.реле   "
 
 # define NAME_DIAGN_EN  \
@@ -285,6 +380,20 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " DF SPI Err.    ",   \
   " Ext.SRAM Err.  ",   \
   " Int.FLASH Err. ",   \
+  "ЦП:Ош.приема к.1",   \
+  "ЦП:Ош.пакета к.1",   \
+  "ЦП:Ош.ответа к.1",   \
+  " ЦП:Нет отв.к.1 ",   \
+  "КП:Ош.приема к.1",   \
+  "КП:Ош.пакета к.1",   \
+  " КП:Ош.запр.к.1 ",   \
+  "ЦП:Ош.приема к.2",   \
+  "ЦП:Ош.пакета к.2",   \
+  "ЦП:Ош.ответа к.2",   \
+  " ЦП:Нет отв.к.2 ",   \
+  "КП:Ош.приема к.2",   \
+  "КП:Ош.пакета к.2",   \
+  " КП:Ош.запр.к.2 ",   \
   " DO Ctrl.Err.   "
 
 # define NAME_DIAGN_KZ  \
@@ -343,6 +452,20 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   " Ош.SPI_DF      ",   \
   " Ош.внешней SRAM",   \
   " Ош.внутр.FLASH ",   \
+  "ЦП:Ош.приема к.1",   \
+  "ЦП:Ош.пакета к.1",   \
+  "ЦП:Ош.ответа к.1",   \
+  " ЦП:Нет отв.к.1 ",   \
+  "КП:Ош.приема к.1",   \
+  "КП:Ош.пакета к.1",   \
+  " КП:Ош.запр.к.1 ",   \
+  "ЦП:Ош.приема к.2",   \
+  "ЦП:Ош.пакета к.2",   \
+  "ЦП:Ош.ответа к.2",   \
+  " ЦП:Нет отв.к.2 ",   \
+  "КП:Ош.приема к.2",   \
+  "КП:Ош.пакета к.2",   \
+  " КП:Ош.запр.к.2 ",   \
   " Ош.вых.реле    "
 
 

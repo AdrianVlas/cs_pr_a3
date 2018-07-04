@@ -299,6 +299,7 @@ extern void EXITI_POWER_IRQHandler(void);
 extern int str_to_int_DATE_Mmm(void);
 
 extern void start_transmint_data_via_CANAL1_MO(void);
+extern void start_receive_data_via_CANAL1_MO(void);
 
 extern long ChangeCfg(void* pv);
 

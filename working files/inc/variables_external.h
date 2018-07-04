@@ -130,6 +130,9 @@ extern __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;
 extern uint8_t crc_settings;
 extern unsigned int config_settings_modified;
 
+//Масив управлінських структур
+extern __control_struct array_control_struct[NUMBER_ALL_BLOCKS];
+
 //Змінні для визначеня ресурсу процесора-програми
 extern unsigned int restart_resurs_count;
 extern unsigned int resurs_temp;

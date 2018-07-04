@@ -1404,6 +1404,178 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       }
       else if (result == DYN_MEM_NO_ENOUGH_MEM) index_1--;
     }
+  
+    if (
+        (mem_for_prt == true) &&
+        (result == DYN_MEM_SELECT_OK)  
+       )   
+    {
+      //“ребка сформувати управл≥нську структуру дл€ м≥дпроцесорного обм≥ну
+      uint32_t index_ln = 0;
+      for (size_t id = _ID_FB_FIRST_ALL; id < _ID_FB_LAST_ALL; id++)
+      {
+        uint32_t n = 0;
+        size_t size_struct = 0;
+
+        size_t size_block_tx = 0, size_add_data_tx = 0;
+        uint8_t *p_buffer_tx = NULL, *p_add_data_tx = NULL;
+
+        size_t size_block_rx = 0;
+        uint8_t *p_buffer_rx = NULL, *p_buffer_ctrl_rx = NULL;
+        
+        switch (id)
+        {
+        case ID_FB_CONTROL_BLOCK:
+          {
+            n = 1;
+            size_block_tx = DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8);
+            p_buffer_tx = fix_block_active_state;
+            size_struct = 0; /*ц€ зм≥нна не мала б використовуватис€ дл€ "«агального блоку"*/
+            break;
+          }
+        case ID_FB_INPUT:
+          {
+            n = current->n_input;
+            if (n != 0)
+            {
+              size_block_tx = DIV_TO_HIGHER(INPUT_SIGNALS_OUT, 8);
+              p_buffer_tx = ((__LN_INPUT*)spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR])->active_state;
+              size_struct = sizeof(__LN_INPUT);
+            }
+            break;
+          }
+        case ID_FB_OUTPUT:
+          {
+            n = current->n_output;
+            if (n != 0)
+            {
+              size_block_tx = DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8);
+              p_buffer_tx = ((__LN_OUTPUT_LED*)spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR])->active_state;
+              size_struct = sizeof(__LN_OUTPUT_LED);
+            }
+            break;
+          }
+        case ID_FB_LED:
+          {
+            n = current->n_led;
+            if (n != 0)
+            {
+              size_block_tx = DIV_TO_HIGHER(OUTPUT_LED_SIGNALS_OUT_TOTAL, 8);
+              p_buffer_tx = ((__LN_OUTPUT_LED*)spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR])->active_state;
+              size_struct = sizeof(__LN_OUTPUT_LED);
+            }
+            break;
+          }
+        case ID_FB_BUTTON:
+          {
+            n = current->n_button;
+            if (n != 0)
+            {
+              size_block_tx = DIV_TO_HIGHER(BUTTON_SIGNALS_OUT, 8);
+              p_buffer_tx = ((__LN_BUTTON*)spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR])->active_state;
+              size_struct = sizeof(__LN_BUTTON);
+            }
+            break;
+          }
+        case ID_FB_ALARM:
+          {
+            n = current->n_alarm;
+            if (n != 0)
+            {
+              size_block_tx = DIV_TO_HIGHER(ALARM_SIGNALS_OUT, 8);
+              p_buffer_tx = ((__LN_ALARM*)spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR])->active_state;
+              size_struct = sizeof(__LN_ALARM);
+            }
+            break;
+          }
+        case ID_FB_GROUP_ALARM:
+          {
+            n = current->n_group_alarm;
+            if (n != 0)
+            {
+              size_block_tx = DIV_TO_HIGHER(GROUP_ALARM_SIGNALS_OUT, 8);
+              size_add_data_tx = sizeof(uint32_t);
+              p_buffer_tx = ((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR])->active_state;
+              p_add_data_tx = (uint8_t*)(&(((__LN_GROUP_ALARM*)spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR])->NNC));
+              size_struct = sizeof(__LN_GROUP_ALARM);
+            }
+            break;
+          }
+        case ID_FB_INPUT_GOOSE_BLOCK:
+          {
+            n = current->n_input_GOOSE_block;
+            if (n != 0)
+            {
+              size_block_tx = DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_OUT, 8);
+              p_buffer_tx = ((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR])->active_state;
+              size_struct = sizeof(__LN_INPUT_GOOSE_BLOCK);
+              
+              size_block_rx = DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_INT_IN, 8);
+              p_buffer_rx = ((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR])->internal_input;
+              p_buffer_ctrl_rx = ((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR])->internal_input_ctrl;
+            }
+            break;
+          }
+        case ID_FB_INPUT_MMS_BLOCK:
+          {
+            n = current->n_input_MMS_block;
+            if (n != 0)
+            {
+              size_block_tx = DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8);
+              p_buffer_tx = ((__LN_INPUT_MMS_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR])->active_state;
+              size_struct = sizeof(__LN_INPUT_MMS_BLOCK);
+              
+              size_block_rx = DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_INT_IN, 8);
+              p_buffer_rx = ((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR])->internal_input;
+              p_buffer_ctrl_rx = ((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR])->internal_input_ctrl;
+            }
+            break;
+          }
+        case ID_FB_NETWORK_OUTPUT_BLOCK:
+          {
+            n = current->n_network_output_block;
+            if (n != 0)
+            {
+              size_block_tx = DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_OUT, 8);
+              p_buffer_tx = ((__LN_NETWORK_OUTPUT_BLOCK*)spca_of_p_prt[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR])->active_state;
+              size_struct = sizeof(__LN_NETWORK_OUTPUT_BLOCK);
+            }
+            break;
+          }
+        case ID_FB_EVENT_LOG:
+          {
+            n = (current->n_log != 0)*1;
+            if (n != 0)
+            {
+              size_block_tx = DIV_TO_HIGHER(NETWORK_OUTPUT_BLOCK_SIGNALS_OUT, 8);
+              p_buffer_tx = (uint8_t*)((__LOG_INPUT*)spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
+              size_struct = 0;/*ц€ зм≥нна не мала б використовуватис€ дл€ "∆урналу под≥й"*/
+            }
+            break;
+          }
+        default: break;
+        }
+      
+        if (n != 0)
+        {
+          array_control_struct[index_ln].off_on = true;
+
+          array_control_struct[index_ln].n = n;
+          array_control_struct[index_ln].size_struct = size_struct;
+
+          array_control_struct[index_ln].p_buffer_tx = p_buffer_tx;
+          array_control_struct[index_ln].size_block_tx = size_block_tx;
+          array_control_struct[index_ln].p_add_data_tx = p_add_data_tx;
+          array_control_struct[index_ln].size_add_data_tx = size_add_data_tx;
+
+          array_control_struct[index_ln].p_buffer_rx = p_buffer_rx;
+          array_control_struct[index_ln].p_buffer_ctrl_rx = p_buffer_ctrl_rx;
+          array_control_struct[index_ln].size_block_rx = size_block_rx;
+          
+          index_ln++;
+        }
+      }
+    }
   }
   else
   {

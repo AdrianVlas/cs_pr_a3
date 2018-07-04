@@ -274,6 +274,7 @@ void total_error_sw_fixed(unsigned int);
 int str_to_int_DATE_Mmm(void);
 
 void start_transmint_data_via_CANAL1_MO(void);
+void start_receive_data_via_CANAL1_MO(void);
 
 //extern void inputPacketParser(void);
 extern void inputPacketParserUSB(void);

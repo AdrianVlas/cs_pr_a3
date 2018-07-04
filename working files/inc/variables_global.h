@@ -252,6 +252,9 @@ __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;
 uint8_t crc_settings;
 unsigned int config_settings_modified = 0;
 
+//Масив управлінських структур
+__control_struct array_control_struct[NUMBER_ALL_BLOCKS];
+
 //Ресурс++
 unsigned int restart_resurs_count = 0;
 unsigned int resurs_temp = 0;

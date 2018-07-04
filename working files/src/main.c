@@ -193,6 +193,32 @@ inline void periodical_operations(void)
   }
 
   /*******************/
+  //Управління Каналом 2 міжпроцесорного обміну між БАв і комунікаційною платою
+  /*******************/
+  if (
+      (IEC_board_present == true) &&
+      (Canal2 == false)  
+     )   
+  {
+//    CANAL2_MO_routine();
+  }
+  else if ((Canal1 == true) && (Canal2 == true)) Canal2 = false;
+  Canal1 = false;
+  /*******************/
+
+  /*******************/
+  //Якщо прийшла команда на синхронызацыю часу з Ethernet, то запускаємо її в дію
+  /*******************/
+  if (IEC_save_time != 0)
+  {
+    IEC_save_time = false;
+    for(uint32_t i = 0; i < 7; i++) time_edit[i] = IEC_time_edit[i];
+    calibration_edit = (copying_time == 2) ? calibration : calibration_copy;
+    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
+  }
+  /*******************/
+  
+  /*******************/
   //Контроль достовірності важливих даних
   /*******************/
   /*

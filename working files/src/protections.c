@@ -489,7 +489,8 @@ inline void main_protection(void)
       /**************************/
       if (
           ((diagnostyka_tmp_high[0] & MASKA_AVAR_ERROR_0) != 0) ||
-          ((diagnostyka_tmp_high[1] & MASKA_AVAR_ERROR_1) != 0)
+          ((diagnostyka_tmp_high[1] & MASKA_AVAR_ERROR_1) != 0) ||
+          ((diagnostyka_tmp_high[2] & MASKA_AVAR_ERROR_2) != 0)
          )   
       {
         _SET_BIT(fix_block_active_state, FIX_BLOCK_AVAR_DEFECT);
@@ -710,6 +711,16 @@ void TIM2_IRQHandler(void)
     TIM2->SR = (uint16_t)((~(uint32_t)TIM_IT_CC1) & 0xffff);
     uint32_t current_tick = TIM2->CCR1;
     
+    /***********************************************************/
+    //Прийом інформації з комунікаційної плати
+    /***********************************************************/
+    //Перевіряємо чи прийшли дані по каналу CANAL1_MO з комунікаційної плати
+    GPIO_CANAL1_MO_Out1->BSRRL = GPIO_PIN_CANAL1_MO_Out1; //Переводимо пін canal1_Out1 в стан "1"
+    start_receive_data_via_CANAL1_MO();
+    Canal1 = true;
+    GPIO_CANAL1_MO_Out1->BSRRH = GPIO_PIN_CANAL1_MO_Out1; //Переводимо пін canal1_Out1 в стан "0"
+    /***********************************************************/
+
     /***********************************************************/
     //Опрцювання функцій захистів
     /***********************************************************/
