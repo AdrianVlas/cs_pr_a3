@@ -200,7 +200,7 @@ inline void periodical_operations(void)
       (Canal2 == false)  
      )   
   {
-//    CANAL2_MO_routine();
+    CANAL2_MO_routine();
   }
   else if ((Canal1 == true) && (Canal2 == true)) Canal2 = false;
   Canal1 = false;
@@ -257,6 +257,7 @@ inline void periodical_operations(void)
       /***
       Подаємо команду на перезапуск
       ***/
+      GPIO_KP_SOFT_RESET->BSRRL = GPIO_PIN_KP_SOFT_RESET; //Подаємо команду на перезапуск комунікаціної плати
       NVIC_SystemReset();
       
       restart_device = false;

@@ -305,6 +305,10 @@
 #define GPIO_PIN_CANAL1_MO_Out1           GPIO_Pin_1
 #define RCC_AHB1Periph_GPIO_CANAL1_MO_Out1 RCC_AHB1Periph_GPIOB
 
+
+#define GPIO_KP_SOFT_RESET                GPIOB
+#define GPIO_PIN_KP_SOFT_RESET            GPIO_Pin_0
+#define RCC_AHB1Periph_KP_SOFT_RESET      RCC_AHB1Periph_GPIOB
   /********************************************/
 
   /********************************************/

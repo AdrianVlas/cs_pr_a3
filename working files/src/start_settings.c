@@ -751,6 +751,12 @@ void start_settings_peripherals(void)
   GPIO_Init(GPIO_CANAL1_MO_Out1, &GPIO_InitStructure);
   /* «Ì≥Ï‡∫ÏÓ Ô≥Ì Canal1_MO_Out */
   GPIO_ResetBits(GPIO_CANAL1_MO_Out1, GPIO_PIN_CANAL1_MO_Out1);
+
+  /* KP_SOFT_RESET_Out1*/
+  GPIO_InitStructure.GPIO_Pin = GPIO_PIN_KP_SOFT_RESET;
+  GPIO_Init(GPIO_KP_SOFT_RESET, &GPIO_InitStructure);
+  /* «Ì≥Ï‡∫ÏÓ Ô≥Ì KP_SOFT_RESET */
+  GPIO_ResetBits(GPIO_KP_SOFT_RESET, GPIO_PIN_KP_SOFT_RESET);
   /**************/
 
   /**************/

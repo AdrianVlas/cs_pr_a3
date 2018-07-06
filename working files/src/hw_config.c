@@ -48,7 +48,8 @@ void Set_System(void)
                          RCC_AHB1Periph_GPIO_485DE              |
                          RCC_AHB1Periph_GPIO_EXTERNAL_WATCHDOG  |
                          RCC_AHB1Periph_GPIO_POWER_CTRL         |
-                         RCC_AHB1Periph_GPIO_CANAL1_MO_Out1,
+                         RCC_AHB1Periph_GPIO_CANAL1_MO_Out1     |
+                         RCC_AHB1Periph_KP_SOFT_RESET,
                          
                          ENABLE);
 
