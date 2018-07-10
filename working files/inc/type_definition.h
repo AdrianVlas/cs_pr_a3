@@ -656,6 +656,7 @@ typedef struct _control_struct
 {
   uint32_t off_on;
   
+  uint32_t id;
   uint32_t n;
   uintptr_t size_struct;
   

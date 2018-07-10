@@ -1560,6 +1560,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         {
           array_control_struct[index_ln].off_on = true;
 
+          array_control_struct[index_ln].id = id;
           array_control_struct[index_ln].n = n;
           array_control_struct[index_ln].size_struct = size_struct;
 
@@ -1786,7 +1787,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       {
         //Елемент "Вх.GOOSE блок"
         n_cur  = current->n_input_GOOSE_block;
-        current->n_or = n_prev = control->n_input_GOOSE_block;
+        current->n_input_GOOSE_block = n_prev = control->n_input_GOOSE_block;
         
         copy_settings_LN = copy_settings_INPUT_GOOSE_BLOCK;
         size = n_prev*sizeof(__settings_for_INPUT_GOOSE_BLOCK);
@@ -1796,7 +1797,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       {
         //Елемент "Вх.MMS блок"
         n_cur  = current->n_input_MMS_block;
-        current->n_or = n_prev = control->n_input_MMS_block;
+        current->n_input_MMS_block = n_prev = control->n_input_MMS_block;
         
         copy_settings_LN = copy_settings_INPUT_MMS_BLOCK;
         size = n_prev*sizeof(__settings_for_INPUT_MMS_BLOCK);
@@ -1806,7 +1807,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
       {
         //Елемент "Мережевий вихідний блок"
         n_cur  = current->n_network_output_block;
-        current->n_or = n_prev = control->n_network_output_block;
+        current->n_network_output_block = n_prev = control->n_network_output_block;
         
         copy_settings_LN = copy_settings_NETWORK_OUTPUT_BLOCK;
         size = n_prev*sizeof(__settings_for_NETWORK_OUTPUT_BLOCK);
@@ -2712,6 +2713,7 @@ void min_settings_INPUT_GOOSE_BLOCK(unsigned int mem_to_prt, uintptr_t *base, si
       for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_INT_IN, 8); i++)
       {
         ((__LN_INPUT_GOOSE_BLOCK *)(base) + shift)->internal_input[i] = 0;
+        ((__LN_INPUT_GOOSE_BLOCK *)(base) + shift)->internal_input_ctrl[i] = 0;
       }
     }
   }
@@ -2772,6 +2774,7 @@ void min_settings_INPUT_MMS_BLOCK(unsigned int mem_to_prt, uintptr_t *base, size
       for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_INT_IN, 8); i++)
       {
         ((__LN_INPUT_MMS_BLOCK *)(base) + shift)->internal_input[i] = 0;
+        ((__LN_INPUT_MMS_BLOCK *)(base) + shift)->internal_input_ctrl[i] = 0;
       }
     }
   }

@@ -155,29 +155,9 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   | (1 << (ERROR_VDD_ADC_TEST_COARSE_BIT - 32))                 \
   | (1 << (ERROR_EXTERNAL_SRAM_BIT - 32))                       \
   | (1 << (ERROR_INTERNAL_FLASH_BIT - 32))                      \
-  | (1 << (ERROR_CPU_RECEIVING_CANAL_1 - 32))                   \
-  | (1 << (ERROR_CPU_RECEIVED_PACKET_CANAL_1 - 32))             \
-  | (1 << (ERROR_CPU_ANSWER_CANAL_1 - 32))                      \
-  | (1 << (ERROR_CPU_NO_ANSWER_CANAL_1 - 32))                   \
-  | (1 << (ERROR_IEC_RECEIVING_CANAL_1 - 32))                   \
-  | (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_1 - 32))             \
-  | (1 << (ERROR_IEC_REQUEST_CANAL_1 - 32))                     \
-  | (1 << (ERROR_CPU_RECEIVING_CANAL_2 - 32))                   \
-  | (1 << (ERROR_CPU_RECEIVED_PACKET_CANAL_2 - 32))             \
-  | (1 << (ERROR_CPU_ANSWER_CANAL_2 - 64))                      \
-  | (1 << (ERROR_CPU_NO_ANSWER_CANAL_2 - 64))                   \
-  | (1 << (ERROR_IEC_RECEIVING_CANAL_2 - 64))                   \
-  | (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_2 - 64))             \
-  | (1 << (ERROR_IEC_REQUEST_CANAL_2 - 64))                     \
 )
 
-#define MASKA_AVAR_ERROR_2        (unsigned int)(               \
-    (1 << (ERROR_CPU_ANSWER_CANAL_2 - 64))                      \
-  | (1 << (ERROR_CPU_NO_ANSWER_CANAL_2 - 64))                   \
-  | (1 << (ERROR_IEC_RECEIVING_CANAL_2 - 64))                   \
-  | (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_2 - 64))             \
-  | (1 << (ERROR_IEC_REQUEST_CANAL_2 - 64))                     \
-)
+#define MASKA_AVAR_ERROR_2                              0
 
 
 # define NAME_DIAGN_RU  \

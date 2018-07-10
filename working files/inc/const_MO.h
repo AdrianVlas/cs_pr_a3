@@ -98,6 +98,13 @@ enum _state_queue_mo
                          MASKA_FOR_BIT(STATE_QUEUE_MO_ASK_SENDING_SETTING_NETWORK_LAYER)\
                        )    
 
+#define QUEUQ_MO_PROGRESS       (                                                                \
+                                  MASKA_FOR_BIT(STATE_QUEUE_MO_TRANSMITING_BASIC_SETTINGS)     | \
+                                  MASKA_FOR_BIT(STATE_QUEUE_MO_TRANSMITING_MAKING_MEMORY_BLOCK)| \
+                                  MASKA_FOR_BIT(STATE_QUEUE_MO_TRANSMITING_FULL_DESCRIPTION)   | \
+                                  MASKA_FOR_BIT(STATE_QUEUE_MO_RECEIVING_SETTING_NETWORK_LAYER)  \
+                                )    
+
 enum _state_acs
 {
   ACS_MADE = 0,
