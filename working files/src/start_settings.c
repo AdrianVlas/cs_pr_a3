@@ -1690,10 +1690,10 @@ void min_settings(__SETTINGS_FIX *target_label)
   
   target_label->language = LANGUAGE_EN;
   
-  target_label->IP4[0] = 192;
-  target_label->IP4[1] = 168;
-  target_label->IP4[2] = 0;
-  target_label->IP4[3] = 11;
+  target_label->IPv4[0] = 192;
+  target_label->IPv4[1] = 168;
+  target_label->IPv4[2] = 0;
+  target_label->IPv4[3] = 11;
 
   target_label->mask = NETWORK_MASK_DEFAULT;
 

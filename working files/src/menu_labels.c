@@ -129,6 +129,16 @@ void make_ekran_time_config_or_settings(void)
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 2] = '8';
     name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 1] = '5';
   }
+  else if((*(point_to_target + 7)) == NET_PARAMS_FIX_CHANGES)
+  {
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 7] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 6] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 5] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 4] = ' ';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 3] = 'N';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 2] = 'e';
+    name_string[INDEX_TIME_CALIBRATION_M2_TIME][MAX_COL_LCD - 1] = 't';
+  }
   else
   {
     //теоретично ми сюди б не мали ніколи заходити, але якщо ми сюди зайшли, то виводимо сигналізацію про помилку на екран

@@ -369,6 +369,11 @@ void CANAL2_MO_routine()
     if (CANAL2_MO_state == CANAL2_MO_BREAK_LAST_ACTION)
     {
       queue_mo &= (uint32_t)(~QUEUQ_MO_PROGRESS);
+      
+      if ( (config_settings_modified & MASKA_FOR_BIT(BIT_NET_LOCKS)) != 0)
+      {
+        config_settings_modified = 0;
+      }
 
              Canal2_MO_Transmit[index_w++] = START_BYTE_MO;
       sum += Canal2_MO_Transmit[index_w++] = IEC_board_address;
@@ -420,10 +425,10 @@ void CANAL2_MO_routine()
             sum += Canal2_MO_Transmit[index_w++] = serial_number_dev & 0xff;
             sum += Canal2_MO_Transmit[index_w++] = (serial_number_dev >> 8) & 0xff;
           
-            sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.IP4[0] & 0xff;
-            sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.IP4[1] & 0xff;
-            sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.IP4[2] & 0xff;
-            sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.IP4[3] & 0xff;
+            sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.IPv4[0] & 0xff;
+            sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.IPv4[1] & 0xff;
+            sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.IPv4[2] & 0xff;
+            sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.IPv4[3] & 0xff;
         
             sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.mask;
 
@@ -509,26 +514,43 @@ void CANAL2_MO_routine()
         
             _SET_STATE(queue_mo, STATE_QUEUE_MO_TRANSMITING_MAKING_MEMORY_BLOCK);
           }
-//          else if (
-//                   (
-//                    (repeat == false) &&
-//                    (_GET_OUTPUT_STATE(queue_mo, STATE_QUEUE_MO_ASK_SENDING_SETTING_NETWORK_LAYER))
-//                   )
-//                   ||  
-//                   (
-//                    (repeat == true) &&
-//                    (_GET_OUTPUT_STATE(queue_mo, STATE_QUEUE_MO_RECEIVING_SETTING_NETWORK_LAYER))
-//                   )
-//                  )   
-//          {
-//                   Canal2_MO_Transmit[index_w++] = START_BYTE_MO;
-//            sum += Canal2_MO_Transmit[index_w++] = IEC_board_address;
-//            sum += Canal2_MO_Transmit[index_w++] = my_address_mo;
-//  
-//            sum += Canal2_MO_Transmit[index_w++] = REQUEST_SETTINGS_NETWORK_LAYER;
-//        
-//            _SET_STATE(queue_mo, STATE_QUEUE_MO_RECEIVING_SETTING_NETWORK_LAYER);
-//          }
+          else if (
+                   (
+                    (repeat == false) &&
+                    (_GET_OUTPUT_STATE(queue_mo, STATE_QUEUE_MO_ASK_SENDING_SETTING_NETWORK_LAYER))
+                   )
+                   ||  
+                   (
+                    (repeat == true) &&
+                    (_GET_OUTPUT_STATE(queue_mo, STATE_QUEUE_MO_RECEIVING_SETTING_NETWORK_LAYER))
+                   )
+                  )   
+          {
+            
+            if (
+                (config_settings_modified == 0) &&
+                (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT  ) == 0) &&
+                (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_CONFIG_EEPROM_BIT      ) == 0) &&
+                (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_CONFIG_EEPROM_BIT   ) == 0) &&
+                (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_CONFIG_EEPROM_BIT      ) == 0) &&
+                (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT) == 0) &&
+                (_CHECK_SET_BIT(control_i2c_taskes, TASK_WRITING_SETTINGS_EEPROM_BIT    ) == 0) &&
+                (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_READ_SETTINGS_EEPROM_BIT ) == 0) &&
+                (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT    ) == 0)
+               )
+            {
+              //Фіксуємо, що система Net захопила "монополію" на зміну конфігурації і налаштувань
+              config_settings_modified = MASKA_FOR_BIT(BIT_NET_LOCKS);
+            
+                     Canal2_MO_Transmit[index_w++] = START_BYTE_MO;
+              sum += Canal2_MO_Transmit[index_w++] = IEC_board_address;
+              sum += Canal2_MO_Transmit[index_w++] = my_address_mo;
+  
+              sum += Canal2_MO_Transmit[index_w++] = REQUEST_SETTINGS_NETWORK_LAYER;
+        
+              _SET_STATE(queue_mo, STATE_QUEUE_MO_RECEIVING_SETTING_NETWORK_LAYER);
+            }
+          }
         }
       }
       else
@@ -713,69 +735,89 @@ void CANAL2_MO_routine()
             CANAL2_MO_state = CANAL2_MO_ERROR;
           }
         }
-//        else if (_GET_OUTPUT_STATE(queue_mo, STATE_QUEUE_MO_RECEIVING_SETTING_NETWORK_LAYER)) 
-//        {
-//          if (Canal2_MO_Received[3] == SENDING_SETTINGS_NETWORK_LAYER)
-//          {
-//            //Прийняти налаштування мережевого рівня Ethernet
-//            uint16_t IPv4_tmp[4] = {Canal2_MO_Received[4], Canal2_MO_Received[5], Canal2_MO_Received[6], Canal2_MO_Received[7]};
-//            uint32_t mask_tmp = Canal2_MO_Received[8];
-//            uint16_t gateway_tmp[4] = {Canal2_MO_Received[9], Canal2_MO_Received[10], Canal2_MO_Received[11], Canal2_MO_Received[12]};
-//            if (
-//                (current_settings.IP4[0] != IPv4_tmp[0]) ||
-//                (current_settings.IP4[1] != IPv4_tmp[1]) ||
-//                (current_settings.IP4[2] != IPv4_tmp[2]) ||
-//                (current_settings.IP4[3] != IPv4_tmp[3]) ||
-//                (current_settings.mask != mask_tmp) ||
-//                (current_settings.gateway[0] != gateway_tmp[0]) ||
-//                (current_settings.gateway[1] != gateway_tmp[1]) ||
-//                (current_settings.gateway[2] != gateway_tmp[2]) ||
-//                (current_settings.gateway[3] != gateway_tmp[3])
-//               )
-//            {
-//              //Помічаємо, що поле структури зараз буде змінене
-//              changed_settings = CHANGED_ETAP_EXECUTION;
-//            
-//              current_settings.IP4[0] = IPv4_tmp[0];
-//              current_settings.IP4[1] = IPv4_tmp[1];
-//              current_settings.IP4[2] = IPv4_tmp[2];
-//              current_settings.IP4[3] = IPv4_tmp[3];
-//              current_settings.mask = mask_tmp;
-//              current_settings.gateway[0] = gateway_tmp[0];
-//              current_settings.gateway[1] = gateway_tmp[1];
-//              current_settings.gateway[2] = gateway_tmp[2];
-//              current_settings.gateway[3] = gateway_tmp[3];
-//
-//              //Формуємо запис у таблиці настройок про зміну конфігурації і ініціюємо запис у EEPROM нових настройок
-//              fix_change_settings(0, 4);
-//
-//              //Виставляємо признак, що на екрані треба обновити інформацію
-//              new_state_keyboard |= (1<<BIT_REWRITE);
-//            }
-//          
-//            //Відправити підтвердження прийняття налаштувань мережевого рівня Ethernet
-//            sum += Canal2_MO_Transmit[index_w++] = CONFIRM_RECEIVING_SETTINGS_NETWORK_LAYER;
-//            sum += Canal2_MO_Transmit[index_w++] = true;
-//          }
-//          else 
-//          {
-//            index_w = 0;
-//            _CLEAR_STATE(queue_mo, STATE_QUEUE_MO_RECEIVING_SETTING_NETWORK_LAYER);
-//          
-//            if (
-//                (Canal2_MO_Received[3] == ANY_CONFIRMATION) &&
-//                (Canal2_MO_Received[4] == true)
-//               )
-//            {
-//              CANAL2_MO_state = CANAL2_MO_FREE;
-//              Canal2 = true;
-//            }
-//            else
-//            {
-//              CANAL2_MO_state = CANAL2_MO_ERROR;
-//            }
-//          }
-//        }
+        else if (_GET_OUTPUT_STATE(queue_mo, STATE_QUEUE_MO_RECEIVING_SETTING_NETWORK_LAYER)) 
+        {
+          if (Canal2_MO_Received[3] == SENDING_SETTINGS_NETWORK_LAYER)
+          {
+            //Прийняти налаштування мережевого рівня Ethernet
+
+            settings_fix_edit.IPv4[0] = Canal2_MO_Received[4];
+            settings_fix_edit.IPv4[1] = Canal2_MO_Received[5];
+            settings_fix_edit.IPv4[2] = Canal2_MO_Received[6];
+            settings_fix_edit.IPv4[3] = Canal2_MO_Received[7];
+            settings_fix_edit.mask = Canal2_MO_Received[8];
+            settings_fix_edit.gateway[0] = Canal2_MO_Received[9];
+            settings_fix_edit.gateway[1] = Canal2_MO_Received[10];
+            settings_fix_edit.gateway[2] = Canal2_MO_Received[11];
+            settings_fix_edit.gateway[3] = Canal2_MO_Received[12];
+            
+            //Відправити підтвердження прийняття налаштувань мережевого рівня Ethernet
+            sum += Canal2_MO_Transmit[index_w++] = CONFIRM_RECEIVING_SETTINGS_NETWORK_LAYER;
+            sum += Canal2_MO_Transmit[index_w++] = true;
+          }
+          else 
+          {
+            index_w = 0;
+            _CLEAR_STATE(queue_mo, STATE_QUEUE_MO_RECEIVING_SETTING_NETWORK_LAYER);
+          
+            if (
+                (Canal2_MO_Received[3] == ANY_CONFIRMATION) &&
+                (Canal2_MO_Received[4] == true)
+               )
+            {
+              CANAL2_MO_state = CANAL2_MO_FREE;
+              
+              if (
+                  (settings_fix.IPv4[0] != settings_fix_edit.IPv4[0]) ||
+                  (settings_fix.IPv4[1] != settings_fix_edit.IPv4[1]) ||
+                  (settings_fix.IPv4[2] != settings_fix_edit.IPv4[2]) ||
+                  (settings_fix.IPv4[3] != settings_fix_edit.IPv4[3]) ||
+                  (settings_fix.mask != settings_fix_edit.mask) ||
+                  (settings_fix.gateway[0] != settings_fix_edit.gateway[0]) ||
+                  (settings_fix.gateway[1] != settings_fix_edit.gateway[1]) ||
+                  (settings_fix.gateway[2] != settings_fix_edit.gateway[2]) ||
+                  (settings_fix.gateway[3] != settings_fix_edit.gateway[3])
+                 )
+              {
+                //Є реальні зміни
+                config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+              
+                settings_fix.IPv4[0] = settings_fix_edit.IPv4[0];
+                settings_fix.IPv4[1] = settings_fix_edit.IPv4[1];
+                settings_fix.IPv4[2] = settings_fix_edit.IPv4[2];
+                settings_fix.IPv4[3] = settings_fix_edit.IPv4[3];
+                settings_fix.mask = settings_fix_edit.mask;
+                settings_fix.gateway[0] = settings_fix_edit.gateway[0];
+                settings_fix.gateway[1] = settings_fix_edit.gateway[1];
+                settings_fix.gateway[2] = settings_fix_edit.gateway[2];
+                settings_fix.gateway[3] = settings_fix_edit.gateway[3];
+
+                //Треба активувати нові налаштуваня
+                unsigned int result = set_config_and_settings(1, NET_PARAMS_FIX_CHANGES);
+                if (result != 0)
+                {
+                  //Повідомляємо про критичну помилку
+                  current_state_menu2.edition = ED_ERROR;
+                  CANAL2_MO_state = CANAL2_MO_ERROR;
+                }
+                config_settings_modified = 0;
+              }
+              else config_settings_modified = 0;
+              
+              if (CANAL2_MO_state == CANAL2_MO_FREE) Canal2 = true;
+            }
+            else
+            {
+              CANAL2_MO_state = CANAL2_MO_ERROR;
+              unsigned int result = set_config_and_settings(0, NO_MATTER_PARAMS_FIX_CHANGES);
+              if (result != 0)
+              {
+                //Повідомляємо про критичну помилку
+                current_state_menu2.edition = ED_ERROR;
+              }
+            }
+          }
+        }
       }
     
       if (CANAL2_MO_state == CANAL2_MO_ERROR)

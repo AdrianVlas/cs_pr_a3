@@ -1125,7 +1125,7 @@ void make_ekran_settings_network_layer_Ethrenet(void)
              )   
           {
             uint16_t *point_2;
-            if (index_in_ekran_tmp == INDEX_SNLETH_M2_IPV4) point_2 = point_1->IP4;
+            if (index_in_ekran_tmp == INDEX_SNLETH_M2_IPV4) point_2 = point_1->IPv4;
             else if (index_in_ekran_tmp == INDEX_SNLETH_M2_GATEWAY) point_2 = point_1->gateway;
             uint16_t array[4] = {point_2[0], point_2[1], point_2[2], point_2[3]};
           
@@ -1276,8 +1276,8 @@ enum _result_pressed_enter_during_edition press_enter_in_settings_network_layer_
         uint16_t *p_value_edit, *p_value_cont;
         if (current_state_menu2.index_position == INDEX_SNLETH_M2_IPV4)
         {
-          p_value_edit = settings_fix_edit.IP4;
-          p_value_cont = settings_fix.IP4;
+          p_value_edit = settings_fix_edit.IPv4;
+          p_value_cont = settings_fix.IPv4;
         }
         else
         {
@@ -1351,8 +1351,8 @@ void press_esc_in_settings_network_layer_Ethrenet(void)
     uint16_t *p_value_edit, *p_value_cont;
     if (current_state_menu2.index_position == INDEX_SNLETH_M2_IPV4)
     {
-      p_value_edit = settings_fix_edit.IP4;
-      p_value_cont = settings_fix.IP4;
+      p_value_edit = settings_fix_edit.IPv4;
+      p_value_cont = settings_fix.IPv4;
     }
     else
     {
@@ -1398,7 +1398,7 @@ void change_settings_network_layer_Ethrenet(unsigned int action)
       uint16_t *p_value_edit;
       if (current_state_menu2.index_position == INDEX_SNLETH_M2_IPV4)
       {
-        p_value_edit = settings_fix_edit.IP4;
+        p_value_edit = settings_fix_edit.IPv4;
       }
       else
       {

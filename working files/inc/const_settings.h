@@ -59,7 +59,8 @@ enum _action_on_settings
   
   BIT_MENU_LOCKS,
   BIT_USB_LOCKS,
-  BIT_RS485_LOCKS
+  BIT_RS485_LOCKS,
+  BIT_NET_LOCKS
 };
 
 #define AND_SIGNALS_IN                  8

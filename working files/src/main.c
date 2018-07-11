@@ -123,7 +123,7 @@ inline void periodical_operations(void)
       current_state_menu2.edition = ED_ERROR;
     }
     config_settings_modified = 0;
-    type_of_settings_changed_from_interface = 0;
+//    type_of_settings_changed_from_interface = 0;
   }
   //Фіксація сигналу про те що налаштуванння/конфігурація змінені чи ні
   if ((config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION) | MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC))) != 0) 

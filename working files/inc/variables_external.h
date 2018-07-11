@@ -280,7 +280,7 @@ extern uint16_t number_32bit_in_target;
 extern uint16_t restart_timeout_interface;
 extern unsigned int timeout_idle_new_settings;
 extern uint16_t restart_timeout_idle_new_settings;
-extern uint16_t type_of_settings_changed_from_interface;
+//extern uint16_t type_of_settings_changed_from_interface;
 
 extern unsigned int serial_number_dev;
 extern unsigned int edit_serial_number_dev;
