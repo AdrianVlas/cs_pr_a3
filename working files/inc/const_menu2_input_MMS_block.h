@@ -2,20 +2,20 @@
 #define __CONST_INPUT_MMS_BLOCK_MENU2__
 
 #define NAME_INPUT_MMS_BLOCK_IN_SIGNALS_RU           \
-  "Αλ-G.           ",                   \
+  "Αλ-Μ.           ",                   \
   "Αλ-LR           "
 
 #define NAME_INPUT_MMS_BLOCK_IN_SIGNALS_UA           \
-  "Αλ-G.           ",                   \
+  "Αλ-Μ.           ",                   \
   "Αλ-LR           "
 
 
 #define NAME_INPUT_MMS_BLOCK_IN_SIGNALS_EN           \
-  "Bl-G            ",                   \
+  "Bl-M            ",                   \
   "Bl-LR           "
 
 #define NAME_INPUT_MMS_BLOCK_IN_SIGNALS_KZ           \
-  "Αλ-G.           ",                   \
+  "Αλ-Μ.           ",                   \
   "Αλ-LR           "
     
 #define NAME_INPUT_MMS_BLOCK_OUT_SIGNALS_RU          \
