@@ -258,6 +258,17 @@ inline void periodical_operations(void)
       Подаємо команду на перезапуск
       ***/
       GPIO_KP_SOFT_RESET->BSRRL = GPIO_PIN_KP_SOFT_RESET; //Подаємо команду на перезапуск комунікаціної плати
+      
+      //Витримаємо павзу 2,0 мс
+      uint16_t current_count_tim4 = ((uint16_t)TIM4->CNT);
+      uint32_t delta = 0;
+      while (delta < 201) //(200 + 1)* 0,01(мс) = 2,01(мс)
+      {
+        uint16_t new_count_tim4 = ((uint16_t)TIM4->CNT);
+        if (new_count_tim4 >= current_count_tim4) delta = new_count_tim4 - current_count_tim4;
+        else delta = (0x10000 - current_count_tim4) + new_count_tim4; //0x10000 - це повний період таймера, бо ми настроїли його тактуватиу інтервалі [0; 65535]
+      }
+      
       NVIC_SystemReset();
       
       restart_device = false;
