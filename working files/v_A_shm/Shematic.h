@@ -32,7 +32,8 @@ LU_TU,
 LU_TS,
 LU_LOG,
 LU_STNG_FIX,
-TOTAL_LU
+TOTAL_LU,
+ID_OBJ
 };
 
 typedef struct config_tag{ 
@@ -83,6 +84,7 @@ class Shematic
     void* pLUAreaList;
     void* p_current_config_prt;//__CONFIG *
     void* pCFixBlockWrp;
+    void* pExecSeq;
     short arIdxLUAreaListElem[TOTAL_LU];
     char chMaxIteratoin;
     char chIteration;
@@ -95,6 +97,7 @@ public:
     ~Shematic(void);
     void DoCalc(void);
     void DoCalcStatInfo(void);
+    void DoCalcLU_V01(void);
     void DoCalcLU(void);
     void DoCalcLUSources(void);
     void DoCalcLUSourcesStatInfo(void);
@@ -109,6 +112,7 @@ public:
     void printResult(void);
     long InsertLU(long lId, void*pvObjImage);
     long EvalSizeObj(long lId);
+    long AllocateObj(void*pvObjImage);
     void ChangeRelativeOnEvalLinks(void);
     void ChangeStngOrdnumRelOnBase(long lIdxScanedObj);
     void SetupCircutLinks(void *pv);
@@ -248,7 +252,13 @@ typedef struct tag_LULinksInfo{
 	
 }LULinksInfo;
 */
-
+typedef struct tag_AllocInfo{
+	short shBF; // Bit Flags Fld 0-Need Move
+    short shSize; //In bytes
+    void* pvSrc; //Pointer on Area obj in Memory
+    void* pvDsc; //Pointer on Area obj in Alloc Memory
+	
+}AllocInfo;
 
 #define SIZE_LU_AREA_LIST_ITEM sizeof(LUAreaListElem)
 /*

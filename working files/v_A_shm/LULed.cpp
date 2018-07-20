@@ -132,7 +132,7 @@ CLULed& rCLULed = *(static_cast<CLULed*> (pObj));
     } sLV;
     */
     if (chGLBIn1_5 == rCLULed.shShemasOrdNumStng) {
-        asm(
+        asm volatile (
         "bkpt 1"
         );
         /*
@@ -175,7 +175,7 @@ arChIntermediaResult[OFFSET_OUT_IN_MNU_PULSE_EXTANDED_SELECTOR] = 0;//Now Defaul
 
 char *pCh = (this->arrPchIn[(LED_IN_NAME__LEDIN - 1)]);
 /* if(*pCh != 0 && this->shShemasOrdNumStng == 1)
-        asm(
+        asm volatile(
         "bkpt 1"
         ); */
 arChIntermediaResult[OFFSET_OUT_IN_00_LEDIN                   ] = pCh[0];//Now Default
@@ -518,7 +518,7 @@ pLUShcemasDscRec =m_pArLedShcemasDscRecords[shCounterProcessedRec - LED_NOT_01__
                 
             default:
                 shCounterProcessedRec++;
-                asm(
+                asm volatile(
                     "bkpt 1"
                     );
         }

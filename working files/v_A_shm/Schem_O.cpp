@@ -213,7 +213,7 @@ long i,j;
 //    TmrCalls();    
 //    UpdateStateDI();
 if(chStateOptimisation == 2)
-   asm(
+   asm volatile(
        "bkpt 1"
        );
     DoCalcLUSources();
@@ -231,6 +231,9 @@ if(chStateOptimisation == 2)
     i = arIdxLUAreaListElem[LU_OUTPUT-1];
     LUIterator((static_cast<__CONFIG* >(p_current_config_prt))->n_output,i);//
 }
+
+
+
 
 
 //`extern DICfgSuit sDiCfg;
@@ -441,7 +444,7 @@ CLUTrig& refCLUDTrg = *(static_cast<CLUTrig *> (pObj));
     //char *pCh;
     k = 0;
 //    if(chGBL_BP_StopLUTrig == refCLUDTrg.shShemasOrdNumStng)
-//    asm(
+//    asm volatile(
 //                "bkpt 1"
 //                );
 
@@ -496,7 +499,7 @@ void AltOp(void *pObj){
     CPulseAlternator& rPulseAlt = *(static_cast<CPulseAlternator*> (pObj));
     j = rPulseAlt.arrOut[0];
         if(shBkptIdAlt == rPulseAlt.shShemasOrdNumStng)
-   asm(
+   asm volatile(
        "bkpt 1"
        );
     i = rPulseAlt.TAlt(j);
@@ -515,6 +518,35 @@ i = pCLUTu->shShemasOrdNumStng;
     pCLUTu->arrOut[0] = 0;
 }
 
+//Optimization Module Nazar
+void Shematic::DoCalcLU_V01(void){
+register union {
+short* pOrderCalcNum;
+char  *pCh;
+}P;
+long lAmtProcessObj,lIdxCounter;
+long i,j;
+//    TmrCalls();    
+//    UpdateStateDI();
+if(chStateOptimisation == 1)
+   asm volatile(
+       "bkpt 1"
+       );
+    DoCalcLUSources();
+    P.pCh = const_cast<char*>(arrChCalcLUOrderNumsSchmPage2);
+
+    lAmtProcessObj = sizeof(arrChCalcLUOrderNumsSchmPage2)>>1;
+    lIdxCounter = 0;
+    do {
+        i = P.pOrderCalcNum[lIdxCounter];
+        j = i >> 8;
+        i &= 0xff;
+        i += arIdxLUAreaListElem[j-1];
+        LUSelector(i);
+    } while (++lIdxCounter < lAmtProcessObj );
+    i = arIdxLUAreaListElem[LU_OUTPUT-1];
+    LUIterator((static_cast<__CONFIG* >(p_current_config_prt))->n_output,i);//
+}
 
 
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

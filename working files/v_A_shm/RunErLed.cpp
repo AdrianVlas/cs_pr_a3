@@ -112,7 +112,7 @@ char *pCh;
     //pSwrp = reinterpret_cast<SWrp*>(&diagnostyka[0]);
     //pSwrp = reinterpret_cast<SWrp*>(set_diagnostyka);
     if(chGBL_BP_StopRunErrorLed == 1)
-    asm(
+    asm volatile(
                 "bkpt 1"
                 );
 //State Led

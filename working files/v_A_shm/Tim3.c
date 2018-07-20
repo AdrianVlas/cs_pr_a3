@@ -1,8 +1,7 @@
 
 #include "Tim3.h"
 
-//stm32f10x_tim.h и stm32f10x_tim.c.
-
+//stm32f10x_tim.h  stm32f10x_tim.c.
 
 /**
  * General purpose timer 3 interrupt initialization
@@ -46,7 +45,7 @@ TIM_Cmd(TIM3,DISABLE);
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; /* TIM up counting mode*/
     TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure); /*According to the specified parameter initialization of TIMx time base unit*/
 
-	/* Output Compare Timing Mode настроювання: Канал:1 */
+	/* Output Compare Timing Mode Channel:1 */
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_Timing;
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable;
 	TIM_OCInitStructure.TIM_Pulse = TIM2_CCR1_VAL<<1;
