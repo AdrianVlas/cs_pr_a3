@@ -4649,6 +4649,12 @@
                 </file>
             </group>
             <group>
+                <name>MO</name>
+                <file>
+                    <name>$PROJ_DIR$\..\..\working files\inc\const_MO.h</name>
+                </file>
+            </group>
+            <group>
                 <name>protection</name>
                 <file>
                     <name>$PROJ_DIR$\..\..\working files\inc\const_df.h</name>
@@ -5189,6 +5195,12 @@
                             </data>
                         </settings>
                     </configuration>
+                </file>
+            </group>
+            <group>
+                <name>MO</name>
+                <file>
+                    <name>$PROJ_DIR$\..\..\working files\src\mo.c</name>
                 </file>
             </group>
             <group>
@@ -6591,7 +6603,7 @@
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.cpp</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\working files\v_A_shm\baseinpoint.h</name>
+                <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\CLUTs.cpp</name>

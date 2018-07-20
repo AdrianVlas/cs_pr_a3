@@ -1366,9 +1366,6 @@
                 <name>$PROJ_DIR$\..\..\SystemView\SEGGER\SEGGER_SYSVIEW_Int.h</name>
             </file>
         </group>
-        <configuration>
-            <name>Flash-Debug</name>
-        </configuration>
     </group>
     <group>
         <name>USB Device</name>
@@ -1666,6 +1663,12 @@
                 </file>
             </group>
             <group>
+                <name>MO</name>
+                <file>
+                    <name>$PROJ_DIR$\..\..\working files\inc\const_MO.h</name>
+                </file>
+            </group>
+            <group>
                 <name>protection</name>
                 <file>
                     <name>$PROJ_DIR$\..\..\working files\inc\const_df.h</name>
@@ -1945,6 +1948,12 @@
                     <configuration>
                         <name>Flash-Debug</name>
                     </configuration>
+                </file>
+            </group>
+            <group>
+                <name>MO</name>
+                <file>
+                    <name>$PROJ_DIR$\..\..\working files\src\mo.c</name>
                 </file>
             </group>
             <group>
