@@ -33,8 +33,6 @@
   /********************************************/
   //Клавіатура
   /********************************************/
-#ifdef KEYBOARD_VER_1
-
 #define KEYBOARD                        GPIOC  
 #define KEYBOARD_SW_1_PIN               GPIO_Pin_11
 #define KEYBOARD_SW_2_PIN               GPIO_Pin_8
@@ -53,13 +51,6 @@
 #define KEYBOARD_SW_C                           GPIOG
 #define KEYBOARD_SW_C_PIN                       GPIO_Pin_15
 #define RCC_AHB1Periph_GPIO_KEYBOARD_SW_C       RCC_AHB1Periph_GPIOG
-
-#else
-
-#error  "It is impossible to use old keyboard with communication board"
-
-
-#endif
 
   /********************************************/
 

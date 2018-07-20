@@ -227,7 +227,6 @@
                     <state>USE_STDPERIPH_DRIVER</state>
                     <state>STM32F2XX</state>
                     <state>USE_USB_OTG_FS</state>
-                    <state>KEYBOARD_VER_1</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -6860,7 +6859,7 @@
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.cpp</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.h</name>
+                <name>$PROJ_DIR$\..\..\working files\v_A_shm\baseinpoint.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\CLUTs.cpp</name>
@@ -7233,7 +7232,6 @@
                             <state>USE_STDPERIPH_DRIVER</state>
                             <state>STM32F2XX</state>
                             <state>USE_USB_OTG_FS</state>
-                            <state>KEYBOARD_VER_1</state>
                             <state>SYSTEM_VIEWER_ENABLE</state>
                             <state>TEST_MODE</state>
                         </option>
