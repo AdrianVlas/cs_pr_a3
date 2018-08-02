@@ -1,16 +1,14 @@
 <NotepadPlus>
-    <Session activeView="1">
-        <mainView activeIndex="0">
-            <File firstVisibleLine="2" xOffset="0" scrollWidth="2360" startPos="1154" endPos="1154" selMode="0" lang="C" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\I_Shm.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\I_Shm.h" />
-            <File firstVisibleLine="12" xOffset="0" scrollWidth="2360" startPos="518" endPos="518" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\Shematic.cpp" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="2360" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\Shematic.h" />
+    <Session activeView="0">
+        <mainView activeIndex="2">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="250" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_IEC61850\working files\v_A_shm\Shematic.cpp" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="800" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_IEC61850\working files\v_A_shm\LUMms.cpp" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="790" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_IEC61850\working files\v_A_shm\LULan.cpp" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="790" startPos="188" endPos="188" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_IEC61850\working files\v_A_shm\LUGoos.cpp" />
         </mainView>
-        <subView activeIndex="0">
-            <File firstVisibleLine="12" xOffset="0" scrollWidth="1640" startPos="577" endPos="577" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\v_A_shm\Shematic.cpp" />
-            <File firstVisibleLine="302" xOffset="0" scrollWidth="1480" startPos="4494" endPos="4469" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_pr_a\Device-2.12.x.y\working files\inc\type_definition.h">
-                <Fold line="6" />
-            </File>
+        <subView activeIndex="1">
+            <File firstVisibleLine="2" xOffset="0" scrollWidth="400" startPos="99" endPos="99" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_IEC61850\working files\v_A_shm\Schem_O.cpp" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1480" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="G:\emb_pj\CS_Demo\demo3\cs_IEC61850\working files\inc\type_definition.h" />
         </subView>
     </Session>
 </NotepadPlus>
