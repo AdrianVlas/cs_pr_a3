@@ -1,0 +1,9 @@
+cd /G/emb_pj/CS_Demo/demo3/cs_IEC61850
+
+git add -v .
+git commit -m ' A-Version on 04-08-2018'
+git push --repo https://github.com/AdrianVlas/cs_pr_a3.git
+AdnVsforGIT17093
+vid25prtvcs@gmail.com
+git push --repo https://github.com/AdrianVlas/cs_ether61.git
+git  https://github.com/Malynovsky/Device-2.12.x.y
