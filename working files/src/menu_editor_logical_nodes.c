@@ -2006,7 +2006,7 @@ void change_set_signal(unsigned int action)
           }
         case ID_FB_NETWORK_OUTPUT_BLOCK:
           {
-            p_param = &(((__settings_for_INPUT_MMS_BLOCK*)sca_of_p_edit[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
+            p_param = &(((__settings_for_NETWORK_OUTPUT_BLOCK*)sca_of_p_edit[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR] + (number_logical_node_in - 1))->param[index_in*n_similar_input_signals]);
             break;
           }
         case ID_FB_EVENT_LOG:

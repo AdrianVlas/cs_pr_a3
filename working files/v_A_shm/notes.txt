@@ -1,0 +1,35 @@
+
+
+Disassembly Widow
+…
+
+j = 0;
+=== >>> 0x800e91e: 0x2700 MOVS R7, #0
+j = InsertLU(LU_STNG_FIX, static_cast(&locCFixBlockWrp));
+0x800e920: 0xaa10 ADD R2, SP, #0x40
+0x800e922: 0x2119 MOVS R1, #25 ; 0x19
+0x800e924: 0x0028 MOVS R0, R5
+0x800e926: 0xf7ff 0xfb73 BL Shematic::InsertLU(long, void *) ; 0x800e010
+0x800e92a: 0x0004 MOVS R4, R0
+if (j == 0)
+=== >>> 0x800e92c: 0x2c00 CMP R4, #0
+0x800e92e: 0xd106 BNE.N 0x800e93e
+lsLcVarArea.chErrCount |= 1;//Insert Data Error
+
+0	.Блокировка МТЗ1;		GNRPTOC1.Blk.ctlVal 	
+
+22	.Сраб ПО МТЗ1		LD0.GNRPTOC1.Str.general		
+25	.Сраб МТЗ1		LD0.GNRPTOC1.Op.general		
+
+   unsigned short ushDIState;//0
+   unsigned short ushLeds;   //2
+   unsigned short ushOutVcs; //4
+  //CmdWordsHolderDsc CopyCmdFl
+  unsigned long ulDiCmd; 6  
+unsigned long ulPrt1Cmd; 10    
+unsigned long ulPrt2Cmd; 14    
+unsigned long ulOutDefLgcCmd;18
+unsigned long ulInDefLgcCmd;22
+
+Мені треба відобразити біти 22, 25
+Відповідно sAddr  22,6 25,6
