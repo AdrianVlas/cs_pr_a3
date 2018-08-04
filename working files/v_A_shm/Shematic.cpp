@@ -3414,12 +3414,12 @@ shRelativeIndexLU = plcCLUBase->shLUBieldOrdNum - i-1;
             i = UN_LN.pLN_GOOSE[shRelativeIndexLU].settings.param[locChOrdNumIn];
             break;
         case TARAS_ALAS_STNG_LU_MMS:
-            UN_LN.pLN_TS = reinterpret_cast<__LN_TS*>( spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR]);
-            i = UN_LN.pLN_TS[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            UN_LN.pLN_MMS = reinterpret_cast<__LN_INPUT_MMS_BLOCK*>( spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR]);
+            i = UN_LN.pLN_MMS[shRelativeIndexLU].settings.param[locChOrdNumIn];
             break;
         case TARAS_ALAS_STNG_LU_LAN:
-            UN_LN.pLN_TS = reinterpret_cast<__LN_TS*>( spca_of_p_prt[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR]);
-            i = UN_LN.pLN_TS[shRelativeIndexLU].settings.param[locChOrdNumIn];
+            UN_LN.pLN_LAN = reinterpret_cast<__LN_NETWORK_OUTPUT_BLOCK*>( spca_of_p_prt[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR]);
+            i = UN_LN.pLN_LAN[shRelativeIndexLU].settings.param[locChOrdNumIn];
             break;
             
         case TARAS_ALAS_STNG_LU_LOG:
