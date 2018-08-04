@@ -44,7 +44,7 @@ void  Mms__2_8_Op  (void *pObj){
 CLUMms& rCLUMms = *(static_cast<CLUMms *> (pObj));
     long  j, l,k;
 
-    
+     __LN_INPUT_MMS_BLOCK *pMmsBlock = static_cast<__LN_INPUT_MMS_BLOCK *>(rCLUMms.pvCfgLN);
     //        if(chGBL_BP_StopLUTs == rCLUTs.shShemasOrdNumStng)
     //    asm volatile(
     //    "bkpt 1"
@@ -53,7 +53,7 @@ CLUMms& rCLUMms = *(static_cast<CLUMms *> (pObj));
     l = *(rCLUMms.arrPchIn[Mms__2_8_IN_NAME__BLOCK_LR - 1]);
     k = 0;
     if( j == 0 && l == 0){
-        __LN_INPUT_MMS_BLOCK *pMmsBlock = static_cast<__LN_INPUT_MMS_BLOCK *>(rCLUMms.pvCfgLN);
+       
         l = pMmsBlock->internal_input_ctrl[(Mms__2_8_OUT_NAME__CO_1-1) / 8] & (1 << ((Mms__2_8_OUT_NAME__CO_1-1) % 8));
         rCLUMms.arrOut[(Mms__2_8_OUT_NAME__CO_1-1)] = 0;
         if (l > 0) {
@@ -118,11 +118,11 @@ CLUMms& rCLUMms = *(static_cast<CLUMms *> (pObj));
                 rCLUMms.arrOut[(Mms__2_8_OUT_NAME__CO_8-1)] = 1;
                  k |= 1 << ((Mms__2_8_OUT_NAME__CO_8-1) % 8);
         } 
-
-    
+        
+        pMmsBlock->active_state[((Mms__2_8_OUT_NAME__CO_8-1) / 8)] = k;
     }
     else{
-        
+        pMmsBlock->active_state[((Mms__2_8_OUT_NAME__CO_8-1) / 8)] = 0;
         rCLUMms.arrOut[0] = 0;
         rCLUMms.arrOut[1] = 0;
         rCLUMms.arrOut[2] = 0;

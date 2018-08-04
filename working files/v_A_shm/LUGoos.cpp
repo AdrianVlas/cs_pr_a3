@@ -45,14 +45,15 @@ register long i;
         arrPchIn[i] = reinterpret_cast<char*> (0xcccccccc); //&chGblGround;
     for (i = 0; i < chNumOutput; i++)
         arrOut[i] = 0;
-    //chError = 0; 
+    //chError = 0;
+    chIn_C = 0;
 
     
 }
 void Goose__1_8_Op  (void *pObj){
 CLUGoose& rCLUGoose = *(static_cast<CLUGoose *> (pObj));
-    long  j, l,k;
-
+register    long  j, l,k;
+__LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGoose.pvCfgLN);
     
     //        if(chGBL_BP_StopLUTs == rCLUTs.shShemasOrdNumStng)
     //    asm volatile(
@@ -60,75 +61,154 @@ CLUGoose& rCLUGoose = *(static_cast<CLUGoose *> (pObj));
     //    );
     j = *(rCLUGoose.arrPchIn[Goose__1_8_IN_NAME__BLOCK_G  - 1]);
     //l = rCLUGoose.arrPchIn[Goose__1_8_IN_NAME__BLOCK_G - 1];
-    k = 0;
+    k = rCLUGoose.chIn_C;
     if( j == 0 ){
-        __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGoose.pvCfgLN);
+        
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_1-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_1-1) % 8));
-        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_1-1)] = 0;
+        
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_1-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_1-1) % 8));
-            if (j > 0)
-                rCLUGoose.arrOut[0] = 1;
-                k |= 1 << ((Goose__1_8_OUT_NAME__CO_1-1) % 8);
-        } 
+            if (j > 0){
+                //rCLUGoose.arrOut[0] = 1;
+                k |= 1 << ((Goose__1_8_OUT_NAME__CO_1-1) % 8); l = 1;
+            }
+            else{
+            //rCLUGoose.arrOut[0] = 0;
+                k &=~( 1 << ((Goose__1_8_OUT_NAME__CO_1-1) % 8));l = 0;
+            }
+           
+        }
+        else{
+           if(k & (1 << ((Goose__1_8_OUT_NAME__CO_1-1) % 8)) ) 
+                l = 1;
+        }
+        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_1-1)] = l;//k & (1 << ((Goose__1_8_OUT_NAME__CO_1-1) % 8));
+        
+        
+        
+        
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_2-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_2-1) % 8));
-        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_2-1)] = 0;
+        
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_2-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_2-1) % 8));
-            if (j > 0)
-                rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_2-1)] = 1;
-                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_2-1) % 8);
-        } 
+            if (j > 0){
+                //rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_2-1)] = 1;
+                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_2-1) % 8); l = 1;
+            }
+            else{
+                k &=~( 1 << ((Goose__1_8_OUT_NAME__CO_2-1) % 8)); l = 0;
+                }
+        } else{
+           if(k & (1 << ((Goose__1_8_OUT_NAME__CO_2-1) % 8)) ) 
+                l = 1;
+        }
+        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_2-1)] =  l;//k & (1 << ((Goose__1_8_OUT_NAME__CO_2-1) % 8));  
+      
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_3-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_3-1) % 8));
-        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_3-1)] = 0;
+        
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_3-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_3-1) % 8));
-            if (j > 0)
-                rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_3-1)] = 1;
-                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_3-1) % 8);
+            if (j > 0){
+                //rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_3-1)] = 1;
+                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_3-1) % 8);l = 1;
+            }
+            else{
+            //rCLUGoose.arrOut[0] = 0;
+                k &=~( 1 << ((Goose__1_8_OUT_NAME__CO_3-1) % 8)); l = 0;
+            }
+            
+        }else{
+           if(k & (1 << ((Goose__1_8_OUT_NAME__CO_3-1) % 8)) ) 
+                l = 1;
         }
+        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_3-1)] = l;
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_4-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_4-1) % 8));
-        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_4-1)] = 0;
+        
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_4-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_4-1) % 8));
-            if (j > 0)
-                rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_4-1)] = 1;
-                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_4-1) % 8);
-        } 
+            if (j > 0){
+                //rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_4-1)] = 1;
+                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_4-1) % 8); l = 1;
+            } 
+            else{
+            //rCLUGoose.arrOut[0] = 0;
+                k &=~( 1 << ((Goose__1_8_OUT_NAME__CO_4-1) % 8));l = 0;
+            }
+        } else{
+           if(k & (1 << ((Goose__1_8_OUT_NAME__CO_4-1) % 8)) ) 
+                l = 1;
+        }
+        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_4-1)] = l;        
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_5-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_5-1) % 8));
-        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_5-1)] = 0;
+        
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_5-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_5-1) % 8));
-            if (j > 0)
-                rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_5-1)] = 1;
-                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_5-1) % 8);
+            if (j > 0){
+                //rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_5-1)] = 1;
+                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_5-1) % 8); l = 1;
+            }
+            else{
+            //rCLUGoose.arrOut[0] = 0;
+                k &=~( 1 << ((Goose__1_8_OUT_NAME__CO_5-1) % 8));l = 0;
+            }
+            
+        } else{
+           if(k & (1 << ((Goose__1_8_OUT_NAME__CO_5-1) % 8)) ) 
+                l = 1;
         }
+        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_5-1)] = l;
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_6-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_6-1) % 8));
-        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_6-1)] = 0;
+        
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_6-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_6-1) % 8));
-            if (j > 0)
-                rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_6-1)] = 1;
-                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_6-1) % 8);
-        } 
+            if (j > 0){
+                //rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_6-1)] = 1;
+                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_6-1) % 8); l = 1;
+            }else{
+            //rCLUGoose.arrOut[0] = 0;
+                k &=~( 1 << ((Goose__1_8_OUT_NAME__CO_6-1) % 8));l = 0;
+            }     
+        } else{
+           if(k & (1 << ((Goose__1_8_OUT_NAME__CO_6-1) % 8)) ) 
+                l = 1;
+        }
+        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_6-1)] = l;        
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_7-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_7-1) % 8));
-        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_7-1)] = 0;
+        
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_7-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_7-1) % 8));
-            if (j > 0)
-                rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_7-1)] = 1;
-                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_7-1) % 8);
-        } 
+            if (j > 0){
+               // rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_7-1)] = 1;
+                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_7-1) % 8); l = 1;
+            }else{
+            //rCLUGoose.arrOut[0] = 0;
+                k &=~( 1 << ((Goose__1_8_OUT_NAME__CO_7-1) % 8));l = 0;
+            }
+        }        else{
+           if(k & (1 << ((Goose__1_8_OUT_NAME__CO_7-1) % 8)) ) 
+                l = 1;
+        }
+        
+        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_7-1)] = l;
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_8-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_8-1) % 8));
-        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_8-1)] = 0;
+        
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_8-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_8-1) % 8));
-            if (j > 0)
-                rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_8-1)] = 1;
-                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_8-1) % 8);
-        } 
-
-    
+            if (j > 0){
+                //rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_8-1)] = 1;
+                 k |= 1 << ((Goose__1_8_OUT_NAME__CO_8-1) % 8);l = 1;
+            }else{
+            //rCLUGoose.arrOut[0] = 0;
+                k &=~( 1 << ((Goose__1_8_OUT_NAME__CO_1-1) % 8));l = 0;
+            }            
+        } else{
+           if(k & (1 << ((Goose__1_8_OUT_NAME__CO_8-1) % 8)) ) 
+                l = 1;
+        }
+        rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_8-1)] = l;
+       
+    rCLUGoose.chIn_C = k;
+    pMmsBlock->active_state[((Goose__1_8_OUT_NAME__CO_8-1) / 8)] = k;
     }
     else{
         
@@ -140,6 +220,7 @@ CLUGoose& rCLUGoose = *(static_cast<CLUGoose *> (pObj));
         rCLUGoose.arrOut[5] = 0;
         rCLUGoose.arrOut[6] = 0;
         rCLUGoose.arrOut[7] = 0;
+        pMmsBlock->active_state[((Goose__1_8_OUT_NAME__CO_8-1) / 8)] = 0;
     }
     
 }

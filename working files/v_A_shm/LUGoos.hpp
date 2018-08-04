@@ -61,7 +61,7 @@ public:
     char arrOut   [TOTAL_Goose__1_8_OUTPUT]; //
     //    char chError;
     //    char chQ;
-//    char chIn_C;
+    unsigned char chIn_C;
     friend void  Goose__1_8_Op  (void *pObj);
 };
 extern void Goose__1_8_Op  (void *pObj);
