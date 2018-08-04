@@ -716,6 +716,7 @@ void CANAL2_MO_routine()
                 ((current_bln + 1) == number_bln)
                )
             {
+              _CLEAR_STATE(queue_mo, STATE_QUEUE_MO_TRANSMITING_MAKING_MEMORY_BLOCK);
               CANAL2_MO_state = CANAL2_MO_FREE;
               Canal2 = true;
             }

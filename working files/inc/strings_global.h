@@ -687,7 +687,7 @@ const uint8_t name_string_editor_logical_nodes[MAX_NAMBER_LANGUAGE][MAX_ROW_FOR_
     " Загальний блок ",
     " Д.Входи        ",
     " В.Реле         ",
-    " Світоіндикатори",
+    " Світлоіндикат. ",
     " ФК             ",
     " СЗС            ",
     " ШГС            ",
@@ -1007,7 +1007,7 @@ const uint8_t name_stringlist_settings_param[MAX_NAMBER_LANGUAGE][MAX_ROW_LIST_S
   {
     " Д.Входи        ",
     " В.Реле         ",
-    " Світоіндикатори",
+    " Світлоіндикат. ",
     " СЗС            ",
     " ШГС            ",
     " Таймери        ",
