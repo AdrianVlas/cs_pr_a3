@@ -6501,6 +6501,12 @@
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUFKey.cpp</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUGoos.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LULan.cpp</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LULed.cpp</name>
       </file>
       <file>
@@ -6508,6 +6514,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LULss.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUMms.cpp</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\working files\v_A_shm\LUNot_1_1.cpp</name>
