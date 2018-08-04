@@ -1526,8 +1526,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
               size_struct = sizeof(__LN_INPUT_MMS_BLOCK);
               
               size_block_rx = DIV_TO_HIGHER(INPUT_MMS_BLOCK_SIGNALS_INT_IN, 8);
-              p_buffer_rx = ((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR])->internal_input;
-              p_buffer_ctrl_rx = ((__LN_INPUT_GOOSE_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR])->internal_input_ctrl;
+              p_buffer_rx = ((__LN_INPUT_MMS_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR])->internal_input;
+              p_buffer_ctrl_rx = ((__LN_INPUT_MMS_BLOCK*)spca_of_p_prt[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR])->internal_input_ctrl;
             }
             break;
           }
