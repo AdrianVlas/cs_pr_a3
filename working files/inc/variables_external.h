@@ -288,6 +288,19 @@ extern unsigned int edit_serial_number_dev;
 extern unsigned int control_word_of_watchdog;
 extern unsigned int test_watchdogs;
 
+//Назви логічних вузлів по IEC-61850
+extern const uint8_t LPHD[];
+extern const uint8_t BIGGIO[];
+extern const uint8_t BOGGIO[];
+extern const uint8_t LEDGGIO[];
+extern const uint8_t FKGGIO[];
+extern const uint8_t LSAGGIO[];
+extern const uint8_t GSBGGIO[];
+extern const uint8_t GOOSBIRECGGIO[];
+extern const uint8_t MMSRECGGIO[];
+extern const uint8_t VBOGGIO[];
+extern const uint8_t RBDR[];
+
 //Міжпроцесорний обмін
 extern uint8_t Canal1_MO_Transmit[BUFFER_CANAL1_MO];
 extern uint8_t Canal1_MO_Received[BUFFER_CANAL1_MO];

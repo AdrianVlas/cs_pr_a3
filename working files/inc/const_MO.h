@@ -9,6 +9,9 @@
 #define START_BYTE_MO             0x5A
 #define STOP_BYTE_MO              0xA5
 
+#define SIZE_LN_MAME              16
+
+
 enum _start_label
 {
   START_LABEL_NEW_TM = 10,

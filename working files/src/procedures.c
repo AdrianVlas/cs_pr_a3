@@ -1422,11 +1422,13 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
 
         size_t size_block_rx = 0;
         uint8_t *p_buffer_rx = NULL, *p_buffer_ctrl_rx = NULL;
+        const uint8_t *p_ln_name;
         
         switch (id)
         {
         case ID_FB_CONTROL_BLOCK:
           {
+            p_ln_name = LPHD;
             n = 1;
             size_block_tx = DIV_TO_HIGHER(FIX_BLOCK_SIGNALS_OUT, 8);
             p_buffer_tx = fix_block_active_state;
@@ -1435,6 +1437,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
         case ID_FB_INPUT:
           {
+            p_ln_name = BIGGIO;
             n = current->n_input;
             if (n != 0)
             {
@@ -1446,6 +1449,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
         case ID_FB_OUTPUT:
           {
+            p_ln_name = BOGGIO;
             n = current->n_output;
             if (n != 0)
             {
@@ -1457,6 +1461,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
         case ID_FB_LED:
           {
+            p_ln_name = LEDGGIO;
             n = current->n_led;
             if (n != 0)
             {
@@ -1468,6 +1473,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
         case ID_FB_BUTTON:
           {
+            p_ln_name = FKGGIO;
             n = current->n_button;
             if (n != 0)
             {
@@ -1479,6 +1485,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
         case ID_FB_ALARM:
           {
+            p_ln_name = LSAGGIO;
             n = current->n_alarm;
             if (n != 0)
             {
@@ -1490,6 +1497,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
         case ID_FB_GROUP_ALARM:
           {
+            p_ln_name = GSBGGIO;
             n = current->n_group_alarm;
             if (n != 0)
             {
@@ -1503,6 +1511,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
         case ID_FB_INPUT_GOOSE_BLOCK:
           {
+            p_ln_name = GOOSBIRECGGIO;
             n = current->n_input_GOOSE_block;
             if (n != 0)
             {
@@ -1518,6 +1527,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
         case ID_FB_INPUT_MMS_BLOCK:
           {
+            p_ln_name = MMSRECGGIO;
             n = current->n_input_MMS_block;
             if (n != 0)
             {
@@ -1533,6 +1543,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
         case ID_FB_NETWORK_OUTPUT_BLOCK:
           {
+            p_ln_name = VBOGGIO;
             n = current->n_network_output_block;
             if (n != 0)
             {
@@ -1544,6 +1555,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           }
         case ID_FB_EVENT_LOG:
           {
+            p_ln_name = RBDR;
             n = (current->n_log != 0)*1;
             if (n != 0)
             {
@@ -1561,6 +1573,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
           array_control_struct[index_ln].off_on = true;
 
           array_control_struct[index_ln].id = id;
+          array_control_struct[index_ln].p_ln_name = p_ln_name;
+          
           array_control_struct[index_ln].n = n;
           array_control_struct[index_ln].size_struct = size_struct;
 

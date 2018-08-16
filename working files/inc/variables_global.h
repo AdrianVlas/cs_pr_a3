@@ -404,6 +404,19 @@ unsigned int edit_serial_number_dev;
 unsigned int control_word_of_watchdog = 0;
 unsigned int test_watchdogs = 0;
 
+//Назви логічних вузлів по IEC-61850
+const uint8_t LPHD[] = "LPHD";
+const uint8_t BIGGIO[] = "BIGGIO";
+const uint8_t BOGGIO[] = "BOGGIO";
+const uint8_t LEDGGIO[] = "LEDGGIO";
+const uint8_t FKGGIO[] = "FKGGIO";
+const uint8_t LSAGGIO[] = "LSAGGIO";
+const uint8_t GSBGGIO[] = "GSBGGIO";
+const uint8_t GOOSBIRECGGIO[] = "GOOSBIRECGGIO";
+const uint8_t MMSRECGGIO[] = "MMSRECGGIO";
+const uint8_t VBOGGIO[] = "VBOGGIO";
+const uint8_t RBDR[] = "RBDR";
+
 //Міжпроцесорний обмін
 uint8_t Canal1_MO_Transmit[BUFFER_CANAL1_MO];
 uint8_t Canal1_MO_Received[BUFFER_CANAL1_MO];

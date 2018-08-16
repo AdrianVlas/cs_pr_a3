@@ -481,7 +481,7 @@ void CANAL2_MO_routine()
           
             while (
                    (current_bln_tmp < number_bln) &&
-                   ((index_w + 1 + 1 + 1 + 1 + 2 + 2 + 2 + 4) < BUFFER_CANAL2_MO)  
+                   ((index_w + 1 + 1 + 1 + 1 + 2 + 2 + 2 + 4 + SIZE_LN_MAME) < BUFFER_CANAL2_MO)  
                   )
             {
               sum += Canal2_MO_Transmit[index_w++] = START_LABEL_NEW_BLOCK; /*признак початку інформації по створюваному блоку*/
@@ -506,6 +506,18 @@ void CANAL2_MO_routine()
               sum += Canal2_MO_Transmit[index_w++] = (size_description >>  8) & 0xff; /*LSW->MSB: Розмір буферу описової частини оперативних даних*/
               sum += Canal2_MO_Transmit[index_w++] = (size_description >> 16) & 0xff; /*MSW->LSB: Розмір буферу описової частини оперативних даних*/
               sum += Canal2_MO_Transmit[index_w++] = (size_description >> 24) & 0xff; /*MSW->MSB: Розмір буферу описової частини оперативних даних*/
+              
+              unsigned int null_founded = false;
+              for (size_t i = 0; i < SIZE_LN_MAME; i++)
+              {
+                if (null_founded == false)
+                {
+                  uint8_t symbol = *(array_control_struct[current_bln_tmp].p_ln_name + i);
+                  sum += Canal2_MO_Transmit[index_w++] = symbol;
+                  if (symbol == '\0') null_founded = true;
+                }
+                else sum += Canal2_MO_Transmit[index_w++] = '\0';
+              }
             
               current_bln_tmp++;
             }

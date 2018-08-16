@@ -657,6 +657,8 @@ typedef struct _control_struct
   uint32_t off_on;
   
   uint32_t id;
+  const uint8_t *p_ln_name;
+  
   uint32_t n;
   uintptr_t size_struct;
   
