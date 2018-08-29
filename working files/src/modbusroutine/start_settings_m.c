@@ -44,5 +44,8 @@ void global_component_installation(void) {
   constructorIUSmallComponent(&(config_array[IUSMALLCOMPONENT]));//подготовка компонента iu
   constructorYustBigComponent(&(config_array[YUSTBIGCOMPONENT]));//подготовка компонента yust
 //  constructorRPOBigComponent(&(config_array[RPOBIGCOMPONENT]));//подготовка компонента rpo
+  constructorOLANBigComponent(&(config_array[OLANBIGCOMPONENT]));//подготовка компонента output LAN
+  constructorIMMSBigComponent(&(config_array[IMMSBIGCOMPONENT]));//подготовка компонента input MMS
+  constructorIGOOSEBigComponent(&(config_array[IGOOSEBIGCOMPONENT]));//подготовка компонента input GOOSE
 }//global_vareiables_installation_bo(void)
 

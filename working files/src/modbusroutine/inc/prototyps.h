@@ -61,4 +61,8 @@ void constructorAISmallComponent(COMPONENT_OBJ *);
 void constructorPKVBigComponent(COMPONENT_OBJ *);
 void constructorIUSmallComponent(COMPONENT_OBJ *);
 
+void constructorOLANBigComponent(COMPONENT_OBJ *);
+void constructorIMMSBigComponent(COMPONENT_OBJ *);
+void constructorIGOOSEBigComponent(COMPONENT_OBJ *);
+
 #endif

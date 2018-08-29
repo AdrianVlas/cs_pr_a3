@@ -87,13 +87,13 @@ int getConfigBigModbusRegister(int adrReg)
     return current_config.n_log;
    break;
    case 12: //GOOSE in
-    return 0;
+    return current_config_edit.n_input_GOOSE_block;
    break;
-   case 13: //GOOSE out
-    return 0;
+   case 13: //MMS in
+    return current_config_edit.n_input_MMS_block;
    break;
-   case 14: //MMS in
-    return 0;
+   case 14: //LAN out
+    return current_config_edit.n_network_output_block;
    break;
    case 15: //MMS out
     return 0;
@@ -189,8 +189,11 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
     current_config_edit.n_log = (tempWriteArray[offsetTempWriteArray+i]);
    break; 
    case 12: //GOOSE in
-   case 13: //GOOSE out
-   case 14: //MMS in
+    current_config_edit.n_input_GOOSE_block = (tempWriteArray[offsetTempWriteArray+i]);
+   case 13: //MMS in
+    current_config_edit.n_input_MMS_block = (tempWriteArray[offsetTempWriteArray+i]);
+   case 14: //LAN out
+    current_config_edit.n_network_output_block = (tempWriteArray[offsetTempWriteArray+i]);
    case 15: //MMS out
    break;
  }//switch

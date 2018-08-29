@@ -588,12 +588,13 @@ int outputFunc20PacketEncoder(int adrUnit, int fileNumber, int recordNumber, int
 int outputFunc16PacketEncoder(int adrUnit, int adrReg, int cntReg)
 {
 //выходной кодировщик 16 функции
-  short dataReg = 0;
+//  short dataReg = 0;
   int   flag = 1;
   superPreWriteAction();//action до записи
   for(int i=0; i<cntReg; i++)
     {
-      dataReg = tempReadArray[i];
+//      dataReg = tempReadArray[i];
+      uint32_t dataReg = (unsigned short) tempReadArray[i];
       int result = superWriterRegister(adrReg+i, dataReg);
       switch(result)
         {
@@ -1416,6 +1417,20 @@ int superControlParam(int param)
       if(cnt==0)return 1;
       if(cnt>current_config.n_log) return 1;
       break;
+
+    case ID_FB_INPUT_GOOSE_BLOCK:
+      if(cnt==0)return 1;
+      if(cnt>current_config.n_input_GOOSE_block) return 1;         //Кількість Вх.GOOSE блоків
+      break;
+    case ID_FB_INPUT_MMS_BLOCK:
+      if(cnt==0)return 1;
+      if(cnt>current_config.n_input_MMS_block) return 1;           //Кількість Вх.MMS блоків
+      break;
+    case ID_FB_NETWORK_OUTPUT_BLOCK:
+      if(cnt==0)return 1;
+      if(cnt>current_config.n_network_output_block) return 1;      //Кількість Мережевих вихідних блоків
+      break;
+
     default:
       return 1;
     }//switch id
@@ -1541,6 +1556,23 @@ int superValidParam(uint32_t param)
           n_nodes = current_config.n_ts;
           break;
         }
+
+        case ID_FB_INPUT_GOOSE_BLOCK:
+        {
+          n_nodes = current_config.n_input_GOOSE_block;         //Кількість Вх.GOOSE блоків
+          break;
+        }
+        case ID_FB_INPUT_MMS_BLOCK:
+        {
+          n_nodes = current_config.n_input_MMS_block;           //Кількість Вх.MMS блоків
+          break;
+        }
+        case ID_FB_NETWORK_OUTPUT_BLOCK:
+        {
+          n_nodes = current_config.n_network_output_block;      //Кількість Мережевих вихідних блоків
+          break;
+        }
+
         case ID_FB_EVENT_LOG:
         {
           n_nodes = 1;
