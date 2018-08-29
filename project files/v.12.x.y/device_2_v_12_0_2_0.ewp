@@ -4751,6 +4751,12 @@
                             <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\GIBigComponent.c</name>
                         </file>
                         <file>
+                            <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\IGOOSEBigComponent.c</name>
+                        </file>
+                        <file>
+                            <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\IMMSBigComponent.c</name>
+                        </file>
+                        <file>
                             <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\IUSmallComponent.c</name>
                         </file>
                         <file>
@@ -4764,6 +4770,9 @@
                         </file>
                         <file>
                             <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\NOTBigComponent.c</name>
+                        </file>
+                        <file>
+                            <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\OLANBigComponent.c</name>
                         </file>
                         <file>
                             <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\ORBigComponent.c</name>
@@ -6603,7 +6612,7 @@
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.cpp</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.h</name>
+                <name>$PROJ_DIR$\..\..\working files\v_A_shm\baseinpoint.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\CLUTs.cpp</name>
