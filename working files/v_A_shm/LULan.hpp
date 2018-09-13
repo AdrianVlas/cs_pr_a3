@@ -15,6 +15,7 @@
 #define LULAN_HPP
 
 #include "lubase.h"
+#include <stdint.h>
 const short shCLULan_x_y_AmtOut = 8;
 const short shCLULan_x_y_AmtIn  = 8;
 
@@ -62,7 +63,7 @@ public:
     friend void Lan__9_8_Op(void *pObj);
 };
 extern void Lan__9_8_Op  (void *pObj);
-
+extern uint32_t  IEC_board_present;
 
 
 

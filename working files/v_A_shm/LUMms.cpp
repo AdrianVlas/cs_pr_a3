@@ -23,7 +23,7 @@ CLUMms::CLUMms(void) {
 
 CLUMms::~CLUMms(void) {
 }
-
+//char chGBL_BP_StopLUMms = 0;
 CLUMms::CLUMms(char chM,char chI) {
 register long i;
     chMaxIteratoin = chM;
@@ -45,10 +45,10 @@ CLUMms& rCLUMms = *(static_cast<CLUMms *> (pObj));
     long  j, l,k;
 
      __LN_INPUT_MMS_BLOCK *pMmsBlock = static_cast<__LN_INPUT_MMS_BLOCK *>(rCLUMms.pvCfgLN);
-    //        if(chGBL_BP_StopLUTs == rCLUTs.shShemasOrdNumStng)
-    //    asm volatile(
-    //    "bkpt 1"
-    //    );
+//            if(chGBL_BP_StopLUMms == rCLUTs.shShemasOrdNumStng)
+//        asm volatile(
+//        "bkpt 1"
+//        );
     j = *(rCLUMms.arrPchIn[Mms__2_8_IN_NAME__BLOCK_M  - 1]);
     l = *(rCLUMms.arrPchIn[Mms__2_8_IN_NAME__BLOCK_LR - 1]);
     k = 0;
@@ -118,7 +118,10 @@ CLUMms& rCLUMms = *(static_cast<CLUMms *> (pObj));
                 rCLUMms.arrOut[(Mms__2_8_OUT_NAME__CO_8-1)] = 1;
                  k |= 1 << ((Mms__2_8_OUT_NAME__CO_8-1) % 8);
         } 
-        
+//        if(chGBL_BP_StopLUMms == rCLUMms.shShemasOrdNumStng && k != 0)
+//        asm volatile(
+//        "bkpt 1"
+//        );
         pMmsBlock->active_state[((Mms__2_8_OUT_NAME__CO_8-1) / 8)] = k;
     }
     else{

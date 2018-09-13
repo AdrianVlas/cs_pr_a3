@@ -15,6 +15,7 @@
 #define LUGOOSE_HPP
 
 #include "lubase.h"
+#include <stdint.h>
 
 const short shCLUGoose_x_y_AmtOut = 8;
 const short shCLUGoose_x_y_AmtIn  = 8;
@@ -65,7 +66,7 @@ public:
     friend void  Goose__1_8_Op  (void *pObj);
 };
 extern void Goose__1_8_Op  (void *pObj);
-
+extern uint32_t  IEC_board_present;
 
 #endif /* LUGOOSE_HPP */
 
