@@ -102,11 +102,6 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   int countRegister = t2smallcomponent->operativMarker[1]-t2smallcomponent->operativMarker[0]+1;
   if(t2smallcomponent->operativMarker[1]<0) countRegister = 1;
 
-
-
-
-
-
 //   __LN_BUTTON *arr = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
 
 //загрузка edit массва
@@ -116,7 +111,17 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
    int offset = i+ t2smallcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
    int param = tempWriteArray[offsetTempWriteArray+i];
    if(param==0) return 2;//уйти
-
+//int paramTmp1=0;
+//int paramTmp2=0;
+//if(offset==61514-61440)
+//{
+//  paramTmp1 = param;
+//}
+//if(offset==61515-61440)
+//{
+//  paramTmp2 = param;
+//}
+   
   switch(offset%2) {//индекс регистра входа
     case 0://(ID,N)
       if(superControlParam(param)) return 2;//уйти
@@ -156,13 +161,13 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
       LED_arr1[N_tmp]._link = LED_arr[N_tmp]._link = (int32_t)link_tmp;
       } break;
 
-//    case ID_FB_BUTTON:
-//      {
-//       __LN_BUTTON *BUTTON_arr  = (__LN_BUTTON*)(spca_of_p[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
-//       __LN_BUTTON *BUTTON_arr1 = (__LN_BUTTON*)(spca_of_p_edit[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
-//      BUTTON_arr1[N_tmp]._n    = BUTTON_arr[N_tmp]._n    = (int32_t)n_tmp;
-//      BUTTON_arr1[N_tmp]._link = BUTTON_arr[N_tmp]._link = (int32_t)link_tmp;
-//      } break;
+    case ID_FB_BUTTON:
+      {
+       __settings_for_BUTTON *BUTTON_arr  = (__settings_for_BUTTON*)(sca_of_p[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+       __settings_for_BUTTON *BUTTON_arr1 = (__settings_for_BUTTON*)(sca_of_p_edit[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+      BUTTON_arr1[N_tmp]._n    = BUTTON_arr[N_tmp]._n    = (int32_t)n_tmp;
+      BUTTON_arr1[N_tmp]._link = BUTTON_arr[N_tmp]._link = (int32_t)link_tmp;
+      } break;
 
     case ID_FB_ALARM:
       {

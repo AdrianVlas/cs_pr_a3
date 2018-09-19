@@ -4920,6 +4920,12 @@
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\SZSBigComponent.c</name>
             </file>
             <file>
+              <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\T1SmallComponent.c</name>
+            </file>
+            <file>
+              <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\T2SmallComponent.c</name>
+            </file>
+            <file>
               <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\TSBigComponent.c</name>
             </file>
             <file>
@@ -4964,12 +4970,6 @@
           </file>
           <file>
             <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\supervisor.c</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\T1SmallComponent.c</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$\..\..\working files\src\modbusroutine\component\T2SmallComponent.c</name>
           </file>
         </group>
         <file>
