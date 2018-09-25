@@ -65,7 +65,7 @@ int setT2SmallModbusRegister(int adrReg, int dataReg)
   superSetOperativMarker(t2smallcomponent, adrReg);
   superSetTempWriteArray(dataReg);//записать в буфер
 
-  return 0;//MARKER_OUTPERIMETR;
+  return 0;
 }//setT2SmallModbusRegister(int x, int y)
 int setT2SmallModbusBit(int x, int y)
 {
@@ -102,18 +102,16 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
   int countRegister = t2smallcomponent->operativMarker[1]-t2smallcomponent->operativMarker[0]+1;
   if(t2smallcomponent->operativMarker[1]<0) countRegister = 1;
 
-//   __LN_BUTTON *arr = (__LN_BUTTON*)(spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
-
 //загрузка edit массва
-  int ID_tmp=-1;
-  int N_tmp =-1;
+  int n_tmp=-1;
+  int link_tmp =-1;
   for(int i=0; i<countRegister; i++) {
    int offset = i+ t2smallcomponent->operativMarker[0]-BEGIN_ADR_REGISTER;
    int param = tempWriteArray[offsetTempWriteArray+i];
    if(param==0) return 2;//уйти
 //int paramTmp1=0;
 //int paramTmp2=0;
-//if(offset==61514-61440)
+//if(offset==61440-61440)
 //{
 //  paramTmp1 = param;
 //}
@@ -123,17 +121,18 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
 //}
    
   switch(offset%2) {//индекс регистра входа
-    case 0://(ID,N)
-      if(superControlParam(param)) return 2;//уйти
-      ID_tmp  = (param>>8)&0xff;//id блока
-      N_tmp   = param&0xff;//номер блока
+    case 0://(n, link)
+       n_tmp    = (param>>8)&0xff;//n
+       link_tmp = param&0xff;//link
     break;
-    case 1://(n, link)
+    case 1://(ID,N)
     {
-      if(ID_tmp<0) return 2;//уйти
-      if(N_tmp<0)  return 2;//уйти
-       int n_tmp    = (param>>8)&0xff;//n
-       int link_tmp = param&0xff;//link
+      if(superControlParam(param)) return 2;//уйти
+      int ID_tmp  = (param>>8)&0xff;//id блока
+      int N_tmp   = (param&0xff)-1;//номер блока
+
+//      if(ID_tmp<0) return 2;//уйти
+//      if(N_tmp<0)  return 2;//уйти
 
   switch(ID_tmp)
     {
@@ -260,8 +259,6 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
       return 2;//уйти
     }//switch id
 
-      ID_tmp=-1;
-      N_tmp =-1;
     } break;
  }//switch
 
