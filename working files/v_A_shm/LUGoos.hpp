@@ -63,6 +63,7 @@ public:
     //    char chError;
     //    char chQ;
     unsigned char chIn_C;
+    unsigned char chIn_E;
     friend void  Goose__1_8_Op  (void *pObj);
 };
 extern void Goose__1_8_Op  (void *pObj);

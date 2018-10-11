@@ -47,12 +47,12 @@ register long i;
         arrOut[i] = 0;
     //chError = 0;
     chIn_C = 0;
-
+    chIn_E = 1;
     
 }
 void Goose__1_8_Op  (void *pObj){
 CLUGoose& rCLUGoose = *(static_cast<CLUGoose *> (pObj));
-register    long  j, l,k,e;
+register    long  j, l,k,e,m;
 __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGoose.pvCfgLN);
     
     //        if(chGBL_BP_StopLUTs == rCLUTs.shShemasOrdNumStng)
@@ -61,8 +61,11 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
     //    );
     if (_CHECK_SET_BIT(diagnostyka_tmp_high , ERROR_CPU_NO_ANSWER_CANAL_1) != 0){
 		e = 0;//Error
+        
 	}else{
 		e =1;//No_error
+        if(chIn_E == 0)
+        m = 1;
     }
     j = *(rCLUGoose.arrPchIn[Goose__1_8_IN_NAME__BLOCK_G  - 1]);
     //l = rCLUGoose.arrPchIn[Goose__1_8_IN_NAME__BLOCK_G - 1];
@@ -70,7 +73,7 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
     if( j == 0 ){
         
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_1-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_1-1) % 8));
-        
+        l |= m; 
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_1-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_1-1) % 8));
             if (j > 0){
@@ -96,7 +99,7 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
         
         
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_2-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_2-1) % 8));
-        
+        l |= m;
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_2-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_2-1) % 8));
             if (j > 0){
@@ -113,7 +116,7 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
         rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_2-1)] =  l&& e;;//k & (1 << ((Goose__1_8_OUT_NAME__CO_2-1) % 8));  
       
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_3-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_3-1) % 8));
-        
+        l |= m;
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_3-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_3-1) % 8));
             if (j > 0){
@@ -131,7 +134,7 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
         }
         rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_3-1)] = l&& e;
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_4-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_4-1) % 8));
-        
+        l |= m;
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_4-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_4-1) % 8));
             if (j > 0){
@@ -148,7 +151,7 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
         }
         rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_4-1)] = l&& e;        
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_5-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_5-1) % 8));
-        
+        l |= m;
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_5-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_5-1) % 8));
             if (j > 0){
@@ -166,7 +169,7 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
         }
         rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_5-1)] = l&& e;
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_6-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_6-1) % 8));
-        
+        l |= m;
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_6-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_6-1) % 8));
             if (j > 0){
@@ -182,7 +185,7 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
         }
         rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_6-1)] = l&& e;        
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_7-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_7-1) % 8));
-        
+        l |= m;
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_7-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_7-1) % 8));
             if (j > 0){
@@ -199,7 +202,7 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
         
         rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_7-1)] = l&& e;
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_8-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_8-1) % 8));
-        
+        l |= m;
         if (l > 0) {
             j = pMmsBlock->internal_input[(Goose__1_8_OUT_NAME__CO_8-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_8-1) % 8));
             if (j > 0){
@@ -230,5 +233,5 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
         rCLUGoose.arrOut[7] = 0;
         pMmsBlock->active_state[((Goose__1_8_OUT_NAME__CO_8-1) / 8)] = 0;
     }
-    
+    chIn_E = e;
 }
