@@ -169,13 +169,14 @@ void start_receive_data_via_CANAL1_MO(void)
                 {
                   *(point++) = Canal1_MO_Received[index++];
                 }
-                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_RECEIVING_CANAL_1)         ) _SET_BIT(set_diagnostyka, ERROR_IEC_RECEIVING_CANAL_1);
-                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_RECEIVED_PACKET_CANAL_1   )) _SET_BIT(set_diagnostyka, ERROR_IEC_RECEIVED_PACKET_CANAL_1);
-                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_REQUEST_CANAL_1)           ) _SET_BIT(set_diagnostyka, ERROR_IEC_REQUEST_CANAL_1);
+                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_RECEIVING_CANAL_1)      ) _SET_BIT(set_diagnostyka, ERROR_IEC_RECEIVING_CANAL_1);
+                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_RECEIVED_PACKET_CANAL_1)) _SET_BIT(set_diagnostyka, ERROR_IEC_RECEIVED_PACKET_CANAL_1);
+                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_REQUEST_CANAL_1)        ) _SET_BIT(set_diagnostyka, ERROR_IEC_REQUEST_CANAL_1);
+                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_NO_ANSWER_CANAL_1)      ) _SET_BIT(set_diagnostyka, ERROR_IEC_NO_ANSWER_CANAL_1);
 
-                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_RECEIVING_CANAL_2)         ) _SET_BIT(set_diagnostyka, ERROR_IEC_RECEIVING_CANAL_2);
-                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_RECEIVED_PACKET_CANAL_2   )) _SET_BIT(set_diagnostyka, ERROR_IEC_RECEIVED_PACKET_CANAL_2);
-                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_REQUEST_CANAL_2)           ) _SET_BIT(set_diagnostyka, ERROR_IEC_REQUEST_CANAL_2);
+                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_RECEIVING_CANAL_2)      ) _SET_BIT(set_diagnostyka, ERROR_IEC_RECEIVING_CANAL_2);
+                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_RECEIVED_PACKET_CANAL_2)) _SET_BIT(set_diagnostyka, ERROR_IEC_RECEIVED_PACKET_CANAL_2);
+                if (_GET_OUTPUT_STATE(confirm_diagnostyka_mo, ERROR_REQUEST_CANAL_2)        ) _SET_BIT(set_diagnostyka, ERROR_IEC_REQUEST_CANAL_2);
               }
               
               
@@ -436,6 +437,11 @@ void CANAL2_MO_routine()
             sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.gateway[1] & 0xff;
             sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.gateway[2] & 0xff;
             sum += Canal2_MO_Transmit[index_w++] = settings_fix_prt.gateway[3] & 0xff;
+            
+            unsigned int period = TIM2_CCR1_VAL*2000/*Prescaler*//60/*вхдна частота таймера у ћ√ц*/; /*результат у мкс*/
+            sum += Canal2_MO_Transmit[index_w++] = period        & 0xff;
+            sum += Canal2_MO_Transmit[index_w++] = (period >> 8) & 0xff;
+            
         
             _CLEAR_STATE(queue_mo, STATE_QUEUE_MO_SEND_BASIC_SETTINGS);
             _SET_STATE(queue_mo, STATE_QUEUE_MO_TRANSMITING_BASIC_SETTINGS);

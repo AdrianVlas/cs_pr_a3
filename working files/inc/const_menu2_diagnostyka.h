@@ -73,6 +73,7 @@ ERROR_CPU_NO_ANSWER_CANAL_1,
 ERROR_IEC_RECEIVING_CANAL_1,
 ERROR_IEC_RECEIVED_PACKET_CANAL_1,
 ERROR_IEC_REQUEST_CANAL_1,
+ERROR_IEC_NO_ANSWER_CANAL_1,
 
 ERROR_CPU_RECEIVING_CANAL_2,
 ERROR_CPU_RECEIVED_PACKET_CANAL_2,
@@ -101,26 +102,24 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
            (1 << (ERROR_CPU_NO_ANSWER_CANAL_1 - 32))         |\
            (1 << (ERROR_IEC_RECEIVING_CANAL_1 - 32))         |\
            (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_1 - 32))   |\
-           (1 << (ERROR_IEC_REQUEST_CANAL_1 - 32))            \
+           (1 << (ERROR_IEC_REQUEST_CANAL_1 - 32))           |\
+           (1 << (ERROR_IEC_NO_ANSWER_CANAL_1 - 32))          \
           )   
-#define WORD_2_MASKA_ERRORS_FROM_CANAL_1 (unsigned int)       \
-          (                                                   \
-           (1 << (ERROR_IEC_RECEIVING_CANAL_2 - 64))         |\
-           (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_2 - 64))   |\
-           (1 << (ERROR_IEC_REQUEST_CANAL_2 - 64))            \
-          )   
-
+#define WORD_2_MASKA_ERRORS_FROM_CANAL_1 0
 
 #define WORD_0_MASKA_RECEIVING_ERRORS_CANAL_2 0
 #define WORD_1_MASKA_RECEIVING_ERRORS_CANAL_2 (unsigned int)  \
           (                                                   \
-           (1 << (ERROR_CPU_RECEIVING_CANAL_2 - 32))         |\
-           (1 << (ERROR_CPU_RECEIVED_PACKET_CANAL_2 - 32))    \
+           (1 << (ERROR_CPU_RECEIVING_CANAL_2 - 32))          \
           ) 
 #define WORD_2_MASKA_RECEIVING_ERRORS_CANAL_2 (unsigned int)  \
           (                                                   \
+           (1 << (ERROR_CPU_RECEIVED_PACKET_CANAL_2 - 64))   |\
            (1 << (ERROR_CPU_ANSWER_CANAL_2 - 64))            |\
-           (1 << (ERROR_CPU_NO_ANSWER_CANAL_2 - 64))          \
+           (1 << (ERROR_CPU_NO_ANSWER_CANAL_2 - 64))         |\
+           (1 << (ERROR_IEC_RECEIVING_CANAL_2 - 64))         |\
+           (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_2 - 64))   |\
+           (1 << (ERROR_IEC_REQUEST_CANAL_2 - 64))            \
           ) 
 
 #define MASKA_AVAR_ERROR_0        (unsigned int)(               \
@@ -223,6 +222,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   "КП:Ош.приема к.1",   \
   "КП:Ош.пакета к.1",   \
   " КП:Ош.запр.к.1 ",   \
+  " КП:Нет запр.к.1",   \
   "ЦП:Ош.приема к.2",   \
   "ЦП:Ош.пакета к.2",   \
   "ЦП:Ош.ответа к.2",   \
@@ -295,6 +295,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   "КП:Пом.прийм.к.1",   \
   " КП:Пом.п-ту к.1",   \
   " КП:Пом.зап.к.1 ",   \
+  " КП:Нема зап.к.1",   \
   "ЦП:Пом.прийм.к.2",   \
   " ЦП:Пом.п-ту к.2",   \
   " ЦП:Пом.відп.к.2",   \
@@ -367,6 +368,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   "КП:Ош.приема к.1",   \
   "КП:Ош.пакета к.1",   \
   " КП:Ош.запр.к.1 ",   \
+  " КП:Нет запр.к.1",   \
   "ЦП:Ош.приема к.2",   \
   "ЦП:Ош.пакета к.2",   \
   "ЦП:Ош.ответа к.2",   \
@@ -439,6 +441,7 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   "КП:Ош.приема к.1",   \
   "КП:Ош.пакета к.1",   \
   " КП:Ош.запр.к.1 ",   \
+  " КП:Нет запр.к.1",   \
   "ЦП:Ош.приема к.2",   \
   "ЦП:Ош.пакета к.2",   \
   "ЦП:Ош.ответа к.2",   \

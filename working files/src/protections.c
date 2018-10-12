@@ -802,6 +802,21 @@ void TIM2_IRQHandler(void)
     }
     /***********************************************************/
     
+    /***
+    Очікування, щоб попередній пакет гарантовано завершив передаватися
+    ***/
+    while (DMA_StreamCANAL1_MO_Tx->NDTR != 0);
+
+    uint32_t tick_for_Canal_1_tmp = TIM5->CNT;
+    uint64_t delta_tmp = 0;
+    do
+    {
+      uint32_t tick_tmp = TIM5->CNT;
+      delta_tmp = (tick_tmp < tick_for_Canal_1_tmp) ? (tick_tmp + 0x100000000 - tick_for_Canal_1_tmp) : (tick_tmp - tick_for_Canal_1_tmp);
+    }
+    while(delta_tmp < 120);/* 120/ 60000000 = 2 мкс*/
+    /***/
+
     /***********************************************************/
     //Ініціюємо передачу даних по каналу CANAL1_MO у комунікаційну плату
     /***********************************************************/
