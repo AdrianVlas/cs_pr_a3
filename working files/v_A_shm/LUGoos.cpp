@@ -201,7 +201,7 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
            if(k & (1 << ((Goose__1_8_OUT_NAME__CO_7-1) % 8)) ) 
                 l = 1;
         }
-        
+         
         rCLUGoose.arrOut[(Goose__1_8_OUT_NAME__CO_7-1)] = l && e;
         l = pMmsBlock->internal_input_ctrl[(Goose__1_8_OUT_NAME__CO_8-1) / 8] & (1 << ((Goose__1_8_OUT_NAME__CO_8-1) % 8));
         l += m;
