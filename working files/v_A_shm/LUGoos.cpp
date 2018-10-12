@@ -64,7 +64,7 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
         
 	}else{
 		e =1;//No_error
-        if(chIn_E == 0)
+        if(rCLUGoose.chIn_E == 0)
         m = 1;
     }
     j = *(rCLUGoose.arrPchIn[Goose__1_8_IN_NAME__BLOCK_G  - 1]);
@@ -233,5 +233,5 @@ __LN_INPUT_GOOSE_BLOCK *pMmsBlock = static_cast<__LN_INPUT_GOOSE_BLOCK *>(rCLUGo
         rCLUGoose.arrOut[7] = 0;
         pMmsBlock->active_state[((Goose__1_8_OUT_NAME__CO_8-1) / 8)] = 0;
     }
-    chIn_E = e;
+    rCLUGoose.chIn_E = e;
 }
