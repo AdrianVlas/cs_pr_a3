@@ -6,9 +6,9 @@
 void start_receive_data_via_CANAL1_MO(void)
 {
   //Попередньо скидаємо повідомплення про помилки, які потім будемо виставляти
-  clear_diagnostyka[0] |= WORD_0_MASKA_ERRORS_FROM_CANAL_1;
-  clear_diagnostyka[1] |= WORD_1_MASKA_ERRORS_FROM_CANAL_1;
-  clear_diagnostyka[2] |= WORD_2_MASKA_ERRORS_FROM_CANAL_1;
+  clear_diagnostyka[0] |= WORD_0_MASKA_ERRORS_FROM_CANAL_1_2;
+  clear_diagnostyka[1] |= WORD_1_MASKA_ERRORS_FROM_CANAL_1_2;
+  clear_diagnostyka[2] |= WORD_2_MASKA_ERRORS_FROM_CANAL_1_2;
   
   //Зупиняэмо канал приймання
   if ((DMA_StreamCANAL1_MO_Rx->CR & (uint32_t)DMA_SxCR_EN) !=0) DMA_StreamCANAL1_MO_Rx->CR &= ~(uint32_t)DMA_SxCR_EN;  
