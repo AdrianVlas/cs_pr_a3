@@ -67,7 +67,7 @@ void SET_OUT_Op(void *pObj) {
     //CLUDout_1_0 *pCLUDout_1_0 = reinterpret_cast<CLUDout_1_0 *>(pObj);
     CLUDout_1_0& rCLUDout_1_0 = *(static_cast<CLUDout_1_0*> (pObj));
 	if(shGBLBPStopSetOut == rCLUDout_1_0.shLUBieldOrdNum)
-    asm(
+    asm volatile(
                 "bkpt 1"
                 );
     rCLUDout_1_0.CalcReleySchematic();   
@@ -132,7 +132,7 @@ volatile bool boolchQTrg06 = m_chQTrg06;
 //for (i = OFFSET_OUT_RELE_Not01__1_1; i < OFFSET_OUT_IN_RELE_NORMAL_SELECTOR; i++)//OFFSET_OUT_Or_22__3_1
 //    arChIntermediaResult[i] = 0xcc;
     if(shBkptIdDO == shShemasOrdNumStng)
-   asm(
+   asm volatile(
        "bkpt 1"
        );
     
@@ -247,7 +247,7 @@ short shCounterProcessedRec = m_shStartRecord;//RELE_Not01__1_1;
     //pLUShcemasDscRec = arPReleShcemasDscRecords[shCounterProcessedRec - RELE_Not01__1_1];
 pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
     if(shBkptIdDO == shShemasOrdNumStng)
-   asm(
+   asm volatile(
        "bkpt 1"
        );
     i = pLUShcemasDscRec->chTypeOperation;
@@ -408,7 +408,7 @@ pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
 
         default:
             shCounterProcessedRec++;
-            asm(
+            asm volatile(
                 "bkpt 1"
                 );
     }

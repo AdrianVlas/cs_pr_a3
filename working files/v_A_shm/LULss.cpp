@@ -706,7 +706,7 @@ char chGBL_BP_StopLss = 0;
 void LssOp	(void *pObj){
 CLULss& rCLULss = *(static_cast<CLULss*>(pObj));
 if(chGBL_BP_StopLss == rCLULss.shShemasOrdNumStng)
-    asm(
+    asm volatile (
                 "bkpt 1"
                 );
 rCLULss.CalcLssSchematicOpt();				

@@ -44,7 +44,7 @@ char arrChCmd[TOTAL_MUTE_ALARM_LED_IN];
     sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__ALARM - 1] = 0;
     sLV.arrChCmd[MUTE_ALARM_LED_IN_NAME__MUTE  - 1] = 0;
     if(chGBL_BP_StopMuteAlarmLed == 1)
-    asm(
+    asm volatile(
                 "bkpt 1"
                 );
 //Hold command

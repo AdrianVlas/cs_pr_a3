@@ -115,10 +115,12 @@ Shematic::Shematic(void) {
     //Debug Code
     memset(static_cast<void*>(arIdxLUAreaListElem),0,sizeof(short)*TOTAL_LU);
     pLUAreaList = static_cast<void*>(&gLUAreaMem.headLUAreaList);
+    pExecSeq = static_cast<void*>(0);
 	LL_CryaCrya++;
     chInitTerminated = 0;
     chMaxIteratoin = 2;
     chIteration = 0;
+    shSizeExecSeq = 0;
 
 }
 
@@ -306,7 +308,11 @@ void Shematic::DoCalc(void) {
         }
         */
     }
-else{
+else{ 
+        if(chStateOptimisation == 1){
+        DoCalcLU_V01();
+        }
+        else
     DoCalcLU();
 }    
     eMuteAlarmLed.EvalMuteAlarmLed();
@@ -908,6 +914,9 @@ long Shematic::EvalSizeObj(long lId) {
         case LU_STNG_FIX:
             lsizeObj = sizeof (CFixBlockWrp);
             break;
+        case ID_OBJ:
+            lsizeObj = sizeof (CFixBlockWrp);
+            break;
 
         default:
             lsizeObj = 0;
@@ -1418,6 +1427,7 @@ long Shematic::Init2(void) {
     lsLcVarArea.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
     lsLcVarArea.chErrCount = 0;
 	shLssLUAreaListElemIndex = 0;
+    p_current_config_prt = static_cast<void*>(&current_config_prt);
     //DetectCircutLinks();
     lsLcVarArea.shCounterInitCLUObj = 1;
     eLUTestLed.LinkTestLedTimers();
@@ -1754,14 +1764,42 @@ long Shematic::Init2(void) {
                     lRefCFixBlockWrp.LogicFunc = FBWrp_Op;
                     lRefCFixBlockWrp.LogicFunc(static_cast<void*>(lsLcVarArea.pCLUBase));
             pCFixBlockWrp = static_cast<void*> (static_cast<void*>(lsLcVarArea.pCLUBase));   
-        }       
             
+            
+                AllocInfo lAllocInfo = {0, 0,0,0};
+                //lAllocInfo
+                j = gblLUAreaAuxVar.shAmountPlacedLogicUnit ;//Fix Block Exclude
+                j--;
+                lAllocInfo.shSize = j<<2;//Link Add
+                j = 0;
+                j = AllocateObj(static_cast<void*>(&lAllocInfo));
+                if (j == 0){ 
+                    lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                    
+                }
+                else{
+                pExecSeq   = lAllocInfo.pvDsc;
+                j = lAllocInfo.shSize; shSizeExecSeq = j;
+                j>>= 2;
+                for (long k = 0; k < j; k++){
+                    static_cast<long*>(pExecSeq)[k] = static_cast<long>(0xfccccccc);//Init Default Value
+                }
+                j = FillArr_n_linkVal();
+                    if (j != 0)
+                    lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                }
+            //Alloc Mem for arrShCalcLUOrderNumsSchmHighLevel[] */
+            
+            }
+        
     }
+    //
     eRunErrorLed.UpdateRunErrorLed();
 SetupCircutLinks2(static_cast<void*>(&lsLcVarArea));
 
 eLUTestLed.UpdateCLUTestLed();
 eMuteAlarmLed.UpdateMuteAlarmLed();
+//Sort Element Now it 14-09-2018
 return lsLcVarArea.chErrCount;
 
 }
@@ -1804,9 +1842,9 @@ void Shematic::SetupCLUDInput_0_1StngParam(void *pv){
         i = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_INPUT);//locRef_CLULed.
         shRelativeIndexLU = locRef_CLUDInput_0_1.shLUBieldOrdNum - i-1;
         locRef_CLUDInput_0_1.pvCfgLN = static_cast<void*> (pLN_INPUT + shRelativeIndexLU);
-        //int32_t set_delay[INPUT_SET_DELAYS];//Допуск ДВ
-        //uint32_t control;//Постійний Змінний
-        //INDEX_CTRL_INPUT_TYPE_SIGNAL 0-Постійний; 1- Змінний
+        //int32_t set_delay[INPUT_SET_DELAYS];//Dopusk DV
+        //uint32_t control;//Postiynyy Zminnyy
+        //INDEX_CTRL_INPUT_TYPE_SIGNAL 0-Postiynyy; 1- Zminnyy
         i = pLN_INPUT[shRelativeIndexLU].settings.control;
         locRef_CLUDInput_0_1.bbTypeSig = i&(1<<INDEX_CTRL_INPUT_TYPE_SIGNAL);
         locRef_CLUDInput_0_1.shTDelay  = pLN_INPUT[shRelativeIndexLU].settings.set_delay[0];
@@ -1862,9 +1900,9 @@ void Shematic::SetupCLUDout_1_0StngParam(void *pv){
         i = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_OUTPUT);//locRef_CLULed.
         shRelativeIndexLU = locPCLUDout_1_0->shLUBieldOrdNum - i-1;
         locPCLUDout_1_0->pvCfgLN = static_cast<void*> (pLN_OUTPUT+shRelativeIndexLU);
-        //int32_t set_delay[INPUT_SET_DELAYS];//Допуск ДВ
-        //uint32_t control;//Постійний Змінний
-        //INDEX_CTRL_INPUT_TYPE_SIGNAL 0-Постійний; 1- Змінний
+        //int32_t set_delay[INPUT_SET_DELAYS];//Dopusk DV
+        //uint32_t control;//Postiynyy Zminnyy
+        //INDEX_CTRL_INPUT_TYPE_SIGNAL 0-Postiynyy; 1- Zminnyy
         j = pLN_OUTPUT[shRelativeIndexLU].settings.control;
         bbSel = j&(1<< INDEX_CTRL_OUTPUT_LED_N_T);
         locPCLUDout_1_0->m_ReleyCfgSuit.chSel1 = bbSel;
@@ -2162,6 +2200,7 @@ void Shematic::SetupCLUFKeyStngParam(void *pv){
      pLN_BUTTON_TU = reinterpret_cast<__LN_BUTTON*>( spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);   
      j = EvalIdxinarrLUAreaListElem(TARAS_ALAS_STNG_LU_KEY);
         shRelativeIndexLU = locRef_CLUFKey.shLUBieldOrdNum - j - 1;
+    locRef_CLUFKey.pvCfgLN = static_cast<void*> (pLN_BUTTON_TU+shRelativeIndexLU);     
     locRef_CLUFKey.pIn = static_cast<void*>(&(pLN_BUTTON_TU[shRelativeIndexLU].active_state[0]));
     }while(bbVar);
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
@@ -3094,16 +3133,16 @@ shRelativeIndexLU = plcCLUBase->shLUBieldOrdNum - i-1;
 //i += (static_cast<LUCRefExchParam*>( pvIn))->chLU_OrdNumIn;
 // *(static_cast<SBitFld_LUInInfo*>(pvOut) ) = arrSBitFldCRefInfo[i].sBitLUInputInfo;
 /*    long param = i;
-          unsigned int id_input   = (param >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
-            unsigned int n_input    = (param >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер
-            unsigned int out_input  = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу
+          unsigned int id_input   = (param >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Typ Funktsional?noho bloku
+            unsigned int n_input    = (param >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Poryadkovyy nomer       
+            unsigned int out_input  = (param >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Nomer vykhodu       
             */
 locSBitFld.bfInfo_IdLUStng = 
-        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Typ Funktsional?noho bloku
 locSBitFld.bfInfo_OrdNumStng = 
-        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Poryadkovyy nomer
 locSBitFld.bfInfo_OrdNumOut = 
-        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Nomer vykhodu  
          *(static_cast<SBitFld_LUInInfo*>(pvOut) ) = locSBitFld;   
     return 0;
 
@@ -3357,7 +3396,7 @@ SBitFld_LUInInfo locSBitFld;
 LUCRefExchParam lcLUCRefExchParam;
 Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
     i = j = 0;
-//    	    asm(
+//    	    asm volatile(
 //                "bkpt 1"
 //                );
     sLV.shIdx = sLV.shAmtLU = 0;
@@ -3396,7 +3435,7 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
                 if(sLV.lcLUCrossRefData.shRefIdLUStng == 0 && sLV.lcLUCrossRefData.shRefOrdNumStng ==0)
                     {j = (-1);rsLV.chVal = 1;}
                 else {
-//                    asm(
+//                    asm volatile(
 //                        "bkpt 1"
 //                        );
                  //Find Obj
@@ -3421,7 +3460,7 @@ Init2LcVarArea& rsLV = *(static_cast<Init2LcVarArea*>(pv));
                             rsLV.pCh = static_cast<char*>(sLV.pCLURef->pOut);
                             rsLV.pCh += sLV.lcLUCrossRefData.chRefOrdNumOut -1;//As Idx
                             rsLV.chVal = 1;
-//                            asm(
+//                            asm volatile(
 //                                "bkpt 1"
 //                                );
                             break;
@@ -3612,7 +3651,7 @@ return;
         if(locSBitFld.bfInfo_IdLUStng == 0 && locSBitFld.bfInfo_OrdNumStng ==0)
             {j = (-1);rsLV.chVal = 1;}
         else {
-//            asm(
+//            asm volatile(
 //                "bkpt 1"
 //            );
         }    
@@ -3649,7 +3688,7 @@ return;
                     rsLV.pCh = static_cast<char*>(rsLV.pCLURef->pOut);
                     rsLV.pCh += static_cast<unsigned char>(locSBitFld.bfInfo_OrdNumOut - 1); //As Idx
                     rsLV.chVal = 1;
-//                     asm(
+//                     asm volatile(
 //                    "bkpt 1"
 //                    );
                     break;
@@ -3695,7 +3734,7 @@ return;
         if(locSBitFld.bfInfo_IdLUStng == 0 && locSBitFld.bfInfo_OrdNumStng ==0)
             {j = (-1);rsLV.chVal = 1;}
         else {
-//            asm(
+//            asm volatile(
 //                "bkpt 1"
 //            );
         }    
@@ -3732,7 +3771,7 @@ return;
                     rsLV.pCh = static_cast<char*>(rsLV.pCLURef->pOut);
                     rsLV.pCh += static_cast<unsigned char>(locSBitFld.bfInfo_OrdNumOut - 1); //As Idx
                     rsLV.chVal = 1;
-//                     asm(
+//                     asm volatile(
 //                    "bkpt 1"
 //                    );
                     break;
@@ -3900,8 +3939,259 @@ i = 0;
     eRunErrorLed.EvalRunErrorLed();
     eLUTestLed.CalCLUTestLedSchematic();
 }
+long Shematic::AllocateObj(void*pvObjImage) {
+    register long i,j;
+    register void* pv;
+
+    struct {
+        long lId, lsizeobj;
+        void *pV;
+        LUAreaListElem* arrLUAreaListElem;
+        AllocInfo* pAllocInfo;
+    } sLV;
+    //check Id
+    sLV.lsizeobj = 0;
+    //i = EvalSizeObj(lId);//
+    //if (i) {
+
+        //Check pvObjImage
+        if (pvObjImage != 0) {
+            i = (static_cast<AllocInfo*>(pvObjImage))->shSize;
+            //check Free Memory
+            pv = static_cast<void*>(&gblLUAreaAuxVar);
+            if ((static_cast<LUAreaAuxVar*>(pv))->lAmountFreeMem >=
+                    static_cast<long>(i + SIZE_LU_AREA_LIST_ITEM)) {
+                sLV.lId = ID_OBJ; //Save Id
+                sLV.lsizeobj = (static_cast<AllocInfo*>(pvObjImage))->shSize;
+                sLV.pV = pv;
+                sLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
+                i = (static_cast<LUAreaAuxVar*>(pv))->shAmountPlacedLogicUnit; //Now Index in LUAreaListElem
+
+                if (i) {
+                    i--; //Detect Head
+                    pv = static_cast<void*>(&sLV.arrLUAreaListElem[i]); //Last Elem
+                    //Mem Area
+                    j = reinterpret_cast<long>(( static_cast<LUAreaListElem*>(pv))->pvLU);
+                    //Add size
+                    j -= sLV.lsizeobj; //((LUAreaListElem*)pv)->shSizeLU;
+                    //
+                    
+                    pv = static_cast<void*>(&sLV.arrLUAreaListElem[i + 1]); //Next
+                    (static_cast<LUAreaListElem*>(pv))->shSizeLU = static_cast<short>(sLV.lsizeobj);
+                    (static_cast<LUAreaListElem*>(pv))->shIdLU   = static_cast<short>(sLV.lId);
+                    (static_cast<LUAreaListElem*>(pv))->pvLU     = reinterpret_cast<void*>(j);
+                    gblLUAreaAuxVar.pvHead = reinterpret_cast<void*>(j); // (lId - sLV.lId);//For check Only
+                    //sLV.pCLUBase = ((LUAreaListElem*) pv)->pvLU;
+                    
+                } else {
+                    pv = static_cast<void*>(&gLUAreaMem.headLUAreaList);
+
+                    //First Init
+                    j = reinterpret_cast<long>(&gLUAreaMem.chArRamPrgEvt[SIZE_MEM_BLK]);
+                    j -= (sLV.lsizeobj);
+                    (static_cast<LUAreaListElem*>(pv))->pvLU = reinterpret_cast<void*>(j);
+                    (static_cast<LUAreaListElem*>(pv) )->shSizeLU = static_cast<short>(sLV.lsizeobj);
+                    (static_cast<LUAreaListElem*>(pv) )->shIdLU =   static_cast<short>(sLV.lId);
+                    gblLUAreaAuxVar.pvHead = gblLUAreaAuxVar.pvTail =
+                            (static_cast<LUAreaListElem*> (pv))->pvLU;
+                    //sLV.pCLUBase = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+                    
+                }
+                //Bield Obj in Mem
+                if( ((static_cast<AllocInfo*>(pvObjImage))->shBF)&1 ){
+                    memcpy(reinterpret_cast<void*>(j),
+                    (static_cast<AllocInfo*>(pvObjImage))->pvSrc, sLV.lsizeobj);
+                    }
+                (static_cast<AllocInfo*>(pvObjImage))->pvDsc = reinterpret_cast<void*>(j);
+                pv = static_cast<void*>(&gblLUAreaAuxVar);
+                //?!!!((LUAreaAuxVar*) pv)->lAmountFreeMem -= ((short) sLV.lsizeobj + SIZE_LU_AREA_LIST_ITEM);
+                //?!!!((LUAreaAuxVar*) pv)->lAmountUsedMem += ((short) sLV.lsizeobj + SIZE_LU_AREA_LIST_ITEM);
+                (static_cast<LUAreaAuxVar*> (pv))->lAmountFreeMem -= (sLV.lsizeobj + SIZE_LU_AREA_LIST_ITEM);
+                (static_cast<LUAreaAuxVar*>(pv))->lAmountUsedMem += ( sLV.lsizeobj + SIZE_LU_AREA_LIST_ITEM);
+
+            } else sLV.lsizeobj = 0;
+        }
+        return static_cast<long>(sLV.lsizeobj);
+    //}i = EvalSizeObj(lId);//
 
 
+
+    
+}
+//=====================================================================================================
+//''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+//FillArr_n_linkVal Added 08-10-2018
+//....................................................................................................
+//=====================================================================================================
+long  Shematic::FillArr_n_linkVal(void ){
+long n,l;
+void* pv;
+CLUBase *pB;
+
+short shCounterFindObj = 0;
+short shAmtLookObj = 0;
+struct {
+        char chVal;
+        //short shKey;
+        //char *pCh;
+        //CLUBase *pCLURef;
+        LUAreaListElem* arrLUAreaListElem;
+        union {
+        long* pLOrderCalcNum;
+        short* pShOrderCalcNum;
+        char  *pCh;
+        }P;
+} rsLV;
+    //pv = static_cast<void*>(&current_config_prt);
+            
+    //shAmtLookObj = gblLUAreaAuxVar.shAmountPlacedLogicUnit-j;
+    shAmtLookObj = (static_cast<__CONFIG* >(p_current_config_prt))->n_input
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_output
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_led
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_button
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_alarm
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_group_alarm
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_and
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_or
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_xor
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_not
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_timer
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_trigger
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_meander
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_tu
+                    + (static_cast<__CONFIG* >(p_current_config_prt))->n_ts;
+    rsLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
+    rsLV.chVal = 0;//rsLV.pCh = static_cast<char*>(0);
+    
+    while ((shCounterFindObj) < shAmtLookObj && rsLV.chVal == 0) {
+                //i = j + shCounterFindObj;
+        pv = static_cast<void*>(&rsLV.arrLUAreaListElem[shCounterFindObj]);
+        //rsLV.pCLURef = (CLUBase*) ((LUAreaListElem*) pv)->pvLU;
+        pB = static_cast<CLUBase*>((static_cast<LUAreaListElem*>(pv))->pvLU);//rsLV.pCLURef
+
+                switch (pB->chTypeLogicFunction ) {
+                    case LU_OP_READ_DI: //TARAS_ALAS_STNG_LU_INPUT:
+            //            UN_LN.pLN_INPUT = reinterpret_cast<__LN_INPUT*>( spca_of_p_prt[ID_FB_INPUT - _ID_FB_FIRST_VAR]);
+                           n = (static_cast<__LN_INPUT*>(pB-> pvCfgLN))->settings._n;
+                           l = (static_cast<__LN_INPUT*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_SET_OUT: //TARAS_ALAS_STNG_LU_OUTPUT:
+                        //UN_LN.pLN_OUTPUT_LED = reinterpret_cast<__LN_OUTPUT_LED*>( spca_of_p_prt[ID_FB_OUTPUT - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_OUTPUT_LED[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_OUTPUT_LED*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_OUTPUT_LED*>(pB-> pvCfgLN))->settings._link;
+                        
+                        break;
+                    case LU_OP_SET_LED: //TARAS_ALAS_STNG_LU_LED:
+                        //UN_LN.pLN_OUTPUT_LED = reinterpret_cast<__LN_OUTPUT_LED*>( spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_OUTPUT_LED[shRelativeIndexLU].settings._n;
+                            n = (static_cast<__LN_OUTPUT_LED*>(pB-> pvCfgLN))->settings._n;
+                            l = (static_cast<__LN_OUTPUT_LED*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_F_KEY: //TARAS_ALAS_STNG_LU_KEY:
+            //            UN_LN.pLN_INPUT = reinterpret_cast<__LN_BUTTON_TU*>( spca_of_p_prt[ID_FB_BUTTON - _ID_FB_FIRST_VAR]);
+                            n = (static_cast<__LN_BUTTON*>(pB-> pvCfgLN))->settings._n;
+                            l = (static_cast<__LN_BUTTON*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_LSS: //TARAS_ALAS_STNG_LU_ALARMS:
+                        //UN_LN.pLN_ALARM = reinterpret_cast<__LN_ALARM*>( spca_of_p_prt[ID_FB_ALARM - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_ALARM[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_ALARM*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_ALARM*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_BGS:  //TARAS_ALAS_STNG_LU_BGS:
+                        //UN_LN.pLN_GROUP_ALARM = reinterpret_cast<__LN_GROUP_ALARM*>( spca_of_p_prt[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR]);
+                        n = (static_cast<__LN_GROUP_ALARM*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_GROUP_ALARM*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_AND: //TARAS_ALAS_STNG_LU_AND:
+                        //UN_LN.pLN_AND = reinterpret_cast<__LN_AND*>( spca_of_p_prt[ID_FB_AND - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_AND[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_AND*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_AND*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_OR: //TARAS_ALAS_STNG_LU_OR:
+                        //UN_LN.pLN_OR = reinterpret_cast<__LN_OR*>( spca_of_p_prt[ID_FB_OR - _ID_FB_FIRST_VAR]);
+                       //i = UN_LN.pLN_OR[shRelativeIndexLU].settings._n;
+                       n = (static_cast<__LN_OR*>(pB-> pvCfgLN))->settings._n;
+                       l = (static_cast<__LN_OR*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_XOR: //TARAS_ALAS_STNG_LU_XOR:
+                        //UN_LN.pLN_XOR = reinterpret_cast<__LN_XOR*>( spca_of_p_prt[ID_FB_XOR - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_XOR[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_XOR*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_XOR*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_NOT: //TARAS_ALAS_STNG_LU_NOT:
+                        //UN_LN.pLN_NOT = reinterpret_cast<__LN_NOT*>( spca_of_p_prt[ID_FB_NOT - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_NOT[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_NOT*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_NOT*>(pB-> pvCfgLN))->settings._link;
+                        break;            
+                    case LU_OP_MFT: //TARAS_ALAS_STNG_LU_TIMER:
+                        //UN_LN.pLN_TIMER = reinterpret_cast<__LN_TIMER*>( spca_of_p_prt[ID_FB_TIMER - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_TIMER[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_TIMER*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_TIMER*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_D_TRG__4_2: //TARAS_ALAS_STNG_LU_TRIGGER:
+                        //UN_LN.pLN_TRIGGER = reinterpret_cast<__LN_TRIGGER*>( spca_of_p_prt[ID_FB_TRIGGER - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_TRIGGER[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_TRIGGER*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_TRIGGER*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_MEANDR:  //TARAS_ALAS_STNG_LU_MEANDERS:
+            //            UN_LN.pLN_INPUT = reinterpret_cast<__LN_MEANDER*>( spca_of_p_prt[ID_FB_MEANDER - _ID_FB_FIRST_VAR]);
+                            n = (static_cast<__LN_MEANDER*>(pB-> pvCfgLN))->settings._n;
+                            l = (static_cast<__LN_MEANDER*>(pB-> pvCfgLN))->settings._link;
+            
+                        break;
+                    case LU_OP_TU: //TARAS_ALAS_STNG_LU_TU:
+                        //UN_LN.pLN_TU = reinterpret_cast<__LN_TU*>( spca_of_p_prt[ID_FB_TU - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_TU[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_TU*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_TU*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                        
+                    case LU_OP_TS: //TARAS_ALAS_STNG_LU_TS:
+                        //UN_LN.pLN_TS = reinterpret_cast<__LN_TS*>( spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_TS[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_TS*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_TS*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                     //TARAS_ALAS_STNG_LU_LOG:
+                        //UN_LN.pLN_TS = reinterpret_cast<__LN_TS*>( spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_TS[shRelativeIndexLU].settings._n;
+                        //break;
+                        
+                    default:
+                        ;
+                }
+                //Put Data in Array
+
+        if ( n <= shAmtLookObj){
+            //short *pSh = static_cast<short*>(pExecSeq);
+            //pSh[n] = pB->shLUBieldOrdNum;
+            //( static_cast<long*>(pExecSeq))[n-1] = pB->shLUBieldOrdNum;
+            rsLV.P.pLOrderCalcNum = static_cast<long*>(pExecSeq)+(n-1);
+            rsLV.P.pLOrderCalcNum[0]  =  pB->shLUBieldOrdNum;
+            rsLV.P.pShOrderCalcNum[1] = l;//Link Field
+            // static_cast<short*>(pExecSeq)[n]   = l;//Link Field
+            
+        }
+        else if (n < 0){
+            rsLV.chVal |= 1;
+        }
+        else{
+            rsLV.chVal |= 2;
+        }
+        shCounterFindObj++;
+        
+    }
+
+    return rsLV.chVal;
+
+}            
 
 
 
@@ -3977,11 +4267,11 @@ sLV.pInOutParam->pChReset = static_cast<char*>(0);
 
 i = settings_fix_prt.param[FIX_BLOCK_TEST_INPUT];
 locSBitFld.bfInfo_IdLUStng = 
-        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Typ Funktsional?noho bloku
 locSBitFld.bfInfo_OrdNumStng = 
-        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Poryadkovyy nomer
 locSBitFld.bfInfo_OrdNumOut = 
-        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Nomer vykhodu;
 
 j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
  if(j!=(-1)){
@@ -3995,11 +4285,11 @@ j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng))
     }
 i = settings_fix_prt.param[FIX_BLOCK_TEST_RESET];
 locSBitFld.bfInfo_IdLUStng = 
-        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Typ Funktsional?noho bloku
 locSBitFld.bfInfo_OrdNumStng = 
-        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Poryadkovyy nomer
 locSBitFld.bfInfo_OrdNumOut = 
-        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Nomer vykhodu
 
 j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
  if(j!=(-1)){
@@ -4032,11 +4322,11 @@ sLV.pInOutParam->pChMute  = static_cast<char*>(0);
 
 i = settings_fix_prt.param[FIX_BLOCK_ALARM];
 locSBitFld.bfInfo_IdLUStng = 
-        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Typ Funktsional?noho bloku
 locSBitFld.bfInfo_OrdNumStng = 
-        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Poryadkovyy nomer
 locSBitFld.bfInfo_OrdNumOut = 
-        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Nomer vykhodu;
 
 j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
  if(j!=(-1)){
@@ -4050,11 +4340,11 @@ j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng))
     }
 i = settings_fix_prt.param[FIX_BLOCK_BLOCK];
 locSBitFld.bfInfo_IdLUStng = 
-        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Typ Funktsional?noho bloku
 locSBitFld.bfInfo_OrdNumStng = 
-        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Poryadkovyy nomer
 locSBitFld.bfInfo_OrdNumOut = 
-        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Nomer vykhodu
 
 j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
  if(j!=(-1)){
@@ -4068,11 +4358,11 @@ j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng))
     }
 i = settings_fix_prt.param[FIX_BLOCK_MUTE];
 locSBitFld.bfInfo_IdLUStng = 
-        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Тип Функціонального блоку
+        (i >> SFIFT_PARAM_ID ) & MASKA_PARAM_ID ;//Typ Funktsional?noho bloku
 locSBitFld.bfInfo_OrdNumStng = 
-        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Порядковий номер;
+        (i >> SFIFT_PARAM_N  ) & MASKA_PARAM_N  ;//Poryadkovyy nomer;
 locSBitFld.bfInfo_OrdNumOut = 
-        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Номер виходу;
+        (i >> SFIFT_PARAM_OUT) & MASKA_PARAM_OUT;//Nomer vykhodu;
 
 j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng));
  if(j!=(-1)){
@@ -4094,7 +4384,7 @@ j = sh.EvalIdxinarrLUAreaListElem(static_cast<long>(locSBitFld.bfInfo_IdLUStng))
 //..................................................................................
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 long InitSchematic(void){
-//    	    asm(
+//    	    asm volatile(
 //                "bkpt 1"
 //                );
 

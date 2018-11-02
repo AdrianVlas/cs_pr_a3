@@ -302,7 +302,7 @@ void Mft_Op(void *pObj){
     U_EC.lEC = 0;
     CMft& rCMft = *(static_cast<CMft*>(pObj));
      	if(rCMft.shShemasOrdNumStng == chMftCmpVal){
-            asm(
+            asm volatile(
             "bkpt 1"
             );
         }

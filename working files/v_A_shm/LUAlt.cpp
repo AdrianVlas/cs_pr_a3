@@ -30,7 +30,10 @@ chNumOutput = static_cast<char>(shCLUPulseAlternator_x_y_AmtOut);
 }
 void CPulseAlternator::UpdateCPulseAlt(void){
 //Set Input parameters
-pIn = static_cast<void*>(arrPchIn);
+#if (SH_CLU_PULSE_ALTERNATOR_X_Y_AMT_IN > 0)  
+  pIn = static_cast<void*>(arrPchIn);
+#endif  
+
 //Set OutPut parameters
 pOut = static_cast<void*>(arrOut);
 for(long i = 0; i < chNumInput;i++)
