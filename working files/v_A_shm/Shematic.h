@@ -30,9 +30,6 @@ LU_LSS,
 LU_BGS,
 LU_TU,
 LU_TS,
-LU_GOOSE,
-LU_MMS,
-LU_LAN,
 LU_LOG,
 LU_STNG_FIX,
 TOTAL_LU,
@@ -92,12 +89,10 @@ class Shematic
     char chMaxIteratoin;
     char chIteration;
     char chSumNLedPlusNOut;
-    char chSumNTUPlusNLAN;
+    char chSumNTUPlusNTS;
     short shSum8Elem;
-    short shIdxSumNLedPlusNOutSeq;
-    short shIdxSumNTUPlusNLANSeq;
-    short shIdxSum8ElemSeq;
-
+    short shSizeExecSeq;
+    
 public:
     Shematic(void);
     ~Shematic(void);
@@ -108,6 +103,7 @@ public:
     void DoCalcLUSources(void);
     void DoCalcLUSourcesStatInfo(void);
     void LUSelector( long lIdxLU);
+    void* LUSelectorRV( long lIdxLU);
     void LUIterator(long AmountCalcLU, long lIdxLU);
     void LUIteratorStatInfo(long AmountCalcLU, long lIdxLU);
     void Init_(void);
@@ -144,9 +140,6 @@ public:
     void SetupCPulseAlternatorStngParam(void *pv);
     void SetupCLUTuStngParam(void *pv);
     void SetupCLUTsStngParam(void *pv);
-    void SetupCLUGooseStngParam(void *pv);
-    void SetupCLUMmsStngParam(void *pv);
-    void SetupCLULanStngParam(void *pv);
     void SetupCLULogStngParam(void *pv);
     long FillSBitFld_LUInInfo(void *pvIn,void *pvOut);
     long FillSBitFld_LUInInfo2(void *pvIn,void *pvOut);
@@ -156,6 +149,7 @@ public:
     void SetupCLUInternalRef(void *pv);
     void SetupCLUInternalRef2(void *pv);
     void SetupCLUInternalRefLed(void *pv);
+    long FillArr_n_linkVal(void );
 	friend long InitSchematic(void);
 	friend long ReInitSchematic(void);
 	friend void DoCalcWrp(void);

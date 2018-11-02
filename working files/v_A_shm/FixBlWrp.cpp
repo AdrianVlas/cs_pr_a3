@@ -101,12 +101,12 @@ long l;
     else{
         rCFixBlockWrp.arrOut[TRIGER_FAULT_CMD]          = 0;
     }    
-    if(l&(1<<FIX_BLOCK_SCHEME_INCORRECT)){
-        rCFixBlockWrp.arrOut[SHCEMATIC_FAULT_CMD]          = 1;
-    }
-    else{
-        rCFixBlockWrp.arrOut[SHCEMATIC_FAULT_CMD]          = 0;
-    }
+//    if(l&(1<<FIX_BLOCK_SCHEME_INCORRECT)){
+//        rCFixBlockWrp.arrOut[SHCEMATIC_FAULT_CMD]          = 1;
+//    }
+//    else{
+//        rCFixBlockWrp.arrOut[SHCEMATIC_FAULT_CMD]          = 0;
+//    }
     
 	if(  measurement[4] < l_0D80_UNOM){
 	 	stdpUminL = 1;

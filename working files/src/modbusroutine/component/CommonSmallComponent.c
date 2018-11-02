@@ -70,10 +70,10 @@ void loadCommonSmallActualData(void)
           if(fix_block_active_state[FIX_BLOCK_AVAR_DEFECT >> 3] & (1 << (FIX_BLOCK_AVAR_DEFECT & ((1 << 3) - 1))))
             tempReadArray[0] |= (1<<bit);
           break;
-        case 3://Ошибка работы лог схемы
-          if(fix_block_active_state[FIX_BLOCK_SCHEME_INCORRECT >> 3 ] & (1 << (FIX_BLOCK_SCHEME_INCORRECT & ((1 << 3) - 1))))
-            tempReadArray[0] |= (1<<bit);
-          break;
+//        case 3://Ошибка работы лог схемы
+//          if(fix_block_active_state[FIX_BLOCK_SCHEME_INCORRECT >> 3 ] & (1 << (FIX_BLOCK_SCHEME_INCORRECT & ((1 << 3) - 1))))
+//            tempReadArray[0] |= (1<<bit);
+//          break;
         case 4://Ошибка работы триггеров
           if(fix_block_active_state[FIX_BLOCK_D_TRIGGER_STATE_INCORRECT >> 3 ] & (1 << (FIX_BLOCK_D_TRIGGER_STATE_INCORRECT & ((1 << 3) - 1))))
             tempReadArray[0] |= (1<<bit);

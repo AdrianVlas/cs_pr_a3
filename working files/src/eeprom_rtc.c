@@ -622,7 +622,7 @@ void main_routines_for_i2c(void)
             }
           case ID_FB_BUTTON:
             {
-              size_of_block = current_config.n_button*0;
+              size_of_block = current_config.n_button*sizeof(__settings_for_BUTTON);
               break;
             }
           case ID_FB_ALARM:
@@ -1041,7 +1041,7 @@ void main_routines_for_i2c(void)
             }
           case ID_FB_BUTTON:
             {
-              size_of_block = current_config.n_button*0;
+              size_of_block = current_config.n_button*sizeof(__settings_for_BUTTON);
               break;
             }
           case ID_FB_ALARM:
@@ -1956,7 +1956,7 @@ void main_routines_for_i2c(void)
             }
           case ID_FB_BUTTON:
             {
-              size_of_block = current_config.n_button*0;
+              size_of_block = current_config.n_button*sizeof(__settings_for_BUTTON);
               break;
             }
           case ID_FB_ALARM:

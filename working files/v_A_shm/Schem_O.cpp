@@ -153,6 +153,16 @@ register LUAreaListElem*pLUAreaListElem;
 pLUAreaListElem = static_cast<LUAreaListElem*>(this->pLUAreaList);
 pv = (pLUAreaListElem[lIdxLU]).pvLU;
 (static_cast<CLUBase*>( pv))->LogicFunc( pv);
+    
+}
+void* Shematic::LUSelectorRV( long lIdxLU){//Selector Return Value
+register void* pv;
+register LUAreaListElem*pLUAreaListElem;
+#pragma calls=  Mft_Op, XOR_Op_8_1,TU_Op,DTRG_Op_4_2,OR_Op_8_1,NOT_Op_1_1,LssOp,Log_Op,SET_LED_Op,FKey_Op,SET_OUT_Op,READ_DI_Op,BGSig_Op,AND_Op_8_1,PulseAlt_Op
+pLUAreaListElem = static_cast<LUAreaListElem*>(this->pLUAreaList);
+pv = (pLUAreaListElem[lIdxLU]).pvLU;
+(static_cast<CLUBase*>( pv))->LogicFunc( pv);
+    return pv;
 }
 //    while (sLV.shAmountCalcLU--) {
 //        pv = static_cast<void*>( &sLV.arrLUAreaListElem[i]);
@@ -517,35 +527,115 @@ i = pCLUTu->shShemasOrdNumStng;
     i--;
     pCLUTu->arrOut[0] = 0;
 }
-
+#define MAX_AMOUNT_LINK_ITERATION 3
 //Optimization Module Nazar
 void Shematic::DoCalcLU_V01(void){
 register union {
-short* pOrderCalcNum;
+long* pLOrderCalcNum;
+short* pShOrderCalcNum;
 char  *pCh;
 }P;
 long lAmtProcessObj,lIdxCounter;
-long i,j;
-//    TmrCalls();    
-//    UpdateStateDI();
+long i,l;
+void* pv;
+    struct {
+    
+    short shMarkerIteration;
+    short shLocalIdxCounter;
+    short shCounterLocalIteration;
+    void *pV;
+    LUAreaListElem* arrLUAreaListElem;
+    CLUBase* pCLUBase;//SelectorCurrElem
+//      bool bbStateChange;
+    char chLUNumOut;
+    short shLUStateOut,shLUStateOutChk;
+    
+      
+    } sLV;
+//?    TmrCalls();    
+//?    UpdateStateDI();
 if(chStateOptimisation == 1)
    asm volatile(
        "bkpt 1"
        );
-    DoCalcLUSources();
-    P.pCh = const_cast<char*>(arrChCalcLUOrderNumsSchmPage2);
+       sLV.arrLUAreaListElem = static_cast<LUAreaListElem*>(this->pLUAreaList);
+       //pLUAreaList = static_cast<void*>(&gLUAreaMem.headLUAreaList);
+       sLV.shLocalIdxCounter = sLV.shMarkerIteration = sLV.shCounterLocalIteration = 0;
+       sLV.chLUNumOut = sLV.shLUStateOutChk = sLV.shLUStateOut = 0;
+    //DoCalcLUSources(); <- This function make Nazar Prg
+    //P.pCh = const_cast<char*>(arrChCalcLUOrderNumsSchmPage2);
+    P.pCh = static_cast<char*>(pExecSeq);
 
-    lAmtProcessObj = sizeof(arrChCalcLUOrderNumsSchmPage2)>>1;
+    //lAmtProcessObj = sizeof(arrChCalcLUOrderNumsSchmPage2)>>1;
+    lAmtProcessObj = (shSizeExecSeq >> 2) - 1;
     lIdxCounter = 0;
     do {
-        i = P.pOrderCalcNum[lIdxCounter];
-        j = i >> 8;
-        i &= 0xff;
-        i += arIdxLUAreaListElem[j-1];
-        LUSelector(i);
-    } while (++lIdxCounter < lAmtProcessObj );
-    i = arIdxLUAreaListElem[LU_OUTPUT-1];
-    LUIterator((static_cast<__CONFIG* >(p_current_config_prt))->n_output,i);//
+         
+         sLV.shLocalIdxCounter = lIdxCounter;
+         i = P.pShOrderCalcNum[0] - 1;//Num Convert to Index
+         l = P.pShOrderCalcNum[1]; 
+//        j = i >> 8;//        i &= 0xff;//        i += arIdxLUAreaListElem[j-1];
+        if (l>0){//Save State Outs
+            pv = (sLV.arrLUAreaListElem[i]).pvLU;
+            sLV.chLUNumOut = static_cast<CLUBase*>( pv)->chNumOutput;
+            for (long lii = 0; lii < sLV.chLUNumOut;lii++)
+            sLV.shLUStateOut |= static_cast<char*>((static_cast<CLUBase*>( pv)->pOut))[lii] << lii;
+            //Read Out
+        }
+        pv = LUSelectorRV(i);
+        if( l == 0 ){//|| sLV.shLocalIdxCounter == lIdxCounter
+            lIdxCounter++;
+            P.pLOrderCalcNum ++;//= lIdxCounter;
+        }
+        else{
+            //Fix State            
+            for (long lii = 0; lii < sLV.chLUNumOut;lii++)
+            sLV.shLUStateOutChk |= static_cast<char*>((static_cast<CLUBase*>( pv)->pOut))[lii] << lii;
+            
+            if(sLV.shLUStateOutChk != sLV.shLUStateOut){
+                long j = sLV.shLocalIdxCounter + 1;
+                sLV.pV = static_cast<void*>(P.pCh);
+                P.pLOrderCalcNum = &(static_cast<long*>(pExecSeq))[j];
+                
+                //
+                while( j < lAmtProcessObj && P.pShOrderCalcNum[1] == l ){
+                    pv = LUSelectorRV(j);
+                    j++;
+                    P.pLOrderCalcNum ++;//= j;
+                }
+                //Check State
+                if(sLV.shMarkerIteration != lIdxCounter){
+                    sLV.shCounterLocalIteration = 0;
+                    sLV.shMarkerIteration = lIdxCounter;
+                    
+                }
+                else{
+                    sLV.shCounterLocalIteration++;
+                    if(sLV.shCounterLocalIteration  > MAX_AMOUNT_LINK_ITERATION)
+                        while(1);//Fix Fault
+                        //Later insert in program Error
+                        //Fix Schematic Error
+                }
+                P.pCh = static_cast<char*>(sLV.pV);//Restore pointer
+                
+            }
+            else{//Defacto this is (state_curr_el == el(i)) 
+                lIdxCounter++;
+                P.pLOrderCalcNum = (static_cast<long*>(pExecSeq))+lIdxCounter;
+                
+            }
+        }
+        
+        
+        
+        
+        
+    } while (lIdxCounter < lAmtProcessObj );
+    
+//    i = arIdxLUAreaListElem[LU_OUTPUT-1];
+//    LUIterator((static_cast<__CONFIG* >(p_current_config_prt))->n_output,i);//
+
+
 }
 
 

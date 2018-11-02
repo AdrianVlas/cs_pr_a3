@@ -2069,6 +2069,72 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
     n += target_config->n_group_alarm*GROUP_ALARM_SIGNALS_OUT;
     /***/
     
+    /***/
+    //Визначення (n, link)
+    /***/
+    uint32_t _n = 1;
+    //Входи
+    for (size_t i = 0; i < target_config->n_input; i++) 
+    {
+      ((__settings_for_INPUT*)target_sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR] + i)->_n = _n++;
+      ((__settings_for_INPUT*)target_sca_of_p[ID_FB_INPUT - _ID_FB_FIRST_VAR] + i)->_link = 0;
+    }
+    //ФК
+    for (size_t i = 0; i < target_config->n_button; i++) 
+    {
+      ((__settings_for_BUTTON*)target_sca_of_p[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + i)->_n = _n++;
+      ((__settings_for_BUTTON*)target_sca_of_p[ID_FB_BUTTON - _ID_FB_FIRST_VAR] + i)->_link = 0;
+    }
+    //ШГС
+    for (size_t i = 0; i < target_config->n_group_alarm; i++) 
+    {
+      ((__settings_for_GROUP_ALARM*)target_sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + i)->_n = _n++;
+      ((__settings_for_GROUP_ALARM*)target_sca_of_p[ID_FB_GROUP_ALARM - _ID_FB_FIRST_VAR] + i)->_link = 0;
+    }
+    //БФТ
+    for (size_t i = 0; i < target_config->n_timer; i++) 
+    {
+      ((__settings_for_TIMER*)target_sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR] + i)->_n = _n++;
+      ((__settings_for_TIMER*)target_sca_of_p[ID_FB_TIMER - _ID_FB_FIRST_VAR] + i)->_link = 0;
+    }
+    //І
+    for (size_t i = 0; i < target_config->n_and; i++) 
+    {
+      ((__settings_for_AND*)target_sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR] + i)->_n = _n++;
+      ((__settings_for_AND*)target_sca_of_p[ID_FB_AND - _ID_FB_FIRST_VAR] + i)->_link = 0;
+    }
+    //СЗС
+    for (size_t i = 0; i < target_config->n_alarm; i++) 
+    {
+      ((__settings_for_ALARM*)target_sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + i)->_n = _n++;
+      ((__settings_for_ALARM*)target_sca_of_p[ID_FB_ALARM - _ID_FB_FIRST_VAR] + i)->_link = 0;
+    }
+    //АБО
+    for (size_t i = 0; i < target_config->n_or; i++) 
+    {
+      ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->_n = _n++;
+      ((__settings_for_OR*)target_sca_of_p[ID_FB_OR - _ID_FB_FIRST_VAR] + i)->_link = 0;
+    }
+    //Триґер
+    for (size_t i = 0; i < target_config->n_trigger; i++) 
+    {
+      ((__settings_for_TRIGGER*)target_sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + i)->_n = _n;
+      ((__settings_for_TRIGGER*)target_sca_of_p[ID_FB_TRIGGER - _ID_FB_FIRST_VAR] + i)->_link = _n++;
+    }
+    //Св.
+    for (size_t i = 0; i < target_config->n_led; i++) 
+    {
+      ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR] + i)->_n = _n++;
+      ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_LED - _ID_FB_FIRST_VAR] + i)->_link = 0;
+    }
+    //Виходи
+    for (size_t i = 0; i < target_config->n_output; i++) 
+    {
+      ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + i)->_n = _n++;
+      ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + i)->_link = 0;
+    }
+    /***/
+    
     target_fix_settings->schematic = 2 << 8; /*признак Схеми 2*/
     
     uint8_t *label_to_time_array;
