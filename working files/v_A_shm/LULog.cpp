@@ -27,11 +27,11 @@ if(
 	& ((_LOG_INPUT)(1 << EVENT_LOG_WORK))
 )
 {
-Є сигнал
+YE syhnal
 }
 else
 {
-Немє сигнал
+Nemye syhnal
 }
 
 */
@@ -55,11 +55,11 @@ spca_of_p_prt[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
 l1 = static_cast<__LOG_INPUT>(1 << EVENT_LOG_WORK);
  if( (l1&(*pLOG_INPUT)) != 0)
  {
-    pCLULog->arrOut[0] = 1;// Є сигнал
+    pCLULog->arrOut[0] = 1;// Fix Sig
  }
  else
  {
-    pCLULog->arrOut[0] = 0;// Немє сигнал
+    pCLULog->arrOut[0] = 0;// No Sig
  }
 //    
     

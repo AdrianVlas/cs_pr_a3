@@ -32,7 +32,8 @@ LU_TU,
 LU_TS,
 LU_LOG,
 LU_STNG_FIX,
-TOTAL_LU
+TOTAL_LU,
+ID_OBJ
 };
 
 typedef struct config_tag{ 
@@ -83,22 +84,26 @@ class Shematic
     void* pLUAreaList;
     void* p_current_config_prt;//__CONFIG *
     void* pCFixBlockWrp;
+    void* pExecSeq;
     short arIdxLUAreaListElem[TOTAL_LU];
     char chMaxIteratoin;
     char chIteration;
     char chSumNLedPlusNOut;
     char chSumNTUPlusNTS;
     short shSum8Elem;
-
+    short shSizeExecSeq;
+    
 public:
     Shematic(void);
     ~Shematic(void);
     void DoCalc(void);
     void DoCalcStatInfo(void);
+    void DoCalcLU_V01(void);
     void DoCalcLU(void);
     void DoCalcLUSources(void);
     void DoCalcLUSourcesStatInfo(void);
     void LUSelector( long lIdxLU);
+    void* LUSelectorRV( long lIdxLU);
     void LUIterator(long AmountCalcLU, long lIdxLU);
     void LUIteratorStatInfo(long AmountCalcLU, long lIdxLU);
     void Init_(void);
@@ -109,6 +114,7 @@ public:
     void printResult(void);
     long InsertLU(long lId, void*pvObjImage);
     long EvalSizeObj(long lId);
+    long AllocateObj(void*pvObjImage);
     void ChangeRelativeOnEvalLinks(void);
     void ChangeStngOrdnumRelOnBase(long lIdxScanedObj);
     void SetupCircutLinks(void *pv);
@@ -143,6 +149,7 @@ public:
     void SetupCLUInternalRef(void *pv);
     void SetupCLUInternalRef2(void *pv);
     void SetupCLUInternalRefLed(void *pv);
+    long FillArr_n_linkVal(void );
 	friend long InitSchematic(void);
 	friend long ReInitSchematic(void);
 	friend void DoCalcWrp(void);
@@ -248,7 +255,13 @@ typedef struct tag_LULinksInfo{
 	
 }LULinksInfo;
 */
-
+typedef struct tag_AllocInfo{
+	short shBF; // Bit Flags Fld 0-Need Move
+    short shSize; //In bytes
+    void* pvSrc; //Pointer on Area obj in Memory
+    void* pvDsc; //Pointer on Area obj in Alloc Memory
+	
+}AllocInfo;
 
 #define SIZE_LU_AREA_LIST_ITEM sizeof(LUAreaListElem)
 /*

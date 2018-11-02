@@ -23,7 +23,7 @@ CLUTs& rCLUTs = *(static_cast<CLUTs *> (pObj));
 
     k = 0;
     if(chGBL_BP_StopLUTs == rCLUTs.shShemasOrdNumStng)
-    asm(
+    asm volatile(
     "bkpt 1"
     );  
     __LN_TS* pLN_TS = static_cast<__LN_TS *>(rCLUTs.pvCfgLN);

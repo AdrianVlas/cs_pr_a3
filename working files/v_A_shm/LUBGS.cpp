@@ -206,7 +206,7 @@ register long i;
    if(i == 0){
 //       rCBGSig.m_chCounterCall = 0;
         if(rCBGSig.shLUBieldOrdNum == shIdxBGSBkpt)
-   asm(
+   asm volatile(
                "bkpt 1"
                );
     //rCBGSig.CalcBusGrSigSchematicDbg();
@@ -566,15 +566,15 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
 
 }
 //long Ibus, long lTinterval
-// UCV - від 54 до 253 В.
-// IIN1, IIN2, IIN3, IIN4 ==  0,005 до 5 А.
+// UCV - vid 54 do 253 V.
+// IIN1, IIN2, IIN3, IIN4 == 0,005 do 5 A.
 char chBkpt = 0;
 long CBGSig::EvalDeltaIbusDbg(void) {
     register long i, j,Iti;
     //Kc = Ucurr_power/Unom_power
     //Num Analog Chanel
     Iti = measurement_DBG[m_chNumberAnalogChanell];
-	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm(
+	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm volatile(
 	            "bkpt 1"
 	            );
 //    Iti = measurement_DBG[m_chNumberAnalogChanell];
@@ -613,7 +613,7 @@ i*=9;i/=10;
                 else
                     i = j - Iti;
                 if(i > m_lKcDeltaIy ){
-                    // asm(
+                    // asm volatile(
                     // "bkpt 1"
                     // );
                     i = 1;
@@ -632,7 +632,7 @@ long CBGSig::EvalDeltaIbus(void) {
     //Kc = Ucurr_power/Unom_power
     //Num Analog Chanel
     Iti = measurement[m_chNumberAnalogChanell];
-	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm(
+	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm volatile(
 	            "bkpt 1"
 	            );
 //    Iti = measurement[m_chNumberAnalogChanell];
@@ -666,7 +666,7 @@ i*=9;i/=10;//i *= 58981;i>>=16;//0.9 koeff
                 else
                     i = j - Iti;
                 if(i > m_lKcDeltaIy ){
-                    // asm(
+                    // asm volatile(
                     // "bkpt 1"
                     // );
                     i = 1;
@@ -694,7 +694,7 @@ long CBGSig::EvalDeltaIbusDbg(void*pv) {
     //Num Analog Chanel
 //    Iti = measurement_DBG[m_chNumberAnalogChanell];
     Iti = *(static_cast<long*>(pv)+m_chNumberAnalogChanell);
-	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm(
+	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm volatile(
 	            "bkpt 1"
 	            );
 //    Iti = measurement_DBG[m_chNumberAnalogChanell];
@@ -733,7 +733,7 @@ i*=9;i/=10;
                 else
                     i = j - Iti;
                 if(i > m_lKcDeltaIy ){
-                    // asm(
+                    // asm volatile(
                     // "bkpt 1"
                     // );
                     i = 1;
@@ -763,7 +763,7 @@ long CBGSig::EvalDeltaIbus(void *pv) {
     else i--;     
     Ii = *(static_cast<long*>(pv)+m_chNumberAnalogChanell+ (i*I_U*1) );
     
-	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm(
+	if((chBkpt != 0) && (m_chNumberAnalogChanell==1))asm volatile(
 	            "bkpt 1"
 	            );
 //    Iti = measurement[m_chNumberAnalogChanell];
@@ -821,7 +821,7 @@ long CBGSig::EvalDeltaIbus(void *pv) {
                 else
                     i = j - Ii;
                 if(i > m_lKcDeltaIy ){
-                    // asm(
+                    // asm volatile(
                     // "bkpt 1"
                     // );
                     lRetVal = 1;

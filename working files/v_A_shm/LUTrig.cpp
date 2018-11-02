@@ -10,7 +10,7 @@ register    long k, j, l; //
     bool bbl = refCLUDTrg.chQ;
     k = 0;
     if(chGBL_BP_StopLUTrig == refCLUDTrg.shShemasOrdNumStng)
-    asm(
+    asm volatile(
                 "bkpt 1"
                 );
 //pCh = refCLUDTrg.arrPchIn[DTRG__4_2_IN_NAME__SET - 1];
