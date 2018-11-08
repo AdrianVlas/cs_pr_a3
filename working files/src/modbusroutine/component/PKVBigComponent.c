@@ -304,11 +304,10 @@ int setPKVBigModbusRegister(int adrReg, int dataReg)
    case 16: //14015
    case 17: //14015
    case 18: //14015
-    if(dataReg>32) return MARKER_ERRORDIAPAZON;
-    if(dataReg<0) return MARKER_ERRORDIAPAZON;
-    break;
    case 19: //14015
    case 20: //14015
+//    if(dataReg>32) return MARKER_ERRORDIAPAZON;
+//    if(dataReg<0) return MARKER_ERRORDIAPAZON;
    case 21: //14015
    case 22: //14015
    case 23: //14015
@@ -523,33 +522,33 @@ int flag_time_array = 0;
     case 15://Порт TCP
     break;
     case 16://IP адрес устройства
-     arr1->IPv4[0] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
-     arr1->IPv4[1] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
+     arr1->IPv4[0] = arr->IPv4[0] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
+     arr1->IPv4[1] = arr->IPv4[1] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
      restart_timeout_idle_new_settings = true;
     break;
     case 17://IP адрес устройства
-     arr1->IPv4[2] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
-     arr1->IPv4[3] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
+     arr1->IPv4[2] = arr->IPv4[2] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
+     arr1->IPv4[3] = arr->IPv4[3] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
      restart_timeout_idle_new_settings = true;
     break;
 
     case 18://Маска подсети
-     arr1->mask = tempWriteArray[offsetTempWriteArray+i] & 0xff;
+     arr1->mask = arr->mask = tempWriteArray[offsetTempWriteArray+i] & 0xff;
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
      restart_timeout_idle_new_settings = true;
     break;
 
     case 19://Шлюз по-умолчанию
-     arr1->gateway[0] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
-     arr1->gateway[1] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
+     arr1->gateway[0] = arr->gateway[0] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
+     arr1->gateway[1] = arr->gateway[1] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
      restart_timeout_idle_new_settings = true;
     break;
     case 20://Шлюз по-умолчанию
-     arr1->gateway[2] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
-     arr1->gateway[3] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
+     arr1->gateway[2] = arr->gateway[2] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
+     arr1->gateway[3] = arr->gateway[3] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
      config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
      restart_timeout_idle_new_settings = true;
     break;
