@@ -448,6 +448,7 @@ pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
     
 }
 void UpdateOutDiagn(void){
+//    if()
     for(long i = 0, lAmtOut = current_config_prt.n_output; i< lAmtOut;i++){
         if(DoCheckUI32Bit.ul_val &((1) << i) ){
             if (set_diagnostyka != NULL){

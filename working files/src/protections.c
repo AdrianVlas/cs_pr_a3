@@ -175,7 +175,11 @@ inline void calc_measurement(void)
     
     float mnognyk = (i < (NUMBER_ANALOG_CANALES - 1)) ? MNOGNYK_I_DIJUCHE_FLOAT : MNOGNYK_U_DIJUCHE_FLOAT;
     float value_float = mnognyk*((float)sqrt_sum_sqr_data_local[i])/((i != IM_U) ? 64.0f : 4.0f); /*64 = 4*16. 16 - це підсилення каналів "Analog Input"; 4 - це sqrt(16), а 16 береться з того, що 32 = 16*2 */
+#ifdef TEST_MEAS_MODE
+measurement[i] = measurement[i]; 
+#else	
     measurement[i] = (unsigned int)value_float; 
+#endif	
     /***/
   }
 }

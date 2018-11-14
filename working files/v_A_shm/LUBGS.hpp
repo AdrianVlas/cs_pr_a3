@@ -28,9 +28,14 @@ public:
     //CBGSig(CBGSig&);
     CBGSig(char chM, char chI);
     void CalcBusGrSigSchematicDbg(void);
+    void CalcBusGrSigSchematic1(void);
     void CalcBusGrSigSchematic(void);
     long lTWait(long lActivKey);
-    long lTReset(long lActivKey);
+    long TClrTrg(long lActivKey);
+    long TElongation(long lActivKey);
+    long TImp6ms(long lActivKey);
+    long TImpNNP(long lActivKey);
+    long TImpNNM(long lActivKey);
     char* arrPchIn[TOTAL_BGS_VISIO_IN]; //
     char arrOut [TOTAL_BGS_VISIO_OUT]; //Tra
 static char m_chCounterCall;
@@ -48,6 +53,10 @@ static unsigned int  measbuf[3][I_U];
     char m_chLinkedTimers; //Field bit
     char m_chStateTWait;
     char m_chStateTReset;
+    char m_chSttElongation;
+    char m_chStt6MsImp;
+    char m_chSttImpNNP;
+    char m_chSttImpNNM;
     char m_chNumberAnalogChanell;
 	char m_chWRIfix,m_chIfixDir;
     char m_chStdpCE, m_chStdpOV ;
@@ -57,9 +66,14 @@ static unsigned int  measbuf[3][I_U];
 	char m_chWR_NNP;
 	 char ch_DTrg;
      char ch_C1;
+    char chTzatrState; 
     BGSigSuit m_BGSigSuit;
     TmrNode m_NodeTWait;
     TmrNode m_NodeTReset;
+    TmrNode m_NodeTElongation;
+    TmrNode m_NodeTImp6ms;
+    TmrNode m_NodeTImpNNP;
+    TmrNode m_NodeTImpNNM;
     long m_lMeasIti_mn_1,m_lKcDeltaIy;
     long m_lNNC,m_lNNP;
     long m_lIfix,m_lIp,m_lIc;

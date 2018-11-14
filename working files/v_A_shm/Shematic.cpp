@@ -240,8 +240,10 @@ void Shematic::DoCalc(void) {
         
         }        
     //}    
-    if(CBGSig::chNeedTimerCalculated >0)    
+    if(CBGSig::chNeedTimerCalculated >0){    
          CBGSig::m_chCounterCall = 0;//It`s initiated Recalc when Timer work    
+         CBGSig::chNeedTimerCalculated = 0;
+    }     
    
 //    CBGSig::chNeedRefrash = 1;        
         
