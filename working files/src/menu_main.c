@@ -146,11 +146,11 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
         (new_level == SET_NEW_PASSWORD_MENU2_LEVEL) &&
         (current_state_menu2.edition == ED_VIEWING)
        )
-       ||  
-       (
-        (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
-        (current_state_menu2.edition == ED_VIEWING)
-       )
+//       ||  
+//       (
+//        (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
+//        (current_state_menu2.edition == ED_VIEWING)
+//       )
       )   
      )   
   {
@@ -169,16 +169,16 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
           (_CHECK_SET_BIT(control_i2c_taskes, TASK_READING_SETTINGS_EEPROM_BIT    ) == 0)
          )   
       {
-        if  (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
-        {
-          //Входимо в режим редагування
-          current_state_menu2.edition = ED_EDITION;
-        }
-        else
-        {
+//        if  (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL)
+//        {
+//          //Входимо в режим редагування
+//          current_state_menu2.edition = ED_EDITION;
+//        }
+//        else
+//        {
           //Входимо з правом подальшого редагування
           current_state_menu2.edition = ED_CAN_BE_EDITED;
-        }
+//        }
 
         //Фіксуємо, що система меню захопила "монополію" на зміну конфігурації і налаштувань
         config_settings_modified = MASKA_FOR_BIT(BIT_MENU_LOCKS);
@@ -208,14 +208,14 @@ enum _result_pressed_enter_during_edition press_enter_in_ekran_with_request(void
       *((enum _menu2_levels*)p_menu_param_1) = PASSWORD_MENU2_LEVEL;
     }
   }
-  else if (
-           (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
-           (current_state_menu2.edition == ED_CAN_BE_EDITED)
-          )   
-  {
-    //Входимо в режим редагування
-    current_state_menu2.edition = ED_EDITION;
-  }
+//  else if (
+//           (new_level == EDITOR_LIST_LOGICAL_NODES_FOR_OUTPUT_MENU2_LEVEL) &&
+//           (current_state_menu2.edition == ED_CAN_BE_EDITED)
+//          )   
+//  {
+//    //Входимо в режим редагування
+//    current_state_menu2.edition = ED_EDITION;
+//  }
   else if (new_level == TIME_MANU2_LEVEL)
   {
     //Входимо в режим без редагування

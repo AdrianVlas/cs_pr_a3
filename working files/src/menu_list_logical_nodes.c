@@ -60,11 +60,11 @@ void make_ekran_list_logical_nodes(void)
        (current_level >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL) &&
        (current_level <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_INPUT_MENU2_LEVEL)
       )
-      ||  
-      (
-       (current_level >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
-       (current_level <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
-      )
+//      ||  
+//      (
+//       (current_level >= __BEGIN_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL) &&
+//       (current_level <  __NEXT_AFTER_EDITOR_LIST_SELECTED_TYPE_LOGICAL_NODE_FOR_OUTPUT_MENU2_LEVEL)
+//      )
      )   
   {
     intptr_t index = position_in_current_level_menu2[previous_level_in_current_level_menu2[current_level]] - NUMBER_FIX_BLOCKS; 
@@ -129,7 +129,7 @@ void make_ekran_list_logical_nodes(void)
   unsigned int index_in_ekran = (position_temp >> POWER_MAX_ROW_LCD) << POWER_MAX_ROW_LCD;
   unsigned int max_row = (current_state_menu2.p_max_row == NULL) ? current_state_menu2.max_row : *current_state_menu2.p_max_row;
 
-  //Формуємо рядки  рядки у робочий екран
+  //Формуємо рядки у робочий екран
   for (size_t i = 0; i < MAX_ROW_LCD; i++)
   {
     //Наступні рядки треба перевірити, чи їх требе відображати у текучій конфігурації
@@ -137,8 +137,8 @@ void make_ekran_list_logical_nodes(void)
     {
       if (
           (
-           (current_level == EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) ||
-           (current_level == EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)
+           (current_level == EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) /*||
+           (current_level == EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)*/
           )
           &&  
           (index_in_ekran < NUMBER_FIX_BUTTONS)    
@@ -151,8 +151,8 @@ void make_ekran_list_logical_nodes(void)
           
         unsigned int number = index_in_ekran + 1;
         if (
-            (current_level == EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) ||
-            (current_level == EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)
+            (current_level == EDITOR_LIST_BUTTONS_FOR_INPUT_MENU2_LEVEL ) /*||
+            (current_level == EDITOR_LIST_BUTTONS_FOR_OUTPUT_MENU2_LEVEL)*/
            )
         {
           number -= NUMBER_FIX_BUTTONS;

@@ -106,7 +106,7 @@ NUMBER_ODYNYCI_VYMIRJUVANNJA
 /*****************************************/
 #define VERSIA_PZ                                             12
 #define MODYFIKACIA_VERSII_PZ                                 0
-#define ZBIRKA_VERSII_PZ                                      2
+#define ZBIRKA_VERSII_PZ                                      3
 #define ZBIRKA_PIDVERSII_PZ                                   0
 /*****************************************/
 
@@ -126,6 +126,6 @@ NUMBER_ODYNYCI_VYMIRJUVANNJA
 //Версія універсальної карти памяті
 /*****************************************/
 #define VERSIA_GMM                                             100
-#define MODYFIKACIA_VERSII_GMM                                 0
+#define MODYFIKACIA_VERSII_GMM                                 1
 /*****************************************/
 #endif

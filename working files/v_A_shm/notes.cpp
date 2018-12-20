@@ -31,21 +31,124 @@ void Shematic::DoCalcLU(void) {
     sLV.shAmountCalcLU = gblLUAreaAuxVar.shAmountPlacedLogicUnit;
     sLV.arrLUAreaListElem = &gLUAreaMem.headLUAreaList;
     i = 0;
+    CounterLocalIteration = 0;MarkerIteration = 0;
+        int i = 0;
+    while(i < N;){
+        state_curr_el = el(i); 
+        el(i).calc;
+
+        if( (el(i)_link == 0) || (state_curr_el == el(i)) ){
+            i++;
+        }else{
+
+            j = i + 1;
     
+            while( (j<= N) && (el(j)._link == el(i)._link) ){
+             el(j).calc;
+             j++;
+            }
+            i = el(i)._link;
+            if( MarkerLinkIteration != i ){
+                //Start 
+                CounterLocalIteration = 0;
+                MarkerLinkIteration = i;
+            }
+            else{
+                CounterLocalIteration++;
+                if(CounterLocalIteration > MAX_AMOUNT_ITERATION)
+                    FixFault;//No Stable State;
+            }
+
+        }
+    }
+
 }
-vector<int> vec_d{ 10, 20, 30, 40 };
-vector<int> list;
-std::vector<double> collection{ 1.0, 3.5, 0.5, 7.2 };
-std::vector<char> letters{ 'a', 'b', 'c' };
+Рефлізація алгоритму сортування
+1)В перший прохід знаходиш максимальне(мінімальне) число. І формуєш список двонаправлений котрий вже на 1 менший
+2)Далі проглядаєш вже список. Знайшов максимальне(мінімальне) число -Вставляєш індекс у вже сформований список
+і виймаєш його із списку початкових елементів.
+Знову продивляєшся список і виймаєш індекс його максимальне(мінімальне)
 
-You can read this statement as “for each int n in vec, std::cout << n << '',” The colon (:)
-therefore is pronounced “in.”
-To represent the snake in memory, we thus need to keep track of its velocity and an ordered list of the
-It's difficult to get a good feel for how iterators work without having a sense of how all the pieces fit together <-CS106A
+Для експерименту візьмемо Масив розміром 4,10, 50, 100, 1000.
+const short SH_SIZE_ARR = 4;
 
-Listing 11.10 (twodimvector.cpp) experiments with 2D vectors and takes advantage of the using type
-alias statement to simplify the code <--©2017 Richard L. Halterman
+typedef struct {
+//    long lVal;
+	long lIdx;
+    void *next;
+}NodeS;
 
-When you declare a Vector variable, it starts out as an empty vector<-Eric S. Roberts
+typedef struct {
+    long lVal;
+	long lIdx;
+    void *next;
+	void *prev;
+}NodeB; 
+ NodeS *pNodeS;
+ NodeB *pNodeB,pNodeHead, pNodeTail;
+ long arLong[SH_SIZE_ARR];
+ NodeS arNodeS[SH_SIZE_ARR];
+ NodeB arNodeB[SH_SIZE_ARR];
+ NodeB arNodeB[SH_SIZE_ARR];
+ 
+ long lEtalonMax = arLong[0];
+ long lEtalonMin = arLong[0];
+ 
+ pNodeS = &arNodeS[0];
+// pNodeS->(void *)0;
+ 
+ pNodeB = &arNodeB[0];
+ pNodeB ->next = &arNodeB[1];
+ pNodeB ->prev = (void*)0;
+ pNodeB ->lVal = lEtalonObj;
+ pNodeB ->lIdx = 0;
+ pNodeHead = &arNodeB[0];
+ pNodeTail = 
+	for(long i = 1, NodeB *plocNodeB = pNodeB; i++; i<(SH_SIZE_ARR-1)){
+		if(arLong[i]< lEtalonObj)
+		lEtalonMin = arLong[i];
+        //pNextNodeB = &arNodeB[i];
+        if(arLong[i]> lEtalonObj)
+        lEtalonMax = arLong[i];
+		   
 
-Representing Relationships with map  'if (keywords.count(word))' <-full Course
+		plocNodeB ->lVal = arLong[i];
+		plocNodeB ->lIdx = i;
+		plocNodeB ->next = &arNodeB[i+1];
+		plocNodeB ->prev = &arNodeB[i-1];
+		
+		
+	}
+	long lIdx = SH_SIZE_ARR -1;
+	pNodeB = &arNodeB[lIdx];
+	pNodeTail = pNodeB;
+	pNodeB ->next = (void *)0;
+	pNodeB ->prev = &arNodeB[lIdx-1];
+	pNodeB ->lVal = arLong[i];
+	pNodeB ->lIdx = lIdx;
+	
+    pNodeB =  pNodeHead;
+	while(pNodeB ->next){
+		if(pNodeB ->lVal < lEtalonObj)
+		lEtalonObj = pNodeB ->lVal;
+        if(arLong[i]> lEtalonObj)
+        lEtalonMax = arLong[i];
+	
+	
+	}
+                if ((rsLV.pCLURef->shShemasIdLUStng == static_cast<short>(locSBitFld.bfInfo_IdLUStng)) &&
+                        (rsLV.pCLURef->shShemasOrdNumStng == static_cast<short>(locSBitFld.bfInfo_OrdNumStng))
+                        ) {//Set UP Logic
+                    //rsLV.pCh = static_cast<char*>(rsLV.pCLURef->pOut);
+                    //rsLV.pCh += static_cast<unsigned char>(locSBitFld.bfInfo_OrdNumOut - 1); //As Idx
+                    rsLV.chVal = 1;
+//                     asm volatile(
+//                    "bkpt 1"
+//                    );
+                    break;
+                }    
+ Попробуй поработать сразу с Max and Min
+ Второй список можно привести к масиву индексов
+ 
+
+

@@ -24,7 +24,7 @@
                     <messagesLimit>100</messagesLimit>
                 </cstatargs>
                 <cstat_settings>
-                    <cstat_version>1.5.3</cstat_version>
+                    <cstat_version>1.5.4</cstat_version>
                     <checks_tree>
                         <package enabled="true" name="STDCHECKS">
                             <group enabled="true" name="ARR">
@@ -2057,9 +2057,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\ExtPoint.cpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\..\working files\v_A_shm\ExtPoint.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\FixBlWrp.cpp</name>
