@@ -30,6 +30,9 @@ LU_LSS,
 LU_BGS,
 LU_TU,
 LU_TS,
+LU_GOOSE,
+LU_MMS,
+LU_LAN,
 LU_LOG,
 LU_STNG_FIX,
 TOTAL_LU,
@@ -89,10 +92,13 @@ class Shematic
     char chMaxIteratoin;
     char chIteration;
     char chSumNLedPlusNOut;
-    char chSumNTUPlusNTS;
+    char chSumNTUPlusNLAN;
     short shSum8Elem;
-    short shSizeExecSeq;
-    
+    short shIdxSumNLedPlusNOutSeq;
+    short shIdxSumNTUPlusNLANSeq;
+    short shIdxSum8ElemSeq;
+	short shSizeExecSeq;
+
 public:
     Shematic(void);
     ~Shematic(void);
@@ -140,6 +146,9 @@ public:
     void SetupCPulseAlternatorStngParam(void *pv);
     void SetupCLUTuStngParam(void *pv);
     void SetupCLUTsStngParam(void *pv);
+    void SetupCLUGooseStngParam(void *pv);
+    void SetupCLUMmsStngParam(void *pv);
+    void SetupCLULanStngParam(void *pv);
     void SetupCLULogStngParam(void *pv);
     long FillSBitFld_LUInInfo(void *pvIn,void *pvOut);
     long FillSBitFld_LUInInfo2(void *pvIn,void *pvOut);
