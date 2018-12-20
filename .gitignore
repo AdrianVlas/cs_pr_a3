@@ -9,9 +9,12 @@
 # Ігнорувати my.bat
 my.bat
 *.pdf
+*.ses
+
 # Ігнорувати файли з папки settings/
 settings/
 
 # Ігнорувати файли з папки Flash-Debug/
 Flash-Debug/
 nppBackup/
+ses/
