@@ -2103,6 +2103,8 @@ void Shematic::SetupCLUAnd_8_1StngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_AND-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq = arIdxLUAreaListElem[LU_AND-1]; 
     }
     GlobalObjectMap.arPCLUAnd_8_1[j] = static_cast<CLUAnd_8_1*>(pInit2LcVarArea->pCLUBase);
     pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
@@ -2145,6 +2147,8 @@ void Shematic::SetupCLUOr_8_1StngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_OR-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_OR-1];
     }
     GlobalObjectMap.arPCLUOr_8_1[j] =
       static_cast<CLUOr_8_1*>(pInit2LcVarArea->pCLUBase);
@@ -2188,6 +2192,8 @@ void Shematic::SetupCLUXor_8_1StngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_XOR-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_XOR-1];
     }
     GlobalObjectMap.arPCLUXor_8_1[j] =
       static_cast<CLUXor_8_1*>(pInit2LcVarArea->pCLUBase);
@@ -2233,6 +2239,8 @@ void Shematic::SetupCLUNot_1_1StngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_NOT-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_NOT-1];
     }
     GlobalObjectMap.arPCLUNot_1_1[j] =
       static_cast<CLUNot_1_1*>(pInit2LcVarArea->pCLUBase);
@@ -2564,6 +2572,8 @@ void Shematic::SetupCPulseAlternatorStngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_MEANDERS-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_MEANDERS-1];
     }
     GlobalObjectMap.arPCPulseAlternator[j] =
       static_cast<CPulseAlternator*>(pInit2LcVarArea->pCLUBase);
