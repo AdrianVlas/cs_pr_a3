@@ -118,7 +118,7 @@ Shematic::Shematic(void) {
 	LL_CryaCrya++;
     chInitTerminated = 0;
     chMaxIteratoin = 2;
-    chIteration = 0;
+    shIdxSum8ElemSeq = chIteration = 0;
 
 }
 
@@ -266,15 +266,15 @@ void Shematic::DoCalc(void) {
         do{
             //Startovyi Iterator
             //i = arIdxLUAreaListElem[LU_LSS-1];
-            i = arIdxLUAreaListElem[LU_LSS-1];
+            i = shIdxSum8ElemSeq;//arIdxLUAreaListElem[LU_LSS-1];
             j = shSum8Elem;//kolichestvo elementov
             LUIterator(j,i);    
             //Startovyi Iterator    
-            i = arIdxLUAreaListElem[LU_OUTPUT-1];
+            i = shIdxSumNLedPlusNOutSeq;//arIdxLUAreaListElem[LU_OUTPUT-1];
             //kolichestvo elementov
             j = chSumNLedPlusNOut;
             LUIterator(j,i);//
-            i = arIdxLUAreaListElem[LU_TU-1];
+            i = shIdxSumNTUPlusNLANSeq;//arIdxLUAreaListElem[LU_TU-1];
             j = chSumNTUPlusNTS;
             LUIterator(j,i);//
             CLUBase::m_AuxInfo.ch++;
@@ -1423,6 +1423,7 @@ long Shematic::Init2(void) {
     //DetectCircutLinks();
     lsLcVarArea.shCounterInitCLUObj = 1;
     eLUTestLed.LinkTestLedTimers();
+    
     if( current_config_prt.n_input ){
         CLUDInput_0_1 locCLUDInput_0_1(10, 0); // = CLUDInput_0_1(0,10);
         short shLC__n_input = current_config_prt.n_input;
@@ -1757,7 +1758,12 @@ long Shematic::Init2(void) {
                     lRefCFixBlockWrp.LogicFunc(static_cast<void*>(lsLcVarArea.pCLUBase));
             pCFixBlockWrp = static_cast<void*> (static_cast<void*>(lsLcVarArea.pCLUBase));   
         }       
-            
+    //    if(shIdxSumNLedPlusNOutSeq == 0)
+    //         shIdxSumNLedPlusNOutSeq =gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+    //    if(shIdxSumNTUPlusNLANSeq == 0)
+    //         shIdxSumNTUPlusNLANSeq =gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+    //    if(shIdxSum8ElemSeq == 0) 
+    //         shIdxSum8ElemSeq = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
     }
     eRunErrorLed.UpdateRunErrorLed();
 SetupCircutLinks2(static_cast<void*>(&lsLcVarArea));
@@ -1881,6 +1887,8 @@ void Shematic::SetupCLUDout_1_0StngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_OUTPUT-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSumNLedPlusNOutSeq == 0)
+            shIdxSumNLedPlusNOutSeq = arIdxLUAreaListElem[LU_OUTPUT-1];
     }
     GlobalObjectMap.arPCLUDout_1_0[j] = static_cast<CLUDout_1_0*>(
        pInit2LcVarArea->pCLUBase);
@@ -1947,6 +1955,8 @@ shRelativeIndexLU -= 1;
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_LED-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSumNLedPlusNOutSeq == 0)
+             shIdxSumNLedPlusNOutSeq = arIdxLUAreaListElem[LU_LED-1];
     }
     locRef_CLULed.arrPchIn[LED_IN_NAME__TEST_M-1 ] = &(eLUTestLed.arrOut[TEST_LED_OUT_NAME_TEST_M]);
     locRef_CLULed.arrPchIn[LED_IN_NAME__TLEDIN-1 ] = &(eLUTestLed.arrOut[TEST_LED_OUT_NAME_TEST_M+1+j]);
@@ -1995,6 +2005,8 @@ void Shematic::SetupCLUAnd_8_1StngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_AND-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq = arIdxLUAreaListElem[LU_AND-1]; 
     }
     GlobalObjectMap.arPCLUAnd_8_1[j] = static_cast<CLUAnd_8_1*>(pInit2LcVarArea->pCLUBase);
     pInit2LcVarArea->shIdxGlobalObjectMapPointers++;//sLV.shIdx++
@@ -2037,6 +2049,8 @@ void Shematic::SetupCLUOr_8_1StngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_OR-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_OR-1];
     }
     GlobalObjectMap.arPCLUOr_8_1[j] =
       static_cast<CLUOr_8_1*>(pInit2LcVarArea->pCLUBase);
@@ -2080,6 +2094,8 @@ void Shematic::SetupCLUXor_8_1StngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_XOR-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_XOR-1];
     }
     GlobalObjectMap.arPCLUXor_8_1[j] =
       static_cast<CLUXor_8_1*>(pInit2LcVarArea->pCLUBase);
@@ -2125,6 +2141,8 @@ void Shematic::SetupCLUNot_1_1StngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_NOT-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_NOT-1];
     }
     GlobalObjectMap.arPCLUNot_1_1[j] =
       static_cast<CLUNot_1_1*>(pInit2LcVarArea->pCLUBase);
@@ -2222,6 +2240,8 @@ void Shematic::SetupCLULssStngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_LSS-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_LSS-1];
     }
     GlobalObjectMap.arPCLULss[j] = locPCLULss;      //static_cast<CLULss*>(pInit2LcVarArea->pCLUBase);
     
@@ -2293,6 +2313,8 @@ void Shematic::SetupCBGSigStngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_BGS-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_BGS-1];
     }
     GlobalObjectMap.arPCBGSig[j] =
       static_cast<CBGSig*>(pInit2LcVarArea->pCLUBase);
@@ -2353,6 +2375,8 @@ void Shematic::SetupCLUMft_2_1StngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_MFT-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_MFT-1];
     }
     GlobalObjectMap.arCMft[j] =
       static_cast<CMft*>(pInit2LcVarArea->pCLUBase);
@@ -2402,6 +2426,8 @@ void Shematic::SetupCLUTrigStngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_TRIGGERS-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_TRIGGERS-1];    
     }
     GlobalObjectMap.arPCLUTrig[j] = locPCLUTrig;
     //  static_cast<CLUTrig*>(pInit2LcVarArea->pCLUBase);
@@ -2448,6 +2474,8 @@ void Shematic::SetupCPulseAlternatorStngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_MEANDERS-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSum8ElemSeq == 0)
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_MEANDERS-1];
     }
     GlobalObjectMap.arPCPulseAlternator[j] =
       static_cast<CPulseAlternator*>(pInit2LcVarArea->pCLUBase);
@@ -2495,6 +2523,8 @@ void Shematic::SetupCLUTuStngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_TU-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSumNTUPlusNLANSeq == 0)
+             shIdxSumNTUPlusNLANSeq = arIdxLUAreaListElem[LU_TU-1];
     }
     GlobalObjectMap.arPCLUTu[j] =
       static_cast<CLUTu*>(pInit2LcVarArea->pCLUBase);
@@ -2540,6 +2570,8 @@ void Shematic::SetupCLUTsStngParam(void *pv){
     j = pInit2LcVarArea->shIdxGlobalObjectMapPointers;
     if( j == 0){
         arIdxLUAreaListElem[LU_TS-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
+        if(shIdxSumNTUPlusNLANSeq == 0)
+             shIdxSumNTUPlusNLANSeq = arIdxLUAreaListElem[LU_TS-1];
     }
     GlobalObjectMap.arPCLUTs[j] =
       static_cast<CLUTs*>(pInit2LcVarArea->pCLUBase);
@@ -3883,15 +3915,15 @@ i = 0;
     do{
         //Startovyi Iterator
         //i = arIdxLUAreaListElem[LU_LSS-1];
-        i = arIdxLUAreaListElem[LU_LSS-1];
+        i = shIdxSum8ElemSeq;//i = arIdxLUAreaListElem[LU_LSS-1];
         j = shSum8Elem;//kolichestvo elementov
         LUIteratorStatInfo(j,i);    
         //Startovyi Iterator    
-        i = arIdxLUAreaListElem[LU_OUTPUT-1];
+        i = shIdxSumNLedPlusNOutSeq;//arIdxLUAreaListElem[LU_OUTPUT-1];
         //kolichestvo elementov
         j = chSumNLedPlusNOut;
         LUIteratorStatInfo(j,i);// LUIterator(j,i);//
-        i = arIdxLUAreaListElem[LU_TU-1];
+        i = shIdxSumNTUPlusNLANSeq;//arIdxLUAreaListElem[LU_TU-1];
         j = chSumNTUPlusNTS;
         LUIteratorStatInfo(j,i);//
         CLUBase::m_AuxInfo.ch++;

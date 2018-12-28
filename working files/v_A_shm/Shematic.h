@@ -89,6 +89,9 @@ class Shematic
     char chSumNLedPlusNOut;
     char chSumNTUPlusNTS;
     short shSum8Elem;
+    short shIdxSumNLedPlusNOutSeq;
+    short shIdxSumNTUPlusNLANSeq;
+    short shIdxSum8ElemSeq;
 
 public:
     Shematic(void);

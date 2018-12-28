@@ -24,8 +24,7 @@ enum PBGS_BIT_POS {
 
 m_chSttElongation = m_chStt6MsImp = 0;
 m_chSttImpNNP = m_chSttImpNNM = 0;
-set_diagnostyka
-LIMITED_OUTS_MODE
+
 
 
 
