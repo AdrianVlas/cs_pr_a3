@@ -34,11 +34,13 @@ enum {
  IUSMALLCOMPONENT        ,//29
  YUSTBIGCOMPONENT        ,//30
  REGPROBIGCOMPONENT      ,//31
- OLANBIGCOMPONENT        ,//32 подготовка компонента output LAN
- IMMSBIGCOMPONENT        ,//33 подготовка компонента input MMS
- IGOOSEBIGCOMPONENT      ,//34 подготовка компонента input GOOSE
+ T1SMALLCOMPONENT        ,//32
+ T2SMALLCOMPONENT        ,//33
+ OLANBIGCOMPONENT        ,//34 подготовка компонента output LAN
+ IMMSBIGCOMPONENT        ,//35 подготовка компонента input MMS
+ IGOOSEBIGCOMPONENT      ,//36 подготовка компонента input GOOSE
 
- TOTAL_COMPONENT         ,//35
+ TOTAL_COMPONENT         ,//34
 
  MARKER_OUTPERIMETR   = 100000,
  MARKER_ERRORPERIMETR = 100001,

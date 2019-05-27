@@ -189,7 +189,8 @@ int inputPacketParser(void)
       globalbeginAdrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       globalcntBit      = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       if(globalcntBit>1000) return 0;//слишком длинный пакет
-      //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrBit="<<adrBit<<" cntBit="<<cntBit;
+      if((*received_count)!=8) return 0;//нарушено к-во
+
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc1PacketEncoder(adrUnit, globalbeginAdrBit, globalcntBit);
     }
@@ -200,7 +201,8 @@ int inputPacketParser(void)
       globalbeginAdrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       globalcntReg      = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       if(globalcntReg>125) return 0;//слишком длинный пакет
-      //qDebug()<<"adrUnit="<<adrUnit<<" numFunc="<<numFunc<<" adrReg="<<adrReg<<" cntReg="<<cntReg;
+      if((*received_count)!=8) return 0;//нарушено к-во
+
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc3PacketEncoder(adrUnit, globalbeginAdrReg, globalcntReg);
     }
@@ -210,6 +212,8 @@ int inputPacketParser(void)
       globalbeginAdrBit  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int dataBit = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       globalcntBit      = 1;
+      if((*received_count)!=8) return 0;//нарушено к-во
+
       switch(dataBit)
         {
         case 0xFF00:
@@ -236,6 +240,7 @@ int inputPacketParser(void)
       globalbeginAdrReg  = (unsigned int)inputPacket[3] +256*(unsigned int)inputPacket[2];
       int dataReg = (unsigned int)inputPacket[5] +256*(unsigned int)inputPacket[4];
       globalcntReg      = 1;
+      if((*received_count)!=8) return 0;//нарушено к-во
       outputPacket[1] = (unsigned char)numFunc;
       sizeOutputPacket = outputFunc6PacketEncoder(adrUnit, globalbeginAdrReg, dataReg);
     }
@@ -893,34 +898,28 @@ int outputFunc1PacketEncoder(int adrUnit, int adrBit, int cntBit)
   for(; idxDataBit<cntBit; idxDataBit++)
     {
       int result = superReaderBit(adrBit+ idxDataBit);
-      int idxReg = idxDataBit/16;
 
       switch(result)
         {
         case MARKER_OUTPERIMETR:
-          //dataRegister[idxReg] = 0;
           break;
         case MARKER_ERRORPERIMETR:
-          dataRegister[idxReg] = -2;
-//          break;
           return Error_modbus(adrUnit, // address,
-                              outputPacket[1],//function,
-                              ERROR_ILLEGAL_DATA_ADDRESS,//error,
-                              outputPacket);//output_data
+                                outputPacket[1],//function,
+                                ERROR_ILLEGAL_DATA_ADDRESS,//error,
+                                outputPacket);//output_data
         default:
         {
-          dataRegister[idxReg] |= (result<<(idxDataBit%16));
+          dataRegister[idxDataBit/8] |= (result<<(idxDataBit%8));
           flag = 0;
         }
         }//switch
-      //qDebug()<<"result= "<<dataRegister[idxReg];
     }//for
   if(flag)//незначащие пакеты недопустимы
     return Error_modbus(adrUnit, // address,
-                        outputPacket[1],//function,
-                        ERROR_ILLEGAL_DATA_ADDRESS,//error,
-                        outputPacket);//output_data
-  superPostReadAction();//action после чтения
+                          outputPacket[1],//function,
+                          ERROR_ILLEGAL_DATA_ADDRESS,//error,
+                          outputPacket);//output_data
 
   int idxOutputPacket = 0;
 //adrUnit
@@ -929,35 +928,21 @@ int outputFunc1PacketEncoder(int adrUnit, int adrBit, int cntBit)
 //numFunc
   idxOutputPacket++;
 
-  if(cntBit<9)
-    {
 //cnt
-      outputPacket[idxOutputPacket] = (unsigned char)1;
+      int cntByte = cntBit/8;
+      if(cntBit%8) cntByte++;
+      outputPacket[idxOutputPacket] = cntByte;
       idxOutputPacket++;
 //data
-      outputPacket[idxOutputPacket] = (unsigned char)dataRegister[0];
-      idxOutputPacket++;
-    }//if
-  else
-    {
-//cnt
-      int cntReg = cntBit/16;
-      if(cntBit%16) cntReg++;
-      outputPacket[idxOutputPacket] = (unsigned char)cntReg*2;
-      idxOutputPacket++;
-//data
-      for(int i=0; i<cntReg; i++)
+      for(int i=0; i<cntByte; i++)
         {
-//Ldata
+//data
           outputPacket[idxOutputPacket] = (unsigned char)(dataRegister[i]&0xFF);
           idxOutputPacket++;
-//Mdata
-          outputPacket[idxOutputPacket] = (unsigned char)((dataRegister[i]>>8)&0xFF);
-          idxOutputPacket++;
         }//for
-    }
+
   return idxOutputPacket;
-}//outputFunc3PacketEncoder(int adrUnit, int adrReg, int cntReg)
+}//outputFunc1PacketEncoder(int adrUnit, int adrBit, int cntBit)
 
 /**************************************/
 //action до чтения
@@ -1121,7 +1106,7 @@ int superReader20(int offsetRegister)
         case 3://минуты секунды
           return ((buffer_for_RS485_read_record_log[3] << 8) | buffer_for_RS485_read_record_log[2]);
         case 4://миллисекунды
-          return buffer_for_RS485_read_record_log[1];
+          return 100*((buffer_for_RS485_read_record_log[1]/16)*10 + (buffer_for_RS485_read_record_log[1]%16));
         case 5://идентификатор объекта
           return (word & 0xffff);
         case 6://идентификатор объекта
@@ -1417,20 +1402,6 @@ int superControlParam(int param)
       if(cnt==0)return 1;
       if(cnt>current_config.n_log) return 1;
       break;
-
-    case ID_FB_INPUT_GOOSE_BLOCK:
-      if(cnt==0)return 1;
-      if(cnt>current_config.n_input_GOOSE_block) return 1;         //Кількість Вх.GOOSE блоків
-      break;
-    case ID_FB_INPUT_MMS_BLOCK:
-      if(cnt==0)return 1;
-      if(cnt>current_config.n_input_MMS_block) return 1;           //Кількість Вх.MMS блоків
-      break;
-    case ID_FB_NETWORK_OUTPUT_BLOCK:
-      if(cnt==0)return 1;
-      if(cnt>current_config.n_network_output_block) return 1;      //Кількість Мережевих вихідних блоків
-      break;
-
     default:
       return 1;
     }//switch id
@@ -1556,23 +1527,6 @@ int superValidParam(uint32_t param)
           n_nodes = current_config.n_ts;
           break;
         }
-
-        case ID_FB_INPUT_GOOSE_BLOCK:
-        {
-          n_nodes = current_config.n_input_GOOSE_block;         //Кількість Вх.GOOSE блоків
-          break;
-        }
-        case ID_FB_INPUT_MMS_BLOCK:
-        {
-          n_nodes = current_config.n_input_MMS_block;           //Кількість Вх.MMS блоків
-          break;
-        }
-        case ID_FB_NETWORK_OUTPUT_BLOCK:
-        {
-          n_nodes = current_config.n_network_output_block;      //Кількість Мережевих вихідних блоків
-          break;
-        }
-
         case ID_FB_EVENT_LOG:
         {
           n_nodes = 1;

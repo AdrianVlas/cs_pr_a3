@@ -24,6 +24,8 @@ void global_component_installation(void) {
   constructorTSBigComponent(&(config_array[TSBIGCOMPONENT]));//подготовка компонента ts
   constructorTUSmallComponent(&(config_array[TUSMALLCOMPONENT]));//подготовка компонента tu
   constructorTUBigComponent(&(config_array[TUBIGCOMPONENT]));//подготовка компонента tu
+  constructorT1SmallComponent(&(config_array[T1SMALLCOMPONENT]));//подготовка компонента T1
+  constructorT2SmallComponent(&(config_array[T2SMALLCOMPONENT]));//подготовка компонента T2
   constructorANDBigComponent(&(config_array[ANDBIGCOMPONENT]));//подготовка компонента and
   constructorORBigComponent(&(config_array[ORBIGCOMPONENT]));//подготовка компонента or
   constructorXORBigComponent(&(config_array[XORBIGCOMPONENT]));//подготовка компонента xor

@@ -147,7 +147,8 @@ possible calls superPreWriteAction : preAISmallWriteAction, preANDBigWriteAction
                                      preSDISmallWriteAction, preSZSBigWriteAction, preTSBigWriteAction,
                                      preTSSmallWriteAction, preTUBigWriteAction, preTUSmallWriteAction,
                                      preXORBigWriteAction, preYustBigWriteAction, preIGOOSEBigWriteAction,
-                                     preIMMSBigWriteAction, preOLANBigWriteAction
+                                     preIMMSBigWriteAction, preOLANBigWriteAction,
+                                     preT1SmallWriteAction, preT2SmallWriteAction
                                      ;
 
 possible calls superPreReadAction : preAISmallReadAction, preANDBigReadAction, preCGSBigReadAction,
@@ -161,7 +162,8 @@ possible calls superPreReadAction : preAISmallReadAction, preANDBigReadAction, p
                                      preSDISmallReadAction, preSZSBigReadAction, preTSBigReadAction,
                                      preTSSmallReadAction, preTUBigReadAction, preTUSmallReadAction,
                                      preXORBigReadAction, preYustBigReadAction, preIGOOSEBigReadAction,
-                                     preIMMSBigReadAction, preOLANBigReadAction
+                                     preIMMSBigReadAction, preOLANBigReadAction,
+                                     preT1SmallReadAction, preT2SmallReadAction
                                      ;
 
 possible calls superPostWriteAction :postAISmallWriteAction, postANDBigWriteAction, postCGSBigWriteAction,
@@ -175,7 +177,8 @@ possible calls superPostWriteAction :postAISmallWriteAction, postANDBigWriteActi
                                      postSDISmallWriteAction, postSZSBigWriteAction, postTSBigWriteAction,
                                      postTSSmallWriteAction, postTUBigWriteAction, postTUSmallWriteAction,
                                      postXORBigWriteAction, postYustBigWriteAction, postIGOOSEBigWriteAction,
-                                     postIMMSBigWriteAction, postOLANBigWriteAction
+                                     postIMMSBigWriteAction, postOLANBigWriteAction,
+                                     postT1SmallWriteAction, postT2SmallWriteAction
                                      ;
 
 possible calls superPostReadAction : postAISmallReadAction, postANDBigReadAction, postCGSBigReadAction,
@@ -189,7 +192,8 @@ possible calls superPostReadAction : postAISmallReadAction, postANDBigReadAction
                                      postSDISmallReadAction, postSZSBigReadAction, postTSBigReadAction,
                                      postTSSmallReadAction, postTUBigReadAction, postTUSmallReadAction,
                                      postXORBigReadAction, postYustBigReadAction, postIGOOSEBigReadAction,
-                                     postIMMSBigReadAction, postOLANBigReadAction
+                                     postIMMSBigReadAction, postOLANBigReadAction,
+                                     postT1SmallReadAction, postT2SmallReadAction
                                      ;
 
 possible calls  superReaderRegister: getAISmallModbusRegister, getANDBigModbusRegister, getCGSBigModbusRegister,
@@ -203,7 +207,8 @@ possible calls  superReaderRegister: getAISmallModbusRegister, getANDBigModbusRe
                                      getSDISmallModbusRegister, getSZSBigModbusRegister, getTSBigModbusRegister,
                                      getTSSmallModbusRegister, getTUBigModbusRegister, getTUSmallModbusRegister,
                                      getXORBigModbusRegister, getYustBigModbusRegister, getIGOOSEBigModbusRegister,
-                                     getIMMSBigModbusRegister, getOLANBigModbusRegister
+                                     getIMMSBigModbusRegister, getOLANBigModbusRegister,
+                                     getT1SmallModbusRegister, getT2SmallModbusRegister
                                      ;
 //exclude loadRPRSmallActualData;
 max recursion depth loadRPRSmallActualData : 1;
@@ -219,7 +224,8 @@ possible calls superReaderBit :      getAISmallModbusBit, getANDBigModbusBit, ge
                                      getSDISmallModbusBit, getSZSBigModbusBit, getTSBigModbusBit,
                                      getTSSmallModbusBit, getTUBigModbusBit, getTUSmallModbusBit,
                                      getXORBigModbusBit, getYustBigModbusBit, getIGOOSEBigModbusBit,
-                                     getIMMSBigModbusBit, getOLANBigModbusBit
+                                     getIMMSBigModbusBit, getOLANBigModbusBit,
+                                     getT1SmallModbusBit, getT2SmallModbusBit
                                      ;
                                      
 possible calls superWriterRegister:  setAISmallModbusRegister, setANDBigModbusRegister, setCGSBigModbusRegister,
@@ -233,7 +239,8 @@ possible calls superWriterRegister:  setAISmallModbusRegister, setANDBigModbusRe
                                      setSDISmallModbusRegister, setSZSBigModbusRegister, setTSBigModbusRegister,
                                      setTSSmallModbusRegister, setTUBigModbusRegister, setTUSmallModbusRegister,
                                      setXORBigModbusRegister, setYustBigModbusRegister, setIGOOSEBigModbusRegister,
-                                     setIMMSBigModbusRegister, setOLANBigModbusRegister
+                                     setIMMSBigModbusRegister, setOLANBigModbusRegister,
+                                     setT1SmallModbusRegister, setT2SmallModbusRegister
                                      ;
 
 possible calls superWriterBit :      setAISmallModbusBit, setANDBigModbusBit, setCGSBigModbusBit,
@@ -247,7 +254,8 @@ possible calls superWriterBit :      setAISmallModbusBit, setANDBigModbusBit, se
                                      setSDISmallModbusBit, setSZSBigModbusBit, setTSBigModbusBit,
                                      setTSSmallModbusBit, setTUBigModbusBit, setTUSmallModbusBit,
                                      setXORBigModbusBit, setYustBigModbusBit, setIGOOSEBigModbusBit,
-                                     setIMMSBigModbusBit, setOLANBigModbusBit
+                                     setIMMSBigModbusBit, setOLANBigModbusBit,
+                                     setT1SmallModbusBit, setT2SmallModbusBit
                                      ;
 
 possible calls superConfig_and_settings : config_and_settingsAISmall, config_and_settingsANDBig, config_and_settingsCGSBig,
@@ -261,7 +269,8 @@ possible calls superConfig_and_settings : config_and_settingsAISmall, config_and
                                      config_and_settingsSDISmall, config_and_settingsSZSBig, config_and_settingsTSBig,
                                      config_and_settingsTSSmall, config_and_settingsTUBig, config_and_settingsTUSmall,
                                      config_and_settingsXORBig, config_and_settingsYustBig, config_and_settingsIGOOSEBig,
-                                     config_and_settingsIMMSBig, config_and_settingsOLANBig
+                                     config_and_settingsIMMSBig, config_and_settingsOLANBig,
+                                     config_and_settingsT1Small, config_and_settingsT2Small
                                      ;
 
 //exclude  superpostWriteAction, superPostWriteAction, superWriterRegister, superWriterBit, superpostReadAction, superPostReadAction, superReaderRegister, superReaderBit, 
