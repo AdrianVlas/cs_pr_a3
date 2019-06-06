@@ -1,7 +1,7 @@
 #include "header.h"
 
 //начальный регистр в карте памяти
-#define BEGIN_ADR_REGISTER 14200
+#define BEGIN_ADR_REGISTER 20200
 //макс к-во обектов
 #define REGISTER_FOR_OBJ 43
 
@@ -103,68 +103,95 @@ void loadPKVBigActualData(void) {
     case 14://Таймаут конца фрейма
      tempReadArray[i] = 0;
     break;
-    case 15://
+    case 15://Порт TCP
     tempReadArray[i] = 0;
     break;
-    case 16://Символ 1 и 2
+
+    case 16://IP адрес устройства
+    tempReadArray[i] = settings_fix.IPv4[0]&0xff;
+    tempReadArray[i] |= ((settings_fix.IPv4[1]&0xff)<<8)&0xFF00;
+    break;
+    case 17://IP адрес устройства
+    tempReadArray[i] = settings_fix.IPv4[2]&0xff;
+    tempReadArray[i] |= ((settings_fix.IPv4[3]&0xff)<<8)&0xFF00;
+    break;
+    case 18://Маска подсети
+    tempReadArray[i] = settings_fix.mask&0xff;
+    break;
+    case 19://Шлюз по-умолчанию
+    tempReadArray[i] = settings_fix.gateway[0]&0xff;
+    tempReadArray[i] |= ((settings_fix.gateway[1]&0xff)<<8)&0xFF00;
+    break;
+    case 20://Шлюз по-умолчанию
+    tempReadArray[i] = settings_fix.gateway[2]&0xff;
+    tempReadArray[i] |= ((settings_fix.gateway[3]&0xff)<<8)&0xFF00;
+    break;
+    case 21://Использовать DHCP (0=Нет, 1=Да)
+    tempReadArray[i] = 0;
+    break;
+    case 22://
+    tempReadArray[i] = 0;
+    break;
+
+    case 23://Символ 1 и 2
     tempReadArray[i] = settings_fix.name_of_cell[0] + ((settings_fix.name_of_cell[1]<<8)&0xFF00);
     break;
-    case 17://Символ 3 и 4
+    case 24://Символ 3 и 4
     tempReadArray[i] = settings_fix.name_of_cell[2] + ((settings_fix.name_of_cell[3]<<8)&0xFF00);
     break;
-    case 18://Символ 5 и 6
+    case 25://Символ 5 и 6
     tempReadArray[i] = settings_fix.name_of_cell[4] + ((settings_fix.name_of_cell[5]<<8)&0xFF00);
     break;
-    case 19://Символ 7 и 8
+    case 26://Символ 7 и 8
     tempReadArray[i] = settings_fix.name_of_cell[6] + ((settings_fix.name_of_cell[7]<<8)&0xFF00);
     break;
-    case 20://Символ 9 и 10
+    case 27://Символ 9 и 10
     tempReadArray[i] = settings_fix.name_of_cell[8] + ((settings_fix.name_of_cell[9]<<8)&0xFF00);
     break;
-    case 21://Символ 11 и 12
+    case 28://Символ 11 и 12
     tempReadArray[i] = settings_fix.name_of_cell[10] + ((settings_fix.name_of_cell[11]<<8)&0xFF00);
     break;
-    case 22://Символ 13 и 14
+    case 29://Символ 13 и 14
     tempReadArray[i] = settings_fix.name_of_cell[12] + ((settings_fix.name_of_cell[13]<<8)&0xFF00);
     break;
-    case 23://Символ 15 и 16
+    case 30://Символ 15 и 16
     tempReadArray[i] = settings_fix.name_of_cell[14] + ((settings_fix.name_of_cell[15]<<8)&0xFF00);
     break;
 
-    case 24://Год
+    case 31://Год
     tempReadArray[i] = *(label_to_time_array + 6);
     break;
-    case 25://Месяц
+    case 32://Месяц
     tempReadArray[i] = *(label_to_time_array + 5);
     break;
-    case 26://День
+    case 33://День
     tempReadArray[i] = *(label_to_time_array + 4);
     break;
-    case 27://Час
+    case 34://Час
     tempReadArray[i] = *(label_to_time_array + 3);
     break;
-    case 28://Минуты
+    case 35://Минуты
     tempReadArray[i] = *(label_to_time_array + 2);
     break;
-    case 29://Секунды
+    case 36://Секунды
     tempReadArray[i] = *(label_to_time_array + 1);
     break;
-    case 30://Сотые секунды
+    case 37://Сотые секунды
     tempReadArray[i] = *(label_to_time_array + 0);
     break;
 
-    case 31://Часовой пояс
-    case 32://Переход на Зимнее/Летнее время
-    case 33://Месяц перехода на Летнее время
-    case 34://Неделя месяца перехода на Летнее время
-    case 35://День недели перехода на Летнее время
-    case 36://Час недели перехода на Летнее время
-    case 37://Месяц перехода на Зимнее время
-    case 38://Неделя месяца перехода на Зимнее время
-    case 39://День недели перехода на Зимнее время
-    case 40://Час недели перехода на Зимнее время
-    case 41://Синхронизация времени
-    case 42://Время утраты синхронизации
+    case 38://Часовой пояс
+    case 39://Переход на Зимнее/Летнее время
+    case 40://Месяц перехода на Летнее время
+    case 41://Неделя месяца перехода на Летнее время
+    case 42://День недели перехода на Летнее время
+    case 43://Час недели перехода на Летнее время
+    case 44://Месяц перехода на Зимнее время
+    case 45://Неделя месяца перехода на Зимнее время
+    case 46://День недели перехода на Зимнее время
+    case 47://Час недели перехода на Зимнее время
+    case 48://Синхронизация времени
+    case 49://Время утраты синхронизации
     tempReadArray[i] = 0;
     break;
    }//switch
@@ -279,87 +306,96 @@ int setPKVBigModbusRegister(int adrReg, int dataReg)
    case 18: //14015
    case 19: //14015
    case 20: //14015
+//    if(dataReg>32) return MARKER_ERRORDIAPAZON;
+//    if(dataReg<0) return MARKER_ERRORDIAPAZON;
    case 21: //14015
    case 22: //14015
    case 23: //14015
+   case 24: //14015
+   case 25: //14015
+   case 26: //14015
+   case 27: //14015
+   case 28: //14015
+   case 29: //14015
+   case 30: //14015
    break; 
-   case 24: //14224
+   case 31: //14231
     if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
     if(dataReg>0x99) return MARKER_ERRORDIAPAZON;
     if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 25: //14225
+   case 32: //14232
     if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
     if(dataReg==0) return MARKER_ERRORDIAPAZON;
     if(dataReg>0x12) return MARKER_ERRORDIAPAZON;
     if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
 //    if(dataReg==0xA || dataReg==0xB || dataReg==0xC || dataReg==0xD || dataReg==0xE || dataReg==0xF) return MARKER_ERRORDIAPAZON;
    break; 
-   case 26: //14226
+   case 33: //14233
     if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
     if(dataReg==0) return MARKER_ERRORDIAPAZON;
     if(dataReg>0x31) return MARKER_ERRORDIAPAZON;
     if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 27: //14227
+   case 34: //14234
     if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
     if(dataReg>0x23) return MARKER_ERRORDIAPAZON;
     if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 28: //14228
-   case 29: //14229
+   case 35: //14235
+   case 36: //14236
     if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
     if(dataReg>0x59) return MARKER_ERRORDIAPAZON;
     if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 30: //14230
+   case 37: //14237
     if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
     if(dataReg>0x99) return MARKER_ERRORDIAPAZON;
     if((dataReg&0xf)>9) return MARKER_ERRORDIAPAZON;
    break; 
-   case 31: //14031
+   case 38: //14038
 //    if(dataReg>32767) dataReg -=32768;
     if(dataReg>720) return MARKER_ERRORDIAPAZON;
     if(dataReg<-720) return MARKER_ERRORDIAPAZON;
    break; 
-   case 32: //14032
+   case 39: //14039
     if(dataReg&0xff00) return MARKER_ERRORDIAPAZON;
     if(dataReg>1) return MARKER_ERRORDIAPAZON;
    break; 
-   case 33: //14033
-    if(dataReg>12) return MARKER_ERRORDIAPAZON;
-    if(dataReg<1) return MARKER_ERRORDIAPAZON;
-   break; 
-   case 34: //14034
-    if(dataReg>5) return MARKER_ERRORDIAPAZON;
-    if(dataReg<1) return MARKER_ERRORDIAPAZON;
-   break; 
-   case 35: //14035
-    if(dataReg>7) return MARKER_ERRORDIAPAZON;
-    if(dataReg<1) return MARKER_ERRORDIAPAZON;
-   break; 
-   case 36: //14036
-    if(dataReg>23) return MARKER_ERRORDIAPAZON;
-   break; 
-   case 37: //14037
-    if(dataReg>12) return MARKER_ERRORDIAPAZON;
-    if(dataReg<1) return MARKER_ERRORDIAPAZON;
-   break; 
-   case 38: //14038
-    if(dataReg>5) return MARKER_ERRORDIAPAZON;
-    if(dataReg<1) return MARKER_ERRORDIAPAZON;
-   break; 
-   case 39: //14039
-    if(dataReg>7) return MARKER_ERRORDIAPAZON;
-    if(dataReg<1) return MARKER_ERRORDIAPAZON;
-   break; 
    case 40: //14040
-    if(dataReg>23) return MARKER_ERRORDIAPAZON;
+    if(dataReg>12) return MARKER_ERRORDIAPAZON;
+    if(dataReg<1) return MARKER_ERRORDIAPAZON;
    break; 
    case 41: //14041
-    if(dataReg>2) return MARKER_ERRORDIAPAZON;
+    if(dataReg>5) return MARKER_ERRORDIAPAZON;
+    if(dataReg<1) return MARKER_ERRORDIAPAZON;
    break; 
    case 42: //14042
+    if(dataReg>7) return MARKER_ERRORDIAPAZON;
+    if(dataReg<1) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 43: //14043
+    if(dataReg>23) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 44: //14044
+    if(dataReg>12) return MARKER_ERRORDIAPAZON;
+    if(dataReg<1) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 45: //14045
+    if(dataReg>5) return MARKER_ERRORDIAPAZON;
+    if(dataReg<1) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 46: //14046
+    if(dataReg>7) return MARKER_ERRORDIAPAZON;
+    if(dataReg<1) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 47: //14047
+    if(dataReg>23) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 48: //14048
+    if(dataReg>2) return MARKER_ERRORDIAPAZON;
+   break; 
+   case 49: //14049
    break; 
   default: return MARKER_OUTPERIMETR;
   }//switch
@@ -483,115 +519,130 @@ int flag_time_array = 0;
 //    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
 //    restart_timeout_idle_new_settings = true;
     break;
-    case 15://
-    //tempReadArray[i] = 0;
-//    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
-//    restart_timeout_idle_new_settings = true;
+    case 15://Порт TCP
     break;
-    case 16://Символ 1 и 2
+    case 16://IP адрес устройства
+     arr1->IPv4[0] = arr->IPv4[0] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
+     arr1->IPv4[1] = arr->IPv4[1] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+     restart_timeout_idle_new_settings = true;
+    break;
+    case 17://IP адрес устройства
+     arr1->IPv4[2] = arr->IPv4[2] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
+     arr1->IPv4[3] = arr->IPv4[3] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+     restart_timeout_idle_new_settings = true;
+    break;
+
+    case 18://Маска подсети
+     arr1->mask = arr->mask = tempWriteArray[offsetTempWriteArray+i] & 0xff;
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+     restart_timeout_idle_new_settings = true;
+    break;
+
+    case 19://Шлюз по-умолчанию
+     arr1->gateway[0] = arr->gateway[0] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
+     arr1->gateway[1] = arr->gateway[1] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+     restart_timeout_idle_new_settings = true;
+    break;
+    case 20://Шлюз по-умолчанию
+     arr1->gateway[2] = arr->gateway[2] = tempWriteArray[offsetTempWriteArray+i] & 0xff;
+     arr1->gateway[3] = arr->gateway[3] = (tempWriteArray[offsetTempWriteArray+i]>>8) & 0xff;
+     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
+     restart_timeout_idle_new_settings = true;
+    break;
+
+    case 23://Символ 1 и 2
      arr1->name_of_cell[0] = arr->name_of_cell[0] = (tempWriteArray[offsetTempWriteArray+i]);
      arr1->name_of_cell[1] = arr->name_of_cell[1] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
-    case 17://Символ 3 и 4
+    case 24://Символ 3 и 4
      arr1->name_of_cell[2] = arr->name_of_cell[2] = (tempWriteArray[offsetTempWriteArray+i]);
      arr1->name_of_cell[3] = arr->name_of_cell[3] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
-    case 18://Символ 5 и 6
+    case 25://Символ 5 и 6
      arr1->name_of_cell[4] = arr->name_of_cell[4] = (tempWriteArray[offsetTempWriteArray+i]);
      arr1->name_of_cell[5] = arr->name_of_cell[5] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
-    case 19://Символ 7 и 8
+    case 26://Символ 7 и 8
      arr1->name_of_cell[6] = arr->name_of_cell[6] = (tempWriteArray[offsetTempWriteArray+i]);
      arr1->name_of_cell[7] = arr->name_of_cell[7] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
-    case 20://Символ 9 и 10
+    case 27://Символ 9 и 10
      arr1->name_of_cell[8] = arr->name_of_cell[8] = (tempWriteArray[offsetTempWriteArray+i]);
      arr1->name_of_cell[9] = arr->name_of_cell[9] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
-    case 21://Символ 11 и 12
+    case 28://Символ 11 и 12
      arr1->name_of_cell[10] = arr->name_of_cell[10] = (tempWriteArray[offsetTempWriteArray+i]);
      arr1->name_of_cell[11] = arr->name_of_cell[11] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
-    case 22://Символ 13 и 14
+    case 29://Символ 13 и 14
      arr1->name_of_cell[12] = arr->name_of_cell[12] = (tempWriteArray[offsetTempWriteArray+i]);
      arr1->name_of_cell[13] = arr->name_of_cell[13] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
-    case 23://Символ 15 и 16
+    case 30://Символ 15 и 16
      arr1->name_of_cell[14] = arr->name_of_cell[14] = (tempWriteArray[offsetTempWriteArray+i]);
      arr1->name_of_cell[15] = arr->name_of_cell[15] = (tempWriteArray[offsetTempWriteArray+i])>>8;
     config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
     restart_timeout_idle_new_settings = true;
     break;
 
-    case 24://Год
+    case 31://Год
      *(label_to_time_array + 6) = (tempWriteArray[offsetTempWriteArray+i]);
      flag_time_array = 1;
-//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
-    case 25://Месяц
+    case 32://Месяц
      *(label_to_time_array + 5) = (tempWriteArray[offsetTempWriteArray+i]);
      flag_time_array = 1;
-//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
-    case 26://День
+    case 33://День
      *(label_to_time_array + 4) = (tempWriteArray[offsetTempWriteArray+i]);
      flag_time_array = 1;
-//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
-    case 27://Час
+    case 34://Час
      *(label_to_time_array + 3) = (tempWriteArray[offsetTempWriteArray+i]);
      flag_time_array = 1;
-//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
-    case 28://Минуты
+    case 35://Минуты
      *(label_to_time_array + 2) = (tempWriteArray[offsetTempWriteArray+i]);
      flag_time_array = 1;
-//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
-    case 29://Секунды
+    case 36://Секунды
      *(label_to_time_array + 1) = (tempWriteArray[offsetTempWriteArray+i]);
      flag_time_array = 1;
-//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
-    case 30://Сотые секунды
+    case 37://Сотые секунды
      *(label_to_time_array + 0) = (tempWriteArray[offsetTempWriteArray+i]);
      flag_time_array = 1;
-//    _SET_BIT(control_i2c_taskes, TASK_START_WRITE_RTC_BIT);
-//    _SET_BIT(control_i2c_taskes, TASK_BLK_OPERATION_BIT);
     break;
 
-    case 31://Часовой пояс
-    case 32://Переход на Зимнее/Летнее время
-    case 33://Месяц перехода на Летнее время
-    case 34://Неделя месяца перехода на Летнее время
-    case 35://День недели перехода на Летнее время
-    case 36://Час недели перехода на Летнее время
-    case 37://Месяц перехода на Зимнее время
-    case 38://Неделя месяца перехода на Зимнее время
-    case 39://День недели перехода на Зимнее время
-    case 40://Час недели перехода на Зимнее время
-    case 41://Синхронизация времени
-    case 42://Время утраты синхронизации
+    case 38://Часовой пояс
+    case 39://Переход на Зимнее/Летнее время
+    case 40://Месяц перехода на Летнее время
+    case 41://Неделя месяца перехода на Летнее время
+    case 42://День недели перехода на Летнее время
+    case 43://Час недели перехода на Летнее время
+    case 44://Месяц перехода на Зимнее время
+    case 45://Неделя месяца перехода на Зимнее время
+    case 46://День недели перехода на Зимнее время
+    case 47://Час недели перехода на Зимнее время
+    case 48://Синхронизация времени
+    case 49://Время утраты синхронизации
     //tempReadArray[i] = 0;
 //    config_settings_modified |= MASKA_FOR_BIT(BIT_CHANGED_SETTINGS);
 //    restart_timeout_idle_new_settings = true;
