@@ -1993,13 +1993,13 @@ void error_reading_with_eeprom()
     else if((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_EMPTY_BIT)) != 0)
     {
       index_info = 3;
-      index_action = 2;
+      index_action = 0;
       information_type = 2;
     }
     else if((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_FAIL_BIT)) != 0)
     {
       index_info = 4;
-      index_action = 2;
+      index_action = 0;
       information_type = 2;
     }
     else if((state_i2c_task & MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_EMPTY_BIT)) != 0)

@@ -1092,7 +1092,9 @@ int superReader20(int offsetRegister)
         case 3://минуты секунды
           return ((buffer_for_USB_read_record_log[3] << 8) | buffer_for_USB_read_record_log[2]);
         case 4://миллисекунды
-          return buffer_for_USB_read_record_log[1];
+          return 100*((buffer_for_USB_read_record_log[1]/16)*10 + (buffer_for_USB_read_record_log[1]%16));
+
+
         case 5://идентификатор объекта
           return (word & 0xffff);
         case 6://идентификатор объекта

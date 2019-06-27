@@ -2298,7 +2298,7 @@ void Shematic::SetupCBGSigStngParam(void *pv){
     chMaskaI = (1 << group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][1]) - 1;
     chShiftI = group_alarm_analog_ctrl_patten[INDEX_CTRL_GROUP_ALARM_I - _MAX_INDEX_CTRL_GROUP_ALARM_BITS_SETTINGS][0];
 
-
+if (shRelativeIndexLU == 0) pvCBGSigDbg = static_cast<void*>(pInit2LcVarArea->pCLUBase);
     i = pLN_GROUP_ALARM[shRelativeIndexLU].settings.analog_input_control;
         i >>= chShiftI;
         i  &= chMaskaI; 
@@ -2314,7 +2314,7 @@ void Shematic::SetupCBGSigStngParam(void *pv){
     if( j == 0){
         arIdxLUAreaListElem[LU_BGS-1] = gblLUAreaAuxVar.shAmountPlacedLogicUnit-1;
         if(shIdxSum8ElemSeq == 0)
-            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_BGS-1];
+            shIdxSum8ElemSeq =  arIdxLUAreaListElem[LU_BGS-1]; 
     }
     GlobalObjectMap.arPCBGSig[j] =
       static_cast<CBGSig*>(pInit2LcVarArea->pCLUBase);

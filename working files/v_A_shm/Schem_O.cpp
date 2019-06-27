@@ -112,6 +112,7 @@ short *parIdxLUAreaListElem;
     lAmtProcessObj = (static_cast<__CONFIG* >(p_current_config_prt))-> n_group_alarm;
     shCounterInitCLUDout = 0;
     CBGSig::chAlreadyCalculated = 0;
+    //,pvCBGSigDbg = static_cast<void*>(GlobalObjectMap.arPCBGSig[0]);
     i = parIdxLUAreaListElem[LU_BGS-1];
     while (shCounterInitCLUDout < lAmtProcessObj ) {
             j = i + shCounterInitCLUDout;
