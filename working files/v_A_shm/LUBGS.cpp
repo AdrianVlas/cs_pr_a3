@@ -17,7 +17,7 @@ volatile unsigned long measurement_DBG[10] = {
 0,0,0,0,90000,0,0,0,0,0,
 };
 unsigned long *PMeas = const_cast<unsigned long*>(&measurement_DBG[0]);
-BGSigDbgRecord  ArrBGSigDbgRec[AMOIUNT_DBG_REC] @ "variables_RAM1";
+//BGSigDbgRecord  ArrBGSigDbgRec[AMOIUNT_DBG_REC] @ "variables_RAM1";
 unsigned int uiIdxArrBGSigDbgRec = 0;
 CBGSig::CBGSig(void):CLUBase()  {
 m_NodeTWait.lTmrVal  = 0;
@@ -366,31 +366,31 @@ register long i;
    asm(
                "bkpt 1"
                );
-    //rCBGSig.CalcBusGrSigSchematicDbg();
-        if(pObj == pvCBGSigDbg){
-    
-           rCBGSig.CalcBusGrSigSchematicDBG1();
-            uiIdxArrBGSigDbgRec++;
-            if (uiIdxArrBGSigDbgRec >= AMOIUNT_DBG_REC)
-                uiIdxArrBGSigDbgRec = 0;
-            if(shIdxBGSBkpt == 97){    //Signal for Print
-                do{
-                   for( i = shIdxBeg; (i < (shIdxBeg +10)) &&(i < shIdxEnd); i++){
-                    //printf("Iter = %ld,  \n", lT);//shIdxBeg
-                    printf("Iter = #%ld# >>Iti = %ld It_01 = %ld It_02 = %ld <<\n", ArrBGSigDbgRec[i].luIterLU, ArrBGSigDbgRec[i].luIti, ArrBGSigDbgRec[i].luIt_01, ArrBGSigDbgRec[i].luIt_02);lT = atol("1234567");lT += atol("2345671");lT = atol("3456758");lT += atol("23456651");lT = atol("3456744");
-                    printf("          [D_In = %d D_Clr = %d D_Q = %d D_notQ = %d  ", ArrBGSigDbgRec[i].chD_In,ArrBGSigDbgRec[i].chD_Clr,ArrBGSigDbgRec[i].chD_Q,ArrBGSigDbgRec[i].chD_notQ);lT = atol("1234567");lT += atol("2345671");lT = atol("3456758");lT += atol("23456651");lT = atol("3456744");
-                    printf("InImpNovyi = %d, Novyi = %d,DeltaIFix = %d, TzatrOut = %d ] \n", ArrBGSigDbgRec[i].chFixUnitIn,ArrBGSigDbgRec[i].chDeltaIBUS,ArrBGSigDbgRec[i].chDeltaIFix,ArrBGSigDbgRec[i].chTwaitOut);
-                    printf("          [Ifix = %ld  Ip = %ld Ic = %ld uNCC = %ld] \n", ArrBGSigDbgRec[i].luIfix, ArrBGSigDbgRec[i].luIp, ArrBGSigDbgRec[i].luIc, ArrBGSigDbgRec[i].luNCC);
-                    lT = atol("8234567");lT += atol("7345671");lT = atol("4456758");lT += atol("33456651");lT = atol("1456744");
-                    printf("\n");
-                     lT = atol("1234567");lT += atol("2345671");lT = atol("3456758");lT += atol("23456651");lT = atol("3456744");
-                    }shIdxBeg += 10; lT = atol("1234567");lT += atol("2345671");lT = atol("3456758");lT += atol("23456651");lT = atol("3456744");
-                }while( shIdxBeg < shIdxEnd );
-            }
-        }
-        else{
-            rCBGSig.CalcBusGrSigSchematic();
-        }
+    rCBGSig.CalcBusGrSigSchematicDbg();
+//        if(pObj == pvCBGSigDbg){
+//    
+//           rCBGSig.CalcBusGrSigSchematicDBG1();
+//            uiIdxArrBGSigDbgRec++;
+//            if (uiIdxArrBGSigDbgRec >= AMOIUNT_DBG_REC)
+//                uiIdxArrBGSigDbgRec = 0;
+//            if(shIdxBGSBkpt == 97){    //Signal for Print
+//                do{
+//                   for( i = shIdxBeg; (i < (shIdxBeg +10)) &&(i < shIdxEnd); i++){
+//                    //printf("Iter = %ld,  \n", lT);//shIdxBeg
+//                    printf("Iter = #%ld# >>Iti = %ld It_01 = %ld It_02 = %ld <<\n", ArrBGSigDbgRec[i].luIterLU, ArrBGSigDbgRec[i].luIti, ArrBGSigDbgRec[i].luIt_01, ArrBGSigDbgRec[i].luIt_02);lT = atol("1234567");lT += atol("2345671");lT = atol("3456758");lT += atol("23456651");lT = atol("3456744");
+//                    printf("          [D_In = %d D_Clr = %d D_Q = %d D_notQ = %d  ", ArrBGSigDbgRec[i].chD_In,ArrBGSigDbgRec[i].chD_Clr,ArrBGSigDbgRec[i].chD_Q,ArrBGSigDbgRec[i].chD_notQ);lT = atol("1234567");lT += atol("2345671");lT = atol("3456758");lT += atol("23456651");lT = atol("3456744");
+//                    printf("InImpNovyi = %d, Novyi = %d,DeltaIFix = %d, TzatrOut = %d ] \n", ArrBGSigDbgRec[i].chFixUnitIn,ArrBGSigDbgRec[i].chDeltaIBUS,ArrBGSigDbgRec[i].chDeltaIFix,ArrBGSigDbgRec[i].chTwaitOut);
+//                    printf("          [Ifix = %ld  Ip = %ld Ic = %ld uNCC = %ld] \n", ArrBGSigDbgRec[i].luIfix, ArrBGSigDbgRec[i].luIp, ArrBGSigDbgRec[i].luIc, ArrBGSigDbgRec[i].luNCC);
+//                    lT = atol("8234567");lT += atol("7345671");lT = atol("4456758");lT += atol("33456651");lT = atol("1456744");
+//                    printf("\n");
+//                     lT = atol("1234567");lT += atol("2345671");lT = atol("3456758");lT += atol("23456651");lT = atol("3456744");
+//                    }shIdxBeg += 10; lT = atol("1234567");lT += atol("2345671");lT = atol("3456758");lT += atol("23456651");lT = atol("3456744");
+//                }while( shIdxBeg < shIdxEnd );
+//            }
+//        }
+//        else{
+//            rCBGSig.CalcBusGrSigSchematic();
+//        }
     }
 }
 
@@ -1419,7 +1419,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         rUl_1 &= ~(1<<shShemasOrdNumStng);
     CBGSig::chNeedTimerCalculated = rUl_1;//It`s Need for Call recalc because Timer work
 
-}
+}/*
 void CBGSig::CalcBusGrSigSchematicDBG1(void) {
     register unsigned long  rUl_1,rUl_2;
 //    register unsigned long u32_bit_hld1 = 0;  
@@ -1794,7 +1794,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         rUl_1 &= ~(1<<shShemasOrdNumStng);
     CBGSig::chNeedTimerCalculated = rUl_1;//It`s Need for Call recalc because Timer work
 
-}
+}*/
 void* pvCBGSigDbg;
 /*
 long CBGSig::EvalDeltaIbusFix(long Ibus, long Ifix, long lActive){
