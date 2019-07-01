@@ -2160,6 +2160,8 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
 /**************************************/
 void error_reading_with_eeprom()
 {
+  static unsigned int writing_configure_before;
+  
   int index_language;
   if (((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)) == 0) || ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) == 0)) index_language = index_language_in_array(LANGUAGE_ABSENT);
   else index_language = index_language_in_array(settings_fix_prt.language);
@@ -2208,13 +2210,13 @@ void error_reading_with_eeprom()
     else if((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_EMPTY_BIT)) != 0)
     {
       index_info = 3;
-      index_action = 2;
+      index_action =  (writing_configure_before != false) ? 2 : 0;
       information_type = 2;
     }
     else if((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_FAIL_BIT)) != 0)
     {
       index_info = 4;
-      index_action = 2;
+      index_action = 0;
       information_type = 2;
     }
     else if((state_i2c_task & MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_EMPTY_BIT)) != 0)
@@ -2268,7 +2270,11 @@ void error_reading_with_eeprom()
     if (information_type == 1)
     {
       //Записуємо мінімальну конфігурацію
-      if (index_action == 2) scheme2_config(&current_config);
+      if (index_action == 2) 
+      {
+        scheme2_config(&current_config);
+        writing_configure_before = true;
+      }
       else min_config(&current_config);
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
       
@@ -2277,9 +2283,12 @@ void error_reading_with_eeprom()
     {
       //Записуємо мінімальну конфігурацію
       min_settings(&settings_fix); /*Для фіксованого блоку немає додаткових особливих налаштувань у переустановлених кнфігураціях*/
-      if (index_action == 2) scheme2_settings(&current_config, &settings_fix, sca_of_p);
+      if (index_action == 2) 
+      {
+        scheme2_settings(&current_config, &settings_fix, sca_of_p);
+        writing_configure_before = false;
+      }
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
-      
     }
     else if (information_type == 3)
     {
