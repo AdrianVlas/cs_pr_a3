@@ -309,7 +309,7 @@ extern uint8_t Canal2_MO_Transmit[BUFFER_CANAL2_MO];
 extern uint8_t Canal2_MO_Received[BUFFER_CANAL2_MO];
 extern unsigned int Canal1, Canal2;
 extern const uint8_t my_address_mo;
-extern uint32_t IEC_board_present;
+extern uint32_t IEC_board_uncall;
 extern uint32_t IEC_board_address;
 extern uint32_t queue_mo, queue_mo_irq;
 extern uint32_t state_array_control_state;
