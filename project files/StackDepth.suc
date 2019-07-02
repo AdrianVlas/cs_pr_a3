@@ -1,0 +1,301 @@
+possible calls Usb_routines : VCP_DataTx;
+possible calls USBD_Init : USBD_USR_Init;
+//possible calls DCD_SessionRequest_ISR : USBD_DevConnected;
+//possible calls USBD_DevConnected : USBD_USR_DeviceConnected;
+//possible calls DCD_OTG_ISR : USBD_DevDisconnected;
+//possible calls USBD_DevDisconnected : USBD_USR_DeviceDisconnected;
+possible calls DCD_HandleResume_ISR : USBD_Resume;
+possible calls USBD_Resume : USBD_USR_DeviceResumed;
+possible calls DCD_HandleUSBSuspend_ISR : USBD_Suspend;
+possible calls USBD_Suspend : USBD_USR_DeviceSuspended;
+possible calls DCD_HandleInEP_ISR : USBD_DataInStage;
+possible calls USBD_DataInStage : usbd_cdc_DataIn;
+possible calls DCD_HandleOutEP_ISR : USBD_DataOutStage, USBD_SetupStage;
+possible calls USBD_DataOutStage : usbd_cdc_EP0_RxReady, usbd_cdc_DataOut;
+possible calls usbd_cdc_EP0_RxReady : VCP_Ctrl;
+possible calls usbd_cdc_DataOut : VCP_DataRx;
+possible calls USBD_GetDescriptor : USBD_USR_DeviceDescriptor, USBD_cdc_GetCfgDesc, USBD_USR_LangIDStrDescriptor, USBD_USR_ManufacturerStrDescriptor, USBD_USR_ProductStrDescriptor, USBD_USR_SerialStrDescriptor, USBD_USR_ConfigStrDescriptor, USBD_USR_InterfaceStrDescriptor;
+possible calls USBD_ClrCfg : usbd_cdc_DeInit;
+possible calls usbd_cdc_DeInit : VCP_DeInit;
+possible calls USBD_SetCfg : usbd_cdc_Init, USBD_USR_DeviceConfigured;
+possible calls usbd_cdc_Init : VCP_Init;
+possible calls USBD_SetFeature : usbd_cdc_Setup;
+possible calls usbd_cdc_Setup : VCP_Ctrl;
+possible calls USBD_ClrFeature : usbd_cdc_Setup;
+possible calls USBD_StdEPReq : usbd_cdc_Setup;
+possible calls USBD_StdItfReq : usbd_cdc_Setup;
+possible calls DCD_HandleSof_ISR : USBD_SOF;
+possible calls USBD_SOF : usbd_cdc_SOF;
+possible calls DCD_HandleUsbReset_ISR : USBD_Reset;
+possible calls USBD_Reset : USBD_USR_DeviceReset;
+possible calls DCD_IsoINIncomplete_ISR : USBD_IsoINIncomplete;
+possible calls USBD_IsoINIncomplete : ;
+possible calls DCD_IsoOUTIncomplete_ISR : USBD_IsoOUTIncomplete;
+possible calls USBD_IsoOUTIncomplete : ;
+
+possible calls allocate_dynamic_memory_for_settings : min_settings_INPUT,  min_settings_OUTPUT_LED,  min_settings_BUTTON, min_settings_ALARM,  min_settings_GROUP_ALARM,  min_settings_AND,  min_settings_OR,  min_settings_XOR,  min_settings_NOT,  min_settings_TIMER,  min_settings_TRIGGER,  min_settings_MEANDER,  min_settings_TU,  min_settings_TS,  min_settings_INPUT_GOOSE_BLOCK,  min_settings_INPUT_MMS_BLOCK,  min_settings_NETWORK_OUTPUT_BLOCK,  min_settings_LOG,
+                                                      copy_settings_INPUT, copy_settings_OUTPUT_LED,                      copy_settings_ALARM, copy_settings_GROUP_ALARM, copy_settings_AND, copy_settings_OR, copy_settings_XOR, copy_settings_NOT, copy_settings_TIMER, copy_settings_TRIGGER, copy_settings_MEANDER, copy_settings_TU, copy_settings_TS, copy_settings_INPUT_GOOSE_BLOCK, copy_settings_INPUT_MMS_BLOCK, copy_settings_NETWORK_OUTPUT_BLOCK, copy_settings_LOG;
+possible calls copy_settings : copy_settings_INPUT, copy_settings_OUTPUT_LED, copy_settings_ALARM, copy_settings_GROUP_ALARM, copy_settings_AND, copy_settings_OR, copy_settings_XOR, copy_settings_NOT, copy_settings_TIMER, copy_settings_TRIGGER, copy_settings_MEANDER;
+possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_enter_in_ekran_with_request,
+                                         move_into_time, make_ekran_time, press_enter_in_time, change_time,
+                                         move_into_ekran_simple,
+                                         make_ekran_measurement,
+                                         move_into_ekran_list_inputs_outputs, make_ekran_list_inputs_outputs,
+                                         move_into_ekran_state_analog_inputs, make_ekran_state_analog_inputs,
+                                         move_into_ekran_input_or_output, make_ekran_state_inputs_or_outputs,
+                                         make_ekran_list_registrators,
+                                         move_into_ekran_event_registraqtors, 
+                                         make_ekran_list_event_log, make_ekran_list_event_pr_err, make_ekran_data_reg,
+                                         move_into_list_settings, make_ekran_list_settings, press_esc_in_list_settings,
+                                         make_ekran_configuration, press_enter_in_configuration, press_esc_in_configuration, change_configuration,
+                                         make_ekran_list_logical_nodes,
+                                         make_ekran_choose_pickup_delay_control,
+                                         make_ekran_choose_delay_control,
+                                         make_ekran_choose_delay,
+                                         make_ekran_choose_control,
+                                         make_ekran_delay_alarm, press_enter_in_delay_alarm, press_esc_in_delay_alarm, change_delay_alarm, make_ekran_control_alarm, press_enter_in_control_alarm, press_esc_in_control_alarm, change_control_alarm,
+                                         make_ekran_pickup_group_alarm, press_enter_in_pickup_group_alarm, press_esc_in_pickup_group_alarm, change_pickup_group_alarm, make_ekran_delay_group_alarm, press_enter_in_delay_group_alarm, press_esc_in_delay_group_alarm, change_delay_group_alarm, make_ekran_control_group_alarm, press_enter_in_control_group_alarm, press_esc_in_control_group_alarm, change_control_group_alarm,
+                                         make_ekran_delay_timer, press_enter_in_delay_timer, press_esc_in_delay_timer, change_delay_timer,
+                                         make_ekran_delay_meander, press_enter_in_delay_meander, press_esc_in_delay_meander, change_delay_meander,
+                                         move_into_list_settings_param, make_ekran_list_settings_param,
+                                         make_ekran_delay_input, press_enter_in_delay_input, press_esc_in_delay_input, change_delay_input, make_ekran_control_input, press_enter_in_control_input, press_esc_in_control_input, change_control_input,
+                                         make_ekran_control_output_led, press_enter_in_control_output_led, press_esc_in_control_output_led, change_control_output_led,
+                                         move_into_editor_list_logical_nodes, make_ekran_editor_list_logical_node, press_enter_in_editor_list_logical_node, press_esc_in_editor_list_logical_node,
+                                         make_ekran_editor_list_inputs_of_selected_logical_node, 
+                                         make_ekran_editor_edit_list_outputs_of_selected_logical_node, change_set_signal,
+                                         move_into_editor_view_chosen_of_selected_logical_node, make_ekran_editor_view_chosen_of_selected_logical_node, press_enter_in_ekran_with_request,
+                                         make_ekran_setting_language, press_enter_in_setting_language, press_esc_in_setting_language, change_setting_language,
+                                         make_ekran_choose_communication_parameters, 
+                                         make_ekran_name_of_cell,
+                                         make_ekran_choose_setting_RS485,
+                                         make_ekran_phy_layer_RS485,
+                                         make_ekran_baud_RS485, press_enter_in_baud_RS485, press_esc_in_baud_RS485, change_baud_RS485,
+                                         make_ekran_pare_RS485, press_enter_in_pare_RS485, press_esc_in_pare_RS485, change_pare_RS485,
+                                         make_ekran_stopbits_RS485, press_enter_in_stopbits_RS485, press_esc_in_stopbits_RS485, change_stopbits_RS485,
+                                         make_ekran_timeout_RS485, press_enter_in_timeout_RS485, press_esc_in_timeout_RS485, change_timeout_RS485,
+                                         make_ekran_protocol_RS485,
+                                         make_ekran_settings_network_layer_Ethrenet, press_enter_in_settings_network_layer_Ethrenet, press_esc_in_settings_network_layer_Ethrenet, change_settings_network_layer_Ethrenet,
+                                         make_ekran_choose_setting_Ethernet,
+                                         make_ekran_address, press_enter_in_address, press_esc_in_address, change_address,
+                                         make_ekran_choose_passwords, press_enter_in_ekran_with_request,
+                                         move_into_diagnostics, make_ekran_diagnostics,
+                                         make_ekran_list_labels,
+                                         make_ekran_time_config_or_settings,
+                                         make_ekran_info,
+                                         make_ekran_date_time_pz,
+                                         make_ekran_password;
+                                         
+
+//Àíäð³ÿ ôóíêö³¿
+//function ChangeCfg :  16;
+possible calls ChangeCfg: ;
+possible calls "Shematic::Init2()": "FBWrp_Op(void*)";
+possible calls "Shematic::SetupCLUAnd_8_1StngParam(void *)"    : "AND_Op_8_1(void *)";
+possible calls "Shematic::SetupCLUOr_8_1StngParam(void *)"     : "OR_Op_8_1(void *)";
+possible calls "Shematic::SetupCLUXor_8_1StngParam(void *)"    : "XOR_Op_8_1(void *)";
+possible calls "Shematic::SetupCLUNot_1_1StngParam(void *)"    : "NOT_Op_1_1(void *)";
+possible calls "Shematic::SetupCLUFKeyStngParam(void *)"       : "FKey_Op(void *)"   ;
+possible calls "Shematic::SetupCLULssStngParam(void *)"        : "LssOp(void *)";
+possible calls "Shematic::SetupCBGSigStngParam(void *)"        : "BGSig_Op(void *)"    ;
+possible calls "Shematic::SetupCLUTrigStngParam(void *)"       :    "DTRG_Op_4_2(void *)";
+possible calls "Shematic::SetupCLULogStngParam(void *)"        : "Log_Op(void *)";
+possible calls "Shematic::SetupCLUTsStngParam(void *)"         : "Ts__2_1_Op(void *)";
+possible calls "Shematic::SetupCLUTuStngParam(void *)"         : "TU_Op(void *)";
+
+possible calls "Shematic::SetupCLUGooseStngParam(void *)"         : "Goose__1_8_Op(void *)";
+possible calls "Shematic::SetupCLUMmsStngParam(void *)"         : "Mms__2_8_Op(void *)";
+possible calls "Shematic::SetupCLULanStngParam(void *)"         : "Lan__9_8_Op(void *)";
+
+possible calls "Shematic::LUSelector(long)": "SET_OUT_Op(void *)", "READ_DI_Op(void *)", "SET_LED_Op(void *)",
+ "AND_Op_8_1(void *)", "OR_Op_8_1(void *)" , "XOR_Op_8_1(void *)", "NOT_Op_1_1(void *)",
+ "FKey_Op(void *)"   , "LssOp(void *)", "BGSig_Op(void *)", "DTRG_Op_4_2(void *)","Null_OP(void*)",
+ "Goose__1_8_Op(void *)","Mms__2_8_Op(void *)","Lan__9_8_Op(void *)",
+ "Log_Op(void *)", "Ts__2_1_Op(void *)", "TU_Op(void *)", "Mft_Op(void *)", "NOT_Op(void *)","PulseAlt_Op(void *)";
+ 
+possible calls "Shematic::LUIterator(long, long)": "SET_OUT_Op(void *)", "READ_DI_Op(void *)", "SET_LED_Op(void *)",
+ "AND_Op_8_1(void *)", "OR_Op_8_1(void *)" , "XOR_Op_8_1(void *)", "NOT_Op_1_1(void *)",
+ "FKey_Op(void *)"   , "LssOp(void *)", "BGSig_Op(void *)", "DTRG_Op_4_2(void *)","Null_OP(void*)",
+ "Goose__1_8_Op(void *)","Mms__2_8_Op(void *)","Lan__9_8_Op(void *)",
+ "Log_Op(void *)", "Ts__2_1_Op(void *)", "TU_Op(void *)", "Mft_Op(void *)", "NOT_Op(void *)","PulseAlt_Op(void *)";
+
+possible calls SetHrdLed: "LedAuxOp1", "LedAuxOp2", "LedAuxOp3", "LedAuxOp4" ;
+
+possible calls "Shematic::DoCalc()" : ;
+//exclude  ChangeCfg, "Shematic::DoCalc()", SetHrdLed, "Null_OP(void*)", "SET_LED_Op(void *)", "LedAuxOp1", "LedAuxOp2", "LedAuxOp3", "LedAuxOp4", "PulseAlt_Op(void *)", "AND_Op_8_1(void *)", "NOT_Op(void *)", "BGSig_Op(void *)", "READ_DI_Op(void *)", "SET_OUT_Op(void *)", "FKey_Op(void *)", "LssOp(void *)", "NOT_Op_1_1(void *)", "DTRG_Op_4_2(void *)", "TU_Op(void *)", "Mft_Op(void *)", "OR_Op_8_1(void *)", "XOR_Op_8_1(void *)", "Ts__2_1_Op(void *)";
+//exclude    "Null_OP(void*)",  
+//max recursion depth Get_data : 2;
+
+call graph root [Interrupt]: NMI_Handler, HardFault_Handler, MemManage_Handler, BusFault_Handler, UsageFault_Handler, SVC_Handler, DebugMon_Handler, PendSV_Handler, SysTick_Handler, TIM2_IRQHandler, TIM4_IRQHandler, TIM3_IRQHandler, TIM5_IRQHandler, I2C1_EV_IRQHandler, I2C1_ER_IRQHandler, DMA1_Stream7_IRQHandler, DMA1_Stream0_IRQHandler, SPI2_IRQHandler, DMA2_Stream0_IRQHandler, SPI1_IRQHandler, USART2_IRQHandler, DMA1_Stream6_IRQHandler, EXTI0_IRQHandler, OTG_FS_IRQHandler;
+call graph root [System]: SystemInit;
+
+//call graph root[]:
+
+//²ãîðÿ ôóíêö³¿
+possible calls superPreWriteAction : preAISmallWriteAction, preANDBigWriteAction, preCGSBigWriteAction,
+                                     preCommonBigWriteAction, preCommonSmallWriteAction, preConfigBigWriteAction,
+                                     preDOUTBigWriteAction, preDOUTSmallWriteAction, preDTRBigWriteAction,
+                                     preDVBigWriteAction, preDVSmallWriteAction, preGIBigWriteAction,
+                                     preIUSmallWriteAction, preKEYSmallWriteAction, preMEBigWriteAction,
+                                     preMFTBigWriteAction, preNOTBigWriteAction, preORBigWriteAction,
+                                     prePKVBigWriteAction, preRegProBigWriteAction, preRMTKeySmallWriteAction,
+                                     preRPRBigWriteAction, preRPRSmallWriteAction, preSDIBigWriteAction,
+                                     preSDISmallWriteAction, preSZSBigWriteAction, preTSBigWriteAction,
+                                     preTSSmallWriteAction, preTUBigWriteAction, preTUSmallWriteAction,
+                                     preXORBigWriteAction, preYustBigWriteAction, preIGOOSEBigWriteAction,
+                                     preIMMSBigWriteAction, preOLANBigWriteAction
+                                     ;
+
+possible calls superPreReadAction : preAISmallReadAction, preANDBigReadAction, preCGSBigReadAction,
+                                     preCommonBigReadAction, preCommonSmallReadAction, preConfigBigReadAction,
+                                     preDOUTBigReadAction, preDOUTSmallReadAction, preDTRBigReadAction,
+                                     preDVBigReadAction, preDVSmallReadAction, preGIBigReadAction,
+                                     preIUSmallReadAction, preKEYSmallReadAction, preMEBigReadAction,
+                                     preMFTBigReadAction, preNOTBigReadAction, preORBigReadAction,
+                                     prePKVBigReadAction, preRegProBigReadAction, preRMTKeySmallReadAction,
+                                     preRPRBigReadAction, preRPRSmallReadAction, preSDIBigReadAction,
+                                     preSDISmallReadAction, preSZSBigReadAction, preTSBigReadAction,
+                                     preTSSmallReadAction, preTUBigReadAction, preTUSmallReadAction,
+                                     preXORBigReadAction, preYustBigReadAction, preIGOOSEBigReadAction,
+                                     preIMMSBigReadAction, preOLANBigReadAction
+                                     ;
+
+possible calls superPostWriteAction :postAISmallWriteAction, postANDBigWriteAction, postCGSBigWriteAction,
+                                     postCommonBigWriteAction, postCommonSmallWriteAction, postConfigBigWriteAction,
+                                     postDOUTBigWriteAction, postDOUTSmallWriteAction, postDTRBigWriteAction,
+                                     postDVBigWriteAction, postDVSmallWriteAction, postGIBigWriteAction,
+                                     postIUSmallWriteAction, postKEYSmallWriteAction, postMEBigWriteAction,
+                                     postMFTBigWriteAction, postNOTBigWriteAction, postORBigWriteAction,
+                                     postPKVBigWriteAction, postRegProBigWriteAction, postRMTKeySmallWriteAction,
+                                     postRPRBigWriteAction, postRPRSmallWriteAction, postSDIBigWriteAction,
+                                     postSDISmallWriteAction, postSZSBigWriteAction, postTSBigWriteAction,
+                                     postTSSmallWriteAction, postTUBigWriteAction, postTUSmallWriteAction,
+                                     postXORBigWriteAction, postYustBigWriteAction, postIGOOSEBigWriteAction,
+                                     postIMMSBigWriteAction, postOLANBigWriteAction
+                                     ;
+
+possible calls superPostReadAction : postAISmallReadAction, postANDBigReadAction, postCGSBigReadAction,
+                                     postCommonBigReadAction, postCommonSmallReadAction, postConfigBigReadAction,
+                                     postDOUTBigReadAction, postDOUTSmallReadAction, postDTRBigReadAction,
+                                     postDVBigReadAction, postDVSmallReadAction, postGIBigReadAction,
+                                     postIUSmallReadAction, postKEYSmallReadAction, postMEBigReadAction,
+                                     postMFTBigReadAction, postNOTBigReadAction, postORBigReadAction,
+                                     postPKVBigReadAction, postRegProBigReadAction, postRMTKeySmallReadAction,
+                                     postRPRBigReadAction, postRPRSmallReadAction, postSDIBigReadAction,
+                                     postSDISmallReadAction, postSZSBigReadAction, postTSBigReadAction,
+                                     postTSSmallReadAction, postTUBigReadAction, postTUSmallReadAction,
+                                     postXORBigReadAction, postYustBigReadAction, postIGOOSEBigReadAction,
+                                     postIMMSBigReadAction, postOLANBigReadAction
+                                     ;
+
+possible calls  superReaderRegister: getAISmallModbusRegister, getANDBigModbusRegister, getCGSBigModbusRegister,
+                                     getCommonBigModbusRegister, getCommonSmallModbusRegister, getConfigBigModbusRegister,
+                                     getDOUTBigModbusRegister, getDOUTSmallModbusRegister, getDTRBigModbusRegister,
+                                     getDVBigModbusRegister, getDVSmallModbusRegister, getGIBigModbusRegister,
+                                     getIUSmallModbusRegister, getKEYSmallModbusRegister, getMEBigModbusRegister,
+                                     getMFTBigModbusRegister, getNOTBigModbusRegister, getORBigModbusRegister,
+                                     getPKVBigModbusRegister, getRegProBigModbusRegister, getRMTKeySmallModbusRegister,
+                                     getRPRBigModbusRegister, getRPRSmallModbusRegister, getSDIBigModbusRegister,
+                                     getSDISmallModbusRegister, getSZSBigModbusRegister, getTSBigModbusRegister,
+                                     getTSSmallModbusRegister, getTUBigModbusRegister, getTUSmallModbusRegister,
+                                     getXORBigModbusRegister, getYustBigModbusRegister, getIGOOSEBigModbusRegister,
+                                     getIMMSBigModbusRegister, getOLANBigModbusRegister
+                                     ;
+//exclude loadRPRSmallActualData;
+max recursion depth loadRPRSmallActualData : 1;
+
+possible calls superReaderBit :      getAISmallModbusBit, getANDBigModbusBit, getCGSBigModbusBit,
+                                     getCommonBigModbusBit, getCommonSmallModbusBit, getConfigBigModbusBit,
+                                     getDOUTBigModbusBit, getDOUTSmallModbusBit, getDTRBigModbusBit,
+                                     getDVBigModbusBit, getDVSmallModbusBit, getGIBigModbusBit,
+                                     getIUSmallModbusBit, getKEYSmallModbusBit, getMEBigModbusBit,
+                                     getMFTBigModbusBit, getNOTBigModbusBit, getORBigModbusBit,
+                                     getPKVBigModbusBit, getRegProBigModbusBit, getRMTKeySmallModbusBit,
+                                     getRPRBigModbusBit, getRPRSmallModbusBit, getSDIBigModbusBit,
+                                     getSDISmallModbusBit, getSZSBigModbusBit, getTSBigModbusBit,
+                                     getTSSmallModbusBit, getTUBigModbusBit, getTUSmallModbusBit,
+                                     getXORBigModbusBit, getYustBigModbusBit, getIGOOSEBigModbusBit,
+                                     getIMMSBigModbusBit, getOLANBigModbusBit
+                                     ;
+                                     
+possible calls superWriterRegister:  setAISmallModbusRegister, setANDBigModbusRegister, setCGSBigModbusRegister,
+                                     setCommonBigModbusRegister, setCommonSmallModbusRegister, setConfigBigModbusRegister,
+                                     setDOUTBigModbusRegister, setDOUTSmallModbusRegister, setDTRBigModbusRegister,
+                                     setDVBigModbusRegister, setDVSmallModbusRegister, setGIBigModbusRegister,
+                                     setIUSmallModbusRegister, setKEYSmallModbusRegister, setMEBigModbusRegister,
+                                     setMFTBigModbusRegister, setNOTBigModbusRegister, setORBigModbusRegister,
+                                     setPKVBigModbusRegister, setRegProBigModbusRegister, setRMTKeySmallModbusRegister,
+                                     setRPRBigModbusRegister, setRPRSmallModbusRegister, setSDIBigModbusRegister,
+                                     setSDISmallModbusRegister, setSZSBigModbusRegister, setTSBigModbusRegister,
+                                     setTSSmallModbusRegister, setTUBigModbusRegister, setTUSmallModbusRegister,
+                                     setXORBigModbusRegister, setYustBigModbusRegister, setIGOOSEBigModbusRegister,
+                                     setIMMSBigModbusRegister, setOLANBigModbusRegister
+                                     ;
+
+possible calls superWriterBit :      setAISmallModbusBit, setANDBigModbusBit, setCGSBigModbusBit,
+                                     setCommonBigModbusBit, setCommonSmallModbusBit, setConfigBigModbusBit,
+                                     setDOUTBigModbusBit, setDOUTSmallModbusBit, setDTRBigModbusBit,
+                                     setDVBigModbusBit, setDVSmallModbusBit, setGIBigModbusBit,
+                                     setIUSmallModbusBit, setKEYSmallModbusBit, setMEBigModbusBit,
+                                     setMFTBigModbusBit, setNOTBigModbusBit, setORBigModbusBit,
+                                     setPKVBigModbusBit, setRegProBigModbusBit, setRMTKeySmallModbusBit,
+                                     setRPRBigModbusBit, setRPRSmallModbusBit, setSDIBigModbusBit,
+                                     setSDISmallModbusBit, setSZSBigModbusBit, setTSBigModbusBit,
+                                     setTSSmallModbusBit, setTUBigModbusBit, setTUSmallModbusBit,
+                                     setXORBigModbusBit, setYustBigModbusBit, setIGOOSEBigModbusBit,
+                                     setIMMSBigModbusBit, setOLANBigModbusBit
+                                     ;
+
+possible calls superConfig_and_settings : config_and_settingsAISmall, config_and_settingsANDBig, config_and_settingsCGSBig,
+                                     config_and_settingsCommonBig, config_and_settingsCommonSmall, config_and_settingsConfigBig,
+                                     config_and_settingsDOUTBig, config_and_settingsDOUTSmall, config_and_settingsDTRBig,
+                                     config_and_settingsDVBig, config_and_settingsDVSmall, config_and_settingsGIBig,
+                                     config_and_settingsIUSmall, config_and_settingsKEYSmall, config_and_settingsMEBig,
+                                     config_and_settingsMFTBig, config_and_settingsNOTBig, config_and_settingsORBig,
+                                     config_and_settingsPKVBig, config_and_settingsRegProBig, config_and_settingsRMTKeySmall,
+                                     config_and_settingsRPRBig, config_and_settingsRPRSmall, config_and_settingsSDIBig,
+                                     config_and_settingsSDISmall, config_and_settingsSZSBig, config_and_settingsTSBig,
+                                     config_and_settingsTSSmall, config_and_settingsTUBig, config_and_settingsTUSmall,
+                                     config_and_settingsXORBig, config_and_settingsYustBig, config_and_settingsIGOOSEBig,
+                                     config_and_settingsIMMSBig, config_and_settingsOLANBig
+                                     ;
+
+//exclude  superpostWriteAction, superPostWriteAction, superWriterRegister, superWriterBit, superpostReadAction, superPostReadAction, superReaderRegister, superReaderBit, 
+//getAISmallModbusBit, getAISmallModbusRegister, postAISmallReadAction, postAISmallWriteAction, postAISmallReadAction, postAISmallWriteAction, setAISmallModbusBit, setAISmallModbusRegister, 
+//getANDBigModbusBit, getANDBigModbusRegister, postANDBigReadAction, postANDBigWriteAction, postANDBigReadAction, postANDBigWriteAction, setANDBigModbusBit, setANDBigModbusRegister,
+//getCGSBigModbusBit, getCGSBigModbusRegister, postCGSBigReadAction, postCGSBigWriteAction, postCGSBigReadAction, postCGSBigWriteAction, setCGSBigModbusBit, setCGSBigModbusRegister,
+//getCommonSmallModbusBit, getCommonSmallModbusRegister, postCommonSmallReadAction, postCommonSmallWriteAction, postCommonSmallReadAction, postCommonSmallWriteAction, setCommonSmallModbusBit, setCommonSmallModbusRegister,
+//getCommonBigModbusBit, getCommonBigModbusRegister, postCommonBigReadAction, postCommonBigWriteAction, postCommonBigReadAction, postCommonBigWriteAction, setCommonBigModbusBit, setCommonBigModbusRegister,
+//getConfigBigModbusBit, getConfigBigModbusRegister, postConfigBigReadAction, postConfigBigWriteAction, postConfigBigReadAction, postConfigBigWriteAction, setConfigBigModbusBit, setConfigBigModbusRegister,
+//getDOUTSmallModbusBit, getDOUTSmallModbusRegister, postDOUTSmallReadAction, postDOUTSmallWriteAction, postDOUTSmallReadAction, postDOUTSmallWriteAction, setDOUTSmallModbusBit, setDOUTSmallModbusRegister,
+//getDOUTBigModbusBit, getDOUTBigModbusRegister, postDOUTBigReadAction, postDOUTBigWriteAction, postDOUTBigReadAction, postDOUTBigWriteAction, setDOUTBigModbusBit, setDOUTBigModbusRegister,
+//getDTRBigModbusBit, getDTRBigModbusRegister, postDTRBigReadAction, postDTRBigWriteAction, postDTRBigReadAction, postDTRBigWriteAction, setDTRBigModbusBit, setDTRBigModbusRegister,
+//getDVSmallModbusBit, getDVSmallModbusRegister, postDVSmallReadAction, postDVSmallWriteAction, postDVSmallReadAction, postDVSmallWriteAction, setDVSmallModbusBit, setDVSmallModbusRegister,
+//getDVBigModbusBit, getDVBigModbusRegister, postDVBigReadAction, postDVBigWriteAction, postDVBigReadAction, postDVBigWriteAction, setDVBigModbusBit, setDVBigModbusRegister,
+//getGIBigModbusBit, getGIBigModbusRegister, postGIBigReadAction, postGIBigWriteAction, postGIBigReadAction, postGIBigWriteAction, setGIBigModbusBit, setGIBigModbusRegister,
+//getIUModbusBit, getIUModbusRegister, postIUSmallReadAction, postIUSmallWriteAction, postIUSmallReadAction, postIUSmallWriteAction, setIUModbusBit, setIUModbusRegister,
+//getKEYSmallModbusBit, getKEYSmallModbusRegister, postKEYSmallReadAction, postKEYSmallWriteAction, postKEYSmallReadAction, postKEYSmallWriteAction, setKEYSmallModbusBit, setKEYSmallModbusRegister,
+//getMEBigModbusBit, getMEBigModbusRegister, postMEBigReadAction, postMEBigWriteAction, postMEBigReadAction, postMEBigWriteAction, setMEBigModbusBit, setMEBigModbusRegister,
+//getMFTBigModbusBit, getMFTBigModbusRegister, postMFTBigReadAction, postMFTBigWriteAction, postMFTBigReadAction, postMFTBigWriteAction, setMFTBigModbusBit, setMFTBigModbusRegister,
+//getNOTBigModbusBit, getNOTBigModbusRegister, postNOTBigReadAction, postNOTBigWriteAction, postNOTBigReadAction, postNOTBigWriteAction, setNOTBigModbusBit, setNOTBigModbusRegister,
+//getORBigModbusBit, getORBigModbusRegister, postORBigReadAction, postORBigWriteAction, postORBigReadAction, postORBigWriteAction, setORBigModbusBit, setORBigModbusRegister,
+//getPKVBigModbusBit, getPKVBigModbusRegister, postPKVBigReadAction, postPKVBigWriteAction, postPKVBigReadAction, postPKVBigWriteAction, setPKVBigModbusBit, setPKVBigModbusRegister,
+//getRMTKeySmallModbusBit, getRMTKeySmallModbusRegister, postRMTKeySmallReadAction, postRMTKeySmallWriteAction, postRMTKeySmallReadAction, postRMTKeySmallWriteAction, setRMTKeySmallModbusBit, setRMTKeySmallModbusRegister,
+//getRPRSmallModbusBit, getRPRSmallModbusRegister, postRPRSmallReadAction, postRPRSmallWriteAction, postRPRSmallReadAction, postRPRSmallWriteAction, setRPRSmallModbusBit, setRPRSmallModbusRegister,
+//getRPRBigModbusBit, getRPRBigModbusRegister, postRPRBigReadAction, postRPRBigWriteAction, postRPRBigReadAction, postRPRBigWriteAction, setRPRBigModbusBit, setRPRBigModbusRegister,
+//getSDISmallModbusBit, getSDISmallModbusRegister, postSDISmallReadAction, postSDISmallWriteAction, postSDISmallReadAction, postSDISmallWriteAction, setSDISmallModbusBit, setSDISmallModbusRegister,
+//getSDIBigModbusBit, getSDIBigModbusRegister, postSDIBigReadAction, postSDIBigWriteAction, postSDIBigReadAction, postSDIBigWriteAction, setSDIBigModbusBit, setSDIBigModbusRegister,
+//getSZSBigModbusBit, getSZSBigModbusRegister, postSZSBigReadAction, postSZSBigWriteAction, postSZSBigReadAction, postSZSBigWriteAction, setSZSBigModbusBit, setSZSBigModbusRegister,
+//getTSSmallModbusBit, getTSSmallModbusRegister, postTSSmallReadAction, postTSSmallWriteAction, postTSSmallReadAction, postTSSmallWriteAction, setTSSmallModbusBit, setTSSmallModbusRegister,
+//getTSBigModbusBit, getTSBigModbusRegister, postTSBigReadAction, postTSBigWriteAction, postTSBigReadAction, postTSBigWriteAction, setTSBigModbusBit, setTSBigModbusRegister,
+//getTUSmallModbusBit, getTUSmallModbusRegister, postTUSmallReadAction, postTUSmallWriteAction, postTUSmallReadAction, postTUSmallWriteAction, setTUSmallModbusBit, setTUSmallModbusRegister,
+//getTUBigModbusBit, getTUBigModbusRegister, postTUBigReadAction, postTUBigWriteAction, postTUBigReadAction, postTUBigWriteAction, setTUBigModbusBit, setTUBigModbusRegister,
+//getXORBigModbusBit, getXORBigModbusRegister, postXORBigReadAction, postXORBigWriteAction, postXORBigReadAction, postXORBigWriteAction, setXORBigModbusBit, setXORBigModbusRegister,
+//getYustBigModbusBit, getYustBigModbusRegister, postYustBigReadAction, postYustBigWriteAction, postYustBigReadAction, postYustBigWriteAction, setYustBigModbusBit, setYustBigModbusRegister,
+//getRegProBigModbusBit, getRegProBigModbusRegister, postRegProBigReadAction, postRegProBigWriteAction, postRegProBigReadAction, postRegProBigWriteAction, setRegProBigModbusBit, setRegProBigModbusRegister,
+//config_and_settingsAISmall, config_and_settingsANDBig, config_and_settingsCGSBig, config_and_settingsCommonBig, config_and_settingsCommonSmall, config_and_settingsConfigBig, config_and_settingsDOUTBig,
+//config_and_settingsDOUTSmall, config_and_settingsDTRBig, config_and_settingsDVBig, config_and_settingsDVSmall, config_and_settingsGIBig, config_and_settingsIUSmall, config_and_settingsKEYSmall, config_and_settingsMEBig,
+//config_and_settingsMFTBig, config_and_settingsNOTBig, config_and_settingsORBig, config_and_settingsPKVBig, config_and_settingsProBig, config_and_settingsRMTKey, config_and_settingsRPRBig, config_and_settingsRPRSmall,
+//config_and_settingsSDIBig, config_and_settingsSDISmall, config_and_settingsSZSBig, config_and_settingsTSBig, config_and_settingsTSSmall, config_and_settingsTUBig, config_and_settingsTUSmall, config_and_settingsXORBig,
+//config_and_settingsYustBig;
+
+exclude USBD_USR_DeviceConnected, USBD_USR_DeviceDisconnected;
