@@ -366,7 +366,7 @@ register long i;
    asm(
                "bkpt 1"
                );
-    rCBGSig.CalcBusGrSigSchematicDbg();
+//    rCBGSig.CalcBusGrSigSchematicDbg();
 //        if(pObj == pvCBGSigDbg){
 //    
 //           rCBGSig.CalcBusGrSigSchematicDBG1();
@@ -391,6 +391,7 @@ register long i;
 //        else{
 //            rCBGSig.CalcBusGrSigSchematic();
 //        }
+rCBGSig.CalcBusGrSigSchematic();
     }
 }
 
