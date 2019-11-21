@@ -29,9 +29,9 @@
 
     
 #define NAME_TIMER_OUT_SIGNALS_RU       \
-  "Виход1          ",                   \
-  "Виход2          ",                   \
-  "Виход3          "
+  "Выход1          ",                   \
+  "Выход2          ",                   \
+  "Выход3          "
 
 #define NAME_TIMER_OUT_SIGNALS_UA       \
   "Вихід1          ",                   \
@@ -44,8 +44,8 @@
   "Output3         "
 
 #define NAME_TIMER_OUT_SIGNALS_KZ       \
-  "Виход1          ",                   \
-  "Виход2          ",                   \
-  "Виход3          "
+  "Выход1          ",                   \
+  "Выход2          ",                   \
+  "Выход3          "
 
 #endif 
