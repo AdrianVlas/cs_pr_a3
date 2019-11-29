@@ -3568,7 +3568,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_network_output_block,
                                           (current_config.n_log != 0) ? 1 : 0,
                                          };  
-    for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
+    for (__id_fb i = _ID_FB_FIRST_ALL; i < _ID_FB_LAST_ALL; i++)
     {
       if (
           (i != ID_FB_GROUP_ALARM) &&
@@ -3584,6 +3584,13 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
         {
           switch (i)
           {
+          case ID_FB_CONTROL_BLOCK:
+            {
+              _n = FIX_BLOCK_SIGNALS_IN;
+              p_param      = settings_fix.param;
+              p_param_edit = settings_fix_edit.param;
+              break;
+            }
           case ID_FB_OUTPUT:
           case ID_FB_LED:
             {
