@@ -1080,7 +1080,7 @@ void make_ekran_choose_setting_Ethernet(void)
 /*****************************************************/
 //Формуємо екран відображення налаштувань мережевого рівня Ethernet
 /*****************************************************/
-void make_ekran_settings_network_layer_Ethrenet(void)
+void make_ekran_settings_network_layer_Ethernet(void)
 {
   if (
       (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ||
@@ -1241,7 +1241,7 @@ void make_ekran_settings_network_layer_Ethrenet(void)
 Натискування Enter у вікні відображення налаштувань мережевого рівня Ethernet
 */
 /*****************************************************/
-enum _result_pressed_enter_during_edition press_enter_in_settings_network_layer_Ethrenet(void)
+enum _result_pressed_enter_during_edition press_enter_in_settings_network_layer_Ethernet(void)
 {
   enum _result_pressed_enter_during_edition result = RPEDE_NONE;
   switch (current_state_menu2.edition)
@@ -1341,7 +1341,7 @@ enum _result_pressed_enter_during_edition press_enter_in_settings_network_layer_
 Натискування ESC у вікні налаштувань мережевого рівня Ethernet
 */
 /*****************************************************/
-void press_esc_in_settings_network_layer_Ethrenet(void)
+void press_esc_in_settings_network_layer_Ethernet(void)
 {
   if (
       (current_state_menu2.index_position == INDEX_SNLETH_M2_IPV4) ||
@@ -1385,7 +1385,7 @@ void press_esc_in_settings_network_layer_Ethrenet(void)
 Вхідні параметри
   Немає
 *****************************************************/
-void change_settings_network_layer_Ethrenet(unsigned int action)
+void change_settings_network_layer_Ethernet(unsigned int action)
 {
   //Вводимо число у відповідне поле
   if (action & ((1 << BIT_KEY_DOWN) | (1 << BIT_KEY_UP)))
