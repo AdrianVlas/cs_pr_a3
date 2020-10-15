@@ -1,7 +1,7 @@
 
 #include "LUBGS.hpp"
 #include "../inc/constants.h"
-
+#include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
 //#include <arm_math.h>
@@ -17,8 +17,8 @@ volatile unsigned long measurement_DBG[10] = {
 0,0,0,0,90000,0,0,0,0,0,
 };
 unsigned long *PMeas = const_cast<unsigned long*>(&measurement_DBG[0]);
-
-
+//BGSigDbgRecord  ArrBGSigDbgRec[AMOIUNT_DBG_REC] @ "variables_RAM1";
+unsigned int uiIdxArrBGSigDbgRec = 0;
 CBGSig::CBGSig(void):CLUBase()  {
 m_NodeTWait.lTmrVal  = 0;
 m_NodeTWait.next     = 0;
@@ -78,8 +78,8 @@ m_BGSigSuit.lTWait     = 0;
 m_chLinkedTimers = 0; //Field bit
 m_chStateTWait   = 0;
 m_chStateTReset  = 0;
-m_lIfix = m_lMeasIti_mn_1 = m_lKcDeltaIy = 0;
- m_lNNC = m_lNNP = m_lIp = m_lIc = 0;
+m_lInew = m_lIfix = m_lMeasIti_mn_1 = m_lKcDeltaIy = 0;
+m_lIti =  m_lNNC = m_lNNP = m_lIp = m_lIc = 0;
 m_chNumberAnalogChanell = 0;
  m_chWRIfix = 0;m_chIfixDir = 0;
  m_chWRIp   = 0;
@@ -91,8 +91,8 @@ m_chSttElongation = m_chStt6MsImp = 0;
 m_chSttImpNNP = m_chSttImpNNM = 0;
 ch_DTrg = 0;
 ch_C1 = 0;
-chTzatrState = 0;
-
+m_chDeltaIBus = chTzatrState = 0;
+m_Iteration = 0;
 }
  char CBGSig::m_chCounterCall = 99;
   char CBGSig::chAlreadyCalculated = 0;
@@ -353,7 +353,7 @@ pOut = static_cast<void*>(arrOut);
 //    chGlSem--;
 //    return i;
 //}
-
+short shIdxBeg, shIdxEnd; long lT = 777;
 char shIdxBGSBkpt = 0;
 void BGSig_Op(void *pObj) {
 register long i;
@@ -1044,17 +1044,19 @@ void CBGSig::CalcBusGrSigSchematic(void) {
  union { //register
    struct {
       unsigned int  PO_DeltaIbus: 1;
-	  unsigned int  DTrgInv:1;
-	  unsigned int  PO_Ifix:1;
-	  unsigned int  PO_DeltaIbusFix:1;
-	  unsigned int  Delay1ms:1;
-	  unsigned int  Imp6ms :1;
-	  unsigned int  PoIp:1;
-	  unsigned int  PoIc:1;
-	  unsigned int  PO_NNC_NCH:1;
-	  unsigned int  PO_NNP_NCH:1;
-	  unsigned int  PO_NNC_CH :1;
-	  unsigned int  PO_NNP_CH :1;
+      unsigned int  DTrgInv:1;
+      unsigned int  PO_Ifix:1;
+      unsigned int  PO_Inew:1;
+      unsigned int  PO_DeltaIbusFix:1;
+      unsigned int  PO_DeltaIbusNew:1;
+      unsigned int  Delay1ms:1;
+      unsigned int  Imp6ms :1;
+      unsigned int  PoIp:1;
+      unsigned int  PoIc:1;
+      unsigned int  PO_NNC_NCH:1;
+      unsigned int  PO_NNP_NCH:1;
+      unsigned int  PO_NNC_CH :1;
+      unsigned int  PO_NNP_CH :1;
       
    } bool_vars;
   long lVl;
@@ -1062,21 +1064,31 @@ void CBGSig::CalcBusGrSigSchematic(void) {
 }wrp;
     //long  lRamainderNNP, lRamainderNNC;
 struct{
-long Ii,Ip;
+long Ii,Ip,Ifix,It_02;
 void* pv;
 char chNotImp6ms;
 }sLV;    
     volatile bool boolWl, boolTzatr;
     wrp.lVl = 0;
     unnBF1.ulVal = 0;
+    m_Iteration++;
+    
+   
 //#pragma data_alignment=4 
 //    char arChIntermediaResult[(TOTAL_BGS_LU)];
 memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     sLV.pv = static_cast<void*>(CBGSig::measbuf);
+    sLV.It_02 = *(static_cast<long*>(sLV.pv)+m_chNumberAnalogChanell+ (CBGSig::m_chIdxGrupSamples*I_U*1) );   
+    
+    boolWl = false;    
     do{
         register long i_l, j_l,Ii,Ip;
         i_l = CBGSig::m_chIdxGrupSamples;
+        i_l++;
+        if(i_l > 2)
+            i_l = 0;
         Ip =  *(static_cast<long*>(sLV.pv)+m_chNumberAnalogChanell+ (i_l*I_U*1) );//I_U-Means index U- last number
+        i_l = CBGSig::m_chIdxGrupSamples;
         if(i_l == 0)
             i_l = 2;
         else i_l--;     
@@ -1086,7 +1098,8 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
 //            asm(
 //            "bkpt 1"
 //            );
-        sLV.Ii = Ii;sLV.Ip = Ip;
+        sLV.Ii = Ii;sLV.Ip = Ip;m_lIti = Ii;
+         
         if (Ii > Ip) {
            j_l = Ii - Ip;
         } else {
@@ -1096,15 +1109,16 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         m_lKcDeltaIy = i_l;
         i_l*=9;i_l/=10;//i *    
         if (j_l > i_l) {//Novyi New-made
-            wrp.bool_vars.PO_DeltaIbus = true;
+            if(m_chDeltaIBus == 0 ){//if(m_chDeltaIBus == 0){
+                wrp.bool_vars.PO_DeltaIbus = true;sLV.Ifix = Ip;m_chDeltaIBus = 1;
+            }else{
+                m_chDeltaIBus = 0;
+            }    
         }
         else{
             i_l = CBGSig::m_chIdxGrupSamples;
-            i_l++;
-            if(i_l > 2)
-            i_l = 0;
             Ip =  *(static_cast<long*>(sLV.pv)+m_chNumberAnalogChanell+ (i_l*I_U*1) );
-            
+            //ArrBGSigDbgRec[uiIdxArrBGSigDbgRec].luIt_02 = sLV.Ip;
             sLV.Ip = Ip;
             if (Ii > Ip) {
                 j_l = Ii - Ip;
@@ -1114,43 +1128,59 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
             i_l = m_lKcDeltaIy;
             i_l*=9;i_l/=10;
             if (j_l > i_l) {//Novyi New-made
-            wrp.bool_vars.PO_DeltaIbus = true;
+                //if(m_chDeltaIBus != i_l){
+                if(m_chDeltaIBus == 0){
+                    wrp.bool_vars.PO_DeltaIbus = true;sLV.Ifix = Ip;m_chDeltaIBus = 1;
+                }else{
+                m_chDeltaIBus = 0;
+                }
             }else{
-                //wrp.bool_vars.PO_DeltaIbus = false;// !!! Only for Dbg
+                m_chDeltaIBus = 0;//wrp.bool_vars.PO_DeltaIbus = false;// !!! Only for Dbg
             }
             
         }
             
             
-        boolWl = false;
+       // boolWl = false;    
+
     }while(boolWl);
     
+     
     
-    if (ch_C1 == 0 && (wrp.bool_vars.PO_DeltaIbus) == 1) {
+    if(TClrTrg(chTzatrState))
+        ch_DTrg = 0;//Clear Trigger
+    else if (ch_C1 == 0 && (wrp.bool_vars.PO_DeltaIbus) == 1) {
         ch_DTrg = 1;//DTrgInv = !ch_DTrg;
+        
     }
+    
     //wrp.bool_vars.DTrgInv = !ch_DTrg;
     rUl_2 = (~static_cast<unsigned long>(ch_DTrg))&1;
     //i++;//
     //i &= 1;
     wrp.bool_vars.DTrgInv = rUl_2;
+    
     ch_C1 = wrp.bool_vars.PO_DeltaIbus;
     rUl_1 = (TElongation(wrp.bool_vars.DTrgInv));
     rUl_1 &= wrp.bool_vars.PO_DeltaIbus;
     //if(i && wrp.bool_vars.PO_DeltaIbus){
-    if(rUl_1 != 0 ){
+    if(rUl_1 != 0 && chTzatrState == 0){
         if (m_chWRIfix == 0) {//chTzatrState == 0 <-This is early code chahged to chTzatrState
-                m_lIfix =  sLV.Ip;
+                //m_lIfix =  sLV.Ip;//!????
+                m_lIfix = sLV.Ifix; 
                 m_chWRIfix = 1;
+                m_lInew = sLV.Ii;//m_lIti
                 wrp.bool_vars.PO_Ifix = true;
             };
     }else{
         ;//Clr Ifix Module
         m_chWRIfix = 0;//wrp.bool_vars.PO_Ifix = false;
     }
+    
     if (ch_DTrg == 1 ) {//&& wrp.bool_vars.PO_Ifix
         long i_l,j_l, Iti;
-        Iti = measurement[m_chNumberAnalogChanell];
+        //!????Iti = measurement[m_chNumberAnalogChanell];<<== Error//
+        Iti = sLV.Ii;
         if (Iti > m_lIfix) {
             j_l = Iti - m_lIfix;
         } else {
@@ -1163,14 +1193,34 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         }    
         else
             rUl_1 = 0;
+        if (Iti > m_lInew) {
+            j_l = Iti - m_lInew;
+        } else {
+            j_l = m_lInew - Iti;
+        }
+        i_l = (m_BGSigSuit.lIust * measurement[4]) / lU_NOM;
+        i_l *=9; i_l/=10;
+        if (j_l > i_l){
+            wrp.bool_vars.PO_DeltaIbusNew = 1;//i_l = 1;
+        }    
+        else
+            rUl_2 = 0;
+        //if(rUl_2 == 0 && rUl_1 == 0)
+        //asm(
+        //       "bkpt 1"
+        //       );
+        
     
     }
+    
     rUl_1 = wrp.bool_vars.PO_DeltaIbusFix;
+    rUl_1 |= wrp.bool_vars.PO_DeltaIbusNew;
     rUl_2 = (~rUl_1)&1;
     unnBF1.ushAr[0] |= (rUl_2) << BGS_NOT7_STATE_BIT;
     
     
-	rUl_1 = (lTWait(rUl_1));
+    
+    rUl_1 = (lTWait(rUl_1));
     //if()
     unnBF1.ulVal |= (rUl_1)<< BGS_TWAIT_STATE_BIT;
     chTzatrState = rUl_1;
@@ -1178,6 +1228,8 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     
     if(TClrTrg(rUl_1|rUl_2))
         ch_DTrg = 0;//Clear Trigger
+        
+    
     rUl_1 = ( 1<< BGS_TWAIT_STATE_BIT);
     rUl_1 &= unnBF1.ulVal;
     rUl_2 =  (TImp6ms(rUl_1));
@@ -1187,10 +1239,12 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     sLV.chNotImp6ms = rUl_1;
     //if((unnBF1.ulVal&( 1<< BGS_TWAIT_STATE_BIT))&& m_chWRIp == 0){
     boolTzatr = chTzatrState;
+
     if( boolTzatr && m_chWRIp == 0){
         long  lRamainderNNP, lRamainderNNC;
         m_lIp = m_lIfix;
-        m_lIc = measurement[m_chNumberAnalogChanell];
+        //m_lIc = measurement[m_chNumberAnalogChanell];//!???
+        m_lIc = sLV.Ii;
         m_lIcMulUnom  = m_lIc*lU_NOM;
         m_lIpMulUnom  = m_lIp*lU_NOM;
         m_lIyMulU     = m_BGSigSuit.lIust * measurement[4];
@@ -1206,17 +1260,17 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
             m_lNNP++;                                  //    m_lNNP++;
         
         if (m_BGSigSuit.chCheckBgs > 0) {
-			if(m_lNNC>0)
-				m_lNNC--;
-			//else{}
-			if(m_lNNP>0)
-				m_lNNP--;
+            if(m_lNNC>0)
+                m_lNNC--;
+            //else{}
+            if(m_lNNP>0)
+                m_lNNP--;
             
             
         }  
 
         m_chWRIp = 1;
-	
+    
     }
     else {
         if ((unnBF1.ulVal&( 1<< BGS_TWAIT_STATE_BIT)) == 0)
@@ -1234,6 +1288,8 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
             if(sLV.chNotImp6ms){
                 rUl_1 = 1;
             }
+        }else{
+            rUl_2 = d;
         }
         rUl_2 =  (TImpNNP(rUl_1));
         arrOut[BGS_OUT_NAME_NNP - 1] = rUl_2;
@@ -1259,12 +1315,12 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
             rUl_2 = m_lKcDeltaIy;//(m_lKcDeltaIy*58981)>>16;
             rUl_2 *= 9;rUl_2 /= 10;
             
-            if (measurement[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rUl_2) ){
+            if (measurement[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rUl_2) ){//!???
                 m_chStdpCE = 1;
             }
             else{
                 rUl_2 *= 11;rUl_2 /= 10;
-                if( (measurement[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rUl_2)) 
+                if( (measurement[m_chNumberAnalogChanell] <= static_cast<unsigned long>(rUl_2))//!??? 
                 &&  (m_chStdpCE == 1) )
                     m_chStdpCE = 1;
                 else
@@ -1281,12 +1337,12 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         
         
         
-        if (measurement[m_chNumberAnalogChanell] > 2000){
+        if (measurement[m_chNumberAnalogChanell] > 2000){//!???
             m_chStdpOV = 1;
             
         }
         else{
-            if( (m_chStdpOV == 1) && (measurement[m_chNumberAnalogChanell] > 1800) )
+            if( (m_chStdpOV == 1) && (measurement[m_chNumberAnalogChanell] > 1800) )//!???
                 m_chStdpOV = 1;
             else
                 m_chStdpOV = 0;
@@ -1345,6 +1401,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     CBGSig::chNeedTimerCalculated = rUl_1;//It`s Need for Call recalc because Timer work
 
 }
+
 
 /*
 long CBGSig::EvalDeltaIbusFix(long Ibus, long Ifix, long lActive){
