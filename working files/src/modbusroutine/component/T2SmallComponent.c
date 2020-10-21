@@ -248,6 +248,31 @@ extern int pointInterface;//метка интерфейса 0-USB 1-RS485
       TS_arr1[N_tmp]._link = TS_arr[N_tmp]._link = (int32_t)link_tmp;
      } break;
 
+//        ID_FB_INPUT_GOOSE_BLOCK,                                        /*17*/
+//        ID_FB_INPUT_MMS_BLOCK,                                          /*18*/
+//        ID_FB_NETWORK_OUTPUT_BLOCK,                                     /*19*/
+    case ID_FB_INPUT_GOOSE_BLOCK:
+     {
+      __settings_for_INPUT_GOOSE_BLOCK *GOOSE_arr  = (__settings_for_INPUT_GOOSE_BLOCK*)(sca_of_p[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR]);
+      __settings_for_INPUT_GOOSE_BLOCK *GOOSE_arr1 = (__settings_for_INPUT_GOOSE_BLOCK*)(sca_of_p_edit[ID_FB_INPUT_GOOSE_BLOCK - _ID_FB_FIRST_VAR]);
+      GOOSE_arr1[N_tmp]._n    = GOOSE_arr[N_tmp]._n    = (int32_t)n_tmp;
+      GOOSE_arr1[N_tmp]._link = GOOSE_arr[N_tmp]._link = (int32_t)link_tmp;
+     } break;
+    case ID_FB_INPUT_MMS_BLOCK:
+     {
+      __settings_for_INPUT_MMS_BLOCK *MMS_arr  = (__settings_for_INPUT_MMS_BLOCK*)(sca_of_p[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR]);
+      __settings_for_INPUT_MMS_BLOCK *MMS_arr1 = (__settings_for_INPUT_MMS_BLOCK*)(sca_of_p_edit[ID_FB_INPUT_MMS_BLOCK - _ID_FB_FIRST_VAR]);
+      MMS_arr1[N_tmp]._n    = MMS_arr[N_tmp]._n    = (int32_t)n_tmp;
+      MMS_arr1[N_tmp]._link = MMS_arr[N_tmp]._link = (int32_t)link_tmp;
+     } break;
+    case ID_FB_NETWORK_OUTPUT_BLOCK:
+     {
+      __settings_for_NETWORK_OUTPUT_BLOCK *NETWORK_arr  = (__settings_for_NETWORK_OUTPUT_BLOCK*)(sca_of_p[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR]);
+      __settings_for_NETWORK_OUTPUT_BLOCK *NETWORK_arr1 = (__settings_for_NETWORK_OUTPUT_BLOCK*)(sca_of_p_edit[ID_FB_NETWORK_OUTPUT_BLOCK - _ID_FB_FIRST_VAR]);
+      NETWORK_arr1[N_tmp]._n    = NETWORK_arr[N_tmp]._n    = (int32_t)n_tmp;
+      NETWORK_arr1[N_tmp]._link = NETWORK_arr[N_tmp]._link = (int32_t)link_tmp;
+     } break;
+
     //case ID_FB_EVENT_LOG:
 //     {
 //       __LOG_INPUT *LOG_arr  = (__LOG_INPUT*)(sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR]);
