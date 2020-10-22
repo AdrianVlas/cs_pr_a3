@@ -37,7 +37,7 @@ void start_receive_data_via_CANAL1_MO(void)
         for (int32_t i = 0; i < (size_packet - 3); i++) sum += Canal1_MO_Received[1 + i];
         if (sum == Canal1_MO_Received[size_packet - 2])
         { 
-          IEC_board_present = true;
+          IEC_board_uncall = 0;
           IEC_board_address = Canal1_MO_Received[2];
           
           uint32_t index = 4;
@@ -199,8 +199,8 @@ void start_receive_data_via_CANAL1_MO(void)
   else
   {
     //Не прийняті дані з комунікаційної плати по каналу 1
-    if (IEC_board_present == true) _SET_BIT(set_diagnostyka, ERROR_CPU_NO_ANSWER_CANAL_1);
-//    IEC_board_present = false;
+    if (IEC_board_uncall == 0) _SET_BIT(set_diagnostyka, ERROR_CPU_NO_ANSWER_CANAL_1);
+    else IEC_board_uncall--;
   }
       
   //Скидуємо всі можливі помилки

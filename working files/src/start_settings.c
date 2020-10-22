@@ -1748,26 +1748,22 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
         DIV_TO_HIGHER(target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN) + (((target_config->n_alarm % OR_SIGNALS_IN) != 0) && ((target_config->n_alarm / OR_SIGNALS_IN) != ((target_config->n_alarm + (target_config->n_alarm / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання MUTE-виходів всіх СЗС*/ + 
         DIV_TO_HIGHER((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) + ((((target_config->n_alarm - (target_config->n_alarm >> 1)) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN) != (((target_config->n_alarm - (target_config->n_alarm >> 1)) + ((target_config->n_alarm - (target_config->n_alarm >> 1)) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для аварійної сигналізації*/;
 
-    if ((target_config->n_output >= 1) && (target_config->n_or >= n)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (1 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-    if ((target_config->n_output >= 2) && (target_config->n_or >= n)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (2 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_output >= 6) && (target_config->n_or >= n)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (6 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_output >= 7) && (target_config->n_or >= n)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (7 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
     
     n += DIV_TO_HIGHER((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN) + ((((target_config->n_alarm >> 1) % OR_SIGNALS_IN) != 0) && (((target_config->n_alarm >> 1) / OR_SIGNALS_IN) != (((target_config->n_alarm >> 1) + ((target_config->n_alarm >> 1) / OR_SIGNALS_IN)) / OR_SIGNALS_IN))), OR_SIGNALS_IN)/*Об'єднання ALARM-виходів всіх СЗС для попереджувальної сигналізації*/;
 
     if ((target_config->n_output >= 3) && (target_config->n_or >= n)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (3 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
     if ((target_config->n_output >= 4) && (target_config->n_or >= n)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (4 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((n & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-
-    for (size_t i = 0; i < 4; i++)
-    {
-      if ((target_config->n_output >= (i + 1)) && (target_config->n_or >= 1)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + i)->param[OUTPUT_LED_RESET] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-      else break;
-    }
     
     n += 1/*Об'єднання виходів АБО всіх ALARM-виходів попреджувальних СЗС і всіх ALARM-виходів аварійної СЗС*/;
     
-    if (target_config->n_output >= 7)
+    if (target_config->n_output >= 5) ((__settings_for_OUTPUT_LED*) target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (5 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_CONTROL_BLOCK & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((FIX_BLOCK_RUN + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+
+    for (size_t i = 2; i < 7; i++)
     {
-      ((__settings_for_OUTPUT_LED*) target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (7 - 1))->param[OUTPUT_LED_LOGIC_INPUT] = ((ID_FB_CONTROL_BLOCK & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((FIX_BLOCK_RUN + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-      if (target_config->n_or >= 1) ((__settings_for_OUTPUT_LED*) target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + (7 - 1))->param[OUTPUT_LED_RESET] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      if ((target_config->n_output >= (i + 1)) && (target_config->n_or >= 1)) ((__settings_for_OUTPUT_LED*)target_sca_of_p[ID_FB_OUTPUT - _ID_FB_FIRST_VAR] + i)->param[OUTPUT_LED_RESET] = ((ID_FB_OR & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | ((1 & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((STANDARD_LOGIC_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+      else break;
     }
     /***/
     
@@ -2037,10 +2033,10 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
     }
     n += ((target_config->n_input > 4/*Reset, Mute, Block, Test*/) ? (target_config->n_input - 4) : 0);
 
-    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 0 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 0) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((0 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 1 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 1) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((1 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 2 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 2) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((2 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
-    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 3 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 3) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((3 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 0 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 0) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((2 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 1 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 1) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((3 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 2 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 2) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((5 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
+    if ((target_config->n_log*LOG_SIGNALS_IN) >= (n + 3 + 1)) *((__LOG_INPUT*)target_sca_of_p[ID_FB_EVENT_LOG - _ID_FB_FIRST_VAR] + n + 3) = ((ID_FB_OUTPUT & MASKA_PARAM_ID) << SFIFT_PARAM_ID) | (((6 + 1) & MASKA_PARAM_N) << SFIFT_PARAM_N) | (((OUTPUT_LED_OUT + 1) & MASKA_PARAM_OUT) << SFIFT_PARAM_OUT);
     n += ((target_config->n_output >= 4/*Ав.звукова, Ав.світлова, Поп.звукова, Поп.світлова*/) ? 4 : target_config->n_output);
     
 
@@ -2094,6 +2090,8 @@ void scheme2_settings(__CONFIG *target_config, __SETTINGS_FIX *target_fix_settin
 /**************************************/
 void error_reading_with_eeprom()
 {
+  static unsigned int writing_configure_before;
+  
   int index_language;
   if (((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)) == 0) || ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) == 0)) index_language = index_language_in_array(LANGUAGE_ABSENT);
   else index_language = index_language_in_array(settings_fix_prt.language);
@@ -2142,13 +2140,13 @@ void error_reading_with_eeprom()
     else if((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_EMPTY_BIT)) != 0)
     {
       index_info = 3;
-      index_action = 2;
+      index_action =  (writing_configure_before != false) ? 2 : 0;
       information_type = 2;
     }
     else if((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_FAIL_BIT)) != 0)
     {
       index_info = 4;
-      index_action = 2;
+      index_action = 0;
       information_type = 2;
     }
     else if((state_i2c_task & MASKA_FOR_BIT(STATE_TRG_FUNC_EEPROM_EMPTY_BIT)) != 0)
@@ -2202,7 +2200,11 @@ void error_reading_with_eeprom()
     if (information_type == 1)
     {
       //Записуємо мінімальну конфігурацію
-      if (index_action == 2) scheme2_config(&current_config);
+      if (index_action == 2) 
+      {
+        scheme2_config(&current_config);
+        writing_configure_before = true;
+      }
       else min_config(&current_config);
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
       
@@ -2211,9 +2213,12 @@ void error_reading_with_eeprom()
     {
       //Записуємо мінімальну конфігурацію
       min_settings(&settings_fix); /*Для фіксованого блоку немає додаткових особливих налаштувань у переустановлених кнфігураціях*/
-      if (index_action == 2) scheme2_settings(&current_config, &settings_fix, sca_of_p);
+      if (index_action == 2) 
+      {
+        scheme2_settings(&current_config, &settings_fix, sca_of_p);
+        writing_configure_before = false;
+      }
       _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
-      
     }
     else if (information_type == 3)
     {

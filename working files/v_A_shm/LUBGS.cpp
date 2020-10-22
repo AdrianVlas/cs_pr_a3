@@ -1403,6 +1403,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
 }
 
 
+void* pvCBGSigDbg;
 /*
 long CBGSig::EvalDeltaIbusFix(long Ibus, long Ifix, long lActive){
 register long i;

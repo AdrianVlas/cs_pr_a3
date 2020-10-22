@@ -63,7 +63,7 @@ public:
     friend void Lan__9_8_Op(void *pObj);
 };
 extern void Lan__9_8_Op  (void *pObj);
-extern uint32_t  IEC_board_present;
+//extern uint32_t  IEC_board_present;
 
 
 
