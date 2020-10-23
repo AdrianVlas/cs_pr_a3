@@ -2,7 +2,7 @@
 
 <workspace>
   <project>
-    <path>$WS_DIR$\v.12.x.y\device_2_v_12_0_2_4(IAR 7 50 2).ewp</path>
+    <path>$WS_DIR$\v.12.x.y\device_2_v_12_0_2_5(IAR 7 50 2).ewp</path>
   </project>
   <batchBuild/>
 </workspace>
