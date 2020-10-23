@@ -103,12 +103,15 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
            (1 << (ERROR_IEC_RECEIVING_CANAL_1 - 32))            |\
            (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_1 - 32))      |\
            (1 << (ERROR_IEC_REQUEST_CANAL_1 - 32))              |\
-           (1 << (ERROR_IEC_NO_ANSWER_CANAL_1 - 32))            |\
+           (1 << (ERROR_IEC_NO_ANSWER_CANAL_1 - 32))             \
+          )  
+            
+#define WORD_2_MASKA_ERRORS_FROM_CANAL_1_2 (unsigned int)        \
+          (                                                      \
            (1 << (ERROR_IEC_RECEIVING_CANAL_2 - 64))            |\
            (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_2 - 64))      |\
            (1 << (ERROR_IEC_REQUEST_CANAL_2 - 64))               \
           )   
-#define WORD_2_MASKA_ERRORS_FROM_CANAL_1_2 0
 
 #define WORD_0_MASKA_RECEIVING_ERRORS_CANAL_2 0
 #define WORD_1_MASKA_RECEIVING_ERRORS_CANAL_2 (unsigned int)  \
@@ -154,9 +157,25 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   | (1 << (ERROR_VDD_ADC_TEST_COARSE_BIT - 32))                 \
   | (1 << (ERROR_EXTERNAL_SRAM_BIT - 32))                       \
   | (1 << (ERROR_INTERNAL_FLASH_BIT - 32))                      \
+  | (1 << (ERROR_CPU_RECEIVING_CANAL_1 - 32))                   \
+  | (1 << (ERROR_CPU_RECEIVED_PACKET_CANAL_1 - 32))             \
+  | (1 << (ERROR_CPU_ANSWER_CANAL_1 - 32))                      \
+  | (1 << (ERROR_CPU_NO_ANSWER_CANAL_1 - 32))                   \
+  | (1 << (ERROR_IEC_RECEIVING_CANAL_1 - 32))                   \
+  | (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_1 - 32))             \
+  | (1 << (ERROR_IEC_REQUEST_CANAL_1 - 32))                     \
+  | (1 << (ERROR_IEC_NO_ANSWER_CANAL_1 - 32))                   \
+  | (1 << (ERROR_CPU_RECEIVING_CANAL_2 - 32))                   \
 )
 
-#define MASKA_AVAR_ERROR_2                              0
+#define MASKA_AVAR_ERROR_2        (unsigned int)(               \
+     (1 << (ERROR_CPU_RECEIVED_PACKET_CANAL_2 - 64))            \
+  |  (1 << (ERROR_CPU_ANSWER_CANAL_2 - 64))                     \
+  |  (1 << (ERROR_CPU_NO_ANSWER_CANAL_2 - 64))                  \
+  |  (1 << (ERROR_IEC_RECEIVING_CANAL_2 - 64))                  \
+  |  (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_2 - 64))            \
+  |  (1 << (ERROR_IEC_REQUEST_CANAL_2 - 64))                    \
+)   
 
 
 # define NAME_DIAGN_RU  \
