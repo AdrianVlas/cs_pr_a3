@@ -105,12 +105,14 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
            (1 << (ERROR_IEC_RECEIVING_CANAL_1 - 32))            |\
            (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_1 - 32))      |\
            (1 << (ERROR_IEC_REQUEST_CANAL_1 - 32))              |\
-           (1 << (ERROR_IEC_NO_ANSWER_CANAL_1 - 32))            |\
+           (1 << (ERROR_IEC_NO_ANSWER_CANAL_1 - 32))             \
+          )   
+#define WORD_2_MASKA_ERRORS_FROM_CANAL_1_2   (unsigned int)      \
+          (                                                      \
            (1 << (ERROR_IEC_RECEIVING_CANAL_2 - 64))            |\
            (1 << (ERROR_IEC_RECEIVED_PACKET_CANAL_2 - 64))      |\
            (1 << (ERROR_IEC_REQUEST_CANAL_2 - 64))               \
           )   
-#define WORD_2_MASKA_ERRORS_FROM_CANAL_1_2 0
 
 #define WORD_0_MASKA_RECEIVING_ERRORS_CANAL_2 0
 #define WORD_1_MASKA_RECEIVING_ERRORS_CANAL_2 0
