@@ -2951,12 +2951,21 @@ void min_settings_INPUT_GOOSE_BLOCK(unsigned int mem_to_prt, uintptr_t *base, si
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < INPUT_GOOSE_BLOCK_SIGNALS_IN; i++)
+    if (mem_to_prt == true)
     {
-      if (mem_to_prt == true) ((__LN_INPUT_GOOSE_BLOCK *)(base) + shift)->settings.param[i] = 0;
-      else ((__settings_for_INPUT_GOOSE_BLOCK *)(base) + shift)->param[i] = 0;
+      ((__LN_INPUT_GOOSE_BLOCK *)(base) + shift)->settings._n = -1;
+      ((__LN_INPUT_GOOSE_BLOCK *)(base) + shift)->settings._link = -1;
+      
+      for (size_t i = 0; i < INPUT_GOOSE_BLOCK_SIGNALS_IN; i++) ((__LN_INPUT_GOOSE_BLOCK *)(base) + shift)->settings.param[i] = 0;
     }
-    
+    else
+    {
+      ((__settings_for_INPUT_GOOSE_BLOCK *)(base) + shift)->_n = -1;
+      ((__settings_for_INPUT_GOOSE_BLOCK *)(base) + shift)->_link = -1;
+
+      for (size_t i = 0; i < INPUT_GOOSE_BLOCK_SIGNALS_IN; i++) ((__settings_for_INPUT_GOOSE_BLOCK *)(base) + shift)->param[i] = 0;
+    }
+
     if (mem_to_prt == true)
     {
       for (size_t i = 0; i < DIV_TO_HIGHER(INPUT_GOOSE_BLOCK_SIGNALS_OUT, 8); i++)
@@ -2981,25 +2990,31 @@ void copy_settings_INPUT_GOOSE_BLOCK(unsigned int mem_to_prt, unsigned int mem_f
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < INPUT_GOOSE_BLOCK_SIGNALS_IN; i++)
+    if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      if ((mem_to_prt == false) && (mem_from_prt == true))
-      {
-        ((__settings_for_INPUT_GOOSE_BLOCK *)(base_target) + shift)->param[i] = ((__LN_INPUT_GOOSE_BLOCK *)(base_source) + shift)->settings.param[i];
-      }
-      else if ((mem_to_prt == true) && (mem_from_prt == false))
-      {
-        ((__LN_INPUT_GOOSE_BLOCK *)(base_target) + shift)->settings.param[i] = ((__settings_for_INPUT_GOOSE_BLOCK *)(base_source) + shift)->param[i];
-      }
-      else if ((mem_to_prt == false) && (mem_from_prt == false))
-      {
-        ((__settings_for_INPUT_GOOSE_BLOCK *)(base_target) + shift)->param[i] = ((__settings_for_INPUT_GOOSE_BLOCK *)(base_source) + shift)->param[i];
-      }
-      else
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(17);
-      }
+      ((__settings_for_INPUT_GOOSE_BLOCK *)(base_target) + shift)->_n = ((__LN_INPUT_GOOSE_BLOCK *)(base_source) + shift)->settings._n;
+      ((__settings_for_INPUT_GOOSE_BLOCK *)(base_target) + shift)->_link = ((__LN_INPUT_GOOSE_BLOCK *)(base_source) + shift)->settings._link;
+      
+      for (size_t i = 0; i < INPUT_GOOSE_BLOCK_SIGNALS_IN; i++) ((__settings_for_INPUT_GOOSE_BLOCK *)(base_target) + shift)->param[i] = ((__LN_INPUT_GOOSE_BLOCK *)(base_source) + shift)->settings.param[i];
+    }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_INPUT_GOOSE_BLOCK *)(base_target) + shift)->settings._n = ((__settings_for_INPUT_GOOSE_BLOCK *)(base_source) + shift)->_n;
+      ((__LN_INPUT_GOOSE_BLOCK *)(base_target) + shift)->settings._link = ((__settings_for_INPUT_GOOSE_BLOCK *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < INPUT_GOOSE_BLOCK_SIGNALS_IN; i++) ((__LN_INPUT_GOOSE_BLOCK *)(base_target) + shift)->settings.param[i] = ((__settings_for_INPUT_GOOSE_BLOCK *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_INPUT_GOOSE_BLOCK *)(base_target) + shift)->_n = ((__settings_for_INPUT_GOOSE_BLOCK *)(base_source) + shift)->_n;
+      ((__settings_for_INPUT_GOOSE_BLOCK *)(base_target) + shift)->_link = ((__settings_for_INPUT_GOOSE_BLOCK *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < INPUT_GOOSE_BLOCK_SIGNALS_IN; i++) ((__settings_for_INPUT_GOOSE_BLOCK *)(base_target) + shift)->param[i] = ((__settings_for_INPUT_GOOSE_BLOCK *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(17);
     }
   }
 }
@@ -3012,10 +3027,19 @@ void min_settings_INPUT_MMS_BLOCK(unsigned int mem_to_prt, uintptr_t *base, size
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < INPUT_MMS_BLOCK_SIGNALS_IN; i++)
+    if (mem_to_prt == true)
     {
-      if (mem_to_prt == true) ((__LN_INPUT_MMS_BLOCK *)(base) + shift)->settings.param[i] = 0;
-      else ((__settings_for_INPUT_MMS_BLOCK *)(base) + shift)->param[i] = 0;
+      ((__LN_INPUT_MMS_BLOCK *)(base) + shift)->settings._n = -1;
+      ((__LN_INPUT_MMS_BLOCK *)(base) + shift)->settings._link = -1;
+      
+       for (size_t i = 0; i < INPUT_MMS_BLOCK_SIGNALS_IN; i++) ((__LN_INPUT_MMS_BLOCK *)(base) + shift)->settings.param[i] = 0;
+    }
+    else 
+    {
+      ((__settings_for_INPUT_MMS_BLOCK *)(base) + shift)->_n = -1;
+      ((__settings_for_INPUT_MMS_BLOCK *)(base) + shift)->_link = -1;
+      
+      for (size_t i = 0; i < INPUT_MMS_BLOCK_SIGNALS_IN; i++) ((__settings_for_INPUT_MMS_BLOCK *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
@@ -3042,25 +3066,31 @@ void copy_settings_INPUT_MMS_BLOCK(unsigned int mem_to_prt, unsigned int mem_fro
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < INPUT_MMS_BLOCK_SIGNALS_IN; i++)
+    if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      if ((mem_to_prt == false) && (mem_from_prt == true))
-      {
-        ((__settings_for_INPUT_MMS_BLOCK *)(base_target) + shift)->param[i] = ((__LN_INPUT_MMS_BLOCK *)(base_source) + shift)->settings.param[i];
-      }
-      else if ((mem_to_prt == true) && (mem_from_prt == false))
-      {
-        ((__LN_INPUT_MMS_BLOCK *)(base_target) + shift)->settings.param[i] = ((__settings_for_INPUT_MMS_BLOCK *)(base_source) + shift)->param[i];
-      }
-      else if ((mem_to_prt == false) && (mem_from_prt == false))
-      {
-        ((__settings_for_INPUT_MMS_BLOCK *)(base_target) + shift)->param[i] = ((__settings_for_INPUT_MMS_BLOCK *)(base_source) + shift)->param[i];
-      }
-      else
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(18);
-      }
+      ((__settings_for_INPUT_MMS_BLOCK *)(base_target) + shift)->_n = ((__LN_INPUT_MMS_BLOCK *)(base_source) + shift)->settings._n;
+      ((__settings_for_INPUT_MMS_BLOCK *)(base_target) + shift)->_link = ((__LN_INPUT_MMS_BLOCK *)(base_source) + shift)->settings._link;
+      
+      for (size_t i = 0; i < INPUT_MMS_BLOCK_SIGNALS_IN; i++) ((__settings_for_INPUT_MMS_BLOCK *)(base_target) + shift)->param[i] = ((__LN_INPUT_MMS_BLOCK *)(base_source) + shift)->settings.param[i];
+    }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_INPUT_MMS_BLOCK *)(base_target) + shift)->settings._n = ((__settings_for_INPUT_MMS_BLOCK *)(base_source) + shift)->_n;
+      ((__LN_INPUT_MMS_BLOCK *)(base_target) + shift)->settings._link = ((__settings_for_INPUT_MMS_BLOCK *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < INPUT_MMS_BLOCK_SIGNALS_IN; i++) ((__LN_INPUT_MMS_BLOCK *)(base_target) + shift)->settings.param[i] = ((__settings_for_INPUT_MMS_BLOCK *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_INPUT_MMS_BLOCK *)(base_target) + shift)->_n = ((__settings_for_INPUT_MMS_BLOCK *)(base_source) + shift)->_n;
+      ((__settings_for_INPUT_MMS_BLOCK *)(base_target) + shift)->_link = ((__settings_for_INPUT_MMS_BLOCK *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < INPUT_MMS_BLOCK_SIGNALS_IN; i++) ((__settings_for_INPUT_MMS_BLOCK *)(base_target) + shift)->param[i] = ((__settings_for_INPUT_MMS_BLOCK *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(18);
     }
   }
 }
@@ -3073,10 +3103,19 @@ void min_settings_NETWORK_OUTPUT_BLOCK(unsigned int mem_to_prt, uintptr_t *base,
 {
   for (size_t shift = index_first; shift < index_last; shift++)
   {
-    for (size_t i = 0; i < NETWORK_OUTPUT_BLOCK_SIGNALS_IN; i++)
+    if (mem_to_prt == true) 
     {
-      if (mem_to_prt == true) ((__LN_NETWORK_OUTPUT_BLOCK *)(base) + shift)->settings.param[i] = 0;
-      else ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base) + shift)->param[i] = 0;
+      ((__LN_NETWORK_OUTPUT_BLOCK *)(base) + shift)->settings._n = -1;
+      ((__LN_NETWORK_OUTPUT_BLOCK *)(base) + shift)->settings._link = -1;
+      
+      for (size_t i = 0; i < NETWORK_OUTPUT_BLOCK_SIGNALS_IN; i++) ((__LN_NETWORK_OUTPUT_BLOCK *)(base) + shift)->settings.param[i] = 0;
+    }
+    else
+    {
+      ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base) + shift)->_n = -1;
+      ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base) + shift)->_link = -1;
+      
+      for (size_t i = 0; i < NETWORK_OUTPUT_BLOCK_SIGNALS_IN; i++) ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base) + shift)->param[i] = 0;
     }
     
     if (mem_to_prt == true)
@@ -3097,25 +3136,31 @@ void copy_settings_NETWORK_OUTPUT_BLOCK(unsigned int mem_to_prt, unsigned int me
 {
   for (size_t shift = index_target; shift < index_source; shift++)
   {
-    for (size_t i = 0; i < NETWORK_OUTPUT_BLOCK_SIGNALS_IN; i++)
+    if ((mem_to_prt == false) && (mem_from_prt == true))
     {
-      if ((mem_to_prt == false) && (mem_from_prt == true))
-      {
-        ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->param[i] = ((__LN_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->settings.param[i];
-      }
-      else if ((mem_to_prt == true) && (mem_from_prt == false))
-      {
-        ((__LN_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->settings.param[i] = ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->param[i];
-      }
-      else if ((mem_to_prt == false) && (mem_from_prt == false))
-      {
-        ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->param[i] = ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->param[i];
-      }
-      else
-      {
-        //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
-        total_error_sw_fixed(19);
-      }
+      ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->_n = ((__LN_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->settings._n;
+      ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->_link = ((__LN_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->settings._link;
+      
+      for (size_t i = 0; i < NETWORK_OUTPUT_BLOCK_SIGNALS_IN; i++) ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->param[i] = ((__LN_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->settings.param[i];
+    }
+    else if ((mem_to_prt == true) && (mem_from_prt == false))
+    {
+      ((__LN_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->settings._n = ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->_n;
+      ((__LN_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->settings._link = ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < NETWORK_OUTPUT_BLOCK_SIGNALS_IN; i++) ((__LN_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->settings.param[i] = ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->param[i];
+    }
+    else if ((mem_to_prt == false) && (mem_from_prt == false))
+    {
+      ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->_n = ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->_n;
+      ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->_link = ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->_link;
+      
+      for (size_t i = 0; i < NETWORK_OUTPUT_BLOCK_SIGNALS_IN; i++) ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_target) + shift)->param[i] = ((__settings_for_NETWORK_OUTPUT_BLOCK *)(base_source) + shift)->param[i];
+    }
+    else
+    {
+      //якщо сюди д≥йшла програма, значить в≥дбулас€ недопустива помилка, тому треба зациклити програму, щоб вона п≥шла на перезагрузку
+      total_error_sw_fixed(19);
     }
   }
 }
@@ -3808,7 +3853,7 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
                                           current_config.n_network_output_block,
                                           (current_config.n_log != 0) ? 1 : 0,
                                          };  
-    for (__id_fb i = _ID_FB_FIRST_VAR; i < _ID_FB_LAST_VAR; i++)
+    for (__id_fb i = _ID_FB_FIRST_ALL; i < _ID_FB_LAST_ALL; i++)
     {
       if (
           (i != ID_FB_GROUP_ALARM) &&
@@ -3824,6 +3869,13 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
         {
           switch (i)
           {
+          case ID_FB_CONTROL_BLOCK:
+            {
+              _n = FIX_BLOCK_SIGNALS_IN;
+              p_param      = settings_fix.param;
+              p_param_edit = settings_fix_edit.param;
+              break;
+            }
           case ID_FB_OUTPUT:
           case ID_FB_LED:
             {

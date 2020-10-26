@@ -213,22 +213,22 @@ const uint8_t name_string_choose_communication_parameters[MAX_NAMBER_LANGUAGE][M
   {
     " Имя ячейки     ",
     " RS-485         ",
-    " Ethrenet       "
+    " Ethernet       "
   },
   {
     " Ім'я комірки   ",
     " RS-485         ",
-    " Ethrenet       "
+    " Ethernet       "
   },
   {
     " Bay name       ",
     " RS-485         ",
-    " Ethrenet       "
+    " Ethernet       "
   },
   {
     " Имя ячейки     ",
     " RS-485         ",
-    " Ethrenet       "
+    " Ethernet       "
   }
 };
 

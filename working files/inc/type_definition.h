@@ -500,6 +500,9 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
+  
   uint32_t param[INPUT_GOOSE_BLOCK_SIGNALS_IN];
   
 } __settings_for_INPUT_GOOSE_BLOCK;
@@ -522,6 +525,9 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
+  
   uint32_t param[INPUT_MMS_BLOCK_SIGNALS_IN];
   
 } __settings_for_INPUT_MMS_BLOCK;
@@ -544,6 +550,9 @@ typedef struct
 **********/
 typedef struct
 {
+  int32_t _n;
+  int32_t _link;
+  
   uint32_t param[NETWORK_OUTPUT_BLOCK_SIGNALS_IN];
   
 } __settings_for_NETWORK_OUTPUT_BLOCK;

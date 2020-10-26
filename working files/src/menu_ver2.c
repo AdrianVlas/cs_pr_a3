@@ -3081,10 +3081,10 @@ void new_level_menu(void)
       current_state_menu2.p_max_row = NULL;
       current_state_menu2.max_row = MAX_ROW_SNLETH_M2;
       current_state_menu2.func_move = move_into_ekran_simple;
-      current_state_menu2.func_show = make_ekran_settings_network_layer_Ethrenet;
-      current_state_menu2.func_press_enter = press_enter_in_settings_network_layer_Ethrenet;
-      current_state_menu2.func_press_esc = press_esc_in_settings_network_layer_Ethrenet;
-      current_state_menu2.func_change = change_settings_network_layer_Ethrenet;
+      current_state_menu2.func_show = make_ekran_settings_network_layer_Ethernet;
+      current_state_menu2.func_press_enter = press_enter_in_settings_network_layer_Ethernet;
+      current_state_menu2.func_press_esc = press_esc_in_settings_network_layer_Ethernet;
+      current_state_menu2.func_change = change_settings_network_layer_Ethernet;
       current_state_menu2.binary_data = false;
       /*
       current_state_menu2.edition не встановлюємо бо він залежить від поперднього 
