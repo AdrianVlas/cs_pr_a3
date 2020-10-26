@@ -12,11 +12,11 @@ const long lU_NOM = 220000;
 extern volatile unsigned long measurement_DBG[10];
 extern unsigned int measurement[];
 typedef struct BgsSuit_tag{
-char chStateGS;
-char chCheckBgs;
-long lTWait;
-//long lTReset;
-long lIust;
+    char chStateGS;
+    char chCheckBgs;
+    long lTWait;
+    //long lTReset;
+    long lIust;
 }BGSigSuit;
 
 
@@ -60,14 +60,14 @@ unsigned int  m_Iteration;
     char m_chSttImpNNP;
     char m_chSttImpNNM;
     char m_chNumberAnalogChanell;
-	char m_chWRIfix,m_chIfixDir;
-	char m_chWRInew;//,m_chINewDir;
+    char m_chWRIfix,m_chIfixDir;
+    char m_chWRInew;//,m_chINewDir;
     char m_chStdpCE, m_chStdpOV ;
-	char m_chWRIp;
-	char m_chWRIc;
-	char m_chWR_NNC;
-	char m_chWR_NNP;
-	 char ch_DTrg;
+    char m_chWRIp;
+    char m_chWRIc;
+    char m_chWR_NNC;
+    char m_chWR_NNP;
+     char ch_DTrg;
      char ch_C1;
     char chTzatrState, m_chDeltaIBus; 
     BGSigSuit m_BGSigSuit;
@@ -93,7 +93,7 @@ unsigned int  m_Iteration;
     long EvalDeltaIbusFix(long Ibus, long Ifix, long lActive);
     long EvalIptp(long lI, long lT, long lActive);
     long EvalIctc(long lI, long lT, long lActive);
-	
+    
 //    long EvalNNC_NCH(long lActivate);
 //    long EvalNNP_NCH(long lActivate);
 //    long EvalNNC_CH(long lActivate);
@@ -112,20 +112,21 @@ extern void BGSig_Op(void *pObj);
 extern unsigned long *PMeas;
 
 typedef struct BgsDBGRecord_tag{
-long luIterLU;
-long luIti,luIt_01,luIt_02;
+    long luIterLU;
+    long luIti,luIt_01,luIt_02;
 
-char chD_In,chD_Clr,chD_Q,chD_notQ;
+    char chD_In,chD_Clr,chD_Q,chD_notQ;
 
-char chFixUnitIn,chDeltaIBUS,chDeltaIFix,chTwaitOut;
-long luIfix;
+    char chFixUnitIn,chDeltaIBUS,chDeltaIFix,chTwaitOut;
+    long luIfix;
 
-long luIp,luIc,luNCC;
+    long luIp,luIc,luNCC;
 
-//long lTReset;
+    //long lTReset;
 
 }BGSigDbgRecord;
 #define AMOIUNT_DBG_REC 2700
+//..#define DEBUG_MODE 1
 
 extern BGSigDbgRecord  ArrBGSigDbgRec[AMOIUNT_DBG_REC];
 extern unsigned int uiIdxArrBGSigDbgRec ;

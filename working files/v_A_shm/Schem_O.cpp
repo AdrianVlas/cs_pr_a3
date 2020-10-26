@@ -554,10 +554,10 @@ void* pv;
     } sLV;
 //?    TmrCalls();    
 //?    UpdateStateDI();
-if(chStateOptimisation == 1)
+/* if(chStateOptimisation == 1)
    asm volatile(
        "bkpt 1"
-       );
+       ); */
        sLV.arrLUAreaListElem = static_cast<LUAreaListElem*>(this->pLUAreaList);
        //pLUAreaList = static_cast<void*>(&gLUAreaMem.headLUAreaList);
        sLV.shLocalIdxCounter = sLV.shMarkerIteration = sLV.shCounterLocalIteration = 0;
