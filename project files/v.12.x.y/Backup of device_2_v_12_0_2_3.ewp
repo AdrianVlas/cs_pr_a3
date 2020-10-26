@@ -66,7 +66,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.50.1.24770</state>
+                    <state>8.32.4.20866</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -116,7 +116,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>28</version>
+                    <version>27</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -133,7 +133,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>28</version>
+                    <version>27</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -156,7 +156,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>28</version>
+                    <version>27</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -215,7 +215,7 @@
             <name>ICCARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>36</version>
+                <version>35</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -479,10 +479,6 @@
                     <name>OICompilerExtraOption</name>
                     <state>1</state>
                 </option>
-                <option>
-                    <name>CCStackProtection</name>
-                    <state>0</state>
-                </option>
             </data>
         </settings>
         <settings>
@@ -703,7 +699,7 @@
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>23</version>
+                <version>22</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -1023,22 +1019,6 @@
                     <name>OILinkExtraOption</name>
                     <state>1</state>
                 </option>
-                <option>
-                    <name>IlinkRawBinaryFile2</name>
-                    <state></state>
-                </option>
-                <option>
-                    <name>IlinkRawBinarySymbol2</name>
-                    <state></state>
-                </option>
-                <option>
-                    <name>IlinkRawBinarySegment2</name>
-                    <state></state>
-                </option>
-                <option>
-                    <name>IlinkRawBinaryAlign2</name>
-                    <state></state>
-                </option>
             </data>
         </settings>
         <settings>
@@ -1172,7 +1152,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -1426,10 +1406,6 @@
                             </option>
                             <option>
                                 <name>IccRTTI2</name>
-                                <state>0</state>
-                            </option>
-                            <option>
-                                <name>CCStackProtection</name>
                                 <state>0</state>
                             </option>
                         </data>
@@ -1443,7 +1419,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -1697,10 +1673,6 @@
                             </option>
                             <option>
                                 <name>IccRTTI2</name>
-                                <state>0</state>
-                            </option>
-                            <option>
-                                <name>CCStackProtection</name>
                                 <state>0</state>
                             </option>
                         </data>
@@ -1714,7 +1686,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -1968,10 +1940,6 @@
                             </option>
                             <option>
                                 <name>IccRTTI2</name>
-                                <state>0</state>
-                            </option>
-                            <option>
-                                <name>CCStackProtection</name>
                                 <state>0</state>
                             </option>
                         </data>
@@ -1988,7 +1956,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -2242,10 +2210,6 @@
                             </option>
                             <option>
                                 <name>IccRTTI2</name>
-                                <state>0</state>
-                            </option>
-                            <option>
-                                <name>CCStackProtection</name>
                                 <state>0</state>
                             </option>
                         </data>
@@ -2259,7 +2223,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -2513,10 +2477,6 @@
                             </option>
                             <option>
                                 <name>IccRTTI2</name>
-                                <state>0</state>
-                            </option>
-                            <option>
-                                <name>CCStackProtection</name>
                                 <state>0</state>
                             </option>
                         </data>
@@ -2563,7 +2523,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -2820,10 +2780,6 @@
                                 <name>IccRTTI2</name>
                                 <state>0</state>
                             </option>
-                            <option>
-                                <name>CCStackProtection</name>
-                                <state>0</state>
-                            </option>
                         </data>
                     </settings>
                 </configuration>
@@ -2860,7 +2816,7 @@
                             <settings>
                                 <name>ICCARM</name>
                                 <data>
-                                    <version>36</version>
+                                    <version>35</version>
                                     <wantNonLocal>0</wantNonLocal>
                                     <debug>1</debug>
                                     <option>
@@ -3116,10 +3072,6 @@
                                         <name>IccRTTI2</name>
                                         <state>0</state>
                                     </option>
-                                    <option>
-                                        <name>CCStackProtection</name>
-                                        <state>0</state>
-                                    </option>
                                 </data>
                             </settings>
                         </configuration>
@@ -3156,7 +3108,7 @@
                         <settings>
                             <name>ICCARM</name>
                             <data>
-                                <version>36</version>
+                                <version>35</version>
                                 <wantNonLocal>0</wantNonLocal>
                                 <debug>1</debug>
                                 <option>
@@ -3410,10 +3362,6 @@
                                 </option>
                                 <option>
                                     <name>IccRTTI2</name>
-                                    <state>0</state>
-                                </option>
-                                <option>
-                                    <name>CCStackProtection</name>
                                     <state>0</state>
                                 </option>
                             </data>
@@ -3430,7 +3378,7 @@
                         <settings>
                             <name>ICCARM</name>
                             <data>
-                                <version>36</version>
+                                <version>35</version>
                                 <wantNonLocal>0</wantNonLocal>
                                 <debug>1</debug>
                                 <option>
@@ -3684,10 +3632,6 @@
                                 </option>
                                 <option>
                                     <name>IccRTTI2</name>
-                                    <state>0</state>
-                                </option>
-                                <option>
-                                    <name>CCStackProtection</name>
                                     <state>0</state>
                                 </option>
                             </data>
@@ -3729,7 +3673,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -3985,10 +3929,6 @@
                                 <name>IccRTTI2</name>
                                 <state>0</state>
                             </option>
-                            <option>
-                                <name>CCStackProtection</name>
-                                <state>0</state>
-                            </option>
                         </data>
                     </settings>
                 </configuration>
@@ -4000,7 +3940,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -4254,10 +4194,6 @@
                             </option>
                             <option>
                                 <name>IccRTTI2</name>
-                                <state>0</state>
-                            </option>
-                            <option>
-                                <name>CCStackProtection</name>
                                 <state>0</state>
                             </option>
                         </data>
@@ -4271,7 +4207,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -4525,10 +4461,6 @@
                             </option>
                             <option>
                                 <name>IccRTTI2</name>
-                                <state>0</state>
-                            </option>
-                            <option>
-                                <name>CCStackProtection</name>
                                 <state>0</state>
                             </option>
                         </data>
@@ -5021,7 +4953,7 @@
                         <settings>
                             <name>ICCARM</name>
                             <data>
-                                <version>36</version>
+                                <version>35</version>
                                 <wantNonLocal>0</wantNonLocal>
                                 <debug>1</debug>
                                 <option>
@@ -5275,10 +5207,6 @@
                                 </option>
                                 <option>
                                     <name>IccRTTI2</name>
-                                    <state>0</state>
-                                </option>
-                                <option>
-                                    <name>CCStackProtection</name>
                                     <state>0</state>
                                 </option>
                             </data>
@@ -5334,7 +5262,7 @@
                         <settings>
                             <name>ICCARM</name>
                             <data>
-                                <version>36</version>
+                                <version>35</version>
                                 <wantNonLocal>0</wantNonLocal>
                                 <debug>1</debug>
                                 <option>
@@ -5588,10 +5516,6 @@
                                 </option>
                                 <option>
                                     <name>IccRTTI2</name>
-                                    <state>0</state>
-                                </option>
-                                <option>
-                                    <name>CCStackProtection</name>
                                     <state>0</state>
                                 </option>
                             </data>
@@ -5605,7 +5529,7 @@
                         <settings>
                             <name>ICCARM</name>
                             <data>
-                                <version>36</version>
+                                <version>35</version>
                                 <wantNonLocal>0</wantNonLocal>
                                 <debug>1</debug>
                                 <option>
@@ -5859,10 +5783,6 @@
                                 </option>
                                 <option>
                                     <name>IccRTTI2</name>
-                                    <state>0</state>
-                                </option>
-                                <option>
-                                    <name>CCStackProtection</name>
                                     <state>0</state>
                                 </option>
                             </data>
@@ -5876,7 +5796,7 @@
                         <settings>
                             <name>ICCARM</name>
                             <data>
-                                <version>36</version>
+                                <version>35</version>
                                 <wantNonLocal>0</wantNonLocal>
                                 <debug>1</debug>
                                 <option>
@@ -6130,10 +6050,6 @@
                                 </option>
                                 <option>
                                     <name>IccRTTI2</name>
-                                    <state>0</state>
-                                </option>
-                                <option>
-                                    <name>CCStackProtection</name>
                                     <state>0</state>
                                 </option>
                             </data>
@@ -6147,7 +6063,7 @@
                         <settings>
                             <name>ICCARM</name>
                             <data>
-                                <version>36</version>
+                                <version>35</version>
                                 <wantNonLocal>0</wantNonLocal>
                                 <debug>1</debug>
                                 <option>
@@ -6401,10 +6317,6 @@
                                 </option>
                                 <option>
                                     <name>IccRTTI2</name>
-                                    <state>0</state>
-                                </option>
-                                <option>
-                                    <name>CCStackProtection</name>
                                     <state>0</state>
                                 </option>
                             </data>
@@ -6431,7 +6343,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -6689,10 +6601,6 @@
                                 <name>IccRTTI2</name>
                                 <state>0</state>
                             </option>
-                            <option>
-                                <name>CCStackProtection</name>
-                                <state>0</state>
-                            </option>
                         </data>
                     </settings>
                     <settings>
@@ -6712,7 +6620,7 @@
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.cpp</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\working files\v_A_shm\BaseInPoint.h</name>
+                <name>$PROJ_DIR$\..\..\working files\v_A_shm\baseinpoint.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\CLUTs.cpp</name>
@@ -6811,7 +6719,7 @@
                     <settings>
                         <name>ICCARM</name>
                         <data>
-                            <version>36</version>
+                            <version>35</version>
                             <wantNonLocal>0</wantNonLocal>
                             <debug>1</debug>
                             <option>
@@ -7067,10 +6975,6 @@
                                 <name>IccRTTI2</name>
                                 <state>0</state>
                             </option>
-                            <option>
-                                <name>CCStackProtection</name>
-                                <state>0</state>
-                            </option>
                         </data>
                     </settings>
                 </configuration>
@@ -7089,7 +6993,7 @@
                 <settings>
                     <name>ICCARM</name>
                     <data>
-                        <version>36</version>
+                        <version>35</version>
                         <wantNonLocal>0</wantNonLocal>
                         <debug>1</debug>
                         <option>
@@ -7345,10 +7249,6 @@
                         </option>
                         <option>
                             <name>IccRTTI2</name>
-                            <state>0</state>
-                        </option>
-                        <option>
-                            <name>CCStackProtection</name>
                             <state>0</state>
                         </option>
                     </data>
