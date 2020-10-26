@@ -66,7 +66,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.32.4.20866</state>
+                    <state>8.32.1.18618</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -116,7 +116,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>27</version>
+                    <version>26</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -133,7 +133,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>27</version>
+                    <version>26</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -156,7 +156,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>27</version>
+                    <version>26</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -661,7 +661,7 @@
                 </option>
                 <option>
                     <name>OOCOutputFile</name>
-                    <state>device_2_v_12_0_2_3.bin</state>
+                    <state>device_2_v_12_0_3_0.bin</state>
                 </option>
                 <option>
                     <name>OOCCommandLineProducer</name>
@@ -716,7 +716,7 @@
                 </option>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>device_2_v_12_0_2_3.out</state>
+                    <state>device_2_v_12_0_3_0(IAR 7 50 2).out</state>
                 </option>
                 <option>
                     <name>IlinkDebugInfoEnable</name>
@@ -1013,7 +1013,7 @@
                 </option>
                 <option>
                     <name>IlinkTrustzoneImportLibraryOut</name>
-                    <state>device_2_v_12_0_2_0_import_lib.o</state>
+                    <state>###Unitialized###</state>
                 </option>
                 <option>
                     <name>OILinkExtraOption</name>
@@ -1157,7 +1157,7 @@
                             <debug>1</debug>
                             <option>
                                 <name>CCOptimizationNoSizeConstraints</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDefines</name>
@@ -1424,7 +1424,7 @@
                             <debug>1</debug>
                             <option>
                                 <name>CCOptimizationNoSizeConstraints</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDefines</name>
@@ -1691,7 +1691,7 @@
                             <debug>1</debug>
                             <option>
                                 <name>CCOptimizationNoSizeConstraints</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDefines</name>
@@ -1961,7 +1961,7 @@
                             <debug>1</debug>
                             <option>
                                 <name>CCOptimizationNoSizeConstraints</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDefines</name>
@@ -2098,11 +2098,11 @@
                                 <state>$PROJ_DIR$\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include</state>
                                 <state>$PROJ_DIR$\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc</state>
                                 <state>$PROJ_DIR$\..\..\Libraries\STM32_USB_OTG_Driver\inc</state>
+                                <state>$PROJ_DIR$\..\..\Libraries\STM32_USB_Device_Library\Core\inc</state>
+                                <state>$PROJ_DIR$\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc</state>
                                 <state>$PROJ_DIR$\..\..\SystemView\Config</state>
                                 <state>$PROJ_DIR$\..\..\SystemView\OS</state>
                                 <state>$PROJ_DIR$\..\..\SystemView\SEGGER</state>
-                                <state>$PROJ_DIR$\..\..\Libraries\STM32_USB_Device_Library\Core\inc</state>
-                                <state>$PROJ_DIR$\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc</state>
                             </option>
                             <option>
                                 <name>CCStdIncCheck</name>
@@ -2228,7 +2228,7 @@
                             <debug>1</debug>
                             <option>
                                 <name>CCOptimizationNoSizeConstraints</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDefines</name>
@@ -2535,7 +2535,6 @@
                                 <state>USE_STDPERIPH_DRIVER</state>
                                 <state>STM32F2XX</state>
                                 <state>USE_USB_OTG_FS</state>
-                                <state>SYSTEM_VIEWER_ENABLE</state>
                             </option>
                             <option>
                                 <name>CCPreprocFile</name>
@@ -2821,13 +2820,13 @@
                                     <debug>1</debug>
                                     <option>
                                         <name>CCOptimizationNoSizeConstraints</name>
-                                        <state>0</state>
+                                        <state>1</state>
                                     </option>
                                     <option>
                                         <name>CCDefines</name>
                                         <state>USE_STDPERIPH_DRIVER</state>
                                         <state>STM32F2XX</state>
-                                        <state>USE_USB_OTG_FS </state>
+                                        <state>USE_USB_OTG_FS</state>
                                     </option>
                                     <option>
                                         <name>CCPreprocFile</name>
@@ -2920,7 +2919,7 @@
                                     </option>
                                     <option>
                                         <name>CCRequirePrototypes</name>
-                                        <state>0</state>
+                                        <state>1</state>
                                     </option>
                                     <option>
                                         <name>CCDiagWarnAreErr</name>
@@ -3113,13 +3112,13 @@
                                 <debug>1</debug>
                                 <option>
                                     <name>CCOptimizationNoSizeConstraints</name>
-                                    <state>0</state>
+                                    <state>1</state>
                                 </option>
                                 <option>
                                     <name>CCDefines</name>
                                     <state>USE_STDPERIPH_DRIVER</state>
                                     <state>STM32F2XX</state>
-                                    <state>USE_USB_OTG_FS </state>
+                                    <state>USE_USB_OTG_FS</state>
                                 </option>
                                 <option>
                                     <name>CCPreprocFile</name>
@@ -3212,7 +3211,7 @@
                                 </option>
                                 <option>
                                     <name>CCRequirePrototypes</name>
-                                    <state>0</state>
+                                    <state>1</state>
                                 </option>
                                 <option>
                                     <name>CCDiagWarnAreErr</name>
@@ -3383,13 +3382,13 @@
                                 <debug>1</debug>
                                 <option>
                                     <name>CCOptimizationNoSizeConstraints</name>
-                                    <state>0</state>
+                                    <state>1</state>
                                 </option>
                                 <option>
                                     <name>CCDefines</name>
                                     <state>USE_STDPERIPH_DRIVER</state>
                                     <state>STM32F2XX</state>
-                                    <state>USE_USB_OTG_FS </state>
+                                    <state>USE_USB_OTG_FS</state>
                                 </option>
                                 <option>
                                     <name>CCPreprocFile</name>
@@ -3482,7 +3481,7 @@
                                 </option>
                                 <option>
                                     <name>CCRequirePrototypes</name>
-                                    <state>0</state>
+                                    <state>1</state>
                                 </option>
                                 <option>
                                     <name>CCDiagWarnAreErr</name>
@@ -3678,13 +3677,13 @@
                             <debug>1</debug>
                             <option>
                                 <name>CCOptimizationNoSizeConstraints</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDefines</name>
                                 <state>USE_STDPERIPH_DRIVER</state>
                                 <state>STM32F2XX</state>
-                                <state>USE_USB_OTG_FS </state>
+                                <state>USE_USB_OTG_FS</state>
                             </option>
                             <option>
                                 <name>CCPreprocFile</name>
@@ -3777,7 +3776,7 @@
                             </option>
                             <option>
                                 <name>CCRequirePrototypes</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDiagWarnAreErr</name>
@@ -3945,13 +3944,13 @@
                             <debug>1</debug>
                             <option>
                                 <name>CCOptimizationNoSizeConstraints</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDefines</name>
                                 <state>USE_STDPERIPH_DRIVER</state>
                                 <state>STM32F2XX</state>
-                                <state>USE_USB_OTG_FS </state>
+                                <state>USE_USB_OTG_FS</state>
                             </option>
                             <option>
                                 <name>CCPreprocFile</name>
@@ -4044,7 +4043,7 @@
                             </option>
                             <option>
                                 <name>CCRequirePrototypes</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDiagWarnAreErr</name>
@@ -4212,13 +4211,13 @@
                             <debug>1</debug>
                             <option>
                                 <name>CCOptimizationNoSizeConstraints</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDefines</name>
                                 <state>USE_STDPERIPH_DRIVER</state>
                                 <state>STM32F2XX</state>
-                                <state>USE_USB_OTG_FS </state>
+                                <state>USE_USB_OTG_FS</state>
                             </option>
                             <option>
                                 <name>CCPreprocFile</name>
@@ -4311,7 +4310,7 @@
                             </option>
                             <option>
                                 <name>CCRequirePrototypes</name>
-                                <state>0</state>
+                                <state>1</state>
                             </option>
                             <option>
                                 <name>CCDiagWarnAreErr</name>
@@ -4349,11 +4348,11 @@
                                 <state>$PROJ_DIR$\..\..\Libraries\CMSIS\Device\ST\STM32F2xx\Include</state>
                                 <state>$PROJ_DIR$\..\..\Libraries\STM32F2xx_StdPeriph_Driver\inc</state>
                                 <state>$PROJ_DIR$\..\..\Libraries\STM32_USB_OTG_Driver\inc</state>
+                                <state>$PROJ_DIR$\..\..\Libraries\STM32_USB_Device_Library\Core\inc</state>
+                                <state>$PROJ_DIR$\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc</state>
                                 <state>$PROJ_DIR$\..\..\SystemView\Config</state>
                                 <state>$PROJ_DIR$\..\..\SystemView\OS</state>
                                 <state>$PROJ_DIR$\..\..\SystemView\SEGGER</state>
-                                <state>$PROJ_DIR$\..\..\Libraries\STM32_USB_Device_Library\Core\inc</state>
-                                <state>$PROJ_DIR$\..\..\Libraries\STM32_USB_Device_Library\Class\cdc\inc</state>
                             </option>
                             <option>
                                 <name>CCStdIncCheck</name>
@@ -4958,7 +4957,7 @@
                                 <debug>1</debug>
                                 <option>
                                     <name>CCOptimizationNoSizeConstraints</name>
-                                    <state>0</state>
+                                    <state>1</state>
                                 </option>
                                 <option>
                                     <name>CCDefines</name>
@@ -5267,7 +5266,7 @@
                                 <debug>1</debug>
                                 <option>
                                     <name>CCOptimizationNoSizeConstraints</name>
-                                    <state>0</state>
+                                    <state>1</state>
                                 </option>
                                 <option>
                                     <name>CCDefines</name>
@@ -5534,7 +5533,7 @@
                                 <debug>1</debug>
                                 <option>
                                     <name>CCOptimizationNoSizeConstraints</name>
-                                    <state>0</state>
+                                    <state>1</state>
                                 </option>
                                 <option>
                                     <name>CCDefines</name>
@@ -5801,7 +5800,7 @@
                                 <debug>1</debug>
                                 <option>
                                     <name>CCOptimizationNoSizeConstraints</name>
-                                    <state>0</state>
+                                    <state>1</state>
                                 </option>
                                 <option>
                                     <name>CCDefines</name>
@@ -6068,7 +6067,7 @@
                                 <debug>1</debug>
                                 <option>
                                     <name>CCOptimizationNoSizeConstraints</name>
-                                    <state>0</state>
+                                    <state>1</state>
                                 </option>
                                 <option>
                                     <name>CCDefines</name>
@@ -6627,9 +6626,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\ExtPoint.cpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\..\working files\v_A_shm\ExtPoint.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\working files\v_A_shm\FixBlWrp.cpp</name>

@@ -35,7 +35,7 @@ possible calls USBD_IsoOUTIncomplete : ;
 
 possible calls allocate_dynamic_memory_for_settings : min_settings_INPUT,  min_settings_OUTPUT_LED,  min_settings_BUTTON, min_settings_ALARM,  min_settings_GROUP_ALARM,  min_settings_AND,  min_settings_OR,  min_settings_XOR,  min_settings_NOT,  min_settings_TIMER,  min_settings_TRIGGER,  min_settings_MEANDER,  min_settings_TU,  min_settings_TS,  min_settings_INPUT_GOOSE_BLOCK,  min_settings_INPUT_MMS_BLOCK,  min_settings_NETWORK_OUTPUT_BLOCK,  min_settings_LOG,
                                                       copy_settings_INPUT, copy_settings_OUTPUT_LED,                      copy_settings_ALARM, copy_settings_GROUP_ALARM, copy_settings_AND, copy_settings_OR, copy_settings_XOR, copy_settings_NOT, copy_settings_TIMER, copy_settings_TRIGGER, copy_settings_MEANDER, copy_settings_TU, copy_settings_TS, copy_settings_INPUT_GOOSE_BLOCK, copy_settings_INPUT_MMS_BLOCK, copy_settings_NETWORK_OUTPUT_BLOCK, copy_settings_LOG;
-possible calls copy_settings : copy_settings_INPUT, copy_settings_OUTPUT_LED, copy_settings_ALARM, copy_settings_GROUP_ALARM, copy_settings_AND, copy_settings_OR, copy_settings_XOR, copy_settings_NOT, copy_settings_TIMER, copy_settings_TRIGGER, copy_settings_MEANDER;
+possible calls copy_settings : copy_settings_INPUT, copy_settings_OUTPUT_LED, copy_settings_BUTTON, copy_settings_ALARM, copy_settings_GROUP_ALARM, copy_settings_AND, copy_settings_OR, copy_settings_XOR, copy_settings_NOT, copy_settings_TIMER, copy_settings_TRIGGER, copy_settings_MEANDER;
 possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_enter_in_ekran_with_request,
                                          move_into_time, make_ekran_time, press_enter_in_time, change_time,
                                          move_into_ekran_simple,
@@ -47,7 +47,7 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          move_into_ekran_event_registraqtors, 
                                          make_ekran_list_event_log, make_ekran_list_event_pr_err, make_ekran_data_reg,
                                          move_into_list_settings, make_ekran_list_settings, press_esc_in_list_settings,
-                                         make_ekran_configuration, press_enter_in_configuration, press_esc_in_configuration, change_configuration,
+                                         make_ekran_configuration, /*press_enter_in_configuration, press_esc_in_configuration, change_configuration,*/
                                          make_ekran_list_logical_nodes,
                                          make_ekran_choose_pickup_delay_control,
                                          make_ekran_choose_delay_control,
@@ -60,9 +60,9 @@ possible calls main_manu_function_ver2 : move_into_main, make_ekran_main, press_
                                          move_into_list_settings_param, make_ekran_list_settings_param,
                                          make_ekran_delay_input, press_enter_in_delay_input, press_esc_in_delay_input, change_delay_input, make_ekran_control_input, press_enter_in_control_input, press_esc_in_control_input, change_control_input,
                                          make_ekran_control_output_led, press_enter_in_control_output_led, press_esc_in_control_output_led, change_control_output_led,
-                                         move_into_editor_list_logical_nodes, make_ekran_editor_list_logical_node, press_enter_in_editor_list_logical_node, press_esc_in_editor_list_logical_node,
+                                         move_into_editor_list_logical_nodes, make_ekran_editor_list_logical_node, press_enter_in_editor_list_logical_node, /*press_esc_in_editor_list_logical_node,*/
                                          make_ekran_editor_list_inputs_of_selected_logical_node, 
-                                         make_ekran_editor_edit_list_outputs_of_selected_logical_node, change_set_signal,
+                                         /*make_ekran_editor_edit_list_outputs_of_selected_logical_node, change_set_signal,*/
                                          move_into_editor_view_chosen_of_selected_logical_node, make_ekran_editor_view_chosen_of_selected_logical_node, press_enter_in_ekran_with_request,
                                          make_ekran_setting_language, press_enter_in_setting_language, press_esc_in_setting_language, change_setting_language,
                                          make_ekran_choose_communication_parameters, 
@@ -110,6 +110,11 @@ possible calls "Shematic::LUSelector(long)": "SET_OUT_Op(void *)", "READ_DI_Op(v
  "AND_Op_8_1(void *)", "OR_Op_8_1(void *)" , "XOR_Op_8_1(void *)", "NOT_Op_1_1(void *)",
  "FKey_Op(void *)"   , "LssOp(void *)", "BGSig_Op(void *)", "DTRG_Op_4_2(void *)","Null_OP(void*)",
  "Goose__1_8_Op(void *)","Mms__2_8_Op(void *)","Lan__9_8_Op(void *)",
+ "Log_Op(void *)", "Ts__2_1_Op(void *)", "TU_Op(void *)", "Mft_Op(void *)", "NOT_Op(void *)","PulseAlt_Op(void *)";
+ 
+possible calls "Shematic::LUSelectorRV(long)": "SET_OUT_Op(void *)", "READ_DI_Op(void *)", "SET_LED_Op(void *)",
+ "AND_Op_8_1(void *)", "OR_Op_8_1(void *)" , "XOR_Op_8_1(void *)", "NOT_Op_1_1(void *)",
+ "FKey_Op(void *)"   , "LssOp(void *)", "BGSig_Op(void *)", "DTRG_Op_4_2(void *)","Null_OP(void*)",
  "Log_Op(void *)", "Ts__2_1_Op(void *)", "TU_Op(void *)", "Mft_Op(void *)", "NOT_Op(void *)","PulseAlt_Op(void *)";
  
 possible calls "Shematic::LUIterator(long, long)": "SET_OUT_Op(void *)", "READ_DI_Op(void *)", "SET_LED_Op(void *)",
