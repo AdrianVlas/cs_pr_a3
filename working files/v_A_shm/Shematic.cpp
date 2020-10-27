@@ -87,22 +87,25 @@ StructElem s3And = StructElem(3);
  */
 
 UNN_LogicUnitArea lcUArea;
+
 short shAmountTotalElem = 0;
 long lAmountOccupyMem = 0;
-//long lIdxHead
-//long lIdxTail
+ //long lIdxHead
+ //long lIdxTail
 short shIdxLUnit = 0;
-//Next List Header
-//Prev List Header
-//Insert function
-//Delete function
+ //Next List Header
+ //Prev List Header
+ //Insert function
+ //Delete function
 /*
 *	Main Object
 *
 */
 Shematic sh;
+
 char chGblGround = 0;
 char chGblVcc    = 1;
+
 CMuteAlarmLed eMuteAlarmLed;
 CLURunErrorLed eRunErrorLed;
 CLUTestLed eLUTestLed;
@@ -173,7 +176,7 @@ Init2();
 chInitTerminated = 1;
 }
 
-char chStateOptimisation = 0;
+char chStateOptimisation = 1;
 
 
 
@@ -211,46 +214,47 @@ void Shematic::DoCalc(void) {
         CBGSig::chMeasUpdateInterval = ++j;
     
     //if(CBGSig::chMeasUpdateInterval == 0){
-        for (long lIdChanell, ii = 0 ; ii < I_U ; ii++)    {
-            lIdChanell  = CBGSig::ChanelsNames[ii];
-            
-            if(CBGSig::meas[lIdChanell] > measurement[lIdChanell])
-                CBGSig::DMeas[lIdChanell] = i = 
-                CBGSig::meas[lIdChanell] - measurement[lIdChanell];
-            else
-                CBGSig::DMeas[lIdChanell] = i =
-                measurement[lIdChanell] - CBGSig::meas[lIdChanell];
-             j = CBGSig::PickUPs[ii];    
-            //if (CBGSig::DMeas[lIdChanell] > static_cast<unsigned long>(j)  )
-            
-                ;
-            if (i > j  )//static_cast<unsigned long>(j)
-                CBGSig::m_chCounterCall = 0;
-            //else
-                
-            }
-        if(CBGSig::chMeasUpdateInterval == 0){
-            
-             memcpy(reinterpret_cast<void*>(CBGSig::meas),
-            reinterpret_cast<void*>(measurement), I_U*sizeof(long));
-            i = CBGSig::m_chIdxGrupSamples;
-            j = I_U*1;//sizeof(long)
-//            lDwnCtr = reinterpret_cast<long>(&(CBGSig::measbuf[i][0]));
-            
-            memcpy(reinterpret_cast<void*>(&(CBGSig::measbuf[i][0])),
-            //reinterpret_cast<void*>(PMeas), I_U*sizeof(long));
-            reinterpret_cast<void*>(measurement), I_U*sizeof(long));
-            i++;
-            if(i > 2)
+    for (long lIdChanell, ii = 0 ; ii < I_U ; ii++)    {                   // Early Worked
+        lIdChanell  = CBGSig::ChanelsNames[ii];                            // Defacto must
+                                                                           // be Inactive
+        if(CBGSig::meas[lIdChanell] > measurement[lIdChanell])             // Code
+            CBGSig::DMeas[lIdChanell] = i =                                // q
+                    CBGSig::meas[lIdChanell] - measurement[lIdChanell];    // q
+        else                                                               // q
+            CBGSig::DMeas[lIdChanell] = i =                                // q
+                    measurement[lIdChanell] - CBGSig::meas[lIdChanell];    // q
+        j = CBGSig::PickUPs[ii];                                           // q
+        //if (CBGSig::DMeas[lIdChanell] > static_cast<unsigned long>(j)  ) // q
+                                                                           // q
+        ;                                                                  // q
+        if (i > j  )//static_cast<unsigned long>(j)                        // q
+            CBGSig::m_chCounterCall = 0;
+        //else
+
+    }
+    if(CBGSig::chMeasUpdateInterval == 0){
+
+        memcpy(reinterpret_cast<void*>(CBGSig::meas),
+               reinterpret_cast<void*>(measurement), I_U*sizeof(long));
+
+        i = CBGSig::m_chIdxGrupSamples;
+        j = I_U*1;//sizeof(long)
+        //lDwnCtr = reinterpret_cast<long>(&(CBGSig::measbuf[i][0]));
+
+        memcpy(reinterpret_cast<void*>(&(CBGSig::measbuf[i][0])),
+                //reinterpret_cast<void*>(PMeas), I_U*sizeof(long));
+                reinterpret_cast<void*>(measurement), I_U*sizeof(long));
+        i++;
+        if(i > 2)
             i = 0;
-            CBGSig::m_chIdxGrupSamples = i;
+        CBGSig::m_chIdxGrupSamples = i;
         
-        }        
-    //}    
-        if(CBGSig::chNeedTimerCalculated >0){    
-         CBGSig::m_chCounterCall = 0;//It`s initiated Recalc when Timer work    
-         CBGSig::chNeedTimerCalculated = 0;
-    }     
+    }
+
+    if(CBGSig::chNeedTimerCalculated >0){
+        CBGSig::m_chCounterCall = 0;//It`s initiated Recalc when Timer work
+        CBGSig::chNeedTimerCalculated = 0;
+    }
    
 //    CBGSig::chNeedRefrash = 1;        
         
@@ -262,12 +266,12 @@ void Shematic::DoCalc(void) {
         eRunErrorLed.EvalRunErrorLed();
         return;
     }
-    if(chStateOptimisation == 0){    
+    if(chStateOptimisation == 0){
         DoCalcLUSources();
         FBWrp_Op(pCFixBlockWrp);
-//        j = (static_cast<__CONFIG* >(p_current_config_prt))-> n_group_alarm;
-//        i = arIdxLUAreaListElem[LU_BGS-1];
-//        LUIterator(j,i); 
+        //  j = (static_cast<__CONFIG* >(p_current_config_prt))-> n_group_alarm;
+        //  i = arIdxLUAreaListElem[LU_BGS-1];
+        //  LUIterator(j,i);
         lDwnCtr = chIteration;
         CLUBase::m_AuxInfo.ch = 0;
         do{
@@ -275,8 +279,8 @@ void Shematic::DoCalc(void) {
             //i = arIdxLUAreaListElem[LU_LSS-1];
             i = shIdxSum8ElemSeq;
             j = shSum8Elem;//kolichestvo elementov
-            LUIterator(j,i);    
-            //Startovyi Iterator    
+            LUIterator(j,i);
+            //Startovyi Iterator
             i = arIdxLUAreaListElem[LU_OUTPUT-1];
             //kolichestvo elementov
             j = chSumNLedPlusNOut;
@@ -286,7 +290,7 @@ void Shematic::DoCalc(void) {
             j = chSumNTUPlusNLAN;
             LUIterator(j,i);//
             CLUBase::m_AuxInfo.ch++;
-        //Predpolagaemyi uroven` vlozenosti
+            //Predpolagaemyi uroven` vlozenosti
         }while(--lDwnCtr);
         
 /*        while (sLV.shAmountCalcLU--) {
@@ -318,11 +322,11 @@ void Shematic::DoCalc(void) {
     }
 else{ 
         if(chStateOptimisation == 1){
-        DoCalcLU_V01();
+            DoCalcLU_V01();
         }
         else
-    DoCalcLU();
-}    
+            DoCalcLU();
+    }
     eMuteAlarmLed.EvalMuteAlarmLed();
     eRunErrorLed.EvalRunErrorLed();
     eLUTestLed.CalCLUTestLedSchematic();
@@ -352,8 +356,8 @@ void Shematic::printResult(void) {
 }
 
 void Shematic::PrintPointsState(void) {
-    //Print state All Points which Shematic Use
-    //Name Logic Unit
+    // Print state All Points which Shematic Use
+    // Name Logic Unit
 }
 
 void Shematic::PrintShematicElemPointsState(void) {
@@ -370,8 +374,10 @@ void Shematic::PrintShematicElemPointsState(void) {
 //#endif
 //static long first_value,last_value;
 //random_number = first_value + rand() % last_value;
+
 static long arNum[300] @ "ZeroInivars_RAM1";
 static short shCounterCalls_GLB;
+
 long Shematic::GetTrueOrderNum(void) {
     register long i, j;
 
@@ -379,9 +385,10 @@ long Shematic::GetTrueOrderNum(void) {
         char chNeedAnotherNumber, chCtrCalls;
     } sLV;
     volatile long random_number;
+
     sLV.chNeedAnotherNumber = 0;
     srand(time(0));
-    //i = (long) rand() % 255; //255 Max diapason
+    // i = (long) rand() % 255; //255 Max diapason
     i = static_cast<long>(rand() % 255); //255 Max diapason
 
     random_number = i + 1; //1 - min diapason
@@ -518,15 +525,15 @@ void Shematic::CreateTestSchema(void) {
 
 struct GlobalObjectMap_tag {
 
-    CLUDInput_0_1 *arPCLUDInput_0_1[MAX_AMOUNT_LU_INPUT]; //NUM_STNG_IN
-    CLUDout_1_0   *arPCLUDout_1_0  [MAX_AMOUNT_LU_OUTPUT]; //NUM_STNG_OUT
-    CLULed        *arPCLULed       [MAX_AMOUNT_LU_LED]; //NUM_STNG_LED
+    CLUDInput_0_1 *arPCLUDInput_0_1[MAX_AMOUNT_LU_INPUT];  // NUM_STNG_IN
+    CLUDout_1_0   *arPCLUDout_1_0  [MAX_AMOUNT_LU_OUTPUT]; // NUM_STNG_OUT
+    CLULed        *arPCLULed       [MAX_AMOUNT_LU_LED];    // NUM_STNG_LED
     CLUNot_1_1    *arPCLUNot_1_1   [MAX_AMOUNT_LU_NOT];
     CLUOr_8_1     *arPCLUOr_8_1    [MAX_AMOUNT_LU_OR];
     CLUAnd_8_1    *arPCLUAnd_8_1   [MAX_AMOUNT_LU_AND];
     CLUXor_8_1    *arPCLUXor_8_1   [MAX_AMOUNT_LU_XOR];
-	CMft          *arCMft          [MAX_AMOUNT_LU_TIMERS];
-    CLUFKey          *arPCLUFKey       [MAX_AMOUNT_LU_FKey];
+    CMft          *arCMft          [MAX_AMOUNT_LU_TIMERS];
+    CLUFKey       *arPCLUFKey      [MAX_AMOUNT_LU_FKey];
     CLULss        *arPCLULss       [MAX_AMOUNT_LU_LSS];
     CBGSig        *arPCBGSig       [MAX_AMOUNT_LU_BGS];
     CLUTrig       *arPCLUTrig      [MAX_AMOUNT_LU_TRIG];
@@ -536,7 +543,7 @@ struct GlobalObjectMap_tag {
     CLUGoose *arPCLUGoose      [MAX_AMOUNT_LU_GOOSE];
     CLUMms   *arPCLUMms        [MAX_AMOUNT_LU_MMS];
     CLULan   *arPCLULan        [MAX_AMOUNT_LU_LAN];
-    CLULog       *arPCLULog      [MAX_AMOUNT_LU_LOG];//MAX_AMOUNT_LU_TS
+    CLULog       *arPCLULog      [MAX_AMOUNT_LU_LOG];// MAX_AMOUNT_LU_TS
     
 } GlobalObjectMap @ "variables_RAM1";
 //Place 3 Unit
@@ -1283,11 +1290,11 @@ void Shematic::DetectCircutLinks(void) {
 
             shRelativeNumber = locSBitFld_LUInInfo.bfInfo_OrdNumStng;
             if(shIdx_arrSBitFldCRefInfo!= (-1)){
-            //Find Element
-                    j = shIdx_arrSBitFldCRefInfo + shRelativeNumber-1;//Only Now
-                    locSBitFld_LUInInfo.bfInfo_OrdNumStng = arrSBitFldCRefInfo[j].bfInfo_BaseID; //sLV.lBaseOrdNumStng
-                    arrSBitFldCRefInfo[i].sBitLUInputInfo.bfInfo_OrdNumStng
-                            = locSBitFld_LUInInfo.bfInfo_OrdNumStng;
+                //Find Element
+                j = shIdx_arrSBitFldCRefInfo + shRelativeNumber-1; // Only Now
+                locSBitFld_LUInInfo.bfInfo_OrdNumStng = arrSBitFldCRefInfo[j].bfInfo_BaseID; //sLV.lBaseOrdNumStng
+                arrSBitFldCRefInfo[i].sBitLUInputInfo.bfInfo_OrdNumStng
+                        = locSBitFld_LUInInfo.bfInfo_OrdNumStng;
             }
 
         } while (++sLV.shCounterScanedObj < sLV.shAmtLU);
