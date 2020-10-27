@@ -425,7 +425,7 @@ uint8_t Canal2_MO_Transmit[BUFFER_CANAL2_MO];
 uint8_t Canal2_MO_Received[BUFFER_CANAL2_MO];
 unsigned int Canal1, Canal2;
 const uint8_t my_address_mo = 0;
-uint32_t IEC_board_present = false;
+uint32_t IEC_board_uncall = 200;
 uint32_t IEC_board_address;
 uint32_t queue_mo, queue_mo_irq;
 uint32_t state_array_control_state;
