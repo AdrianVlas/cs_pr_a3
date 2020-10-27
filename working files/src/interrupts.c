@@ -1,5 +1,10 @@
 #include "header.h"
 
+#define BACKLIGHTING_ON         1
+#define BACKLIGHTING_OFF        300
+
+uint32_t time_backlighting =    BACKLIGHTING_ON*100;
+
 /*****************************************************/
 //Перевірка на помилки у процесі транзакції черз I2C
 /*****************************************************/
@@ -629,6 +634,62 @@ void TIM4_IRQHandler(void)
     GPIO_SetBits(KEYBOARD, KEYBOARD_SW_4_PIN);
     /***************************/
   
+    uint32_t  maska_all_keys = (uint32_t)(
+                                          (1<<BIT_KEY_ENTER) |
+                                          (1<<BIT_KEY_DOWN) |
+                                          (1<<BIT_KEY_RIGHT) |
+                                          (1<<BIT_KEY_ESC) |
+                                          (1<<BIT_KEY_LEFT) |
+                                          (1<<BIT_KEY_UP) |
+                                          (1<<BIT_KEY_MUTE) |
+                                          (1<<BIT_KEY_RESET) |
+                                          (1<<BIT_KEY_TEST) |
+                                          (1<<BIT_KEY_1) |
+                                          (1<<BIT_KEY_2)
+                                         );
+    if ((LCD_BL->ODR & LCD_BL_PIN) != (uint32_t)Bit_RESET)
+    {
+      //Підсвітка ввімкнута
+      if ((new_state_keyboard & maska_all_keys) != 0) time_backlighting = BACKLIGHTING_OFF*100;
+      if (
+           (time_backlighting > 0) && /*випадок старту з викнутою підсвіткою*/
+           (--time_backlighting == 0) /*закінчився час роботи приладу без підсвітки після старту приладу*/
+         )
+      {
+        //Умова вивмкнення підсвітки
+        LCD_BL->BSRRH = LCD_BL_PIN;
+      }
+      
+    }
+    else
+    {
+      //Підсвітка вимкнута
+      if (
+          ((new_state_keyboard & maska_all_keys) != 0) /*умова ввімкнення підсвітки по натискуванні кнопки*/
+          ||  
+          (
+           (time_backlighting > 0)  && /*випадок старту з викнутою підсвіткою*/
+           (--time_backlighting == 0) && /*закінчився час роботи приладу без підсвітки після старту приладу*/
+           ((POWER_CTRL->IDR & POWER_CTRL_PIN) != (uint32_t)Bit_RESET) /*є оперативне живлення*/
+          )   
+         )
+      {
+        //Умова ввімкнення підсвітки після старту приладу
+        LCD_BL->BSRRL = LCD_BL_PIN;
+        time_backlighting = BACKLIGHTING_OFF*100;
+
+        uint32_t  maska_wake_up_keys = (uint32_t)(
+                                                  (1<<BIT_KEY_ENTER) |
+                                                  (1<<BIT_KEY_DOWN) |
+                                                  (1<<BIT_KEY_RIGHT) |
+                                                  (1<<BIT_KEY_ESC) |
+                                                  (1<<BIT_KEY_LEFT) |
+                                                  (1<<BIT_KEY_UP)
+                                                 );
+        new_state_keyboard &= (unsigned int)(~maska_wake_up_keys);
+      }
+    }
+  
     /***************************/
     //Обробка алгоритму функціональних кнопок
     /***************************/
@@ -725,6 +786,15 @@ void TIM4_IRQHandler(void)
       periodical_tasks_TEST_FLASH_MEMORY            = true;
       
       number_inputs_for_fix_one_second = 0;
+      
+      if(++number_seconds >= 60)
+      {
+        number_seconds = 0;
+        if((POWER_CTRL->IDR & POWER_CTRL_PIN) != (uint32_t)Bit_RESET)
+        {
+          reinit_LCD = true;
+        }
+      }
       
       //Робота з таймером очікування нових змін налаштувань
       if (
@@ -2005,10 +2075,15 @@ void EXITI_POWER_IRQHandler(void)
 
       //Виставляємо повідомлення про цю подію
       if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, EVENT_DROP_POWER_BIT);
+      reinit_LCD = true;
     }
     else
     {
       //Живлення пропало на вході блоку живлення
+
+      //Вимикаємо підсвітку
+      LCD_BL->BSRRH = LCD_BL_PIN;
+      time_backlighting = 0;
 
       //Виставляємо повідомлення про цю подію
       if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_DROP_POWER_BIT);

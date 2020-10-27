@@ -126,6 +126,7 @@ long luIp,luIc,luNCC;
 
 }BGSigDbgRecord;
 #define AMOIUNT_DBG_REC 2700
+//#define DEBUG_MODE 1
 
 extern BGSigDbgRecord  ArrBGSigDbgRec[AMOIUNT_DBG_REC];
 extern unsigned int uiIdxArrBGSigDbgRec ;

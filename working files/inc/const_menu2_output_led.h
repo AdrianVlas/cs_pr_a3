@@ -38,7 +38,7 @@
   "Output          "
 
 #define NAME_OUTPUT_LED_OUT_SIGNALS_KZ  \
-  "Виход           "
+  "Выход           "
 
 
 #endif 

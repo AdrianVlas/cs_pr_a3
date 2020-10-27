@@ -81,6 +81,7 @@ extern unsigned int new_state_keyboard;
 extern unsigned char time_set_keyboard[NUMBER_KEY_KEYBOARD];
 
 extern uint16_t time_rewrite;
+extern unsigned int reinit_LCD;
 
 //Меню версії 2
 extern __CURRENT_STATE_MENU2 current_state_menu2;
@@ -129,6 +130,9 @@ extern unsigned char crc_config;
 extern __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;
 extern uint8_t crc_settings;
 extern unsigned int config_settings_modified;
+
+//Визначення періодів у хвилину і більше
+extern unsigned int number_seconds;
 
 //Змінні для визначеня ресурсу процесора-програми
 extern unsigned int restart_resurs_count;

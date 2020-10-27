@@ -107,6 +107,7 @@ unsigned int new_state_keyboard = 0;
 SRAM1 unsigned char time_set_keyboard[NUMBER_KEY_KEYBOARD];
 
 SRAM1 uint16_t time_rewrite/* = 0*/; //Час який пройшов після останнього обновлення
+unsigned int reinit_LCD;
 
 //Меню версії 2
 SRAM1 __CURRENT_STATE_MENU2 current_state_menu2;
@@ -239,6 +240,9 @@ unsigned char crc_config;
 __SETTINGS_FIX settings_fix_prt, settings_fix, settings_fix_edit;
 uint8_t crc_settings;
 unsigned int config_settings_modified = 0;
+
+//Визначення періодів у хвилину і більше
+unsigned int number_seconds;
 
 //Ресурс++
 unsigned int restart_resurs_count = 0;

@@ -361,6 +361,7 @@ pOut = static_cast<void*>(arrOut);
 //}
 short shIdxBeg, shIdxEnd; long lT = 777;
 char shIdxBGSBkpt = 0;
+
 void BGSig_Op(void *pObj) {
 register long i;
     CBGSig& rCBGSig = *(static_cast<CBGSig*> (pObj));
@@ -1183,13 +1184,22 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     
      
     
-    if(TClrTrg(chTzatrState))
+    //?if(TClrTrg(chTzatrState))
+    if(TClrTrg(m_chWRIc))
         ch_DTrg = 0;//Clear Trigger
     else if (ch_C1 == 0 && (wrp.bool_vars.PO_DeltaIbus) == 1) {
         ch_DTrg = 1;//DTrgInv = !ch_DTrg;
         
     }
-    
+   /*. if(TClrTrg(chTzatrState))
+        ch_DTrg = 0;//Clear Trigger
+    else if (ch_C1 == 0 && (wrp.bool_vars.PO_DeltaIbus) == 1) {
+        ch_DTrg = 1;//DTrgInv = !ch_DTrg;
+        
+    }
+    схоже що це можливо неправильно? Насправді це робота попередньому фронту
+	*/
+	
     //wrp.bool_vars.DTrgInv = !ch_DTrg;
     rUl_2 = (~static_cast<unsigned long>(ch_DTrg))&1;
     //i++;//
@@ -1250,7 +1260,9 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         //       );
         
     
-    }
+    }else{
+		
+	}	
     
     rUl_1 = wrp.bool_vars.PO_DeltaIbusFix;
     rUl_1 |= wrp.bool_vars.PO_DeltaIbusNew;
@@ -1267,7 +1279,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
     
     if(TClrTrg(rUl_1|rUl_2))
         ch_DTrg = 0;//Clear Trigger
-    //!m_chWRIc = rUl_1|rUl_2;//! Temp Debug Code   This may be errors 
+    m_chWRIc = rUl_1|rUl_2;//! Temp Debug Code    
     
     rUl_1 = ( 1<< BGS_TWAIT_STATE_BIT);
     rUl_1 &= unnBF1.ulVal;
@@ -1440,7 +1452,8 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         rUl_1 &= ~(1<<shShemasOrdNumStng);
     CBGSig::chNeedTimerCalculated = rUl_1;//It`s Need for Call recalc because Timer work
 
-}/*
+}
+
 void CBGSig::CalcBusGrSigSchematicDBG1(void) {
     register unsigned long  rUl_1,rUl_2;
 //    register unsigned long u32_bit_hld1 = 0;  
@@ -1822,7 +1835,7 @@ memset(static_cast<void*>(arrOut),0,sizeof(char  )*TOTAL_BGS_VISIO_OUT);
         rUl_1 &= ~(1<<shShemasOrdNumStng);
     CBGSig::chNeedTimerCalculated = rUl_1;//It`s Need for Call recalc because Timer work
 
-}*/
+}
 void* pvCBGSigDbg;
 /*
 long CBGSig::EvalDeltaIbusFix(long Ibus, long Ifix, long lActive){

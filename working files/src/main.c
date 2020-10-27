@@ -104,6 +104,12 @@ inline void periodical_operations(void)
     main_routines_for_i2c();
 
   //Обробка дій системи меню
+  if (reinit_LCD)
+  {
+    reinit_LCD = false;
+    lcd_init();
+    new_state_keyboard |= (1<<BIT_REWRITE);
+  }
   main_manu_function_ver2();
   //Обновляємо інформацію на екрані
   view_whole_ekran();

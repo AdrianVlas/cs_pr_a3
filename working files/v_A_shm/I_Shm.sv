@@ -1,5 +1,7 @@
 #include "I_Shm.h"
 #include "IStng.h"
+#include "prtTmr.h"
+#include "Tim9.c"
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //``````````````````````````````````````````````````````````````````````````````````
 //==================================================================================
@@ -23,6 +25,10 @@
 extern __CONFIG current_config_prt; 
  __CONFIG ccfg;
 */
+
+
+char chGlb_ActivatorWREeprom = 0;
+
 char chGlbAmountRegisteredElem = 0;
 long lGlbRegisteredElemField = 0;
 const char chAmtSchematicElement = 15;//
@@ -47,9 +53,9 @@ fnPvrL arrChangeCfgFnptr[16] = {
 };
 
 long ChangeCfg(void* pv){
-    register long i, lRes, lCtrElem;
+    register long i, lRes, lCtrElem, lVl;
 
-	lRes = InitSchematic();
+	lVl = InitSchematic();
     lRes = i = 0;
     lCtrElem = chGlbAmountRegisteredElem;
     if (lCtrElem)
@@ -61,20 +67,27 @@ long ChangeCfg(void* pv){
             lRes = (arrChangeCfgFnptr[i])(pv);
         } while (--lCtrElem > 0 && lRes == 0);
     }
-
-    return i;
+  TIM9Stop();
+  TIM9_Init();
+  
+  TIM9Start();
+  DoCalcWrp();
+  TIM9Stop();
+  i = TIM_GetCounter(TIM9);
+  //lCtrElem = i*417/10000;
+  lCtrElem = i*834/10000;
+  //lCtrElem = i*660/10000;
+  TIM_SetCounter(TIM9,0);
+    TIM9Start();
+  DoCalcStatInfoWrp();
+  TIM9Stop();
+  //Out Param in Terminal
+  
+    return lVl;
 }
-enum MyEnum
-{
-    LED_IDX_BLOCK,
-    LED_IDX_ALARM,
-    LED_IDX_MUTE,
-    LED_IDX_EROR_C,
-    LED_IDX_EROR_NC,
-    LED_IDX_RUN
-};
-// long RegisterHundlerLUCfg(void* pv){
 
+// long RegisterHundlerLUCfg(void* pv){
+ const long TIM9_BASE_CPP = TIM9_BASE;
 
 // return 0;
 
@@ -103,16 +116,30 @@ sLv.pCh = (char*)( spca_of_p_prt[ID_FB_LED - _ID_FB_FIRST_VAR]);
 sLv.pCh += sLv.shRelativeIndexLU * sizeof(__LN_OUTPUT_LED);
 
 
-
-
-
-
-
-
-
 return 0;
 }
 */
+extern DICfgSuit sDiCfg;
+long lIdxWr = 0;
+unsigned char arChInRg[20000] @ "ZeroInivars_RAM1";
+void CheckingDIRegs(void){
+while(1){	
+	//Read Data from Reg Then Save It
+	;
+	;
+	RdHrdIn((void*)&DiHrdStateUI32Bit);
+    UpdateStateDI(); 
+	arChInRg[lIdxWr++] = sDiCfg.DiState.ul_val;
+	if(lIdxWr >= 20000){
+		lIdxWr = 0;
+		asm(
+                "bkpt 1"
+                );
+	}
+	
+}
+
+}
 //#include "../inc/variables_external.h" зараз поки що не йде
 
 

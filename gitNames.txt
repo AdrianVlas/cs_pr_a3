@@ -211,3 +211,5 @@ From https://github.com/Malynovsky/Device-2.12.x.y
 Updating a66dc45..4ceef3a
 Fast-forward
  .gitignore    
+$ git remote -v
+origin  https://github.com/Malynovsky/Device-2.12.x.y.git (fetch)
