@@ -1,0 +1,12 @@
+Variable	Value	Location	Type	
+this	sh (0x20011CFC)	R4	class Shematic *	
+P	<union>	R5	union Shematic::DoCalcLU_V01()::<Unnamed 183>	
+pLOrderCalcNum	0x20004F94 (gLUAreaMem + 19424)	R5	long *	
+pShOrderCalcNum	0x20004F94 (gLUAreaMem + 19424)	R5	short *	
+pCh	0x20004F94 "лллЭлллЭлллЭлллЭлллЭДO"	R5	char *	
+lAmtProcessObj	117	R6	long	
+lIdxCounter	113	R7	long	
+i	-13109	R1	long	
+l	<unavailable>			
+pv	<unavailable>			
+sLV	<struct>	0x2001FF68	struct Shematic::DoCalcLU_V01()::<Unnamed 184>	

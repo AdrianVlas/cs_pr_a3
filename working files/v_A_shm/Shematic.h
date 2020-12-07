@@ -102,7 +102,7 @@ class Shematic
     short shIdxSumNLedPlusNOutSeq;
     short shIdxSumNTUPlusNLANSeq;
     short shIdxSum8ElemSeq;
-    short shSizeExecSeq;
+    short shSizeExecSeq;short shAmountExecSeqElem;
 
 public:
     Shematic(void);

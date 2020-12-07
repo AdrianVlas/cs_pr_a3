@@ -79,7 +79,7 @@ long ChangeCfg(void* pv){
   //lCtrElem = i*660/10000;
   TIM_SetCounter(TIM9,0);
     TIM9Start();
-  DoCalcStatInfoWrp();
+  //DoCalcStatInfoWrp();
   TIM9Stop();
   //Out Param in Terminal
   

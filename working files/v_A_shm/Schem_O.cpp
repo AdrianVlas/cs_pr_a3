@@ -567,12 +567,18 @@ void* pv;
     P.pCh = static_cast<char*>(pExecSeq);
 
     //lAmtProcessObj = sizeof(arrChCalcLUOrderNumsSchmPage2)>>1;
-    lAmtProcessObj = (shSizeExecSeq >> 2) - 1;
+    //?lAmtProcessObj = (shSizeExecSeq >> 2) - 1;
+    lAmtProcessObj = shAmountExecSeqElem;
     lIdxCounter = 0;
     do {
-         
+        
+          
          sLV.shLocalIdxCounter = lIdxCounter;
          i = P.pShOrderCalcNum[0] - 1;//Num Convert to Index
+		 if (i >= 0xcccc || i < 0 ){
+			 lIdxCounter++;
+			 goto endwhile;
+		 }
          l = P.pShOrderCalcNum[1]; 
 //        j = i >> 8;//        i &= 0xff;//        i += arIdxLUAreaListElem[j-1];
         if (l>0){//Save State Outs
@@ -625,10 +631,9 @@ void* pv;
                 
             }
         }
-        
-        
-        
-        
+ endwhile:       
+       ; 
+       
         
     } while (lIdxCounter < lAmtProcessObj );
     

@@ -322,7 +322,8 @@ void Shematic::DoCalc(void) {
     }
 else{ 
         if(chStateOptimisation == 1){
-            DoCalcLU_V01();
+            DoCalcLUSources();FBWrp_Op(pCFixBlockWrp); 
+			DoCalcLU_V01();
         }
         else
             DoCalcLU();
@@ -2718,7 +2719,7 @@ void Shematic::SetupCLUGooseStngParam(void *pv){
     
     for(i = 0; i < locRef_CLUGs.chNumInput;i++)
     locRef_CLUGs.arrPchIn[i] = &chGblGround;
-    locRef_CLUGs.chTypeLogicFunction = LU_OP_MMS;
+    locRef_CLUGs.chTypeLogicFunction = LU_OP_GOOSE;
     locRef_CLUGs.LogicFunc = Goose__1_8_Op;
     
      bool bbVar = false;
@@ -4539,6 +4540,24 @@ struct {
                         n = (static_cast<__LN_TS*>(pB-> pvCfgLN))->settings._n;
                         l = (static_cast<__LN_TS*>(pB-> pvCfgLN))->settings._link;
                         break;
+                    case LU_OP_GOOSE: //TARAS_ALAS_STNG_LU_TS:
+                        //UN_LN.pLN_TS = reinterpret_cast<__LN_INPUT_GOOSE_BLOCK>( spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_TS[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_INPUT_GOOSE_BLOCK*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_INPUT_GOOSE_BLOCK*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_MMS: //TARAS_ALAS_STNG_LU_TS:
+                        //UN_LN.pLN_TS = reinterpret_cast<__LN_INPUT_MMS_BLOCK*>( spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_TS[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_INPUT_MMS_BLOCK*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_INPUT_MMS_BLOCK*>(pB-> pvCfgLN))->settings._link;
+                        break;
+                    case LU_OP_LAN: //TARAS_ALAS_STNG_LU_TS:
+                        //UN_LN.pLN_TS = reinterpret_cast<__LN_TS*>( spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
+                        //i = UN_LN.pLN_TS[shRelativeIndexLU].settings._n;
+                        n = (static_cast<__LN_NETWORK_OUTPUT_BLOCK*>(pB-> pvCfgLN))->settings._n;
+                        l = (static_cast<__LN_NETWORK_OUTPUT_BLOCK*>(pB-> pvCfgLN))->settings._link;
+                        break;
                      //TARAS_ALAS_STNG_LU_LOG:
                         //UN_LN.pLN_TS = reinterpret_cast<__LN_TS*>( spca_of_p_prt[ID_FB_TS - _ID_FB_FIRST_VAR]);
                         //i = UN_LN.pLN_TS[shRelativeIndexLU].settings._n;
@@ -4549,7 +4568,7 @@ struct {
                 }
                 //Put Data in Array
 
-        if ( n <= shAmtLookObj){
+        if ( n <= shAmtLookObj && n >0){
             //short *pSh = static_cast<short*>(pExecSeq);
             //pSh[n] = pB->shLUBieldOrdNum;
             //( static_cast<long*>(pExecSeq))[n-1] = pB->shLUBieldOrdNum;
@@ -4560,7 +4579,7 @@ struct {
             
         }
         else if (n < 0){
-            rsLV.chVal |= 1;
+				break;//rsLV.chVal |= 1;
         }
         else{
             rsLV.chVal |= 2;
@@ -4568,7 +4587,7 @@ struct {
         shCounterFindObj++;
         
     }
-
+    shAmountExecSeqElem = shCounterFindObj;
     return rsLV.chVal;
 
 }            
