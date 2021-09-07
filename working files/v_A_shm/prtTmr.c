@@ -42,7 +42,7 @@ void  TmrCalls(void){
         do{
             //Look In Program
             i = pNode->lTmrVal;
-            if (i)
+            if (i > 0)
                 pNode->lTmrVal = --i;
             i = (long) pNode->next;
             if (i == 0)

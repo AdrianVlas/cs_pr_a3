@@ -362,17 +362,27 @@ CLULed& rCLULed = *(static_cast<CLULed*> (pObj));
 rCLULed.CalcLedSchematic();    
 }
 //#pragma inline
-void ButtonOp(void *pObj){
-long i;
-CLUFKey *pCLUFKey = static_cast<CLUFKey*>(pObj);
-i = static_cast<char*>(pCLUFKey->pIn)[0];
-    if(i!= 0)
-    pCLUFKey->chKeyPres = i;
- //   if(i == 0)
- //   i = pCLUFKey->chKeyPres;
-    pCLUFKey->arrOut[0] = i;    
+//void ButtonOp(void *pObj){
+//long i;
+//CLUFKey *pCLUFKey = static_cast<CLUFKey*>(pObj);
+//i = static_cast<char*>(pCLUFKey->pIn)[0];
+//    if(i!= 0)
+//    pCLUFKey->chKeyPres = i;
+// //   if(i == 0)
+// //   i = pCLUFKey->chKeyPres;
+//    pCLUFKey->arrOut[0] = i;    
+//}
+void ButtonOp(void *pObj)
+{
+    long i;
+    CLUFKey *pCLUFKey = static_cast<CLUFKey *>(pObj);
+    i = static_cast<char *>(pCLUFKey->pIn)[0];
+    if (i != 0)
+        pCLUFKey->chKeyPres = i;
+    //   if(i == 0)
+    //   i = pCLUFKey->chKeyPres;
+    pCLUFKey->arrOut[0] = i;
 }
-
 void LssOptip(void *pObj){
 CLULss& rCLULss = *(static_cast<CLULss*>(pObj));
 

@@ -109,12 +109,17 @@ pOut = static_cast<void*>(arrOut);
 long CMft::TPauseMftDir(long lActivKey) {
     
     register long *plTmrVal = &m_NodeTpauseDir.lTmrVal;
+
     if (lActivKey) {
         if (m_chStateTpauseDir == 0) {
-            lActivKey = m_MftSuit.lTpause; //Load Timer
-            *plTmrVal = lActivKey;
+            long lVl = m_MftSuit.lTpause;//-lActivKey = m_MftSuit.lTpause; // Load Timer
+            
+            if(lVl == 0)
+                return 1;
+            *plTmrVal = lActivKey = lVl; //*plTmrVal on another int can change
             if (*plTmrVal != lActivKey)
-                *plTmrVal = lActivKey; //Possible Clear in Int
+            *plTmrVal = lActivKey; //Possible Clear in Interrupt
+             *plTmrVal = lVl; 
             m_chStateTpauseDir = 1;
         } else {
             lActivKey = *plTmrVal;
@@ -136,6 +141,8 @@ long CMft::TPauseMftInv(long lActivKey) {
     if (lActivKey) {
         if (m_chStateTpauseInv == 0) {
             lActivKey = m_MftSuit.lTpause; //Load Timer
+            if(lActivKey == 0) 
+                return 1; 
             *plTmrVal = lActivKey;
             if (*plTmrVal != lActivKey)
                 *plTmrVal = lActivKey; //Possible Clear in Int
@@ -157,16 +164,17 @@ long CMft::TPauseMftInv(long lActivKey) {
 
 long CMft::TDelayMftDir(long lResetKey, long lInKey) {
     register long *plTmrVal = &m_NodeTdelay.lTmrVal;
-
+    register long lVl;
     if (lResetKey == 0) {
-        if (lInKey) {
-            lInKey = m_MftSuit.lTdelay;
-            *plTmrVal = lInKey;
-            if (*plTmrVal != lInKey)
-                *plTmrVal = lInKey; //lResetKey == 0!
+        if (lInKey > 0 ) {
+            lVl = m_MftSuit.lTdelay;
+            if(m_chStateTdelay == 0 && lVl == 0)
+                return 1;
+            *plTmrVal = lInKey = lVl;//---This special code borne 
+            if (*plTmrVal != lInKey) //--- because cyange *plTmrVal
+                *plTmrVal = lInKey;  //--- on other int happend  
             m_chStateTdelay = 1;//Activated
-            
-            return 1;
+            return 1;            
         
         } else {
             if (m_chStateTdelay == 1) {//Activated
@@ -177,10 +185,9 @@ long CMft::TDelayMftDir(long lResetKey, long lInKey) {
                     lResetKey = 1;
                 }
             }
-
         }
     }
-    if (lResetKey) {
+    if (lResetKey != 0 ) {
         m_chStateTdelay = 0;
         *plTmrVal = 0;
     }
@@ -327,10 +334,10 @@ void Mft_Op(void *pObj){
     rCMft.arrStateIn[MFT_IN_NAME__RESET_I-1]  = j; 
      
 
-    
+    rCMft.m_chOR3 = j || i;
     //--i = static_cast<long>(*(rCMft.arrPchIn[0]));
     j = rCMft.TPauseMftDir(i);
-    rCMft.m_chOR3 = j || i;
+    
     if(rCMft.m_chOR3 != 0){
         
         rCMft.m_D5Q = 0;
@@ -375,9 +382,9 @@ register __LN_TIMER *pLN_TIMER = reinterpret_cast<__LN_TIMER*>(rCMft.pvCfgLN);
     k = rCMft.arrOut[MFT_OUT_NAME__MFT_IMP_INV_OUT-1];
     
     pLN_TIMER->active_state[(TIMER_OUT_RISE_IMPULSE /8) ] = i<< ( TIMER_OUT_RISE_IMPULSE %8);
-    pLN_TIMER->active_state[(TIMER_OUT_RISE_DELAY /8)   ] = j<< ( TIMER_OUT_RISE_DELAY   %8)  ;
-    pLN_TIMER->active_state[(TIMER_OUT_FALL_IMPULSE /8) ] = k<< ( TIMER_OUT_FALL_IMPULSE %8);    
-   
+    pLN_TIMER->active_state[(TIMER_OUT_RISE_DELAY /8)   ] |= j<< ( TIMER_OUT_RISE_DELAY   %8)  ;
+    pLN_TIMER->active_state[(TIMER_OUT_FALL_IMPULSE /8) ] |= k<< ( TIMER_OUT_FALL_IMPULSE %8);    
+   //- @Dbug code pLN_TIMER->active_state[(TIMER_OUT_FALL_IMPULSE /8) ]  = 0xcc;
 
     
 }
