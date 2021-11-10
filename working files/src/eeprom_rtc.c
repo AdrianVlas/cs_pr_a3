@@ -1262,6 +1262,9 @@ void main_routines_for_i2c(void)
       static __id_fb block;
       static unsigned int shift;
       static uint8_t crc_eeprom_trg_func;
+      
+      //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації, так як зараз ми будемо поля змінювати. які могли бути підготовлені для контролю
+      periodical_tasks_TEST_TRG_FUNC_LOCK = false;
 
       if (
           (shift_from_start_address_trg_func_in_eeprom == 0) &&
