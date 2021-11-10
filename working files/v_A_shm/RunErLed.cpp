@@ -155,7 +155,7 @@ char *pCh;
      lStateLed = RUN_ERROR_LED_RED;
         DoStateUI32Bit.ul_val = 0;
         LedStateUI32Bit.ul_val = 0;
-        DoHdwUI32Bit.ul_val = 0;
+        //DoHdwUI32Bit.ul_val = 0;
     }
     else{
         if(chErrorState&2 )

@@ -12,7 +12,7 @@
           
           
           
-        <Column0>275</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+        <Column0>258</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
       </Workspace>
       <Build>
         
@@ -32,7 +32,7 @@
             <Factory>Workspace</Factory>
             <Session>
               
-            <NodeDict><ExpandedNode>device_2_v_12_0_0_9</ExpandedNode></NodeDict></Session>
+            <NodeDict><ExpandedNode>device_2_v_12_0_0_9</ExpandedNode><ExpandedNode>device_2_v_12_0_0_9/user</ExpandedNode><ExpandedNode>device_2_v_12_0_0_9/user/v_A_shm</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
         
