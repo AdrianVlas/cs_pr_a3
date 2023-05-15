@@ -82,6 +82,11 @@ long CLULss::LinkLssTimers(void) {
         i++;
         m_chLinkedTimers |= 8;
     }
+    if (PushTmrNode(&m_Node1_3Ms)) {//static_cast<void*>(
+        i++;
+        m_chLinkedTimers |= 0x10;
+    }
+    
     chGlSem--;
     return i;
 }
@@ -171,6 +176,37 @@ register long *plTmrVal = &m_NodeCs.lTmrVal;
     return 0;
 }
 
+long CLULss::T1_3Ms(long lActivKey) {
+register long *plTmrVal = &m_Node1_3Ms.lTmrVal;
+register long lResetKey = 0;
+    if (lActivKey) {
+        if (m_chStateT1_3Ms == 0) {
+            lActivKey = 1;//m_MftSuit.lTWork;
+            *plTmrVal = lActivKey;
+            if (*plTmrVal != lActivKey)
+                *plTmrVal = lActivKey;
+            m_chStateT1_3Ms = 1;
+            return 1;
+        } else {
+            lActivKey = *plTmrVal;
+            if (lActivKey != 0)
+                return 1; //
+        }
+    } else {
+        if (m_chStateT1_3Ms == 1) {//Activated
+            lActivKey = *plTmrVal;
+            if (lActivKey != 0)
+                return 1; //
+            else
+                lResetKey = 1;
+        }
+    }
+    if (lResetKey) {
+        m_chStateT1_3Ms = 0;
+        *plTmrVal = 0;
+    }
+    return 0;
+}
 
 
 #include "LuLss_p1.cpp"
@@ -702,6 +738,479 @@ register __LN_ALARM *p__LN_ALARM =  static_cast<__LN_ALARM*>(pvCfgLN);
     
 }
 
+
+
+
+typedef union U8_state_Unn{ 
+   struct {
+      unsigned int bt0 : 1; //1
+      unsigned int bt1 : 1; //2
+      unsigned int bt2 : 1; //3
+      unsigned int bt3 : 1; //4
+      unsigned int bt4 : 1; //5
+      unsigned int bt5 : 1; //6
+      unsigned int bt6 : 1; //7
+      unsigned int bt7 : 1; //8
+    } bool_val;
+    unsigned char U8V;
+} U8_state_wrp; 
+
+
+
+
+//=====================================================================================================
+//''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+//                  
+//....................................................................................................
+//=====================================================================================================
+void CLULss::CalcLssSchematicOptManual(void){
+    // ----------------    -------------------------
+//.register long rl_Val,i;
+//.const LedShcemasDscRecord* pLUShcemasDscRec;// 
+//.#pragma data_alignment=4
+//.char arChIntermediaResult[(TOTAL_LSS_LU_CALC_POINT)];
+//.volatile bool boolchQTrg29 = m_chQTrg29,boolchQTrg11 = m_chQTrg11;
+//..register unsigned long u32_bit_holder = 0;  
+
+//..register union {
+    union
+    {
+      struct
+      {
+            unsigned int LSS_NORMAL : 1;
+            unsigned int LSS_TRIGGER : 1;
+            unsigned int LSS_TIMELIMITED : 1;
+            unsigned int LSS_LSSIN1 : 1;
+            unsigned int LSS_MUTE_I : 1;
+            unsigned int LSS_RESET_I : 1;
+            unsigned int LSS_BLOCK_I : 1;
+            unsigned int LSS_D_TRG_11__4_2_Q : 1;
+            unsigned int LSS_D_TRG_11__4_2_NOT_Q : 1;
+            unsigned int LSS_D_TRG_29__4_2_Q : 1;
+            unsigned int LSS_D_TRG_29__4_2_NOT_Q : 1;
+            unsigned int IN_LSS_VCC : 1;
+            unsigned int IN_LSS_GROUND : 1;
+
+      } bool_vars;
+      long lVl;
+    } wrp;
+
+    wrp.lVl = 0;
+    long lV; unsigned long rU;
+        
+    rU = 0;
+    U8_state_wrp stt_LULss_Not01__1_1,
+        stt_LULss_And02__3_1,
+        stt_LULss_And03__3_1,
+        stt_LULss_And04__3_1,
+        stt_LULss_Not05__1_1,
+        stt_LULss_And06__2_1,
+        stt_LULss_And07__2_1,
+        stt_LULss_And08__3_1,
+        stt_LULss_Not09__1_1,
+        stt_LULss_Not10__1_1,
+        stt_LULss_Or_11__3_1,
+        stt_LULss_Or_12__3_1,
+
+        stt_LULss_DT_13__4_2,
+        stt_LULss_Or_14__2_1,
+        stt_LULss_DT_15__4_2,
+        stt_LULss_Not16__1_1,
+        stt_LULss_And17__3_1,
+        stt_LULss_Or_18__3_1,
+        stt_LULss_Or_19__2_1,
+        
+        stt_LULss_Not20__1_1,
+        stt_LULss_And21__4_1,
+        stt_LULss_And22__4_1,
+        stt_LULss_And23__4_1,
+        stt_LULss_And24__4_1,
+        stt_LULss_Or_25__2_1,
+        stt_LULss_Or_26__2_1,
+        stt_LULss_T_IMP_27__1_1,
+        stt_LULss_T_IMP_28__1_1,
+        stt_LULss_T_T_0_29__1_1,
+        stt_LULss_T_0_T_add1ms_29__1_1;
+        // @TIMER_T_0,
+        // @_TIMER_0_T
+        // @_TIMER_IMPULSE;
+stt_LULss_Not01__1_1.U8V = rU,
+        stt_LULss_And02__3_1.U8V = rU,
+        stt_LULss_And03__3_1.U8V = rU,
+        stt_LULss_And04__3_1.U8V = rU,
+        stt_LULss_Not05__1_1.U8V = rU,
+        stt_LULss_And06__2_1.U8V = rU,
+        stt_LULss_And07__2_1.U8V = rU,
+        stt_LULss_And08__3_1.U8V = rU,
+        stt_LULss_Not09__1_1.U8V = rU,
+        stt_LULss_Not10__1_1.U8V = rU,
+        stt_LULss_Or_11__3_1.U8V = rU,
+        stt_LULss_Or_12__3_1.U8V = rU,
+
+        stt_LULss_DT_13__4_2.U8V = rU,
+        stt_LULss_Or_14__2_1.U8V = rU,
+        stt_LULss_DT_15__4_2.U8V = rU,
+        stt_LULss_Not16__1_1.U8V = rU,
+        stt_LULss_And17__3_1.U8V = rU,
+        stt_LULss_Or_18__3_1.U8V = rU,
+        stt_LULss_Or_19__2_1.U8V = rU,
+        
+        stt_LULss_Not20__1_1.U8V = rU,
+        stt_LULss_And21__4_1.U8V = rU,
+        stt_LULss_And22__4_1.U8V = rU,
+        stt_LULss_And23__4_1.U8V = rU,
+        stt_LULss_And24__4_1.U8V = rU,
+        stt_LULss_Or_25__2_1.U8V = rU,
+        stt_LULss_Or_26__2_1.U8V = rU,
+        stt_LULss_T_IMP_27__1_1.U8V = rU,
+        stt_LULss_T_IMP_28__1_1.U8V = rU,
+        stt_LULss_T_T_0_29__1_1.U8V = rU,
+        stt_LULss_T_0_T_add1ms_29__1_1.U8V = rU;
+
+    if (m_LssCfgSuit.chSel == LSS_MODE_SIMPLE)
+      wrp.bool_vars.LSS_NORMAL = 1;//arChIntermediaResult[OFFSET_OUT_IN_LSS_NORMAL] = 1; //
+    else if (m_LssCfgSuit.chSel == LSS_MODE_TRIGGER)
+      wrp.bool_vars.LSS_TRIGGER = 1;//arChIntermediaResult[OFFSET_OUT_IN_LSS_TRIGGER] = 1; //
+    else if (m_LssCfgSuit.chSel == LSS_MODE_PERIOD)
+      wrp.bool_vars.LSS_TIMELIMITED = 1;//arChIntermediaResult[OFFSET_OUT_IN_LSS_TIMELIMITED] = 1;
+   
+    wrp.bool_vars.IN_LSS_VCC = 1;
+    wrp.bool_vars.LSS_D_TRG_11__4_2_Q = m_chQTrg11;            // arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_11__4_2    ] = m_chQTrg11;
+    rU = m_chQTrg11;
+    wrp.bool_vars.LSS_D_TRG_11__4_2_NOT_Q = (rU) & 1; // arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_11__4_2 + 1  ] = !m_chQTrg11;
+    rU = m_chQTrg29;
+    wrp.bool_vars.LSS_D_TRG_29__4_2_Q = rU;            // arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_29__4_2    ] = m_chQTrg29;
+    wrp.bool_vars.LSS_D_TRG_29__4_2_NOT_Q = (~rU) & 1; // arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_29__4_2 + 1  ] = !m_chQTrg29;
+
+    char *pCh = (this->arrPchIn[(LSS_IN_NAME__LSSIN1 - 1)]);
+    wrp.bool_vars.LSS_LSSIN1 = pCh[0]; // arChIntermediaResult[OFFSET_OUT_IN_LSS_LSSIN1 ]
+    pCh = (this->arrPchIn[(LSS_IN_NAME__MUTE_I - 1)]);
+    wrp.bool_vars.LSS_MUTE_I = pCh[0]; // arChIntermediaResult[OFFSET_OUT_IN_LSS_MUTE_I ]
+    pCh = (this->arrPchIn[(LSS_IN_NAME__RESET_I - 1)]);
+    wrp.bool_vars.LSS_RESET_I = pCh[0]; // arChIntermediaResult[OFFSET_OUT_IN_LSS_RESET_I]
+    pCh = (this->arrPchIn[(LSS_IN_NAME__BLOCK_I - 1)]);
+    wrp.bool_vars.LSS_BLOCK_I = pCh[0]; // arChIntermediaResult[OFFSET_OUT_IN_LSS_BLOCK_I]
+
+    // wrp.bool_vars.
+
+    stt_LULss_Or_14__2_1.bool_val.bt0 = wrp.bool_vars.LSS_TRIGGER;
+    stt_LULss_Or_14__2_1.bool_val.bt1 = wrp.bool_vars.LSS_TIMELIMITED;
+    if((stt_LULss_Or_14__2_1.U8V &3) != 0){
+        stt_LULss_Or_14__2_1.bool_val.bt7 = 1;
+    }
+    stt_LULss_And04__3_1.bool_val.bt0 = wrp.bool_vars.LSS_LSSIN1;
+    stt_LULss_And04__3_1.bool_val.bt1 = wrp.bool_vars.LSS_NORMAL;
+    stt_LULss_And04__3_1.bool_val.bt2 = wrp.bool_vars.LSS_MUTE_I;
+    
+    if((stt_LULss_And04__3_1.U8V &7) == 7){
+        stt_LULss_And04__3_1.bool_val.bt7 = 1;
+    } 
+    rU = wrp.bool_vars.LSS_LSSIN1;
+    stt_LULss_Not05__1_1.bool_val.bt7 = (~rU)&1;
+    stt_LULss_Not09__1_1.bool_val.bt7 = (~rU)&1;
+    stt_LULss_Not20__1_1.bool_val.bt7 = (static_cast<unsigned int>(wrp.bool_vars.LSS_BLOCK_I))&1;
+
+    stt_LULss_T_IMP_27__1_1.bool_val.bt0 = rU;
+    lV = T1_1Ms(rU);
+    stt_LULss_T_IMP_27__1_1.bool_val.bt7 = lV;
+
+    stt_LULss_And06__2_1.bool_val.bt0 = stt_LULss_Not05__1_1.bool_val.bt7;
+    stt_LULss_And06__2_1.bool_val.bt1 = wrp.bool_vars.LSS_NORMAL;
+    if((stt_LULss_And06__2_1.U8V &3) == 3){
+        stt_LULss_And06__2_1.bool_val.bt7 = 1;
+    } 
+    rU = stt_LULss_T_IMP_27__1_1.bool_val.bt7;
+    stt_LULss_Not16__1_1.bool_val.bt1 = rU;
+    stt_LULss_Not16__1_1.bool_val.bt7 = (~rU)&1;
+
+    stt_LULss_And07__2_1.bool_val.bt0 = rU;
+    stt_LULss_And07__2_1.bool_val.bt1 = stt_LULss_Or_14__2_1.bool_val.bt7;
+    if((stt_LULss_And07__2_1.U8V &3) == 3){
+        stt_LULss_And07__2_1.bool_val.bt7 = 1;
+    }
+    stt_LULss_And17__3_1.bool_val.bt0 = wrp.bool_vars.LSS_D_TRG_11__4_2_Q;
+    stt_LULss_And17__3_1.bool_val.bt1 = stt_LULss_Not16__1_1.bool_val.bt7;
+    stt_LULss_And17__3_1.bool_val.bt2 = wrp.bool_vars.LSS_TIMELIMITED;
+    if(( stt_LULss_And17__3_1.U8V &7) == 7){
+         stt_LULss_And17__3_1.bool_val.bt7 = 1;
+    } 
+
+    rU = stt_LULss_And17__3_1.bool_val.bt7;
+    stt_LULss_T_T_0_29__1_1.bool_val.bt0 = rU;
+    lV = TCs(rU);//
+    stt_LULss_T_T_0_29__1_1.bool_val.bt1 = lV;
+    //rU = lV;
+    lV = T1_3Ms(stt_LULss_T_T_0_29__1_1.bool_val.bt1);//!@lV = T1_3Ms(rU);
+    stt_LULss_T_0_T_add1ms_29__1_1.bool_val.bt7 =  lV;
+
+    stt_LULss_Or_18__3_1.bool_val.bt0 = stt_LULss_T_0_T_add1ms_29__1_1.bool_val.bt7;
+    stt_LULss_Or_18__3_1.bool_val.bt1 = wrp.bool_vars.LSS_NORMAL;
+    stt_LULss_Or_18__3_1.bool_val.bt2 = wrp.bool_vars.LSS_RESET_I;
+    if((stt_LULss_Or_18__3_1.U8V &7) != 0){
+        stt_LULss_Or_18__3_1.bool_val.bt7 = 1;
+        //
+    }
+
+    stt_LULss_DT_15__4_2.bool_val.bt3 = wrp.bool_vars.IN_LSS_GROUND;
+    stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;//!??
+    rU = stt_LULss_T_IMP_27__1_1.bool_val.bt7;
+    stt_LULss_DT_15__4_2.bool_val.bt1 = stt_LULss_Or_18__3_1.bool_val.bt7;//!??
+      //0- clr Should be                 @/NOW USE \@      0 - SYNCRO
+      //1- D input                       @/NOW USE \@      1 CLR INPUT
+      //2- C                             @/NOW USE \@      2 - D-INPUT
+      //3 -SET inp                       @/NOW USE \@      3 SET -Input
+      //5 - Q                            @/NOW USE \@      7 -Q
+      //6 -q^                            @/NOW USE \@      6 -Q^
+
+    if ( (stt_LULss_DT_15__4_2.U8V&3) == 0x0A)
+        m_chErrorQTrg11 = stt_LULss_DT_15__4_2.U8V;//!?
+      // RESET BLOCK
+    if (stt_LULss_Or_18__3_1.bool_val.bt7 == 1)
+    {                                     // dbg code(mean->).bt1 == 1 CLR INPUT
+      stt_LULss_DT_15__4_2.U8V = 0;     //
+      stt_LULss_DT_15__4_2.bool_val.bt6 = 1; // Q^
+      stt_LULss_DT_15__4_2.bool_val.bt1 = 1; // Clr Inp
+    }
+    else
+    {
+      // SET BLOCK
+      // if(){}
+      // else{ D-INPUT C--INPUT BLOCK
+      //?.bt0 - SYNCRO      .bt2 - D-INPUT
+      
+      if (
+          (m_chInC11 == 0) //previous state  SYNCRO
+          && (stt_LULss_T_IMP_27__1_1.bool_val.bt7 == 1) //current state SYNCRO
+          && (stt_LULss_DT_15__4_2.bool_val.bt1 == 0)  // Clr Inp
+        )
+      {
+            stt_LULss_DT_15__4_2.U8V &= (1 << 7) | (1 << 6);
+            rU = wrp.bool_vars.IN_LSS_VCC;
+            stt_LULss_DT_15__4_2.bool_val.bt2 = rU;
+            stt_LULss_DT_15__4_2.bool_val.bt7 = rU;          // Q
+            //???stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;
+            stt_LULss_DT_15__4_2.bool_val.bt6 = (~rU)&1; // Q^
+      }
+ 
+      stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC; // D
+      stt_LULss_DT_15__4_2.bool_val.bt1 = 0;                     // Clr    wrp.bool_vars.IN_LSS_GROUND
+    }
+    stt_LULss_DT_15__4_2.bool_val.bt0 = stt_LULss_T_IMP_27__1_1.bool_val.bt7;// C <- current state SYNCRO
+    m_chInC11 = stt_LULss_DT_15__4_2.bool_val.bt0;
+    m_chQTrg11= stt_LULss_DT_15__4_2.bool_val.bt7;
+    //  
+     rU = stt_LULss_DT_15__4_2.bool_val.bt7;
+    stt_LULss_Not01__1_1.bool_val.bt1 = rU;
+    stt_LULss_Not01__1_1.bool_val.bt7 = (~rU)&1;
+
+    stt_LULss_And03__3_1.bool_val.bt0 = stt_LULss_DT_15__4_2.bool_val.bt7;
+    stt_LULss_And03__3_1.bool_val.bt1 = stt_LULss_Or_14__2_1.bool_val.bt7;
+    stt_LULss_And03__3_1.bool_val.bt2 = wrp.bool_vars.LSS_MUTE_I;
+    if(( stt_LULss_And03__3_1.U8V &7) == 7){
+         stt_LULss_And03__3_1.bool_val.bt7 = 1;
+    } 
+     rU = stt_LULss_DT_15__4_2.bool_val.bt7;
+    stt_LULss_Not10__1_1.bool_val.bt1 = rU;
+    stt_LULss_Not10__1_1.bool_val.bt7 = (~rU)&1;
+
+    stt_LULss_Or_19__2_1.bool_val.bt0 = stt_LULss_DT_15__4_2.bool_val.bt7;
+    stt_LULss_Or_19__2_1.bool_val.bt1 = wrp.bool_vars.LSS_LSSIN1;
+    if((stt_LULss_Or_19__2_1.U8V &3) != 0){
+        stt_LULss_Or_19__2_1.bool_val.bt7 = 1;
+    }
+
+
+    stt_LULss_And08__3_1.bool_val.bt0 = stt_LULss_Not09__1_1.bool_val.bt7;
+    stt_LULss_And08__3_1.bool_val.bt1 = stt_LULss_Not10__1_1.bool_val.bt7;
+    stt_LULss_And08__3_1.bool_val.bt2 = stt_LULss_Or_14__2_1.bool_val.bt7;
+    if(( stt_LULss_And08__3_1.U8V &7) == 7){
+         stt_LULss_And08__3_1.bool_val.bt7 = 1;
+    } 
+
+    rU = stt_LULss_Not01__1_1.bool_val.bt7;
+    stt_LULss_T_IMP_28__1_1.bool_val.bt0 = rU;
+    lV = T1_1Ms(rU);
+    stt_LULss_T_IMP_28__1_1.bool_val.bt7 = lV;
+
+
+    stt_LULss_Or_12__3_1.bool_val.bt0 = stt_LULss_And06__2_1.bool_val.bt7;
+    stt_LULss_Or_12__3_1.bool_val.bt1 = stt_LULss_And07__2_1.bool_val.bt7;
+    stt_LULss_Or_12__3_1.bool_val.bt2 = stt_LULss_And08__3_1.bool_val.bt7;
+    if((stt_LULss_Or_12__3_1.U8V &7) != 0){
+        stt_LULss_Or_12__3_1.bool_val.bt7 = 1;
+        //
+    }
+
+    stt_LULss_And02__3_1.bool_val.bt0 = stt_LULss_T_IMP_28__1_1.bool_val.bt7;
+    stt_LULss_And02__3_1.bool_val.bt1 = stt_LULss_Or_14__2_1.bool_val.bt7;
+    stt_LULss_And02__3_1.bool_val.bt2 = wrp.bool_vars.LSS_LSSIN1;
+    if(( stt_LULss_And02__3_1.U8V &7) == 7){
+         stt_LULss_And02__3_1.bool_val.bt7 = 1;
+    } 
+
+
+    stt_LULss_Or_11__3_1.bool_val.bt0 = stt_LULss_And02__3_1.bool_val.bt7;
+    stt_LULss_Or_11__3_1.bool_val.bt1 = stt_LULss_And03__3_1.bool_val.bt7;
+    stt_LULss_Or_11__3_1.bool_val.bt2 = stt_LULss_And04__3_1.bool_val.bt7;
+    if((stt_LULss_Or_11__3_1.U8V &7) != 0){
+        stt_LULss_Or_11__3_1.bool_val.bt7 = 1;
+        //
+    }
+    
+//stt_LULss_DT_13__4_2
+    stt_LULss_DT_13__4_2.bool_val.bt3 = wrp.bool_vars.IN_LSS_GROUND;
+
+    stt_LULss_DT_13__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;//!??
+    //?..rU = stt_LULss_T_IMP_27__1_1.bool_val.bt7;
+    stt_LULss_DT_13__4_2.bool_val.bt1 = stt_LULss_Or_11__3_1.bool_val.bt7;//!??
+      //0- clr Should be                 @/NOW USE \@      0 - SYNCRO
+      //1- D input                       @/NOW USE \@      1 CLR INPUT
+      //2- C                             @/NOW USE \@      2 - D-INPUT
+      //3 -SET inp                       @/NOW USE \@      3 SET -Input
+      //5 - Q                            @/NOW USE \@      7 -Q
+      //6 -q^                            @/NOW USE \@      6 -Q^
+
+      // RESET BLOCK
+    if (stt_LULss_Or_12__3_1.bool_val.bt7 == 1)
+    {                                     // dbg code(mean->).bt1 == 1 CLR INPUT
+      stt_LULss_DT_13__4_2.U8V = 0;     //
+      stt_LULss_DT_13__4_2.bool_val.bt6 = 1; // Q^
+      stt_LULss_DT_13__4_2.bool_val.bt1 = 1; // Clr Inp
+    }
+    else
+    {
+      // SET BLOCK
+      // if(){}
+      // else{ D-INPUT C--INPUT BLOCK
+      //?.bt0 - SYNCRO      .bt2 - D-INPUT
+      if (
+          (m_chInC29 == 0) //previous state  SYNCRO
+          && (stt_LULss_Or_11__3_1.bool_val.bt7 == 1) //current state SYNCRO
+          && (stt_LULss_DT_13__4_2.bool_val.bt1 == 0)  // Clr Inp
+        )
+      {
+            stt_LULss_DT_13__4_2.U8V &= (1 << 7) | (1 << 6);
+            rU = wrp.bool_vars.IN_LSS_VCC;
+            stt_LULss_DT_13__4_2.bool_val.bt2 = rU;
+            stt_LULss_DT_13__4_2.bool_val.bt7 = rU;          // Q
+            //???stt_LULss_DT_13__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;
+            stt_LULss_DT_13__4_2.bool_val.bt6 = (~rU)&1; // Q^
+      }
+ 
+      stt_LULss_DT_13__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC; // D
+      stt_LULss_DT_13__4_2.bool_val.bt1 = 0;                     // Clr    wrp.bool_vars.IN_LSS_GROUND
+    }
+    rU = stt_LULss_Or_11__3_1.bool_val.bt7;
+    m_chInC29 =  rU;
+    stt_LULss_DT_13__4_2.bool_val.bt0 =  rU;// C <- current state SYNCRO
+    m_chQTrg29 = stt_LULss_DT_13__4_2.bool_val.bt7;// 
+
+
+    stt_LULss_And21__4_1.bool_val.bt0 = wrp.bool_vars.LSS_NORMAL;
+    stt_LULss_And21__4_1.bool_val.bt1 = wrp.bool_vars.LSS_LSSIN1;
+    stt_LULss_And21__4_1.bool_val.bt2 = stt_LULss_Not20__1_1.bool_val.bt7;
+    stt_LULss_And21__4_1.bool_val.bt3 = stt_LULss_DT_13__4_2.bool_val.bt6;
+    if(( stt_LULss_And21__4_1.U8V &7) == 15){
+         stt_LULss_And21__4_1.bool_val.bt7 = 1;
+    } 
+
+    stt_LULss_And22__4_1.bool_val.bt0 = wrp.bool_vars.LSS_NORMAL;
+    stt_LULss_And22__4_1.bool_val.bt1 = wrp.bool_vars.LSS_LSSIN1;
+    stt_LULss_And22__4_1.bool_val.bt2 = stt_LULss_Not20__1_1.bool_val.bt7;
+    stt_LULss_And22__4_1.bool_val.bt3 = stt_LULss_DT_13__4_2.bool_val.bt7;
+    if(( stt_LULss_And22__4_1.U8V &7) == 15){
+         stt_LULss_And22__4_1.bool_val.bt7 = 1;
+    } 
+
+
+    stt_LULss_And23__4_1.bool_val.bt0 = stt_LULss_Or_14__2_1.bool_val.bt7;
+    stt_LULss_And23__4_1.bool_val.bt1 = stt_LULss_DT_15__4_2.bool_val.bt7;
+    stt_LULss_And23__4_1.bool_val.bt2 = stt_LULss_Not20__1_1.bool_val.bt7;
+    stt_LULss_And23__4_1.bool_val.bt3 = stt_LULss_DT_13__4_2.bool_val.bt6;
+    if(( stt_LULss_And23__4_1.U8V &7) == 15){
+         stt_LULss_And23__4_1.bool_val.bt7 = 1;
+    } 
+
+
+    stt_LULss_And24__4_1.bool_val.bt0 = stt_LULss_Or_14__2_1.bool_val.bt7;
+    stt_LULss_And24__4_1.bool_val.bt1 = stt_LULss_Or_19__2_1.bool_val.bt7;
+    stt_LULss_And24__4_1.bool_val.bt2 = stt_LULss_Not20__1_1.bool_val.bt7;
+    stt_LULss_And24__4_1.bool_val.bt3 = stt_LULss_DT_13__4_2.bool_val.bt7;
+    if(( stt_LULss_And24__4_1.U8V &7) == 15){
+         stt_LULss_And24__4_1.bool_val.bt7 = 1;
+    } 
+
+    stt_LULss_Or_25__2_1.bool_val.bt0 = stt_LULss_And21__4_1.bool_val.bt7;
+    stt_LULss_Or_25__2_1.bool_val.bt1 = stt_LULss_And23__4_1.bool_val.bt7;
+    if((stt_LULss_Or_25__2_1.U8V &3) != 0){
+        stt_LULss_Or_25__2_1.bool_val.bt7 = 1;
+    }
+
+    stt_LULss_Or_26__2_1.bool_val.bt0 = stt_LULss_And22__4_1.bool_val.bt7;
+    stt_LULss_Or_26__2_1.bool_val.bt1 = stt_LULss_And24__4_1.bool_val.bt7;
+    if((stt_LULss_Or_26__2_1.U8V &3) != 0){
+        stt_LULss_Or_26__2_1.bool_val.bt7 = 1;
+    }
+//
+ 
+ 
+
+
+
+
+
+
+
+     
+    lV = stt_LULss_Or_25__2_1.bool_val.bt7;
+    rU = stt_LULss_Or_26__2_1.bool_val.bt7; 
+   
+
+
+ this->arrOut [LSS_OUT_NAME_ALARM -1] = lV;//arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];       
+ this->arrOut [LSS_OUT_NAME_MUTE  -1] = rU;//arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];      
+ 
+register __LN_ALARM *p__LN_ALARM =  static_cast<__LN_ALARM*>(pvCfgLN);
+   //volatile bool boolchQTrg29 = chQTrg29,boolchQTrg11 = m_chQTrg11;
+    p__LN_ALARM->active_state[(ALARM_OUT_ALARM/8) ] = (static_cast<bool>(lV))<<(ALARM_OUT_ALARM%8);
+    p__LN_ALARM->active_state[(ALARM_OUT_MUTE/8) ]  = (static_cast<bool>(rU))<<(ALARM_OUT_MUTE%8) ;
+    
+    //?if(boolchQTrg29 != static_cast<bool>(m_chQTrg29) ){
+    if(wrp.bool_vars.LSS_D_TRG_29__4_2_Q != (m_chQTrg29) ){
+    p__LN_ALARM->d_trigger_state[ALARM_D_TRIGGER_1/8] = (static_cast<bool>(m_chQTrg29))<<(ALARM_D_TRIGGER_1%8);
+    chGlb_ActivatorWREeprom++;
+    }
+    //?if(boolchQTrg11 != static_cast<bool>(m_chQTrg11) ){
+    if(wrp.bool_vars.LSS_D_TRG_11__4_2_Q != (m_chQTrg11) ){
+    p__LN_ALARM->d_trigger_state[ALARM_D_TRIGGER_2/8] = (static_cast<bool>(m_chQTrg11))<<(ALARM_D_TRIGGER_2%8);
+    chGlb_ActivatorWREeprom++;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+}
+//
+//--------------------------------------------------------------------------------------------------------
+//````````````````````````````````````````````````````````````````````````````````````````````````````````
+
+
+
+
+
 char chGBL_BP_StopLss = 0;
 void LssOp	(void *pObj){
 CLULss& rCLULss = *(static_cast<CLULss*>(pObj));
@@ -709,7 +1218,7 @@ if(chGBL_BP_StopLss == rCLULss.shShemasOrdNumStng)
     asm(
                 "bkpt 1"
                 );
-rCLULss.CalcLssSchematicOpt();				
+rCLULss.CalcLssSchematicOptManual();
 }
 
 
