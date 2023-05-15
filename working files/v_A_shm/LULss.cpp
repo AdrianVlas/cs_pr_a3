@@ -875,12 +875,17 @@ stt_LULss_Not01__1_1.U8V = rU,
       wrp.bool_vars.LSS_TIMELIMITED = 1;//arChIntermediaResult[OFFSET_OUT_IN_LSS_TIMELIMITED] = 1;
    
     wrp.bool_vars.IN_LSS_VCC = 1;
+
     wrp.bool_vars.LSS_D_TRG_11__4_2_Q = m_chQTrg11;            // arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_11__4_2    ] = m_chQTrg11;
     rU = m_chQTrg11;
-    wrp.bool_vars.LSS_D_TRG_11__4_2_NOT_Q = (rU) & 1; // arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_11__4_2 + 1  ] = !m_chQTrg11;
+    wrp.bool_vars.LSS_D_TRG_11__4_2_NOT_Q = (~rU) & 1; // arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_11__4_2 + 1  ] = !m_chQTrg11;
+stt_LULss_DT_15__4_2.bool_val.bt6 = wrp.bool_vars.LSS_D_TRG_11__4_2_NOT_Q;
+stt_LULss_DT_15__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_11__4_2_Q;
     rU = m_chQTrg29;
     wrp.bool_vars.LSS_D_TRG_29__4_2_Q = rU;            // arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_29__4_2    ] = m_chQTrg29;
     wrp.bool_vars.LSS_D_TRG_29__4_2_NOT_Q = (~rU) & 1; // arChIntermediaResult[ OFFSET_OUT_LSS_D_TRG_29__4_2 + 1  ] = !m_chQTrg29;
+stt_LULss_DT_13__4_2.bool_val.bt6 = wrp.bool_vars.LSS_D_TRG_29__4_2_NOT_Q;
+stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
 
     char *pCh = (this->arrPchIn[(LSS_IN_NAME__LSSIN1 - 1)]);
     wrp.bool_vars.LSS_LSSIN1 = pCh[0]; // arChIntermediaResult[OFFSET_OUT_IN_LSS_LSSIN1 ]
@@ -908,7 +913,7 @@ stt_LULss_Not01__1_1.U8V = rU,
     rU = wrp.bool_vars.LSS_LSSIN1;
     stt_LULss_Not05__1_1.bool_val.bt7 = (~rU)&1;
     stt_LULss_Not09__1_1.bool_val.bt7 = (~rU)&1;
-    stt_LULss_Not20__1_1.bool_val.bt7 = (static_cast<unsigned int>(wrp.bool_vars.LSS_BLOCK_I))&1;
+    stt_LULss_Not20__1_1.bool_val.bt7 = (~static_cast<unsigned int>(wrp.bool_vars.LSS_BLOCK_I))&1;
 
     stt_LULss_T_IMP_27__1_1.bool_val.bt0 = rU;
     lV = T1_1Ms(rU);
@@ -953,6 +958,7 @@ stt_LULss_Not01__1_1.U8V = rU,
 
     stt_LULss_DT_15__4_2.bool_val.bt3 = wrp.bool_vars.IN_LSS_GROUND;
     stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;//!??
+
     rU = stt_LULss_T_IMP_27__1_1.bool_val.bt7;
     stt_LULss_DT_15__4_2.bool_val.bt1 = stt_LULss_Or_18__3_1.bool_val.bt7;//!??
       //0- clr Should be                 @/NOW USE \@      0 - SYNCRO
@@ -998,7 +1004,7 @@ stt_LULss_Not01__1_1.U8V = rU,
     stt_LULss_DT_15__4_2.bool_val.bt0 = stt_LULss_T_IMP_27__1_1.bool_val.bt7;// C <- current state SYNCRO
     m_chInC11 = stt_LULss_DT_15__4_2.bool_val.bt0;
     m_chQTrg11= stt_LULss_DT_15__4_2.bool_val.bt7;
-    //  
+     stt_LULss_DT_15__4_2.bool_val.bt6 = (~(static_cast<unsigned>(m_chQTrg11)))&1;  
      rU = stt_LULss_DT_15__4_2.bool_val.bt7;
     stt_LULss_Not01__1_1.bool_val.bt1 = rU;
     stt_LULss_Not01__1_1.bool_val.bt7 = (~rU)&1;
@@ -1104,13 +1110,13 @@ stt_LULss_Not01__1_1.U8V = rU,
     m_chInC29 =  rU;
     stt_LULss_DT_13__4_2.bool_val.bt0 =  rU;// C <- current state SYNCRO
     m_chQTrg29 = stt_LULss_DT_13__4_2.bool_val.bt7;// 
-
+stt_LULss_DT_13__4_2.bool_val.bt6 = (~(static_cast<unsigned>(m_chQTrg29)))&1;
 
     stt_LULss_And21__4_1.bool_val.bt0 = wrp.bool_vars.LSS_NORMAL;
     stt_LULss_And21__4_1.bool_val.bt1 = wrp.bool_vars.LSS_LSSIN1;
     stt_LULss_And21__4_1.bool_val.bt2 = stt_LULss_Not20__1_1.bool_val.bt7;
     stt_LULss_And21__4_1.bool_val.bt3 = stt_LULss_DT_13__4_2.bool_val.bt6;
-    if(( stt_LULss_And21__4_1.U8V &7) == 15){
+    if(( stt_LULss_And21__4_1.U8V &15) == 15){
          stt_LULss_And21__4_1.bool_val.bt7 = 1;
     } 
 
@@ -1118,7 +1124,7 @@ stt_LULss_Not01__1_1.U8V = rU,
     stt_LULss_And22__4_1.bool_val.bt1 = wrp.bool_vars.LSS_LSSIN1;
     stt_LULss_And22__4_1.bool_val.bt2 = stt_LULss_Not20__1_1.bool_val.bt7;
     stt_LULss_And22__4_1.bool_val.bt3 = stt_LULss_DT_13__4_2.bool_val.bt7;
-    if(( stt_LULss_And22__4_1.U8V &7) == 15){
+    if(( stt_LULss_And22__4_1.U8V &15) == 15){
          stt_LULss_And22__4_1.bool_val.bt7 = 1;
     } 
 
@@ -1127,7 +1133,7 @@ stt_LULss_Not01__1_1.U8V = rU,
     stt_LULss_And23__4_1.bool_val.bt1 = stt_LULss_DT_15__4_2.bool_val.bt7;
     stt_LULss_And23__4_1.bool_val.bt2 = stt_LULss_Not20__1_1.bool_val.bt7;
     stt_LULss_And23__4_1.bool_val.bt3 = stt_LULss_DT_13__4_2.bool_val.bt6;
-    if(( stt_LULss_And23__4_1.U8V &7) == 15){
+    if(( stt_LULss_And23__4_1.U8V &15) == 15){
          stt_LULss_And23__4_1.bool_val.bt7 = 1;
     } 
 
@@ -1136,7 +1142,7 @@ stt_LULss_Not01__1_1.U8V = rU,
     stt_LULss_And24__4_1.bool_val.bt1 = stt_LULss_Or_19__2_1.bool_val.bt7;
     stt_LULss_And24__4_1.bool_val.bt2 = stt_LULss_Not20__1_1.bool_val.bt7;
     stt_LULss_And24__4_1.bool_val.bt3 = stt_LULss_DT_13__4_2.bool_val.bt7;
-    if(( stt_LULss_And24__4_1.U8V &7) == 15){
+    if(( stt_LULss_And24__4_1.U8V &15) == 15){
          stt_LULss_And24__4_1.bool_val.bt7 = 1;
     } 
 
