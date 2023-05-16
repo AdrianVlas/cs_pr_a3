@@ -264,7 +264,7 @@ unsigned int time_delta_watchdog_output = 0;
 unsigned int time_delta_watchdog_output_min = 0xffff*10;
 unsigned int time_delta_watchdog_output_max = 0;
 
-SRAM1 short int word_SRAM1;
+SRAM1 short int volatile word_SRAM1;
 
 //I2C
 SRAM1 unsigned char Temporaty_I2C_Buffer[SIZE_PAGE_EEPROM + 2];

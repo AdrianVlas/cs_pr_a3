@@ -1,23 +1,5 @@
 #include "header.h"
 
-const unsigned char matrix[16][8] = {
-                                     {0x0A, 0x00, 0x0E, 0x04, 0x04, 0x04, 0x0E, 0x00}, // Ї
-                                     {0x00, 0x0A, 0x00, 0x0C, 0x04, 0x04, 0x0E, 0x00}, // ї
-                                     {0x01, 0x1F, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00}, // Ґ
-                                     {0x00, 0x00, 0x01, 0x1F, 0x10, 0x10, 0x10, 0x00}, // ґ
-                                     {0x0E, 0x11, 0x10, 0x1C, 0x10, 0x11, 0x0E, 0x00}, // Є
-                                     {0x00, 0x00, 0x0E, 0x11, 0x1C, 0x11, 0x0E, 0x00}, // є
-                                     {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
-                                     {0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Љ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                     {0x00, 0x00, 0x0E, 0x11, 0x1F, 0x11, 0x0E, 0x00}, // љ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                     {0x0E, 0x11, 0x01, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                     {0x00, 0x00, 0x0E, 0x01, 0x1F, 0x11, 0x0E, 0x00}, // ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                     {0x11, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04, 0x00}, // Ђ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                     {0x00, 0x00, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04},  // ђ - замінний символ з даним кодом для WIN1251 для казазської мови
-                                     {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
-                                     {0x0E, 0x11, 0x11, 0x11, 0x11, 0x0A, 0x1B, 0x00}, // Ї, як замынник  великоъ букви Омега для англійської розкладки клавіатури
-                                     {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}  // ‰, як замінник грецької літери "дельта"
-                                    }; 
 /*****************************************************/
 //Очікування, поки контролер LCD буде вільним
 /*****************************************************/
@@ -55,15 +37,31 @@ inline unsigned int wait_lcd_ready(void)
     if (new_count_tim4 >= current_count_tim4) delta = new_count_tim4 - current_count_tim4;
     else delta = (0x10000 - current_count_tim4) + new_count_tim4; //0x10000 - це повний період таймера, бо ми настроїли його тактуватиу інтервалі [0; 65535]
     
-    if (delta >= 1001) //(1000 + 1)* 0,01(мс) = 10,01(мс)
+    if ((temp_data & (1<<BF_BIT)) != 0)
     {
-      error_LCD = 1; //Пройшов час більше 10,01 мс з а який LCD не підтвердив операцію
+      if (delta >= 1001) //(1000 + 1)* 0,01(мс) = 10,01(мс)
+      {
+        //Є підозра на проблеми з LCD, але ще треба перевірити чи це не затримка через критчномалий ресурс
 
-      //Виставляємо повідомлення про цю подію
-      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_LCD_BIT);
+        //Затримка на неменше ніж 40 нс
+        _DELAY_ABOUT_40NS();
+        temp_data =  *((unsigned char *) LCD_BASE);
+        //Затримка на неменше ніж 10 нс
+        _DELAY_ABOUT_10NS();
+        
+        if ((temp_data & (1<<BF_BIT)) != 0)
+        {
+          //Таки помилка підтвердилася
+          error_LCD = 1; //Пройшов час більше 10,01 мс з а який LCD не підтвердив операцію
+        }
+        else 
+        {
+          //Чей час > 10,01 мс більш пріоритетні задачі не давали можливості драйверу LCD працювати. З LCD все нормально
+          count++;
+        }
+      }
+      else count = 0;
     }
-    
-    if ((temp_data & (1<<BF_BIT)) != 0) count = 0;
     else count++;
   }
   while (
@@ -73,6 +71,30 @@ inline unsigned int wait_lcd_ready(void)
   
   return error_LCD;
   
+}
+/*****************************************************/
+
+/*****************************************************/
+//Чианння даних з контролера LCD
+/*****************************************************/
+inline unsigned int read_data_from_lcd(unsigned char *p_letter)
+{
+  //Очікуємо поки LCD будк вільним
+  unsigned int error_LCD = wait_lcd_ready();
+  if (error_LCD == 0)
+  {
+    //Виставляємо лінію LCD_RS = 1
+    GPIO_SetBits(LCD_RS, LCD_RS_PIN);
+    //Виставляємо лінію LCD_RW = 1
+    GPIO_SetBits(LCD_RW, LCD_RW_PIN);
+    //Затримка на неменше ніж 40 нс
+    _DELAY_ABOUT_40NS();
+    *p_letter = *((unsigned char *) LCD_BASE);
+    //Затримка на неменше ніж 10 нс
+    _DELAY_ABOUT_10NS();
+  }
+  
+  return error_LCD;
 }
 /*****************************************************/
 
@@ -122,7 +144,7 @@ inline unsigned int Win1251toHd44780 (unsigned int win1251Letter)
     //Ця умова мала б виконуватися завжди
     for (unsigned int i = 0; i < MAX_NYMBER_EXTRA_EXTENDED_ASCII_SYMBOLS; i ++ )
     {
-      if ( extra_letters[i][0] == win1251Letter )
+      if ( extra_letters [i][0] == win1251Letter )
       return extra_letters[i][current_language];
     }
   }
@@ -277,6 +299,17 @@ void lcd_init(void)
   //Відображення включено, курсор є і не мигає
   if (error_LCD == 0) write_command_to_lcd(0x0E);
 
+  if (error_LCD != 0) 
+  {
+    //Виставляємо повідомлення про цю подію
+    if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_LCD_BIT);
+  }
+  else
+  {
+    //Скидаємо повідомлення про цю подію
+    if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_LCD_BIT);
+  }
+  
   //Робота з watchdogs
   if ((control_word_of_watchdog & WATCHDOG_KYYBOARD) == WATCHDOG_KYYBOARD)
   {
@@ -343,18 +376,41 @@ unsigned int hd44780_puts (unsigned char *s, unsigned int len)
 /*****************************************************/
 
 /*****************************************************/
+//Тест достовірності виведеного рядка на LCD
+/*****************************************************/
+unsigned int hd44780_test (unsigned char *s, unsigned int len)
+{
+  unsigned int letter, error_LCD = 0;
+  
+  unsigned int i = 0;
+  while(
+        (i < len       ) &&
+        (error_LCD == 0)  
+       )
+  { 
+    letter = Win1251toHd44780 (s [i++]); // байт даних
+    unsigned char letter_test;
+    error_LCD = read_data_from_lcd(&letter_test);
+    if (error_LCD == 0) error_LCD = (letter_test != letter);
+  }
+  
+  return error_LCD;
+} 
+/*****************************************************/
+
+/*****************************************************/
 //Перенос курсору у вказану позицію
 /*****************************************************/
 unsigned int hd44780_gotoxy(unsigned char x, unsigned char y)
 {
   unsigned char address, writeValue;
 
-  //Вирахувати адрес курсору (0x40 - адрес початку другого рядка)
-  // address = y * 0x40 + x;
   address = 0; // default
   switch (y)
   { 
-    case 0: // 0-ий рядок
+#if POWER_MAX_ROW_LCD == 1
+    
+  case 0: // 0-ий рядок
       { 
         address = 0x00;
         break;
@@ -365,6 +421,30 @@ unsigned int hd44780_gotoxy(unsigned char x, unsigned char y)
         address = 0x40;
         break;
       }
+#elif POWER_MAX_ROW_LCD == 2
+      
+  case 0: // 0-ий рядок
+      { 
+        address = 0x00;
+        break;
+      }
+    case 1: // 1-ий рядок
+      {
+        address = 0x40;
+        break;
+      }
+    case 2: // 2-ий рядок
+      { 
+        address = 0x10;
+        break;
+      }
+
+    case 3: // 3-ий рядок
+      {
+        address = 0x50;
+        break;
+      }
+#endif
   }
 
   // додати стовбець
@@ -386,6 +466,11 @@ unsigned int hd44780_puts_xy (unsigned char x, unsigned char y, unsigned char *s
 {
   unsigned int error_LCD = hd44780_gotoxy (x,y);
   if (error_LCD == 0) error_LCD = hd44780_puts (s, MAX_COL_LCD);
+  if (error_LCD == 0)
+  {
+    error_LCD = hd44780_gotoxy (x,y);
+    if (error_LCD == 0) error_LCD = hd44780_test (s, MAX_COL_LCD);
+  }
   
   return error_LCD;
 }
@@ -399,8 +484,10 @@ void view_whole_ekran(void)
   if (current_state_menu2.current_action != ACTION_WITH_CARRENT_EKRANE_NONE)
   {
     if (
-        (diagnostyka     == NULL) ||
-        (set_diagnostyka == NULL) ||
+        (diagnostyka       == NULL) ||
+        (set_diagnostyka   == NULL) ||
+        (clear_diagnostyka == NULL) ||
+        (_CHECK_SET_BIT(clear_diagnostyka, ERROR_LCD_BIT) != 0) ||
         (
          (_CHECK_SET_BIT(    diagnostyka, ERROR_LCD_BIT) == 0) &&
          (_CHECK_SET_BIT(set_diagnostyka, ERROR_LCD_BIT) == 0)
@@ -427,6 +514,12 @@ void view_whole_ekran(void)
       if (error_LCD == 0) error_LCD = hd44780_gotoxy ((current_state_menu2.position_cursor_x & (MAX_COL_LCD -1)),(current_state_menu2.position_cursor_y & (MAX_ROW_LCD -1)));
       //Виставляємо стан курсора: включено-виключено; мигає- не мигає
       if (error_LCD == 0) error_LCD = mode_viewing(1, current_state_menu2.cursor_on, current_state_menu2.cursor_blinking_on);
+
+      if (error_LCD != 0) 
+      {
+        //Виставляємо повідомлення про цю подію
+        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_LCD_BIT);
+      }
     }
     
     //Знімаємо повідомлення, що екран требе зараз обновити
@@ -511,50 +604,80 @@ int index_language_in_array(int language)
 
     current_language = language_tmp;
           
+    if (error_LCD == 0)
+    {
+			const unsigned char matrix[16][8] = {
+      			                               {0x0A, 0x00, 0x0E, 0x04, 0x04, 0x04, 0x0E, 0x00}, // Ї
+            			                         {0x00, 0x0A, 0x00, 0x0C, 0x04, 0x04, 0x0E, 0x00}, // ї
+                  			                   {0x01, 0x1F, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00}, // Ґ
+                        			             {0x00, 0x00, 0x01, 0x1F, 0x10, 0x10, 0x10, 0x00}, // ґ
+                              			       {0x0E, 0x11, 0x10, 0x1C, 0x10, 0x11, 0x0E, 0x00}, // Є
+                                    			 {0x00, 0x00, 0x0E, 0x11, 0x1C, 0x11, 0x0E, 0x00}, // є
+     			                                 {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
+          			                           {0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Љ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                     			 {0x00, 0x00, 0x0E, 0x11, 0x1F, 0x11, 0x0E, 0x00}, // љ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                     			 {0x0E, 0x11, 0x01, 0x1F, 0x11, 0x11, 0x0E, 0x00}, // Ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
+			                                     {0x00, 0x00, 0x0E, 0x01, 0x1F, 0x11, 0x0E, 0x00}, // ѕ - замінний символ з даним кодом для WIN1251 для казазської мови
+ 			                                     {0x11, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04, 0x00}, // Ђ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                     			 {0x00, 0x00, 0x11, 0x0A, 0x04, 0x1F, 0x04, 0x04},  // ђ - замінний символ з даним кодом для WIN1251 для казазської мови
+                                     			 {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}, // ‰, як замінник грецької літери "дельта"
+                                     			 {0x0E, 0x11, 0x11, 0x11, 0x11, 0x0A, 0x1B, 0x00}, // Ї, як замынник  великоъ букви Омега для англійської розкладки клавіатури
+                                     			 {0x00, 0x00, 0x00, 0x04, 0x0A, 0x11, 0x1F, 0x00}  // ‰, як замінник грецької літери "дельта"
+                                    			}; 
             
-    unsigned int number_new_extra_symbols = 0, index_for_symbol;
+      unsigned int number_new_extra_symbols = 0, index_for_symbol = 0;
             
-    if (current_language == LANGUAGE_EN)
-    {
-      number_new_extra_symbols = 2;
-      index_for_symbol = 14;
-    }
-    else if (current_language == LANGUAGE_UA)
-    {
-      number_new_extra_symbols = 3*2 + 1;
-      index_for_symbol = 0;
-    }
-    else if (current_language == LANGUAGE_KZ)
-    {
-      number_new_extra_symbols = 3*2 + 1;
-      index_for_symbol = 7;
-    }
-    else if (current_language == LANGUAGE_RU)
-    {
-      number_new_extra_symbols = 1;
-      index_for_symbol = 15;
-    }
-      
-    if (number_new_extra_symbols != 0)
-    {
-      //Встановлюємо адресу AC в 0x00 CGRAM
-      error_LCD = write_command_to_lcd(0x40 | 0x00);
-  
-      //Записуємо маттрицю символа
-      unsigned int i = 0, j = index_for_symbol, k = 0;
-      while(
-            (i < number_new_extra_symbols) &&
-            (error_LCD == 0)  
-           )
-      { 
-        error_LCD = write_data_to_lcd(matrix[j][k++]);
-        if (k >= 8)
-        {
-          k = 0;
-          j++;
-          i++;
-        }
+      if (current_language == LANGUAGE_EN)
+      {
+        number_new_extra_symbols = 2;
+        index_for_symbol = 14;
       }
+      else if (current_language == LANGUAGE_UA)
+      {
+        number_new_extra_symbols = 3*2 + 1;
+        index_for_symbol = 0;
+      }
+      else if (current_language == LANGUAGE_KZ)
+      {
+        number_new_extra_symbols = 3*2 + 1;
+        index_for_symbol = 7;
+      }
+    	else if (current_language == LANGUAGE_RU)
+    	{
+      	number_new_extra_symbols = 1;
+      	index_for_symbol = 15;
+    	}
+                                 
+    	if (number_new_extra_symbols != 0)
+    	{
+	      //Встановлюємо адресу AC в 0x00 CGRAM
+  	    error_LCD = write_command_to_lcd(0x40 | 0x00);
+  
+    	  if (error_LCD == 0)
+      	{
+        	//Записуємо маттрицю символа
+        	unsigned int i = 0, j = index_for_symbol, k = 0;
+        	while(
+          	    (i < number_new_extra_symbols) &&
+              	(error_LCD == 0)  
+             	 )
+        	{ 
+          	error_LCD = write_data_to_lcd(matrix[j][k++]);
+          	if (k >= 8)
+          	{
+            	k = 0;
+            	j++;
+            	i++;
+          	}
+        	}
+      	}
+      }
+    }
+
+    if (error_LCD != 0) 
+    {
+      //Виставляємо повідомлення про цю подію
+      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_LCD_BIT);
     }
   }
   

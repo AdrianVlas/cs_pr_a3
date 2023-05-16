@@ -2426,7 +2426,7 @@ void main_routines_for_i2c(void)
             }
           case ID_FB_TRIGGER:
             {
-              size_of_data = current_config.n_trigger*DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
+              size_of_data = current_config_prt.n_trigger*DIV_TO_HIGHER(TRIGGER_D_TRIGGER_TOTAL, 8);
               break;
             }
           default:

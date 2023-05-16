@@ -75,6 +75,8 @@ extern unsigned int wait_lcd_ready(void);
 extern unsigned int clear_lcd(void);
 extern unsigned int mode_viewing(unsigned int, unsigned int, unsigned int);
 extern unsigned int hd44780_puts(unsigned char *, unsigned int);
+extern unsigned int hd44780_test(unsigned char *, unsigned int);
+extern unsigned int read_data_from_lcd(unsigned char*);
 extern unsigned int Win1251toHd44780 (unsigned int);
 extern unsigned int write_data_to_lcd(unsigned char);
 extern unsigned int write_command_to_lcd(unsigned char);

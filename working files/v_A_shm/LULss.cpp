@@ -958,9 +958,10 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
 
     stt_LULss_DT_15__4_2.bool_val.bt3 = wrp.bool_vars.IN_LSS_GROUND;
     stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;//!??
+    stt_LULss_DT_15__4_2.bool_val.bt7 = static_cast<unsigned>(m_chQTrg11);
 
-    rU = stt_LULss_T_IMP_27__1_1.bool_val.bt7;
-    stt_LULss_DT_15__4_2.bool_val.bt1 = stt_LULss_Or_18__3_1.bool_val.bt7;//!??
+    //..rU = stt_LULss_T_IMP_27__1_1.bool_val.bt7;
+    //?..stt_LULss_DT_15__4_2.bool_val.bt1 = stt_LULss_Or_18__3_1.bool_val.bt7;//!??
       //0- clr Should be                 @/NOW USE \@      0 - SYNCRO
       //1- D input                       @/NOW USE \@      1 CLR INPUT
       //2- C                             @/NOW USE \@      2 - D-INPUT
@@ -968,8 +969,8 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
       //5 - Q                            @/NOW USE \@      7 -Q
       //6 -q^                            @/NOW USE \@      6 -Q^
 
-    if ( (stt_LULss_DT_15__4_2.U8V&3) == 0x0A)
-        m_chErrorQTrg11 = stt_LULss_DT_15__4_2.U8V;//!?
+    //..if ( (stt_LULss_DT_15__4_2.U8V&3) == 0x0A)
+    //..    m_chErrorQTrg11 = stt_LULss_DT_15__4_2.U8V;//!? Erroneus combination
       // RESET BLOCK
     if (stt_LULss_Or_18__3_1.bool_val.bt7 == 1)
     {                                     // dbg code(mean->).bt1 == 1 CLR INPUT
@@ -992,34 +993,35 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
       {
             stt_LULss_DT_15__4_2.U8V &= (1 << 7) | (1 << 6);
             rU = wrp.bool_vars.IN_LSS_VCC;
-            stt_LULss_DT_15__4_2.bool_val.bt2 = rU;
+            //?stt_LULss_DT_15__4_2.bool_val.bt2 = rU;// D-INPUT
             stt_LULss_DT_15__4_2.bool_val.bt7 = rU;          // Q
             //???stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;
-            stt_LULss_DT_15__4_2.bool_val.bt6 = (~rU)&1; // Q^
+             // Q^
       }
  
-      stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC; // D
+      stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC; // D-INPUT  
       stt_LULss_DT_15__4_2.bool_val.bt1 = 0;                     // Clr    wrp.bool_vars.IN_LSS_GROUND
     }
     stt_LULss_DT_15__4_2.bool_val.bt0 = stt_LULss_T_IMP_27__1_1.bool_val.bt7;// C <- current state SYNCRO
     m_chInC11 = stt_LULss_DT_15__4_2.bool_val.bt0;
-    m_chQTrg11= stt_LULss_DT_15__4_2.bool_val.bt7;
-     stt_LULss_DT_15__4_2.bool_val.bt6 = (~(static_cast<unsigned>(m_chQTrg11)))&1;  
-     rU = stt_LULss_DT_15__4_2.bool_val.bt7;
-    stt_LULss_Not01__1_1.bool_val.bt1 = rU;
+    rU = stt_LULss_DT_15__4_2.bool_val.bt7 ;// Q^
+    m_chQTrg11= rU;
+     stt_LULss_DT_15__4_2.bool_val.bt6 = (~(rU))&1;  
+    //? rU = stt_LULss_DT_15__4_2.bool_val.bt7;
+    stt_LULss_Not01__1_1.bool_val.bt0 = rU;
     stt_LULss_Not01__1_1.bool_val.bt7 = (~rU)&1;
 
-    stt_LULss_And03__3_1.bool_val.bt0 = stt_LULss_DT_15__4_2.bool_val.bt7;
+    stt_LULss_And03__3_1.bool_val.bt0 = rU;//..stt_LULss_DT_15__4_2.bool_val.bt7;
     stt_LULss_And03__3_1.bool_val.bt1 = stt_LULss_Or_14__2_1.bool_val.bt7;
     stt_LULss_And03__3_1.bool_val.bt2 = wrp.bool_vars.LSS_MUTE_I;
     if(( stt_LULss_And03__3_1.U8V &7) == 7){
          stt_LULss_And03__3_1.bool_val.bt7 = 1;
     } 
-     rU = stt_LULss_DT_15__4_2.bool_val.bt7;
-    stt_LULss_Not10__1_1.bool_val.bt1 = rU;
+    //.. rU = stt_LULss_DT_15__4_2.bool_val.bt7;
+    stt_LULss_Not10__1_1.bool_val.bt0 = rU;
     stt_LULss_Not10__1_1.bool_val.bt7 = (~rU)&1;
 
-    stt_LULss_Or_19__2_1.bool_val.bt0 = stt_LULss_DT_15__4_2.bool_val.bt7;
+    stt_LULss_Or_19__2_1.bool_val.bt0 = rU;//..stt_LULss_DT_15__4_2.bool_val.bt7;
     stt_LULss_Or_19__2_1.bool_val.bt1 = wrp.bool_vars.LSS_LSSIN1;
     if((stt_LULss_Or_19__2_1.U8V &3) != 0){
         stt_LULss_Or_19__2_1.bool_val.bt7 = 1;
@@ -1067,8 +1069,9 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     stt_LULss_DT_13__4_2.bool_val.bt3 = wrp.bool_vars.IN_LSS_GROUND;
 
     stt_LULss_DT_13__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;//!??
-    //?..rU = stt_LULss_T_IMP_27__1_1.bool_val.bt7;
-    stt_LULss_DT_13__4_2.bool_val.bt1 = stt_LULss_Or_11__3_1.bool_val.bt7;//!??
+    stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;//static_cast<unsigned>(m_chQTrg29)
+    //stt_LULss_DT_13__4_2.bool_val.bt6 = wrp.bool_vars.LSS_D_TRG_29__4_2_NOT_Q
+    //
       //0- clr Should be                 @/NOW USE \@      0 - SYNCRO
       //1- D input                       @/NOW USE \@      1 CLR INPUT
       //2- C                             @/NOW USE \@      2 - D-INPUT
@@ -1109,8 +1112,9 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     rU = stt_LULss_Or_11__3_1.bool_val.bt7;
     m_chInC29 =  rU;
     stt_LULss_DT_13__4_2.bool_val.bt0 =  rU;// C <- current state SYNCRO
-    m_chQTrg29 = stt_LULss_DT_13__4_2.bool_val.bt7;// 
-stt_LULss_DT_13__4_2.bool_val.bt6 = (~(static_cast<unsigned>(m_chQTrg29)))&1;
+    rU = stt_LULss_DT_13__4_2.bool_val.bt7;
+    m_chQTrg29 = rU;// 
+    stt_LULss_DT_13__4_2.bool_val.bt6 = (~(rU))&1;
 
     stt_LULss_And21__4_1.bool_val.bt0 = wrp.bool_vars.LSS_NORMAL;
     stt_LULss_And21__4_1.bool_val.bt1 = wrp.bool_vars.LSS_LSSIN1;

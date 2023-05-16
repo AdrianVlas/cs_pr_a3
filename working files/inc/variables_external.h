@@ -154,7 +154,7 @@ extern unsigned int time_delta_watchdog_output;
 extern unsigned int time_delta_watchdog_output_min;
 extern unsigned int time_delta_watchdog_output_max;
 
-extern short int word_SRAM1;
+extern short int volatile word_SRAM1;
 
 extern unsigned char Temporaty_I2C_Buffer[SIZE_PAGE_EEPROM + 2];
 extern uint16_t number_busy_state;

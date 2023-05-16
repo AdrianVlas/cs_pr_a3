@@ -34,13 +34,16 @@
 #define _DELAY_ABOUT_40NS()\
         {                  \
            word_SRAM1 = 1; \
+           word_SRAM1 = 2; \
+           word_SRAM1 = 3; \
         }
 
 #define _DELAY_ABOUT_10NS()\
         {                  \
            word_SRAM1 = 1; \
+           word_SRAM1 = 2; \
+           word_SRAM1 = 3; \
         }
-
 //#define _DELAY_ABOUT_40NS()  \
 //        {                    \
 //          __no_operation();  \
