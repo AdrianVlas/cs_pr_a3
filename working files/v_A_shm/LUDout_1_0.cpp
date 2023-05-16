@@ -432,30 +432,60 @@ pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
     
     pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] &= ~(1<<OUTPUT_LED_OUT);//Clr
     pLN_OUTPUT->active_state[(OUTPUT_LED_OUT/8) ] |= j<<OUTPUT_LED_OUT;
-    if(DoCheckUI32Bit.ul_val &((1) << i) ){
-       // pLN_OUTPUT->active_state[(OUTPUT_LED_ERROR/8) ] |= 1<<OUTPUT_LED_ERROR;
-       //#define _SET_BIT(_array, _number_bit)                                           \
-      //_array[_number_bit >> 5] |= (unsigned int)(1 << (_number_bit & 0x1f)) 
-        if (set_diagnostyka != NULL){
-            set_diagnostyka[(ERROR_DIGITAL_OUTPUTS_BIT+i)>>5] |= 
-            static_cast<unsigned int>(1 << ((ERROR_DIGITAL_OUTPUTS_BIT+i) & 0x1f)); 
-        }
-    }
+    //???if(DoCheckUI32Bit.ul_val &((1) << i) ){
+    //???   // pLN_OUTPUT->active_state[(OUTPUT_LED_ERROR/8) ] |= 1<<OUTPUT_LED_ERROR;
+    //???   //#define _SET_BIT(_array, _number_bit)                                           \
+    //???  //_array[_number_bit >> 5] |= (unsigned int)(1 << (_number_bit & 0x1f)) 
+    //???    if (set_diagnostyka != NULL){
+    //???        set_diagnostyka[(ERROR_DIGITAL_OUTPUTS_BIT+i)>>5] |= 
+    //???        static_cast<unsigned int>(1 << ((ERROR_DIGITAL_OUTPUTS_BIT+i) & 0x1f)); 
+    //???    }
+    //???}
     if(boolchQTrg06 != static_cast<bool>(m_chQTrg06) ){
     pLN_OUTPUT->d_trigger_state[OUTPUT_LED_D_TRIGGER_1/8] = m_chQTrg06<<OUTPUT_LED_D_TRIGGER_1;
     chGlb_ActivatorWREeprom++;//_SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
     } 
     
 }
+
 void UpdateOutDiagn(void){
 //    if()
-    for(long i = 0, lAmtOut = current_config_prt.n_output; i< lAmtOut;i++){
-        if(DoCheckUI32Bit.ul_val &((1) << i) ){
-            if (set_diagnostyka != NULL){
-                set_diagnostyka[(ERROR_DIGITAL_OUTPUTS_BIT+i)>>5] |= 
-                static_cast<unsigned int>(1 << ((ERROR_DIGITAL_OUTPUTS_BIT+i) & 0x1f)); 
+    //?for(long i = 0, lAmtOut = current_config_prt.n_output; i< lAmtOut;i++){
+    //?    if(DoCheckUI32Bit.ul_val &((1) << i) ){
+    //?        if (set_diagnostyka != NULL){
+    //?            set_diagnostyka[(ERROR_DIGITAL_OUTPUTS_BIT+i)>>5] |= 
+    //?            static_cast<unsigned int>(1 << ((ERROR_DIGITAL_OUTPUTS_BIT+i) & 0x1f)); 
+    //?        }
+    //?    }
+    //?}
+      static uint32_t error_rele[NUMBER_OUTPUTS];
+      uint32_t lAmtOut = current_config_prt.n_output;
+      //?if (control_state_outputs != state_outputs_raw)
+      if (DoCheckUI32Bit.ul_val != 0)
+      {
+        for (size_t index = 0; index < lAmtOut; ++index)
+        {
+          //?uint32_t maska = 1 << index;
+        
+          //?if ((control_state_outputs & maska) != (state_outputs_raw & maska))
+          if (DoCheckUI32Bit.ul_val &((1) << index))
+          {
+            if (error_rele[index] < 3) ++error_rele[index];
+            if (error_rele[index] >= 3 ){
+                //?_SET_BIT(set_diagnostyka, (ERROR_DIGITAL_OUTPUT_1_BIT + index));
+                if (set_diagnostyka != NULL){
+                set_diagnostyka[(ERROR_DIGITAL_OUTPUTS_BIT+index)>>5] |= 
+                static_cast<unsigned int>(1 << ((ERROR_DIGITAL_OUTPUTS_BIT+index) & 0x1f)); 
+                }
             }
+          }
+          else error_rele[index] = 0;
         }
-    }
+      }
+      else
+      {
+        for (size_t index = 0; index < lAmtOut; ++index)
+            error_rele[index] = 0;
+      }
 
 }
