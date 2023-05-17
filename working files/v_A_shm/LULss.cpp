@@ -31,12 +31,15 @@ CLULss::CLULss(char chM,char chI) {
     m_Node1_1Ms.lTmrVal = 0;
     m_Node1_1Ms.next = 0;
     m_Node1_2Ms.lTmrVal = 0;
-    m_Node1_2Ms.next = 0;
+    m_Node1_2Ms.next = 0;;
+    m_Node1_3Ms.lTmrVal = 0;
+    m_Node1_3Ms.next = 0;
     m_NodeCs.lTmrVal = 0;
     m_NodeCs.next = 0;
     m_chLinkedTimers = 0;
     m_chStateT1_1Ms = 0;
     m_chStateT1_2Ms = 0;
+    m_chStateT1_3Ms = 0;
     m_chStateTCs = 0;
 m_chQTrg29 = 0;
 m_chQTrg11 = 0;
@@ -93,7 +96,8 @@ long CLULss::LinkLssTimers(void) {
 long CLULss::T1_1Ms(long lActivKey) {
 register long *plTmrVal = &m_Node1_1Ms.lTmrVal;
 register long lResetKey = 0;
-    if (lActivKey) {
+    if (lActivKey)
+    {
         if (m_chStateT1_1Ms == 0) {
             lActivKey = 1;//m_MftSuit.lTWork;
             *plTmrVal = lActivKey;
@@ -101,12 +105,17 @@ register long lResetKey = 0;
                 *plTmrVal = lActivKey;
             m_chStateT1_1Ms = 1;
             return 1;
-        } else {
+        }
+        else if (m_chStateT1_1Ms >= 1) {
             lActivKey = *plTmrVal;
             if (lActivKey != 0)
                 return 1; //
+            //else
+            //return 0;//    m_chStateT1_1Ms = 0;//
         }
-    } else {
+    }
+    else
+    {
         if (m_chStateT1_1Ms == 1) {//Activated
             lActivKey = *plTmrVal;
             if (lActivKey != 0)
@@ -119,7 +128,7 @@ register long lResetKey = 0;
         m_chStateT1_1Ms = 0;
         *plTmrVal = 0;
     }
-    return 0;	
+    return 0;
 }
 long CLULss::T1_2Ms(long lActivKey){
 register long *plTmrVal = &m_Node1_2Ms.lTmrVal;
@@ -917,6 +926,11 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
 
     stt_LULss_T_IMP_27__1_1.bool_val.bt0 = rU;
     lV = T1_1Ms(rU);
+    //..dbg if(lV != 0){
+    //..dbg asm(
+    //..dbg             "bkpt 1"
+    //..dbg );
+    //..dbg }
     stt_LULss_T_IMP_27__1_1.bool_val.bt7 = lV;
 
     stt_LULss_And06__2_1.bool_val.bt0 = stt_LULss_Not05__1_1.bool_val.bt7;
@@ -943,9 +957,19 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     rU = stt_LULss_And17__3_1.bool_val.bt7;
     stt_LULss_T_T_0_29__1_1.bool_val.bt0 = rU;
     lV = TCs(rU);//
+    //.dbg-..if(lV != 0){
+    //.dbg-..asm(
+    //.dbg-..            "bkpt 1"
+    //.dbg-..);
+    //.dbg-..}
     stt_LULss_T_T_0_29__1_1.bool_val.bt1 = lV;
     //rU = lV;
     lV = T1_3Ms(stt_LULss_T_T_0_29__1_1.bool_val.bt1);//!@lV = T1_3Ms(rU);
+    //.dbg-..if(lV != 0){
+    //.dbg-..asm(
+    //.dbg-..            "bkpt 1"
+    //.dbg-..);
+    //.dbg-..}
     stt_LULss_T_0_T_add1ms_29__1_1.bool_val.bt7 =  lV;
 
     stt_LULss_Or_18__3_1.bool_val.bt0 = stt_LULss_T_0_T_add1ms_29__1_1.bool_val.bt7;
@@ -997,7 +1021,12 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
             stt_LULss_DT_15__4_2.bool_val.bt7 = rU;          // Q
             //???stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;
              // Q^
-      }
+            //.dbg-..if(rU != 0){
+            //.dbg-..asm(
+            //.dbg-..            "bkpt 1"
+            //.dbg-..);
+            //.dbg-..}
+       }       
  
       stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC; // D-INPUT  
       stt_LULss_DT_15__4_2.bool_val.bt1 = 0;                     // Clr    wrp.bool_vars.IN_LSS_GROUND
@@ -1037,7 +1066,12 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
 
     rU = stt_LULss_Not01__1_1.bool_val.bt7;
     stt_LULss_T_IMP_28__1_1.bool_val.bt0 = rU;
-    lV = T1_1Ms(rU);
+    lV = T1_2Ms(rU);
+    //.dbg-.. if(lV != 0){
+    //.dbg-.. asm(
+    //.dbg-..             "bkpt 1"
+    //.dbg-.. );
+    //.dbg-.. }
     stt_LULss_T_IMP_28__1_1.bool_val.bt7 = lV;
 
 
@@ -1104,7 +1138,12 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
             stt_LULss_DT_13__4_2.bool_val.bt7 = rU;          // Q
             //???stt_LULss_DT_13__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;
             stt_LULss_DT_13__4_2.bool_val.bt6 = (~rU)&1; // Q^
-      }
+             //.dbg-..  if(rU != 0){
+             //.dbg-..  asm(
+             //.dbg-..              "bkpt 1"
+             //.dbg-..  );
+             //.dbg-..  }
+      }           
  
       stt_LULss_DT_13__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC; // D
       stt_LULss_DT_13__4_2.bool_val.bt1 = 0;                     // Clr    wrp.bool_vars.IN_LSS_GROUND
@@ -1224,11 +1263,15 @@ register __LN_ALARM *p__LN_ALARM =  static_cast<__LN_ALARM*>(pvCfgLN);
 char chGBL_BP_StopLss = 0;
 void LssOp	(void *pObj){
 CLULss& rCLULss = *(static_cast<CLULss*>(pObj));
-if(chGBL_BP_StopLss == rCLULss.shShemasOrdNumStng)
+if(chGBL_BP_StopLss == rCLULss.shShemasOrdNumStng){
     asm(
                 "bkpt 1"
                 );
-rCLULss.CalcLssSchematicOptManual();
+ //rCLULss.CalcLssSchematicOpt();//
+ rCLULss.CalcLssSchematicOptManual();//
+ return;
+}
+ rCLULss.CalcLssSchematicOptManual();//
 }
 
 
