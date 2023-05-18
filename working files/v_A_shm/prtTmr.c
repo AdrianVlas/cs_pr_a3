@@ -174,11 +174,16 @@ char chGbl__REL7_REL14__RW_VAL;
 short shGbl__REL7_REL14__RD_VAL;
 short shGblDOCheckIn;
 
-
-short shCheckIndicator;
+long DI_Copy;
+char firstWritingDOIndicator = 0, counterReadDI = 0;
+short shCheckIndicator, shReadedCheckIndicator;
+short arReadedDIVal[] = {
+ 0,0,0,0,0, 0,0 
+};
 UI32Bit DiHrdStateUI32Bit;//, DiHrdStateUI32Bit
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 //---
+extern void RdHrdIn_V0(void*pv);
 extern void RdHrdIn(void*pv);
 //..................................................................................
 //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -237,6 +242,7 @@ sLV.chVal = *(sLV.pLAdr3);
 		shGblDOCheckIn |= j<<5;  
 		*((unsigned char*)pvRlc) = --l;//shCheckIndicator --;
 	}
+  //for next update RdHrdIn_V0((void*)&DI_Copy);
 }
 // __istate_t s = __get_interrupt_state();
 // __disable_interrupt();
@@ -700,3 +706,193 @@ long LedAuxOp5(long l,void *pv){
 return i;
 }
 
+
+//""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+//---
+extern void RdHrdIn_V0(void*pv);
+//..................................................................................
+//""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+//~~~     функция считывания состояния дискретных входов                       ~~~~~
+//~~~     p_out_param должен указывать на область памяти 4 байта              ~~~~~
+//~~~     возврат 3 - команда выполнена успешно                               ~~~~~
+//~~~                                                                         ~~~~~
+//~~~     Положение бит                                                       ~~~~~
+//~~~     MSB ...LSB                                                          ~~~~~
+//~~~     ДВ16  ДВ0                                                           ~~~~~
+//,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+//""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+////////////////////////////////////////////////////////////////////////////////////
+void RdHrdIn_V0(void *pv){
+    register long i,j,l;
+    register void *pvRlc;
+    //reinterpret_cast<void*>(NOR_PSRAM_BANK2);
+    pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_READ_DIN01__05<<1));
+    //((char*)pvRlc) += ;//
+    i = *((char*)pvRlc);//0-5 bits
+    i&= 0x1f;
+    ((UI32Bit*) pv)->ar_uch[0] = (char)i;
+    pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO__REL_1_6<<1));
+    i = *((short*)pvRlc);//9-15 bits
+	shGbl__REL_1_6__RD_VAL = i;
+	i &= 0xfe00;
+    j = i & 0xe00;
+    j >>= 4; 
+    ((UI32Bit*) pv)->ar_uch[0] |= (char)j;//6,78 - 9-10 <-Add 3 bita
+    ((UI32Bit*) pv)->ar_uch[1] = (i >> 12);//8-12        <-Set 4 bita 9-12
+    pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_READ_DIN06__12<<1));
+    i = *((char*)pvRlc);//13-17 5bit
+	shGbl__DIN6_DIN12__RD_VAL = i;
+    j = i & 0x1f;
+    ((UI32Bit*) pv)->ar_uch[1] |= (j<<4);
+    ((UI32Bit*) pv)->ar_uch[2] = j>>4;//Only 1 bit
+    pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO_REL7_REL14<<1));
+    i = *((unsigned short*)pvRlc);
+	shGbl__REL7_REL14__RD_VAL = i;
+	//i &=
+    j = i>>12;
+	j &=3;
+    ((UI32Bit*) pv)->ar_uch[2] |= (j<<1);//Add 2 bit
+/*
+sLV.pLAdr4 = reinterpret_cast<char*>( NOR_PSRAM_BANK2);
+sLV.pLAdr4 += ADR_READ_DIN06__12<<1;
+sLV.chVal = *(sLV.pLAdr3);
+*/
+  if( firstWritingDOIndicator != 0)
+  {
+    if(shCheckIndicator != shReadedCheckIndicator){
+      counterReadDI = 0;
+      shReadedCheckIndicator = shCheckIndicator;
+    }
+    pvRlc = (void*)&shCheckIndicator;
+    l = *((unsigned char*)pvRlc);
+    if(  (l & 1) != 0   ){
+      shGblDOCheckIn = (shGbl__REL_1_6__RD_VAL&0x100)>>4;
+      j = i&0xf00;
+      shGblDOCheckIn |= j>>8;
+      j = i >>14;
+      shGblDOCheckIn |= j<<5;  
+      //?*((unsigned char*)pvRlc) = --l;//shCheckIndicator --;
+      if( counterReadDI < 6)
+        arReadedDIVal[counterReadDI++] = shGblDOCheckIn;
+      else{
+        counterReadDI = 0;
+      }
+      
+      
+    }
+    
+  }
+}
+
+// __istate_t s = __get_interrupt_state();
+// __disable_interrupt();
+// / * Do something here. * /
+// __set_interrupt_state(s);
+
+//?UI32Bit DoStateUI32Bit,DoHdwUI32Bit,DoCheckUI32Bit;
+//""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+//---
+extern void SetHrdOut_V1(void*pv);
+//..................................................................................
+//""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+//~~~     функция записи состояния дискретных входов                       ~~~~~
+//~~~     p_out_param должен указывать на область памяти 4 байта              ~~~~~
+//~~~     возврат 3 - команда выполнена успешно                               ~~~~~
+//~~~                                                                         ~~~~~
+//~~~     Положение бит                                                       ~~~~~
+//~~~     MSB ...LSB                                                          ~~~~~
+//~~~     ДВ16  ДВ0                                                           ~~~~~
+//,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+//""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+//////////////////////////////////////////////////////////////////////////////////////////
+void SetHrdOut_V1(void*pv){
+    register long i,j;
+    register void *pvRlc;
+	__istate_t s = __get_interrupt_state();__disable_interrupt();		
+//	i = DoStateUI32Bit.ar_uch[0];
+	j = shGblDOCheckIn;
+  
+	i = ~j;
+
+#ifdef LIMITED_OUTS_MODE
+	#warning message Checking Discrete Outs 6,7 will Disabled
+	j = i&0x1f;
+	#pragma message("'''''''''''''''''''''''''''''''")
+	#pragma message("       !!!CAUTION!!!           ")
+	#pragma message("---prtTmr.c in Limited Mode ---")
+	#pragma message("===============================")
+	
+#else
+	// #ifdef _DEBUG
+         // //Print("Hello from MQL5 compiler [DEBUG]");
+      // #else
+        // #ifdef _RELEASE
+           // //Print("Hello from MQL5 compiler [RELEASE]");
+        // #endif
+    // #endif
+	#pragma message("---prtTmr.c in Strict Mode---")
+	//
+	#pragma message ("---Checking Discrete Outs 6,7 will Enabled---")
+	
+	
+	j = i&0x7f;
+#endif	
+	
+//	
+
+    pvRlc = (void*)&shCheckIndicator;
+    i = *((unsigned short*)pvRlc);
+	if(i != 0){
+	//if(shCheckIndicator != 0){
+        i &= 1<<13;
+        if(i!=0){
+            //i = *((unsigned char*)pvRlc);
+            if( i&0x1000 )
+              i &= 0x1fff;
+            
+            
+            //?DoCheckUI32Bit.ar_uch[0] = DoHdwUI32Bit.ar_uch[0]^j;
+            DoCheckUI32Bit.ar_uch[0] = DoHdwUI32Bit.ar_uch[0]^j;
+           
+            //?shCheckIndicator++;
+        }
+        else{
+            i |= (1<<13)|(1<<14);
+            i++;
+            shCheckIndicator = i;
+        }
+    }
+    if ( firstWritingDOIndicator == 0 )
+      firstWritingDOIndicator = 1;
+    
+//?    i = ((UI32Bit*) pv)->ar_uch[0]; 
+//?    j = i&0x10;//Find 5 bit
+//?    if(j){
+//?		j = 1;//Set 5bit
+//?		chGbl_REL_1_6__ROWS_A_D__RW_VAL |= j;
+//?		}
+//?	else{
+//?		j = chGbl_REL_1_6__ROWS_A_D__RW_VAL;
+//?		j >>= 1;
+//?		j <<= 1;
+//?		chGbl_REL_1_6__ROWS_A_D__RW_VAL = j;
+//?		}
+//?
+//?		
+//?    pvRlc = (void*)(((long)NOR_PSRAM_BANK2)+(ADR_WRITE_RDO__REL_1_6__ROWS_A__D<<1));
+//?    *((char*)pvRlc) = j;//???
+//?    pvRlc = (void*)((long)NOR_PSRAM_BANK2+(ADR_READ_CHECK_RDO_REL7_REL14<<1));
+//?    i = ((UI32Bit*) pv)->ar_uch[0]; 
+//?    //j = i>>1;
+//?    //j &= 0x3f;
+//?	j = i;
+//?    //j &= 0x6f;
+//?    j &= 0xf;
+//?    j |= (i&0x60)<<1;
+//?	
+//?    *((char*)pvRlc) = j;
+//?	DoHdwUI32Bit = DoStateUI32Bit;
+//?    shCheckIndicator |= 1<<14;
+__set_interrupt_state(s);
+    
+}

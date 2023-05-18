@@ -448,6 +448,8 @@ pLUShcemasDscRec = m_pArShcemasDscRecords[shCounterProcessedRec];
     
 }
 
+extern short shCheckIndicator;
+
 void UpdateOutDiagn(void){
 //    if()
     //?for(long i = 0, lAmtOut = current_config_prt.n_output; i< lAmtOut;i++){
@@ -481,6 +483,8 @@ void UpdateOutDiagn(void){
           }
           else error_rele[index] = 0;
         }
+       DoCheckUI32Bit.ul_val =  0;
+
       }
       else
       {
