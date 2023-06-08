@@ -39,7 +39,7 @@ UI32Bit DiState;//OFF_BYTE_DI_State
 extern void  TmrCalls(void);
 extern char chGlSem ;
 //fix max amount available in system timers
-extern const unsigned char uCh_MAX_Amt_1_MS_TMR  ;
+extern const unsigned short uSh_MAX_Amt_1_MS_TMR  ;
 //counter for 1ms Timers <-now Reserved as is the functionaliyi should move to locals Vars
 //extern short  sh1MsCtrServicedTimers;
 extern short  sh1MsRegisteredTimers;//Max amount fix timers

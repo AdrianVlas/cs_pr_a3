@@ -1,7 +1,7 @@
 #include <string.h>
 #include <intrinsics.h>
 #include "prtTmr.h"
-const unsigned char uCh_MAX_Amt_1_MS_TMR  = 200;
+const unsigned short uSh_MAX_Amt_1_MS_TMR  = 5000;
 
 
 
@@ -77,7 +77,7 @@ long TallingList(TmrNode *pNode) {
     register TmrNode *pCurrent;
     //long i;
     //volatile long lRegListNumber;
-    if ((sh1MsRegisteredTimers+1)> uCh_MAX_Amt_1_MS_TMR)
+    if ((sh1MsRegisteredTimers+1)> uSh_MAX_Amt_1_MS_TMR)
         return 0;
     if (sh1MsRegisteredTimers++) {//
         pCurrent = pTailTmrNode;
@@ -95,7 +95,7 @@ long TallingList(TmrNode *pNode) {
 //Adding an item to the beginning of the list (pushing to the list)
 long PushTmrNode(TmrNode *pNode){
 
-    if ((sh1MsRegisteredTimers+1)> uCh_MAX_Amt_1_MS_TMR)
+    if ((sh1MsRegisteredTimers+1)> uSh_MAX_Amt_1_MS_TMR)
         return 0;
     if (sh1MsRegisteredTimers) {//
         pNode-> next = (void*)pHeadTmrNode;
@@ -114,7 +114,7 @@ long IncreaseTmrList(TmrNode *pNode,long lPos){
     register TmrNode *pCurrent;
     void *pv;
 
-    if ((sh1MsRegisteredTimers+1)< uCh_MAX_Amt_1_MS_TMR && lPos< sh1MsRegisteredTimers) {
+    if ((sh1MsRegisteredTimers+1)< uSh_MAX_Amt_1_MS_TMR && lPos< sh1MsRegisteredTimers) {
         pCurrent = pHeadTmrNode;
         while (pCurrent->next != ((void *) 0) && lPos--) {
             pCurrent = (TmrNode*) pCurrent->next;
