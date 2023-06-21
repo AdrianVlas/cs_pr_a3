@@ -1444,6 +1444,7 @@ long Shematic::Init2(void) {
             }//Else Error
             else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
 
         } while (shCounterInitCLUDIn < shLC__n_input && j);
@@ -1463,6 +1464,7 @@ long Shematic::Init2(void) {
             }//Else Error
              else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
         } while (shCounterInitCLUDout < shLC__n_output && j);
     }
@@ -1481,6 +1483,7 @@ long Shematic::Init2(void) {
             }//Else Error
             else{
                     lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
         } while (shCounterInitCLULed < shLC__n_led && j);
     }
@@ -1500,6 +1503,7 @@ long Shematic::Init2(void) {
             }//Else Error
         else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
         } while (shCounterInitCLUFKey < shLC__n_button && j);
 
@@ -1520,6 +1524,7 @@ long Shematic::Init2(void) {
             }//Else Error
         else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
         } while (shCounterInitCLULss < shLC__n_alarm && j);
 
@@ -1540,6 +1545,7 @@ long Shematic::Init2(void) {
             }//Else Error
         else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }    
         } while (shCounterInitCBGSig < shLC__n_group_alarm && j);
 
@@ -1559,6 +1565,7 @@ long Shematic::Init2(void) {
             }//Else Error
          else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }    
         } while (shCounterInitCLUAnd < shLC__n_and && j);
     }
@@ -1576,6 +1583,7 @@ long Shematic::Init2(void) {
             }//Else Error
         else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
         } while (shCounterInitCLUOr < shLC__n_or && j);
     }
@@ -1593,6 +1601,7 @@ long Shematic::Init2(void) {
             }
          else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
             //Else Error
         } while (shCounterInitCLUXor < shLC__n_xor && j);
@@ -1611,6 +1620,7 @@ long Shematic::Init2(void) {
             }//Else Error
          else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }    
         } while (shCounterInitCLUNot < shLC__n_not && j);
     }
@@ -1628,6 +1638,7 @@ long Shematic::Init2(void) {
             }//Else Error
           else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }   
         } while (shCounterInitCMft < shLC__n_timers && j);
     }
@@ -1647,6 +1658,7 @@ long Shematic::Init2(void) {
             }//Else Error
          else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
         } while (shCounterInitCLUTrig < shLC__n_trigger && j);
 
@@ -1667,6 +1679,7 @@ long Shematic::Init2(void) {
             }//Else Error
              else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
         } while (shCounterInitCPulseAlternator < shLC__n_meander && j);
 
@@ -1687,6 +1700,7 @@ long Shematic::Init2(void) {
             }//Else Error
              else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
         } while (shCounterInitCLUTu < shLC__n_tu && j);
 
@@ -1707,6 +1721,7 @@ long Shematic::Init2(void) {
             }//Else Error
              else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
         } while (shCounterInitCLUTs < shLC__n_ts && j);
 
@@ -1727,6 +1742,7 @@ long Shematic::Init2(void) {
             }//Else Error
              else{
                 lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
             }
         } while (shCounterInitCLULog < shLC__n_log && j);
 
@@ -1737,8 +1753,10 @@ long Shematic::Init2(void) {
          //FBWrp_Op(static_cast<void*>(&locCFixBlockWrp));
         j = 0;
         j = InsertLU(LU_STNG_FIX, static_cast<void*>(&locCFixBlockWrp));
-        if (j == 0) 
+        if (j == 0){ 
             lsLcVarArea.chErrCount |= 1;//Insert Data Error
+                return lsLcVarArea.chErrCount;
+        }
         else{
                  register void* pv;
                  register long l;
@@ -4197,5 +4215,51 @@ sh.DoCalcStatInfo();
 
 CStatInfoStore hldrCStatInfoStore;
 
+enum SizeClases { 
+SIZE_OF_BASE_POINT = 1,
+SIZE_OF_POINT    ,      
+SIZE_OF_EXTENDED ,   
 
 
+LU_DInput_0_1 = sizeof (CLUDInput_0_1),
+LU_Dout_1_0 = sizeof (CLUDout_1_0),
+LU_Led = sizeof (CLULed),
+LU_FKey = sizeof (CLUFKey),
+LU_Lss = sizeof (CLULss),
+LU_BGSig = sizeof (CBGSig),
+LU_And_8_1 = sizeof (CLUAnd_8_1),
+LU_Or_8_1 = sizeof (CLUOr_8_1),
+LU_Xor_8_1 = sizeof (CLUXor_8_1),
+LU_Not_1_1 = sizeof (CLUNot_1_1),
+LU_Mft = sizeof (CMft),
+LUTrig = sizeof (CLUTrig),
+LU_PulseAlternator = sizeof (CPulseAlternator),
+LUTu = sizeof (CLUTu),
+LUTs = sizeof (CLUTs),
+LULog = sizeof (CLULog),
+LUFixBlockWrp = sizeof (CFixBlockWrp),
+HEADER_ONE_RECORD = sizeof(LUAreaListElem),
+SIZE_OF_LU_UPPER_BOUND
+};
+
+__root const long arrSizes[] = {
+	LU_DInput_0_1        ,
+LU_Dout_1_0              ,
+LU_Led                   ,
+LU_FKey                  ,
+LU_Lss                   ,
+LU_BGSig                 ,
+LU_And_8_1               ,
+LU_Or_8_1                ,
+LU_Xor_8_1               ,
+LU_Not_1_1               ,
+LU_Mft                   ,
+LUTrig                   ,
+LU_PulseAlternator       ,
+LUTu                     ,
+LUTs                     ,
+LULog                    ,
+LUFixBlockWrp            ,
+HEADER_ONE_RECORD        ,
+
+};

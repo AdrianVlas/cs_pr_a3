@@ -280,7 +280,12 @@ int postCommonSmallWriteAction(void)
           if(tempWriteArray[0]==1)
             {
               superConfig_and_settings();//компонентная активация
-              set_config_and_settings(1, USB_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+              unsigned int result = set_config_and_settings(1, USB_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+              if (result != 0) 
+              {
+                current_state_menu2.edition = ED_ERROR;
+                return 3;
+              }
             }
           if(tempWriteArray[0]==0)
             set_config_and_settings(0, USB_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
@@ -290,7 +295,12 @@ int postCommonSmallWriteAction(void)
           if(tempWriteArray[0]==1)
             {
               superConfig_and_settings();//компонентная активация
-              set_config_and_settings(1, RS485_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+              unsigned int result = set_config_and_settings(1, RS485_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
+              if (result != 0) 
+              {
+                current_state_menu2.edition = ED_ERROR;
+                return 3;
+              }
             }//if
           if(tempWriteArray[0]==0)
             set_config_and_settings(0, RS485_PARAMS_FIX_CHANGES);//ЧЕРЕЗ ф-цию 5
