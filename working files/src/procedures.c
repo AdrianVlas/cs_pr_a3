@@ -1069,7 +1069,14 @@ __result_dym_mem_select allocate_dynamic_memory_for_diagnostyka(__action_dym_mem
 /*****************************************************/
 //Зміна конфігурації
 /*****************************************************/
-__result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_select make_remake_restore, unsigned int mem_for_prt, uintptr_t *p_sca_of_p_current[], uintptr_t *p_sca_of_p_control[], __CONFIG *current, __CONFIG *edited, __CONFIG *control)
+__result_dym_mem_select allocate_dynamic_memory_for_settings(
+                                                             __action_dym_mem_select const make_remake_restore, 
+                                                             unsigned int const mem_for_prt, 
+                                                             uintptr_t * p_sca_of_p_current[], 
+                                                             uintptr_t * const p_sca_of_p_control[], 
+                                                             __CONFIG * const current, 
+                                                             __CONFIG * const edited, 
+                                                             __CONFIG * const control)
 {
   __result_dym_mem_select result = DYN_MEM_SELECT_OK;
   __id_fb index_1;
@@ -1335,7 +1342,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
   }
   else
   {
-    //Треб підготуватися для відновлення даних по контрльних даних
+    //Треба підготуватися для відновлення даних по контрльних даних
     index_1 = _ID_FB_LAST_VAR;
     index_1--;
   }
@@ -1396,7 +1403,8 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_input = n_prev = control->n_input;
         
         copy_settings_LN = copy_settings_INPUT;
-        size = n_prev*sizeof(__settings_for_INPUT);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_INPUT) : sizeof(__settings_for_INPUT));
+
         break;
       }
     case ID_FB_OUTPUT:
@@ -1415,7 +1423,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         }
         
         copy_settings_LN = copy_settings_OUTPUT_LED;
-        size = n_prev*sizeof(__settings_for_OUTPUT_LED);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_OUTPUT_LED) : sizeof(__settings_for_OUTPUT_LED));
         break;
       }
     case ID_FB_BUTTON:
@@ -1425,7 +1433,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_button = n_prev = control->n_button;
         
         copy_settings_LN = NULL;
-        size = n_prev*0;
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_BUTTON) : 0);
         break;
       }
     case ID_FB_ALARM:
@@ -1435,7 +1443,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_alarm = n_prev = control->n_alarm;
         
         copy_settings_LN = copy_settings_ALARM;
-        size = n_prev*sizeof(__settings_for_ALARM);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_ALARM) : sizeof(__settings_for_ALARM));
         break;
       }
     case ID_FB_GROUP_ALARM:
@@ -1445,7 +1453,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_group_alarm = n_prev = control->n_group_alarm;
         
         copy_settings_LN = copy_settings_GROUP_ALARM;
-        size = n_prev*sizeof(__settings_for_GROUP_ALARM);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_GROUP_ALARM) : sizeof(__settings_for_GROUP_ALARM));
         break;
       }
     case ID_FB_AND:
@@ -1455,7 +1463,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_and = n_prev = control->n_and;
         
         copy_settings_LN = copy_settings_AND;
-        size = n_prev*sizeof(__settings_for_AND);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_AND) : sizeof(__settings_for_AND));
         break;
       }
     case ID_FB_OR:
@@ -1465,7 +1473,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_or = n_prev = control->n_or;
         
         copy_settings_LN = copy_settings_OR;
-        size = n_prev*sizeof(__settings_for_OR);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_OR) : sizeof(__settings_for_OR));
         break;
       }
     case ID_FB_XOR:
@@ -1475,7 +1483,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_xor = n_prev = control->n_xor;
         
         copy_settings_LN = copy_settings_XOR;
-        size = n_prev*sizeof(__settings_for_XOR);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_XOR) : sizeof(__settings_for_XOR));
         break;
       }
     case ID_FB_NOT:
@@ -1485,7 +1493,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_not = n_prev = control->n_not;
         
         copy_settings_LN = copy_settings_NOT;
-        size = n_prev*sizeof(__settings_for_NOT);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_NOT) : sizeof(__settings_for_NOT));
         break;
       }
     case ID_FB_TIMER:
@@ -1495,7 +1503,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_timer = n_prev = control->n_timer;
         
         copy_settings_LN = copy_settings_TIMER;
-        size = n_prev*sizeof(__settings_for_TIMER);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_TIMER) : sizeof(__settings_for_TIMER));
         break;
       }
     case ID_FB_TRIGGER:
@@ -1505,7 +1513,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_trigger = n_prev = control->n_trigger;
         
         copy_settings_LN = copy_settings_TRIGGER;
-        size = n_prev*sizeof(__settings_for_TRIGGER);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_TRIGGER) : sizeof(__settings_for_TRIGGER));
         break;
       }
     case ID_FB_MEANDER:
@@ -1515,7 +1523,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_meander = n_prev = control->n_meander;
         
         copy_settings_LN = copy_settings_MEANDER;
-        size = n_prev*sizeof(__settings_for_MEANDER);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_MEANDER) : sizeof(__settings_for_MEANDER));
         break;
       }
     case ID_FB_TU:
@@ -1525,7 +1533,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_tu = n_prev = control->n_tu;
         
         copy_settings_LN = copy_settings_TU;
-        size = n_prev*sizeof(__settings_for_TU);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_TU) : sizeof(__settings_for_TU));
         break;
       }
     case ID_FB_TS:
@@ -1535,7 +1543,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         current->n_ts = n_prev = control->n_ts;
         
         copy_settings_LN = copy_settings_TS;
-        size = n_prev*sizeof(__settings_for_TS);
+        size = n_prev*((mem_for_prt == true) ? sizeof(__LN_TS) : sizeof(__settings_for_TS));
         break;
       }
     case ID_FB_EVENT_LOG:
@@ -1546,6 +1554,7 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
         
         copy_settings_LN = copy_settings_LOG;
         size = n_prev*sizeof(__LOG_INPUT)*LOG_SIGNALS_IN;
+        if ((mem_for_prt == true) && (n_prev != 0)) size += sizeof(__LOG_INPUT);
         break;
       }
     default:
@@ -1578,7 +1587,10 @@ __result_dym_mem_select allocate_dynamic_memory_for_settings(__action_dym_mem_se
                )   
             {
               //Викликаємо функцію повернення нових налаштувань у попередні значення
-              if (copy_settings_LN != NULL) (*copy_settings_LN)(false, (p_sca_of_p_control == spca_of_p_prt), ptr, p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR], n_cur, n_prev);
+              if (copy_settings_LN != NULL)
+              {
+                (*copy_settings_LN)((mem_for_prt == true), (p_sca_of_p_control == spca_of_p_prt), ptr, p_sca_of_p_control[index_1 - _ID_FB_FIRST_VAR], n_cur, n_prev);
+              }
             }
             else
             {
@@ -2840,6 +2852,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     else if (result == DYN_MEM_NO_ENOUGH_MEM) 
     {
       TIM_Cmd(TIM2, ENABLE); //Відновлюємо роботу системи логіки
+      TIM_Cmd(TIM3, ENABLE);
       /*
       при такому негативному резульаті зміни конфігурації все ж таки конфігурація повернулася 
       до свого попереднього стану, тому можна відновити інших більш пріоритетних систем, зокрема,
