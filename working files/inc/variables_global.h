@@ -385,7 +385,7 @@ SRAM1 uint16_t number_32bit_in_target/* = 0*/;
 SRAM1 uint16_t restart_timeout_interface/* = 0*/;
 unsigned int timeout_idle_new_settings;
 SRAM1 uint16_t restart_timeout_idle_new_settings/* = 0*/;
-SRAM1 uint16_t type_of_settings_changed_from_interface/* = 0*/;
+//SRAM1 uint16_t type_of_settings_changed_from_interface/* = 0*/;
 
 unsigned int serial_number_dev = 0;                         //Заводський номер пристрою
 unsigned int edit_serial_number_dev;

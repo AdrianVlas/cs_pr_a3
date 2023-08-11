@@ -146,11 +146,6 @@ enum _INPUT_output_signals
     
 };
 
-enum _INPUT_d_trigger
-{
-  INPUT_D_TRIGGER_TOTAL = 0
-};
-
 /***/
 
 /*

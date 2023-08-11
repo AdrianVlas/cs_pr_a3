@@ -2766,6 +2766,7 @@ source - елементи з перерахування enum __source_fix_changes
 0 - успішее виконання опреації
 1 - недостатньо пам'яті, але вдалося відновити попередній сатн по "для захисту"
 2 - недостатньо пам'яті і не вдалося відновити попередній стан по "для захисту"
+3 - дана конфігурація надопустима через можливий перебір ресурсу
 */
 /*****************************************************/
 unsigned int set_config_and_settings(unsigned int direction, unsigned int source)
@@ -2816,176 +2817,185 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     //Активація внесених змін
     if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
     {
-      __CONFIG current_config_tmp = current_config_prt;
-      //Зупиняємо систему логіки
-      TIM_Cmd(TIM3, DISABLE);
-      TIM_Cmd(TIM2, DISABLE);
-      result = allocate_dynamic_memory_for_settings(REMAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, &current_config, &current_config_tmp);
-      if (result == DYN_MEM_SELECT_OK)
+      if (resurs_control(&current_config) == false)
       {
-        //Фіксуємо, що відбулася зміна конфігурації
-        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_CHANGE_CONFIGURATION_BIT);
-      }
-    }
-
-    if (result == DYN_MEM_SELECT_OK)
-    {
-      if (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
-      {
-        //Відбувалися зміни у налаштуваннях
+        __CONFIG current_config_tmp = current_config_prt;
         //Зупиняємо систему логіки
         TIM_Cmd(TIM3, DISABLE);
         TIM_Cmd(TIM2, DISABLE);
-        copy_settings(&current_config, &settings_fix_prt, &settings_fix, spca_of_p_prt, sca_of_p);
-        //Фіксуємо, що відбулася зміна налаштувань
-        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_CHANGE_SETTINGS_BIT);
+        result = allocate_dynamic_memory_for_settings(REMAKE_DYN_MEM, true, spca_of_p_prt, NULL, &current_config_prt, &current_config, &current_config_tmp);
+        if (result == DYN_MEM_SELECT_OK)
+        {
+          //Фіксуємо, що відбулася зміна конфігурації
+          if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_CHANGE_CONFIGURATION_BIT);
+        }
+      }
+      else error = 3;
+    }
+
+    if (error != 3)
+    {
+      if (result == DYN_MEM_SELECT_OK)
+      {
+        if (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
+        {
+          //Відбувалися зміни у налаштуваннях
+          //Зупиняємо систему логіки
+          TIM_Cmd(TIM3, DISABLE);
+          TIM_Cmd(TIM2, DISABLE);
+          copy_settings(&current_config, &settings_fix_prt, &settings_fix, spca_of_p_prt, sca_of_p);
+          //Фіксуємо, що відбулася зміна налаштувань
+          if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, EVENT_CHANGE_SETTINGS_BIT);
         
-        /***
+          /***
           Зміни у Андрієвій системі
-        ***/
-        unsigned int tmp;
-        long res = ChangeCfg((void*)&tmp);
-        if (res != 0) result = PRT_MEM_ERROR;
+          ***/
+          unsigned int tmp;
+          long res = ChangeCfg((void*)&tmp);
+          if (res != 0) result = PRT_MEM_ERROR;
+          /***/
+        }
+      }
+      else if (result == DYN_MEM_NO_ENOUGH_MEM) 
+      {
+        TIM_Cmd(TIM2, ENABLE); //Відновлюємо роботу системи логіки
+        TIM_Cmd(TIM3, ENABLE);
+        /*
+        при такому негативному резульаті зміни конфігурації все ж таки конфігурація повернулася 
+        до свого попереднього стану, тому можна відновити інших більш пріоритетних систем, зокрема,
+        системи захиств.
+        У іншому випадку цього робити не можна, бо ми не знаємо, у якому стані зараз масиви налаштувань,
+        які змінювалися у процесі зміни конфігурації
+        */
+      }
+    
+    
+      if (result == DYN_MEM_SELECT_OK)
+      {
+        /*
+        Дії по встановленню мінімальних налаштувань
+        */
+        if (source == DEFAULT_PARAMS_FIX_CHANGES)
+        {
+          enum _menu2_levels temp_value_level = current_state_menu2.current_level;
+          while(
+                (temp_value_level >= __BEGIN_SETTINGS_MENU2_LEVEL) &&
+                (temp_value_level <  __NEXT_AFTER_SETTINGS_MENU2_LEVEL)
+               )
+          {
+            temp_value_level = previous_level_in_current_level_menu2[temp_value_level];
+          }
+          if (temp_value_level != current_state_menu2.current_level)
+          {
+            current_state_menu2.current_level = temp_value_level;
+            new_level_menu();
+          }
+          reconfiguration_RS_485 = true;
+          reconfiguration_RS_485_with_reset_usart = true;
+          set_password_USB = true;
+          set_password_RS485 = true;
+        }
         /***/
-      }
-    }
-    else if (result == DYN_MEM_NO_ENOUGH_MEM) 
-    {
-      TIM_Cmd(TIM2, ENABLE); //Відновлюємо роботу системи логіки
-      TIM_Cmd(TIM3, ENABLE);
-      /*
-      при такому негативному резульаті зміни конфігурації все ж таки конфігурація повернулася 
-      до свого попереднього стану, тому можна відновити інших більш пріоритетних систем, зокрема,
-      системи захиств.
-      У іншому випадку цього робити не можна, бо ми не знаємо, у якому стані зараз масиви налаштувань,
-      які змінювалися у процесі зміни конфігурації
-      */
-    }
-    
-    
-    if (result == DYN_MEM_SELECT_OK)
-    {
-      /*
-      Дії по встановленню мінімальних налаштувань
-      */
-      if (source == DEFAULT_PARAMS_FIX_CHANGES)
-      {
-        enum _menu2_levels temp_value_level = current_state_menu2.current_level;
-        while(
-              (temp_value_level >= __BEGIN_SETTINGS_MENU2_LEVEL) &&
-              (temp_value_level <  __NEXT_AFTER_SETTINGS_MENU2_LEVEL)
-             )
-        {
-          temp_value_level = previous_level_in_current_level_menu2[temp_value_level];
-        }
-        if (temp_value_level != current_state_menu2.current_level)
-        {
-          current_state_menu2.current_level = temp_value_level;
-          new_level_menu();
-        }
-        reconfiguration_RS_485 = true;
-        reconfiguration_RS_485_with_reset_usart = true;
-        set_password_USB = true;
-        set_password_RS485 = true;
-      }
-      /***/
 
-      /*
-      Дії по зміні налаштувань RS-485
-      */
-      if (reconfiguration_RS_485 != 0)
-      {
-        //Підраховуємо нову величину затримки у бітах, яка допускається між байтами у RS-485 згідно з визначеними настройками
-        calculate_namber_bit_waiting_for_rs_485();
-        //Виставляємо команду про переконфігурування RS-485
-        if (reconfiguration_RS_485_with_reset_usart != 0) make_reconfiguration_RS_485 = 0xff;
-      }
-      if (set_password_USB   != false) password_set_USB   = 1;
-      if (set_password_RS485 != false) password_set_RS485 = 1;
-      /***/
+        /*
+        Дії по зміні налаштувань RS-485
+        */
+        if (reconfiguration_RS_485 != 0)
+        {
+          //Підраховуємо нову величину затримки у бітах, яка допускається між байтами у RS-485 згідно з визначеними настройками
+          calculate_namber_bit_waiting_for_rs_485();
+          //Виставляємо команду про переконфігурування RS-485
+          if (reconfiguration_RS_485_with_reset_usart != 0) make_reconfiguration_RS_485 = 0xff;
+        }
+        if (set_password_USB   != false) password_set_USB   = 1;
+        if (set_password_RS485 != false) password_set_RS485 = 1;
+        /***/
       
-      if (clear_diagnostyka != NULL) 
-      {
-        _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
-        _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
-      }
+        if (clear_diagnostyka != NULL) 
+        {
+          _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+          _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+        }
       
-      uint8_t *label_to_time_array;
-      if (copying_time == 2) label_to_time_array = time_copy;
-      else label_to_time_array = time;
+        uint8_t *label_to_time_array;
+        if (copying_time == 2) label_to_time_array = time_copy;
+        else label_to_time_array = time;
 
-      if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
-      {
-        //Записуємо час останньої зміни конфігурації
-        for (size_t i = 0; i < 7; i++) current_config_prt.time_config[i] = current_config.time_config[i] = current_config_edit.time_config[i] = *(label_to_time_array + i);
-        current_config_prt.time_config[7] = current_config.time_config[7] = current_config_edit.time_config[7] = (uint8_t)(source & 0xff);
-        
-        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
-        
-        //Зміна конфігурції може змінити розміри налаштувань. а це може вплинути на розміщення триґерної інформації, тому її також записуємо
-        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
-        //Скидаємо можливу активну задачу самоконтролю по резервній копії для триґерної інформації
-        periodical_tasks_TEST_TRG_FUNC_LOCK = false;
-      }
-      
-      if (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
-      {
-        if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_SETTINGS))
+        if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
         {
-          //Записуємо час останньої зміни налаштувань
+          //Записуємо час останньої зміни конфігурації
+          for (size_t i = 0; i < 7; i++) current_config_prt.time_config[i] = current_config.time_config[i] = current_config_edit.time_config[i] = *(label_to_time_array + i);
+          current_config_prt.time_config[7] = current_config.time_config[7] = current_config_edit.time_config[7] = (uint8_t)(source & 0xff);
         
-          for (size_t i = 0; i < 7; i++) settings_fix_prt.time_setpoints[i] = settings_fix.time_setpoints[i] = settings_fix_edit.time_setpoints[i] = *(label_to_time_array + i);
-          settings_fix_prt.time_setpoints[7] = settings_fix.time_setpoints[7] = settings_fix_edit.time_setpoints[7] = (uint8_t)(source & 0xff);
-        }
-        if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC))
-        {
-          //Записуємо час останньої зміни зв'язків
-           settings_fix_prt.schematic =  settings_fix.schematic = settings_fix_edit.schematic = (settings_fix.schematic & 0xff00) | 0x1; /*фіксуємо що типова схема змінена*/
+          _SET_BIT(control_i2c_taskes, TASK_START_WRITE_CONFIG_EEPROM_BIT);
         
-          for (size_t i = 0; i < 7; i++) settings_fix_prt.time_schematic[i] = settings_fix.time_schematic[i] = settings_fix_edit.time_schematic[i] = *(label_to_time_array + i);
-          settings_fix_prt.time_schematic[7] = settings_fix.time_schematic[7] = settings_fix_edit.time_schematic[7] = (uint8_t)(source & 0xff);
+          //Зміна конфігурції може змінити розміри налаштувань. а це може вплинути на розміщення триґерної інформації, тому її також записуємо
+          _SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT);
+          //Скидаємо можливу активну задачу самоконтролю по резервній копії для триґерної інформації
+          periodical_tasks_TEST_TRG_FUNC_LOCK = false;
         }
       
-        _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+        if (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
+        {
+          if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_SETTINGS))
+          {
+            //Записуємо час останньої зміни налаштувань
+        
+            for (size_t i = 0; i < 7; i++) settings_fix_prt.time_setpoints[i] = settings_fix.time_setpoints[i] = settings_fix_edit.time_setpoints[i] = *(label_to_time_array + i);
+            settings_fix_prt.time_setpoints[7] = settings_fix.time_setpoints[7] = settings_fix_edit.time_setpoints[7] = (uint8_t)(source & 0xff);
+          }
+          if (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC))
+          {
+            //Записуємо час останньої зміни зв'язків
+            settings_fix_prt.schematic =  settings_fix.schematic = settings_fix_edit.schematic = (settings_fix.schematic & 0xff00) | 0x1; /*фіксуємо що типова схема змінена*/
+        
+            for (size_t i = 0; i < 7; i++) settings_fix_prt.time_schematic[i] = settings_fix.time_schematic[i] = settings_fix_edit.time_schematic[i] = *(label_to_time_array + i);
+            settings_fix_prt.time_schematic[7] = settings_fix.time_schematic[7] = settings_fix_edit.time_schematic[7] = (uint8_t)(source & 0xff);
+          }
+      
+          _SET_BIT(control_i2c_taskes, TASK_START_WRITE_SETTINGS_EEPROM_BIT);
+        }
+      
+      
+        //Подаємо команду на перезапуск
+        restart_device = true;
+      
       }
-      
-      
-      //Подаємо команду на перезапуск
-      restart_device = true;
-      
-    }
-    else if (result == DYN_MEM_NO_ENOUGH_MEM) 
-    {
-      if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
-      if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
-      
-      error = 1;
-    }
-    else 
-    {
-      if (result == DYN_MEM_TOTAL_ERROR)
+      else if (result == DYN_MEM_NO_ENOUGH_MEM) 
       {
         if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
         if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
-      }
-      else if (result == PRT_MEM_ERROR)
-      {
-        if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_PRT_MEMORY_BIT);
-        if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
-      }
       
-      error = 2;
+        error = 1;
+      }
+      else 
+      {
+        if (result == DYN_MEM_TOTAL_ERROR)
+        {
+          if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+          if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_PRT_MEMORY_BIT);
+        }
+        else if (result == PRT_MEM_ERROR)
+        {
+          if (set_diagnostyka != NULL) _SET_BIT(set_diagnostyka, ERROR_PRT_MEMORY_BIT);
+          if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT);
+        }
+      
+        error = 2;
+      }
     }
   }
   
   if (
       (error == 1) ||
+      (error == 3) ||
       (direction == 0)
      ) 
   {
     //Повернення до стану до редагування
     if (
         (error == 1) ||
+        (error == 3) ||
         (config_settings_modified & MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION))
        )   
     {
@@ -3008,6 +3018,7 @@ unsigned int set_config_and_settings(unsigned int direction, unsigned int source
     
     if (
         (error == 1) ||
+        (error == 3) ||
         (config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC)))
        )   
     {
@@ -3219,6 +3230,54 @@ __result_dym_mem_select action_after_changing_of_configuration(void)
   }
   
   return result;
+}
+/*****************************************************/
+
+
+/*****************************************************/
+/*****************************************************/
+unsigned int resurs_control(__CONFIG const * const p_config)
+{
+  static int const resurs_nodes[NUMBER_VAR_BLOCKS_CHANGED] =
+  {
+    1881,
+    168,
+    255,
+    273,
+    61,
+    55,
+    250,
+    175,
+    33,
+    108,
+    155,
+    111
+  };
+  uint32_t const * const p_field_arr[NUMBER_VAR_BLOCKS_CHANGED] = 
+  {
+    &(p_config->n_alarm),
+    &(p_config->n_group_alarm),
+    &(p_config->n_and),
+    &(p_config->n_or),
+    &(p_config->n_xor),
+    &(p_config->n_not),
+    &(p_config->n_timer),
+    &(p_config->n_trigger),
+    &(p_config->n_meander),
+    &(p_config->n_tu),
+    &(p_config->n_ts),
+    &(p_config->n_log)
+  };
+  
+  int resurs = 143436;
+#define LIMIT 6000
+  for (size_t i = 0; ((i < NUMBER_VAR_BLOCKS_CHANGED) && (resurs >= LIMIT)); ++i)
+  {
+    resurs -= (*p_field_arr[i])*resurs_nodes[i];
+  }
+  
+  return (resurs < LIMIT);
+#undef LIMIT
 }
 /*****************************************************/
 

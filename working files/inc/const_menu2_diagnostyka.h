@@ -110,9 +110,6 @@ _NUMBER_ERRORS_WITHOUT_DIGITAL_OUTPUTS = ERROR_DIGITAL_OUTPUTS_BIT
   | (1 << (ERROR_INTERNAL_FLASH_BIT - 32))                      \
 )
 
-#define MASKA_AVAR_ERROR_2              0
-
-
 # define NAME_DIAGN_RU  \
   " Ош.I2C         ",   \
   " Ош.юстирования ",   \

@@ -55,7 +55,9 @@ fnPvrL arrChangeCfgFnptr[16] = {
 long ChangeCfg(void* pv){
     register long i, lRes, lCtrElem, lVl;
 
-	lVl = InitSchematic();
+  lVl = InitSchematic();
+  if( lVl != 0)
+    return lVl;
     lRes = i = 0;
     lCtrElem = chGlbAmountRegisteredElem;
     if (lCtrElem)

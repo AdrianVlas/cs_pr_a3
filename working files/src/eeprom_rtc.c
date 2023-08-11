@@ -1258,13 +1258,13 @@ void main_routines_for_i2c(void)
     }
     else if (_CHECK_SET_BIT(control_i2c_taskes, TASK_START_WRITE_TRG_FUNC_EEPROM_BIT) !=0)
     {
+      //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації, так як зараз ми будемо поля змінювати. які могли бути підготовлені для контролю
+      periodical_tasks_TEST_TRG_FUNC_LOCK = false;
+
       //Стоїть умова початку запису нової порції інформації по триґерній інформації у EEPROM
       static __id_fb block;
       static unsigned int shift;
       static uint8_t crc_eeprom_trg_func;
-      
-      //Скидаємо активну задачу самоконтролю по резервній копії для триґерної інформації, так як зараз ми будемо поля змінювати. які могли бути підготовлені для контролю
-      periodical_tasks_TEST_TRG_FUNC_LOCK = false;
 
       if (
           (shift_from_start_address_trg_func_in_eeprom == 0) &&
@@ -1505,6 +1505,9 @@ void main_routines_for_i2c(void)
     {
       //Стоїть умова початку нового запису у EEPROM по інформації Журналу подій
       
+      //Скидаємо активну задачу самоконтролю по резервній копії, так як зараз ми будемо поля змінювати. які могли бути підготовлені для контролю
+      periodical_tasks_TEST_INFO_REJESTRATOR_LOG_LOCK = false;
+
       //Скидаємо біт запуску нового запису і виставляємо біт запису блоків у EEPROM з блокуванням, щоб запуск почався з синхронізацією
       _SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_LOG_EEPROM_BIT);
       _SET_BIT(control_i2c_taskes, TASK_BLK_WRITING_EEPROM_BIT);
@@ -1536,6 +1539,9 @@ void main_routines_for_i2c(void)
     {
       //Стоїть умова початку нового запису у EEPROM по інформації реєстратора програмних подій
       
+      //Скидаємо активну задачу самоконтролю по резервній копії, так як зараз ми будемо поля змінювати. які могли бути підготовлені для контролю
+      periodical_tasks_TEST_INFO_REJESTRATOR_PR_ERR_LOCK = false;
+
       //Скидаємо біт запуску нового запису і виставляємо біт запису блоків у EEPROM з блокуванням, щоб запуск почався з синхронізацією
       _SET_BIT(control_i2c_taskes, TASK_WRITING_INFO_REJESTRATOR_PR_ERR_EEPROM_BIT);
       _SET_BIT(control_i2c_taskes, TASK_BLK_WRITING_EEPROM_BIT);
@@ -2547,7 +2553,7 @@ void main_routines_for_i2c(void)
               if (clear_diagnostyka != NULL) _SET_BIT(clear_diagnostyka, ERROR_TRG_FUNC_EEPROM_BIT);
 
               //Зберігаємо контрольну суму (не інвертовану)
-              crc_trg_func = crc_eeprom_trg_func;
+              crc_trg_func_ctrl = crc_trg_func = crc_eeprom_trg_func;
 
               if ((comparison_writing & MASKA_FOR_BIT(COMPARISON_WRITING_TRG_FUNC_BIT)) == 0)
               {

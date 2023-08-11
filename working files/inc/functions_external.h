@@ -216,6 +216,8 @@ extern void calculate_namber_bit_waiting_for_rs_485(void);
 extern void restore_trigger_functions(unsigned int*);
 extern void changing_diagnostyka_state(void);
 extern unsigned int count_number_set_bit(unsigned int*, unsigned int);
+unsigned int resurs_control(__CONFIG const * const);
+
 
 extern void set_bit(unsigned int*, unsigned int);
 extern void clear_bit(unsigned int*, unsigned int);

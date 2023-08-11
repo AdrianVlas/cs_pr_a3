@@ -2250,7 +2250,7 @@ void Shematic::SetupCLULssStngParam(void *pv){
     for(i = 0; i < locRef_CLULss.chNumInput;i++)
         locRef_CLULss.arrPchIn[i] = &chGblGround;
     long pushed_timers =  locRef_CLULss.LinkLssTimers();
-    if (pushed_timers != 4){
+    if (pushed_timers != 5){
         if( pInit2LcVarArea->chErrCount < 200 )
           pInit2LcVarArea->chErrCount++;
     }

@@ -223,6 +223,7 @@ void global_vareiables_installation(void)
   current_state_menu2.func_change = NULL;
   current_state_menu2.binary_data = false;
   current_state_menu2.edition = ED_VIEWING;
+  current_state_menu2.edition_option = 0;
 
   time[0] = 0x0;
   time[1] = 0x0;

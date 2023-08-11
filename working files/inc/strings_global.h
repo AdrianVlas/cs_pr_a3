@@ -42,6 +42,14 @@ const uint8_t information_no_free_dyn_mem[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] 
   " Дин.пам.недост."
 };
 
+const uint8_t information_no_resurs[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1] = 
+{
+  " Ресурсу.недост.",
+  " Ресурсу.недост.",
+  " Ресурсу.недост.",
+  " Ресурсу.недост."
+};
+
 const uint8_t information_on_off[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1] = 
 {
   {"     Откл.      ", "      Вкл.      "},

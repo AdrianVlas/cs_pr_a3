@@ -733,10 +733,14 @@ void main_manu_function_ver2(void)
                   //Знімаємо режим редагування
                   current_state_menu2.edition = ED_VIEWING;
                 }
-                else if (result == 1)
+                else if (
+                         (result == 1) ||
+                         (result == 3)
+                        )   
                 {
                   //Повідомляємо про неможливість встановити нову конфігурацію
                   current_state_menu2.edition = ED_INFO;
+                  if (result == 3) current_state_menu2.edition_option = 1;
                 }
                 else
                 {

@@ -28,7 +28,21 @@ inline void watchdog_routine(void)
      ((control_word_of_watchdog & UNITED_BITS_WATCHDOG) == UNITED_BITS_WATCHDOG) 
      ||
      (
-      (restart_device != false) &&
+      (
+       (restart_device != false) || 
+       (
+        (diagnostyka != NULL) &&
+        (
+         (_CHECK_SET_BIT(diagnostyka, ERROR_PRT_MEMORY_BIT) != 0)
+         ||
+         (
+          (_CHECK_SET_BIT(diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT) != 0) &&
+          ((TIM2->CR1 & (TIM_CR1_CEN)) == 0) &&
+          ((TIM3->CR1 & (TIM_CR1_CEN)) == 0)
+         )
+        )
+       )   
+      )   &&
       ((control_word_of_watchdog & (UNITED_BITS_WATCHDOG & (uint32_t)(~(WATCHDOG_PROTECTION | WATCHDOG_PROTECTION_1)))) == (UNITED_BITS_WATCHDOG & (uint32_t)(~(WATCHDOG_PROTECTION | WATCHDOG_PROTECTION_1))))
      ) 
     )   
@@ -131,7 +145,7 @@ inline void periodical_operations(void)
       current_state_menu2.edition = ED_ERROR;
     }
     config_settings_modified = 0;
-    type_of_settings_changed_from_interface = 0;
+//    type_of_settings_changed_from_interface = 0;
   }
   //Фіксація сигналу про те що налаштуванння/конфігурація змінені чи ні
   if ((config_settings_modified & (MASKA_FOR_BIT(BIT_CHANGED_CONFIGURATION) | MASKA_FOR_BIT(BIT_CHANGED_SETTINGS) | MASKA_FOR_BIT(BIT_CHANGED_SCHEMATIC))) != 0) 
@@ -248,7 +262,19 @@ inline void periodical_operations(void)
   else if (periodical_tasks_TEST_CONFIG != 0)
   {
     //Стоїть у черзі активна задача самоконтролю конфігурації
-    if ((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)) != 0)
+    if (
+        ((state_i2c_task & MASKA_FOR_BIT(STATE_CONFIG_EEPROM_GOOD_BIT)) != 0) &&
+        (
+         !(
+           (diagnostyka != NULL) &&
+           (
+            (_CHECK_SET_BIT(diagnostyka, ERROR_PRT_MEMORY_BIT) != 0)
+            ||
+            (_CHECK_SET_BIT(diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT) != 0)
+           )
+          )
+        )  
+       )   
     {
       //Перевірку здійснюємо тільки тоді, коли конфігурація була успішно прочитана
       if (
@@ -274,7 +300,19 @@ inline void periodical_operations(void)
   else if (periodical_tasks_TEST_SETTINGS != 0)
   {
     //Стоїть у черзі активна задача самоконтролю таблиці настройок
-    if ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) != 0)
+    if (
+        ((state_i2c_task & MASKA_FOR_BIT(STATE_SETTINGS_EEPROM_GOOD_BIT)) != 0) &&
+        (
+         !(
+           (diagnostyka != NULL) &&
+           (
+            (_CHECK_SET_BIT(diagnostyka, ERROR_PRT_MEMORY_BIT) != 0)
+            ||
+            (_CHECK_SET_BIT(diagnostyka, ERROR_NO_FREE_DYNAMIC_MEMORY_BIT) != 0)
+           )
+          )
+        )  
+       )   
     {
       //Перевірку здійснюємо тільки тоді, коли таблиця настройок була успішно прочитана
       if (

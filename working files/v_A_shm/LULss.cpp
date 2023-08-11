@@ -89,6 +89,10 @@ long CLULss::LinkLssTimers(void) {
         i++;
         m_chLinkedTimers |= 0x10;
     }
+    if (PushTmrNode(& m_Node4_2Ms)) {//static_cast<void*>(
+        i++;
+        m_chLinkedTimers |= 0x20;
+    }
     
     chGlSem--;
     return i;
@@ -216,6 +220,40 @@ register long lResetKey = 0;
     }
     return 0;
 }
+
+
+long CLULss::T4_2Ms(long lActivKey) {
+register long *plTmrVal = &m_Node4_2Ms.lTmrVal;
+register long lResetKey = 0;
+    if (lActivKey) {
+        if (m_chStateT4_2Ms == 0) {
+            lActivKey = 2;//m_MftSuit.lTWork;
+            *plTmrVal = lActivKey;
+            if (*plTmrVal != lActivKey)
+                *plTmrVal = lActivKey;
+            m_chStateT4_2Ms = 1;
+            return 1;
+        } else {
+            lActivKey = *plTmrVal;
+            if (lActivKey != 0)
+                return 1; //
+        }
+    } else {
+        if (m_chStateT4_2Ms == 1) {//Activated
+            lActivKey = *plTmrVal;
+            if (lActivKey != 0)
+                return 1; //
+            else
+                lResetKey = 1;
+        }
+    }
+    if (lResetKey) {
+        m_chStateT4_2Ms = 0;
+        *plTmrVal = 0;
+    }
+    return 0;	
+}
+
 
 
 #include "LuLss_p1.cpp"
@@ -810,7 +848,7 @@ void CLULss::CalcLssSchematicOptManual(void){
     rU = 0;
     U8_state_wrp stt_LULss_Not01__1_1,
         stt_LULss_And02__3_1,
-        stt_LULss_And03__3_1,
+        stt_LULss_And03__4_1,
         stt_LULss_And04__3_1,
         stt_LULss_Not05__1_1,
         stt_LULss_And06__2_1,
@@ -819,7 +857,7 @@ void CLULss::CalcLssSchematicOptManual(void){
         stt_LULss_Not09__1_1,
         stt_LULss_Not10__1_1,
         stt_LULss_Or_11__3_1,
-        stt_LULss_Or_12__3_1,
+        stt_LULss_Or_12__4_1,
 
         stt_LULss_DT_13__4_2,
         stt_LULss_Or_14__2_1,
@@ -839,13 +877,16 @@ void CLULss::CalcLssSchematicOptManual(void){
         stt_LULss_T_IMP_27__1_1,
         stt_LULss_T_IMP_28__1_1,
         stt_LULss_T_T_0_29__1_1,
-        stt_LULss_T_0_T_add1ms_29__1_1;
+        stt_LULss_T_0_T_add1ms_29__1_1,
+        stt_LULss_T_IMP_30__1_1,
+        stt_LULss_Not31__1_1,
+        stt_LULss_And32__2_1;
         // @TIMER_T_0,
         // @_TIMER_0_T
         // @_TIMER_IMPULSE;
 stt_LULss_Not01__1_1.U8V = rU,
         stt_LULss_And02__3_1.U8V = rU,
-        stt_LULss_And03__3_1.U8V = rU,
+        stt_LULss_And03__4_1.U8V = rU,
         stt_LULss_And04__3_1.U8V = rU,
         stt_LULss_Not05__1_1.U8V = rU,
         stt_LULss_And06__2_1.U8V = rU,
@@ -854,7 +895,7 @@ stt_LULss_Not01__1_1.U8V = rU,
         stt_LULss_Not09__1_1.U8V = rU,
         stt_LULss_Not10__1_1.U8V = rU,
         stt_LULss_Or_11__3_1.U8V = rU,
-        stt_LULss_Or_12__3_1.U8V = rU,
+        stt_LULss_Or_12__4_1.U8V = rU,
 
         stt_LULss_DT_13__4_2.U8V = rU,
         stt_LULss_Or_14__2_1.U8V = rU,
@@ -874,6 +915,9 @@ stt_LULss_Not01__1_1.U8V = rU,
         stt_LULss_T_IMP_27__1_1.U8V = rU,
         stt_LULss_T_IMP_28__1_1.U8V = rU,
         stt_LULss_T_T_0_29__1_1.U8V = rU,
+        stt_LULss_T_IMP_30__1_1.U8V = rU,
+        stt_LULss_Not31__1_1.U8V = rU,
+        stt_LULss_And32__2_1.U8V = rU,
         stt_LULss_T_0_T_add1ms_29__1_1.U8V = rU;
 
     if (m_LssCfgSuit.chSel == LSS_MODE_SIMPLE)
@@ -907,6 +951,14 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
 
     // wrp.bool_vars.
 
+#ifdef DEBUG_MODE
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_LSS_LSSIN1 = wrp.bool_vars.LSS_LSSIN1;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_LSS_MUTE_I = wrp.bool_vars.LSS_MUTE_I;
+#else
+
+#endif
+
+
     stt_LULss_Or_14__2_1.bool_val.bt0 = wrp.bool_vars.LSS_TRIGGER;
     stt_LULss_Or_14__2_1.bool_val.bt1 = wrp.bool_vars.LSS_TIMELIMITED;
     if((stt_LULss_Or_14__2_1.U8V &3) != 0){
@@ -923,6 +975,12 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     stt_LULss_Not05__1_1.bool_val.bt7 = (~rU)&1;
     stt_LULss_Not09__1_1.bool_val.bt7 = (~rU)&1;
     stt_LULss_Not20__1_1.bool_val.bt7 = (~static_cast<unsigned int>(wrp.bool_vars.LSS_BLOCK_I))&1;
+    
+    stt_LULss_And32__2_1.bool_val.bt0 = stt_LULss_Or_14__2_1.bool_val.bt7;
+    stt_LULss_And32__2_1.bool_val.bt1 = wrp.bool_vars.LSS_RESET_I;
+    if((stt_LULss_And32__2_1.U8V &3) == 3){
+        stt_LULss_And32__2_1.bool_val.bt7 = 1;
+    } 
 
     stt_LULss_T_IMP_27__1_1.bool_val.bt0 = rU;
     lV = T1_1Ms(rU);
@@ -932,6 +990,28 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     //..dbg );
     //..dbg }
     stt_LULss_T_IMP_27__1_1.bool_val.bt7 = lV;
+
+    stt_LULss_T_IMP_30__1_1.bool_val.bt0 = rU;
+    lV = T4_2Ms(rU);
+    stt_LULss_T_IMP_30__1_1.bool_val.bt7 = lV;
+    
+    stt_LULss_Not31__1_1.bool_val.bt0 = lV;
+    rU =  stt_LULss_T_IMP_30__1_1.bool_val.bt7;
+    stt_LULss_Not31__1_1.bool_val.bt7 = (~rU)&1;
+
+#ifdef DEBUG_MODE
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_T_IMP_27_bt0 = stt_LULss_T_IMP_27__1_1.bool_val.bt0;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_T_IMP_27_bt7 = stt_LULss_T_IMP_27__1_1.bool_val.bt7;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_T_IMP_30_bt0 = stt_LULss_T_IMP_30__1_1.bool_val.bt0;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_T_IMP_30_bt7 = stt_LULss_T_IMP_30__1_1.bool_val.bt7;
+    
+    
+    
+#else
+
+#endif
+
+
 
     stt_LULss_And06__2_1.bool_val.bt0 = stt_LULss_Not05__1_1.bool_val.bt7;
     stt_LULss_And06__2_1.bool_val.bt1 = wrp.bool_vars.LSS_NORMAL;
@@ -971,7 +1051,15 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     //.dbg-..);
     //.dbg-..}
     stt_LULss_T_0_T_add1ms_29__1_1.bool_val.bt7 =  lV;
+#ifdef DEBUG_MODE
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_T_T_0_29_bt0 = stt_LULss_T_IMP_27__1_1.bool_val.bt0;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_T_T_0_29_bt1 = stt_LULss_T_IMP_27__1_1.bool_val.bt7;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_T_0_T_add1ms_29_bt7 = stt_LULss_T_IMP_30__1_1.bool_val.bt0;
+    
 
+#else
+
+#endif
     stt_LULss_Or_18__3_1.bool_val.bt0 = stt_LULss_T_0_T_add1ms_29__1_1.bool_val.bt7;
     stt_LULss_Or_18__3_1.bool_val.bt1 = wrp.bool_vars.LSS_NORMAL;
     stt_LULss_Or_18__3_1.bool_val.bt2 = wrp.bool_vars.LSS_RESET_I;
@@ -979,10 +1067,18 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
         stt_LULss_Or_18__3_1.bool_val.bt7 = 1;
         //
     }
+#ifdef DEBUG_MODE
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_Or_18__3_1_bt0 = stt_LULss_Or_18__3_1.bool_val.bt0;
+    
+#else
 
+#endif
     stt_LULss_DT_15__4_2.bool_val.bt3 = wrp.bool_vars.IN_LSS_GROUND;
     stt_LULss_DT_15__4_2.bool_val.bt2 = wrp.bool_vars.IN_LSS_VCC;//!??
     stt_LULss_DT_15__4_2.bool_val.bt7 = static_cast<unsigned>(m_chQTrg11);
+    
+    
+    
 
     //..rU = stt_LULss_T_IMP_27__1_1.bool_val.bt7;
     //?..stt_LULss_DT_15__4_2.bool_val.bt1 = stt_LULss_Or_18__3_1.bool_val.bt7;//!??
@@ -1036,15 +1132,26 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     rU = stt_LULss_DT_15__4_2.bool_val.bt7 ;// Q^
     m_chQTrg11= rU;
      stt_LULss_DT_15__4_2.bool_val.bt6 = (~(rU))&1;  
+     #ifdef DEBUG_MODE
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_DT_15__4_2_clr = stt_LULss_DT_15__4_2.bool_val.bt1
+                                                         | stt_LULss_Or_18__3_1.bool_val.bt7;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_DT_15__4_2_in  = stt_LULss_DT_15__4_2.bool_val.bt0
+    | stt_LULss_T_IMP_27__1_1.bool_val.bt7;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_DT_15__4_2_Q   = stt_LULss_DT_15__4_2.bool_val.bt7;
+    
+#else
+
+#endif
     //? rU = stt_LULss_DT_15__4_2.bool_val.bt7;
     stt_LULss_Not01__1_1.bool_val.bt0 = rU;
     stt_LULss_Not01__1_1.bool_val.bt7 = (~rU)&1;
 
-    stt_LULss_And03__3_1.bool_val.bt0 = rU;//..stt_LULss_DT_15__4_2.bool_val.bt7;
-    stt_LULss_And03__3_1.bool_val.bt1 = stt_LULss_Or_14__2_1.bool_val.bt7;
-    stt_LULss_And03__3_1.bool_val.bt2 = wrp.bool_vars.LSS_MUTE_I;
-    if(( stt_LULss_And03__3_1.U8V &7) == 7){
-         stt_LULss_And03__3_1.bool_val.bt7 = 1;
+    stt_LULss_And03__4_1.bool_val.bt0 = rU;//..stt_LULss_DT_15__4_2.bool_val.bt7;
+    stt_LULss_And03__4_1.bool_val.bt1 = stt_LULss_Or_14__2_1.bool_val.bt7;
+    stt_LULss_And03__4_1.bool_val.bt2 = wrp.bool_vars.LSS_MUTE_I;
+    stt_LULss_And03__4_1.bool_val.bt3 = stt_LULss_Not31__1_1.bool_val.bt7;
+    if(( stt_LULss_And03__4_1.U8V &15) == 15){
+         stt_LULss_And03__4_1.bool_val.bt7 = 1;
     } 
     //.. rU = stt_LULss_DT_15__4_2.bool_val.bt7;
     stt_LULss_Not10__1_1.bool_val.bt0 = rU;
@@ -1075,11 +1182,12 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     stt_LULss_T_IMP_28__1_1.bool_val.bt7 = lV;
 
 
-    stt_LULss_Or_12__3_1.bool_val.bt0 = stt_LULss_And06__2_1.bool_val.bt7;
-    stt_LULss_Or_12__3_1.bool_val.bt1 = stt_LULss_And07__2_1.bool_val.bt7;
-    stt_LULss_Or_12__3_1.bool_val.bt2 = stt_LULss_And08__3_1.bool_val.bt7;
-    if((stt_LULss_Or_12__3_1.U8V &7) != 0){
-        stt_LULss_Or_12__3_1.bool_val.bt7 = 1;
+    stt_LULss_Or_12__4_1.bool_val.bt0 = stt_LULss_And06__2_1.bool_val.bt7;
+    stt_LULss_Or_12__4_1.bool_val.bt1 = stt_LULss_And07__2_1.bool_val.bt7;
+    stt_LULss_Or_12__4_1.bool_val.bt2 = stt_LULss_And08__3_1.bool_val.bt7;
+    stt_LULss_Or_12__4_1.bool_val.bt3 = stt_LULss_And32__2_1.bool_val.bt7;
+    if((stt_LULss_Or_12__4_1.U8V &15) != 0){
+        stt_LULss_Or_12__4_1.bool_val.bt7 = 1;
         //
     }
 
@@ -1092,12 +1200,26 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
 
 
     stt_LULss_Or_11__3_1.bool_val.bt0 = stt_LULss_And02__3_1.bool_val.bt7;
-    stt_LULss_Or_11__3_1.bool_val.bt1 = stt_LULss_And03__3_1.bool_val.bt7;
+    stt_LULss_Or_11__3_1.bool_val.bt1 = stt_LULss_And03__4_1.bool_val.bt7;
     stt_LULss_Or_11__3_1.bool_val.bt2 = stt_LULss_And04__3_1.bool_val.bt7;
     if((stt_LULss_Or_11__3_1.U8V &7) != 0){
         stt_LULss_Or_11__3_1.bool_val.bt7 = 1;
         //
     }
+#ifdef DEBUG_MODE
+
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_Or_11__3_1_bt0 = stt_LULss_Or_11__3_1.bool_val.bt0;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_Or_11__3_1_bt1 = stt_LULss_Or_11__3_1.bool_val.bt1;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_Or_11__3_1_bt2 = stt_LULss_Or_11__3_1.bool_val.bt2;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_Or_11__3_1_bt7 = stt_LULss_Or_11__3_1.bool_val.bt7;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_Or_12__4_1_bt0 = stt_LULss_Or_12__4_1.bool_val.bt0;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_Or_12__4_1_bt1 = stt_LULss_Or_12__4_1.bool_val.bt1;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_Or_12__4_1_bt2 = stt_LULss_Or_12__4_1.bool_val.bt2;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_Or_12__4_1_bt3 = stt_LULss_Or_12__4_1.bool_val.bt3;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_Or_12__4_1_bt7 = stt_LULss_Or_12__4_1.bool_val.bt7;
+#else
+
+#endif
     
 //stt_LULss_DT_13__4_2
     stt_LULss_DT_13__4_2.bool_val.bt3 = wrp.bool_vars.IN_LSS_GROUND;
@@ -1114,7 +1236,7 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
       //6 -q^                            @/NOW USE \@      6 -Q^
 
       // RESET BLOCK
-    if (stt_LULss_Or_12__3_1.bool_val.bt7 == 1)
+    if (stt_LULss_Or_12__4_1.bool_val.bt7 == 1)
     {                                     // dbg code(mean->).bt1 == 1 CLR INPUT
       stt_LULss_DT_13__4_2.U8V = 0;     //
       stt_LULss_DT_13__4_2.bool_val.bt6 = 1; // Q^
@@ -1154,6 +1276,12 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     rU = stt_LULss_DT_13__4_2.bool_val.bt7;
     m_chQTrg29 = rU;// 
     stt_LULss_DT_13__4_2.bool_val.bt6 = (~(rU))&1;
+#ifdef DEBUG_MODE
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].ch_DT_13__4_2_Q = stt_LULss_DT_13__4_2.bool_val.bt7;
+    
+#else
+
+#endif
 
     stt_LULss_And21__4_1.bool_val.bt0 = wrp.bool_vars.LSS_NORMAL;
     stt_LULss_And21__4_1.bool_val.bt1 = wrp.bool_vars.LSS_LSSIN1;
@@ -1202,7 +1330,21 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     }
 //
  
- 
+ #ifdef DEBUG_MODE
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec].stt_LULss_Or_25_bt7 = stt_LULss_Or_25__2_1.bool_val.bt7;
+    ArrCSSigDbgRec[uiIdxArrCSSigDbgRec++].stt_LULss_Or_26_bt7 = stt_LULss_Or_26__2_1.bool_val.bt7;
+    if (uiIdxArrCSSigDbgRec >= AMOIUNT_DBG_REC){
+        
+        asm(
+       "bkpt 1"
+        );
+    }
+    
+    
+#else
+
+#endif
+
 
 
 
@@ -1214,7 +1356,10 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     lV = stt_LULss_Or_25__2_1.bool_val.bt7;
     rU = stt_LULss_Or_26__2_1.bool_val.bt7; 
    
-
+    if( lV == 1 && rU == 1)
+        asm(
+       "bkpt 1"
+        );
 
  this->arrOut [LSS_OUT_NAME_ALARM -1] = lV;//arChIntermediaResult[OFFSET_OUT_LSS_OR_27__2_1];       
  this->arrOut [LSS_OUT_NAME_MUTE  -1] = rU;//arChIntermediaResult[OFFSET_OUT_LSS_OR_28__2_1];      
@@ -1222,7 +1367,7 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
 register __LN_ALARM *p__LN_ALARM =  static_cast<__LN_ALARM*>(pvCfgLN);
    //volatile bool boolchQTrg29 = chQTrg29,boolchQTrg11 = m_chQTrg11;
     p__LN_ALARM->active_state[(ALARM_OUT_ALARM/8) ] = (static_cast<bool>(lV))<<(ALARM_OUT_ALARM%8);
-    p__LN_ALARM->active_state[(ALARM_OUT_MUTE/8) ]  = (static_cast<bool>(rU))<<(ALARM_OUT_MUTE%8) ;
+    p__LN_ALARM->active_state[(ALARM_OUT_MUTE/8) ]  |= (static_cast<bool>(rU))<<(ALARM_OUT_MUTE%8) ;
     
     //?if(boolchQTrg29 != static_cast<bool>(m_chQTrg29) ){
     if(wrp.bool_vars.LSS_D_TRG_29__4_2_Q != (m_chQTrg29) ){
@@ -1231,21 +1376,9 @@ register __LN_ALARM *p__LN_ALARM =  static_cast<__LN_ALARM*>(pvCfgLN);
     }
     //?if(boolchQTrg11 != static_cast<bool>(m_chQTrg11) ){
     if(wrp.bool_vars.LSS_D_TRG_11__4_2_Q != (m_chQTrg11) ){
-    p__LN_ALARM->d_trigger_state[ALARM_D_TRIGGER_2/8] = (static_cast<bool>(m_chQTrg11))<<(ALARM_D_TRIGGER_2%8);
+    p__LN_ALARM->d_trigger_state[ALARM_D_TRIGGER_2/8] |= (static_cast<bool>(m_chQTrg11))<<(ALARM_D_TRIGGER_2%8);
     chGlb_ActivatorWREeprom++;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1260,21 +1393,29 @@ register __LN_ALARM *p__LN_ALARM =  static_cast<__LN_ALARM*>(pvCfgLN);
 
 
 
-char chGBL_BP_StopLss = 0;
-void LssOp	(void *pObj){
-CLULss& rCLULss = *(static_cast<CLULss*>(pObj));
-if(chGBL_BP_StopLss == rCLULss.shShemasOrdNumStng){
-    asm(
+    char chGBL_BP_StopLss = 0;
+void LssOp	(void *pObj)
+{
+    CLULss& rCLULss = *(static_cast<CLULss*>(pObj));
+    if(chGBL_BP_StopLss == rCLULss.shShemasOrdNumStng){
+        asm volatile(
                 "bkpt 1"
-                );
+        );
  //rCLULss.CalcLssSchematicOpt();//
- rCLULss.CalcLssSchematicOptManual();//
- return;
+    rCLULss.CalcLssSchematicOptManual();//
+    return;
 }
- rCLULss.CalcLssSchematicOptManual();//
+    rCLULss.CalcLssSchematicOptManual();//
 }
 
 
+#ifdef DEBUG_MODE
+ CSSigDbgRecord  ArrCSSigDbgRec[AMOIUNT_DBG_REC];
+ unsigned int uiIdxArrCSSigDbgRec ;
+ void* pvCCSSigDbg;
+#else
+
+#endif
 
 
 

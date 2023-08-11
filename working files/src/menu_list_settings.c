@@ -79,7 +79,19 @@ void make_ekran_list_settings(void)
            (current_state_menu2.edition == ED_INFO)
           )   
   {
-    make_ekran_about_info(0, ((current_state_menu2.edition == ED_WARNING_EDITION_BUSY) ? information_no_edition : information_no_free_dyn_mem));
+    const uint8_t (*p_information)[MAX_COL_LCD + 1];
+    if (current_state_menu2.edition == ED_WARNING_EDITION_BUSY) p_information = information_no_edition;
+    else
+    {
+      if (current_state_menu2.edition_option == 0) p_information = information_no_free_dyn_mem;
+      else
+      {
+        p_information = information_no_resurs;
+        current_state_menu2.edition_option = 0;
+      }
+    }
+    
+    make_ekran_about_info(0, p_information);
   }
   else
   {

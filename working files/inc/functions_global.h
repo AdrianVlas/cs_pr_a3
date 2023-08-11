@@ -218,6 +218,7 @@ void calculate_namber_bit_waiting_for_rs_485(void);
 void restore_trigger_functions(unsigned int*);
 void changing_diagnostyka_state(void);
 unsigned int count_number_set_bit(unsigned int*, unsigned int);
+unsigned int resurs_control(__CONFIG const * const);
 
 //void input_scan(void);
 void main_protection(void);

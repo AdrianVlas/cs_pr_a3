@@ -8,6 +8,7 @@ extern const uint8_t information_out_of_limits[MAX_NAMBER_LANGUAGE][MAX_COL_LCD 
 extern const uint8_t information_error[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint32_t cursor_x_error[MAX_NAMBER_LANGUAGE];
 extern const uint8_t information_no_free_dyn_mem[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
+extern const uint8_t information_no_resurs[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];
 extern const uint8_t information_on_off[MAX_NAMBER_LANGUAGE][2][MAX_COL_LCD + 1];
 extern const uint32_t cursor_x_on_off[MAX_NAMBER_LANGUAGE][2];
 extern const uint8_t information_request[MAX_NAMBER_LANGUAGE][MAX_COL_LCD + 1];

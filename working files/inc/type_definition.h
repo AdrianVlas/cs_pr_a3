@@ -27,6 +27,7 @@ typedef struct
   unsigned int binary_data;           //1 - екран відображення бінарної інформації/0 - екран відображення небінарної інформації
   
   enum _edition_stats edition;
+  unsigned int edition_option;
   
   unsigned int cursor_on;             //1 - курсор відображається/ 0 - курсор не відображається
   unsigned int cursor_blinking_on;    //1 - курсор мигає/ 0 - курсор не мигає

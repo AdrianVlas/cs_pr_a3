@@ -283,7 +283,7 @@ int postCommonSmallWriteAction(void)
               unsigned int result = set_config_and_settings(1, USB_PARAMS_FIX_CHANGES);//×ÅÐÅÇ ô-öèþ 5
               if (result != 0) 
               {
-                if (result >= 2)current_state_menu2.edition = ED_ERROR;
+                if (result == 2)current_state_menu2.edition = ED_ERROR;
                 return 3;
               }
             }
@@ -305,7 +305,7 @@ int postCommonSmallWriteAction(void)
               unsigned int result = set_config_and_settings(1, RS485_PARAMS_FIX_CHANGES);//×ÅÐÅÇ ô-öèþ 5
               if (result != 0) 
               {
-                if (result >= 2) current_state_menu2.edition = ED_ERROR;
+                if (result == 2) current_state_menu2.edition = ED_ERROR;
                 return 3;
               }
             }//if
