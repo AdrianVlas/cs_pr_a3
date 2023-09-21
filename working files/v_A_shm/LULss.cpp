@@ -150,7 +150,7 @@ register long *plTmrVal = &m_Node1_2Ms.lTmrVal;
 register long lResetKey = 0;
     if (lActivKey) {
         if (m_chStateT1_2Ms == 0) {
-            lActivKey = 3;//m_MftSuit.lTWork;
+            lActivKey = 2;//m_MftSuit.lTWork;
             *plTmrVal = lActivKey;
             if (*plTmrVal != lActivKey)
                 *plTmrVal = lActivKey;
@@ -1033,9 +1033,9 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
         if(sh.m_last_iteration != 0)
             LSSIN_I_2ms_Val = 0;//LssIn_I = 1
     }
-    else{
-        LSSIN_I_2ms_Val = 0;// stt_LULss_T_IMP_In.bt1  = 0;
-    }
+    //..else{
+    //..    LSSIN_I_2ms_Val = 0;// stt_LULss_T_IMP_In.bt1  = 0;
+    //..}
      
      //LSS_D_2ms_Prev, LSS_D_2ms_Val;      // For Timer Emelation 2MS    LSS_D_2ms,  
      
@@ -1099,22 +1099,22 @@ stt_LULss_DT_13__4_2.bool_val.bt7 = wrp.bool_vars.LSS_D_TRG_29__4_2_Q;
     //..dbg );
     //..dbg }
     stt_LULss_T_IMP_27__1_1.bool_val.bt7 = lV;
-    if(stt_LULss_T_IMP_Out.bool_val.bt0 != lV){
-        asm(
-                    "bkpt 1"
-        );
-     
-    }
+    //.if(stt_LULss_T_IMP_Out.bool_val.bt0 != lV){
+    //.    asm(
+    //.                "bkpt 1"
+    //.    );
+    //. 
+    //.}
     stt_LULss_T_IMP_30__1_1.bool_val.bt0 = rU;
     lV = T4_2Ms(rU);
     stt_LULss_T_IMP_30__1_1.bool_val.bt7 = lV;
     
-    if(stt_LULss_T_IMP_Out.bool_val.bt1 != lV){
-        //asm(
-        //            "bkpt 1"
-        //);
-     
-    }
+    //..if(stt_LULss_T_IMP_Out.bool_val.bt1 != lV){
+    //..    //asm(
+    //..    //            "bkpt 1"
+    //..    //);
+    //.. 
+    //..}
     
     
     stt_LULss_Not31__1_1.bool_val.bt0 = lV;
