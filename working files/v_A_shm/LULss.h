@@ -40,6 +40,16 @@ public:
     char m_chInC29;
     char m_chInC11;
     char m_chErrorQTrg11;
+    
+    //.char LSSIN_Imp_1Ms, LSSIN_Imp_2Ms, LSS_D_Imp_2Ms, RESET_Imp_1Ms;
+    
+    char  LSSIN_I_1ms_Prev;                 // For Timer Emulation 1MS      LSSIN_I_1ms,
+    char  LSSIN_I_2ms_Prev, LSSIN_I_2ms_Val;// For Timer Emulation 2MS      LSSIN_I_2ms,
+    char  LSS_D_2ms_Prev, LSS_D_2ms_Val;      // For Timer Emulation 2MS    LSS_D_2ms,  
+    char  RESET_I_1ms_Prev;                 // For Timer Emulation !MS      RESET_I_1ms,
+    
+    
+    
     short m_shAmountProcessedRec;
     short m_shStartRecord;
      LedShcemasDscRecord** m_pArLssShcemasDscRecords;//PConst
@@ -58,6 +68,7 @@ public:
     inline long GetStateVarchInC (long lIdTrg);
     inline void SetTrg(long lIdTrg);
     inline void ClrTrg(long lIdTrg);
+     void ClearTrgTmrMemberVar(void);
     void UpdateCLss(void);
     long LinkLssTimers(void);
     friend void LssOp (void *pObj);
